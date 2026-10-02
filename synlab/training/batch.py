@@ -264,6 +264,7 @@ def build_training_batch(
     quality_target_valid: np.ndarray | None = None,
     quality_tier: Mapping[str, int] | None = None,
     contradiction_source: Any | None = None,
+    meta: Mapping[str, Any] | None = None,
 ) -> TrainingBatch:
     """Assemble a :class:`TrainingBatch` from a pool/fixture or pre-sampled rows.
 
@@ -429,7 +430,8 @@ def build_training_batch(
         sample_keys=sample_keys,
         pool_id=str(getattr(pool, "pool_id", "") or (labels or {}).get("pool_id", "")),
         meta={"exclusion_reason_names": EXCLUSION_REASON_NAMES,
-              "relation_names": RELATION_NAMES},
+              "relation_names": RELATION_NAMES,
+              **dict(meta or {})},
     )
     audit = negative_audit(batch)
     if not audit["ok"]:

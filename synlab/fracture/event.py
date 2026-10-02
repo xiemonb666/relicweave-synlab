@@ -24,7 +24,9 @@ from .booleans import (
     SourceResolver,
     boolean_difference,
     boolean_intersection,
+    concat_tagged,
     mesh_hash,
+    mesh_shells,
     tag_source,
 )
 from .fragment import (
@@ -54,6 +56,45 @@ class EventBuild:
     result: FractureResult
     classifications: dict[str, dict[str, Any]] = field(default_factory=dict)
     pieces: dict[str, SplitPart] = field(default_factory=dict)
+
+
+def _cut_both_sides(source_mother: Any, source_cutter: Any) -> tuple[Any, Any]:
+    """``M_minus = M ∩ C`` and ``M_plus = M \\ C`` for one shared cutter.
+
+    A mother assembled from several *independent* closed shells (V10's body + lid + collar,
+    built with ``build_vessel(union=False)``) is **not** a valid single CSG operand: its shells
+    interpenetrate by construction -- the lid collar laps the body mouth and the lid dome by a
+    real volumetric overlap, which is the documented design ("contact is not R2") -- so the
+    winding number of the whole-body input is ambiguous exactly where the shells overlap.
+    Manifold then answers with a mesh that is geometrically closed but not a closed *surface*:
+    measured on ``LIN0000_V10_M11_PAT15`` the whole-body call returns ``M_minus`` with 69 and
+    ``M_plus`` with 124 edges used by four faces (``is_watertight`` False), and the event is
+    refused by the conservation gate although its volume is right to 1e-5 mm^3.
+
+    Cutting one shell at a time is the definition that matches the rest of the pipeline -- the
+    fragments of an event are already the connected components of each side
+    (:func:`synlab.fracture.fragment.split_components`), and the mother volume is the sum of the
+    shell volumes -- and it returns closed solids: measured on the same lineage, per-shell
+    ``M_minus``/``M_plus`` are watertight with zero non-manifold edges and the same volumes
+    (5449360.623305 vs 5449360.623244 mm^3).  A single-shell mother keeps the previous code path
+    bit for bit (measured on ``LIN0051_V01_M10_PAT08``: identical vertices and faces), so no
+    already-working vessel is affected.  Nothing is relaxed here: both sides still come from the
+    same frozen cutter bytes and every result is still audited downstream.
+    """
+    shells = mesh_shells(source_mother.mesh)
+    if len(shells) <= 1:
+        return (boolean_intersection([source_mother, source_cutter], label="M_minus"),
+                boolean_difference([source_mother, source_cutter], label="M_plus"))
+    shell_sources = [
+        tag_source(part, 1.0, "mother", triangle_ids=np.asarray(source_mother.triangle_ids)[ids])
+        for part, ids in shells
+    ]
+    return (
+        concat_tagged([boolean_intersection([shell, source_cutter], label="M_minus")
+                       for shell in shell_sources], label="M_minus"),
+        concat_tagged([boolean_difference([shell, source_cutter], label="M_plus")
+                       for shell in shell_sources], label="M_plus"),
+    )
 
 
 def _fragment_ids(base: str, parts: list[SplitPart], side: int) -> list[str]:
@@ -95,8 +136,7 @@ def run_shared_cut(
                                                faces=np.asarray(cutter_mesh.faces),
                                                process=False),
                                2.0, "cutter")
-    minus = boolean_intersection([source_mother, source_cutter], label="M_minus")
-    plus = boolean_difference([source_mother, source_cutter], label="M_plus")
+    minus, plus = _cut_both_sides(source_mother, source_cutter)
     if minus.n_faces == 0 or plus.n_faces == 0:
         raise SynLabError(
             ErrorCode.FRACTURE_CONSERVATION_FAIL,

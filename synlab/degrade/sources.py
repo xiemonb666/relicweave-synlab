@@ -20,7 +20,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass, field, replace
 from pathlib import Path
-from typing import Any
+from typing import Any, Sequence
 
 import numpy as np
 
@@ -371,8 +371,15 @@ def unflatten_payload(arrays: dict[str, np.ndarray], meta: dict[str, Any]) -> di
 
 def commit_source(store: Any, source: SourceBundle, *, role: str, schema: str,
                   lineage_id: str | None = None, split: str | None = None,
-                  qa: dict[str, Any] | None = None, meta: dict[str, Any] | None = None) -> Any:
-    """Commit a source/output bundle to an :class:`synlab.storage.store.AssetStore`."""
+                  qa: dict[str, Any] | None = None, meta: dict[str, Any] | None = None,
+                  ancestry: Sequence[str] = ()) -> Any:
+    """Commit a source/output bundle to an :class:`synlab.storage.store.AssetStore`.
+
+    ``ancestry`` is an optional addition to the historical signature: it records the asset ids
+    this bundle was *derived from* (the degradation source of a variant, the observation of a
+    degradation source).  It is a store column, not part of the payload, so a release closure can
+    be walked from a variant back to the lineage asset without changing any asset id.
+    """
     arrays, extra_meta, dropped = flatten_payload(source.payload)
     payload: dict[str, Any] = dict(arrays)
     merged = dict(extra_meta)
@@ -389,6 +396,7 @@ def commit_source(store: Any, source: SourceBundle, *, role: str, schema: str,
         role=role or source.role or "degradation_output", schema=schema, unit=source.unit,
         frame=source.frame, payload=payload, meta={**merged, **(meta or {})}, qa=qa or {},
         lineage_id=lineage_id if lineage_id is not None else source.lineage_id, split=split,
+        ancestry=[str(a) for a in ancestry if a],
     )
 
 

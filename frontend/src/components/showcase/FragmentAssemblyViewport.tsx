@@ -28,6 +28,16 @@ export interface FragmentRef {
   file_key: string;
   volume_mm3?: number | null;
   label?: string;
+  /** 权威面属性推出来的断面分组（来自清单 metrics，不是前端推断）。 */
+  surface_groups?: Record<string, { faces?: number; area_mm2?: number; material?: string }>;
+  /** 导出后逐字节复算的几何一致性测量（GLB vs 权威派生数组）。 */
+  geometry_check?: {
+    position_max_abs_error_vs_authority_m?: number;
+    winding_matches_authority?: boolean;
+    triangles_in_glb?: number;
+    authority_faces?: number;
+    mismatches?: string[];
+  };
 }
 
 export interface FragmentAssemblyViewportProps {
@@ -44,6 +54,75 @@ interface LoadedFragment {
   object: THREE.Group;
   measurement: GlbMeasurement;
   centerM: THREE.Vector3;
+}
+
+/** 展示材质名 → 权威断面分组（`_display_surface_groups` 写进 GLB 的材质名）。 */
+export const SURFACE_MATERIAL_GROUPS: Record<string, string> = {
+  synlab_display_new_fracture_surface: 'new_fracture_surface',
+  synlab_display_original_surface: 'original_mother_surface',
+  synlab_display_ambiguous_surface: 'ambiguous_surface',
+};
+
+/** 权威断面分组的文案（分组本身来自权威面属性 origin_kind / interface_id）。 */
+export const SURFACE_GROUP_LABELS: Record<string, string> = {
+  new_fracture_surface: '新断面（权威 origin_kind=INTERFACE / interface_id≥0）',
+  original_mother_surface: '原表面（权威 origin_kind=mother_surface）',
+  ambiguous_surface: '未判定面（权威 origin_kind=ambiguous）',
+};
+
+export interface SurfaceLegendRow {
+  /** GLB 里真实的材质名（图例的一等公民：没有这个材质就不会出现在图例里）。 */
+  material: string;
+  group: string | null;
+  label: string;
+  colorHex: string | null;
+  /** 本次加载的三维几何里该材质覆盖的三角面数（浏览器实测）。 */
+  displayTriangles: number;
+  /** 清单里该分组的权威面数与面积（来自 fragment.mesh 的面属性，单位 mm²）。 */
+  authorityFaces: number | null;
+  authorityAreaMm2: number | null;
+}
+
+export function collectSurfaceLegend(
+  measurements: GlbMeasurement[],
+  fragments: FragmentRef[],
+): SurfaceLegendRow[] {
+  const authority = new Map<string, { faces: number; area: number }>();
+  for (const fragment of fragments) {
+    for (const [group, row] of Object.entries(fragment.surface_groups ?? {})) {
+      const current = authority.get(group) ?? { faces: 0, area: 0 };
+      current.faces += Number(row?.faces ?? 0);
+      current.area += Number(row?.area_mm2 ?? 0);
+      authority.set(group, current);
+    }
+  }
+  const rows = new Map<string, SurfaceLegendRow>();
+  for (const measurement of measurements) {
+    for (const group of measurement.materialGroups ?? []) {
+      const existing = rows.get(group.material);
+      if (existing) {
+        existing.displayTriangles += group.triangles;
+        continue;
+      }
+      const surface = SURFACE_MATERIAL_GROUPS[group.material] ?? null;
+      const authorityRow = surface ? authority.get(surface) : undefined;
+      rows.set(group.material, {
+        material: group.material,
+        group: surface,
+        label: surface ? SURFACE_GROUP_LABELS[surface] ?? surface : group.material,
+        colorHex: group.colorHex,
+        displayTriangles: group.triangles,
+        authorityFaces: authorityRow ? authorityRow.faces : null,
+        authorityAreaMm2: authorityRow ? authorityRow.area : null,
+      });
+    }
+  }
+  return [...rows.values()].sort((a, b) => {
+    const order = ['new_fracture_surface', 'original_mother_surface', 'ambiguous_surface'];
+    const ai = a.group ? order.indexOf(a.group) : order.length;
+    const bi = b.group ? order.indexOf(b.group) : order.length;
+    return ai === bi ? b.displayTriangles - a.displayTriangles : ai - bi;
+  });
 }
 
 export function FragmentAssemblyViewport({
@@ -260,6 +339,34 @@ export function FragmentAssemblyViewport({
   }, [wireframe, status]);
 
   const totalTriangles = measurements.reduce((sum, item) => sum + item.triangleCount, 0);
+  const meshesWithoutNormal = measurements.reduce(
+    (sum, item) => sum + (item.meshesWithoutNormal ?? 0),
+    0,
+  );
+  const legend = useMemo(
+    () => collectSurfaceLegend(measurements, fragments),
+    [measurements, fragments],
+  );
+  const legendIsSplit = legend.some((row) => row.group !== null);
+  const geometryChecks = fragments
+    .map((fragment) => fragment.geometry_check)
+    .filter((check): check is NonNullable<FragmentRef['geometry_check']> => Boolean(check));
+  const maxPositionError = geometryChecks.length
+    ? Math.max(...geometryChecks.map((check) => Number(check.position_max_abs_error_vs_authority_m ?? 0)))
+    : null;
+  const windingOk = geometryChecks.length
+    ? geometryChecks.every((check) => check.winding_matches_authority !== false)
+    : null;
+  const authorityFacesSum = legendIsSplit
+    ? legend.reduce((sum, row) => sum + Number(row.authorityFaces ?? 0), 0)
+    : null;
+  const displayTrianglesSum = legendIsSplit
+    ? legend.reduce((sum, row) => sum + row.displayTriangles, 0)
+    : null;
+  const authorityFacesTotal = fragments.reduce(
+    (sum, fragment) => sum + Number(fragment.geometry_check?.authority_faces ?? 0),
+    0,
+  );
   const centerAuthority =
     measurements.length > 0
       ? displayToAuthority(measurements[0].displayCenterM).map((v) => v.toFixed(3)).join(', ')
@@ -275,6 +382,13 @@ export function FragmentAssemblyViewport({
           <Badge tone={explode > 0 ? 'warn' : 'ok'}>
             {explode > 0 ? `爆炸视图（展示位移 ${explode.toFixed(3)} m）` : '原位'}
           </Badge>
+          {status === 'ready' ? (
+            <Badge tone={meshesWithoutNormal === 0 ? 'ok' : 'bad'}>
+              {meshesWithoutNormal === 0
+                ? `平滑着色：${measurements.reduce((sum, item) => sum + (item.meshesWithNormal ?? 0), 0)} 个 mesh 全带 NORMAL`
+                : `${meshesWithoutNormal} 个 mesh 缺 NORMAL（three.js 会 flatShading）`}
+            </Badge>
+          ) : null}
         </div>
         <div className="viewport__tools">
           <label className="check">
@@ -349,6 +463,53 @@ export function FragmentAssemblyViewport({
             </div>
           </dl>
         ) : null}
+        {legendIsSplit ? (
+          <div className="surface-legend">
+            <div className="surface-legend__title">
+              断面分色图例 —— 分组来自**权威面属性**（<code className="mono">origin_kind</code> /{' '}
+              <code className="mono">interface_id</code>），色块取自 GLB 里真实的{' '}
+              <code className="mono">material.baseColorFactor</code>
+            </div>
+            <ul className="surface-legend__list">
+              {legend.map((row) => (
+                <li key={row.material}>
+                  <span
+                    className="surface-legend__swatch"
+                    style={{ background: row.colorHex ?? '#666' }}
+                    aria-hidden="true"
+                  />
+                  <span className="surface-legend__label">{row.label}</span>
+                  <span className="mono small">
+                    显示三角面 {row.displayTriangles}
+                    {row.authorityFaces !== null ? ` · 权威面 ${row.authorityFaces}` : ''}
+                    {row.authorityAreaMm2 !== null
+                      ? ` · 权威面积 ${row.authorityAreaMm2.toFixed(3)} mm²`
+                      : ''}
+                    {` · 材质 ${row.material}`}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            {displayTrianglesSum !== null && authorityFacesSum !== null ? (
+              <p className="muted small mono">
+                一致性：显示分组面数合计 {displayTrianglesSum} = 权威分组面数合计 {authorityFacesSum}
+                {authorityFacesTotal ? `（本次事件权威碎片面数合计 ${authorityFacesTotal}）` : ''}
+                {maxPositionError !== null
+                  ? ` · GLB 顶点位置与权威最大偏差 ${maxPositionError.toExponential(2)} m（float32 舍入）`
+                  : ''}
+                {windingOk !== null ? ` · 绕向与权威一致：${windingOk ? '是' : '否'}` : ''}
+              </p>
+            ) : null}
+            <p className="muted small">
+              这是<b>显示着色</b>，<b>不代表几何真实起伏</b>：新断面与原表面是同一批顶点、同一批三角面，
+              只是按权威面属性分成两个 primitive 换了个颜色。真实断口起伏需要{' '}
+              <code className="mono">rough_shared_cut</code> 后端（本机 FAILED）或{' '}
+              <code className="mono">warped_partition</code>（PENDING）/
+              <code className="mono">fracture_modes</code>（MISSING）；页面对未实现的部分不做任何
+              噪声位移或几何替换。
+            </p>
+          </div>
+        ) : null}
         {failures.length > 0 ? (
           <div className="state state--error state--compact" role="alert">
             <div className="state__title">
@@ -369,6 +530,14 @@ export function FragmentAssemblyViewport({
           {measurements.length > 0
             ? ` 权威尺寸示例：${measurements[0].authorityExtentMm.map((v: number) => v.toFixed(2)).join(' × ')} mm。`
             : ''}
+        </p>
+        <p className="muted small">
+          当前显示的是展示几何 <b>L0 的平滑着色</b>（逐顶点 NORMAL 由权威网格算出：面积加权 +
+          角度阈值 + 保持绕向；权威几何未变，清单里每个 GLB 都带导出后逐字节复算的{' '}
+          <code className="mono">geometry_unchanged</code> 与{' '}
+          <code className="mono">normals</code> 测量值）。
+          若轮廓仍显棱角，那是 L0 网格本身的离散化限制，不是着色能修的；可选展示策略是改用清单里
+          已实测的 L1/L2 层级 + 同一套平滑法线，那会<b>降低</b>几何精度、不会让几何更精细。
         </p>
         {measurements.length > 0 ? (
           <p className="muted small mono">

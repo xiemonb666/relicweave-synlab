@@ -13,6 +13,7 @@
 import { useState } from 'react';
 
 import { AssetBrowser } from '../components/AssetBrowser';
+import { FracturePreviewPanel } from '../components/FracturePreviewPanel';
 import { SceneViewport } from '../components/SceneViewport';
 import { SpecStudio } from '../components/SpecStudio';
 import type { FieldSpec, FormValue } from '../components/SchemaForm';
@@ -80,6 +81,9 @@ const INITIAL_SPEC: FormValue = {
   implementation: { require_poc_before_custom: false },
 };
 
+const INITIAL_FRACTURE: Record<string, unknown> = INITIAL_SPEC.fracture as Record<string, unknown>;
+const INITIAL_PIECE_RANGE = (INITIAL_FRACTURE.target_piece_range as [number, number] | undefined) ?? [4, 12];
+
 export function FracturePage() {
   const app = useAppState();
   const capabilities = useResource((signal) => getCapabilities({ doctor: 'none' }, signal), []);
@@ -121,6 +125,12 @@ export function FracturePage() {
             <Badge tone="neutral">邻边/装配默认在研究审计 tab</Badge>
           </div>
         }
+      />
+
+      <FracturePreviewPanel
+        targetPieceRange={INITIAL_PIECE_RANGE}
+        backend={String(INITIAL_FRACTURE.backend ?? 'rough_shared_cut')}
+        fragmentId={fragmentAsset}
       />
 
       <SectionCard
@@ -199,6 +209,16 @@ export function FracturePage() {
             onProvenance={(assetId) => app.openProvenance({ kind: 'asset', id: assetId })}
             pageSize={12}
             emptyReason="还没有碎片资产。fracture 阶段需要 fracture+mothers 能力；能力缺失时后端 503 且不创建 run。"
+            renderRowActions={(asset) => (
+              <button
+                type="button"
+                className="btn btn--tiny"
+                onClick={() => setFragmentAsset(asset.asset_id)}
+                disabled={fragmentAsset === asset.asset_id}
+              >
+                {fragmentAsset === asset.asset_id ? '已在下方分析' : '送入断面分析'}
+              </button>
+            )}
           />
           <AssetBrowser
             title="物理结果 / 切刀（physical_result / cutter_mesh）"

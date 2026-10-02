@@ -1,0 +1,288 @@
+{
+  "vessels": {
+    "V01": {
+      "build_s": 0.072,
+      "faces": 4128,
+      "vertices": 2065,
+      "watertight": true,
+      "volume_mm3": 184887.9889183985,
+      "area_mm2": 107061.12013495606,
+      "extents_mm": [
+        203.0835035138848,
+        202.4569163969706,
+        77.55133847894936
+      ],
+      "bounds": [
+        [
+          -101.5020403817586,
+          -101.47533207757037,
+          8.038
+        ],
+        [
+          101.5814631321262,
+          100.98158431940023,
+          85.58933847894936
+        ]
+      ],
+      "material_id": "M01",
+      "mother_id": "V01-M01",
+      "meta_keys": [
+        "assembly",
+        "builder",
+        "cavity_probe_points_mm",
+        "construct",
+        "design_thickness_max_mm",
+        "design_thickness_min_mm",
+        "geometry_hash",
+        "max_wall_mm",
+        "min_wall_mm",
+        "n_faces",
+        "params",
+        "pre_warp_health",
+        "profile_metrics",
+        "registry_version",
+        "requires_cavity",
+        "surface_tag_names",
+        "vessel",
+        "vessel_family",
+        "vessel_name"
+      ],
+      "audit": {
+        "ok": true,
+        "mother_id": "V01-M01",
+        "vessel_id": "V01",
+        "material_id": "M01",
+        "failures": [],
+        "geometry_hash": "sha256:b314a841ec9745489e4f4a5ee06dcc90f9435941d729bf6ec414a5187b190b6b",
+        "state": "QA_PASSED"
+      }
+    },
+    "V02": {
+      "build_s": 0.072,
+      "faces": 5088,
+      "vertices": 2545,
+      "watertight": true,
+      "volume_mm3": 62248.87763905983,
+      "area_mm2": 30470.66393487912,
+      "extents_mm": [
+        121.03085318124019,
+        120.67765365781979,
+        35.519053843344196
+      ],
+      "bounds": [
+        [
+          -60.47786916763207,
+          -60.572310223997036,
+          3.25
+        ],
+        [
+          60.55298401360812,
+          60.10534343382275,
+          38.769053843344196
+        ]
+      ],
+      "material_id": "M01",
+      "mother_id": "V02-M01",
+      "meta_keys": [
+        "assembly",
+        "builder",
+        "cavity_probe_points_mm",
+        "construct",
+        "design_thickness_max_mm",
+        "design_thickness_min_mm",
+        "geometry_hash",
+        "max_wall_mm",
+        "min_wall_mm",
+        "n_faces",
+        "params",
+        "pre_warp_health",
+        "profile_metrics",
+        "registry_version",
+        "requires_cavity",
+        "surface_tag_names",
+        "vessel",
+        "vessel_family",
+        "vessel_name"
+      ],
+      "audit": {
+        "ok": true,
+        "mother_id": "V02-M01",
+        "vessel_id": "V02",
+        "material_id": "M01",
+        "failures": [],
+        "geometry_hash": "sha256:cc485afcf0c71ad61379fb5e4faaf37eb35a07d91dc8f85e994f49eadbcbbb4d",
+        "state": "QA_PASSED"
+      }
+    },
+    "V04": {
+      "build_s": 0.105,
+      "faces": 5486,
+      "vertices": 2741,
+      "watertight": true,
+      "volume_mm3": 227776.44798577417,
+      "area_mm2": 112429.9541886907,
+      "extents_mm": [
+        239.62854376204493,
+        193.01704755037244,
+        123.04105639457703
+      ],
+      "bounds": [
+        [
+          -96.76949772512526,
+          -96.75730036948225,
+          1.2185795307159424
+        ],
+        [
+          142.85904603691966,
+          96.25974718089019,
+          124.25963592529297
+        ]
+      ],
+      "material_id": "M01",
+      "mother_id": "V04-M01",
+      "meta_keys": [
+        "assembly",
+        "attachments",
+        "builder",
+        "cavity_probe_points_mm",
+        "construct",
+        "design_thickness_max_mm",
+        "design_thickness_min_mm",
+        "geometry_hash",
+        "max_wall_mm",
+        "min_wall_mm",
+        "n_faces",
+        "params",
+        "pre_warp_health",
+        "profile_metrics",
+        "registry_version",
+        "requires_cavity",
+        "surface_tag_names",
+        "vessel",
+        "vessel_family",
+        "vessel_name"
+      ],
+      "audit": {
+        "ok": true,
+        "mother_id": "V04-M01",
+        "vessel_id": "V04",
+        "material_id": "M01",
+        "failures": [],
+        "geometry_hash": "sha256:3cd94c15a9ab0922128f889e38025820051b1c92a0a25a28314f75d5565f367b",
+        "state": "QA_PASSED"
+      }
+    },
+    "V13": {
+      "build_s": 0.029,
+      "faces": 844,
+      "vertices": 424,
+      "watertight": true,
+      "volume_mm3": 425691.29293024074,
+      "area_mm2": 88950.36621268556,
+      "extents_mm": [
+        150.613952700489,
+        100.44807284422792,
+        70.0
+      ],
+      "bounds": [
+        [
+          -75.2764669160732,
+          -50.41370455442358,
+          0.0
+        ],
+        [
+          75.33748578441579,
+          50.03436828980434,
+          70.0
+        ]
+      ],
+      "material_id": "M01",
+      "mother_id": "V13-M01",
+      "meta_keys": [
+        "assembly",
+        "builder",
+        "cavity_probe_points_mm",
+        "construct",
+        "design_thickness_max_mm",
+        "design_thickness_min_mm",
+        "geometry_hash",
+        "max_wall_mm",
+        "min_wall_mm",
+        "n_faces",
+        "params",
+        "pre_warp_health",
+        "registry_version",
+        "requires_cavity",
+        "surface_tag_names",
+        "vessel",
+        "vessel_family",
+        "vessel_name"
+      ],
+      "audit": {
+        "ok": true,
+        "mother_id": "V13-M01",
+        "vessel_id": "V13",
+        "material_id": "M01",
+        "failures": [],
+        "geometry_hash": "sha256:e7072cc8025735f3cdb2d20ca613ee0f5e4eedc6c3342cb33c074489ff0a7d84",
+        "state": "QA_PASSED"
+      }
+    },
+    "V18": {
+      "build_s": 0.022,
+      "faces": 354,
+      "vertices": 179,
+      "watertight": true,
+      "volume_mm3": 1112021.351463144,
+      "area_mm2": 81758.50582969587,
+      "extents_mm": [
+        231.43566247987718,
+        110.75632761458519,
+        45.021754060272784
+      ],
+      "bounds": [
+        [
+          -115.656812371596,
+          -55.75645510394293,
+          0.06549030374545041
+        ],
+        [
+          115.77885010828118,
+          54.99987251064225,
+          45.08724436401823
+        ]
+      ],
+      "material_id": "M01",
+      "mother_id": "V18-M01",
+      "meta_keys": [
+        "assembly",
+        "builder",
+        "cavity_probe_points_mm",
+        "construct",
+        "design_thickness_max_mm",
+        "design_thickness_min_mm",
+        "geometry_hash",
+        "max_wall_mm",
+        "min_wall_mm",
+        "n_faces",
+        "params",
+        "pre_warp_health",
+        "registry_version",
+        "requires_cavity",
+        "surface_tag_names",
+        "vessel",
+        "vessel_family",
+        "vessel_name"
+      ],
+      "audit": {
+        "ok": true,
+        "mother_id": "V18-M01",
+        "vessel_id": "V18",
+        "material_id": "M01",
+        "failures": [],
+        "geometry_hash": "sha256:c33683fde9f49d066c10304ad680861221dad01a4453f85ada589d0f36113a5f",
+        "state": "QA_PASSED"
+      }
+    }
+  }
+}

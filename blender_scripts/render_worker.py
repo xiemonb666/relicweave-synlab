@@ -55,6 +55,27 @@ Self-checks (recorded, never silently passed)
 * anti-aliased vs exact pass behaviour (the AA evidence of plan 13.2 / R7),
 * RGB scale linearity against two emitters of known ratio.
 
+GPU rendering (``render.device`` / ``render.compute_device_type``)
+-----------------------------------------------------------------
+``scene.cycles.device = "GPU"`` on its own selects **no** compute device: the Cycles addon
+preferences must additionally name the backend (``compute_device_type``) and mark the device
+``use = True``, otherwise Cycles renders on the CPU while the scene setting still reads
+"GPU".  :func:`resolve_compute_device` performs that handshake and returns what it *measured*
+(backend actually selected, devices actually enabled), never what was requested.
+
+* ``render.device``: ``"CPU"`` (default, unchanged behaviour), ``"GPU"`` or ``"AUTO"``
+  (``AUTO`` = GPU when a usable backend exists, else CPU).
+* ``render.compute_device_type``: ``"AUTO"`` (``OPTIX`` -> ``CUDA`` -> ... preference order),
+  or an explicit ``OPTIX`` / ``CUDA`` / ``HIP`` / ``ONEAPI`` / ``METAL`` / ``NONE``.
+* ``render.gpu_require``: when true a GPU request that cannot be honoured raises
+  ``GPU_UNAVAILABLE`` instead of falling back.  With it false the CPU fallback is taken **and
+  recorded** in ``manifest.blender.device_selection.fallback_reason`` — the manifest never
+  claims a device that was not used.
+* ``render.gpu_device_index``: restrict the choice to one device of the selected backend.
+
+The independent ``Scene.ray_cast`` cross-check is a CPU geometry pass and stays in place for
+GPU renders too, so a GPU geometry error cannot pass unnoticed.
+
 Run standalone::
 
     & $env:BLENDER_BIN --background --python blender_scripts/render_worker.py -- cfg.json
@@ -104,6 +125,12 @@ PASS_POSITION = "Position"
 #: kept only as an audited channel.
 AOV_FACE_ID = "rws_face_id"
 AOV_TAG = "rws_surface_tag"
+
+#: Backend preference used when ``render.compute_device_type`` is ``"AUTO"``.  OptiX is tried
+#: first because it is the fastest path for NVIDIA hardware on supported scenes, but it is
+#: only *chosen* when the running build actually exposes a device of that type (measured).
+GPU_BACKEND_PREFERENCE = ("OPTIX", "CUDA", "HIP", "ONEAPI", "METAL")
+DEVICE_MODES = ("CPU", "GPU", "AUTO")
 
 ATTR_FACE_ID = "rws_face_label"    # mesh attribute names; deliberately different from the
 ATTR_TAG = "rws_tag_label"         # AOV names because Cycles resolves AOV and attribute
@@ -854,6 +881,137 @@ def raycast_check(scene, cam_cfg: dict, depth_z: np.ndarray, face_id: np.ndarray
 
 
 # --------------------------------------------------------------------------------------
+# compute device selection
+# --------------------------------------------------------------------------------------
+def _cycles_prefs():
+    addon = bpy.context.preferences.addons.get("cycles")
+    return None if addon is None else addon.preferences
+
+
+def list_compute_devices() -> list[dict]:
+    """Every device Cycles reports for this build, with its backend and ``use`` flag."""
+    prefs = _cycles_prefs()
+    if prefs is None:
+        return []
+    try:
+        prefs.get_devices()
+    except Exception:  # noqa: BLE001
+        return []
+    out = []
+    for dev in prefs.devices:
+        out.append({"name": dev.name, "type": dev.type, "use": bool(dev.use),
+                    "id": str(getattr(dev, "id", ""))})
+    return out
+
+
+def resolve_compute_device(requested: str, compute_device_type: str = "AUTO",
+                           require_gpu: bool = False,
+                           device_index: int | None = None) -> dict:
+    """Select a Cycles compute device and report what was *measured*, not what was asked.
+
+    Returns a report dict; raises :class:`WorkerError` (``GPU_UNAVAILABLE``) when a GPU was
+    required but could not be selected.  Without ``require_gpu`` the CPU fallback is taken and
+    the reason is recorded so the manifest cannot claim an unused device.
+    """
+    requested = str(requested or "CPU").upper()
+    compute_device_type = str(compute_device_type or "AUTO").upper()
+    report: dict = {
+        "requested_device": requested,
+        "requested_compute_device_type": compute_device_type,
+        "require_gpu": bool(require_gpu),
+        "requested_device_index": device_index,
+        "available_devices": [],
+        "resolved_device": "CPU",
+        "resolved_compute_device_type": "NONE",
+        "enabled_devices": [],
+        "fallback": False,
+        "fallback_reason": None,
+    }
+    if requested not in DEVICE_MODES:
+        raise WorkerError("SCHEMA_INVALID",
+                          f"render.device must be one of {list(DEVICE_MODES)}, got {requested!r}")
+
+    prefs = _cycles_prefs()
+    if prefs is None:
+        report["fallback_reason"] = "the cycles addon preferences are unavailable in this build"
+    else:
+        try:
+            prefs.get_devices()
+        except Exception as exc:  # noqa: BLE001
+            report["fallback_reason"] = f"get_devices failed: {type(exc).__name__}: {exc}"
+    if not report["fallback_reason"]:
+        report["available_devices"] = list_compute_devices()
+
+    if requested == "CPU":
+        try:
+            prefs.compute_device_type = "NONE"
+        except Exception:  # noqa: BLE001 - not all builds expose NONE
+            pass
+        report["resolved_compute_device_type"] = "NONE"
+        return report
+
+    by_type: dict[str, list[dict]] = {}
+    for dev in report["available_devices"]:
+        by_type.setdefault(str(dev["type"]), []).append(dev)
+
+    order = list(GPU_BACKEND_PREFERENCE) if compute_device_type == "AUTO" \
+        else [compute_device_type]
+    chosen = None
+    for candidate in order:
+        if by_type.get(candidate):
+            chosen = candidate
+            break
+    if chosen is None and report["fallback_reason"] is None:
+        report["fallback_reason"] = (
+            f"no device of type {order} is exposed by this build "
+            f"(available: {sorted(by_type) or 'none'})")
+
+    if chosen is not None and report["fallback_reason"] is None:
+        try:
+            prefs.compute_device_type = chosen
+        except Exception as exc:  # noqa: BLE001
+            report["fallback_reason"] = \
+                f"selecting {chosen} failed: {type(exc).__name__}: {exc}"
+        else:
+            if str(prefs.compute_device_type) != chosen:
+                report["fallback_reason"] = (
+                    f"the build refused compute_device_type={chosen} "
+                    f"(read back {prefs.compute_device_type!r})")
+    if chosen is not None and report["fallback_reason"] is None:
+        candidates = by_type[chosen]
+        if device_index is not None:
+            if not 0 <= int(device_index) < len(candidates):
+                raise WorkerError(
+                    "SCHEMA_INVALID",
+                    f"render.gpu_device_index={device_index} is out of range for {chosen} "
+                    f"({len(candidates)} device(s) available)")
+            candidates = [candidates[int(device_index)]]
+        wanted = {dev["id"] for dev in candidates}
+        enabled = []
+        for dev in prefs.devices:
+            dev.use = (dev.type == chosen and str(getattr(dev, "id", "")) in wanted)
+            if dev.use:
+                enabled.append(dev.name)
+        report["enabled_devices"] = enabled
+        if not enabled:
+            report["fallback_reason"] = f"{chosen} was selected but no device could be enabled"
+        else:
+            report["resolved_device"] = "GPU"
+            report["resolved_compute_device_type"] = chosen
+
+    if report["resolved_device"] != "GPU":
+        report["fallback"] = True
+        report["fallback_reason"] = report["fallback_reason"] or "unknown reason"
+        if require_gpu:
+            raise WorkerError(
+                "GPU_UNAVAILABLE",
+                f"render.device={requested} with gpu_require=true could not be honoured: "
+                f"{report['fallback_reason']}",
+                available_devices=report["available_devices"])
+    return report
+
+
+# --------------------------------------------------------------------------------------
 # main
 # --------------------------------------------------------------------------------------
 def run(cfg: dict) -> dict:
@@ -880,7 +1038,21 @@ def run(cfg: dict) -> dict:
     device = str(rcfg.get("device", "CPU")).upper()
     geom_bounces = int(rcfg.get("geometry_max_bounces", 0))
 
-    scene.cycles.device = device if device in ("CPU", "GPU") else "CPU"
+    # ``cycles.device = "GPU"`` alone selects nothing: the addon preference has to name the
+    # backend and enable the device.  resolve_compute_device does that and reports what it
+    # actually got (see the module docstring); a silent CPU fallback is impossible because the
+    # resolved device is written into the manifest.
+    raw_index = rcfg.get("gpu_device_index", None)
+    device_index = None if raw_index is None else int(raw_index)
+    device_report = resolve_compute_device(
+        device, str(rcfg.get("compute_device_type", "AUTO")),
+        bool(rcfg.get("gpu_require", False)), device_index)
+    scene.cycles.device = "GPU" if device_report["resolved_device"] == "GPU" else "CPU"
+    device_report["cycles_device_setting"] = scene.cycles.device
+    # re-read after the scene flag is applied: Cycles keeps these two in sync and a mismatch
+    # here would mean the device was dropped between selection and render
+    device_report["compute_device_type_after_scene_setting"] = str(
+        getattr(_cycles_prefs(), "compute_device_type", "NONE"))
     scene.cycles.seed = seed
     scene.cycles.use_animated_seed = False
     scene.cycles.use_adaptive_sampling = bool(rcfg.get("adaptive_sampling", True))
@@ -1252,6 +1424,7 @@ def run(cfg: dict) -> dict:
             "python": sys.version.split()[0],
             "binary": bpy.app.binary_path,
             "cycles_device_setting": scene.cycles.device,
+            "device_selection": device_report,
             "gpu_devices": _gpu_devices(),
         },
         "render": {

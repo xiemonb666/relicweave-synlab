@@ -23,6 +23,15 @@ SCHEMA_CHECKPOINT = "synlab.checkpoint.v1"
 SCHEMA_REPORT = "synlab.report.v1"
 SCHEMA_QA = "synlab.qa.v1"
 SCHEMA_COVERAGE = "synlab.coverage.v1"
+#: The simulated excavation context of one batch (plan t088: "模拟出土区、层位、袋号/坑位等可控
+#: 元数据").  Declared here, and every value it carries is marked ``simulated=true``.
+SCHEMA_CONTEXT = "synlab.context.v1"
+# --- contract-debt declarations: schema ids that real products already use but that were
+# --- never declared here (docs/a12/modality_census.md §6.1b).  Declarations only: no existing
+# --- asset is renamed, re-stamped or rewritten by adding these names.
+SCHEMA_LABELS = "synlab.labels.v1"
+SCHEMA_PROVENANCE = "synlab.provenance.v1"
+SCHEMA_DISPLAY_GLB = "synlab.display_glb.v1"
 
 # ---------------------------------------------------------------- roles
 ROLE_MOTHER_MESH = "mother_mesh"
@@ -61,16 +70,42 @@ ROLE_COVERAGE = "coverage"
 ROLE_RUN_SPEC = "run_spec"
 ROLE_DISPLAY_LOD = "display_lod_glb"
 ROLE_MVS_RESULT = "mvs_result"
+#: One simulated excavation context per batch (plan t088).  Carries no geometry payload: its
+#: fields are the controlled metadata a real excavation would hand over with the sherds.
+ROLE_CONTEXT_PACK = "context_pack"
 
 # ---------------------------------------------------------------- units / frames
 UNIT_MM = "mm"
 UNIT_PX = "px"
 UNIT_NONE = "1"
+# --- contract-debt declarations: ``m`` (118 ``display_lod_glb`` assets) was used by real
+# --- products but never declared (docs/a12/modality_census.md §6.1b).
+UNIT_M = "m"
 FRAME_WORLD = "W_mm"
 FRAME_FRAGMENT = "F_mm"
 FRAME_SCAN = "S_mm"
 FRAME_CAMERA = "C_mm"
 FRAME_PIXEL = "pixel_cv_center"
+#: Y-up metre frame of the display layer (``display_lod_glb``).
+FRAME_Y_UP_M = "Y_up_m"
+#: Explicit "this asset has no spatial frame" marker used by the provenance/qa roles.
+FRAME_NONE = "none"
+
+#: Every schema id this module declares.  A real product whose ``assets.schema`` is not in here
+#: is contract drift, and ``tests/a12/storage`` asserts the set against the real stores.
+DECLARED_SCHEMAS: frozenset[str] = frozenset({
+    SCHEMA_MOTHER, SCHEMA_MATERIAL, SCHEMA_PATTERN, SCHEMA_CUTTER, SCHEMA_FRAGMENT,
+    SCHEMA_TRUTH_CLEAN, SCHEMA_TRUTH_PHYSICAL, SCHEMA_TRUTH_VISIBLE, SCHEMA_PHYSICAL,
+    SCHEMA_OBS, SCHEMA_FEATURE, SCHEMA_CAMERA_PROFILE, SCHEMA_MEASUREMENT, SCHEMA_POOL,
+    SCHEMA_ROSTER, SCHEMA_EPISODE, SCHEMA_CHECKPOINT, SCHEMA_REPORT, SCHEMA_QA,
+    SCHEMA_COVERAGE, SCHEMA_CONTEXT, SCHEMA_LABELS, SCHEMA_PROVENANCE, SCHEMA_DISPLAY_GLB,
+})
+#: Every unit value this module declares.
+DECLARED_UNITS: frozenset[str] = frozenset({UNIT_MM, UNIT_PX, UNIT_NONE, UNIT_M})
+#: Every frame value this module declares (``"none"`` included: it is a real written value).
+DECLARED_FRAMES: frozenset[str] = frozenset({
+    FRAME_WORLD, FRAME_FRAGMENT, FRAME_SCAN, FRAME_CAMERA, FRAME_PIXEL, FRAME_Y_UP_M, FRAME_NONE,
+})
 
 # ---------------------------------------------------------------- source kinds
 SOURCE_RAW_CAPTURE = "RAW_CAPTURE"

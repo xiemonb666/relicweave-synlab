@@ -410,6 +410,140 @@ tests/a12/api_ui/
   _serve.py         真实后端启动器（create_app 需要显式 store_root）
   _seed_demo.py     产出真实 100 mm 母体 + display_lod 任务的演示数据根
   check_frontend.py  构建 / 路由 / 组件 / 新增组件与 lib / e2e 文件 / fixture 断言
+  check_synthesis_ui.py  新增端点（inventory / degradation-pairs / batch-plan / chain-preview）的真实契约验收
   run_e2e.py        真实端到端运行器（拉起后端 + vite preview，调 playwright test）
 docs/a12/api_ui.md  本文档
 ```
+
+---
+
+## 11. 操作逻辑改版：合成向导 / 批量面板 / 断裂与退化预览（U14 + U04/U05/U07 增强）
+
+本节记录 2026-10-02 的「前端操作逻辑」改版：把「合成数据 / 批量合成 / 预览 / 断裂预览 / 退化预览」
+从“分散在多个页面的表单”收敛成一条可走完的流程，并且**每一个数字都来自真实后端**。
+
+### 11.1 新增页面：U14 合成向导 `/synlab/synthesis`
+
+六个步骤，任一步都可以直接点开（步骤条是原生 button，Tab 可达）：
+
+| 步骤 | 做什么 | 真实数据源 | 关键诚实点 |
+|---|---|---|---|
+| ① 器型/材料/花纹族/层组合 | 多选组合，实时显示组合空间大小 | `GET /registry/{vessel,material,pattern,layer_combo}` | 下拉**只**来自 registry；registry 为空时显示 `REGISTRY_EMPTY` 阻塞卡并说明“前端不复制 24/12/16 名单” |
+| ② 断裂参数 | 选后端（含真实 status）、片数区间、最小特征波长、共享面误差、最大尝试 | `GET /registry/fracture_backend` | `MISSING`/`PENDING` 后端仍可选中，但后端会给出真实拒绝码；`lo<2 或 hi<lo` 就地报错 |
+| ③ 退化 | 6 个阶段分组、多选轴、档位 0–4、variant | `GET /registry/axis` + `GET /synthesis/inventory`（哪些轴在本 store 已物化） | 明确写“level 0 = 真恒等”；未物化的轴标 `NA`，不用 L1 顶替 |
+| ④ 观测 | route（ideal_visible/proxy_scan/photo_mvs）、视角数、长边 px、renderer（auto/software_rasterizer/blender）、相机档 | `synlab/schemas/spec.py::ObservationConfig` 的真实枚举 + `GET /capabilities.env` 的真实探测 | `blender_bpy != OK` 时该选项 `disabled` 并标注 `ENV_CAPABILITY_MISSING` |
+| ⑤ 预览 | 真实跑**一条**谱系并显示每阶段耗时与产物 | `POST /synthesis/chain-preview`（见 11.2） | 未运行前不显示任何数字；失败显示后端 `code` + 复现命令 |
+| ⑥ 入队批量 | 批大小、`resume` 续跑、提交后实时进度 | `POST /synthesis/batch-plan` → `POST /jobs` → `GET /runs/{id}/events`（SSE，断线退化 `GET /jobs?run_id=`） | 202 只表示已受理；job state 是 worker 写的权威值 |
+
+页面底部常驻「配置导出」：`spec` → **YAML**（`src/lib/yaml.ts`，浏览器侧序列化）+ 下载按钮 +
+两个 `spec_hash` 并排显示：
+
+* `spec_hash（后端）` 来自 `POST /specs/validate` 的真实响应；
+* `spec_hash（本机）` 用与 `synlab.canonical.canonical_json` 相同的规则（键排序、紧凑分隔符、UTF-8）
+  在浏览器里算 SHA-256（`crypto.subtle`），用于交叉核对；两者不一致时页面会显示 `不一致` 徽标。
+
+### 11.2 新增后端端点（`synlab/api/routers/synthesis.py`，全部只读或复用既有入队路径）
+
+| 方法 + 路径 | 语义 | 主要真实响应字段 |
+|---|---|---|
+| `GET /api/synlab/synthesis/inventory` | 只读聚合：资产/磁盘/覆盖矩阵/退化轴与小配对/批处理计数。不创建 run、不写资产 | `assets_total` `bytes_total` `roles{role:{assets,bytes}}` `lineages` `events` `runs[]` `fracture_backends[]` `buckets{field,rows[],covered,target,source}` `coverage{targets,covered,missing,gaps}` `degradation_axes[]` `degradation_pairs[]` `panel{planned,attempted,accepted,failed,pending,by_state,failure_codes,disk_bytes,disk_files,asset_count,runs,events}` |
+| `GET /api/synlab/synthesis/degradation-pairs?axis_id=` | 同一 axis 的 L0 与 Ln 配对（同 basis、同 source） | `pairs[]{axis_id,basis_id,source_asset_id,level_0,level_n,paired,same_source,deltas[]{key,from,to,delta,unit},note}` `axes[]` `repro[]`；未物化轴 → `404 NOT_FOUND` + `details.materialized_axes` |
+| `POST /api/synlab/synthesis/batch-plan` | 按覆盖矩阵选下一批组合，产出可直接提交的 spec 与续跑游标 | `selected` `next_cursor` `pending_combinations` `combinations[]{index,vessel_id,material_id,pattern_id,layer_combo_id}` `applied_combo` `spec` `spec_hash` `coverage_source` `resume{requested,semantics,next_from,already_covered}` `repro[]` |
+| `POST /api/synlab/synthesis/chain-preview` | 同步跑一条真实谱系（`target_mothers=1`） | pipeline 模式：`mode` `executed` `state` `run_id` `lineage_id` `spec_hash` `stages[]{stage,seconds,outputs,output_bytes,asset_ids,roles,state}` `assets[]` `asset_files` `asset_bytes` `wall_seconds` `coverage_row` `coverage_ref` `events[]` `blocked{code,stage,message,repro,hint}`；jobs 模式（`mode=jobs`）走 `POST /jobs` + 一个 `synlab.api.worker --once` 子进程，字段同形但 `stages[].seconds` 来自 events 表 |
+
+`chain-preview` 的两条真实路径（都写进 `docs`，页面不隐藏）：
+
+* `mode="pipeline"`（默认，向导使用）：直接调用 `synlab.pipeline.build_one_mother`
+  —— 与 `tools/batch_generate.py` 同一条 façade 链（母体→纹样→断裂→真值→物理损伤→退化→观测→
+  特征/标注/provenance→出土上下文），资产真实写入 store 并带 `run_id` 归属；`stages[].seconds`
+  是管线内部的 `perf_counter` 实测值，`outputs/output_bytes` 是该阶段产出资产的个数与
+  payload `stat()` 字节和。**它不经过 job handler 的能力门**，因此这条路径能真正跑完；
+* `mode="jobs"`：走既有 `POST /jobs` + `synlab.api.worker --once`。本 build 的 pipeline stage
+  handler 是能力门控的桩（`synlab/api/handlers.py::run_capability_gated`），会返回
+  `INTEGRATION_PENDING`；响应里原样带出该 code 与 `FROZEN_CALLS` 里的目标 façade 调用。
+
+`POST /jobs` 与既有语义完全不变；本 router **只新增**路径，不改任何既有路由的语义。
+
+### 11.3 改进后的面板与它们的数据来源
+
+| 面板 | 页面 | 数据来源端点 | 新增能力 |
+|---|---|---|---|
+| 合成向导六步 | U14 `/synlab/synthesis` | 见 11.1 | 一条自然流程；YAML + spec_hash 导出 |
+| 批量合成面板 | U07 `/synlab/jobs` | `GET /synthesis/inventory`、`POST /synthesis/batch-plan`、`POST /jobs`、`GET /jobs?run_id=`、`GET /runs/{id}/events` | 每批 planned/attempted/accepted/failed + 失败错误码表；**磁盘实测字节与增量**；**覆盖矩阵**（6 维，来自 coverage aggregate）；**一键续跑下一批**（含 `resume` 语义说明） |
+| 断裂预览 | U04 `/synlab/fracture` | `GET /registry/fracture_backend`、`GET /assets?role=fragment_mesh&lineage_id=`、`GET /assets/{id}`（qa/meta/integrity）、`GET /assets/{id}/files/fragment_mesh?key=arrays`、`POST /previews` | **目标片数 vs 实测片数对照**；碎片 3D **原位/爆炸**；**断面高亮**（真实 `mesh.face__origin_kind` / `interface_id`）；审计数值原样表；PENDING/MISSING 后端的结构化错误码 + 复现命令 |
+| 退化预览（L0 vs Ln） | U05 `/synlab/degradation` | `GET /synthesis/degradation-pairs`、`GET /synthesis/inventory`、`GET /research/assets/{id}/truth?include_arrays=true`、`GET /assets/{id}/files/{role}?key=arrays` | **L0（真恒等）与 Ln 并排**真实帧 + `measured` 变化量表；paired basis（同 `basis_id`）与同 source 徽标；未物化轴显示 `NA` + 补齐命令 |
+
+### 11.4 预览性能与缓存
+
+* `src/lib/assetData.ts` 的 `loadAssetArrays/loadAssetBytes` 以 `assetId|role|key` 为键缓存 Promise：
+  同一次会话里同一个资产的 `arrays.npz` **只下载一次**；失败即从缓存移除，便于重试。
+* `FragmentMeshViewport` 只在 `assetId` / 高亮 / 爆炸位移变化时重建几何；每帧只 `renderer.render`，
+  不重新解析 npz。
+* `RgbFrameView` 用 `putImageData` 直接贴真实像素，CSS `image-rendering: pixelated` 做缩放
+  （大图不重采样、不额外解码）。
+* `useJobWatch`（`AsyncOperation.tsx`）只在 `GET /jobs/{id}` 的 `state`/`updated_at` 变化时更新 state，
+  避免无意义重渲染；`useResource` 的 `refreshing` 让轮询刷新时不闪空。
+* 大图/长列表：资产浏览器分页、覆盖矩阵只渲染前 60 个桶并注明总数、interface 明细放在 `<details>` 里。
+
+### 11.5 错误码展示规则
+
+1. **后端结构化失败**（problem envelope `{ok:false,error:{code,status,stage,message,retryable,details,request_id}}`）：
+   一律显示 `code` 徽标 + `message` + `stage` + `request_id`，可展开 `details`（原样 JSON）。
+2. **后端返回的 `blocked`**（chain-preview）或 `repro` 数组：以“复现命令”列表渲染，每条带复制按钮，
+   命令**由后端给出**，前端不拼命令。
+3. **transport 层失败**：`ApiError(code=BACKEND_UNREACHABLE)` / `NetworkError` → 显示 `BACKEND_UNREACHABLE`
+   + 真实请求地址 + 启动后端的命令。
+4. **能力缺失**：`GET /capabilities` 的 `missing` / `env.*.status != OK` 在 ④ 步就地禁用选项并标注
+   `ENV_CAPABILITY_MISSING`；`POST /jobs` 的能力门仍是 503 `DEPENDENCY_CAPABILITY_MISSING`（不创建 run）。
+5. **就地表单校验**：片数区间、渲染后端与 blender 探测、组合为空等，用 `.field__error` + `role="alert"`
+   紧贴字段显示；后端 `POST /specs/validate` 的错误逐条列在 ⑤ 步的“校验结果”里（字段路径 + type + msg）。
+
+### 11.6 可达性与窄屏
+
+* 步骤条、选择器、面板操作全部是原生 `button` / `input` / `select`，`label` 通过 `htmlFor` 关联，
+  `:focus-visible` 有 2px 轮廓；
+* 组合选择用 `fieldset/legend` 分组，读屏可读；表格都有 `caption` 与 `th[scope]`；
+* `styles.css` 的新规则全部包在 `@media (max-width: 900px)` 里降为单列，`.picker .chips` 取消 max-height，
+  窄屏不再出现横向滚动。
+
+### 11.7 e2e 覆盖点（`frontend/e2e/ui-real-backend.spec.ts`）
+
+| 用例 | 覆盖 |
+|---|---|
+| `U14 合成向导：①→⑥ 全流程` | ① 真实 registry id（`V01`/`M01`/`PAT01` 复选框出现）→ ② 后端表有行 → ③ `level 0 = 真恒等` 文案 + 档位 select 恰好 5 个 option 且含“真恒等” → ④ route 含 `photo_mvs`、renderer 含 `software_rasterizer`/`blender` → ⑤ 真实 `spec_hash`（`sha256:`）+ 点“跑一次单谱系预览”后**要么**出现阶段耗时表（真实数字）**要么**出现带错误码与复现命令的失败卡 → ⑥ 规划+提交后出现真实 run/job 计数 → YAML 预览 |
+| `U07 批量面板` | planned/attempted/accepted/failed 真实数字、覆盖矩阵（24 器物或“没有覆盖矩阵”）、一键续跑、无错误卡 |
+| `U04 断裂预览` | 目标/实测片数对照、3D 断面视图、爆炸位移控件；选中真实碎片后出现审计数值或“该资产缺断面属性” |
+| `U05 退化预览` | L0 与 Ln 并排（或“没有任何已物化的退化轴”）、档位表、缺 level 0 时 `level 0 = NA`、不出现把 L1 当 baseline 的文案 |
+| 既有 12 路由巡检 | 路由列表已加入 `/synlab/synthesis`（13 条），且每页 `.state--error` 必须为 0 |
+
+另有 `tests/a12/api_ui/check_synthesis_ui.py`：用**真实 uvicorn + 真实 store** 校验 4 个新端点的契约，
+包括 `attempted ≤ planned`、`accepted ≤ attempted`、bucket 资产数 ≤ 总资产数、`delta == to - from`、
+`resume` 语义字段、非法 spec → `422 SCHEMA_INVALID`、未知字段 → `422`（`extra=forbid` 生效）。
+
+### 11.8 仍未实现 / 需要后端补的东西（如实列出）
+
+| 项 | 现状 | 需要后端做什么 |
+|---|---|---|
+| 断裂的「切面法向 / 偏移」独立控件 | schema 的 `FractureConfig` 里**没有** normal/offset 字段，只有 `target_piece_range` / `seed_count_range` / `rough_amplitude_mm` | 若要在 UI 上直接设切面法向与偏移，需要在这层 schema 增加字段（例如 `fracture.plane_normal` / `plane_offset_mm`）并在 `fracture` 后端消费；当前向导明确写出“由种子推导”，不假装有这个控件 |
+| 断裂预览的「目标片数」来源 | 目标区间来自前端 spec 草稿（真实 schema 字段），实测来自 `GET /assets?role=fragment_mesh&lineage_id=` | 若希望“目标片数”也来自后端权威记录，需要在 run/job 结果里返回该 run 的 target 配置（`run_spec` 资产目前只有 plan） |
+| 每批 planned/attempted/accepted/failed 的**批次维度** | 现在是 store 级 jobs 表计数 + 每批的 run（`GET /jobs?run_id=`） | 若要“每批一行账本”，需要后端记录 batch 元数据（batch_id → planned/attempted/accepted/failed）；`reports/coverage.json` 只有最新一次 run 摘要 |
+| 覆盖矩阵的 `layer_combo_id` | 已提交资产的 `meta` 里没有该字段（后端 `coverage` sources 自己也这么写）；桶里如实 `null` | 需要生成阶段把 `layer_combo_id` 写进资产 meta，或让 API 暴露 coverage rows 的 layer 列 |
+| `mode=jobs` 的 pipeline stage handler | `INTEGRATION_PENDING`（handler 是能力门控桩） | 若要 `/jobs` 路径也能跑真实谱系，需要把 `handlers.py` 的 stage handler 接到 façade 调用（`FROZEN_CALLS` 已列出目标签名）。当前向导默认走 `mode=pipeline`，`mode=jobs` 的错误码会原样展示 |
+| 磁盘增量 | 用两次 `GET /synthesis/inventory` 的 `panel.disk_bytes` 差值表示（真实 `stat()`） | 若要精确到“本批新增”，需要后端按 run 记账（`runs[]` 已返回每 run 的 bytes，但 job 运行中无法实时细分） |
+| 观测阶段的 `cv2` 崩溃 | 本机 `cv2 5.0.0` 在观测阶段抛 `Unknown C++ exception from OpenCV code`（`build_one_mother` 已把它变成结构化失败 `UNEXPECTED`，不中断整条请求） | 依赖侧问题：需要与 OpenCV 4.x 兼容的版本或修掉调用点；前端只负责把 `code/stage/message` 与复现命令显示出来 |
+
+### 11.9 本次改版的命令与退出码
+
+```
+cd frontend
+node node_modules/typescript/bin/tsc --noEmit            # 0
+node node_modules/vite/bin/vite.js build                 # 0
+cd ..
+.venv\Scripts\python.exe tests/a12/api_ui/check_frontend.py            # 0（OVERALL: PASS）
+.venv\Scripts\python.exe tests/a12/api_ui/check_synthesis_ui.py        # 0（OVERALL: PASS）
+.venv\Scripts\python.exe tests/a12/api_ui/run_e2e.py --skip-build      # 0
+```
+
+`check_synthesis_ui.py` 会自己起一个真实 uvicorn（可用 `--store-root` 指向任意真实 store），
+不依赖任何已运行的服务，也不 mock 任何响应。
+

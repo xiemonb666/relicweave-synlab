@@ -13,13 +13,18 @@ This module runs the **training path** against a real exported training package
 
 Two facts about the current package are structural and are reported, not worked around:
 
-1. the exported relation table contains **only R2 rows** (no R1/R0), so the batch carries zero
-   legal negatives and ``TrainingBatch.effective_query_count() == 0`` -- the trainer's own
-   ``fit()`` refuses such an accumulation window (``no effective query``);
+1. the exported relation table contains **only R2 rows** (no confirmed R1/R0 with
+   ``valid=true`` and ``loss_mask=true``), so the batch carries zero legal negatives and
+   ``TrainingBatch.effective_query_count() == 0`` -- the trainer's own ``fit()`` refuses such an
+   accumulation window (``no effective query``);
 2. the R2 mates are *modelled but unobserved* (``queries.parquet`` has
    ``has_observation=false``; ``obs/geometry/tokens`` indexes carry only the three ``-m``
    fragments), so even the positive pairs are unencodable and the rank task has no pair to
    score.
+
+Both are named per task, with the measured counts of the mask that rejected each row, in
+``report["supervision"]`` (see :mod:`synlab.training.supervision`) -- a task that is *blocked*
+(``n_valid_labels > 0``, ``n_allowed == 0``) is never reported as if it had no labels.
 
 ``run_smoke`` therefore drives the same per-microbatch call the trainer uses
 (:meth:`synlab.training.trainer.Trainer.train_step`) with the real batch, performs the real
@@ -48,6 +53,7 @@ from ..qc.loader_probe import ExportedRelationPool, _batch_rows, _pool_id, load_
 from ..storage.export import TrainingPackage, _jsonable
 from .api import _SpecView, _shape_of_pool
 from .batch import QUALITY_TIERS, TrainingBatch
+from .labels import PackageLabelSource
 from .model import build_model
 from .sampler import POINT_BUCKETS, SampledSpec, bucket_of
 from .trainer import Trainer
@@ -192,6 +198,24 @@ def _row_bucket(pool, rows: Sequence[Mapping[str, Any]]) -> dict[str, int]:
             "points": bucket_of(int(np.ceil(np.mean(points))), POINT_BUCKETS) if rows else 0}
 
 
+def _rank_unavailability_reason(batch: TrainingBatch, pos: np.ndarray,
+                               neg: np.ndarray) -> str:
+    """Measured reason the rank task has no supervision in *this* batch.
+
+    Only facts the batch itself carries are used here (the encodability of a pair needs the
+    encoder, so that half is reported by ``compute_losses``'s diagnostics and by
+    ``report["supervision"]``).
+    """
+    n_pos, n_neg = int(pos.sum()), int(neg.sum())
+    if n_pos == 0:
+        return "the exported relation table carries no supervised R2 pair"
+    if n_neg == 0:
+        return (f"the exported relation table carries {n_pos} supervised R2 pair(s) and no "
+                "confirmed R1/R0 row (valid=true and loss_mask=true), so a query has no legal "
+                "negative to compete against")
+    return f"{n_neg} legal negative pair(s) are present; see supervision.rank for the mask"
+
+
 # --------------------------------------------------------------------------------------
 # Batch / model / step
 # --------------------------------------------------------------------------------------
@@ -258,11 +282,16 @@ def _run_step(trainer: Trainer, batch: TrainingBatch, *, accumulate: float = 1.0
         "effective_queries": info.get("effective_queries"),
         "encodable_pairs": info.get("encodable_pairs"),
         "unencodable_pairs": info.get("unencodable_pairs"),
+        "supervision": info.get("supervision"),
         "tasks": {name: {"skipped": bool(res.get("skipped")),
                          "reason": res.get("reason"),
                          "loss": (None if res.get("loss") is None else float(res["loss"])),
                          "n_valid": int(res.get("n_valid", 0)),
-                         "weight": float(res.get("weight", 0.0))}
+                         "n_allowed": int(res.get("n_allowed", res.get("n_valid", 0))),
+                         "n_valid_labels": int(res.get("n_valid_labels",
+                                                       res.get("n_valid", 0)) or 0),
+                         "weight": float(res.get("weight", 0.0)),
+                         "diagnostics": _jsonable(res.get("diagnostics", {}))}
                   for name, res in (info.get("report") or {}).items()},
     }
     if not record["skipped"]:
@@ -339,7 +368,12 @@ def run_smoke(package_dir: str | Path = DEFAULT_PACKAGE, *, steps: int = 3,
     if out_path is not None:
         out_path.mkdir(parents=True, exist_ok=True)
     release_hash = str(manifest.get("release_manifest_hash") or manifest.get("manifest_hash") or "")
+    # the label side of the package is read here and handed to the batch builder; without this
+    # wiring the correspondence/quality tensors stay zero however much the package stores
+    label_source = PackageLabelSource.from_package(package)
+    report["labels"] = label_source.report()
     trainer = Trainer(spec, model, pool=pool, out_dir=out_path, release_hash=release_hash,
+                      label_source=label_source,
                       recipe={"smoke": True, "package_id": manifest.get("package_id"),
                               "source": "synlab.training.smoke"})
     report["model"] = {
@@ -385,12 +419,11 @@ def run_smoke(package_dir: str | Path = DEFAULT_PACKAGE, *, steps: int = 3,
         "legal_negative_pairs": int(neg.sum()),
         "queries_eligible_for_rank_loss": int(np.count_nonzero((pos.sum(axis=1) > 0)
                                                               & (neg.sum(axis=1) > 0))),
-        "reason_rank_unnavailable": (
-            "the exported relation table carries only R2 rows, so no confirmed R1/R0 negative "
-            "exists; additionally every R2 mate is modelled-but-unobserved, so no positive pair "
-            "is encodable either"),
-        "correspondence_labels_in_package": int(np.asarray(batch.corr_weight).sum()),
+        "reason_rank_unnavailable": _rank_unavailability_reason(batch, pos, neg),
+        "correspondence_labels_in_package": int(
+            report["labels"]["correspondence"]["samples"]),
         "valid_quality_targets": int(np.asarray(batch.quality_target_valid).sum()),
+        "quality_target_channel": str(report["labels"]["quality"]["channel"]),
         "valid_contradiction_labels": int(np.asarray(batch.contradiction_valid).sum()),
         "views_per_observed_fragment": sorted({int(np.count_nonzero(batch.features.global_valid[i]))
                                                for i in range(batch.features.n_fragments)}),
@@ -399,7 +432,8 @@ def run_smoke(package_dir: str | Path = DEFAULT_PACKAGE, *, steps: int = 3,
     # ---- the trainer's own fit() on the sampler path (recorded refusal) -----------------
     refusal: dict[str, Any] = {"attempted": True}
     probe_model = build_model(seed=int(SMOKE_SPEC["train_seed"]), **dims)
-    probe_trainer = Trainer(spec, probe_model, pool=pool, out_dir=None, release_hash=release_hash)
+    probe_trainer = Trainer(spec, probe_model, pool=pool, out_dir=None, release_hash=release_hash,
+                            label_source=label_source)
     try:
         metrics = probe_trainer.fit(steps=1)
         refusal.update({"raised": None, "metrics": _jsonable(metrics)})
@@ -422,6 +456,9 @@ def run_smoke(package_dir: str | Path = DEFAULT_PACKAGE, *, steps: int = 3,
         "trainer_metrics": _jsonable(trainer.metrics.as_dict()),
         "multi_task_report": _jsonable(trainer.multi_task.task_report()),
     }
+    # per-task supervision accounting of the *real* batch: n_valid (labels that exist) against
+    # n_allowed (rows that survive every mask the loss applies), with the measured blocker
+    report["supervision"] = _jsonable(step_records[0].get("supervision") or {})
 
     # ---- checkpoint: save -> reload -> one more identical step ---------------------------
     ckpt_path = (out_path / f"{SMOKE_RUN_NAME}_step{trainer.step_index}.pt") if out_path else None
@@ -431,6 +468,10 @@ def run_smoke(package_dir: str | Path = DEFAULT_PACKAGE, *, steps: int = 3,
     else:
         save_record = trainer.save_checkpoint(ckpt_path)
         payload = torch.load(ckpt_path, map_location="cpu", weights_only=False)
+        # the report must describe *this* file: prove the bytes on disk carry the weights the
+        # in-memory model had at save time (``payload_hash`` covers neither the optimizer nor the
+        # RNG blobs, and those two make two saves of identical weights differ byte-for-byte)
+        file_round_trip = _compare_checkpoint(trainer.model, payload)
         digest_at_save = _model_digest(trainer.model)
         # A. continue in-process
         loss_a = _run_step(trainer, batch)
@@ -438,15 +479,20 @@ def run_smoke(package_dir: str | Path = DEFAULT_PACKAGE, *, steps: int = 3,
         # B. rebuild from the checkpoint and continue
         resumed_model = build_model(seed=int(SMOKE_SPEC["train_seed"]), **dims)
         resumed_trainer = Trainer(spec, resumed_model, pool=pool, out_dir=out_path,
-                                  release_hash=release_hash)
+                                  release_hash=release_hash, label_source=label_source)
         resume_report = resumed_trainer.resume(ckpt_path)
         digest_loaded = _model_digest(resumed_trainer.model)
+        # compare *as loaded*: the extra step below is a real optimizer step that changes the
+        # weights, so comparing after it would report a mismatch that says nothing about the
+        # round trip (it reported eight "value mismatch" entries for exactly that reason).
+        state_vs_checkpoint = _compare_checkpoint(resumed_trainer.model, payload)
         loss_b = _run_step(resumed_trainer, batch)
         digest_b = _model_digest(resumed_trainer.model)
         # C. a different data release must be refused, not silently resumed
         other = build_model(seed=int(SMOKE_SPEC["train_seed"]), **dims)
         other_trainer = Trainer(spec, other, pool=pool, out_dir=out_path,
-                                release_hash="sha256:not-the-same-release")
+                                release_hash="sha256:not-the-same-release",
+                                label_source=label_source)
         try:
             other_trainer.resume(ckpt_path)
             mismatch = {"raised": None}
@@ -463,7 +509,8 @@ def run_smoke(package_dir: str | Path = DEFAULT_PACKAGE, *, steps: int = 3,
             "sampler_cursor": _jsonable(save_record["sampler_cursor"]),
             "reproducibility_level": save_record["reproducibility_level"],
             "data_release_hash": payload.get("data_release_hash"),
-            "model_state_vs_checkpoint": _compare_checkpoint(resumed_trainer.model, payload),
+            "model_state_vs_checkpoint": state_vs_checkpoint,
+            "file_matches_model_at_save": file_round_trip,
             "param_digest_at_save": digest_at_save,
             "param_digest_after_load": digest_loaded,
             "param_digest_after_extra_step_live": digest_a,
@@ -490,6 +537,11 @@ def run_smoke(package_dir: str | Path = DEFAULT_PACKAGE, *, steps: int = 3,
                                  if t["skipped"]}),
         "skipped_task_reasons": {name: t["reason"] for r in step_records
                                  for name, t in r["tasks"].items() if t["skipped"]},
+        "tasks_with_real_supervision": list(report.get("supervision", {}).get(
+            "tasks_with_supervision", [])),
+        "tasks_blocked_with_labels_present": sorted(
+            name for name, task in (report.get("supervision", {}).get("tasks") or {}).items()
+            if task["n_allowed"] == 0 and task.get("n_valid_labels", task["n_valid"]) > 0),
         "claim": ("the pipeline (read -> batch -> forward -> backward -> optimizer -> "
                   "checkpoint -> resume) is exercised on real bytes; no generalisation claim "
                   "is made from this package"),
@@ -502,7 +554,11 @@ def run_smoke(package_dir: str | Path = DEFAULT_PACKAGE, *, steps: int = 3,
         "optimizer_steps_taken": int(trainer.step_index) >= int(steps),
         "checkpoint_consistent": bool(report.get("checkpoint", {}).get("extra_step_loss_equal")
                                       and report["checkpoint"].get("extra_step_digest_equal")
-                                      and report["checkpoint"].get("load_is_bitwise_identical"))
+                                      and report["checkpoint"].get("load_is_bitwise_identical")
+                                      and report["checkpoint"].get(
+                                          "model_state_vs_checkpoint", {}).get("ok")
+                                      and report["checkpoint"].get(
+                                          "file_matches_model_at_save", {}).get("ok"))
         if report.get("checkpoint", {}).get("saved") else True,
     }
     report["checks"] = checks
@@ -526,7 +582,13 @@ def _kind_histogram(relations: Sequence[Mapping[str, Any]]) -> dict[str, int]:
 
 
 def _compare_checkpoint(model, payload: Mapping[str, Any]) -> dict[str, Any]:
-    """Bitwise comparison of every loaded parameter against the checkpoint tensors."""
+    """Bitwise comparison of every loaded parameter against the checkpoint tensors.
+
+    ``model`` must be the **just-resumed** model: ``smoke.run_smoke`` calls this immediately
+    after ``Trainer.resume`` and before the extra verification step, because that step is a
+    real optimizer step and would otherwise make the comparison report a difference that has
+    nothing to do with checkpointing.
+    """
     torch = __import__("torch")
     encoder_state = payload.get("model") or {}
     head_state = payload.get("pair_head") or {}

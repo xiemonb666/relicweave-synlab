@@ -37,7 +37,7 @@ import shutil
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Sequence
 
 import numpy as np
 
@@ -248,14 +248,27 @@ class Target:
         return int(np.asarray(self.mesh.faces).shape[0])
 
 
-def resolve_target(physical_or_fragment: Any, fragment_id: str | None = None) -> Target:
-    """Resolve a PhysicalResult / Fragment / raw mesh into a renderable :class:`Target`."""
+def resolve_target(physical_or_fragment: Any, fragment_id: str | None = None, *,
+                   allow_unlabeled: bool = False) -> Target:
+    """Resolve a PhysicalResult / Fragment / raw mesh into a renderable :class:`Target`.
+
+    ``surface_tag`` is *resolved*, never defaulted: the provenance ladder below walks every
+    carrier of the target's face semantics and records which one answered in
+    ``Target.meta["surface_tag_source"]``.  A target whose provenance cannot be resolved is
+    refused with a structured ``INPUT_UNAVAILABLE`` error instead of being rendered with an
+    all-zero tag map (an all-zero map is indistinguishable from "this body really has no new
+    surface", which is exactly the defect this ladder exists to remove).  A caller that really
+    wants an unlabeled render - a raw box in a fixture, a scaffold mesh - asks for it with
+    ``allow_unlabeled=True``; the absence is then recorded in ``Target.meta`` as a structured
+    ``surface_tag_absence`` block, so it is never silent.
+    """
     import trimesh
 
     obj = physical_or_fragment
     mother_id = str(getattr(obj, "mother_id", "") or "")
     component_id = ""
     face_origin_kind = None
+    face_interface_id = None
     surface_tag_override = None
     meta: dict[str, Any] = {}
 
@@ -279,20 +292,29 @@ def resolve_target(physical_or_fragment: Any, fragment_id: str | None = None) ->
                 stage="observe.routes.resolve_target",
                 evidence_refs=[c.component_id for c in components][:8],
             )
-        mesh = trimesh.Trimesh(vertices=np.asarray(chosen.mesh.vertices),
-                               faces=np.asarray(chosen.mesh.faces), process=False)
+        source_mesh = getattr(chosen, "mesh", None)
+        mesh = trimesh.Trimesh(vertices=np.asarray(source_mesh.vertices),
+                               faces=np.asarray(source_mesh.faces), process=False)
+        _carry_face_attrs(mesh, source_mesh)
         frag_id = str(chosen.clean_fragment_id)
         component_id = str(chosen.component_id)
         meta["physical_version"] = int(getattr(obj, "version", 0))
         meta["lost_volume_ratio"] = float(getattr(obj, "lost_volume_ratio", 0.0))
         meta["status"] = str(getattr(chosen, "status", "CORE"))
+        meta["input_kind"] = "physical_component"
+        meta["physical_face_provenance"] = _jsonable(
+            dict(getattr(obj, "meta", {}) or {}).get("face_provenance") or {})
     elif hasattr(obj, "fragment_id") and hasattr(obj, "mesh"):
         # Fragment
-        mesh = trimesh.Trimesh(vertices=np.asarray(obj.mesh.vertices),
-                               faces=np.asarray(obj.mesh.faces), process=False)
+        source_mesh = getattr(obj, "mesh", None)
+        mesh = trimesh.Trimesh(vertices=np.asarray(source_mesh.vertices),
+                               faces=np.asarray(source_mesh.faces), process=False)
+        _carry_face_attrs(mesh, source_mesh)
         frag_id = str(obj.fragment_id)
         component_id = f"comp_{frag_id}"
-        face_origin_kind = np.asarray(getattr(obj, "face_origin_kind", None))
+        meta["input_kind"] = "fragment"
+        face_origin_kind = _as_channel(getattr(obj, "face_origin_kind", None))
+        face_interface_id = _as_channel(getattr(obj, "face_interface_id", None))
     elif hasattr(obj, "mesh") and hasattr(obj, "face_surface_tag"):
         # MotherGeometry: closed body with the mother's own face-tag vocabulary, which is the
         # vocabulary ``ORIGIN_TO_TAG``/``surface_tag_names`` speaks (0 outer_wall, 2 rim,
@@ -323,17 +345,22 @@ def resolve_target(physical_or_fragment: Any, fragment_id: str | None = None) ->
     elif hasattr(obj, "vertices") and hasattr(obj, "faces"):
         mesh = trimesh.Trimesh(vertices=np.asarray(obj.vertices),
                                faces=np.asarray(obj.faces), process=False)
+        _carry_face_attrs(mesh, obj)
         frag_id = str(fragment_id or "fragment_unknown")
         component_id = f"comp_{frag_id}"
         meta["input_kind"] = "raw_mesh"
+        meta["source_mesh_face_attrs"] = sorted(
+            (mesh.metadata or {}).get("face_attr_arrays") or {})
     elif isinstance(obj, dict) and "mesh" in obj:
         raw = obj["mesh"]
         mesh = trimesh.Trimesh(vertices=np.asarray(raw.vertices),
                                faces=np.asarray(raw.faces), process=False)
+        _carry_face_attrs(mesh, raw)
         frag_id = str(obj.get("fragment_id", fragment_id or "fragment_unknown"))
         component_id = str(obj.get("component_id", f"comp_{frag_id}"))
-        face_origin_kind = np.asarray(obj.get("face_origin_kind")) \
-            if obj.get("face_origin_kind") is not None else None
+        face_origin_kind = _as_channel(obj.get("face_origin_kind"))
+        face_interface_id = _as_channel(obj.get("face_interface_id"))
+        meta["input_kind"] = "mapping"
     else:
         raise SynLabError(
             ErrorCode.INPUT_UNAVAILABLE,
@@ -346,13 +373,43 @@ def resolve_target(physical_or_fragment: Any, fragment_id: str | None = None) ->
     if n == 0:
         raise SynLabError(ErrorCode.INPUT_UNAVAILABLE, "target mesh has no faces",
                           stage="observe.routes.resolve_target")
-    if surface_tag_override is not None:
-        surface_tag = np.asarray(surface_tag_override, dtype=np.int16)
-    elif face_origin_kind is not None and face_origin_kind.shape[0] == n:
-        surface_tag = np.vectorize(lambda k: ORIGIN_TO_TAG.get(int(k), 6),
-                                   otypes=[np.int16])(face_origin_kind)
-    else:
-        surface_tag = np.zeros(n, dtype=np.int16)
+    carried = dict((mesh.metadata or {}).get("face_attr_arrays") or {})
+    if surface_tag_override is None:
+        # a mother / vessel mesh carries the tag vocabulary itself; it is passed through, never
+        # relabelled (see the MotherGeometry branch above)
+        carried_tag = _as_channel(carried.get("surface_tag"))
+        if carried_tag is not None and carried_tag.shape[0] == n:
+            surface_tag_override = carried_tag.astype(np.int16)
+    if face_origin_kind is None and _as_channel(carried.get("origin_kind")) is not None:
+        face_origin_kind = _as_channel(carried.get("origin_kind"))
+    if face_interface_id is None and _as_channel(carried.get("interface_id")) is not None:
+        face_interface_id = _as_channel(carried.get("interface_id"))
+    if face_origin_kind is not None and face_origin_kind.shape[0] != n:
+        meta["face_origin_kind_length_mismatch"] = {
+            "channel": int(face_origin_kind.shape[0]), "faces": int(n)}
+        face_origin_kind = None
+    if face_interface_id is not None and face_interface_id.shape[0] != n:
+        meta["face_interface_id_length_mismatch"] = {
+            "channel": int(face_interface_id.shape[0]), "faces": int(n)}
+        face_interface_id = None
+
+    surface_tag, tag_source, interface_id_out = _resolve_surface_tag(
+        n=n, override=surface_tag_override, origin_kind=face_origin_kind,
+        interface_id=face_interface_id, meta=meta)
+    if tag_source == "UNLABELED" and not allow_unlabeled:
+        raise SynLabError(
+            ErrorCode.INPUT_UNAVAILABLE,
+            "OBS_TARGET_PROVENANCE_MISSING: the render target carries neither face "
+            "origin_kind/interface_id nor surface tags, so its fracture surface cannot be "
+            "tagged.  Rendering it would emit an all-zero surface_tag map, which is exactly "
+            "what 'this body has no new surface' looks like.  Attach the face channels "
+            "(physical.api.attach_face_provenance / fragment.mesh.metadata['face_attr_arrays']) "
+            "or pass allow_unlabeled=True to render it knowingly without provenance.",
+            stage="observe.routes.resolve_target",
+            measurements={"n_faces": int(n), "fragment_id": frag_id,
+                          "input_kind": str(meta.get("input_kind", "")),
+                          "face_attrs": sorted(carried)},
+        )
     face_id = np.arange(n, dtype=np.int32)
     verts = np.asarray(mesh.vertices, dtype=np.float64)
     if verts.ndim != 2 or verts.shape[1] != 3 or verts.shape[0] == 0:
@@ -365,12 +422,89 @@ def resolve_target(physical_or_fragment: Any, fragment_id: str | None = None) ->
         )
     bbox = np.array([verts[:, 0].min(), verts[:, 1].min(), verts[:, 2].min(),
                      verts[:, 0].max(), verts[:, 1].max(), verts[:, 2].max()])
+    meta["surface_tag_face_histogram"] = _tag_histogram(surface_tag)
     return Target(
         mother_id=mother_id, fragment_id=frag_id, component_id=component_id,
         mesh=mesh, surface_tag=surface_tag, face_id=face_id,
         face_origin_kind=face_origin_kind, source_kind=SOURCE_SENSOR_SIM,
         bbox=bbox, meta=meta,
     )
+
+
+def _as_channel(value: Any) -> np.ndarray | None:
+    """A face channel as a 1-D array, or ``None`` when it is absent."""
+    if value is None:
+        return None
+    arr = np.asarray(value)
+    if arr.size == 0:
+        return None
+    return arr.reshape(-1)
+
+
+def _carry_face_attrs(mesh: Any, source: Any) -> None:
+    """Copy the ``face_attr_arrays`` of ``source`` onto the rebuilt ``mesh`` (shallow, no copy).
+
+    ``resolve_target`` rebuilds the mesh object (``process=False``, so the vertex/face arrays are
+    shared) but a fresh ``trimesh.Trimesh`` starts with empty metadata.  Dropping the face
+    channels here is what left the physical path with no provenance at all.
+    """
+    attrs = dict((getattr(source, "metadata", None) or {}).get("face_attr_arrays") or {})
+    if attrs:
+        mesh.metadata = dict(mesh.metadata or {})
+        mesh.metadata["face_attr_arrays"] = dict(attrs)
+
+
+def _resolve_surface_tag(*, n: int, override: np.ndarray | None,
+                         origin_kind: np.ndarray | None, interface_id: np.ndarray | None,
+                         meta: dict[str, Any]) -> tuple[np.ndarray, str, np.ndarray | None]:
+    """Resolve the render tag map and *record which evidence produced it*.
+
+    Order: declared mother tags, then ``origin_kind`` through :data:`ORIGIN_TO_TAG`, then the
+    declared interface ROI carried by ``interface_id`` (``>= 0`` is an interface face - the same
+    rule :func:`synlab.physical.fields.roi_faces` uses to select the ROI).  Only when none of
+    them exists is the map empty, and then the reason is recorded structurally for the caller to
+    accept or refuse.
+    """
+    if override is not None:
+        tags = np.asarray(override, dtype=np.int16).reshape(-1)
+        meta.setdefault("surface_tag_source", "MOTHER_FACE_SURFACE_TAG")
+        return tags, str(meta["surface_tag_source"]), interface_id
+    if origin_kind is not None:
+        tags = np.vectorize(lambda k: ORIGIN_TO_TAG.get(int(k), 6),
+                            otypes=[np.int16])(np.asarray(origin_kind).reshape(-1))
+        meta["surface_tag_source"] = "FACE_ORIGIN_KIND"
+        meta["origin_kind_face_histogram"] = {
+            str(int(k)): int(v) for k, v in zip(*np.unique(
+                np.asarray(origin_kind).reshape(-1), return_counts=True))}
+        return tags, "FACE_ORIGIN_KIND", interface_id
+    if interface_id is not None:
+        ids = np.asarray(interface_id).reshape(-1)
+        tags = np.where(ids >= 0, np.int16(ORIGIN_TO_TAG[ORIGIN_INTERFACE]),
+                        np.int16(ORIGIN_TO_TAG[ORIGIN_MOTHER_SURFACE])).astype(np.int16)
+        meta["surface_tag_source"] = "FACE_INTERFACE_ID_ROI"
+        meta["interface_id_face_histogram"] = {
+            str(int(k)): int(v) for k, v in zip(*np.unique(ids, return_counts=True))}
+        return tags, "FACE_INTERFACE_ID_ROI", ids
+    meta["surface_tag_source"] = "UNLABELED"
+    meta["surface_tag_absence"] = {
+        "code": "OBS_TARGET_PROVENANCE_MISSING",
+        "detail": ("no mother surface tag, no face origin_kind and no face interface_id on the "
+                   "target; the empty tag map below is an absence of evidence, not a "
+                   "measurement"),
+        "faces": int(n),
+        "channels_looked_for": ["face_origin_kind", "origin_kind", "face_interface_id",
+                                "interface_id", "face_surface_tag"],
+        "rendered_because": "allow_unlabeled=True",
+    }
+    return np.zeros(int(n), dtype=np.int16), "UNLABELED", interface_id
+
+
+def _tag_histogram(tags: np.ndarray) -> dict[str, int]:
+    values = np.asarray(tags).reshape(-1)
+    if values.size == 0:
+        return {}
+    unique, counts = np.unique(values, return_counts=True)
+    return {str(int(k)): int(v) for k, v in zip(unique, counts)}
 
 
 # --------------------------------------------------------------------------------------
@@ -1370,6 +1504,8 @@ def _assemble_result(*, target: Target, route: str, spec: ObsSpec, bundles: list
             "distortion_policy": str(spec.distortion_policy),
             "target_meta": dict(target.meta),
             "surface_tag_names": {"0": "outer_wall", "2": "rim", "6": "attachment"},
+            "surface_tag_source": str((target.meta or {}).get("surface_tag_source", "")),
+            "surface_tag_pixels": _tag_pixel_report(views, target),
             "pixel_convention": "opencv_pixel_center_0_0",
             "colmap_pixel_convention": "top_left_corner_0.5",
             "label_files_present": bool(spec.freeze_label_files),
@@ -1379,6 +1515,51 @@ def _assemble_result(*, target: Target, route: str, spec: ObsSpec, bundles: list
     result.quality = estimate_quality(result)
     result.observation_id = _observation_id(result)
     return result
+
+
+def _tag_pixel_report(views: Sequence[Any], target: "Target") -> dict[str, Any]:
+    """Measured ``surface_tag`` pixel histogram of a delivered observation, per view.
+
+    The fracture surface is ``tag 2 (rim)`` (:data:`ORIGIN_TO_TAG`); this block is what makes
+    "is the fracture surface in the image at all" answerable from the committed metadata alone,
+    instead of by re-reading every mask.  ``faces`` is the per-class face count of the rendered
+    target, so the pixel share can be compared with the *area* share of the same class.
+    """
+    rim_tag = int(ORIGIN_TO_TAG[ORIGIN_INTERFACE])
+    per_view: dict[str, Any] = {}
+    totals: dict[str, int] = {}
+    total_pixels = 0
+    rim_pixels = 0
+    for index, view in enumerate(views):
+        tag = np.asarray(getattr(view, "surface_tag", np.zeros(0, dtype=np.int16))).reshape(-1)
+        view_id = str(getattr(view, "view_id", "") or f"v{index:03d}")
+        histogram = {str(int(k)): int(v) for k, v in zip(*np.unique(tag, return_counts=True))} \
+            if tag.size else {}
+        for key, value in histogram.items():
+            totals[key] = totals.get(key, 0) + int(value)
+        pixels = int(tag.size)
+        total_pixels += pixels
+        rim_pixels += int(histogram.get(str(rim_tag), 0))
+        per_view[view_id] = {
+            "pixels": pixels, "histogram": histogram,
+            "rim_pixels": int(histogram.get(str(rim_tag), 0)),
+            "rim_fraction": (float(histogram.get(str(rim_tag), 0)) / pixels) if pixels else 0.0,
+        }
+    faces = _tag_histogram(np.asarray(target.surface_tag))
+    face_total = int(sum(faces.values()))
+    return {
+        "rim_tag": rim_tag,
+        "views": per_view,
+        "pixels_total": int(total_pixels),
+        "histogram": totals,
+        "rim_pixels": int(rim_pixels),
+        "rim_fraction": (float(rim_pixels) / total_pixels) if total_pixels else 0.0,
+        "target_faces": faces,
+        "target_rim_faces": int(faces.get(str(rim_tag), 0)),
+        "target_rim_face_fraction": (float(faces.get(str(rim_tag), 0)) / face_total)
+        if face_total else 0.0,
+        "tag_source": str((target.meta or {}).get("surface_tag_source", "")),
+    }
 
 
 def _observation_id(obs: ObservationResult) -> str:

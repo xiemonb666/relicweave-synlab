@@ -15,6 +15,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import { AssetBrowser } from '../components/AssetBrowser';
+import { BatchSynthesisPanel } from '../components/BatchSynthesisPanel';
 import { JobTimeline } from '../components/JobTimeline';
 import { MetricChart } from '../components/MetricChart';
 import { RunSelector } from '../components/RunSelector';
@@ -316,6 +317,8 @@ export function JobsPage() {
           }}
         />
       </SectionCard>
+
+      <BatchSynthesisPanel onSelectRun={app.setSelectedRunId} />
 
       <SectionCard
         title="run 选择与实时监控"

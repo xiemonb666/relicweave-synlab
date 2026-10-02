@@ -46,6 +46,7 @@ from .losses import (
 )
 from .model import DualTowerModel
 from .sampler import LineageBalancedSampler, ShardedIterableDataset
+from .supervision import supervision_accounting
 
 TRAINER_VERSION = "a12.trainer.v1"
 #: reproducibility actually provided: sampler stream and optimizer steps are exact on CPU fp32
@@ -55,6 +56,45 @@ REPRODUCIBILITY_LEVEL = "EXACT_SAMPLER_SEQUENCE_AND_STEP_CPU_FP32_SAME_PROCESS"
 _CLEAN_TIERS = (0, 1)
 _MID_TIERS = (2,)
 _HARD_TIERS = (3, 4, 5)
+
+
+def _label_histogram(labels: Any, valid: Any) -> dict[str, int]:
+    """Histogram of the *valid* labels only (an invalid label is not a label)."""
+    arr = np.asarray(labels, dtype=np.int64)[np.asarray(valid, dtype=bool)]
+    if arr.size == 0:
+        return {}
+    values, counts = np.unique(arr, return_counts=True)
+    return {str(int(v)): int(c) for v, c in zip(values.tolist(), counts.tolist())}
+
+
+def _rank_skip_reason(n_positives: int, n_negatives: int, n_allowed: int) -> str:
+    """Name the *measured* blocker of the rank task instead of a single catch-all string.
+
+    The batch can fail rank supervision for two independent reasons -- no legal negative at all,
+    or no positive pair that can be encoded -- and the fix is different for each.  The reason
+    string is derived from the counts that were just measured, never from a constant.
+    """
+    if n_positives == 0:
+        return "no_confirmed_R2_positive_in_the_batch"
+    if n_negatives == 0:
+        return "no_legal_negative_in_exported_relations"
+    if n_allowed == 0:
+        return "no_encodable_pair_for_the_positive_and_its_negatives"
+    return "no_encodable_positive_pair"
+
+
+def _contradiction_skip_reason(n_labels: int, n_allowed: int, n_q_encodable: int,
+                               n_c_encodable: int) -> str:
+    """Why a non-empty contradiction label set produced no loss row."""
+    if n_labels == 0:
+        return "no_contradiction_label"
+    if n_allowed == 0 and n_c_encodable == 0:
+        return "no_encodable_contradiction_pair_candidate_side_unobserved"
+    if n_allowed == 0 and n_q_encodable == 0:
+        return "no_encodable_contradiction_pair_query_side_unobserved"
+    if n_allowed == 0:
+        return "no_encodable_contradiction_pair"
+    return "no_valid_contradiction_label"
 
 
 def _torch():
@@ -209,12 +249,15 @@ class Trainer:
                  recipe: Mapping[str, Any] | None = None,
                  release_hash: str = "",
                  curriculum_enabled: bool | None = None,
-                 curriculum_control: bool = False) -> None:
+                 curriculum_control: bool = False,
+                 label_source: Any | None = None) -> None:
         torch = _torch()
         self.spec = spec
         self.model = model
         self.pool = pool
         self.store = store
+        self.label_source = label_source
+        self.label_report: dict[str, Any] = {}
         self.device = torch.device(device)
         self.trainer_version = trainer_version
         self.recipe = dict(recipe or {})
@@ -319,7 +362,16 @@ class Trainer:
         return seq
 
     def build_batch(self, spec) -> TrainingBatch:
-        """Turn a sampled spec into a feature bundle plus separately held labels."""
+        """Turn a sampled spec into a feature bundle plus separately held labels.
+
+        When a ``label_source`` is configured (see :mod:`synlab.training.labels`), the label side
+        of the package is handed to :func:`synlab.training.batch.build_training_batch` through
+        its ``correspondence=`` / ``quality_target=`` / ``quality_target_valid=`` arguments.  That
+        plumbing is the difference between "the package carries no label" and "the label never
+        reached the batch": without it every one of those tensors is zero no matter what the
+        package stores, and the loss then reports ``no_correspondence_label`` /
+        ``no_valid_quality_target`` for a package that does carry both.
+        """
         ids: list[str] = []
         for row in spec.rows:
             for fid in [row["query"], *row["positives"], *row["negatives"]]:
@@ -331,11 +383,28 @@ class Trainer:
         )).check_shapes()
         labels = {"pool_id": getattr(self.pool, "pool_id", ""),
                   "lineage_cluster": getattr(self.pool, "lineage_cluster_of", {}) or {}}
-        return build_training_batch(
+        kwargs: dict[str, Any] = {}
+        label_report: dict[str, Any] = {}
+        source = self.label_source
+        if source is not None:
+            quality_target, quality_valid, quality_report = source.quality_target_for(ids)
+            kwargs["quality_target"] = quality_target
+            kwargs["quality_target_valid"] = quality_valid
+            label_report["quality"] = quality_report
+            correspondence, corr_report = source.correspondence_for(bundle, spec.rows)
+            label_report["correspondence"] = corr_report
+            if correspondence:
+                # only a real, token-mapped correspondence table may become W
+                kwargs["correspondence"] = correspondence
+        self.label_report = label_report
+        batch = build_training_batch(
             bundle, pool=self.pool, rows=spec.rows, labels=labels,
             sampler_cfg=getattr(self.spec, "sampling", None),
             quality_tier=getattr(self.pool, "quality_tier", None),
+            meta={"supervision_labels": label_report} if label_report else None,
+            **kwargs,
         )
+        return batch
 
     # ------------------------------------------------------------------ losses
     def compute_losses(self, batch: TrainingBatch, *,
@@ -363,12 +432,22 @@ class Trainer:
         results: dict[str, Any] = {}
         if int((pos_mask & allowed).sum()) == 0:
             results["rank"] = {"loss": None, "n_valid": 0, "skipped": True,
-                               "reason": "no_encodable_positive_pair", "diagnostics": {}}
+                               "n_valid_labels": int(pos_mask.sum() + neg_mask.sum()),
+                               "reason": _rank_skip_reason(int(pos_mask.sum()), int(neg_mask.sum()),
+                                                           int(allowed.sum())),
+                               "diagnostics": {
+                                   "n_positives_label_valid": int(pos_mask.sum()),
+                                   "n_negatives_label_valid": int(neg_mask.sum()),
+                                   "n_encodable_pairs": int(allowed.sum()),
+                                   "rejected_by": "z_valid[candidate]==False for every positive"
+                                                  if int(neg_mask.sum()) == 0 else
+                                                  "no legal negative survives `allowed`"}}
         else:
             results["rank"] = rank_loss_pair_head(
                 sim_masked, allowed, pos_mask=pos_mask & allowed, neg_mask=neg_mask & allowed,
                 temperature=self.temperature,
             )
+            results["rank"]["n_valid_labels"] = int(pos_mask.sum() + neg_mask.sum())
 
         # ---- A. same-fragment multi-view InfoNCE (R2 / grey-zone excluded from negatives)
         view_emb, view_valid = self._view_embeddings(features)
@@ -383,9 +462,26 @@ class Trainer:
         tok_valid = features.token_valid
         l_dim = int(tokens.shape[1])
         corr_w = np.asarray(batch.corr_weight, dtype=np.float32)
+        corr_labels = dict((batch.meta.get("supervision_labels") or {}).get("correspondence") or {})
         if float(corr_w.sum()) <= 0:
-            results["correspondence"] = {"loss": None, "n_valid": 0, "skipped": True,
-                                         "reason": "no_correspondence_label", "diagnostics": {}}
+            results["correspondence"] = {
+                "loss": None, "n_valid": 0, "skipped": True,
+                "n_valid_labels": int(corr_labels.get("n_label_samples_in_batch",
+                                                      corr_labels.get(
+                                                          "n_label_samples_in_package", 0))),
+                "reason": ("no_correspondence_label" if not corr_labels
+                           or not corr_labels.get("n_label_samples_in_package")
+                           else "correspondence_labels_never_reached_token_space"),
+                "diagnostics": {
+                    "label_samples_in_package": int(
+                        corr_labels.get("n_label_samples_in_package", 0)),
+                    "pairs_in_batch_with_labels": int(
+                        corr_labels.get("pairs_in_batch_with_labels", 0)),
+                    "pairs_with_both_sides_observable": int(
+                        corr_labels.get("pairs_with_both_sides_observable", 0)),
+                    "token_mapped_rows": int(corr_labels.get("token_mapped_rows", 0)),
+                    "blocked_by": list(corr_labels.get("blocked_by") or []),
+                }}
         else:
             q_tokens = torch.nn.functional.normalize(tokens[q_idx], dim=-1)   # [Q,C,L,D]
             c_tokens = torch.nn.functional.normalize(tokens[c_idx], dim=-1)
@@ -412,36 +508,65 @@ class Trainer:
                                   device=self.device)
         pred = self.model.encoder.encode_quality(features)
         if int(q_valid.sum()) == 0:
+            quality_labels = dict((batch.meta.get("supervision_labels") or {}).get("quality") or {})
             results["quality"] = {"loss": None, "n_valid": 0, "skipped": True,
-                                  "reason": "no_valid_quality_target", "diagnostics": {}}
+                                  "n_valid_labels": 0,
+                                  "reason": "no_valid_quality_target",
+                                  "diagnostics": {
+                                      "n_fragments": int(f),
+                                      "channel": str(quality_labels.get("channel", "")),
+                                      "measured_fragments_in_package": int(quality_labels.get(
+                                          "n_measured_fragments_in_package", 0)),
+                                      "missing_is_not_a_zero_label": True}}
         elif pred.shape[-1] == int(np.prod(q_target.shape[1:])):
             results["quality"] = quality_loss(
                 pred, q_target.reshape(f, -1), q_valid.reshape(f, -1), kind="huber", delta=1.0)
+            results["quality"]["n_valid_labels"] = int(q_valid.sum())
         elif pred.shape[-1] == 1 and q_target.numel():
             results["quality"] = quality_loss(
                 pred, q_target.mean(dim=(-1, -2), keepdim=False).unsqueeze(-1),
                 q_valid.any(dim=(-1, -2)).unsqueeze(-1), kind="huber", delta=1.0)
+            results["quality"]["n_valid_labels"] = int(q_valid.any(dim=(-1, -2)).sum())
         else:
             results["quality"] = {
-                "loss": None, "n_valid": 0, "skipped": True,
+                "loss": None, "n_valid": 0, "skipped": True, "n_valid_labels": int(q_valid.sum()),
                 "reason": f"quality_output_dim_mismatch(pred={pred.shape[-1]},"
                           f"target={int(np.prod(q_target.shape[1:]))})",
                 "diagnostics": {}}
 
         # ---- E. contradiction / compatibility on the pair score (missing masked out)
         cont = torch.as_tensor(batch.contradiction, dtype=torch.long, device=self.device)
-        cont_valid = torch.as_tensor(batch.contradiction_valid, dtype=torch.bool,
-                                     device=self.device) & allowed
+        # the label set *before* encodability is measured separately: "no label exists" and
+        # "every labelled pair is unencodable" are different facts with different fixes
+        cont_labels = torch.as_tensor(batch.contradiction_valid, dtype=torch.bool,
+                                      device=self.device)
+        cont_valid = cont_labels & allowed
         if int(cont_valid.sum()) == 0:
-            results["contradiction"] = {"loss": None, "n_valid": 0, "skipped": True,
-                                        "reason": "no_contradiction_label", "diagnostics": {}}
+            results["contradiction"] = {
+                "loss": None, "n_valid": 0, "skipped": True,
+                "n_valid_labels": int(cont_labels.sum()),
+                "reason": _contradiction_skip_reason(
+                    int(cont_labels.sum()), 0, int(z_valid[q_idx].sum()),
+                    int(z_valid[c_idx].sum())),
+                "diagnostics": {
+                    "n_labels_valid_before_encodability": int(cont_labels.sum()),
+                    "n_labels_after_encodability": 0,
+                    "label_histogram": _label_histogram(batch.contradiction,
+                                                        np.asarray(batch.contradiction_valid)),
+                    "classes_present": len(_label_histogram(batch.contradiction,
+                                                            np.asarray(batch.contradiction_valid)))},
+            }
         else:
             logits3 = torch.stack([torch.zeros_like(sim_masked), sim_masked, -sim_masked],
                                   dim=-1)[..., None, :]
             results["contradiction"] = contradiction_loss(
                 logits3, cont[..., None], cont_valid[..., None])
+            results["contradiction"]["n_valid_labels"] = int(cont_labels.sum())
 
         combined = self.multi_task.combine(results)
+        supervision = supervision_accounting(
+            batch, z_valid=np.asarray(z_valid.detach().cpu().numpy(), dtype=bool),
+            label_report=batch.meta.get("supervision_labels"))
         out = {
             "combined": combined,
             "results": results,
@@ -449,6 +574,7 @@ class Trainer:
             "n_fragments": f,
             "encodable_pairs": int(allowed.sum()),
             "unencodable_pairs": int((pair_valid & ~allowed).sum()),
+            "supervision": supervision,
         }
         if return_task_tensors:
             out["task_tensors"] = {k: v.get("loss") for k, v in results.items()}
@@ -497,7 +623,8 @@ class Trainer:
         combined = out["combined"]
         if combined["loss"] is None:
             return {"skipped": True, "reason": "all_tasks_skipped", "report": combined["report"],
-                    "effective_queries": out["effective_queries"]}
+                    "effective_queries": out["effective_queries"],
+                    "supervision": out.get("supervision")}
         loss = combined["loss"]
         accum_loss = loss * float(accumulate)
         if not bool(torch.isfinite(accum_loss)):
@@ -520,6 +647,7 @@ class Trainer:
                 "effective_queries": out["effective_queries"],
                 "encodable_pairs": out["encodable_pairs"],
                 "unencodable_pairs": out["unencodable_pairs"],
+                "supervision": out.get("supervision"),
                 "diagnostics": {k: v.get("diagnostics", {}) for k, v in out["results"].items()}}
 
     def _dump_failure(self, batch: TrainingBatch, loss) -> str:

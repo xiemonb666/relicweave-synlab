@@ -146,7 +146,7 @@ class PatternConfig(StrictModel):
 
 class FractureConfig(StrictModel):
     backend: Literal["plane_shared_cut", "rough_shared_cut", "warped_partition", "secondary_fracture",
-                     "fracture_modes"] = "rough_shared_cut"
+                     "fracture_modes", "warp_voronoi_cut"] = "rough_shared_cut"
     target_piece_range: tuple[int, int] = (8, 20)
     min_feature_wavelength_mm: float = Field(0.24, gt=0)
     shared_surface_max_error_mm: float = Field(0.01, gt=0)
@@ -453,7 +453,7 @@ MATERIAL_IDS = [f"M{i:02d}" for i in range(1, 13)]
 PATTERN_IDS = [f"PAT{i:02d}" for i in range(1, 17)]
 LAYER_COMBO_IDS = ["L01", "L02", "L03", "L04"]
 FRACTURE_BACKEND_IDS = ["plane_shared_cut", "rough_shared_cut", "warped_partition",
-                        "secondary_fracture", "fracture_modes"]
+                        "secondary_fracture", "fracture_modes", "warp_voronoi_cut"]
 AXIS_IDS = (
     [f"P{i:02d}" for i in range(1, 9)]
     + [f"I{i:02d}" for i in range(1, 11)]

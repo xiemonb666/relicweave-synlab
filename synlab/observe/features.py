@@ -336,8 +336,22 @@ def _quality_features(obs: Any) -> dict[str, np.ndarray]:
             "underexposed_fraction", "mean_level", "point_valid_fraction",
             "view_coverage_mean", "hole_ratio_max", "roi_coverage_mean",
             "nn_spacing_median", "nn_spacing_p95")
-    values = np.array([float(quality[k]["value"]) for k in keys], dtype=np.float32)
-    valid = np.array([bool(quality[k]["valid"]) for k in keys], dtype=bool)
+    # A missing or malformed entry must degrade to "invalid", never abort the lineage:
+    # measured trigger was a KeyError('nn_spacing_p95') that killed whole accepted runs.
+    def _entry(key: str):
+        row = quality.get(key)
+        if isinstance(row, dict):
+            raw, ok = row.get("value"), bool(row.get("valid", False))
+        else:
+            raw, ok = row, False
+        try:
+            return float(raw), bool(ok)
+        except (TypeError, ValueError):
+            return 0.0, False
+
+    pairs = [_entry(k) for k in keys]
+    values = np.array([v for v, _ in pairs], dtype=np.float32)
+    valid = np.array([ok for _, ok in pairs], dtype=bool)
     return {"values": values, "valid": valid, "names": list(keys)}
 
 

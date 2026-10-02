@@ -173,14 +173,29 @@ def estimate_quality(obs: Any, *, mask: np.ndarray | None = None) -> dict[str, A
                     float(np.percentile(nn, 95)) if nn.size else 0.0,
                     unit="mm" if scale_valid else "unknown", valid=bool(nn.size))
             except Exception as exc:  # noqa: BLE001 - estimator is optional, report it
+                # consumers unpack a FIXED key tuple, so every branch must emit every key
                 out["nn_spacing_median"] = _entry(0.0, unit="unknown", valid=False,
                                                   note=f"cKDTree unavailable: {exc}")
+                out["nn_spacing_p95"] = _entry(0.0, unit="unknown", valid=False,
+                                               note=f"cKDTree unavailable: {exc}")
         else:
+            # A cloud with 0 or 1 points must still expose every key the consumers read:
+            # ``synlab.observe.features._quality_features`` unpacks a fixed key tuple, so a
+            # missing ``nn_spacing_p95`` used to abort the whole lineage with an internal
+            # KeyError instead of reporting an invalid estimate.  Measured trigger: the
+            # ``photo_mvs`` route stops with ``STOP_SFM`` and delivers an empty cloud.
             out["nn_spacing_median"] = _entry(0.0, unit="unknown", valid=False,
                                               note="fewer than 2 points")
+            out["nn_spacing_p95"] = _entry(0.0, unit="unknown", valid=False,
+                                           note="fewer than 2 points")
     else:
         out["point_count"] = _entry(0.0, unit="1", valid=False, note="no fused points")
         out["point_valid_fraction"] = _entry(0.0, unit="1", valid=False)
+        # the no-cloud path must also expose the spacing keys the consumers read
+        out["nn_spacing_median"] = _entry(0.0, unit="unknown", valid=False,
+                                          note="no fused points")
+        out["nn_spacing_p95"] = _entry(0.0, unit="unknown", valid=False,
+                                       note="no fused points")
 
     # -- holes and coverage
     out["view_coverage_mean"] = _entry(float(np.mean(coverage)) if coverage else 0.0,

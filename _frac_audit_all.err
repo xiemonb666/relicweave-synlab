@@ -1,0 +1,19 @@
+Traceback (most recent call last):
+  File "C:\Users\xiemo\Desktop\ShardForge\relicweave-synlab\_frac_audit_all.py", line 235, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "C:\Users\xiemo\Desktop\ShardForge\relicweave-synlab\_frac_audit_all.py", line 212, in main
+    result = run_voronoi_event(mother, event_id=f"SW-{vessel}-{count}",
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xiemo\Desktop\ShardForge\relicweave-synlab\synlab\fracture\voronoi_event.py", line 1173, in run_voronoi_event
+    partition, seed_report = build_partition(
+                             ^^^^^^^^^^^^^^^^
+  File "C:\Users\xiemo\Desktop\ShardForge\relicweave-synlab\synlab\fracture\voronoi_frag.py", line 878, in build_partition
+    cells = voronoi_cells(points, np.stack([lo, hi]), neighbours=neighbours)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xiemo\Desktop\ShardForge\relicweave-synlab\synlab\fracture\voronoi_frag.py", line 483, in voronoi_cells
+    candidate.sort(key=lambda j: float(np.linalg.norm(points[j] - seed)))
+  File "C:\Users\xiemo\Desktop\ShardForge\relicweave-synlab\synlab\fracture\voronoi_frag.py", line 483, in <lambda>
+    candidate.sort(key=lambda j: float(np.linalg.norm(points[j] - seed)))
+                                                      ~~~~~~^^^
+IndexError: index 1 is out of bounds for axis 0 with size 1

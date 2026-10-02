@@ -17,7 +17,13 @@ from ..roles import (
     SCHEMA_PHYSICAL,
     UNIT_MM,
 )
-from ..schemas.runtime import PhysicalComponent, PhysicalResult
+from ..schemas.runtime import (
+    ORIGIN_AMBIGUOUS,
+    ORIGIN_INTERFACE,
+    ORIGIN_MOTHER_SURFACE,
+    PhysicalComponent,
+    PhysicalResult,
+)
 from . import operators as OPS
 from . import sdf as S
 from .recipe import APPEARANCE_AXES, P06_VARIANTS, P08_VARIANTS, DamageOutcome, DamageRecipe
@@ -168,12 +174,25 @@ def close_numerical_pinholes(mesh: trimesh.Trimesh, *,
     volume_before = float(abs(mesh.volume))
     candidate = mesh.copy()
     # the patch face traverses the boundary in the opposite direction of the surface edge
-    patch = [np.asarray(loop[::-1], dtype=np.int64)[None, :] for loop in loops]
-    candidate.faces = np.vstack([np.asarray(mesh.faces, dtype=np.int64)] + patch)
+    # Fan-triangulate each boundary loop: boundary cycles can have different lengths (a 3-edge
+    # pinhole next to a 4-edge one), and vstacking the raw cycles raises a shape error.  The fan
+    # keeps the reversed winding of the surface edge, so the patch face is oriented inward.
+    patches: list[np.ndarray] = []
+    for loop in loops:
+        rev = np.asarray(loop[::-1], dtype=np.int64)
+        if rev.size < 3:
+            continue
+        for k in range(1, int(rev.size) - 1):
+            patches.append(np.array([[int(rev[0]), int(rev[k]), int(rev[k + 1])]],
+                                    dtype=np.int64))
+    if not patches:
+        report["reason"] = "boundary loop had fewer than three vertices"
+        return mesh, report
+    candidate.faces = np.vstack([np.asarray(mesh.faces, dtype=np.int64)] + patches)
     candidate.merge_vertices()
     candidate.remove_unreferenced_vertices()
     closed = bool(candidate.is_watertight) and bool(candidate.is_winding_consistent)
-    report["faces_added"] = int(len(loops))
+    report["faces_added"] = int(len(patches))
     report["volume_delta_mm3"] = float(abs(candidate.volume) - volume_before)
     if not closed:
         report["reason"] = ("filling the pinholes did not yield a watertight, "
@@ -182,6 +201,170 @@ def close_numerical_pinholes(mesh: trimesh.Trimesh, *,
     report["applied"] = True
     report["watertight_after"] = True
     return candidate, report
+
+
+# ------------------------------------------------------------------- face provenance
+#: Face-level provenance of a *damaged* component (see docs/a12/fracture_surface_signal.md).
+#: Every damaged face is classified into exactly one of the three origin kinds of
+#: :mod:`synlab.schemas.runtime` -- mother surface (0), interface (1) or ambiguous (2) -- from
+#: two *measurable* instruments, never from a guess:
+#:
+#: 1. **source-surface mapping.**  The exact closest point of the damaged face centroid on the
+#:    clean source surface (float64 point-to-triangle, ``trimesh.proximity.closest_point``) gives
+#:    the clean face it came from.  The mapping is accepted only when the centroid lands within
+#:    ``tol_mm`` of that face *and* the two normals agree within ``cos_min``, and then the origin
+#:    kind and the interface id of the clean face are inherited.  The tolerance has a measured
+#:    basis: the damaged surface is re-extracted on the frozen SDF grid, so a face that is
+#:    genuinely the same surface can sit half a cell away from it, plus the recession the operator
+#:    actually realized; the default is therefore ``0.5 * spacing + realized_recession`` clipped to
+#:    ``[MIN, MAX]`` (all three are recorded with the result).
+#: 2. **declared ROI band for SDF-born faces.**  A face that maps to nothing is new geometry
+#:    created by the operator.  It is called an interface face only when it lies inside the band
+#:    the operator itself declares for its ROI (``halo_mm`` of its own SDF pipeline, the distance
+#:    at which its ROI weight reaches zero); every other new face stays ``ORIGIN_AMBIGUOUS`` and
+#:    is counted, with the reason, in the provenance report.
+ORIGIN_PROVENANCE_VERSION = "origin_provenance_v1"
+#: Half a frozen SDF cell: the re-extracted level set of the *unmodified* field can sit this far
+#: from the original surface and still be the same surface (measured on the L0 probe).
+ORIGIN_COLOCATION_CELL_FRACTION = 0.5
+#: Never declare a co-location tighter than this (float32 attribute quantisation, welding).
+ORIGIN_COLOCATION_MIN_MM = 0.05
+#: Never declare a co-location wider than this: above it the mapping stops being evidence.
+ORIGIN_COLOCATION_MAX_MM = 1.0
+#: 60 degrees.  A face that crosses the wall (a sliver at a boolean rim) is not "the same surface".
+ORIGIN_COLOCATION_COS_MIN = 0.5
+#: Fallback ROI band when the operator did not report its own halo.
+ORIGIN_ROI_HALO_FALLBACK_MM = 3.0
+
+
+def origin_colocation_tolerance_mm(*, spacing_mm: float | None = None,
+                                   realized_recession_mm: float = 0.0,
+                                   min_wall_mm: float | None = None) -> float:
+    """Co-location tolerance of the source-surface mapping, in mm (measured inputs only)."""
+    tol = ORIGIN_COLOCATION_MIN_MM + max(0.0, float(realized_recession_mm or 0.0))
+    if spacing_mm is not None and float(spacing_mm) > 0.0:
+        tol += ORIGIN_COLOCATION_CELL_FRACTION * float(spacing_mm)
+    tol = min(max(tol, ORIGIN_COLOCATION_MIN_MM), ORIGIN_COLOCATION_MAX_MM)
+    if min_wall_mm is not None and float(min_wall_mm) > 0.0:
+        # a wall thinner than twice the tolerance would map a face onto the *other* side of it
+        tol = min(tol, 0.5 * float(min_wall_mm))
+    return float(max(tol, 1e-6))
+
+
+def classify_face_origin(damaged: trimesh.Trimesh, clean: trimesh.Trimesh, *,
+                         origin: np.ndarray, interface_id: np.ndarray,
+                         roi_ids: np.ndarray | None = None, tol_mm: float,
+                         cos_min: float = ORIGIN_COLOCATION_COS_MIN,
+                         roi_tol_mm: float = 0.0) -> tuple[np.ndarray, np.ndarray, dict[str, Any]]:
+    """Classify every face of ``damaged`` against the clean source surface it descends from.
+
+    ``origin`` / ``interface_id`` are the clean face channels (same length as ``clean.faces``);
+    ``roi_ids`` are the clean faces of the *declared* ROI (an interface operator's interface
+    patch).  Returns ``(origin_kind, interface_id, report)`` with one entry per damaged face.
+
+    The three classes and their evidence are exactly:
+
+    ``0`` inherited mother surface -- centroid within ``tol_mm`` of a clean face whose own origin
+    kind is 0, normals agreeing within ``cos_min``; the clean face's ``interface_id`` is kept.
+    ``1`` interface -- either inherited from a clean interface face by the same mapping, or born
+    in the operator's declared ROI band (``roi_tol_mm`` of the ROI geometry) with no clean face
+    within ``tol_mm``.
+    ``2`` ambiguous -- new geometry outside the declared ROI band, and every face the mapping
+    could not accept; counted in ``report['classes']['ambiguous']['reasons']``.
+    """
+    faces = int(len(damaged.faces))
+    origin_out = np.full(faces, ORIGIN_AMBIGUOUS, dtype=np.uint8)
+    iface_out = np.full(faces, -1, dtype=np.int32)
+    clean_origin = np.asarray(origin, dtype=np.int64).reshape(-1)
+    clean_iface = np.asarray(interface_id, dtype=np.int64).reshape(-1)
+    report: dict[str, Any] = {
+        "version": ORIGIN_PROVENANCE_VERSION,
+        "faces": faces,
+        "tol_mm": float(tol_mm),
+        "cos_min": float(cos_min),
+        "roi_tol_mm": float(roi_tol_mm),
+        "instrument": ("trimesh.proximity.closest_point (exact point-to-triangle, float64) "
+                       "+ face-normal agreement"),
+        "classes": {},
+    }
+    if faces == 0:
+        report["classes"] = {str(ORIGIN_MOTHER_SURFACE): 0, str(ORIGIN_INTERFACE): 0,
+                             str(ORIGIN_AMBIGUOUS): 0}
+        return origin_out, iface_out, report
+    if clean_origin.shape[0] != len(clean.faces) or clean_iface.shape[0] != len(clean.faces):
+        report["classes"] = {str(ORIGIN_MOTHER_SURFACE): 0, str(ORIGIN_INTERFACE): 0,
+                             str(ORIGIN_AMBIGUOUS): faces}
+        report["failure"] = ("clean face channels do not match the clean mesh "
+                             f"({clean_origin.shape[0]}/{clean_iface.shape[0]} vs "
+                             f"{len(clean.faces)} faces); no face is claimed")
+        return origin_out, iface_out, report
+
+    centroids = np.asarray(damaged.triangles_center, dtype=np.float64)
+    close, dist, tri = trimesh.proximity.closest_point(clean, centroids)
+    tri = np.asarray(tri, dtype=np.int64).reshape(-1)
+    dist = np.asarray(dist, dtype=np.float64).reshape(-1)
+    d_normals = np.asarray(damaged.face_normals, dtype=np.float64)
+    c_normals = np.asarray(clean.face_normals, dtype=np.float64)
+    cos = np.abs(np.einsum("ij,ij->i", d_normals, c_normals[tri]))
+    mapped = (dist <= float(tol_mm)) & (cos >= float(cos_min))
+    origin_out[mapped] = clean_origin[tri[mapped]].astype(np.uint8)
+    iface_out[mapped] = clean_iface[tri[mapped]].astype(np.int32)
+
+    new = ~mapped
+    roi_near = np.zeros(faces, dtype=bool)
+    roi_index = np.full(faces, -1, dtype=np.int64)
+    roi = None if roi_ids is None else np.asarray(roi_ids, dtype=np.int64).reshape(-1)
+    if roi is not None and roi.size and float(roi_tol_mm) > 0.0 and bool(new.any()):
+        roi_mesh = trimesh.Trimesh(vertices=np.asarray(clean.vertices, dtype=np.float64),
+                                   faces=np.asarray(clean.faces, dtype=np.int64)[roi],
+                                   process=False)
+        _closest, roi_dist, roi_tri = trimesh.proximity.closest_point(roi_mesh, centroids[new])
+        roi_dist = np.asarray(roi_dist, dtype=np.float64).reshape(-1)
+        near_new = roi_dist <= float(roi_tol_mm)
+        idx_new = np.flatnonzero(new)
+        roi_near[idx_new[near_new]] = True
+        roi_index[idx_new[near_new]] = roi[np.asarray(roi_tri, dtype=np.int64).reshape(-1)[near_new]]
+    born_in_roi = new & roi_near
+    origin_out[born_in_roi] = ORIGIN_INTERFACE
+    # the interface id of a new ROI face is the id of the nearest declared-ROI source face; when
+    # that source face carries no id (-1: an origin-kind-only ROI) the id stays -1, never invented
+    ok = born_in_roi & (roi_index >= 0)
+    iface_out[ok] = clean_iface[roi_index[ok]].astype(np.int32)
+
+    reasons: dict[str, int] = {}
+    if bool(new.any()):
+        reasons["new_face_outside_declared_roi_band"] = int((new & ~roi_near).sum())
+        reasons["new_face_in_declared_roi_band"] = int(born_in_roi.sum())
+    report["classes"] = {
+        str(ORIGIN_MOTHER_SURFACE): int(np.count_nonzero(origin_out == ORIGIN_MOTHER_SURFACE)),
+        str(ORIGIN_INTERFACE): int(np.count_nonzero(origin_out == ORIGIN_INTERFACE)),
+        str(ORIGIN_AMBIGUOUS): int(np.count_nonzero(origin_out == ORIGIN_AMBIGUOUS)),
+    }
+    face_area = np.asarray(damaged.area_faces, dtype=np.float64)
+    total_area = float(face_area.sum())
+    report["class_area_mm2"] = {
+        str(kind): float(face_area[origin_out == int(kind)].sum())
+        for kind in (ORIGIN_MOTHER_SURFACE, ORIGIN_INTERFACE, ORIGIN_AMBIGUOUS)}
+    report["class_area_fraction"] = {
+        key: (value / total_area if total_area > 0 else 0.0)
+        for key, value in report["class_area_mm2"].items()}
+    report["area_mm2"] = total_area
+    report["mapped_to_clean_face"] = int(mapped.sum())
+    report["mapped_fraction"] = float(mapped.mean())
+    report["born_in_declared_roi"] = int(born_in_roi.sum())
+    report["ambiguous_reasons"] = reasons
+    report["distance_mm"] = {
+        "p50": float(np.percentile(dist, 50)), "p90": float(np.percentile(dist, 90)),
+        "max": float(dist.max()),
+        "mapped_max": float(dist[mapped].max()) if bool(mapped.any()) else None,
+    }
+    report["inherited_origin_histogram"] = {
+        str(int(k)): int(v) for k, v in zip(*np.unique(clean_origin[tri[mapped]],
+                                                       return_counts=True))} if bool(mapped.any()) \
+        else {}
+    report["interface_id_histogram"] = {
+        str(int(k)): int(v) for k, v in zip(*np.unique(iface_out, return_counts=True))}
+    return origin_out, iface_out, report
 
 
 def subset_outside_stats(damaged: trimesh.Trimesh, reference: trimesh.Trimesh, *,
@@ -422,6 +605,13 @@ def apply_damage(clean_truth: Any, fragment: Any, recipe: DamageRecipe,
             "damage_semantics": DAMAGE_SEMANTICS,
             "note": "level 0 returns the source asset reference/bytes without resampling",
         }
+        identity_provenance = {
+            "version": ORIGIN_PROVENANCE_VERSION, "attached": False,
+            "reason": ("identity level 0 returns the source object unchanged, so the source's own "
+                       "face channels (fragment.face_origin_kind / face_interface_id) stay "
+                       "authoritative and are not copied onto a shared object"),
+        }
+        qa["face_provenance"] = identity_provenance
         return PhysicalResult(
             mother_id=mother_id, clean_ref=clean_ref, event_id=event_id,
             recipe_id=recipe.recipe_id or f"{recipe.axis_id}:{recipe.variant}:L0", version=1,
@@ -431,6 +621,7 @@ def apply_damage(clean_truth: Any, fragment: Any, recipe: DamageRecipe,
                   "source_geometry_hash": _geometry_hash(mesh), "axis_id": recipe.axis_id,
                   "variant": recipe.variant, "level": int(recipe.level),
                   "damage_semantics": DAMAGE_SEMANTICS,
+                  "face_provenance": identity_provenance,
                   "geometry_changed": False, "frozen": recipe.frozen()},
         )
 
@@ -507,17 +698,166 @@ def apply_damage(clean_truth: Any, fragment: Any, recipe: DamageRecipe,
         },
     )
     if outcome.mesh is not None and geometry_changed:
-        # face-level provenance of the new surface: SDF-born faces carry no clean barycentric id
-        from ..storage.mesh_io import with_face_attrs
-
-        for component in components:
-            if component.meta.get("is_contamination"):
-                origin = np.full(len(component.mesh.faces), 2, dtype=np.uint8)
-            else:
-                origin = np.full(len(component.mesh.faces), 2, dtype=np.uint8)
-            with_face_attrs(component.mesh, origin_kind=origin)
+        provenance = attach_face_provenance(
+            result, clean_mesh=mesh, fragment=fragment,
+            spacing_mm=_measured_spacing_mm(outcome),
+            halo_mm=_measured_roi_halo_mm(outcome))
+        result.meta["face_provenance"] = provenance
+        result.qa["face_provenance"] = provenance
+    else:
+        # level 0 / no geometry change: the component *is* the source object and its bytes are
+        # returned unchanged (identity contract), so nothing is attached.  The absence is
+        # recorded instead of being left to look like "no interface here".
+        result.meta["face_provenance"] = {
+            "version": ORIGIN_PROVENANCE_VERSION, "attached": False,
+            "reason": ("identity level 0 returns the source object unchanged; the source's own "
+                       "face channels are authoritative"
+                       if not geometry_changed else "the operator returned no mesh"),
+        }
     _attach_physical_truth(result, clean_truth)
     return result
+
+
+def _measured_spacing_mm(outcome: Any) -> float | None:
+    """The SDF grid spacing the operator actually used, or ``None`` when it did not report one."""
+    pipeline = dict((getattr(outcome, "details", None) or {}).get("sdf_pipeline") or {})
+    for key in ("grid", "spacing", "sdf"):
+        block = pipeline.get(key)
+        if isinstance(block, dict) and block.get("spacing_mm") is not None:
+            return float(block["spacing_mm"])
+    return None
+
+
+def _measured_roi_halo_mm(outcome: Any) -> float | None:
+    """The operator's own ROI halo (the distance at which its ROI weight reaches zero)."""
+    pipeline = dict((getattr(outcome, "details", None) or {}).get("sdf_pipeline") or {})
+    value = pipeline.get("halo_mm")
+    return None if value is None else float(value)
+
+
+def _source_face_channels(clean_mesh: Any, fragment: Any) -> tuple[np.ndarray, np.ndarray, dict]:
+    """The clean source's ``origin_kind`` / ``interface_id`` face channels (never invented)."""
+    from .fields import face_channel
+
+    n = int(len(np.asarray(clean_mesh.faces)))
+    origin = face_channel(clean_mesh, fragment, "origin_kind")
+    iface = face_channel(clean_mesh, fragment, "interface_id")
+    info: dict[str, Any] = {
+        "origin_kind_source": None if origin is None else "clean_fragment.origin_kind",
+        "interface_id_source": None if iface is None else "clean_fragment.interface_id",
+    }
+    if origin is None:
+        # no origin channel: a missing channel is *not* "everything is the mother surface"
+        origin = np.full(n, ORIGIN_AMBIGUOUS, dtype=np.uint8)
+        info["origin_kind_source"] = "MISSING"
+    if iface is None:
+        iface = np.full(n, -1, dtype=np.int32)
+        info["interface_id_source"] = "MISSING"
+    return (np.asarray(origin, dtype=np.uint8).reshape(-1),
+            np.asarray(iface, dtype=np.int32).reshape(-1), info)
+
+
+def attach_face_provenance(result: PhysicalResult, *, clean_mesh: Any, fragment: Any,
+                           spacing_mm: float | None = None,
+                           halo_mm: float | None = None) -> dict[str, Any]:
+    """Classify every damaged face and attach ``origin_kind`` + ``interface_id`` to each component.
+
+    This is the writer of the face-level provenance of a damaged body.  Contamination bodies are
+    handled separately: they are *deposited* material with no source surface on the clean
+    fragment, so no face of one is ever mapped to a clean face (mapping a dirt shell onto the wall
+    it covers would relabel dirt as the original surface); they are reported as their own class.
+    """
+    from ..storage.mesh_io import with_face_attrs
+    from .fields import face_channel, roi_faces
+
+    declared = dict((result.meta or {}).get("declared") or {})
+    roi_spec = dict(declared.get("roi") or {"kind": "interface"})
+    source_origin, source_iface, channels = _source_face_channels(clean_mesh, fragment)
+    measured = dict((result.meta or {}).get("measured") or {})
+    recession = 0.0
+    for key in ("realized_max_recession_mm", "depth_mm", "affected_depth_mm"):
+        if measured.get(key) is not None:
+            recession = float(measured[key])
+            break
+    tol_mm = origin_colocation_tolerance_mm(
+        spacing_mm=spacing_mm, realized_recession_mm=recession,
+        min_wall_mm=measured.get("min_thickness_mm"))
+    band = float(halo_mm) if halo_mm else ORIGIN_ROI_HALO_FALLBACK_MM
+    roi_ids: np.ndarray | None = None
+    roi_info: dict[str, Any] = {"roi_kind": None, "roi_source": "unavailable"}
+    try:
+        roi_ids, roi_info = roi_faces(clean_mesh, fragment, roi_spec)
+    except SynLabError as exc:
+        roi_info = {"roi_kind": str(roi_spec.get("kind", "")), "roi_source": "NOT_APPLICABLE",
+                    "failure_code": getattr(getattr(exc, "code", None), "value", None),
+                    "reason": str(exc).splitlines()[0][:300]}
+
+    report: dict[str, Any] = {
+        "version": ORIGIN_PROVENANCE_VERSION,
+        "attached": True,
+        "tol_mm": float(tol_mm),
+        "tol_basis": {
+            "cell_fraction": ORIGIN_COLOCATION_CELL_FRACTION,
+            "spacing_mm": None if spacing_mm is None else float(spacing_mm),
+            "realized_recession_mm": float(recession),
+            "min_wall_mm": measured.get("min_thickness_mm"),
+            "bounds_mm": [ORIGIN_COLOCATION_MIN_MM, ORIGIN_COLOCATION_MAX_MM],
+            "rule": "clip(0.05 + 0.5*spacing + realized_recession, [0.05, 1.0]) capped at half the "
+                    "measured minimum wall thickness",
+        },
+        "cos_min": ORIGIN_COLOCATION_COS_MIN,
+        "roi_band_mm": float(band),
+        "roi": roi_info,
+        "roi_faces": None if roi_ids is None else int(len(roi_ids)),
+        "source_channels": channels,
+        "components": {},
+    }
+    totals = {str(ORIGIN_MOTHER_SURFACE): 0, str(ORIGIN_INTERFACE): 0, str(ORIGIN_AMBIGUOUS): 0}
+    for component in result.components:
+        faces = int(len(np.asarray(component.mesh.faces)))
+        if component.meta.get("is_contamination"):
+            origin = np.full(faces, ORIGIN_AMBIGUOUS, dtype=np.uint8)
+            iface = np.full(faces, -1, dtype=np.int32)
+            with_face_attrs(component.mesh, origin_kind=origin, interface_id=iface)
+            entry = {"class": "CONTAMINATION_UNMAPPED", "faces": faces,
+                     "origin_kind_histogram": {str(ORIGIN_AMBIGUOUS): faces},
+                     "reason": ("deposited material: it has no source surface on the clean "
+                                "fragment, so no face is mapped onto one")}
+        else:
+            origin, iface, entry = classify_face_origin(
+                component.mesh, clean_mesh, origin=source_origin, interface_id=source_iface,
+                roi_ids=roi_ids, tol_mm=tol_mm, roi_tol_mm=band)
+            with_face_attrs(component.mesh, origin_kind=origin, interface_id=iface)
+        entry["component_id"] = str(component.component_id)
+        entry["interface_id_histogram"] = {
+            str(int(k)): int(v) for k, v in zip(*np.unique(np.asarray(
+                (component.mesh.metadata or {}).get("face_attr_arrays", {}).get(
+                    "interface_id", np.full(faces, -1)), dtype=np.int64), return_counts=True))}
+        report["components"][str(component.component_id)] = entry
+        for key, value in (entry.get("origin_kind_histogram") or entry.get("classes") or {}).items():
+            totals[str(key)] = totals.get(str(key), 0) + int(value)
+    report["totals"] = totals
+    report["totals_fraction"] = {k: (v / max(sum(totals.values()), 1)) for k, v in totals.items()}
+    return report
+
+
+def result_recipe(result: PhysicalResult) -> DamageRecipe:
+    """Rebuild the (frozen) recipe of a result: axis/variant/level + the declared ROI/params.
+
+    ``ratio``-style readers use this to re-run the same declared ROI selection on the source
+    without re-running the operator; nothing here is sampled or invented.
+    """
+    declared = (result.meta or {}).get("declared") or {}
+    frozen = (result.meta or {}).get("frozen") or {}
+    return DamageRecipe(
+        axis_id=str(declared.get("axis_id", (result.meta or {}).get("axis_id", ""))),
+        variant=str(declared.get("variant", (result.meta or {}).get("variant", ""))),
+        level=int(declared.get("level", (result.meta or {}).get("level", 0)) or 0),
+        roi=dict(declared.get("roi") or {"kind": "interface"}),
+        params=dict(declared.get("params") or {}),
+        grid={"spacing_mm": None},
+        meta={"shortest_structure_mm": None},
+    )
 
 
 def _attach_physical_truth(result: PhysicalResult, clean_truth: Any) -> None:
@@ -799,8 +1139,29 @@ def _component_payload(component: PhysicalComponent) -> dict[str, Any]:
     return dict(mesh_arrays(component.mesh))
 
 
+def _jsonable(value: Any) -> Any:
+    """JSON-safe copy of a measured structure (numpy scalars/arrays reduced, never guessed)."""
+    if isinstance(value, dict):
+        return {str(k): _jsonable(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_jsonable(v) for v in value]
+    if isinstance(value, np.ndarray):
+        return [_jsonable(v) for v in value.reshape(-1).tolist()]
+    if isinstance(value, np.integer):
+        return int(value)
+    if isinstance(value, np.floating):
+        return float(value)
+    if isinstance(value, np.bool_):
+        return bool(value)
+    if isinstance(value, (str, int, float, bool)) or value is None:
+        return value
+    return str(value)
+
+
 def _component_meta(component: PhysicalComponent, result: PhysicalResult) -> dict[str, Any]:
     """Component metadata; the single place that defines the component asset contract."""
+    provenance = dict((result.meta or {}).get("face_provenance") or {})
+    own = dict((provenance.get("components") or {}).get(str(component.component_id)) or {})
     return {"component_id": component.component_id, "volume_mm3": component.volume_mm3,
             "is_representative": component.is_representative, "status": component.status,
             "ancestor": component.meta.get("clean_fragment_ancestor"),
@@ -808,7 +1169,20 @@ def _component_meta(component: PhysicalComponent, result: PhysicalResult) -> dic
             "axis_id": result.meta.get("axis_id"), "level": result.meta.get("level"),
             # the delivered mesh is closed/legal under this semantics version
             "damage_semantics": str((result.meta or {}).get("damage_semantics",
-                                                            DAMAGE_SEMANTICS_V1))}
+                                                            DAMAGE_SEMANTICS_V1)),
+            # the evidence behind the face labels of *this* component (tolerances, hit rate,
+            # class counts/areas).  The labels themselves are the ``face__origin_kind`` /
+            # ``face__interface_id`` arrays of the same asset.
+            "face_provenance": _jsonable({
+                "version": provenance.get("version", ORIGIN_PROVENANCE_VERSION),
+                "attached": bool(provenance.get("attached", False)),
+                "reason": provenance.get("reason"),
+                "tol_mm": provenance.get("tol_mm"), "tol_basis": provenance.get("tol_basis"),
+                "cos_min": provenance.get("cos_min"), "roi_band_mm": provenance.get("roi_band_mm"),
+                "roi": provenance.get("roi"), "roi_faces": provenance.get("roi_faces"),
+                "source_channels": provenance.get("source_channels"),
+                "component": own,
+            })}
 
 
 def commit_physical(store: Any, result: PhysicalResult, *, lineage_id: str | None = None,
@@ -971,6 +1345,11 @@ def commit_physical_result(store: Any, result: PhysicalResult, *, audit: dict[st
                                                         DAMAGE_SEMANTICS_V1)),
         "subset_instrument": ((audit.get("checks") or {}).get("damaged_subset_clean") or {}
                               ).get("instrument"),
+        # face-level provenance of the damaged body: the class counts/areas, the declared
+        # tolerances and the mapping hit rate behind the ``face__origin_kind`` arrays of the
+        # component asset of this result
+        "face_provenance": _jsonable((result.meta or {}).get("face_provenance") or {}),
+        "face_channel_arrays": ["face__origin_kind", "face__interface_id"],
         "run_id": run_id,
     }
     ancestry = [a for a in (clean_asset_id, component_asset_id) if a]
@@ -982,7 +1361,9 @@ def commit_physical_result(store: Any, result: PhysicalResult, *, audit: dict[st
     return record
 
 
-__all__ = ["apply_damage", "assemble_damage_bodies", "audit_physical", "close_numerical_pinholes",
-           "material_volume_floor", "register_components", "commit_physical",
-           "commit_physical_result", "subset_outside_stats",
-           "DAMAGE_SEMANTICS", "DAMAGE_SEMANTICS_V1", "DamageRecipe", "DamageOutcome"]
+__all__ = ["apply_damage", "assemble_damage_bodies", "attach_face_provenance", "audit_physical",
+           "classify_face_origin", "close_numerical_pinholes", "material_volume_floor",
+           "origin_colocation_tolerance_mm", "register_components", "commit_physical",
+           "commit_physical_result", "result_recipe", "subset_outside_stats",
+           "DAMAGE_SEMANTICS", "DAMAGE_SEMANTICS_V1", "ORIGIN_PROVENANCE_VERSION",
+           "DamageRecipe", "DamageOutcome"]

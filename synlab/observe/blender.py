@@ -216,6 +216,58 @@ def probe_is_ok(report: dict[str, Any] | None = None) -> bool:
     return bool((report or selftest()).get("status") == "OK")
 
 
+_GPU_PROBE_CACHE: dict[str, dict[str, Any]] = {}
+
+
+def gpu_probe(binary: str | None = None, *, refresh: bool = False,
+              timeout_s: float = 300.0) -> dict[str, Any]:
+    """Ask the Blender build which Cycles compute backends it really exposes.
+
+    Returns the parsed ``RWS_GPU_PROBE`` record from ``blender_scripts/probe_gpu_devices.py``
+    with ``preferred`` set to ``OPTIX`` / ``CUDA`` / ``CPU``.  This is a *measurement*: the
+    probe enumerates ``preferences.addons['cycles'].preferences.devices``, so a build without
+    OptiX reports ``CPU`` instead of being assumed capable.
+    """
+    exe = find_blender_binary(binary)
+    if exe is None:
+        return {"capability": "blender_gpu", "status": "MISSING", "binary": None,
+                "preferred": "CPU",
+                "detail": "no Blender binary found; GPU rendering cannot be probed"}
+    if not refresh and exe in _GPU_PROBE_CACHE:
+        return dict(_GPU_PROBE_CACHE[exe])
+    probe = REPO_ROOT / "blender_scripts" / "probe_gpu_devices.py"
+    argv = [exe, "--background", "--python-exit-code", "1", "--python", str(probe)]
+    started = time.perf_counter()
+    try:
+        proc = subprocess.run(argv, capture_output=True, text=True, timeout=timeout_s,
+                              check=False, cwd=str(REPO_ROOT))
+    except Exception as exc:  # noqa: BLE001 - any failure is a capability failure
+        report: dict[str, Any] = {"capability": "blender_gpu", "status": "FAIL", "binary": exe,
+                                  "argv": argv, "preferred": "CPU",
+                                  "error": f"{type(exc).__name__}: {exc}",
+                                  "seconds": time.perf_counter() - started}
+        _GPU_PROBE_CACHE[exe] = report
+        return dict(report)
+    parsed: dict[str, Any] = {}
+    for line in (proc.stdout or "").splitlines():
+        if line.startswith("RWS_GPU_PROBE "):
+            try:
+                parsed = json.loads(line[len("RWS_GPU_PROBE "):])
+            except json.JSONDecodeError:
+                parsed = {}
+    report = dict(parsed)
+    report.update({
+        "capability": "blender_gpu",
+        "status": "OK" if (proc.returncode == 0 and parsed) else "FAIL",
+        "binary": exe, "argv": argv, "returncode": int(proc.returncode),
+        "seconds": time.perf_counter() - started,
+        "preferred": parsed.get("preferred", "CPU"),
+        "stderr_tail": _tail(proc.stderr, 800),
+    })
+    _GPU_PROBE_CACHE[exe] = report
+    return dict(report)
+
+
 # --------------------------------------------------------------------------------------
 # request configuration
 # --------------------------------------------------------------------------------------
@@ -229,7 +281,17 @@ class BlenderBackendConfig:
     denoise: bool = False
     denoiser: str = "OPENIMAGEDENOISE"
     max_bounces: int = 4
+    #: "CPU" (unchanged default) | "GPU" | "AUTO" (GPU when a usable backend exists, else CPU).
+    #: ``cycles.device`` alone selects no device, so the worker also performs the Cycles addon
+    #: handshake (backend + per-device ``use``) and records the *resolved* device in the
+    #: manifest; see ``blender_scripts/render_worker.py``.
     device: str = "CPU"
+    #: "AUTO" -> OPTIX, then CUDA, then the other Cycles backends, whichever this build exposes.
+    compute_device_type: str = "AUTO"
+    #: when true an un-honourable GPU request raises instead of silently rendering on the CPU
+    gpu_require: bool = False
+    #: restrict the choice to one device of the selected backend (index into its device list)
+    gpu_device_index: int | None = None
     seed: int = 20261001
     #: exact geometry pass: one sample per pixel inside a 0.01 px filter (no interpolation)
     geometry_samples: int = 1
@@ -381,6 +443,9 @@ def build_config(scene: Scene, frame: ViewFrame, *, light: LightSpec, spec: Rend
             "denoiser": config.denoiser,
             "max_bounces": int(config.max_bounces),
             "device": config.device,
+            "compute_device_type": config.compute_device_type,
+            "gpu_require": bool(config.gpu_require),
+            "gpu_device_index": config.gpu_device_index,
             "seed": int(config.seed),
             "geometry_samples": int(config.geometry_samples),
             "geometry_filter_width": float(config.geometry_filter_width),
@@ -546,6 +611,10 @@ def assemble_render_output(manifest: dict[str, Any], *, frame: ViewFrame,
         "denoise_applies_to": manifest["render"]["denoise_applies_to"],
         "max_bounces": int(manifest["render"]["max_bounces"]),
         "cycles_device": manifest["blender"]["cycles_device_setting"],
+        #: the *measured* outcome of the device handshake (backend, enabled devices, and the
+        #: reason when a requested GPU fell back to the CPU).  Absent in manifests written
+        #: before the GPU switch existed, hence ``get``.
+        "cycles_device_selection": manifest["blender"].get("device_selection"),
         "engine": manifest["render"]["engine"],
         "seed": int(manifest["render"]["seed"]),
         "elapsed_seconds": float(manifest["elapsed_seconds"]),
@@ -681,6 +750,6 @@ __all__ = [
     "BACKEND_BLENDER", "BACKEND_SOFTWARE", "BlenderBackendConfig", "CONFIG_SCHEMA",
     "DEFAULT_WORK_ROOT", "REPO_ROOT", "ERROR_PREFIX", "RESULT_PREFIX", "SELFTEST_PATH",
     "WORKER_PATH", "assemble_render_output", "build_config", "capability_probe",
-    "circle_of_confusion_px", "find_blender_binary", "probe_is_ok", "render_view_blender",
-    "run_worker", "selftest",
+    "circle_of_confusion_px", "find_blender_binary", "gpu_probe", "probe_is_ok",
+    "render_view_blender", "run_worker", "selftest",
 ]

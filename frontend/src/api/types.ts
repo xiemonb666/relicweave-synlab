@@ -713,3 +713,234 @@ export interface EpisodeStepResponse {
   state: EpisodeRow['state'];
   note: string;
 }
+
+/* ------------------------------------------- 只读聚合（synlab/api/routers/synthesis.py） */
+
+/** 一条谱系的单阶段行（pipeline 模式是阶段名，jobs 模式是 DAG 节点 id）。 */
+export interface ChainPreviewStage {
+  stage: string;
+  node_id?: string;
+  job_id?: string;
+  state?: string;
+  attempt?: number;
+  outputs: number;
+  output_bytes: number;
+  asset_ids?: string[];
+  roles?: string[];
+  /** 实测秒数；null = 后端未记录。 */
+  seconds: number | null;
+  error: Record<string, unknown> | null;
+}
+
+/** `POST /synthesis/chain-preview` —— 同步单谱系预览（真实跑完或真实失败，绝无占位数据）。 */
+export interface ChainPreviewResponse {
+  ok: boolean;
+  /** `pipeline` = 直接调用 façade 链；`jobs` = 走 POST /jobs + worker。 */
+  mode: 'pipeline' | 'jobs';
+  executed: boolean;
+  state: string;
+  run_id: string;
+  run_created?: boolean;
+  job_id?: string;
+  job_ids?: string[];
+  spec_hash: string;
+  validate: SpecValidationResponse;
+  lineage_id?: string;
+  vessel_id?: string;
+  material_id?: string;
+  pattern_id?: string;
+  dag?: Array<{ node_id: string; stage: string; job_id: string; depends_on: string[] }>;
+  /** 每阶段真实耗时/产出（pipeline 模式来自 perf_counter，jobs 模式来自 events）。 */
+  stages: ChainPreviewStage[];
+  steps?: ChainPreviewStage[];
+  assets: AssetRecord[];
+  asset_files: number;
+  asset_bytes: number;
+  wall_seconds: number;
+  stage_wall_seconds?: number;
+  retry?: number;
+  coverage_row?: Record<string, unknown>;
+  coverage_ref?: string;
+  run_spec_ref?: string;
+  events: RunEvent[];
+  idempotent_replay?: boolean;
+  created?: boolean;
+  /** 未执行/未完成时的结构化原因（含真实错误码与复现命令）。 */
+  blocked: {
+    code: string;
+    stage: string;
+    message: string;
+    attempts?: number;
+    job_id?: string;
+    states?: string[];
+    outputs?: number;
+    output_bytes?: number;
+    runner?: { ok: boolean; exit: number | null; seconds: number; command: string; stdout?: string; stderr?: string };
+    repro?: string[];
+    hint?: string;
+    note?: string;
+  } | null;
+  repro: string[];
+  note: string;
+  timing_note: string;
+}
+
+export interface SynthesisInventoryBucket {
+  id: string;
+  vessel_id?: string | null;
+  material_id?: string | null;
+  pattern_id?: string | null;
+  layer_combo_id?: string | null;
+  assets: number;
+  fragments: number;
+  lineages: number;
+  runs: string[];
+  /** 该组合在 reports/coverage_aggregate.json 或 coverage.json 里是否算实现覆盖。 */
+  covered: boolean;
+}
+
+export interface SynthesisCoverageBlock {
+  path?: string;
+  kind?: string;
+  declared_field?: string | null;
+  required?: number;
+  covered?: number;
+  complete?: boolean;
+  covered_ids?: string[];
+  missing_ids?: string[];
+  evidence?: Record<string, string>;
+  [key: string]: unknown;
+}
+
+export interface SynthesisInventoryResponse {
+  ok: boolean;
+  store_root: string;
+  assets_total: number;
+  bytes_total: number;
+  roles: Record<string, { assets: number; bytes: number }>;
+  lineages: number;
+  events: number;
+  runs: Array<{ run_id: string; status: string | null; jobs: number; assets: number; bytes: number }>;
+  fracture_backends: Array<{ backend: string; assets: number; qa_status: string[] }>;
+  buckets: {
+    field: string;
+    declared_field: string | null;
+    rows: SynthesisInventoryBucket[];
+    covered_ids: string[];
+    missing_ids: string[];
+    covered: number;
+    target: number | null;
+    source: string | null;
+    note?: string;
+  };
+  coverage: {
+    targets: Record<string, number>;
+    covered: Record<string, string[]>;
+    missing: Record<string, string[]>;
+    gaps?: Record<string, {
+      target?: number | null;
+      present?: number | null;
+      shortfall?: number | null;
+      status?: string | null;
+      missing?: string[];
+    }>;
+    sources: string[];
+    note: string;
+  };
+  degradation_axes: Array<{
+    axis_id: string;
+    levels: Array<{ level: number; assets: number; identity: number; measured_keys: string[] }>;
+    basis_ids: string[];
+    paired_levels: boolean;
+    materialized: boolean;
+    note: string;
+  }>;
+  degradation_pairs: Array<{
+    pair_key: string;
+    axis_id: string;
+    source_asset_id: string;
+    basis_id: string | null;
+    level_0: {
+      axis_id: string;
+      level: number;
+      identity: boolean | null;
+      realized: boolean | null;
+      basis_id: string | null;
+      asset_id: string;
+      role: string;
+      meta: Record<string, unknown>;
+      measured: Record<string, unknown>;
+    } | null;
+    level_n: {
+      axis_id: string;
+      level: number;
+      identity: boolean | null;
+      realized: boolean | null;
+      basis_id: string | null;
+      asset_id: string;
+      role: string;
+      meta: Record<string, unknown>;
+      measured: Record<string, unknown>;
+    } | null;
+    paired: boolean;
+    same_source: boolean;
+    /** 由 level_0 / level_n 的 meta.measured 逐键相减得到的真实变化量。 */
+    deltas: Array<{ key: string; from: number | null; to: number | null; delta: number | null; unit: string | null }>;
+    note: string;
+  }>;
+  panel: {
+    planned: number;
+    attempted: number;
+    accepted: number;
+    failed: number;
+    pending?: number;
+    by_state: Record<string, number>;
+    failure_codes: Array<{ code: string; count: number; job_ids: string[]; retryable: boolean | null }>;
+    disk_bytes: number;
+    disk_files?: number;
+    asset_count: number;
+    runs: number;
+    events?: number;
+    note: string;
+  };
+  empty_reason: string | null;
+  note: string;
+}
+
+export interface DegradationPairsResponse {
+  ok: boolean;
+  axis_id: string | null;
+  pairs: SynthesisInventoryResponse['degradation_pairs'];
+  axes: SynthesisInventoryResponse['degradation_axes'];
+  empty_reason: string | null;
+  note: string;
+  repro: string[];
+}
+
+export interface BatchPlanResponse {
+  ok: boolean;
+  stage: string;
+  spec_hash: string | null;
+  next_cursor: number;
+  requested: number;
+  selected: number;
+  pending_combinations: number;
+  combinations: Array<Record<string, unknown>>;
+  applied_combo: Partial<
+    Record<'vessel_ids' | 'material_ids' | 'pattern_ids' | 'layer_combo_ids', string[]>
+  >;
+  spec: Record<string, unknown>;
+  coverage_source: string | null;
+  budget: BudgetReport | null;
+  note: string;
+  empty_reason: string | null;
+  resume: {
+    requested: boolean;
+    semantics: string;
+    next_from: number;
+    already_covered: number;
+    completed_assets: number;
+    note: string;
+  };
+  repro: string[];
+}

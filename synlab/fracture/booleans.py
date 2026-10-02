@@ -29,8 +29,10 @@ __all__ = [
     "boolean_difference",
     "boolean_union",
     "components",
+    "concat_tagged",
     "faces_inside",
     "mesh_hash",
+    "mesh_shells",
     "ORIGIN_MOTHER_SURFACE",
     "ORIGIN_INTERFACE",
     "ORIGIN_AMBIGUOUS",
@@ -161,10 +163,36 @@ def _weld_coincident(vertices: np.ndarray, faces: np.ndarray,
     return verts[first], new_faces, welded, int(verts.shape[0] - first.shape[0])
 
 
+def _empty_tagged() -> SourceTaggedResult:
+    """A boolean output that really has no face (an operand that misses the other one).
+
+    An empty result is a *legitimate* answer, not a lost property channel: a shell of a
+    multi-shell mother that lies entirely on one side of the cutter intersects it in nothing
+    (measured on ``LIN0058_V24_M06_PAT11``, whose 16- and 12-face inner shells the plane never
+    reaches).  ``Manifold.to_mesh()`` returns zero vertices for it, which used to trip the
+    "manifold dropped the source properties" assertion.  Callers still decide what an empty
+    *side* means (``run_shared_cut`` refuses an event whose whole ``M ∩ C`` or ``M \\ C`` is
+    empty), so nothing is silently accepted here.
+    """
+    mesh = trimesh.Trimesh(vertices=np.zeros((0, 3), dtype=np.float64),
+                           faces=np.zeros((0, 3), dtype=np.int64), process=False)
+    mesh.metadata = dict(mesh.metadata or {})
+    mesh.metadata["welded_coincident_vertices"] = 0
+    return SourceTaggedResult(
+        mesh=mesh,
+        point=np.zeros((0, 3), dtype=np.float64),
+        mesh_id=np.zeros(0, dtype=np.float64),
+        source_tri=np.zeros(0, dtype=np.int64),
+        bary=np.zeros((0, 2), dtype=np.float64),
+    )
+
+
 def _from_manifold(result: Manifold, *, label: str) -> SourceTaggedResult:
     data = result.to_mesh()
     props = np.asarray(data.vert_properties, dtype=np.float64)
     faces = np.asarray(data.tri_verts, dtype=np.int64)
+    if faces.shape[0] == 0:
+        return _empty_tagged()
     if props.ndim != 2 or props.shape[1] < _PROP_COLUMNS:
         raise SynLabError(ErrorCode.SCHEMA_INVALID,
                           f"{label}: manifold dropped the source properties "
@@ -222,6 +250,80 @@ def boolean_difference(sources: list[SourceMesh], *, label: str = "difference",
 
 def boolean_union(sources: list[SourceMesh], *, label: str = "union") -> SourceTaggedResult:
     return _run("union", sources, label=label)
+
+
+def mesh_shells(mesh: trimesh.Trimesh) -> list[tuple[trimesh.Trimesh, np.ndarray]]:
+    """Closed shells of one body, each with the original indices of its own faces.
+
+    ``trimesh`` reports a body assembled from several *disjoint* closed parts as one watertight
+    mesh, and CSG needs one valid solid per operand: a mesh whose shells interpenetrate has no
+    well-defined winding number, so a boolean run on the whole body is undefined where the
+    shells overlap (see :func:`synlab.fracture.event.run_shared_cut`).  Squeezing each shell onto
+    its own vertices also keeps the per-shell source triangle ids valid in the parent body,
+    which is what the returned index array carries.
+    """
+    labels, count = components(mesh)
+    faces = np.asarray(mesh.faces, dtype=np.int64)
+    vertices = np.asarray(mesh.vertices, dtype=np.float64)
+    out: list[tuple[trimesh.Trimesh, np.ndarray]] = []
+    for index in range(int(count)):
+        mask = np.asarray(labels == index, dtype=bool)
+        selected = faces[mask]
+        used, inverse = np.unique(selected.reshape(-1), return_inverse=True)
+        part = trimesh.Trimesh(vertices=vertices[used],
+                               faces=np.asarray(inverse, dtype=np.int64).reshape(-1, 3),
+                               process=False)
+        out.append((part, np.nonzero(mask)[0].astype(np.int64)))
+    return out
+
+
+def concat_tagged(results: Iterable[SourceTaggedResult], *,
+                  label: str) -> SourceTaggedResult:
+    """Concatenate boolean outputs into one result, offsetting vertices per piece.
+
+    Only the *vertex indices* are offset: every piece keeps its own reconstructed source
+    position, provenance mesh id and barycentric channel, so the concatenated result is
+    indistinguishable from a single boolean for every consumer downstream.
+
+    Pieces with no face are dropped -- they carry nothing -- and an all-empty set returns an
+    empty result instead of raising, because "this side of the cut is empty" is a real outcome
+    the caller has to judge (see :func:`_empty_tagged`).
+    """
+    items = [item for item in results if int(item.n_faces) > 0]
+    if not items:
+        return _empty_tagged()
+    if len(items) == 1:
+        return items[0]
+    vertices: list[np.ndarray] = []
+    faces: list[np.ndarray] = []
+    point: list[np.ndarray] = []
+    mesh_id: list[np.ndarray] = []
+    source_tri: list[np.ndarray] = []
+    bary: list[np.ndarray] = []
+    offset = 0
+    welded = 0
+    for item in items:
+        local = np.asarray(item.mesh.vertices, dtype=np.float64)
+        vertices.append(local)
+        faces.append(np.asarray(item.mesh.faces, dtype=np.int64) + offset)
+        point.append(np.asarray(item.point, dtype=np.float64))
+        mesh_id.append(np.asarray(item.mesh_id, dtype=np.float64))
+        source_tri.append(np.asarray(item.source_tri, dtype=np.int64))
+        bary.append(np.asarray(item.bary, dtype=np.float64))
+        offset += int(local.shape[0])
+        welded += int((item.mesh.metadata or {}).get("welded_coincident_vertices", 0))
+    mesh = trimesh.Trimesh(vertices=np.concatenate(vertices), faces=np.concatenate(faces),
+                           process=False)
+    mesh.metadata = dict(mesh.metadata or {})
+    mesh.metadata["welded_coincident_vertices"] = int(welded)
+    mesh.metadata["concatenated_pieces"] = len(items)
+    return SourceTaggedResult(
+        mesh=mesh,
+        point=np.concatenate(point),
+        mesh_id=np.concatenate(mesh_id),
+        source_tri=np.concatenate(source_tri),
+        bary=np.concatenate(bary),
+    )
 
 
 def mesh_hash(mesh: trimesh.Trimesh) -> str:

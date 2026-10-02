@@ -215,6 +215,52 @@
   border-left: 3px solid var(--ok);
 }
 
+/* ------------------------------------------------------------------ 断面分色图例 */
+/* 分组来自权威面属性 origin_kind / interface_id；色块取自 GLB 里真实的材质颜色。 */
+.surface-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-elev);
+  padding: 8px 10px;
+}
+
+.surface-legend__title {
+  font-size: 0.85em;
+  color: var(--text-dim);
+}
+
+.surface-legend__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.surface-legend__list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.surface-legend__swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid var(--line-strong);
+  flex: 0 0 auto;
+  align-self: center;
+}
+
+.surface-legend__label {
+  font-size: 0.9em;
+}
+
 /* ------------------------------------------------------------------ 窄屏 */
 @media (max-width: 900px) {
   .showcase-cols {

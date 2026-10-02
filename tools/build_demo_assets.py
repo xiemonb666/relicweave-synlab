@@ -73,6 +73,40 @@ STORE_DIRNAME = "store"
 #: 素面展示资产的**展示用**中性陶土色（不是权威材质；authority 的 materials 集成是 PENDING）
 DISPLAY_NEUTRAL_BODY_U8 = [214, 208, 196, 255]
 
+#: 展示用平滑法线的角度阈值（度）。**只影响 GLB 的 NORMAL 属性**：权威网格的顶点、面索引与
+#: 绕向一字不改（`_verify_display_glb` 会逐三角面复算位置张量与绕向并写进资产 meta）。
+#: 语义：顶点法线 = 与该顶点「主面」（面积最大的相邻面）夹角 ≤ 阈值的相邻面的**面积加权**平均。
+#: 因此曲率连续的器壁会平滑，而真正跨过棱（如断面与外壁的交线）的面不会被平均糊掉。
+DISPLAY_NORMAL_ANGLE_DEG = 30.0
+
+#: 展示用断面着色（**显示着色**，不是权威材质）。分组来自权威面属性
+#: `origin_kind`（0=mother_surface / 1=interface / 2=ambiguous）与 `interface_id`（≥0 = 新断面）。
+#: 颜色只用于在视口里区分「新断面」与「原表面」；它**不代表**几何起伏、粗糙度或材质真值。
+DISPLAY_SURFACE_STYLES: dict[str, dict[str, Any]] = {
+    "new_fracture_surface": {
+        "material": "synlab_display_new_fracture_surface",
+        "label": "新断面（origin_kind=INTERFACE / interface_id≥0）",
+        "base_color_u8": [246, 231, 197, 255],
+        "roughness": 0.50,
+    },
+    "original_mother_surface": {
+        "material": "synlab_display_original_surface",
+        "label": "原表面（origin_kind=mother_surface）",
+        "base_color_u8": [176, 172, 164, 255],
+        "roughness": 0.85,
+    },
+    "ambiguous_surface": {
+        "material": "synlab_display_ambiguous_surface",
+        "label": "未判定面（origin_kind=ambiguous）",
+        "base_color_u8": [132, 126, 118, 255],
+        "roughness": 0.75,
+    },
+}
+
+#: 断面分组的固定顺序（GLB 里 primitive / node 的顺序，也是前端图例的顺序）
+DISPLAY_SURFACE_ORDER: tuple[str, ...] = (
+    "original_mother_surface", "new_fracture_surface", "ambiguous_surface")
+
 MASTER_SEED = 20261001
 LINEAGE_ID = "a12_demo"
 SPLIT = "train"
@@ -82,6 +116,11 @@ SPLIT = "train"
 GENERATOR_COMMAND = "& .venv\\Scripts\\python.exe tools\\build_demo_assets.py"
 
 RESULT_MARKER = "@@SYNLAB_DEMO_RESULT@@"
+
+#: 子进程 → 父进程的结果传输深度预算。展示资产的实测值嵌在
+#: ``metrics.fragments[i].glb.metrics.normals.*`` 里（第 7 层），默认 6 层会把它们抹成
+#: 占位符；因此结果传输单独放宽，其它调用点保持默认值。
+RESULT_MAX_DEPTH = 14
 
 #: 运行中标记。启动时若发现它存在，说明上一次运行（父进程）被系统杀掉了——
 #: 本机对重负载 Python 进程会直接杀进程树，父进程来不及写任何条目。
@@ -181,11 +220,17 @@ PNG_ENCODING_LEGEND: dict[str, str] = {
 # ======================================================================================
 # 通用小工具
 # ======================================================================================
-def _jsonable(value: Any, *, depth: int = 0, max_items: int = 400) -> Any:
-    """把任意对象转成可 JSON 序列化、且体积可控的结构（不丢真实数值，只截断超长集合）。"""
+def _jsonable(value: Any, *, depth: int = 0, max_items: int = 400,
+              max_depth: int = 6) -> Any:
+    """把任意对象转成可 JSON 序列化、且体积可控的结构（不丢真实数值，只截断超长集合）。
+
+    ``max_depth`` 是**嵌套深度上限**：超过就写 ``"<max-depth T>"`` 占位符。子进程把结果
+    传回父进程时用更深的预算（``max_depth=RESULT_MAX_DEPTH``），否则展示资产的实测值
+    （``fragments[i].glb.metrics.normals…``）会在第 7 层被抹成占位符、页面与测试都读不到。
+    """
     import numpy as np
 
-    if depth > 6:
+    if depth > max_depth:
         return f"<max-depth {type(value).__name__}>"
     if value is None or isinstance(value, (bool, int, float, str)):
         if isinstance(value, float) and (value != value or value in (float("inf"), float("-inf"))):
@@ -212,13 +257,14 @@ def _jsonable(value: Any, *, depth: int = 0, max_items: int = 400) -> Any:
         }
     if isinstance(value, dict):
         items = list(value.items())
-        out = {str(k): _jsonable(v, depth=depth + 1, max_items=max_items)
+        out = {str(k): _jsonable(v, depth=depth + 1, max_items=max_items, max_depth=max_depth)
                for k, v in items[:max_items]}
         if len(items) > max_items:
             out["__truncated_keys__"] = len(items) - max_items
         return out
     if isinstance(value, (list, tuple)):
-        out = [_jsonable(v, depth=depth + 1, max_items=max_items) for v in value[:max_items]]
+        out = [_jsonable(v, depth=depth + 1, max_items=max_items, max_depth=max_depth)
+               for v in value[:max_items]]
         if len(value) > max_items:
             out.append(f"<truncated {len(value) - max_items} items>")
         return out
@@ -415,14 +461,340 @@ def _store(demo_root: Path) -> Any:
     return AssetStore(demo_root / STORE_DIRNAME)
 
 
+def _authority_vertex_normals(mesh: Any, *,
+                              angle_threshold_deg: float = DISPLAY_NORMAL_ANGLE_DEG
+                              ) -> tuple[Any, dict[str, Any]]:
+    """权威网格 → 展示用逐顶点法线：**面积加权 + 角度阈值平滑 + 保持绕向**。
+
+    规则（全部可复算，measurements 里带数值）：
+
+    * 面法线由**绕向**决定（``cross(v1 - v0, v2 - v0)``，右手系），因此正反面与权威一致；
+      退化面（面积 0）权重为 0，且不会被当作主面。
+    * 每个顶点选「面积最大的相邻面」为主面，只平均与该主面夹角 ≤ ``angle_threshold_deg``
+      的相邻面；权重是该面在这个顶点处的**面积**（三角面面积，与顶点无关 → 纯面积加权）。
+    * 结果单位化；若加权和退化为 0（极罕见）则退回主面法线。
+
+    这是**显示变换**：不移动任何顶点、不改变面索引与绕向，只写出 glTF 的 ``NORMAL``。
+    """
+    import numpy as np
+
+    vertices = np.asarray(mesh.vertices, dtype=np.float64)
+    faces = np.asarray(mesh.faces, dtype=np.int64)
+    stats: dict[str, Any] = {
+        "angle_threshold_deg": float(angle_threshold_deg),
+        "weighting": "face_area",
+        "orientation": "winding (right-hand rule, cross(v1-v0, v2-v0))",
+        "vertices": int(len(vertices)), "faces": int(len(faces)),
+    }
+    if len(faces) == 0 or len(vertices) == 0:
+        return np.zeros((len(vertices), 3), dtype=np.float64), stats
+
+    v0, v1, v2 = vertices[faces[:, 0]], vertices[faces[:, 1]], vertices[faces[:, 2]]
+    raw = np.cross(v1 - v0, v2 - v0)
+    twice_area = np.linalg.norm(raw, axis=1)
+    degenerate = twice_area <= 1e-12
+    face_normals = raw / np.where(degenerate, 1.0, twice_area)[:, None]
+    face_normals[degenerate] = 0.0
+    area = 0.5 * twice_area
+    area[degenerate] = 0.0
+
+    order = np.argsort(faces.reshape(-1), kind="stable")
+    flat_vertex = faces.reshape(-1)[order]
+    flat_face = np.repeat(np.arange(len(faces)), 3)[order]
+    starts = np.searchsorted(flat_vertex, np.arange(len(vertices) + 1))
+
+    cos_limit = float(np.cos(np.radians(float(angle_threshold_deg))))
+    normals = np.zeros((len(vertices), 3), dtype=np.float64)
+    isolated = 0
+    restricted = 0
+    fallback = 0
+    for vertex in range(len(vertices)):
+        incident = flat_face[starts[vertex]:starts[vertex + 1]]
+        if incident.size == 0:
+            isolated += 1
+            continue
+        weights = area[incident]
+        seed = int(incident[int(np.argmax(weights))])
+        dots = face_normals[incident] @ face_normals[seed]
+        keep = (dots >= cos_limit) & (weights > 0.0)
+        if not bool(keep.any()):
+            normals[vertex] = face_normals[seed]
+            fallback += 1
+            restricted += 1
+            continue
+        if int(keep.sum()) < int(incident.size):
+            restricted += 1
+        normal = (face_normals[incident[keep]] * weights[keep][:, None]).sum(axis=0)
+        length = float(np.linalg.norm(normal))
+        if length <= 1e-15:
+            normals[vertex] = face_normals[seed]
+            fallback += 1
+        else:
+            normals[vertex] = normal / length
+
+    lengths = np.linalg.norm(normals, axis=1)
+    reference = np.asarray(mesh.vertex_normals, dtype=np.float64)
+    dots = np.einsum("ij,ij->i", normals, reference)
+    stats.update({
+        "degenerate_faces": int(degenerate.sum()),
+        "isolated_vertices": int(isolated),
+        "vertices_restricted_by_threshold": int(restricted),
+        "seed_fallbacks": int(fallback),
+        "max_normal_length_error": float(np.abs(lengths - 1.0).max()) if len(lengths) else 0.0,
+        "min_normal_length": float(lengths.min()) if len(lengths) else 0.0,
+        "max_angle_vs_trimesh_vertex_normals_deg":
+            float(np.degrees(np.arccos(np.clip(dots.min(), -1.0, 1.0)))) if len(dots) else 0.0,
+        "mean_angle_vs_trimesh_vertex_normals_deg":
+            float(np.degrees(np.arccos(np.clip(dots, -1.0, 1.0))).mean()) if len(dots) else 0.0,
+        "flipped_vs_trimesh_vertex_normals": int(np.count_nonzero(dots < 0.0)),
+        "note": ("显示变换：只写 GLB 的 NORMAL，顶点位置 / 面索引 / 绕向未改"),
+    })
+    return normals, stats
+
+
+def _display_surface_groups(mesh: Any) -> dict[str, Any]:
+    """从**权威面属性**读断面分组（`origin_kind` / `interface_id`），不做任何几何推断。
+
+    返回 ``{"groups": {name: {"faces": int, "area_mm2": float, "mask": ndarray}},
+    "source": str, "authority": {...}}``；mesh 上没有这些面属性时返回空 ``groups``
+    并说明原因（不猜）。
+    """
+    import numpy as np
+
+    from synlab.schemas.runtime import (ORIGIN_AMBIGUOUS, ORIGIN_INTERFACE,
+                                        ORIGIN_MOTHER_SURFACE)
+    from synlab.storage.mesh_io import face_attrs
+
+    attrs = face_attrs(mesh) or {}
+    origin = attrs.get("origin_kind")
+    interface = attrs.get("interface_id")
+    if origin is None and interface is None:
+        return {"groups": {}, "source": "mesh has no origin_kind/interface_id face attribute",
+                "authority": {}}
+
+    faces = np.asarray(mesh.faces, dtype=np.int64)
+    area = np.asarray(mesh.area_faces, dtype=np.float64)
+    origin_arr = (np.asarray(origin, dtype=np.int64) if origin is not None
+                  else np.full(len(faces), -1, dtype=np.int64))
+    interface_arr = (np.asarray(interface, dtype=np.int64) if interface is not None
+                     else np.full(len(faces), -1, dtype=np.int64))
+
+    # 权威语义：新断面 = origin_kind==INTERFACE **或** interface_id>=0；两者不一致时按并集归属
+    # 到新断面，并把分歧数记下来（诚实：不掩盖属性之间的不一致）。
+    new_surface = (origin_arr == ORIGIN_INTERFACE) | (interface_arr >= 0)
+    ambiguous = (origin_arr == ORIGIN_AMBIGUOUS) & ~new_surface
+    original = ~(new_surface | ambiguous)
+    masks = {"new_fracture_surface": new_surface, "original_mother_surface": original,
+             "ambiguous_surface": ambiguous}
+    conflict = int(np.count_nonzero((origin_arr == ORIGIN_INTERFACE) != (interface_arr >= 0)))
+
+    groups: dict[str, Any] = {}
+    for name in DISPLAY_SURFACE_ORDER:
+        mask = masks[name]
+        if not bool(mask.any()):
+            continue
+        groups[name] = {"faces": int(mask.sum()),
+                        "area_mm2": float(area[mask].sum()),
+                        "mask": mask}
+    # 相邻分组之间**共享**的顶点数：>0 说明断面与原表面在拓扑上共用顶点，
+    # 顶点法线只能在阈值内平均（否则会把断面和原表面糊成一片，看不出断口棱线）。
+    spans = 0
+    masks_present = [masks[name] for name in DISPLAY_SURFACE_ORDER if bool(masks[name].any())]
+    if len(masks_present) > 1:
+        seen: set[int] = set()
+        shared: set[int] = set()
+        for mask in masks_present:
+            current = set(np.unique(faces[mask]).tolist())
+            shared |= (current & seen)
+            seen |= current
+        spans = len(shared)
+    authority = {
+        "faces_total": int(len(faces)),
+        "area_total_mm2": float(area.sum()),
+        "vertices_spanning_surface_groups": int(spans),
+        "origin_kind_counts": {str(int(v)): int(np.count_nonzero(origin_arr == v))
+                               for v in sorted(set(origin_arr.tolist()))},
+        "interface_id_counts": {str(int(v)): int(np.count_nonzero(interface_arr == v))
+                                for v in sorted(set(interface_arr.tolist()))},
+        "origin_interface_vs_interface_id_conflicts": conflict,
+        "new_surface_definition":
+            "origin_kind == ORIGIN_INTERFACE(1) 或 interface_id >= 0",
+    }
+    return {"groups": groups, "source": "authority face attributes origin_kind/interface_id",
+            "authority": authority}
+
+
+def _decode_glb(glb: bytes) -> tuple[dict[str, Any], bytes]:
+    """把 GLB 拆回 ``(glTF JSON, BIN chunk)``（用于导出后逐字节实测，而不是相信导出器）。"""
+    import json as _json
+    import struct
+
+    data = bytes(glb)
+    magic, version, length = struct.unpack_from("<III", data, 0)
+    if magic != 0x46546C67:
+        raise ValueError(f"导出结果不是 GLB（magic={magic:#x}）")
+    offset, tree, binary = 12, None, b""
+    while offset < min(length, len(data)):
+        chunk_len, chunk_type = struct.unpack_from("<II", data, offset)
+        offset += 8
+        chunk = data[offset:offset + chunk_len]
+        offset += chunk_len
+        if chunk_type == 0x4E4F534A:
+            tree = _json.loads(chunk.decode("utf-8"))
+        elif chunk_type == 0x004E4942:
+            binary = chunk
+    if tree is None:
+        raise ValueError("GLB 没有 JSON chunk")
+    return tree, binary
+
+
+def _accessor_array(tree: dict[str, Any], binary: bytes, index: int) -> Any:
+    """读出 accessor 的数值数组（只支持 glTF 导出器实际会写的标量/向量类型）。"""
+    import numpy as np
+
+    component_dtypes = {5120: np.int8, 5121: np.uint8, 5122: np.int16, 5123: np.uint16,
+                        5125: np.uint32, 5126: np.float32}
+    widths = {"SCALAR": 1, "VEC2": 2, "VEC3": 3, "VEC4": 4, "MAT4": 16}
+    accessor = tree["accessors"][index]
+    dtype = np.dtype(component_dtypes[accessor["componentType"]])
+    width = widths[accessor["type"]]
+    view = tree["bufferViews"][accessor["bufferView"]]
+    base = int(view.get("byteOffset", 0)) + int(accessor.get("byteOffset", 0))
+    count = int(accessor["count"])
+    stride = int(view.get("byteStride") or dtype.itemsize * width)
+    if stride == dtype.itemsize * width:
+        flat = np.frombuffer(binary, dtype=dtype, count=count * width, offset=base)
+        return flat.reshape(count, width) if width > 1 else flat
+    rows = [np.frombuffer(binary, dtype=dtype, count=width,
+                          offset=base + i * stride) for i in range(count)]
+    stacked = np.stack(rows)
+    return stacked if width > 1 else stacked.reshape(-1)
+
+
+def _verify_display_glb(glb: bytes, *, expected_parts: list[dict[str, Any]]) -> dict[str, Any]:
+    """导出后**从字节里复算**：属性列表、法线归一化误差、位置/绕向是否与权威一致。
+
+    ``expected_parts`` 每项 ``{"name", "positions" (display m), "faces", "normal_index"}``，
+    其中 ``positions``/``faces`` 就是要写进 GLB 的权威派生数组。任何一项对不上都会写进
+    ``mismatches``（页面与文档照实引用，不隐藏）。
+    """
+    import numpy as np
+
+    tree, binary = _decode_glb(glb)
+    report: dict[str, Any] = {"primitives": [], "mismatches": []}
+    by_node: dict[str, dict[str, Any]] = {}
+    for node in tree.get("nodes", []):
+        if "mesh" not in node:
+            continue
+        mesh_def = tree["meshes"][node["mesh"]]
+        for primitive in mesh_def.get("primitives", []):
+            attributes = sorted(primitive.get("attributes", {}))
+            position = _accessor_array(tree, binary, primitive["attributes"]["POSITION"])
+            index = (_accessor_array(tree, binary, primitive["indices"]).astype(np.int64)
+                     if "indices" in primitive else None)
+            material = primitive.get("material")
+            material_name = (tree["materials"][material].get("name")
+                             if material is not None else None)
+            entry = {
+                "node": str(node.get("name")),
+                "material": material_name,
+                "attributes": attributes,
+                "has_normal": "NORMAL" in attributes,
+                "vertices": int(position.shape[0]),
+                "triangles": int(len(index) // 3) if index is not None else
+                             int(position.shape[0] // 3),
+            }
+            normals = None
+            if entry["has_normal"]:
+                normals = _accessor_array(tree, binary, primitive["attributes"]["NORMAL"])
+                lengths = np.linalg.norm(normals.astype(np.float64), axis=1)
+                entry["normal_unit_max_abs_error"] = float(np.abs(lengths - 1.0).max())
+                entry["normal_min_length"] = float(lengths.min())
+            by_node[entry["node"]] = {"entry": entry, "position": position, "index": index,
+                                      "normals": normals}
+            report["primitives"].append(entry)
+    report["primitive_count"] = len(report["primitives"])
+    report["primitives_with_normal"] = sum(1 for p in report["primitives"] if p["has_normal"])
+    report["all_primitives_have_normal"] = bool(
+        report["primitives"] and report["primitives_with_normal"] == report["primitive_count"])
+    if report["primitives"]:
+        report["normal_unit_max_abs_error"] = max(
+            (p.get("normal_unit_max_abs_error", 0.0) for p in report["primitives"]), default=0.0)
+
+    triangles_total = 0
+    position_max_error = 0.0
+    normal_angle_max = 0.0
+    normal_angle_mean = 0.0
+    winding_ok = True
+    for part in expected_parts:
+        found = by_node.get(part["name"])
+        if found is None:
+            report["mismatches"].append(f"missing primitive {part['name']!r}")
+            continue
+        position = found["position"].astype(np.float64)
+        index = found["index"]
+        expected_positions = np.asarray(part["positions"], dtype=np.float64)
+        expected_faces = np.asarray(part["faces"], dtype=np.int64)
+        triangles_total += int(len(expected_faces))
+        if index is None:
+            report["mismatches"].append(f"{part['name']}: primitive has no indices")
+            continue
+        if position.shape != expected_positions.shape:
+            report["mismatches"].append(
+                f"{part['name']}: vertices {position.shape} != expected "
+                f"{expected_positions.shape}")
+            continue
+        delta = np.abs(position - expected_positions).max() if position.size else 0.0
+        position_max_error = max(position_max_error, float(delta))
+        if not np.array_equal(index.reshape(-1, 3), expected_faces):
+            report["mismatches"].append(f"{part['name']}: index buffer != authority faces")
+            continue
+        # 绕向：用 GLB 自己写出的位置与索引重算法线方向，必须与权威面法线同向
+        tri = position[index.reshape(-1, 3)]
+        raw = np.cross(tri[:, 1] - tri[:, 0], tri[:, 2] - tri[:, 0])
+        lengths = np.linalg.norm(raw, axis=1)
+        good = lengths > 1e-12
+        if bool(good.any()):
+            authority_tri = expected_positions[expected_faces]
+            ref = np.cross(authority_tri[:, 1] - authority_tri[:, 0],
+                           authority_tri[:, 2] - authority_tri[:, 0])
+            dots = np.einsum("ij,ij->i", raw[good], ref[good])
+            if bool((dots <= 0).any()):
+                winding_ok = False
+                report["mismatches"].append(f"{part['name']}: winding flipped")
+        if found["normals"] is not None and part.get("normals") is not None:
+            got = found["normals"].astype(np.float64)
+            want = np.asarray(part["normals"], dtype=np.float64)
+            if got.shape == want.shape and got.size:
+                cosines = np.clip(np.einsum("ij,ij->i", got, want), -1.0, 1.0)
+                angles = np.degrees(np.arccos(cosines))
+                normal_angle_max = max(normal_angle_max, float(angles.max()))
+                normal_angle_mean = max(normal_angle_mean, float(angles.mean()))
+    report.update({
+        "triangles_total": int(triangles_total),
+        "position_max_abs_error_vs_authority_m": float(position_max_error),
+        "winding_matches_authority": bool(winding_ok),
+        "normal_max_angle_vs_intended_deg": float(normal_angle_max),
+        "normal_mean_angle_vs_intended_deg": float(normal_angle_mean),
+    })
+    return report
+
+
 def _export_display_glb(store: Any, mesh: Any, *, source_asset: str | None,
                         label: str, extra_meta: dict[str, Any] | None = None,
-                        bake: dict[str, Any] | None = None) -> tuple[Any, dict[str, Any]]:
+                        bake: dict[str, Any] | None = None,
+                        surface_split: bool = False) -> tuple[Any, dict[str, Any]]:
     """权威 mm/Z-up mesh → 米/Y-up 的 ``display_lod_glb`` 派生资产（与 worker 同一套契约）。
 
     ``bake`` 非空时导出**带纹样贴图**的展示几何：两个 primitive（带图卡 UV 的外壁 +
     纯 body 颜色的其余面），贴图就是卡片上那张 albedo PNG；法线从完整母体网格算一次后共用。
-    没有 ``bake`` 时行为与以前完全一致（只有位置，没有材质）。
+    没有 ``bake`` 时导出一个纯色 primitive（L0）。
+
+    ``surface_split=True`` 时按**权威面属性** `origin_kind` / `interface_id` 把 L0 拆成
+    多个 primitive（新断面 / 原表面 / 未判定），每个 primitive 一个展示材质；顶点位置、
+    面索引与绕向一字不改，只是分组与着色——这是显示着色，不是几何起伏。
+    所有路径都会写出由权威网格算出的逐顶点 ``NORMAL``（面积加权 + 角度阈值 + 保绕向），
+    并在导出后从 GLB 字节里复算校验（``_verify_display_glb``）。
     """
     import numpy as np
     import trimesh
@@ -441,29 +813,68 @@ def _export_display_glb(store: Any, mesh: Any, *, source_asset: str | None,
     bake_stats: dict[str, Any] = {}
     geometry_totals = {"faces": 0, "vertices": 0}
 
+    rotation = np.asarray(display.T_DISPLAY_AUTHORITY, dtype=np.float64)[:3, :3]
+    # 法线**从权威网格算一次**（面积加权 + 角度阈值 + 保绕向），再按展示变换旋转到 m/Y-up。
+    authority_normals, normal_stats = _authority_vertex_normals(
+        mesh, angle_threshold_deg=DISPLAY_NORMAL_ANGLE_DEG)
+    display_normals = authority_normals @ rotation.T
+    normal_lengths = np.linalg.norm(display_normals, axis=1, keepdims=True)
+    display_normals = display_normals / np.where(normal_lengths > 0, normal_lengths, 1.0)
+
+    surface = (_display_surface_groups(mesh) if surface_split
+               else {"groups": {}, "authority": {},
+                     "source": "surface_split=False：本展示资产不做断面分色"})
+    surface_groups = surface["groups"]
+    expected_parts: list[dict[str, Any]] = []
+    scene_nodes: list[str] = []
+    display_parts: dict[str, Any] = {}
+
+    def _neutral_material(name: str = "synlab_display_neutral_body") -> Any:
+        return trimesh.visual.material.PBRMaterial(
+            name=name, baseColorFactor=DISPLAY_NEUTRAL_BODY_U8, metallicFactor=0.0,
+            roughnessFactor=0.72)
+
+    def _add_solid_part(node_name: str, face_ids: Any, material: Any) -> Any:
+        """按给定的**权威面 id 集合**加一个 primitive。
+
+        顶点做**致密化重映射**（只保留该组引用到的顶点，位置值不变），法线按同一映射取——
+        因此几何（位置张量与绕向）与权威逐位一致，变的只是分组、顶点缓冲排布与材质。
+        """
+        ids = np.asarray(face_ids, dtype=np.int64)
+        faces_arr = (np.asarray(mesh.faces, dtype=np.int64)[ids] if ids.size
+                     else np.zeros((0, 3), dtype=np.int64))
+        used = (np.unique(faces_arr.reshape(-1)) if faces_arr.size
+                else np.zeros(0, dtype=np.int64))
+        remap = np.full(len(display_vertices), -1, dtype=np.int64)
+        remap[used] = np.arange(len(used), dtype=np.int64)
+        part = trimesh.Trimesh(vertices=display_vertices[used],
+                               faces=remap[faces_arr], process=False)
+        part.visual = trimesh.visual.TextureVisuals(material=material)
+        part._cache["vertex_normals"] = np.ascontiguousarray(display_normals[used])
+        scene.add_geometry(part, node_name=node_name)
+        scene_nodes.append(node_name)
+        display_parts[node_name] = {
+            "faces": int(len(part.faces)), "vertices": int(len(part.vertices)),
+            "material": getattr(material, "name", None),
+            "uv": False}
+        expected_parts.append({"name": node_name,
+                               "positions": np.asarray(part.vertices, dtype=np.float64),
+                               "faces": np.asarray(part.faces, dtype=np.int64),
+                               "normals": np.asarray(part._cache["vertex_normals"])})
+        return part
+
     if bake is None:
-        display_mesh = trimesh.Trimesh(vertices=display_vertices, faces=np.asarray(mesh.faces),
-                                       process=False)
-        # 没有花纹的展示资产也必须显式给一个展示材质：glTF 里 primitive 不带 material 时
-        # 走规范的默认材质（metallic=1），浏览器里会渲染成一块没有漫反射的金属。
-        # 这是**展示用**中性陶土色，不是权威材质（authority 的 materials 集成仍是 PENDING）。
-        display_mesh.visual = trimesh.visual.TextureVisuals(
-            material=trimesh.visual.material.PBRMaterial(
-                baseColorFactor=DISPLAY_NEUTRAL_BODY_U8, metallicFactor=0.0,
-                roughnessFactor=0.72))
-        levels["L0"] = {"faces": int(len(display_mesh.faces)),
-                        "vertices": int(len(display_mesh.vertices))}
-        geometry_totals = {"faces": int(len(display_mesh.faces)),
-                           "vertices": int(len(display_mesh.vertices))}
-        scene.add_geometry(display_mesh, node_name="L0")
+        faces_all = np.asarray(mesh.faces, dtype=np.int64)
         # L1/L2 的简化结果**照实测量并记录**，但不放进同一个场景：展示页的视口把场景里的
         # 所有节点一起渲染（`SceneViewport` 没有 LOD 选择器），多层级重叠会 z-fighting，
         # 而二次误差简化的 L2 实测外扩到 193.95 mm（L0 是 182.45 mm），会直接穿出器壁。
-        lod_nodes = ["L0"]
+        measure_mesh = trimesh.Trimesh(vertices=display_vertices, faces=faces_all, process=False)
+        levels["L0"] = {"faces": int(len(faces_all)), "vertices": int(len(display_vertices)),
+                        "exported_as_scene_node": False}
         for level, ratio in (("L1", 0.3), ("L2", 0.08)):
             try:
-                simplified = display_mesh.simplify_quadric_decimation(
-                    face_count=max(4, int(len(display_mesh.faces) * ratio)))
+                simplified = measure_mesh.simplify_quadric_decimation(
+                    face_count=max(4, int(len(measure_mesh.faces) * ratio)))
             except BaseException as exc:  # noqa: BLE001 - 简化后端是可选的，缺失要如实记录
                 lod_notes.append(f"{level} skipped: {type(exc).__name__}: {exc}")
                 continue
@@ -478,16 +889,30 @@ def _export_display_glb(store: Any, mesh: Any, *, source_asset: str | None,
             lod_notes.append(
                 f"{level} measured only (faces={int(len(simplified.faces))}, "
                 f"extent_m={np.round(extent, 6).tolist()}): 不放进场景，避免与 L0 重叠渲染")
-        levels["L0"]["exported_as_scene_node"] = True
-        lod_notes.append("scene_nodes=" + ",".join(lod_nodes) +
-                         "（展示视口同时渲染场景所有节点，因此只放 L0）")
+
+        if surface_groups:
+            # 断面分色：按权威面属性把 L0 拆成 2~3 个 primitive，每个一个展示材质。
+            for name in DISPLAY_SURFACE_ORDER:
+                group = surface_groups.get(name)
+                if group is None:
+                    continue
+                style = DISPLAY_SURFACE_STYLES[name]
+                material = trimesh.visual.material.PBRMaterial(
+                    name=str(style["material"]), baseColorFactor=list(style["base_color_u8"]),
+                    metallicFactor=0.0, roughnessFactor=float(style["roughness"]))
+                _add_solid_part(name, np.flatnonzero(group["mask"]), material)
+            lod_notes.append(
+                "surface_split：按权威面属性 origin_kind/interface_id 分成 "
+                + "/".join(scene_nodes) + "（顶点位置、面索引、绕向与权威逐位一致；"
+                "颜色只是显示着色，不代表几何起伏或材质真值）")
+        else:
+            _add_solid_part("L0", np.arange(len(faces_all), dtype=np.int64), _neutral_material())
+        geometry_totals = {"faces": int(len(faces_all)), "vertices": int(len(display_vertices))}
+        lod_notes.append("scene_nodes=" + ",".join(scene_nodes) +
+                         "（展示视口同时渲染场景所有节点，因此只放 L0 的展示几何）")
     else:
         from PIL import Image
 
-        rotation = np.asarray(display.T_DISPLAY_AUTHORITY, dtype=np.float64)[:3, :3]
-        normals = np.asarray(mesh.vertex_normals, dtype=np.float64) @ rotation.T
-        lengths = np.linalg.norm(normals, axis=1, keepdims=True)
-        normals = normals / np.where(lengths > 0, lengths, 1.0)
         texture = Image.open(io.BytesIO(bytes(bake["albedo_png"])))
         texture.load()
         roughness = float(bake.get("roughness", 0.65))
@@ -495,32 +920,46 @@ def _export_display_glb(store: Any, mesh: Any, *, source_asset: str | None,
                                 dtype=np.float64)
 
         textured = bake["textured"]
-        wall = trimesh.Trimesh(
-            vertices=display.transform_vertices(np.asarray(textured["vertices_mm"], dtype=np.float64)),
-            faces=np.asarray(textured["faces"], dtype=np.int64), process=False)
+        wall_vertices = display.transform_vertices(
+            np.asarray(textured["vertices_mm"], dtype=np.float64))
+        wall_faces = np.asarray(textured["faces"], dtype=np.int64)
+        wall_index = np.asarray(textured["normal_index"], dtype=np.int64)
+        wall = trimesh.Trimesh(vertices=wall_vertices, faces=wall_faces, process=False)
         wall.visual = trimesh.visual.TextureVisuals(
             uv=np.asarray(textured["uv"], dtype=np.float64),
             material=trimesh.visual.material.PBRMaterial(
-                baseColorFactor=[255, 255, 255, 255], metallicFactor=0.0,
-                roughnessFactor=roughness, baseColorTexture=texture))
+                name="synlab_display_pattern_wall", baseColorFactor=[255, 255, 255, 255],
+                metallicFactor=0.0, roughnessFactor=roughness, baseColorTexture=texture))
+        parts = [("wall", wall, wall_index)]
         body = bake["body"]
-        parts = [("wall", wall, np.asarray(textured["normal_index"], dtype=np.int64))]
         if len(np.asarray(body["faces"])) > 0:
             shell = trimesh.Trimesh(
                 vertices=display.transform_vertices(np.asarray(body["vertices_mm"], dtype=np.float64)),
                 faces=np.asarray(body["faces"], dtype=np.int64), process=False)
             shell.visual = trimesh.visual.TextureVisuals(
                 material=trimesh.visual.material.PBRMaterial(
+                    name="synlab_display_pattern_body",
                     baseColorFactor=np.rint(np.clip(body_color, 0.0, 1.0) * 255.0).astype(np.uint8),
                     metallicFactor=0.0, roughnessFactor=roughness))
             parts.append(("body", shell, np.asarray(body["normal_index"], dtype=np.int64)))
         for name, part, normal_index in parts:
             # 法线从完整母体网格算一次后按索引取，两个 primitive 共用 → tag 边界与 UV 解缠缝
             # 上都不会出现假折线（trimesh 只在 cache 里有 vertex_normals 时才导出 NORMAL）
-            part._cache["vertex_normals"] = np.ascontiguousarray(normals[normal_index])
+            part_normals = np.ascontiguousarray(display_normals[normal_index])
+            part._cache["vertex_normals"] = part_normals
             scene.add_geometry(part, node_name=name)
+            scene_nodes.append(name)
+            display_parts[name] = {"faces": int(len(part.faces)),
+                                   "vertices": int(len(part.vertices)),
+                                   "material": getattr(part.visual.material, "name", None),
+                                   "uv": bool(getattr(part.visual, "uv", None) is not None)}
+            expected_parts.append({"name": name,
+                                   "positions": np.asarray(part.vertices, dtype=np.float64),
+                                   "faces": np.asarray(part.faces, dtype=np.int64),
+                                   "normals": part_normals})
             levels[name] = {"faces": int(len(part.faces)), "vertices": int(len(part.vertices)),
-                            "uv": bool(getattr(part.visual, "uv", None) is not None)}
+                            "uv": bool(getattr(part.visual, "uv", None) is not None),
+                            "exported_as_scene_node": True}
         lod_notes.append("LOD skipped: 顶点色/贴图是逐原始顶点烘焙的，简化会重采样它们")
         bake_stats = {"primitives": [name for name, _, _ in parts],
                       "texture_bytes": len(bytes(bake["albedo_png"]))}
@@ -529,6 +968,12 @@ def _export_display_glb(store: Any, mesh: Any, *, source_asset: str | None,
             "vertices": int(sum(len(part.vertices) for _, part, _ in parts)),
         }
     glb = scene.export(file_type="glb", include_normals=True)
+    # 导出后**从字节里复算**：属性列表 / 归一化误差 / 位置与绕向是否与权威一致。
+    glb_check = _verify_display_glb(glb, expected_parts=expected_parts)
+    if not glb_check["all_primitives_have_normal"]:
+        raise RuntimeError(
+            f"展示 GLB 缺少 NORMAL（{label}）：primitives="
+            f"{[p['attributes'] for p in glb_check['primitives']]}")
 
     transform = display.describe()
     record = store.commit_asset(
@@ -547,15 +992,43 @@ def _export_display_glb(store: Any, mesh: Any, *, source_asset: str | None,
             "lod_levels": levels,
             "lod_notes": lod_notes,
             "bake": bake_stats or None,
+            "scene_nodes": list(scene_nodes),
+            "display_parts": display_parts,
             "display_material": (
                 {"mode": "pattern_texture", "metallicFactor": 0.0}
                 if bake is not None else
-                {"mode": "neutral_display_body", "baseColorFactor": DISPLAY_NEUTRAL_BODY_U8,
-                 "metallicFactor": 0.0, "roughnessFactor": 0.72,
-                 "note": "展示用中性陶土色，不是权威材质；synlab.materials 的集成仍是 PENDING"}),
-            "normals": ("顶点法线随 GLB 导出：three.js GLTFLoader 在几何没有 NORMAL 时会设 "
-                        "flatShading=true（node_modules/three/examples/jsm/loaders/GLTFLoader.js:"
-                        "3522/3581），那样每个三角面都是平色块"),
+                ({"mode": "surface_split_display_shading", "metallicFactor": 0.0,
+                  "styles": {name: {"material": DISPLAY_SURFACE_STYLES[name]["material"],
+                                    "label": DISPLAY_SURFACE_STYLES[name]["label"],
+                                    "baseColorFactor": DISPLAY_SURFACE_STYLES[name]["base_color_u8"],
+                                    "roughnessFactor": DISPLAY_SURFACE_STYLES[name]["roughness"]}
+                             for name in display_parts if name in DISPLAY_SURFACE_STYLES},
+                  "note": "新断面/原表面只是**显示着色**（来源：权威面属性 "
+                          "origin_kind/interface_id），不代表几何起伏、粗糙度或材质真值"}
+                 if surface_groups else
+                 {"mode": "neutral_display_body", "baseColorFactor": DISPLAY_NEUTRAL_BODY_U8,
+                  "metallicFactor": 0.0, "roughnessFactor": 0.72,
+                  "material_name": "synlab_display_neutral_body",
+                  "note": "展示用中性陶土色，不是权威材质；synlab.materials 的集成仍是 PENDING"})),
+            "normals": {
+                "mode": "authority_area_weighted_angle_threshold",
+                "angle_threshold_deg": DISPLAY_NORMAL_ANGLE_DEG,
+                "weighting": "face_area",
+                "orientation": "winding-preserving (cross(v1-v0, v2-v0))",
+                "stats": normal_stats,
+                "export_check": glb_check,
+                "note": ("顶点法线随 GLB 导出：three.js GLTFLoader 在几何没有 NORMAL 时会设 "
+                         "flatShading=true（node_modules/three/examples/jsm/loaders/GLTFLoader.js:"
+                         "3522/3581），那样每个三角面都是平色块。这是**显示着色**：顶点位置、"
+                         "面索引与绕向与权威逐位一致（见 export_check）。"),
+            },
+            "surface_groups": (
+                {name: {"faces": group["faces"], "area_mm2": group["area_mm2"],
+                        "material": DISPLAY_SURFACE_STYLES[name]["material"],
+                        "label": DISPLAY_SURFACE_STYLES[name]["label"]}
+                 for name, group in surface_groups.items()} if surface_groups else None),
+            "surface_group_source": surface["source"] if surface_groups else None,
+            "surface_group_authority": surface["authority"] or None,
             "note": "display-only derivation; authoritative geometry remains mm/Z-up and is untouched",
             **(extra_meta or {}),
         },
@@ -564,8 +1037,16 @@ def _export_display_glb(store: Any, mesh: Any, *, source_asset: str | None,
             "display_extent_m": display_extent.tolist(),
             "transform_id": transform["transform_id"],
             "glb_bytes": len(glb),
+            "primitives_with_normal": glb_check["primitives_with_normal"],
+            "all_primitives_have_normal": glb_check["all_primitives_have_normal"],
+            "normal_unit_max_abs_error": glb_check.get("normal_unit_max_abs_error", None),
+            "position_max_abs_error_vs_authority_m":
+                glb_check["position_max_abs_error_vs_authority_m"],
+            "winding_matches_authority": glb_check["winding_matches_authority"],
+            "glb_mismatches": glb_check["mismatches"],
         },
-        qa_status="QA_PASS",
+        qa_status="QA_PASS" if (glb_check["all_primitives_have_normal"]
+                                and not glb_check["mismatches"]) else "QA_FAIL",
         ancestry=[source_asset] if source_asset else [],
         lineage_id=LINEAGE_ID,
         split=SPLIT,
@@ -581,6 +1062,36 @@ def _export_display_glb(store: Any, mesh: Any, *, source_asset: str | None,
         "lod_notes": lod_notes,
         "display_transform_id": transform["transform_id"],
         "bake": bake_stats or None,
+        "scene_nodes": list(scene_nodes),
+        "normals": {
+            "angle_threshold_deg": DISPLAY_NORMAL_ANGLE_DEG,
+            "weighting": "face_area",
+            "primitives": [{k: p[k] for k in ("node", "material", "attributes", "vertices",
+                                              "triangles", "has_normal")}
+                           for p in glb_check["primitives"]],
+            "all_primitives_have_normal": glb_check["all_primitives_have_normal"],
+            "normal_unit_max_abs_error": glb_check.get("normal_unit_max_abs_error", None),
+            "normal_max_angle_vs_intended_deg": glb_check["normal_max_angle_vs_intended_deg"],
+            "max_normal_length_error": normal_stats["max_normal_length_error"],
+            "vertices_restricted_by_threshold": normal_stats["vertices_restricted_by_threshold"],
+            "max_angle_vs_trimesh_vertex_normals_deg":
+                normal_stats["max_angle_vs_trimesh_vertex_normals_deg"],
+            "flipped_vs_trimesh_vertex_normals": normal_stats["flipped_vs_trimesh_vertex_normals"],
+        },
+        "geometry_unchanged": {
+            "position_max_abs_error_vs_authority_m":
+                glb_check["position_max_abs_error_vs_authority_m"],
+            "winding_matches_authority": glb_check["winding_matches_authority"],
+            "triangles_in_glb": glb_check["triangles_total"],
+            "authority_faces": int(len(np.asarray(mesh.faces))),
+            "mismatches": glb_check["mismatches"],
+        },
+        "surface_groups": (
+            {name: {"faces": group["faces"], "area_mm2": group["area_mm2"],
+                    "material": DISPLAY_SURFACE_STYLES[name]["material"]}
+             for name, group in surface_groups.items()} if surface_groups else None),
+        "surface_group_source": surface["source"] if surface_groups else None,
+        "surface_group_authority": surface["authority"] or None,
     }
     return record, metrics
 
@@ -1418,7 +1929,20 @@ def task_fracture(demo_root: Path, task: dict[str, Any], manifest: Manifest) -> 
         glb_record, glb_metrics = _export_display_glb(
             store, fragment.mesh, source_asset=mother_asset,
             label=f"fragment:{entry_id}:{fragment.fragment_id}",
-            extra_meta={"fragment_id": str(fragment.fragment_id), "event_id": entry_id})
+            extra_meta={"fragment_id": str(fragment.fragment_id), "event_id": entry_id},
+            surface_split=True)
+        # 断面分色的一致性**用权威面属性复算**（不看 GLB 里的分组自证）：
+        # 分组面数 / 面积来自 fragment.mesh 的 origin_kind / interface_id 与权威面积。
+        authority_groups = _display_surface_groups(fragment.mesh)
+        group_rows = {name: {"faces": group["faces"], "area_mm2": group["area_mm2"],
+                             "material": DISPLAY_SURFACE_STYLES[name]["material"]}
+                      for name, group in authority_groups["groups"].items()}
+        display_rows = glb_metrics.get("surface_groups") or {}
+        faces_ok = all(display_rows.get(name, {}).get("faces") == row["faces"]
+                       for name, row in group_rows.items()) and len(display_rows) == len(group_rows)
+        area_ok = all(abs(display_rows.get(name, {}).get("area_mm2", -1.0) - row["area_mm2"])
+                      <= 1e-9 * max(1.0, abs(row["area_mm2"]))
+                      for name, row in group_rows.items())
         fragments.append({
             "fragment_id": str(fragment.fragment_id),
             "volume_mm3": float(fragment.volume_mm3),
@@ -1431,6 +1955,19 @@ def task_fracture(demo_root: Path, task: dict[str, Any], manifest: Manifest) -> 
             "source_face_coverage": (
                 float(np_mean(getattr(fragment, "face_source_tri", [])))
                 if getattr(fragment, "face_source_tri", None) is not None else None),
+            "surface_groups": group_rows,
+            "surface_group_source": authority_groups["source"],
+            "surface_group_authority": authority_groups["authority"],
+            "surface_group_check": {
+                "display_face_counts_match_authority": bool(faces_ok),
+                "display_areas_match_authority": bool(area_ok),
+                "authority_faces_total": int(len(fragment.mesh.faces)),
+                "display_faces_total": int(sum(row.get("faces", 0) for row in display_rows.values())),
+                "authority_area_total_mm2": float(authority_groups["authority"]["area_total_mm2"]),
+                "display_area_total_mm2": float(sum(row.get("area_mm2", 0.0)
+                                                    for row in display_rows.values())),
+            },
+            "display_geometry_check": glb_metrics.get("geometry_unchanged"),
             "glb": {"asset_id": glb_record.asset_id, "role": glb_record.role, "key": "glb",
                     "metrics": glb_metrics},
         })
@@ -1452,6 +1989,15 @@ def task_fracture(demo_root: Path, task: dict[str, Any], manifest: Manifest) -> 
         "fragments": fragments,
         "fragments_available": bool(fragments),
         "fracture_event_source": "synlab.fracture.api.fracture_event（真实产出 FractureResult）",
+        "display_shading": {
+            "mode": "authority_area_weighted_angle_threshold + surface_split",
+            "angle_threshold_deg": DISPLAY_NORMAL_ANGLE_DEG,
+            "surface_group_source": "authority face attributes origin_kind / interface_id",
+            "geometry_untouched": "GLB 的 POSITION 与索引逐位等于权威派生数组（见各碎片 display_geometry_check）",
+            "note": ("新断面 / 原表面只是**显示着色**，不代表几何起伏、粗糙度或材质真值；"
+                     "断口真实起伏需要 rough_shared_cut 后端（本机 FAILED）或 warped_partition"
+                     "（PENDING）/ fracture_modes（MISSING），未实现的部分不伪造。"),
+        },
     }
 
     # ---------------------------------------------------------------- 3) QA 门（真实审计）
@@ -2285,7 +2831,9 @@ def main(argv: list[str] | None = None) -> int:
                             title=f"单元 {entry_id_for(task)}", status="FAILED")
             result["failure"] = _failure_from_exception(exc)
             result["traceback_tail"] = traceback.format_exc()[-2000:]
-        sys.stdout.write(RESULT_MARKER + json.dumps(_jsonable(result), ensure_ascii=False) + "\n")
+        sys.stdout.write(RESULT_MARKER
+                         + json.dumps(_jsonable(result, max_depth=RESULT_MAX_DEPTH),
+                                      ensure_ascii=False) + "\n")
         sys.stdout.flush()
         return 0
 

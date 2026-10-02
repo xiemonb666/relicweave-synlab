@@ -84,6 +84,16 @@ export function describeGlbRefFailure(asset: AssetRecord | null | undefined): st
   }]，无法确定 GLB 文件；请确认它是 display_lod_glb 派生资产`;
 }
 
+/** GLB 里一个展示材质分组的真实三角面数（名字来自 glTF ``material.name``）。 */
+export interface GlbMaterialGroup {
+  /** glTF 材质名；GLB 没写名字时用 ``'(未命名材质)'``。 */
+  material: string;
+  /** 该材质在本次加载的几何里覆盖的三角面数（真实索引计数，不是估计）。 */
+  triangles: number;
+  /** 该材质的 baseColorFactor（十六进制，无颜色信息时为 null）——用于图例色块。 */
+  colorHex: string | null;
+}
+
 export interface GlbMeasurement {
   assetId: string;
   role: string;
@@ -103,6 +113,12 @@ export interface GlbMeasurement {
   authorityExtentMm: Vec3;
   meshCount: number;
   triangleCount: number;
+  /** 逐材质的真实三角面数（断面分色图例的数据源）。 */
+  materialGroups: GlbMaterialGroup[];
+  /** 带 ``NORMAL`` 属性的 mesh 数；没有 NORMAL 时 three.js 会 flatShading（每面平色块）。 */
+  meshesWithNormal: number;
+  /** 缺 ``NORMAL`` 的 mesh 数（>0 就是真的在走 flatShading，页面必须照实说）。 */
+  meshesWithoutNormal: number;
 }
 
 export interface LoadedGlb {
@@ -186,6 +202,9 @@ export async function loadDerivedGlb(
 
   let meshCount = 0;
   let triangleCount = 0;
+  let meshesWithNormal = 0;
+  let meshesWithoutNormal = 0;
+  const groups = new Map<string, GlbMaterialGroup>();
   const box = new THREE.Box3();
   gltf.scene.updateMatrixWorld(true);
   gltf.scene.traverse((child) => {
@@ -195,7 +214,21 @@ export async function loadDerivedGlb(
     const geometry = mesh.geometry as THREE.BufferGeometry;
     const index = geometry.getIndex();
     const position = geometry.getAttribute('position');
-    triangleCount += index ? index.count / 3 : position ? position.count / 3 : 0;
+    const meshTriangles = index ? index.count / 3 : position ? position.count / 3 : 0;
+    triangleCount += meshTriangles;
+    if (geometry.getAttribute('normal')) meshesWithNormal += 1;
+    else meshesWithoutNormal += 1;
+    for (const item of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
+      const standard = item as THREE.MeshStandardMaterial | undefined;
+      const name = standard?.name ? standard.name : '(未命名材质)';
+      const existing = groups.get(name);
+      const colorHex = standard?.color ? `#${standard.color.getHexString()}` : null;
+      if (existing) {
+        existing.triangles += meshTriangles;
+      } else {
+        groups.set(name, { material: name, triangles: meshTriangles, colorHex });
+      }
+    }
     geometry.computeBoundingBox();
     if (geometry.boundingBox) box.union(geometry.boundingBox.clone().applyMatrix4(mesh.matrixWorld));
   });
@@ -225,6 +258,11 @@ export async function loadDerivedGlb(
       authorityExtentMm: displayExtentToAuthority(displayExtentM),
       meshCount,
       triangleCount: Math.round(triangleCount),
+      materialGroups: [...groups.values()]
+        .map((group) => ({ ...group, triangles: Math.round(group.triangles) }))
+        .sort((a, b) => b.triangles - a.triangles),
+      meshesWithNormal,
+      meshesWithoutNormal,
     },
   };
 }

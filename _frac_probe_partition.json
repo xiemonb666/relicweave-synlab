@@ -1,0 +1,148 @@
+{
+  "vessel": "V13",
+  "material": "M01",
+  "faces": 844,
+  "volume_mm3": 425691.29293024074,
+  "runs": [
+    {
+      "requested": 16,
+      "cells": 14,
+      "dropped_cells": 2,
+      "t_build_s": 0.222,
+      "t_cellmesh_s": 0.037,
+      "t_meshdump_s": 0.036,
+      "cell_faces_total": 304,
+      "stats": {
+        "cells": 14,
+        "watertight": 14,
+        "positive_volume": 14,
+        "min_euler_number": 2,
+        "all_convex_solids": true
+      },
+      "conjugacy": {
+        "shared_facet_pairs": 37,
+        "one_sided_facets": 8,
+        "identical_vertex_sets": 37,
+        "max_vertex_distance_mm": 6.888967415955462e-14,
+        "tolerance_mm": 1e-09,
+        "conjugate": false,
+        "vertices_compared": 401
+      },
+      "law": {
+        "n_cells": 14,
+        "volume_total_mm3": 854096.8638307092,
+        "volume_min_mm3": 170.01885753234092,
+        "volume_median_mm3": 69776.29358737826,
+        "volume_max_mm3": 101441.64005224266,
+        "equivalent_diameter_min_mm": 6.873313563766594,
+        "equivalent_diameter_median_mm": 51.073696564931915,
+        "equivalent_diameter_max_mm": 57.86365729155142,
+        "size_ratio_max_over_min": 596.6493453995035
+      },
+      "seed_report": {
+        "candidates": 317,
+        "stride_mm": 12.0,
+        "grid": [
+          13,
+          9,
+          6
+        ],
+        "thickness_median_mm": 10.507777171563754,
+        "thickness_min_mm": 1.7409866662232485,
+        "thickness_max_mm": 11.57654016892739,
+        "curvature_p95_per_mm": 0.9999963863915377,
+        "face_normal_agreement": 1.0,
+        "near_duplicate_pairs": 0,
+        "min_seed_distance_mm": 22.54036800415633,
+        "strategy": "farthest_weighted",
+        "spacing_min_mm": 22.54036800415633,
+        "seeds_requested": 16,
+        "seeds_drawn": 16,
+        "pool": 317,
+        "shortfall": 0,
+        "weight_quantiles": [
+          137.3165630599314,
+          150.6164680435116,
+          684.7816575321409
+        ],
+        "impact_point": null,
+        "material_volume_mm3": 425691.29293024074,
+        "seed_spacing_mean_mm": 36.33019177232175,
+        "cells": 14,
+        "dropped_cells": 2,
+        "cell_volume_sum_mm3": 854096.8638307092,
+        "cell_volume_uniformity": 0.001676026308770056
+      }
+    },
+    {
+      "requested": 32,
+      "cells": 28,
+      "dropped_cells": 4,
+      "t_build_s": 0.53,
+      "t_cellmesh_s": 0.067,
+      "t_meshdump_s": 0.067,
+      "cell_faces_total": 736,
+      "stats": {
+        "cells": 28,
+        "watertight": 28,
+        "positive_volume": 28,
+        "min_euler_number": 2,
+        "all_convex_solids": true
+      },
+      "conjugacy": {
+        "shared_facet_pairs": 93,
+        "one_sided_facets": 27,
+        "identical_vertex_sets": 93,
+        "max_vertex_distance_mm": 3.918882436998103e-12,
+        "tolerance_mm": 1e-09,
+        "conjugate": false,
+        "vertices_compared": 989
+      },
+      "law": {
+        "n_cells": 28,
+        "volume_total_mm3": 1000530.5141117176,
+        "volume_min_mm3": 1538.1555372747341,
+        "volume_median_mm3": 29182.295880239348,
+        "volume_max_mm3": 108708.43071898927,
+        "equivalent_diameter_min_mm": 14.321896920851342,
+        "equivalent_diameter_median_mm": 38.1911318427116,
+        "equivalent_diameter_max_mm": 59.21360942059089,
+        "size_ratio_max_over_min": 70.67453718730954
+      },
+      "seed_report": {
+        "candidates": 317,
+        "stride_mm": 12.0,
+        "grid": [
+          13,
+          9,
+          6
+        ],
+        "thickness_median_mm": 10.507777171563754,
+        "thickness_min_mm": 1.7409866662232485,
+        "thickness_max_mm": 11.57654016892739,
+        "curvature_p95_per_mm": 0.9999963863915377,
+        "face_normal_agreement": 1.0,
+        "near_duplicate_pairs": 0,
+        "min_seed_distance_mm": 11.477159679215129,
+        "strategy": "farthest_weighted",
+        "spacing_min_mm": 11.477159679215129,
+        "seeds_requested": 32,
+        "seeds_drawn": 32,
+        "pool": 317,
+        "shortfall": 0,
+        "weight_quantiles": [
+          137.3165630599314,
+          150.6164680435116,
+          684.7816575321409
+        ],
+        "impact_point": null,
+        "material_volume_mm3": 425691.29293024074,
+        "seed_spacing_mean_mm": 25.387271413717844,
+        "cells": 28,
+        "dropped_cells": 4,
+        "cell_volume_sum_mm3": 1000530.5141117176,
+        "cell_volume_uniformity": 0.014149367506287145
+      }
+    }
+  ]
+}

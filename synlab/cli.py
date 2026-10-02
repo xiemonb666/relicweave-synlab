@@ -16,7 +16,8 @@ from typing import Any, Optional
 import typer
 
 from .canonical import hash_file, hash_json
-from .config import compile_spec, load_diagnose_spec, load_generation_spec, load_train_spec
+from .config import (compile_spec, load_diagnose_spec, load_document, load_generation_spec,
+                     load_train_spec)
 from .errors import ErrorCode, Result, SynLabError
 from .jobs.resources import Estimate, ResourceBudget, ResourceGuard
 from .registry import REGISTRY, load_all
@@ -93,7 +94,16 @@ def validate(config: str = typer.Option(..., "--config"), json_mode: bool = type
     """Schema, stage, applicability and file-dependency validation."""
     try:
         load_all()
-        spec = load_generation_spec(config)
+        document = load_document(config)
+        # A *physics* config may carry its `synlab.v3` generation spec in a nested
+        # ``generation_spec:`` block (``configs/a12/fracture_physics.yaml``), because that file has
+        # parameters that are not part of the generation schema.  Validating the nested block is
+        # what makes one artefact both the physics declaration and a machine-checked spec.
+        if "generation_spec" not in document:
+            spec = load_generation_spec(config)
+        else:
+            from .schemas.spec import GenerationSpec
+            spec = GenerationSpec.model_validate(document.get("generation_spec") or {})
         compiled = compile_spec(spec)
         if compiled.errors:
             raise SynLabError(ErrorCode.SCHEMA_INVALID, "; ".join(compiled.errors), stage="validate")
@@ -361,7 +371,7 @@ def acceptance(
     json_mode: bool = typer.Option(False, "--json"),
     out: str = typer.Option("docs/a12/acceptance_report.md", "--out"),
 ) -> None:
-    """Run the A01–A36 acceptance harness and write the report."""
+    """Run the A01鈥揂36 acceptance harness and write the report."""
     try:
         from .qc.acceptance import run_acceptance
 
@@ -399,3 +409,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

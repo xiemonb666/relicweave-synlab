@@ -61,11 +61,18 @@ def test_only_tasks_with_real_supervision_run(smoke: dict) -> None:
     assert first["tasks"]["view"]["skipped"] is False
     assert first["tasks"]["view"]["n_valid"] == 12            # 3 observed fragments x 4 views
     assert first["tasks"]["view"]["loss"] is not None
-    assert first["tasks"]["rank"]["skipped"] is True
-    assert first["tasks"]["rank"]["reason"] == "no_encodable_positive_pair"
-    assert first["tasks"]["correspondence"]["reason"] == "no_correspondence_label"
-    assert first["tasks"]["quality"]["reason"] == "no_valid_quality_target"
-    assert first["tasks"]["contradiction"]["reason"] == "no_contradiction_label"
+    # the package carries the label side of the D task (one observability target per observed
+    # fragment), so quality really runs; measured, not asserted from a constant
+    assert first["tasks"]["quality"]["skipped"] is False
+    assert first["tasks"]["quality"]["n_valid"] == 3
+    assert first["tasks"]["quality"]["n_valid_labels"] == 3
+    assert first["tasks"]["quality"]["loss"] is not None
+    # the three tasks that cannot start name the *measured* blocker, not a catch-all string
+    assert first["tasks"]["rank"]["reason"] == "no_legal_negative_in_exported_relations"
+    assert first["tasks"]["correspondence"]["reason"] == \
+        "correspondence_labels_never_reached_token_space"
+    assert first["tasks"]["contradiction"]["reason"] == \
+        "no_encodable_contradiction_pair_candidate_side_unobserved"
     assert all(r["loss"] is None or r["loss"] == r["loss"] for r in smoke["steps"]["records"])
     assert smoke["steps"]["optimizer_steps_taken"] == 2
 
@@ -97,8 +104,11 @@ def test_report_is_honest_about_what_was_not_trained(smoke: dict) -> None:
     honesty = smoke["honesty"]
     assert honesty["synthesised_negatives"] == 0
     assert honesty["synthesised_labels"] == 0
-    assert set(honesty["tasks_skipped"]) == {"rank", "correspondence", "quality",
-                                            "contradiction"}
+    assert set(honesty["tasks_skipped"]) == {"rank", "correspondence", "contradiction"}
+    # the two tasks that really ran, and the three that are blocked *with labels present*
+    assert honesty["tasks_with_real_supervision"] == ["quality", "view"]
+    assert honesty["tasks_blocked_with_labels_present"] == ["contradiction", "correspondence",
+                                                            "rank"]
     assert smoke["status"] == "PIPELINE_OK_DATA_INSUFFICIENT"
     assert smoke["model"]["parameters"]["total"] == 72710
 

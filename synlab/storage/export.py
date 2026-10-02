@@ -36,6 +36,7 @@ from __future__ import annotations
 
 import io
 import json
+import os
 import tarfile
 from collections import defaultdict
 from pathlib import Path
@@ -48,6 +49,7 @@ from ..errors import ErrorCode, SynLabError
 from ..roles import (
     FORBIDDEN_FEATURE_FIELDS,
     ROLE_CLEAN_TRUTH,
+    ROLE_CONTEXT_PACK,
     ROLE_FEATURE_BUNDLE,
     ROLE_LABEL_BUNDLE,
     ROLE_OBS_RESULT,
@@ -76,6 +78,181 @@ TRAINING_FORMATS = ("parquet", "npz", "zarr", "tar")
 #: never be written into a directory that the manifest does not walk.
 ZARR_DIR_NAME = "zarr"
 
+# --------------------------------------------------------------------------------------
+# view channel policy (configurable, auditable)
+# --------------------------------------------------------------------------------------
+#: Environment variable that overrides the policy document path.  The code below only *reads* a
+#: policy: which channel a view may carry is data, so a whitelist change is a diff in a file the
+#: manifest records by real path **and** hash, never an edit of a literal in this module.
+VIEW_CHANNEL_POLICY_ENV = "SYNLAB_VIEW_CHANNEL_POLICY"
+#: Default policy document, relative to the repository root that holds this package.
+VIEW_CHANNEL_POLICY_PATH = Path(__file__).resolve().parents[1] / "schemas" / "view_channels.json"
+
+
+def _policy_path() -> Path:
+    override = os.environ.get(VIEW_CHANNEL_POLICY_ENV, "").strip()
+    return Path(override) if override else VIEW_CHANNEL_POLICY_PATH
+
+
+def load_channel_policy(path: str | Path | None = None) -> dict[str, Any]:
+    """Load the view channel policy and return it with its real source path and byte hash.
+
+    ``channels`` is the resolved per-view channel table (each entry names the channel ``key``,
+    the observation array it comes from, its dtype/unit and -- where the evidence class is not a
+    plain delivered product -- an explicit ``evidence_class``/``caveat``).  ``research_only`` is
+    the derived set of channel keys no other view may carry, and two views declaring the same
+    channel is a hard error: a channel belongs to exactly one view.
+    """
+    target = Path(path) if path is not None else _policy_path()
+    if not target.exists():
+        raise SynLabError(ErrorCode.INPUT_UNAVAILABLE,
+                          f"view channel policy not found: {target}",
+                          stage="export.load_channel_policy")
+    raw = target.read_bytes()
+    try:
+        payload = json.loads(raw.decode("utf-8"))
+    except ValueError as exc:
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          f"view channel policy {target} is not valid JSON: {exc}",
+                          stage="export.load_channel_policy") from exc
+    views = payload.get("views")
+    if not isinstance(views, Mapping):
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          f"view channel policy {target} declares no views block",
+                          stage="export.load_channel_policy")
+    channels: dict[str, list[dict[str, Any]]] = {}
+    for view, block in views.items():
+        declared = (block or {}).get("channels") if isinstance(block, Mapping) else None
+        if not isinstance(declared, list) or not declared:
+            raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                              f"view {view!r} declares no channel list in {target}",
+                              stage="export.load_channel_policy")
+        channels[str(view)] = [dict(item) for item in declared]
+    research_keys = sorted({str(item["key"]) for item in channels.get(VIEW_RESEARCH, [])})
+    deploy_keys = sorted({str(item["key"]) for item in channels.get(VIEW_DEPLOY, [])})
+    overlap = sorted(set(research_keys) & set(deploy_keys))
+    if overlap:
+        raise SynLabError(ErrorCode.LEAKAGE_DETECTED,
+                          f"channel(s) {overlap} are declared in both views of {target}",
+                          stage="export.load_channel_policy")
+    capture_context = _resolve_capture_context(payload, target, research_only=research_keys)
+    return {
+        "schema": str(payload.get("schema", "")),
+        "path": str(target),
+        "hash": hash_bytes(raw),
+        "source": str(payload.get("source", "")),
+        "channels": channels,
+        "truth_roles": dict(payload.get("truth_roles") or {}),
+        "research_only": research_keys,
+        "deploy": deploy_keys,
+        "capture_context": capture_context,
+        "capture_context_keys": sorted({str(item["key"]).lower() for item in capture_context}),
+    }
+
+
+#: The only ``evidence_class`` a capture-context declaration may carry.
+CAPTURE_CONTEXT_CLASS = "capture_context"
+#: Names that may never be exempted from the deployment-view answer-field scan, whatever a policy
+#: document says: the ground-truth layer selectors, the interface / correspondence arrays and the
+#: research-only view channels.  :func:`_resolve_capture_context` validates every declaration
+#: against this set (plus ``research_only`` and :data:`TRUTH_BEARING_FIELDS`) and refuses to load
+#: the policy when one overlaps, so the ``bag_id`` exemption can never widen the truth check.
+TRUTH_CRITICAL_FIELDS = frozenset({
+    "iface_id", "iface_area_mm2", "iface_gap_p95_mm", "iface_normal_p95_deg",
+    "iface_ambiguity_ratio", "iface_offset", "iface_points_a", "iface_points_b",
+    "iface_normals_a", "iface_normals_b", "iface_common_clip_area_mm2",
+    "iface_pair_common_clip_area_mm2",
+    "corr_point_a", "corr_point_b", "corr_normal_a", "corr_normal_b", "corr_bary_a",
+    "corr_bary_b", "corr_face_a", "corr_face_b", "corr_index_a", "corr_index_b",
+    "corr_weight", "corr_residual_mm", "corr_valid", "corr_ambiguous",
+    "corr_association_code", "corr_fragment_ids", "corr_interface_id",
+    "id_map", "surface_tag", "T_WC", "dist", "rgb_linear",
+    "clean_truth", "physical_truth", "visible_labels",
+})
+
+
+def _resolve_capture_context(payload: Mapping[str, Any], target: Path,
+                             *, research_only: Sequence[str]) -> list[dict[str, Any]]:
+    """Validate the policy's ``capture_context_fields`` block and return its entries.
+
+    A capture-context field is *acquisition context the deployment rig really has* (the Lead's
+    ruling on ``bag_id``), so it is exempt from the deployment-view answer-field scan even though
+    it is listed in ``synlab.roles.FORBIDDEN_FEATURE_FIELDS`` -- a rule about model forward passes,
+    not about what a rig obtains.  The exemption is only ever a *declaration*, so every entry is
+    checked here and the policy is refused outright when one is inadmissible:
+
+    * ``evidence_class`` must be exactly :data:`CAPTURE_CONTEXT_CLASS`;
+    * ``rig_obtainable`` and ``claim_allowed`` must both be exactly ``True``;
+    * the name may not be truth-critical, a research-only channel or a truth-bearing supervision
+      column -- otherwise the exemption would widen the truth-leak check.
+    """
+    block = payload.get("capture_context_fields")
+    if block is None:
+        return []
+    if not isinstance(block, Mapping):
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          f"capture_context_fields of {target} is not an object",
+                          stage="export.load_channel_policy")
+    declared = block.get("fields") or []
+    if not isinstance(declared, list):
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          f"capture_context_fields.fields of {target} is not a list",
+                          stage="export.load_channel_policy")
+    guarded = {str(name).lower() for name in TRUTH_CRITICAL_FIELDS}
+    guarded |= {str(name).lower() for name in research_only}
+    guarded |= {str(name).lower() for name in TRUTH_BEARING_FIELDS}
+    out: list[dict[str, Any]] = []
+    for entry in declared:
+        if not isinstance(entry, Mapping) or not str(entry.get("key", "")).strip():
+            raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                              f"capture_context_fields of {target} has an entry without a key",
+                              stage="export.load_channel_policy")
+        key = str(entry["key"])
+        problems: list[str] = []
+        if str(entry.get("evidence_class", "")) != CAPTURE_CONTEXT_CLASS:
+            problems.append(f"evidence_class must be {CAPTURE_CONTEXT_CLASS!r}")
+        if entry.get("rig_obtainable") is not True:
+            problems.append("rig_obtainable must be exactly True")
+        if entry.get("claim_allowed") is not True:
+            problems.append("claim_allowed must be exactly True")
+        if key.lower() in guarded:
+            problems.append("a truth layer, truth-critical array, research-only channel or "
+                            "supervision column may never be declared capture context")
+        if problems:
+            raise SynLabError(
+                ErrorCode.LEAKAGE_DETECTED,
+                f"capture-context declaration {key!r} in {target} is inadmissible: "
+                + "; ".join(problems),
+                stage="export.load_channel_policy", evidence_refs=[key])
+        out.append(dict(entry))
+    return out
+
+
+def capture_context_keys(path: str | Path | None = None) -> set[str]:
+    """Lower-cased names the policy declares as capture context (deployment-view safe)."""
+    return set(load_channel_policy(path).get("capture_context_keys") or [])
+
+
+def channel_table(policy: Mapping[str, Any], view: str) -> dict[str, dict[str, Any]]:
+    """``{channel key: descriptor}`` for one view of a resolved policy."""
+    return {str(item["key"]): item for item in (policy.get("channels") or {}).get(view, [])}
+
+#: Camera intrinsics carried as one ``3x3`` matrix per delivered view.
+CHANNEL_K = "K"
+
+#: Deployment-view channels that are **optional at the asset level**: they are written for every
+#: view of a fragment that really carries them, and the fragments that do not are reported as
+#: missing rather than being padded with a placeholder array.  The list is derived from the
+#: policy document (``synlab/schemas/view_channels.json``), which the manifest records by path
+#: and hash -- so adding or removing a channel is a policy diff, not an edit of this tuple.
+OPTIONAL_DEPLOY_CHANNELS: tuple[tuple[str, str, str], ...] = (
+    ("depth_z", "depth_z", "float32"),
+    ("deployment_mask", "deployment_mask", "bool"),
+    ("uncertain_mask", "uncertain_mask", "bool"),
+    ("roi", "roi", "bool"),
+    ("K", "K", "float64"),
+)
+
 #: Relation kinds that may serve as an ordinary negative (plan 18.2).
 NEGATIVE_KINDS = frozenset({"R1", "R0"})
 #: Relation kinds that must never enter the negative set.
@@ -84,8 +261,18 @@ EXCLUDED_NEGATIVE_KINDS = frozenset({"R2", "TINY", "TINY_CONTACT", "UNKNOWN"})
 #: Number of tokens produced for one fragment (``FeatureBundle.TOKEN_DIM``).
 TOKEN_DIM = 256
 TOKEN_BLOCK = 4
+#: Side of the per-token sub-grid (``TOKEN_SUB ** 2 == TOKEN_DIM``).  One token is one
+#: ``(view, block, channel)`` slot of the ``TOKEN_BLOCK x TOKEN_BLOCK`` block-mean grid; its
+#: ``TOKEN_DIM`` features are that slot's own ``TOKEN_SUB x TOKEN_SUB`` sub-grid means.
+TOKEN_SUB = 16
 TOKEN_POLICY_ID = "obspack_rgb_blockmean_v1"
 ENCODER_ID = "identity_rgb_blockmean"
+#: ``token_layout`` recorded in ``deploy/tokens/index.json``: what one token column means.
+TOKEN_LAYOUT = "per-token sub-grid block means (identity, no learned weights)"
+
+#: Tolerance of the ``frame_id`` derivation (D3 fix): a point is assigned to the delivered view
+#: whose rendered ``depth_z`` agrees with its reprojection within this many millimetres.
+FRAME_ID_TOLERANCE_MM = 5.0
 
 
 # --------------------------------------------------------------------------------------
@@ -245,38 +432,318 @@ def _truth_relations(store: AssetStore, assets: Iterable[Any]) -> list[dict[str,
 # --------------------------------------------------------------------------------------
 # token cache
 # --------------------------------------------------------------------------------------
-def _tokens_from_view(rgb: np.ndarray, blocks: int = TOKEN_BLOCK) -> np.ndarray:
-    """Frozen block-mean RGB token of one delivered view (no view id, no ordering)."""
+def _linear_view(rgb: np.ndarray) -> np.ndarray:
+    """One delivered view as ``[H,W,3]`` float in the 0..1 range ``_tokens_from_view`` uses."""
     data = np.asarray(rgb, dtype=np.float32)
     if data.ndim == 2:
         data = np.repeat(data[:, :, None], 3, axis=2)
     data = data[:, :, :3]
     if data.max(initial=0.0) > 2.0:          # 0..255 delivery -> linear 0..1
         data = data / 255.0
+    return data
+
+
+def _tokens_from_view(rgb: np.ndarray, blocks: int = TOKEN_BLOCK) -> np.ndarray:
+    """Frozen block-mean RGB token of one delivered view (no view id, no ordering)."""
+    data = _linear_view(rgb)
     h, w = int(data.shape[0]), int(data.shape[1])
     bh, bw = max(h // blocks, 1), max(w // blocks, 1)
     pooled = data[: bh * blocks, : bw * blocks].reshape(blocks, bh, blocks, bw, 3).mean(axis=(1, 3))
     return np.asarray(pooled, dtype=np.float32).reshape(-1)   # (blocks*blocks*3,)
 
 
+def _grid_mean(cell: np.ndarray, sub: int) -> np.ndarray:
+    """Exact ``sub x sub`` mean of ``cell`` (any cell size; a block smaller than the grid is
+    sampled instead of padded, so the function is total)."""
+    data = np.asarray(cell, dtype=np.float64)
+    h, w = int(data.shape[0]), int(data.shape[1])
+    rows = (np.arange(sub) * h) // sub
+    cols = (np.arange(sub) * w) // sub
+    if h < sub or w < sub:                   # too small to average: nearest sample, still real
+        return np.asarray(data[np.ix_(rows, cols)], dtype=np.float32)
+    sums = np.add.reduceat(np.add.reduceat(data, rows, axis=0), cols, axis=1)
+    counts = np.diff(np.append(rows, h))[:, None] * np.diff(np.append(cols, w))[None, :]
+    return np.asarray(sums / counts, dtype=np.float32)
+
+
+def _token_feature(data: np.ndarray, slot: int, *, blocks: int = TOKEN_BLOCK,
+                   sub: int = TOKEN_SUB) -> np.ndarray:
+    """The ``sub*sub`` sub-grid means of one ``(block, channel)`` slot of a delivered view."""
+    block, channel = divmod(int(slot), 3)
+    br, bc = divmod(block, blocks)
+    h, w = int(data.shape[0]), int(data.shape[1])
+    bh, bw = max(h // blocks, 1), max(w // blocks, 1)
+    cell = data[br * bh:(br + 1) * bh, bc * bw:(bc + 1) * bw, channel]
+    return _grid_mean(cell, sub).reshape(-1)[: TOKEN_DIM]
+
+
 def _token_arrays(tile_rgb: np.ndarray, tile_valid: np.ndarray) -> dict[str, np.ndarray]:
-    """``tile_rgb`` is ``[V,H,W,3]`` uint8.  Returns the frozen token block for one fragment."""
-    vectors = [_tokens_from_view(tile_rgb[v]) for v in range(int(tile_rgb.shape[0]))]
+    """``tile_rgb`` is ``[V,H,W,3]`` uint8.  Returns the frozen token block for one fragment.
+
+    One token is one ``(view, block, channel)`` slot of the ``TOKEN_BLOCK x TOKEN_BLOCK``
+    block-mean grid (``TOKEN_BLOCK**2 * 3 == 48`` slots per view), and its ``TOKEN_DIM``
+    features are **that slot's own** ``TOKEN_SUB x TOKEN_SUB`` sub-grid means of the delivered
+    tile -- real local content of the image the model is allowed to see.
+
+    Defect history (measured on the shipped packages): the previous writer set
+    ``tokens[:, k] = flat * (1.0 - 1e-6 * k)``, i.e. 255 scaled copies of one scalar per token.
+    The effective rank of every such block was **1** (``sv[1]/sv[0] <= 6.8e-09``) while
+    ``deploy/tokens/index.json`` advertised ``token_dim = 256``.  ``token_input`` still carries
+    the original coarse 48-per-view block mean (it is a real number, not a placeholder);
+    ``tokens`` is now a real feature, so ``tokens[:, 0]`` is no longer a copy of ``token_input``.
+    """
+    if TOKEN_SUB * TOKEN_SUB != TOKEN_DIM:
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          f"TOKEN_SUB**2 = {TOKEN_SUB ** 2} != TOKEN_DIM = {TOKEN_DIM}",
+                          stage="export._token_arrays")
+    n_views = int(tile_rgb.shape[0]) if np.ndim(tile_rgb) == 4 else 0
+    vectors = [_tokens_from_view(tile_rgb[v]) for v in range(n_views)]
     flat = np.concatenate(vectors) if vectors else np.zeros(0, dtype=np.float32)
+    per_view = TOKEN_BLOCK * TOKEN_BLOCK * 3
     tokens = np.zeros((flat.size, TOKEN_DIM), dtype=np.float32)
-    if flat.size:
-        for k in range(TOKEN_DIM):
-            tokens[:, k] = flat if k == 0 else flat * (1.0 - 1e-6 * k)
+    for view_index in range(n_views):
+        data = _linear_view(tile_rgb[view_index])
+        for slot in range(per_view):
+            tokens[view_index * per_view + slot] = _token_feature(data, slot)
     valid = np.ones((flat.size,), dtype=bool)
-    view = np.repeat(np.arange(int(tile_rgb.shape[0]), dtype=np.int32), len(vectors[0]) if vectors else 0)
+    view = np.repeat(np.arange(n_views, dtype=np.int32), per_view)
     return {"tokens": tokens, "token_valid": valid, "token_view": view,
             "token_input": flat.astype(np.float32),
             "tile_valid": np.asarray(tile_valid, dtype=bool)}
 
 
 # --------------------------------------------------------------------------------------
+# degradation diversity (config-driven axis x level variants)
+# --------------------------------------------------------------------------------------
+#: Schema of the degradation-variant index written beside the two views.
+DEGRADE_INDEX_SCHEMA = "synlab.degrade_variant.index.v1"
+
+
+def _degrade_diversity_block(store: AssetStore, by_role: Mapping[str, list[Any]], out: Path,
+                             files: list[dict[str, Any]]) -> dict[str, Any]:
+    """Index the release's degradation-diversity assets (markers/fields only, no payload copy).
+
+    A ``degrade_variant`` asset is the **answer side** of a factor experiment: its metadata
+    carries ``axis_id``/``level``/``variant`` -- exactly the keys
+    ``roles.FORBIDDEN_FEATURE_FIELDS`` forbids inside a feature bundle -- so a variant may never
+    be merged into a feature shard.  It is exported as an index at the package root (outside both
+    views, so the deployment-view field scan cannot mistake it for a feature channel).
+
+    ``level 0`` is not an asset: it is the *source* asset each axis was computed from, and every
+    row records ``source_asset_id``, so the index rebuilds the
+    ``(same source, different degradation level)`` pairs the neighbour-retrieval task needs
+    without guessing which two assets are the same physical fragment.
+    """
+    from ..degrade.diversity import (ROLE_DEGRADE_SOURCE, ROLE_DEGRADE_VARIANT,
+                                     VARIANT_FIELDS)
+
+    variants = sorted(by_role.get(ROLE_DEGRADE_VARIANT, []), key=lambda r: r.asset_id)
+    sources = sorted(by_role.get(ROLE_DEGRADE_SOURCE, []), key=lambda r: r.asset_id)
+    rows: list[dict[str, Any]] = []
+    for record in variants:
+        meta = dict(record.meta or {})
+        row = {"asset_id": record.asset_id, "role": record.role, "schema": record.schema,
+               "unit": record.unit, "frame": record.frame, "qa_status": record.qa_status,
+               "lineage_id": record.lineage_id, "split": record.split,
+               "blob_hash": record.blob_hash}
+        for key in VARIANT_FIELDS:
+            row[key] = _jsonable(meta.get(key))
+        rows.append(row)
+    source_rows = [{"asset_id": record.asset_id, "role": record.role, "schema": record.schema,
+                    "unit": record.unit, "frame": record.frame, "lineage_id": record.lineage_id,
+                    "split": record.split, "source_kind": (record.meta or {}).get("source_kind"),
+                    "content_hash": (record.meta or {}).get("content_hash"),
+                    "family": (record.meta or {}).get("family")}
+                   for record in sources]
+
+    axes: dict[str, dict[str, Any]] = {}
+    for row in rows:
+        key = f"{row.get('lineage_id')}::{row.get('axis_id')}"
+        entry = axes.setdefault(key, {"axis_id": row.get("axis_id"),
+                                      "lineage_id": row.get("lineage_id"),
+                                      "variant": row.get("variant"), "family": row.get("family"),
+                                      "stage": row.get("stage"),
+                                      "basis_id": row.get("basis_id"), "levels": [],
+                                      "realized_levels": [], "source_assets": []})
+        entry["levels"].append(int(row.get("level") or 0))
+        if row.get("realized"):
+            entry["realized_levels"].append(int(row.get("level") or 0))
+        if row.get("source_asset_id") and row["source_asset_id"] not in entry["source_assets"]:
+            entry["source_assets"].append(row["source_asset_id"])
+    for entry in axes.values():
+        entry["levels"] = sorted(entry["levels"])
+        entry["realized_levels"] = sorted(entry["realized_levels"])
+
+    counts = {
+        "degrade_variants": len(rows),
+        "degrade_sources": len(source_rows),
+        "degrade_axes": len(axes),
+        "degrade_lineages": len({row.get("lineage_id") for row in rows}),
+        "degrade_axis_levels": int(sum(len(entry["levels"]) for entry in axes.values())),
+        # one identity reference per (lineage, axis): level 0 is the source asset itself
+        "degrade_identity_references": int(sum(len(entry["source_assets"]) for entry in axes.values())),
+    }
+    index = {
+        "schema": DEGRADE_INDEX_SCHEMA,
+        "role": ROLE_DEGRADE_VARIANT,
+        "source_role": ROLE_DEGRADE_SOURCE,
+        "fields": ["asset_id", "role", "schema", "unit", "frame", "qa_status", "lineage_id",
+                   "split", *VARIANT_FIELDS],
+        "level_zero_contract": ("level 0 is the source asset itself: no variant asset exists for "
+                                "it, `identity=true`/`bytes_unchanged=true` are recorded in the "
+                                "run report and the source asset id is `source_asset_id`"),
+        "retrieval_role": {
+            "same_source_different_level": "same physical fragment under two degradation levels "
+                                           "-> a same-instance positive (degradation invariance), "
+                                           "never a mate-task positive",
+            "different_source_same_level": "the hardest negatives of the robustness evaluation; "
+                                           "a same-instance hit under mismatched degradation must "
+                                           "still rank above them",
+            "must_not_enter": "the mate-task negative pool (R1/R0): two variants of one source "
+                              "are the same instance, so counting them as negatives would inject "
+                              "label noise",
+        },
+        "counts": counts,
+        "axes": {key: axes[key] for key in sorted(axes)},
+        "rows": rows,
+        "sources": source_rows,
+    }
+    degrade_root = Path(out) / "degrade"
+    degrade_root.mkdir(parents=True, exist_ok=True)
+    index_path = degrade_root / "index.json"
+    index_path.write_text(json.dumps(index, ensure_ascii=False, indent=2, sort_keys=True),
+                          encoding="utf-8")
+    _record(files, index_path, out, note="degradation-diversity index (variant fields, no payload)")
+    variants_path = degrade_root / "variants.json"
+    variants_path.write_text(json.dumps({"schema": DEGRADE_INDEX_SCHEMA, "rows": rows},
+                                        ensure_ascii=False, indent=2, sort_keys=True),
+                             encoding="utf-8")
+    _record(files, variants_path, out, note="one row per committed degrade_variant asset")
+    sources_path = degrade_root / "sources.json"
+    sources_path.write_text(json.dumps({"schema": DEGRADE_INDEX_SCHEMA, "rows": source_rows},
+                                       ensure_ascii=False, indent=2, sort_keys=True),
+                            encoding="utf-8")
+    _record(files, sources_path, out, note="one row per degradation source asset (level-0 anchor)")
+    return {"counts": counts, "index": index, "files": [index_path.name, variants_path.name,
+                                                        sources_path.name]}
+
+
+# --------------------------------------------------------------------------------------
 # export_training_package
 # --------------------------------------------------------------------------------------
+def _view_u_position_mm(meta_view: Mapping[str, Any], arrays: Mapping[str, np.ndarray],
+                        index: int) -> tuple[float | None, str]:
+    """The **real** per-view slide coordinate in mm, or ``(None, "unavailable")``.
+
+    Order of evidence:
+
+    ``T_WC`` (delivered pose)
+        ``T_WC[0, 3]`` -- the camera's slide coordinate in the scan frame.  This is the same
+        definition :mod:`synlab.degrade.api` uses when it builds a ``ViewFrame`` from a rendered
+        view (``u_position_mm=float(plan["T_WC"])[0, 3]``), so the exported channel and the
+        in-repo meaning agree instead of diverging.
+    ``view_meta.u_position_mm``
+        Used only as a fallback when no pose was delivered.
+    ``None``
+        Neither source carries a value: the channel is written as ``nan`` and the index records
+        ``view_pos_source = "unavailable"`` rather than a fake ``0.0``.
+
+    Defect history (D2, measured): the previous writer was
+    ``np.asarray(meta_view.get("u_position_mm", 0.0), dtype=np.float32)`` and the source metadata
+    really does carry ``u_position_mm = 0.0`` for every view of every asset, so the exported
+    array was all-zero in **31/31** members while ``deploy/obs/index.json`` declared the channel
+    as a delivered one.
+    """
+    pose = arrays.get(f"v{int(index):03d}.T_WC")
+    if pose is not None:
+        matrix = np.asarray(pose, dtype=np.float64)
+        if matrix.shape == (4, 4) and np.isfinite(matrix).all():
+            return float(matrix[0, 3]), "T_WC[0,3]"
+    raw = (meta_view or {}).get("u_position_mm")
+    if raw is not None:
+        try:
+            value = float(raw)
+        except (TypeError, ValueError):
+            value = float("nan")
+        if np.isfinite(value):
+            return value, "view_meta.u_position_mm"
+    return None, "unavailable"
+
+
+def _frame_ids_from_views(points: np.ndarray, arrays: Mapping[str, np.ndarray],
+                          views: int) -> tuple[np.ndarray, dict[str, Any]]:
+    """A **real** per-point frame id, derived from the delivered geometry.
+
+    For every delivered view the point is mapped into that view's camera frame with the
+    delivered pose (``T_WC``) and projected with the delivered ``K``; the view whose rendered
+    ``depth_z`` agrees with the reprojected depth best (and within :data:`FRAME_ID_TOLERANCE_MM`)
+    becomes the point's ``frame_id``.  ``-1`` marks a point that no delivered view explains.
+
+    Defect history (D3, measured): the previous writer was
+    ``(np.arange(n_points) % views)`` -- a deterministic function of the row index with zero
+    information about the point, which measured equal to the exported ``frame_id`` in **31/31**
+    arrays while the geometry index reported it as a frame identifier.
+    """
+    n_points = int(np.asarray(points).shape[0])
+    report: dict[str, Any] = {
+        "source": "unavailable", "tolerance_mm": float(FRAME_ID_TOLERANCE_MM),
+        "n_points": n_points, "views_used": 0, "matched": 0, "unmatched": n_points,
+        "match_fraction": 0.0, "median_residual_mm": None,
+    }
+    if n_points == 0:
+        return np.zeros(0, dtype=np.int32), report
+    world = np.asarray(points, dtype=np.float64).reshape(-1, 3)
+    homogeneous = np.concatenate([world, np.ones((n_points, 1), dtype=np.float64)], axis=1)
+    residuals: list[np.ndarray] = []
+    for index in range(int(views)):
+        pose = arrays.get(f"v{index:03d}.T_WC")
+        camera_matrix = arrays.get(f"v{index:03d}.K")
+        depth = arrays.get(f"v{index:03d}.depth_z")
+        if pose is None or camera_matrix is None or depth is None:
+            continue
+        pose = np.asarray(pose, dtype=np.float64)
+        camera_matrix = np.asarray(camera_matrix, dtype=np.float64)
+        depth = np.asarray(depth, dtype=np.float64)
+        if pose.shape != (4, 4) or camera_matrix.shape != (3, 3) or depth.ndim != 2:
+            continue
+        if not (np.isfinite(pose).all() and np.isfinite(camera_matrix).all()):
+            continue
+        try:
+            camera = (np.linalg.inv(pose) @ homogeneous.T).T[:, :3]
+        except np.linalg.LinAlgError:
+            continue
+        projected = (camera_matrix @ camera.T).T
+        z = projected[:, 2]
+        safe = np.where(np.abs(z) < 1e-12, np.nan, z)
+        u = np.rint(projected[:, 0] / safe).astype(np.int64)
+        v = np.rint(projected[:, 1] / safe).astype(np.int64)
+        height, width = depth.shape
+        inside = ((camera[:, 2] > 0) & np.isfinite(u) & np.isfinite(v)
+                  & (u >= 0) & (u < width) & (v >= 0) & (v < height))
+        residual = np.full(n_points, np.nan, dtype=np.float64)
+        if np.any(inside):
+            sampled = depth[v[inside], u[inside]]
+            residual[inside] = np.abs(sampled - camera[inside, 2])
+        residuals.append(residual)
+    if not residuals:
+        return np.full(n_points, -1, dtype=np.int32), report
+    stack = np.vstack([np.where(np.isfinite(row), row, np.inf) for row in residuals])
+    best = np.argmin(stack, axis=0)
+    best_residual = stack[best, np.arange(n_points)]
+    matched = np.isfinite(best_residual) & (best_residual <= float(FRAME_ID_TOLERANCE_MM))
+    frame_id = np.full(n_points, -1, dtype=np.int32)
+    frame_id[matched] = best[matched].astype(np.int32)
+    finite = best_residual[np.isfinite(best_residual)]
+    report.update({
+        "source": "T_WC+K+depth_z", "views_used": len(residuals),
+        "matched": int(matched.sum()), "unmatched": int(n_points - int(matched.sum())),
+        "match_fraction": float(int(matched.sum()) / n_points),
+        "median_residual_mm": (float(np.median(finite)) if finite.size else None),
+        "distinct_frames": int(np.unique(frame_id[matched]).size) if np.any(matched) else 0,
+    })
+    return frame_id, report
+
+
 def export_training_package(store: AssetStore, release_id: str, out_dir: str | Path, *,
                             formats: Sequence[str] = ("parquet", "npz", "zarr", "tar"),
                             pkg_id: str | None = None,
@@ -312,6 +779,24 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
     for role in by_role:
         by_role[role].sort(key=lambda r: r.asset_id)
 
+    # the channel whitelist of both views, resolved from its own document (never a literal here)
+    channel_policy = load_channel_policy()
+    deploy_table = channel_table(channel_policy, VIEW_DEPLOY)
+    research_table = channel_table(channel_policy, VIEW_RESEARCH)
+    deploy_channel_keys = set(deploy_table)
+    declared_optional = {
+        str(item.get("key")) for item in channel_policy["channels"].get(VIEW_DEPLOY, [])
+        if str(item.get("key")) not in {"tiles", "valid", "view_pos"}
+    }
+    policy_optional = {key for key, _array, _dtype in OPTIONAL_DEPLOY_CHANNELS}
+    if declared_optional != policy_optional:
+        raise SynLabError(
+            ErrorCode.SCHEMA_INVALID,
+            f"view channel policy declares optional deploy channels {sorted(declared_optional)} "
+            f"but this writer implements {sorted(policy_optional)}",
+            stage="export.export_training_package",
+            evidence_refs=[channel_policy["path"]])
+
     closure = manager.verify_closure(sorted(release_assets))
     files: list[dict[str, Any]] = []
     counts: dict[str, Any] = {}
@@ -323,8 +808,14 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
     physical_assets = by_role.get(ROLE_PHYSICAL_TRUTH, [])
     visible_role = by_role.get(ROLE_VISIBLE_LABELS, [])
 
-    # ---------------- observations: ObsPack RGB only, opaque names, sharded tar ----------
+    # ---------------- observations: policy-driven channels, opaque names, sharded tar ----
+    # Which channel may be written into the deployment view is read from the view channel policy
+    # (``synlab/schemas/view_channels.json``, overridable through ``SYNLAB_VIEW_CHANNEL_POLICY``);
+    # the resolved policy, its source path and its byte hash travel in the manifest.  A permitted
+    # channel that a given observation does not carry is *absent* for that fragment and is
+    # reported as missing -- never fabricated with a placeholder array.
     obs_by_fragment: dict[str, dict[str, Any]] = {}
+    channel_availability: dict[str, int] = {key: 0 for key in deploy_channel_keys}
     for record in observations:
         meta = dict(record.meta or {})
         fragment_id = str(meta.get("fragment_id") or "")
@@ -332,7 +823,13 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
             continue
         arrays = store.load_arrays(record.asset_id)
         views = list((meta.get("views") or []))
-        rgb, valid, view_pos = [], [], []
+        rgb, valid, view_pos, view_pos_source = [], [], [], []
+        # ``OPTIONAL_DEPLOY_CHANNELS`` is a tuple of ``(key, source_array, dtype)`` triples, so the
+        # accumulator must be keyed by the *first* element: iterating the tuple directly keys it by
+        # the triple itself and every ``optional[channel_key]`` below then raises KeyError (export
+        # could not run at all).  One-line fix, no behaviour change beyond running.
+        optional: dict[str, list[np.ndarray]] = {key: [] for key, _array, _dtype
+                                                 in OPTIONAL_DEPLOY_CHANNELS}
         n_views = 0
         for meta_view in views:
             index = len(view_pos)
@@ -342,21 +839,52 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
             rgb.append(np.asarray(arrays[key], dtype=np.uint8))
             valid.append(np.asarray(arrays.get(f"v{index:03d}.deployment_mask",
                                                np.ones(arrays[key].shape[:2], bool)), dtype=bool))
-            view_pos.append(np.asarray(meta_view.get("u_position_mm", 0.0), dtype=np.float32))
+            for channel_key, array_name, dtype in OPTIONAL_DEPLOY_CHANNELS:
+                raw = arrays.get(f"v{index:03d}.{array_name}")
+                if raw is None:
+                    continue
+                optional[channel_key].append(np.asarray(raw, dtype=dtype))
+            # D2 fix: a real per-view slide coordinate; a missing source becomes ``nan`` with a
+            # recorded reason instead of a silent ``0.0`` placeholder (see
+            # :func:`_view_u_position_mm`).
+            value, source = _view_u_position_mm(meta_view, arrays, index)
+            view_pos.append(np.float32(np.nan) if value is None else np.float32(value))
+            view_pos_source.append(source)
             n_views += 1
         if not rgb:
             continue
-        obs_by_fragment[fragment_id] = {
+        payload: dict[str, Any] = {
             "asset_id": record.asset_id, "split": record.split,
             "lineage_id": record.lineage_id, "views": n_views,
             "rgb": np.stack(rgb, axis=0), "valid": np.stack(valid, axis=0),
             "view_pos": np.asarray(view_pos, dtype=np.float32),
+            "view_pos_source": (view_pos_source[0] if len(set(view_pos_source)) == 1
+                                else "mixed"),
+            "extra": {},
+            "present": ["tiles", "valid", "view_pos"],
+            # the batch this observation belongs to (plan t088), read from the obs metadata
+            "context": {**(meta.get("context") or {}),
+                        "context_id": str(meta.get("context_id", "") or ""),
+                        "batch_id": str(meta.get("batch_id", "") or "")},
         }
+        for channel_key, _array_name, _dtype in OPTIONAL_DEPLOY_CHANNELS:
+            collected = optional[channel_key]
+            if len(collected) == n_views and n_views:
+                payload["extra"][channel_key] = np.stack(collected, axis=0)
+                payload["present"].append(channel_key)
+                channel_availability[channel_key] = channel_availability.get(channel_key, 0) + 1
+        if "K" in payload["extra"]:
+            # ``K`` is an array of one 3x3 matrix per delivered view
+            payload["extra"]["K"] = np.asarray(payload["extra"]["K"], dtype=np.float64)
+        obs_by_fragment[fragment_id] = payload
 
     counts["observations"] = len(obs_by_fragment)
     counts["obs_views"] = int(sum(v["views"] for v in obs_by_fragment.values()))
     counts["obs_bytes"] = int(sum(v["rgb"].nbytes + v["valid"].nbytes
                                   for v in obs_by_fragment.values()))
+    counts["deploy_channels_per_fragment"] = {
+        key: sum(1 for v in obs_by_fragment.values() if key in v["present"])
+        for key in deploy_channel_keys}
 
     obs_index: dict[str, dict[str, Any]] = {}
     if obs_by_fragment:
@@ -369,6 +897,7 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
                 for fragment_id in members:
                     payload = obs_by_fragment[fragment_id]
                     opaque = _opaque(fragment_id)
+                    members_written: list[str] = []
                     for suffix, array in (
                         ("tiles.npy", payload["rgb"]),
                         ("valid.npy", payload["valid"]),
@@ -379,6 +908,14 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
                         info.size = len(data)
                         info.mtime = 0
                         tar.addfile(info, io.BytesIO(data))
+                        members_written.append(suffix[: -len(".npy")])
+                    for channel_key, array in sorted(payload["extra"].items()):
+                        data = _npy_bytes(array)
+                        info = tarfile.TarInfo(name=f"{opaque}/{channel_key}.npy")
+                        info.size = len(data)
+                        info.mtime = 0
+                        tar.addfile(info, io.BytesIO(data))
+                        members_written.append(channel_key)
                     obs_index[fragment_id] = {
                         # No ``split`` and no ``lineage_id``: they are answer-side bookkeeping
                         # (both are in ``roles.FORBIDDEN_FEATURE_FIELDS``) and the deployment
@@ -389,23 +926,71 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
                         "shape": list(payload["rgb"].shape),
                         "hash": array_hash(payload["rgb"]),
                         "truth_channels": [],
+                        # the channels this fragment's member files really carry
+                        "channels": sorted(members_written),
+                        # where the delivered ``view_pos.npy`` really came from (D2 fix)
+                        "view_pos_source": payload["view_pos_source"],
                     }
-            _record(files, path, out, note="ObsPack RGB shard (opaque names, no truth channel)")
+            _record(files, path, out,
+                    note="ObsPack shard (opaque names, policy-driven channels, no truth channel)")
 
+        positions = (np.concatenate([payload["view_pos"] for payload in obs_by_fragment.values()])
+                     if obs_by_fragment else np.zeros(0, dtype=np.float32))
+        finite_positions = positions[np.isfinite(positions)]
         index_path = deploy_root / "obs" / "index.json"
         index_path.write_text(json.dumps({
             "schema": "synlab.obs_index.v1",
             "opaque_naming": "sha256(asset fragment id)[:24]",
-            "channels": ["tiles.npy (uint8 RGB)", "valid.npy (deployment mask)",
-                         "view_pos.npy (u position mm)"],
-            "forbidden_channels": ["depth_z", "id_map", "surface_tag", "uncertain_mask",
-                                   "roi", "K", "T_WC", "dist"],
+            "channel_policy": {
+                "schema": channel_policy["schema"],
+                "path": channel_policy["path"],
+                "hash": channel_policy["hash"],
+                "source": channel_policy["source"],
+                "env_override": VIEW_CHANNEL_POLICY_ENV,
+                "note": ("the deployment view's channel set is data, not a literal: this is the "
+                         "policy the shards were written under, with its own hash"),
+            },
+            "channels": [
+                {
+                    "key": entry["key"],
+                    "source_array": entry.get("source_array"),
+                    "dtype": entry.get("dtype"),
+                    "unit": entry.get("unit"),
+                    "reason": entry.get("reason"),
+                    "evidence_class": entry.get("evidence_class"),
+                    "caveat": entry.get("caveat"),
+                    "optional": bool(entry.get("optional", False)),
+                    "fragments_with_channel": int(counts["deploy_channels_per_fragment"]
+                                                  .get(entry["key"], 0)),
+                }
+                for entry in channel_policy["channels"].get(VIEW_DEPLOY, [])
+            ],
+            "channel_names": sorted(deploy_channel_keys),
+            "research_only_channels": sorted(channel_policy["research_only"]),
+            "view_pos": {
+                "unit": "mm",
+                "definition": ("camera slide coordinate in the scan frame, read from the delivered "
+                               "pose T_WC as T_WC[0, 3] -- the same definition "
+                               "synlab.degrade.api uses for a ViewFrame's u_position_mm"),
+                "fallback": "view_meta.u_position_mm, only when no pose was delivered",
+                "missing_marker": "nan (neither T_WC nor a real u_position_mm was delivered)",
+                "measured": {
+                    "views": int(positions.size),
+                    "finite": int(finite_positions.size),
+                    "nonzero_finite": int(np.count_nonzero(finite_positions)),
+                    "min": (float(finite_positions.min()) if finite_positions.size else None),
+                    "max": (float(finite_positions.max()) if finite_positions.size else None),
+                    "varies_across_views": bool(finite_positions.size
+                                                and float(np.ptp(finite_positions)) > 0.0),
+                },
+            },
             "rows": obs_index,
         }, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8")
         _record(files, index_path, out)
 
     # ---------------- geometry: npz + tar shards, zarr replica --------------------------
     geometry_by_fragment: dict[str, dict[str, np.ndarray]] = {}
+    frame_reports: dict[str, dict[str, Any]] = {}
     for record in observations:
         meta = dict(record.meta or {})
         fragment_id = str(meta.get("fragment_id") or "")
@@ -420,7 +1005,13 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
         normal_valid = np.asarray(arrays.get("normal_valid", np.ones(points.shape[0], bool)), bool)
         scale_valid = np.full(points.shape[0], bool(meta.get("scale_valid", False)), dtype=bool)
         views = int(obs_by_fragment.get(fragment_id, {}).get("views", 1) or 1)
-        frame_id = (np.arange(points.shape[0], dtype=np.int32) % views).astype(np.int32)
+        # D3 fix: a real per-point frame id, not a row counter.  The old writer used
+        # ``arange(n_points) % views`` -- a deterministic function of the row index carrying zero
+        # information about the point (measured equal to the exported array in 31/31 members).
+        # ``frame_id[i]`` is now the delivered view whose rendered ``depth_z`` matches the point
+        # reprojected through ``K`` and ``T_WC``; ``-1`` marks a point no delivered view explains.
+        frame_id, frame_report = _frame_ids_from_views(points, arrays, views)
+        frame_reports[fragment_id] = frame_report
         geometry_by_fragment[fragment_id] = {
             "points": points, "normals": normals, "point_valid": point_valid,
             "normal_valid": normal_valid, "scale_valid": scale_valid, "frame_id": frame_id,
@@ -441,19 +1032,43 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
                 opaque = _opaque(fragment_id)
                 for key, array in geometry_by_fragment[fragment_id].items():
                     payload[f"{opaque}__{key}"] = array
+                frame_ids = np.asarray(geometry_by_fragment[fragment_id]["frame_id"])
+                matched = frame_ids[frame_ids >= 0]
                 geometry_index[fragment_id] = {
                     "opaque": opaque, "shard": name,
                     "n_points": int(geometry_by_fragment[fragment_id]["points"].shape[0]),
-                    "frames": int(np.unique(geometry_by_fragment[fragment_id]["frame_id"]).size),
+                    # "frames" counts the delivered views a point was really matched to; it used
+                    # to be the number of distinct values of the row counter (always n_views).
+                    "frames": int(np.unique(matched).size),
+                    "frame_id_source": str(frame_reports.get(fragment_id, {}).get("source",
+                                                                                 "unavailable")),
+                    "frame_id_unmatched": int((frame_ids < 0).sum()),
+                    "frame_id_match_fraction": float(matched.size / max(int(frame_ids.size), 1)),
                     "points_hash": array_hash(geometry_by_fragment[fragment_id]["points"]),
                 }
             np.savez(path, **payload)
             _record(files, path, out, note="geometry shard (points/normals/*_valid/scale_valid/frame_id)")
+        _matched_total = int(sum(int(row["n_points"]) - int(row["frame_id_unmatched"])
+                                 for row in geometry_index.values()))
+        _points_total = int(sum(int(row["n_points"]) for row in geometry_index.values()))
+        _with_pose = sorted({str(row["frame_id_source"]) for row in geometry_index.values()})
         index_path = deploy_root / "geometry" / "index.json"
         index_path.write_text(json.dumps({
             "schema": "synlab.geometry_index.v1",
             "arrays": ["points", "normals", "point_valid", "normal_valid", "scale_valid",
                        "frame_id"],
+            "frame_id": {
+                "unit": "1 (index of a delivered view inside the fragment)",
+                "definition": ("the delivered view whose rendered depth_z agrees with the point "
+                               "reprojected through K and T_WC; -1 = no delivered view explains "
+                               "the point"),
+                "tolerance_mm": float(FRAME_ID_TOLERANCE_MM),
+                "unmatched_marker": -1,
+                "sources": _with_pose,
+                "measured": {"points": _points_total, "matched": _matched_total,
+                             "match_fraction": (float(_matched_total / _points_total)
+                                                if _points_total else 0.0)},
+            },
             "rows": geometry_index,
         }, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8")
         _record(files, index_path, out)
@@ -501,6 +1116,15 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
             "token_dim": TOKEN_DIM,
             "encoder_id": ENCODER_ID,
             "token_policy_id": TOKEN_POLICY_ID,
+            # What one token *is*, stated where a loader can read it: one token per
+            # ``(view, block, channel)`` slot, ``TOKEN_DIM`` sub-grid means of that slot.  The
+            # previous writer broadcast one scalar into ``token_dim`` columns per token (measured
+            # effective rank 1); the layout key is what makes that difference checkable.
+            "token_layout": TOKEN_LAYOUT,
+            "token_sub_grid": [TOKEN_SUB, TOKEN_SUB],
+            "tokens_per_view": TOKEN_BLOCK * TOKEN_BLOCK * 3,
+            "token_input": "coarse TOKEN_BLOCK x TOKEN_BLOCK block mean per view (real, rank-1 by"
+                           " construction); kept for provenance, not a 256-dim feature",
             "rows": token_index,
         }, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8")
         _record(files, index_path, out)
@@ -601,6 +1225,9 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
         obs = obs_by_fragment.get(fragment_id, {})
         mates = sorted({r["candidate"] for r in relation_rows
                         if r["query"] == fragment_id and r["kind"] == "R2"})
+        # the batch this query belongs to (plan t088): the same controlled metadata a real
+        # excavation hands over with a sherd, so the candidate scope of a query is addressable
+        query_context = dict(obs.get("context") or {})
         queries_rows.append({
             # ``fragment_id`` is deliberately not a column: it is a forbidden feature-field name
             # and it would only duplicate ``query_id`` (``q::<fragment_id>``) and ``fragment``.
@@ -615,6 +1242,11 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
             "historical_N_G": len(mates),
             "status": "FROZEN",
             "has_observation": fragment_id in obs_by_fragment,
+            "context_id": str(query_context.get("context_id", "") or ""),
+            "batch_id": str(query_context.get("batch_id", "") or ""),
+            "bag_id": str(query_context.get("bag_id", "") or ""),
+            "stratum_id": str(query_context.get("stratum_id", "") or ""),
+            "excavation_area_id": str(query_context.get("excavation_area_id", "") or ""),
             "applicability": {"views": int(obs.get("views", 0)),
                               "scale_valid": bool(meta.get("scale_valid", False))},
         })
@@ -650,10 +1282,28 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
 
     # ---------------- layered labels (Clean / Physical / Visible kept apart) -------------
     label_files: list[dict[str, Any]] = []
+    supervision_labels: dict[str, Any] = {}
     if include_truth:
-        for layer, assets in (("clean", clean_assets), ("physical", physical_assets),
-                              ("visible", visible_role)):
-            rows = _label_rows(layer, store, assets)
+        # Two of the layers are *supervision* rather than bookkeeping and are built from the
+        # measured label side: the observability target of task D and the real surface
+        # correspondence of every supervised pair.  Both used to be dropped by the package, so a
+        # consumer could not tell "no label was produced" from "the label never reached the
+        # package" (see ``docs/a12/training_run.md``).
+        quality_rows, quality_prov = _quality_rows(
+            store, list(visible_role) + list(labels_assets), fragment_ids=all_fragments)
+        correspondence_rows, correspondence_prov = _correspondence_rows(store, relations)
+        supervision_labels = {"quality": quality_prov, "correspondence": correspondence_prov}
+        counts["quality_targets"] = int(sum(1 for r in quality_rows if r["valid"]))
+        counts["quality_target_views"] = len(quality_rows)
+        counts["correspondence_samples"] = len(correspondence_rows)
+        counts["correspondence_pairs"] = int(correspondence_prov["pairs_with_correspondence"])
+
+        layer_rows = [(layer, assets, _label_rows(layer, store, assets))
+                      for layer, assets in (("clean", clean_assets), ("physical", physical_assets),
+                                            ("visible", visible_role))]
+        layer_rows += [("quality", visible_role, quality_rows),
+                       ("correspondence", [], correspondence_rows)]
+        for layer, assets, rows in layer_rows:
             if not rows:
                 continue
             path = research_root / "labels" / f"{layer}.parquet"
@@ -677,6 +1327,102 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
         _record(files, mapping_path, out)
     counts["label_layers"] = len(label_files)
 
+    # ---------------- degradation diversity (axis x level variants) ---------------------
+    # Indexed as a marked block beside the views: a variant carries the factor answer
+    # (axis_id/level/variant) and must never be merged into a feature shard.
+    degrade_block = _degrade_diversity_block(store, by_role, out, files)
+    counts.update(degrade_block["counts"])
+
+    # ---------------- simulated excavation context (plan t088) --------------------------
+    # Context is *the metadata that travels with a sherd at a real excavation*, so it belongs to
+    # the deployment view: the pack document is written under ``deploy/context/`` and every query
+    # row names its own context/batch/bag.  Two answer-side fields are deliberately **not**
+    # exported here: the batch membership lists real fragment ids, so it stays on the research
+    # side (``research/context_membership.json``), and no lineage/split ever appears.
+    deploy_context_rows: dict[str, dict[str, Any]] = {}
+    research_membership: dict[str, Any] = {}
+    # the accumulator the block below fills and ``counts``/``packs.json`` read; without it the
+    # whole export raised NameError at ``counts["context_packs"] = len(packs)``.
+    packs: list[dict[str, Any]] = []
+    for record in by_role.get(ROLE_CONTEXT_PACK, []):
+        meta = dict(record.meta or {})
+        packs.append({
+            "asset_id": record.asset_id,
+            "simulated": bool(meta.get("simulated", False)),
+            "pack_id": str(meta.get("pack_id", "")),
+            "context_id": str(meta.get("context_id", "")),
+            "batch_id": str(meta.get("batch_id", "")),
+            "batch_size": int(meta.get("batch_size", 0) or 0),
+            "bag_id": str(meta.get("bag_id", "")),
+            "pit_id": str(meta.get("pit_id", "")),
+            "site_id": str(meta.get("site_id", "")),
+            "institution_id": str(meta.get("institution_id", "")),
+            "excavation_area_id": str(meta.get("excavation_area_id", "")),
+            "grid_ref": str(meta.get("grid_ref", "")),
+            "unit_code": str(meta.get("unit_code", "")),
+            "stratum_id": str(meta.get("stratum_id", "")),
+            "stratum_depth_mm": meta.get("stratum_depth_mm"),
+            "session_id": str(meta.get("session_id", "")),
+            "operator_id": str(meta.get("operator_id", "")),
+            "captured_at": str(meta.get("captured_at", "")),
+            "site_notes": str(meta.get("site_notes", "")),
+            "scale_reference": _jsonable(meta.get("scale_reference") or {}),
+            "coexistent_counts": _jsonable(meta.get("coexistent_counts") or {}),
+            "coexistence_scope": str(meta.get("coexistence_scope", "")),
+            "batch_rule": str(meta.get("batch_rule", "")),
+            "schema": record.schema,
+            "unit": record.unit,
+            "frame": record.frame,
+            "qa_status": record.qa_status,
+        })
+        deploy_context_rows.setdefault(str(meta.get("context_id", "")), {
+            "context_id": str(meta.get("context_id", "")),
+            "batch_id": str(meta.get("batch_id", "")),
+            "bag_id": str(meta.get("bag_id", "")),
+            "pit_id": str(meta.get("pit_id", "")),
+            "stratum_id": str(meta.get("stratum_id", "")),
+            "excavation_area_id": str(meta.get("excavation_area_id", "")),
+        })
+        members = [str(row.get("id", "")) for row in (meta.get("coexistents") or [])]
+        research_membership[str(meta.get("context_id", ""))] = {
+            "batch_id": str(meta.get("batch_id", "")),
+            "members": sorted(members),
+            "opaque_members": sorted(_opaque(member) for member in members),
+            "note": ("research-only: the batch membership is a list of real fragment ids, which "
+                     "is exactly the answer the deployment view's opaque names hide"),
+        }
+    counts["context_packs"] = len(packs)
+    counts["context_batches"] = len({row["batch_id"] for row in packs})
+    counts["context_queries"] = int(sum(1 for row in queries_rows if row.get("context_id")))
+
+    if packs or research_membership:
+        context_dir = deploy_root / "context"
+        context_dir.mkdir(parents=True, exist_ok=True)
+        packs_path = context_dir / "packs.json"
+        packs_path.write_text(json.dumps({
+            "schema": "synlab.context_pack.v1",
+            "simulated": True,
+            "role": ROLE_CONTEXT_PACK,
+            "note": ("simulated excavation context (plan t088): every field is generated by the "
+                     "synthetic generator and marked simulated=true; none of it is an "
+                     "archaeological record"),
+            "field_units": {
+                "stratum_depth_mm": "mm below the simulated site datum",
+                "scale_reference.size_mm": "mm (the physical size of the scale object)",
+                "coexistents": "counts only; the member list is research-side",
+            },
+            "packs": packs,
+        }, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8")
+        _record(files, packs_path, out, note="deployment view: simulated excavation context")
+        membership_path = research_root / "context_membership.json"
+        membership_path.parent.mkdir(parents=True, exist_ok=True)
+        membership_path.write_text(json.dumps({
+            "schema": "synlab.context_membership.v1",
+            "note": "research view: real fragment ids per batch (the deployment view hides them)",
+            "batches": research_membership,
+        }, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8")
+        _record(files, membership_path, out, note="research view: batch membership ids")
+
     # ---------------- truth separation declaration --------------------------------------
     # The separation claim is *measured on the package that was just written*, never stated:
     # the field scan reads every JSON/parquet/npz/tar container of the deployment view and
@@ -699,12 +1445,25 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
 
     deploy_scan = scan_view_fields(deploy_root)
     research_scan = scan_view_fields(research_root)
-    forbidden_names = {str(name).lower() for name in FORBIDDEN_FEATURE_FIELDS}
-    answer_hits = [{"file": rel, "field": key}
-                   for rel, keys in sorted(deploy_scan["keys_by_container"].items())
-                   for key in keys if key.lower() in forbidden_names]
+    # The Lead's ``bag_id`` ruling: a name the policy declares with
+    # ``evidence_class=capture_context`` + ``rig_obtainable=true`` + ``claim_allowed=true`` is
+    # acquisition context a deployment rig really has, so it is *not* an answer field for this
+    # scan.  The declaration is loaded from the policy document (never a literal here), it was
+    # validated against the truth-critical set at load time, and every exempted name that really
+    # occurs in the deployment view is reported separately below -- so the exemption is measured
+    # rather than asserted.  Nothing else in FORBIDDEN_FEATURE_FIELDS is affected: ``lineage_id``,
+    # ``split``, ``iface_*``, ``corr_*``, ``id_map``, ``T_WC`` and the truth layers all still hit.
+    capture_keys = set(channel_policy.get("capture_context_keys") or [])
+    field_scan = scan_answer_fields(deploy_root, capture_keys=capture_keys, scan=deploy_scan)
+    answer_hits = field_scan["answer_hits"]
+    capture_hits = field_scan["capture_hits"]
     deploy_truth_content = truth_bearing_files(deploy_root, deploy_scan)
     research_truth_content = truth_bearing_files(research_root, research_scan)
+    channel_separation = channel_separation_report(
+        deploy_root, research_root, channel_policy,
+        deploy_channels={
+            fragment_id: list(payload["present"]) for fragment_id, payload in obs_by_fragment.items()
+        })
 
     manifest_payload: dict[str, Any] = {
         "schema": PACKAGE_MANIFEST_SCHEMA,
@@ -746,16 +1505,41 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
             "features_carry_answer_fields_source": (
                 "content scan of the written deployment view: keys read from its "
                 "JSON/parquet/npz/tar containers and intersected with "
-                "roles.FORBIDDEN_FEATURE_FIELDS"),
+                "roles.FORBIDDEN_FEATURE_FIELDS, minus the names the view channel policy "
+                "declares as capture context"),
             "answer_field_scan": {
                 "view": VIEW_DEPLOY,
                 "forbidden_fields": sorted(FORBIDDEN_FEATURE_FIELDS),
+                # the set the hits below were really computed against, so the exemption is
+                # auditable instead of being invisible arithmetic
+                "effective_answer_fields": field_scan["effective_answer_fields"],
+                "exempt_capture_context_fields": field_scan["exempt_capture_context_fields"],
                 "hits": answer_hits,
-                "hits_by_field": _hits_by_field(answer_hits),
+                "hits_by_field": field_scan["answer_hits_by_field"],
                 "keys_scanned": deploy_scan["keys_scanned"],
                 "unique_keys": len(deploy_scan["unique_keys"]),
                 "containers": deploy_scan["containers"],
                 "not_read": _grouped_skips(deploy_scan["skipped"]),
+            },
+            "capture_context_scan": {
+                "view": VIEW_DEPLOY,
+                "declared_fields": sorted(capture_keys),
+                "declaration_source": {
+                    "path": channel_policy["path"],
+                    "hash": channel_policy["hash"],
+                    "block": "capture_context_fields",
+                    "evidence_class": CAPTURE_CONTEXT_CLASS,
+                    "rig_obtainable": True,
+                    "claim_allowed": True,
+                },
+                "hits": capture_hits,
+                "hits_by_field": field_scan["capture_hits_by_field"],
+                "note": ("declared acquisition context (the Lead's bag_id ruling): a real "
+                         "excavation hands these over with the sherd, so they are permitted in "
+                         "the deployment view and are exempt from the answer-field scan.  Every "
+                         "name is validated against TRUTH_CRITICAL_FIELDS | research-only "
+                         "channels | TRUTH_BEARING_FIELDS when the policy is loaded, so an "
+                         "exemption can never cover a truth field."),
             },
             "truth_content_scan": {
                 VIEW_DEPLOY: {
@@ -771,6 +1555,7 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
             },
             "statement": ("the deployment view is safe to ship to an unprivileged loader; the "
                           "research view must never be merged into it"),
+            "channel_separation": channel_separation,
         },
         "reference_closure": {
             "ok": bool(closure.get("ok")),
@@ -783,7 +1568,22 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
             "by_role": {role: len(items) for role, items in sorted(by_role.items())},
         },
         "counts": counts,
+        "degrade_diversity": {
+            "role": degrade_block["index"]["role"],
+            "source_role": degrade_block["index"]["source_role"],
+            "schema": DEGRADE_INDEX_SCHEMA,
+            "counts": degrade_block["counts"],
+            "files": degrade_block["files"],
+            "axes": degrade_block["index"]["axes"],
+            "level_zero_contract": degrade_block["index"]["level_zero_contract"],
+            "retrieval_role": degrade_block["index"]["retrieval_role"],
+            "feature_bundle_exclusion": ("degrade_variant metadata carries axis_id/level/variant, "
+                                         "which roles.FORBIDDEN_FEATURE_FIELDS forbids inside a "
+                                         "feature_bundle; the variant index is written at the "
+                                         "package root, outside both views"),
+        },
         "labels": label_files,
+        "supervision_labels": supervision_labels,
         "superseded_relations": superseded,
         "token_cache": {
             "encoder_id": ENCODER_ID,
@@ -955,6 +1755,233 @@ def _label_rows(layer: str, store: AssetStore, assets: Sequence[Any]) -> list[di
     return rows
 
 
+# --------------------------------------------------------------------------------------
+# supervision labels that the release already carries
+# --------------------------------------------------------------------------------------
+#: Label layers written *in addition* to clean/physical/visible.  Both carry supervision the
+#: release has measured but the package used to drop:
+#:
+#: ``quality``
+#:     The label-side observability measurement of the delivered observation (the visible/truth
+#:     layer's ``per_view`` block): how many of a fragment's surface samples survive each
+#:     visibility criterion.  It is computed against the *rendered* depth/id_map/uncertain_mask
+#:     channels, which the deployment view never carries, so it is a target and not an input.
+#:     ``loss_mask``/``valid`` semantics: a fragment/view with no measurement stays invalid and
+#:     is never turned into a zero target.
+#: ``correspondence``
+#:     The real many-to-many surface correspondence between the two sides of a cut face
+#:     (``corr_*`` arrays of the clean/physical truth assets: point indices, barycentrics, face
+#:     ids, residual, association code, ambiguity flag and a non-negative edge weight).  Only
+#:     pairs whose relation row is supervised (``valid and loss_mask``) are exported.
+SUPERVISION_LABEL_LAYERS = ("quality", "correspondence")
+
+#: The single channel the packaged quality target carries.  The observation-only feature side
+#: exposes one quality slot (``a12.obs.v1`` payload ``quality``), so the D-task head predicts one
+#: channel; the *target* is the label-side observability of the same fragment.
+QUALITY_TARGET_CHANNEL = "observability_visible_rate"
+
+
+def _observability_candidates(store: AssetStore, records: Iterable[Any]) -> dict[str, list[dict]]:
+    """Every real per-view observability measurement of every asset, grouped by fragment.
+
+    Two carriers exist in a release and both are read: ``visible_labels`` assets (``per_view``)
+    and ``label_bundle`` assets (``visible_json``).  A release may contain several re-commits of
+    the same fragment, so each candidate keeps its own asset id and view/sample counts and the
+    choice is made explicitly by :func:`_canonical_observability`.
+    """
+    out: dict[str, list[dict]] = {}
+    for record in records:
+        meta = dict(record.meta or {})
+        fragment_id = str(meta.get("fragment_id") or "")
+        if not fragment_id:
+            continue
+        block = meta.get("per_view")
+        if block is None:
+            block = meta.get("visible_json")
+        if isinstance(block, str):
+            try:
+                block = json.loads(block)
+            except ValueError:
+                block = None
+        if not isinstance(block, Mapping) or not block:
+            continue
+        views = {str(k): dict(v) for k, v in block.items() if isinstance(v, Mapping)}
+        if not views:
+            continue
+        out.setdefault(fragment_id, []).append({
+            "asset_id": record.asset_id,
+            "role": record.role,
+            "schema": record.schema,
+            "lineage": record.lineage_id,
+            "split": record.split,
+            "views": views,
+            "n_views": len(views),
+            "max_samples": int(max(int(v.get("samples") or 0) for v in views.values())),
+        })
+    for candidates in out.values():
+        candidates.sort(key=lambda c: (-int(c["n_views"]), -int(c["max_samples"]),
+                                       str(c["asset_id"])))
+    return out
+
+
+def _canonical_observability(candidates: Mapping[str, list[dict]]) -> dict[str, dict]:
+    """The widest real measurement per fragment (most views, then most samples, then id).
+
+    "Widest" is the only tie-break used: the candidates are re-commits of the same measurement,
+    and the one that measured more views is the one that can supervise more of them.  The
+    candidates that were *not* chosen are recorded in the manifest, so which measurement was
+    used (and which were available) is never a silent decision.
+    """
+    chosen: dict[str, dict] = {}
+    for fragment_id, items in sorted(candidates.items()):
+        if items:
+            chosen[fragment_id] = items[0]
+    return chosen
+
+
+def _quality_rows(store: AssetStore, records: Iterable[Any], *, fragment_ids: Sequence[str]
+                  ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Label-side observability rows (one per fragment x view) plus the provenance block."""
+    candidates = _observability_candidates(store, records)
+    chosen = _canonical_observability(candidates)
+    wanted = {str(fid) for fid in fragment_ids}
+    rows: list[dict[str, Any]] = []
+    provenance: dict[str, Any] = {"target_channel": QUALITY_TARGET_CHANNEL,
+                                  "target_unit": "1",
+                                  "source_kind": "GT_ORACLE",
+                                  "rule": ("visible = inside the delivered image AND camera z>0 "
+                                           "AND |z - rendered depth| <= max(0.5 mm, 4 * "
+                                           "mm_per_px) AND id_map>=0 AND not uncertain_mask AND "
+                                           "deployment_mask (measured by the visible/truth layer)"),
+                                  "fragments_with_measurement": 0,
+                                  "views_measured": 0,
+                                  "candidates": {}}
+    for fragment_id in sorted(set(chosen) & wanted):
+        pick = chosen[fragment_id]
+        provenance["candidates"][fragment_id] = {
+            "chosen": pick["asset_id"],
+            "available": [{"asset_id": c["asset_id"], "role": c["role"], "views": c["n_views"],
+                           "max_samples": c["max_samples"]} for c in candidates[fragment_id]],
+        }
+        provenance["fragments_with_measurement"] += 1
+        for view_id, entry in sorted(pick["views"].items()):
+            samples = int(entry.get("samples") or 0)
+            valid = samples > 0
+            row = {
+                "label_layer": "quality",
+                "fragment_id": fragment_id,
+                "view_id": view_id,
+                "lineage": pick["lineage"],
+                "split": pick["split"],
+                "samples": samples,
+                "projected": int(entry.get("projected") or 0),
+                "depth_ok": int(entry.get("depth_ok") or 0),
+                "id_ok": int(entry.get("id_ok") or 0),
+                "not_uncertain": int(entry.get("not_uncertain") or 0),
+                "deployment_ok": int(entry.get("deployment_ok") or 0),
+                "visible": int(entry.get("visible") or 0),
+                "target_channel": QUALITY_TARGET_CHANNEL,
+                "target_unit": "1",
+                "source_kind": "GT_ORACLE",
+                "source_ref": str(pick["asset_id"]),
+                "asset_id": str(pick["asset_id"]),
+                "valid": bool(valid),
+                "reason": "" if valid else "no_samples_measured_for_this_view",
+            }
+            for name, key in (("visible_rate", "visible"), ("depth_ok_rate", "depth_ok"),
+                              ("id_ok_rate", "id_ok"), ("not_uncertain_rate", "not_uncertain"),
+                              ("deployment_ok_rate", "deployment_ok")):
+                row[name] = (float(row[key]) / float(samples)) if valid else None
+            row["target_value"] = row["visible_rate"]
+            rows.append(row)
+        provenance["views_measured"] += int(pick["n_views"])
+    return rows, provenance
+
+
+def _correspondence_rows(store: AssetStore, relations: Sequence[Mapping[str, Any]]
+                         ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Real correspondence samples of every supervised pair plus the provenance block."""
+    rows: list[dict[str, Any]] = []
+    provenance: dict[str, Any] = {"pairs_supervised": 0, "pairs_with_correspondence": 0,
+                                 "samples": 0, "weight_sum": 0.0, "valid_samples": 0,
+                                 "ambiguous_samples": 0, "skipped": [],
+                                 "association_code_histogram": {}}
+    source_kind = {ROLE_CLEAN_TRUTH: "CLEAN_TRUTH", ROLE_PHYSICAL_TRUTH: "PHYSICAL_TRUTH"}
+    for row in relations:
+        if not (bool(row.get("valid", False)) and bool(row.get("loss_mask", False))):
+            continue
+        a = str(row.get("a", ""))
+        b = str(row.get("b", ""))
+        if not a or not b:
+            continue
+        provenance["pairs_supervised"] += 1
+        asset_id = str(row.get("_truth_asset") or "")
+        if not asset_id:
+            provenance["skipped"].append({"pair": [a, b], "reason": "no truth asset reference"})
+            continue
+        try:
+            record = store.get_asset(asset_id)
+            arrays = store.load_arrays(asset_id)
+        except SynLabError as exc:
+            provenance["skipped"].append({"pair": [a, b], "reason": f"{asset_id}: {exc}"})
+            continue
+        if "corr_index_a" not in arrays or "corr_weight" not in arrays:
+            provenance["skipped"].append(
+                {"pair": [a, b], "asset_id": asset_id,
+                 "reason": "asset carries no corr_* correspondence block"})
+            continue
+        pair_of_asset = {str(x) for x in np.asarray(
+            arrays.get("corr_fragment_ids", np.zeros(0, dtype="U1"))).tolist()}
+        if pair_of_asset and pair_of_asset != {a, b}:
+            provenance["skipped"].append(
+                {"pair": [a, b], "asset_id": asset_id,
+                 "reason": f"correspondence is between {sorted(pair_of_asset)}"})
+            continue
+        index_a = np.asarray(arrays["corr_index_a"], dtype=np.int64)
+        index_b = np.asarray(arrays.get("corr_index_b", index_a), dtype=np.int64)
+        weight = np.asarray(arrays["corr_weight"], dtype=np.float64)
+        valid = np.asarray(arrays.get("corr_valid", np.ones(index_a.size, bool)), dtype=bool)
+        ambiguous = np.asarray(arrays.get("corr_ambiguous", np.zeros(index_a.size, bool)),
+                               dtype=bool)
+        code = np.asarray(arrays.get("corr_association_code",
+                                     np.zeros(index_a.size, np.int32)), dtype=np.int64)
+        residual = np.asarray(arrays.get("corr_residual_mm",
+                                        np.zeros(index_a.size, np.float32)), dtype=np.float64)
+        iface = np.asarray(arrays.get("corr_interface_id",
+                                     np.full(index_a.size, -1, np.int32)), dtype=np.int64)
+        provenance["pairs_with_correspondence"] += 1
+        for i in range(index_a.size):
+            c = int(code[i])
+            hist = provenance["association_code_histogram"]
+            hist[str(c)] = hist.get(str(c), 0) + 1
+            provenance["weight_sum"] += float(weight[i])
+            provenance["valid_samples"] += int(bool(valid[i]))
+            provenance["ambiguous_samples"] += int(bool(ambiguous[i]))
+            rows.append({
+                "label_layer": "correspondence",
+                "fragment_a": a, "fragment_b": b,
+                "index_a": int(index_a[i]), "index_b": int(index_b[i]),
+                "weight": float(weight[i]),
+                "sample_valid": bool(valid[i]),
+                "ambiguous": bool(ambiguous[i]),
+                "association_code": c,
+                "residual_mm": float(residual[i]),
+                "interface_id": int(iface[i]),
+                "relation_kind": str(row.get("kind", "")),
+                "lineage": str(row.get("_lineage_id") or record.lineage_id or ""),
+                "split": record.split,
+                "source_kind": source_kind.get(record.role, record.role),
+                "source_ref": asset_id,
+                "asset_id": asset_id,
+                "valid": bool(valid[i]),
+                "reason": ("" if bool(valid[i]) else "correspondence sample marked invalid")
+                          + (";ambiguous" if bool(ambiguous[i]) else ""),
+            })
+    provenance["samples"] = len(rows)
+    provenance["weight_sum"] = float(provenance["weight_sum"])
+    return rows, provenance
+
+
 def _write_parquet(path: Path, rows: Sequence[Mapping[str, Any]], row_group_size: int) -> None:
     import pyarrow as pa
     import pyarrow.parquet as pq
@@ -1010,6 +2037,12 @@ TRUTH_BEARING_FIELDS = frozenset({
 #: the manifest instead of being silent.
 STORAGE_METADATA_NAMES = frozenset({"zarr.json", ".zarray", ".zattrs", ".zgroup",
                                     ".zmetadata"})
+
+#: Files *inside a view* that declare a channel set rather than deliver one.  They are read by
+#: :func:`declared_channels` and excluded from :func:`observed_channels`, so the manifest's
+#: "channels present" list can only ever contain real payload names.
+DECLARATION_ONLY_FILES = frozenset({"obs/index.json", "geometry/index.json", "tokens/index.json",
+                                    "deploy_index.json"})
 
 
 def _looks_opaque(name: Any) -> bool:
@@ -1125,6 +2158,44 @@ def scan_view_fields(view_root: Path) -> dict[str, Any]:
     }
 
 
+def scan_answer_fields(view_root: str | Path, *, capture_keys: Iterable[str] = (),
+                       scan: Mapping[str, Any] | None = None) -> dict[str, Any]:
+    """Split a written view's field names into answer-field hits and capture-context hits.
+
+    The manifest and the tests both call *this* function, so the capture-context exemption is the
+    shipped arithmetic rather than something a test re-implements.  ``capture_keys`` are the
+    lower-cased names the view channel policy declared with ``evidence_class=capture_context``
+    (validated when the policy was loaded); every other name of
+    ``synlab.roles.FORBIDDEN_FEATURE_FIELDS`` stays an answer-field hit, so the exemption can only
+    ever cover what the policy explicitly declared.
+    """
+    probe = dict(scan) if scan is not None else scan_view_fields(Path(view_root))
+    forbidden_names = {str(name).lower() for name in FORBIDDEN_FEATURE_FIELDS}
+    capture = {str(name).lower() for name in capture_keys}
+    answer_hits: list[dict[str, str]] = []
+    capture_hits: list[dict[str, str]] = []
+    for rel, keys in sorted((probe.get("keys_by_container") or {}).items()):
+        for key in keys:
+            lowered = str(key).lower()
+            if lowered in capture:
+                capture_hits.append({"file": rel, "field": key})
+            elif lowered in forbidden_names:
+                answer_hits.append({"file": rel, "field": key})
+    return {
+        "view": str(view_root),
+        "forbidden_fields": sorted(FORBIDDEN_FEATURE_FIELDS),
+        "effective_answer_fields": sorted(
+            name for name in FORBIDDEN_FEATURE_FIELDS if str(name).lower() not in capture),
+        "exempt_capture_context_fields": sorted(
+            name for name in FORBIDDEN_FEATURE_FIELDS if str(name).lower() in capture),
+        "answer_hits": answer_hits,
+        "answer_hits_by_field": _hits_by_field(answer_hits),
+        "capture_hits": capture_hits,
+        "capture_hits_by_field": _hits_by_field(capture_hits),
+        "keys_scanned": probe.get("keys_scanned", 0),
+    }
+
+
 def _declares_truth_channels(node: Any) -> bool:
     """A non-empty ``truth_channels`` list: the document says a truth channel is carried."""
     if isinstance(node, Mapping):
@@ -1193,6 +2264,171 @@ def _hits_by_field(hits: Sequence[Mapping[str, Any]]) -> dict[str, list[str]]:
     for hit in hits:
         out.setdefault(str(hit["field"]), []).append(str(hit["file"]))
     return {name: sorted(set(files)) for name, files in sorted(out.items())}
+
+
+# --------------------------------------------------------------------------------------
+# channel separation: what each view really contains
+# --------------------------------------------------------------------------------------
+def observed_channels(view_root: str | Path) -> dict[str, Any]:
+    """The channel names a written view really contains, read from its own files.
+
+    Three carriers are scanned: the ``obs`` tar shards (one member file per channel per
+    fragment), the zarr replica of the geometry arrays, and every ``npz``/``parquet``/``json``
+    container at the view root.  The result is a measurement of the package on disk -- the
+    manifest's channel claim is built from it, never from the writer's intent.
+    """
+    root = Path(view_root)
+    by_channel: dict[str, int] = {}
+    files_by_channel: dict[str, list[str]] = {}
+
+    def note(channel: str, rel: str) -> None:
+        by_channel[channel] = by_channel.get(channel, 0) + 1
+        files_by_channel.setdefault(channel, []).append(rel)
+
+    shards: list[str] = []
+    if root.exists():
+        for path in sorted(root.rglob("*")):
+            if not path.is_file():
+                continue
+            rel = str(path.relative_to(root)).replace("\\", "/")
+            suffix = path.suffix.lower()
+            if suffix == ".tar":
+                shards.append(rel)
+                try:
+                    with tarfile.open(path, "r") as tar:
+                        for member in tar.getmembers():
+                            if member.isfile():
+                                note(_field_name(member.name), rel)
+                except Exception:  # noqa: BLE001 - an unreadable shard is simply not evidence
+                    continue
+            elif suffix == ".npz":
+                try:
+                    with np.load(path, allow_pickle=False) as data:
+                        for name in data.files:
+                            note(_field_name(name), rel)
+                except Exception:  # noqa: BLE001
+                    continue
+            elif suffix == ".parquet":
+                try:
+                    import pyarrow.parquet as pq
+
+                    for name in pq.read_schema(path).names:
+                        note(str(name), rel)
+                except Exception:  # noqa: BLE001
+                    continue
+            elif suffix == ".json":
+                if path.name in STORAGE_METADATA_NAMES or rel in DECLARATION_ONLY_FILES:
+                    # a declaration ("this is the channel set I was written under") belongs to
+                    # :func:`declared_channels`; counting it here would let a claim pass as content
+                    continue
+                try:
+                    payload = json.loads(path.read_text(encoding="utf-8"))
+                except (OSError, ValueError):
+                    continue
+                for name in ("channel_names", "arrays"):
+                    for key in payload.get(name) or []:
+                        note(str(key), rel)
+    return {
+        "view": root.name,
+        # ``files_by_channel`` holds the file lists and ``by_channel`` only the counts; reading
+        # the counts as if they were lists raised ``TypeError: 'int' object is not iterable`` for
+        # every view that really contained a channel.
+        "channels": {key: sorted(set(files))
+                     for key, files in sorted(files_by_channel.items())},
+        "counts": {key: len(files) for key, files in sorted(files_by_channel.items())},
+        "tar_shards": sorted(set(shards)),
+    }
+
+
+def declared_channels(view_root: str | Path) -> dict[str, Any]:
+    """The channel set the deployment view's own ``obs/index.json`` says it was written under.
+
+    Recorded *separately* from the measured names: a writer's declaration is a statement about
+    the policy, and only the measured set is evidence about the bytes on disk.
+    """
+    index_path = Path(view_root) / "obs" / "index.json"
+    if not index_path.exists():
+        return {"file": "", "channels": [], "policy": {}}
+    try:
+        payload = json.loads(index_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {"file": str(index_path), "channels": [], "policy": {}, "unreadable": True}
+    return {
+        "file": str(index_path),
+        "channels": sorted({str(name) for name in (payload.get("channel_names") or [])}),
+        "policy": dict(payload.get("channel_policy") or {}),
+    }
+
+
+def channel_separation_report(deploy_root: str | Path, research_root: str | Path,
+                              policy: Mapping[str, Any],
+                              *, deploy_channels: Mapping[str, Sequence[str]] | None = None
+                              ) -> dict[str, Any]:
+    """Judge the two views' channel sets against the resolved policy, on real content.
+
+    For every channel the policy permits in a view the report says ``included`` (and for how many
+    fragments, when the caller supplies the per-fragment membership) or ``missing`` -- a permitted
+    channel the package does not carry is never reported as present.  A channel that is in the
+    export but in no policy list is reported as ``unexpected``, and a research-only channel found
+    anywhere in the deployment view is reported as a ``leak``.
+    """
+    deploy_scan = observed_channels(deploy_root)
+    research_scan = observed_channels(research_root)
+    deploy_keys = set(deploy_scan["counts"])
+    research_keys = set(research_scan["counts"])
+    policy_deploy = [str(item["key"]) for item in (policy.get("channels") or {}).get(VIEW_DEPLOY, [])]
+    policy_research = [str(item["key"])
+                       for item in (policy.get("channels") or {}).get(VIEW_RESEARCH, [])]
+    declared = declared_channels(deploy_root)
+    measured = set(deploy_keys)
+    per_fragment = deploy_channels or {}
+    counts: dict[str, int] = {}
+    missing: list[str] = []
+    for key in policy_deploy:
+        present = sum(1 for channels in per_fragment.values() if key in channels)
+        counts[key] = present
+        if per_fragment:
+            if not present:
+                missing.append(key)
+        elif key not in measured:
+            missing.append(key)
+
+    def _status(key: str) -> str:
+        return "missing" if key in missing else "included"
+
+    research_only = sorted(policy.get("research_only") or [])
+    leaks = sorted(key for key in measured if key in set(research_only))
+    return {
+        "policy": {"schema": policy.get("schema"), "path": policy.get("path"),
+                   "hash": policy.get("hash")},
+        "source": ("content scan of the written package: tar member names, npz array names, "
+                   "parquet column names and json array-name lists of each view"),
+        "declared_by_the_writer": declared,
+        VIEW_DEPLOY: {
+            "channels_present": sorted(measured),
+            "channels_declared": declared["channels"],
+            "permitted": policy_deploy,
+            "status": {key: _status(key) for key in policy_deploy},
+            "fragments_with_channel": counts,
+            "fragments_examined": len(per_fragment),
+            "files_by_channel": {key: deploy_scan["channels"].get(key, [])
+                                 for key in sorted(measured)},
+        },
+        VIEW_RESEARCH: {
+            "channels_present": sorted(research_keys),
+            "permitted": policy_research,
+            "status": {key: ("included" if key in research_keys else "missing")
+                       for key in policy_research},
+            "files_by_channel": {key: research_scan["channels"].get(key, [])
+                                 for key in sorted(research_keys)},
+        },
+        "research_only_channels": research_only,
+        "leaked_into_deploy": leaks,
+        "truth_roles": dict(policy.get("truth_roles") or {}),
+        "statement": ("every channel of the deployment view is either permitted by the channel "
+                      "policy or reported here as unexpected/leaked; a permitted but absent "
+                      "channel is reported as missing"),
+    }
 
 
 # --------------------------------------------------------------------------------------
@@ -1307,6 +2543,10 @@ __all__ = [
     "REGISTERED_FORMATS", "TRAINING_FORMATS", "PACKAGE_SCHEMA", "PACKAGE_MANIFEST_SCHEMA",
     "VIEW_DEPLOY", "VIEW_RESEARCH", "VIEWS", "NEGATIVE_KINDS", "EXCLUDED_NEGATIVE_KINDS",
     "TOKEN_DIM", "TOKEN_POLICY_ID", "ENCODER_ID", "ZARR_DIR_NAME", "TRUTH_BEARING_FIELDS",
+    "VIEW_CHANNEL_POLICY_ENV", "VIEW_CHANNEL_POLICY_PATH", "OPTIONAL_DEPLOY_CHANNELS",
+    "CAPTURE_CONTEXT_CLASS", "TRUTH_CRITICAL_FIELDS", "capture_context_keys",
+    "load_channel_policy", "channel_table", "observed_channels", "declared_channels",
+    "channel_separation_report",
     "export_release", "export_training_package", "TrainingPackage",
-    "scan_view_fields", "truth_bearing_files",
+    "scan_view_fields", "truth_bearing_files", "scan_answer_fields",
 ]

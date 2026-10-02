@@ -209,6 +209,187 @@ def _bary_block(rows: Sequence[Mapping[str, Any]], key: str) -> np.ndarray:
 
 
 # ------------------------------------------------------------------- correspondence bundle
+def _interface_rows(clean: CleanTruth) -> list[InterfacePatch]:
+    return sorted(clean.interfaces, key=lambda patch: int(patch.interface_id))
+
+
+def _component_face_channels(component: Any) -> tuple[np.ndarray | None, np.ndarray | None, float]:
+    """``(origin_kind, interface_id, area per face)`` of one damaged component, or ``None``s."""
+    mesh = getattr(component, "mesh", None)
+    if mesh is None:
+        return None, None, 0.0
+    attrs = dict((getattr(mesh, "metadata", None) or {}).get("face_attr_arrays") or {})
+    n = int(len(np.asarray(getattr(mesh, "faces", np.zeros((0, 3))))))
+    origin = attrs.get("origin_kind")
+    iface = attrs.get("interface_id")
+    origin = None if origin is None or len(np.asarray(origin)) != n else \
+        np.asarray(origin, dtype=np.int64).reshape(-1)
+    iface = None if iface is None or len(np.asarray(iface)) != n else \
+        np.asarray(iface, dtype=np.int64).reshape(-1)
+    area = float(np.sum(np.asarray(mesh.area_faces, dtype=np.float64))) if n else 0.0
+    return origin, iface, area
+
+
+def measure_interface_faces(components: Sequence[Any]) -> dict[str, Any]:
+    """Per-``interface_id`` face count and area *measured on the damaged components*.
+
+    Reads the ``origin_kind`` / ``interface_id`` face channels the physical layer attached (see
+    ``synlab.physical.api.attach_face_provenance``).  A component that carries no channel is
+    reported as ``available: False`` for its faces - an absent channel is never read as
+    "zero interface faces".
+    """
+    per_id: dict[int, dict[str, float]] = {}
+    origin_histogram: dict[str, int] = {}
+    origin_area: dict[str, float] = {}
+    missing: list[str] = []
+    available_faces = 0
+    unavailable_faces = 0
+    for component in components:
+        face_area = None
+        mesh = getattr(component, "mesh", None)
+        if mesh is not None:
+            face_area = np.asarray(mesh.area_faces, dtype=np.float64)
+        origin, iface, _area = _component_face_channels(component)
+        if origin is None or iface is None or face_area is None:
+            unavailable_faces += int(len(face_area) if face_area is not None else 0)
+            missing.append(str(getattr(component, "component_id", "")))
+            continue
+        available_faces += int(origin.shape[0])
+        for kind in np.unique(origin):
+            key = str(int(kind))
+            origin_histogram[key] = origin_histogram.get(key, 0) + int(np.sum(origin == kind))
+            origin_area[key] = origin_area.get(key, 0.0) + float(face_area[origin == kind].sum())
+        rows = np.flatnonzero((origin == ORIGIN_INTERFACE) & (iface >= 0))
+        for index in rows:
+            entry = per_id.setdefault(int(iface[index]), {"faces": 0, "area_mm2": 0.0})
+            entry["faces"] += 1
+            entry["area_mm2"] += float(face_area[index])
+    return {
+        "per_interface": {int(k): {"faces": int(v["faces"]), "area_mm2": float(v["area_mm2"])}
+                          for k, v in sorted(per_id.items())},
+        "origin_kind_faces": dict(sorted(origin_histogram.items())),
+        "origin_kind_area_mm2": {k: float(v) for k, v in sorted(origin_area.items())},
+        "faces_with_channel": int(available_faces),
+        "faces_without_channel": int(unavailable_faces),
+        "components_without_channel": missing,
+    }
+
+
+def _interface_table(clean: CleanTruth, measured: Mapping[str, Any]) -> dict[str, np.ndarray]:
+    """The ``iface_*`` table of one *non-clean* truth layer (one row per declared interface).
+
+    Field semantics (all arrays share the row order ``iface_id``):
+
+    ``iface_id``             declared interface id of the clean event (0…N);
+    ``iface_area_mm2``       area the clean layer declared for that interface (mm2);
+    ``iface_new_faces``      faces of the *damaged* body that carry
+                             ``origin_kind == INTERFACE(1)`` and this ``interface_id`` -- the
+                             fracture surface that survived the damage, counted, not assumed;
+    ``iface_new_area_mm2``   their area (mm2);
+    ``iface_corr_start`` / ``iface_corr_stop``  half-open slice of the ``corr_*`` arrays whose
+                             ``corr_interface_id`` equals this id (the paired-mate samples).
+    """
+    patches = _interface_rows(clean)
+    ids = np.asarray([int(p.interface_id) for p in patches], dtype=np.int64)
+    area = np.asarray([float(p.area_mm2) for p in patches], dtype=np.float64)
+    per = dict(measured.get("per_interface") or {})
+    new_faces = np.asarray([int((per.get(int(i)) or {}).get("faces", 0)) for i in ids], dtype=np.int64)
+    new_area = np.asarray([float((per.get(int(i)) or {}).get("area_mm2", 0.0)) for i in ids],
+                          dtype=np.float64)
+    bundle = clean.meta.get("correspondence_bundle")
+    starts = np.zeros(ids.shape[0], dtype=np.int64)
+    stops = np.zeros(ids.shape[0], dtype=np.int64)
+    if isinstance(bundle, Mapping):
+        corr_ids = np.asarray(bundle.get("interface_id", np.zeros(0, dtype=np.int64)),
+                              dtype=np.int64)
+        for row, value in enumerate(ids):
+            hits = np.flatnonzero(corr_ids == value)
+            starts[row] = int(hits[0]) if hits.size else 0
+            stops[row] = int(hits[-1] + 1) if hits.size else 0
+    return {
+        "iface_id": ids,
+        "iface_area_mm2": area,
+        "iface_new_faces": new_faces,
+        "iface_new_area_mm2": new_area,
+        "iface_corr_start": starts,
+        "iface_corr_stop": stops,
+    }
+
+
+def _interface_meta(clean: CleanTruth, measured: Mapping[str, Any],
+                    table: Mapping[str, np.ndarray]) -> dict[str, Any]:
+    patches = _interface_rows(clean)
+    per = dict(measured.get("per_interface") or {})
+    return {
+        "iface_ids": [int(p.interface_id) for p in patches],
+        "iface_pairs": {str(int(p.interface_id)): [str(p.fragment_a), str(p.fragment_b)]
+                        for p in patches},
+        "iface_declared_area_mm2": {str(int(p.interface_id)): float(p.area_mm2) for p in patches},
+        "iface_new_faces_by_id": {str(k): int(v["faces"]) for k, v in per.items()},
+        "iface_new_area_mm2_by_id": {str(k): float(v["area_mm2"]) for k, v in per.items()},
+        "iface_new_faces_total": int(np.sum(np.asarray(table["iface_new_faces"]))),
+        "iface_new_area_total_mm2": float(np.sum(np.asarray(table["iface_new_area_mm2"]))),
+        "iface_origin_kind_faces": dict(measured.get("origin_kind_faces") or {}),
+        "iface_origin_kind_area_mm2": dict(measured.get("origin_kind_area_mm2") or {}),
+        "iface_faces_with_channel": int(measured.get("faces_with_channel", 0)),
+        "iface_faces_without_channel": int(measured.get("faces_without_channel", 0)),
+        "iface_components_without_channel": list(measured.get("components_without_channel") or []),
+        "iface_field_semantics": {
+            "iface_id": "declared clean interface id",
+            "iface_area_mm2": "area declared by the clean layer for this interface (mm2)",
+            "iface_new_faces": "faces of the damaged body with origin_kind=1 (INTERFACE) and this "
+                               "interface_id",
+            "iface_new_area_mm2": "area of those faces (mm2)",
+            "iface_corr_start/stop": "half-open slice of corr_* with this corr_interface_id",
+        },
+    }
+
+
+def _interface_visible_table(interface_ids: np.ndarray, bundle: Mapping[str, Any],
+                             visible_count: np.ndarray,
+                             projected_count: np.ndarray) -> dict[str, np.ndarray]:
+    """Per-interface visibility of the paired-mate samples (``iface_*`` of the visible layer)."""
+    ids = np.asarray(interface_ids, dtype=np.int64).reshape(-1)
+    corr_ids = np.asarray(bundle.get("interface_id", np.zeros(0, dtype=np.int64)), dtype=np.int64)
+    visible = np.asarray(visible_count, dtype=np.int64).reshape(-1)
+    projected = np.asarray(projected_count, dtype=np.int64).reshape(-1)
+    rows_visible = np.asarray([int(np.sum((corr_ids == value) & (visible > 0))) for value in ids],
+                              dtype=np.int64)
+    rows_projected = np.asarray(
+        [int(np.sum((corr_ids == value) & (projected > 0))) for value in ids], dtype=np.int64)
+    counts = np.asarray([int(np.sum(corr_ids == value)) for value in ids], dtype=np.int64)
+    return {
+        "iface_id": ids,
+        "iface_corr_samples": counts,
+        "iface_visible_samples": rows_visible,
+        "iface_projected_samples": rows_projected,
+        "iface_visible_projections": np.asarray(
+            [int(np.sum(visible[corr_ids == value])) for value in ids], dtype=np.int64),
+    }
+
+
+def _rim_pixel_measurement(observation: Any) -> dict[str, Any]:
+    """Rim (``surface_tag == 2``) pixels of one observation, per view, from the real frames.
+
+    Read from the rendered ``surface_tag`` maps; the observation's own measured block
+    (``meta['surface_tag_pixels']``) is used when the frames are not in memory.
+    """
+    rim_tag = int(INTERFACE_SURFACE_TAG)
+    per_view: dict[str, int] = {}
+    total = 0
+    for index, view in enumerate(list(getattr(observation, "views", []) or [])):
+        tag = np.asarray(getattr(view, "surface_tag", np.zeros(0, dtype=np.int16))).reshape(-1)
+        count = int(np.count_nonzero(tag == rim_tag)) if tag.size else 0
+        per_view[str(getattr(view, "view_id", "") or f"v{index:03d}")] = count
+        total += count
+    if not per_view:
+        block = dict((getattr(observation, "meta", {}) or {}).get("surface_tag_pixels") or {})
+        per_view = {str(k): int((v or {}).get("rim_pixels", 0))
+                    for k, v in dict(block.get("views") or {}).items()}
+        total = int(block.get("rim_pixels", sum(per_view.values())))
+    return {"rim_pixels": int(total), "per_view": per_view, "rim_tag": rim_tag}
+
+
 def _empty_correspondence() -> dict[str, np.ndarray]:
     return {
         "fragment_ids": np.zeros(0, dtype="<U1"),
@@ -256,8 +437,9 @@ def _correspondence_from_rows(rows: Sequence[Mapping[str, Any]],
     out["face_a"], out["face_b"] = face_a, face_b
     out["bary_a"] = _bary_block(rows, "bary_a")
     out["bary_b"] = _bary_block(rows, "bary_b")
-    out["interface_id"] = np.asarray([int(r.get("interface_id", -1) or -1) for r in rows],
-                                     dtype=np.int64)
+    out["interface_id"] = np.asarray(
+        [-1 if r.get("interface_id") is None else int(r.get("interface_id")) for r in rows],
+        dtype=np.int64)
     residual = np.asarray([float(r.get("residual_mm", 0.0) or 0.0) for r in rows], dtype=np.float64)
     ambiguous = np.asarray([bool(r.get("ambiguous", False)) for r in rows], dtype=bool)
     fidelity = np.asarray([bool(r.get("fidelity_ok", True)) for r in rows], dtype=bool)
@@ -758,6 +940,13 @@ def update_residual_truth(clean: CleanTruth, physical: Any, *,
                                                     tolerance_mm=survivor_tolerance_mm)
         for patch in clean.interfaces
     }
+    # -- fracture-surface truth carried into this layer (see _interface_table for the semantics).
+    # The clean layer owns the *declared* interface geometry; this layer adds what the damage left
+    # of it, measured on the damaged components' origin_kind/interface_id face channels.
+    interface_measured = measure_interface_faces(components)
+    interface_table = _interface_table(clean, interface_measured)
+    interface_meta = _interface_meta(clean, interface_measured, interface_table)
+    interface_meta["iface_source"] = "clean_truth.iface_* + physical components' face channels"
 
     bundle = clean.meta.get("correspondence_bundle")
     if not isinstance(bundle, Mapping):
@@ -827,6 +1016,8 @@ def update_residual_truth(clean: CleanTruth, physical: Any, *,
         "correspondence_bundle": bundle,
         "correspondence_limit": int(correspondence_limit),
         "mate_present": mate_present,
+        "interface_table": interface_table,
+        **interface_meta,
         "damage": {
             "recipe_id": str(getattr(physical, "recipe_id", "")),
             "level": int(getattr(physical, "meta", {}).get("level", 0) or 0),
@@ -1020,6 +1211,11 @@ def update_visibility_truth(physical_truth: PhysicalTruth, observation: Any, *,
 
     visible_valid = visible_count > 0
     observed_side = int(np.sum(side_of_row != 0))
+    interface_visible = _interface_visible_table(
+        np.asarray((physical_truth.meta.get("interface_table") or {}).get(
+            "iface_id", np.zeros(0, dtype=np.int64))),
+        bundle, visible_count, projected_count)
+    rim = _rim_pixel_measurement(observation)
     qa = {
         "pass": bool(count == 0 or not views or int(np.sum(visible_valid)) > 0),
         "layer": LAYER_VISIBLE,
@@ -1034,11 +1230,20 @@ def update_visibility_truth(physical_truth: PhysicalTruth, observation: Any, *,
         "samples_visible": int(np.sum(visible_valid)),
         "visible_fraction": float(np.sum(visible_valid) / max(observed_side, 1)),
         "rule": VISIBILITY_RULE,
+        # the fracture surface's own pixel evidence, measured on the rendered frames: a layer
+        # that claims the interface is observable must carry a non-zero rim count, not a promise
+        "iface_rim_pixels": int(rim["rim_pixels"]),
+        "iface_rim_pixels_per_view": dict(rim["per_view"]),
+        "iface_rim_visible": bool(rim["rim_pixels"] > 0),
+        "iface_visible_samples": int(np.sum(np.asarray(interface_visible["iface_visible_samples"]))),
+        "iface_interface_count": int(np.asarray(interface_visible["iface_id"]).shape[0]),
         "notes": [
             "one observation renders one component, so the mate side is recorded as not observed "
             "here instead of being assumed visible",
             "a sample with no valid view stays out of the correspondence loss; it is not turned "
             "into a negative match (plan 11.2)",
+            "iface_rim_pixels counts surface_tag == ORIGIN_TO_TAG[ORIGIN_INTERFACE] (2) over the "
+            "delivered frames of this observation",
         ],
     }
     qa["failures"] = [] if qa["pass"] else ["no correspondence sample is visible in any view"]
@@ -1059,6 +1264,22 @@ def update_visibility_truth(physical_truth: PhysicalTruth, observation: Any, *,
         "truth_incomplete": bool(views) and int(np.sum(visible_valid)) == 0,
         "correspondence_visible_counts": visible_count,
         "correspondence_projected_counts": projected_count,
+        "interface_visible_table": interface_visible,
+        "iface_ids": [int(x) for x in np.asarray(interface_visible["iface_id"]).reshape(-1)],
+        "iface_rim_pixels": int(rim["rim_pixels"]),
+        "iface_rim_pixels_per_view": dict(rim["per_view"]),
+        "iface_rim_visible": bool(rim["rim_pixels"] > 0),
+        "iface_visible_samples_by_id": {
+            str(int(k)): int(v) for k, v in zip(
+                np.asarray(interface_visible["iface_id"]).reshape(-1),
+                np.asarray(interface_visible["iface_visible_samples"]).reshape(-1))},
+        "iface_field_semantics": {
+            "iface_id": "declared clean interface id (from the physical layer's interface table)",
+            "iface_corr_samples": "corr_* rows of this interface present in this observation",
+            "iface_visible_samples": "those rows visible in at least one delivered view",
+            "iface_projected_samples": "those rows projecting into at least one frame",
+            "iface_visible_projections": "sum over rows of the number of views each is visible in",
+        },
     }
     return VisibleLabels(
         physical_truth_ref=meta["physical_truth_ref"],
@@ -1282,6 +1503,8 @@ def load_truth(store: Any, asset_id: str, role: str | None = None) -> Any:
         )
     if record.role == ROLE_PHYSICAL_TRUTH or record.schema == SCHEMA_TRUTH_PHYSICAL:
         bundle = _bundle_from_arrays(arrays)
+        table = {key: np.asarray(value) for key, value in arrays.items()
+                 if key.startswith("iface_")}
         return PhysicalTruth(
             clean_truth_ref=str(meta.get("clean_truth_ref", "")),
             version=int(meta.get("version", 1) or 1),
@@ -1292,13 +1515,16 @@ def load_truth(store: Any, asset_id: str, role: str | None = None) -> Any:
             current_fit_valid={str(k): bool(v) for k, v in
                                (meta.get("current_fit_valid", {}) or {}).items()},
             qa=dict(record.qa or {}),
-            meta={**meta, "correspondence_bundle": bundle, "relations_edges": relation_map},
+            meta={**meta, "correspondence_bundle": bundle, "relations_edges": relation_map,
+                  "interface_table": table or dict(meta.get("interface_table") or {})},
         )
     if record.role == ROLE_VISIBLE_LABELS or record.schema == SCHEMA_TRUTH_VISIBLE:
         meta_out = dict(meta)
         for key in ("correspondence_visible_counts", "correspondence_projected_counts"):
             if f"visible_{key}" in arrays:
                 meta_out[key] = np.asarray(arrays[f"visible_{key}"], dtype=np.int64)
+        meta_out["interface_visible_table"] = {
+            key: np.asarray(value) for key, value in arrays.items() if key.startswith("iface_")}
         return VisibleLabels(
             physical_truth_ref=str(meta.get("physical_truth_ref", "")),
             version=int(meta.get("version", 1) or 1),
@@ -1339,6 +1565,21 @@ def _relations_map(rows: Sequence[Mapping[str, Any]]) -> dict[tuple[str, str], R
             valid=bool(row.get("valid", True)), reason=str(row.get("reason", "")),
             loss_mask=bool(row.get("loss_mask", True)),
         )
+    return out
+
+
+def _iface_meta(obj: Any) -> dict[str, Any]:
+    """The JSON-safe ``iface*`` fields of a truth layer (array tables travel as arrays)."""
+    out: dict[str, Any] = {}
+    for key, value in (getattr(obj, "meta", {}) or {}).items():
+        name = str(key)
+        if not name.startswith("iface"):
+            continue
+        if isinstance(value, np.ndarray):
+            continue
+        if isinstance(value, Mapping) and any(isinstance(v, np.ndarray) for v in value.values()):
+            continue
+        out[name] = _jsonable(value)
     return out
 
 
@@ -1383,9 +1624,15 @@ def _payload_of(obj: Any) -> tuple[dict[str, np.ndarray], dict[str, Any]]:
                         "event_id": obj.meta.get("event_id")},
             "truth_incomplete": bool(obj.meta.get("truth_incomplete", False)),
         })
+        meta.update(_iface_meta(obj))
         bundle = obj.meta.get("correspondence_bundle")
         if isinstance(bundle, Mapping):
             arrays.update(_bundle_arrays(bundle))
+        # the fracture-surface table of this layer travels as arrays, so a reader of the *physical*
+        # layer can count the surviving fracture faces without re-opening the component meshes
+        table = obj.meta.get("interface_table")
+        if isinstance(table, Mapping):
+            arrays.update({key: np.asarray(value) for key, value in table.items()})
     elif isinstance(obj, VisibleLabels):
         meta.update({
             "physical_truth_ref": obj.physical_truth_ref, "version": int(obj.version),
@@ -1398,10 +1645,14 @@ def _payload_of(obj: Any) -> tuple[dict[str, np.ndarray], dict[str, Any]]:
             "history": _jsonable(obj.meta.get("history", {})),
             "truth_incomplete": bool(obj.meta.get("truth_incomplete", False)),
         })
+        meta.update(_iface_meta(obj))
         for key in ("correspondence_visible_counts", "correspondence_projected_counts"):
             value = obj.meta.get(key)
             if value is not None:
                 arrays[f"visible_{key}"] = np.asarray(value, dtype=np.int64)
+        table = obj.meta.get("interface_visible_table")
+        if isinstance(table, Mapping):
+            arrays.update({key: np.asarray(value) for key, value in table.items()})
     return arrays, meta
 
 

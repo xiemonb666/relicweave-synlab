@@ -22,6 +22,20 @@ Defect references (all in ``docs/a12/mother_geometry_audit.md`` and
   truncates the body at the shoulder.
 * **A3** ``group_extrude.py`` V22 implements the bevel as a boolean *intersection* with a
   bevel-thick plate, so the slab is cut down to the bevel thickness.
+
+State of the defects in this checkout (see the "修复落地与验证" section of the report):
+
+* **A1 and A2 are fixed** - P1 removed the radius clamp from ``wall_points`` and P2 replaced
+  the radius-monotone filter with ``advancing_control_points`` (z must advance).  The seven
+  strict xfails that depended on A1/A2 turned into XPASS and are now **plain assertions**
+  (``test_wall_widens_to_its_declared_radius``, ``test_neck_family_body_reaches_its_declared_rim``,
+  ``test_v10_lid_seats_on_the_body_instead_of_floating``).
+* **A3 (V22) and B1 (V23) are still open**, so their two xfails stay strict.
+
+Because the pre-fix numbers in ``data/a12/reports/mother_geometry_audit.json`` are the *frozen
+pre-fix snapshot*, the live build can no longer be compared against it.  The live cross-check
+now uses the post-fix measurement file ``s15_audit_all.json`` and, separately, asserts that the
+pre-fix snapshot still carries its own (historical) values.
 """
 
 from __future__ import annotations
@@ -43,8 +57,10 @@ from synlab.seeds import make_rng, seed64  # noqa: E402
 
 #: The vessels whose profile ends in a decreasing shoulder/neck cone (defect A2).
 NECK_FAMILY = ("V06", "V07", "V08", "V09", "V10", "V11", "V16")
-#: The audit report this module cross-checks.
+#: The **pre-fix** audit report this module cross-checks (frozen snapshot, commit c311269).
 AUDIT_JSON = REPO_ROOT / "data" / "a12" / "reports" / "mother_geometry_audit.json"
+#: The **post-fix** re-measurement of all 24 vessels (P1+P2 landed).
+POSTFIX_JSON = (REPO_ROOT / "data" / "a12" / "reports" / "geom_fix" / "s15_audit_all.json")
 #: Seed policy of the audit (the same one the report was produced with).
 SEED_TAG = "mother_geometry_audit"
 
@@ -91,21 +107,41 @@ def test_audit_report_exists_and_covers_every_vessel():
 
 
 def test_measured_z_rim_is_recorded_next_to_the_declared_target(neck_mothers):
-    """``z_rim`` (measured) and ``z_rim_target_mm`` (declared) must both be recorded."""
-    reported = None
-    if AUDIT_JSON.exists():
-        payload = json.loads(AUDIT_JSON.read_text(encoding="utf-8"))
-        reported = {row["vessel_id"]: row for row in payload["symptom_table"]}
+    """``z_rim`` (measured) and ``z_rim_target_mm`` (declared) must both be recorded.
+
+    The live build is compared against the **post-fix** re-measurement
+    (``geom_fix/s15_audit_all.json``).  The pre-fix snapshot is a different geometry by
+    construction, so it is checked separately, below.
+    """
+    postfix = None
+    if POSTFIX_JSON.exists():
+        payload = json.loads(POSTFIX_JSON.read_text(encoding="utf-8"))
+        postfix = payload["vessels"]
     for vessel_id, mother in neck_mothers.items():
         metrics = dict(mother.meta.get("profile_metrics") or {})
         assert "z_rim" in metrics, f"{vessel_id}: measured z_rim is not recorded"
         assert "z_rim_target_mm" in metrics, f"{vessel_id}: declared target is not recorded"
         assert np.isfinite(float(metrics["z_rim"]))
         assert np.isfinite(float(metrics["z_rim_target_mm"]))
-        if reported is not None:
-            # the live build must agree with the recorded audit (same seed, same params)
+        # the same explicit consistency column the builder writes (pure recording)
+        assert metrics["z_rim_shortfall_mm"] == pytest.approx(
+            float(metrics["z_rim_target_mm"]) - float(metrics["z_rim"]), abs=1e-9)
+        if postfix is not None:
+            # the live build must agree with the post-fix re-measurement (same seed, params)
             assert float(metrics["z_rim"]) == pytest.approx(
-                float(reported[vessel_id]["measured_profile_z_rim_mm"]), abs=0.05)
+                float(postfix[vessel_id]["profile_z_rim_mm"]), abs=0.05)
+
+
+def test_prefix_snapshot_still_records_the_prefix_numbers():
+    """The pre-fix audit stays an honest historical record (it must not be rewritten)."""
+    if not AUDIT_JSON.exists():
+        pytest.skip(f"{AUDIT_JSON.relative_to(REPO_ROOT)} is not present in this checkout")
+    payload = json.loads(AUDIT_JSON.read_text(encoding="utf-8"))
+    reported = {row["vessel_id"]: row for row in payload["symptom_table"]}
+    # the A2 family was truncated at the shoulder in that snapshot - the signature of A2
+    assert reported["V10"]["measured_profile_z_rim_mm"] == pytest.approx(123.07, abs=0.05)
+    assert reported["V16"]["measured_profile_z_rim_mm"] == pytest.approx(119.96, abs=0.05)
+    assert payload["defects"]["A2_monotone_drops_neck"]["affected"] == list(NECK_FAMILY)
 
 
 def test_wall_points_returns_rising_z_and_never_negative_radius():
@@ -144,38 +180,63 @@ def test_defects_are_documented_with_evidence():
 
 
 # ---------------------------------------------------------------------------------------
-# correctness assertions: expected to fail while the defects are open
+# correctness assertions: these were ``xfail(strict=True)`` while A1/A2 were open; the fix
+# turned all seven into XPASS, so they are real assertions now.
 # ---------------------------------------------------------------------------------------
-@pytest.mark.xfail(strict=True, reason=(
-    "defect A1 (common.py wall_points): the wall is returned flat at the first sample's "
-    "radius, so the body never widens to the radius its own parameters declare"))
 @pytest.mark.parametrize("vessel_id,declared_radius_mm", [("V17", 90.0), ("V01", 95.0)])
 def test_wall_widens_to_its_declared_radius(vessel_id, declared_radius_mm):
+    """A1 fixed: ``wall_points`` no longer clamps the rising wall to its first sample."""
     mother = create_mother(vessel_id, "M01", default_params(vessel_id), _rng(vessel_id),
                            mother_id=f"{vessel_id}-audit")
     measured = float(mother.meta["profile_metrics"]["r_max"])
     assert measured >= 0.97 * declared_radius_mm
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "defect A2 (common.py monotone_radius_control_points): the shoulder/neck control points "
-    "are dropped, so the body stops at the shoulder instead of the declared rim"))
 @pytest.mark.parametrize("vessel_id", ["V06", "V07", "V10", "V11", "V16"])
 def test_neck_family_body_reaches_its_declared_rim(vessel_id, neck_mothers):
+    """A2 fixed: the shoulder/neck control points survive and the body reaches the rim."""
     metrics = dict(neck_mothers[vessel_id].meta["profile_metrics"])
     target = float(metrics["z_rim_target_mm"])
     assert abs(float(metrics["z_rim"]) - target) <= max(1.0, 0.02 * target)
+    # the acceptance criterion the audit wrote down for the fix is tighter: +/- 2.5 mm
+    assert abs(float(metrics["z_rim"]) - target) <= 2.5
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "defect A2: the V10 lid is placed at the declared rim, so with the body truncated at the "
-    "shoulder the lid floats above the body instead of seating on the mouth"))
 def test_v10_lid_seats_on_the_body_instead_of_floating():
+    """A2 fixed: the lid lands on the mouth instead of hanging above a truncated shoulder."""
     mother = create_mother("V10", "M01", default_params("V10"), _rng("V10"), mother_id="gap")
     parts = mother.mesh.split(only_watertight=False)
     spans = sorted((float(p.bounds[0][2]), float(p.bounds[1][2])) for p in parts)
     worst_gap = max((spans[i + 1][0] - spans[i][1] for i in range(len(spans) - 1)), default=0.0)
     assert worst_gap <= 1.0
+
+
+def test_advancing_filter_enforces_rising_z_and_keeps_repeated_radii():
+    """P2 as landed: the filter is named ``advancing_control_points`` and drops on ``z``.
+
+    Two facts at once: (a) the old radius rule is gone - a shoulder that narrows after a wide
+    belly survives - and (b) the filter's rule is ``z``, not the arclength parameter the shell
+    kernel actually uses.
+    """
+    assert not hasattr(common_mod, "monotone_radius_control_points")
+    shoulder = np.asarray([[0.0, 0.0], [40.0, 10.0], [80.0, 20.0], [60.0, 30.0], [30.0, 40.0]])
+    kept = common_mod.advancing_control_points(shoulder)
+    assert len(kept) == len(shoulder), "a narrowing shoulder must survive (defect A2)"
+    assert np.all(np.diff(np.asarray(kept)[:, 1]) > 0)
+
+
+@pytest.mark.xfail(strict=True, reason=(
+    "P2 side effect (NOT sanctioned by the audit): the z-advance rule also drops the "
+    "concave-base outline points of V01/V12/V15/V17, which are listed along the outline "
+    "(z goes down before it goes up).  Measured: those four vessels dropped 0 points before "
+    "the fix and 3-4 points after, and V01's lowest point moved from z=0.93 mm to z=8.04 mm "
+    "- the bowl lost its recessed base.  The shell kernel parameterises the mid-line by "
+    "arclength, so only a duplicated (zero-length) segment can degenerate it."))
+def test_concave_base_outline_survives_the_advancing_filter():
+    outline = np.asarray([[0.0, 8.0], [19.0, 7.9], [39.0, 4.4], [55.4, 3.25], [68.4, 4.9],
+                          [80.0, 31.5]])
+    kept = common_mod.advancing_control_points(outline)
+    assert len(kept) == len(outline)
 
 
 @pytest.mark.xfail(strict=True, reason=(

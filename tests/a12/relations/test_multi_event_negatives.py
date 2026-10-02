@@ -104,10 +104,18 @@ def test_planning_gives_every_event_its_own_id_and_seed():
     ids = [event.event_id for event in plan.events]
     assert len(ids) == len(set(ids)), "event ids must be unique"
     assert plan.events_per_mother == 3
-    assert plan.events_total == 4, "L1 also carries one unresolved-source event"
+    # 2 mothers x 3 independent events + 1 unresolved-source event = 7.  The earlier expectation
+    # of 4 counted only L1 and contradicted the frozen rule this test itself relies on: a mother
+    # needs >= 3 mutually exclusive events (plan 11.1; docs/a12/v144_data_requirements.md 2.4
+    # line 239 "来自同母体不同替代碎裂事件的碎片..."), and the unresolved-source event is an
+    # *additional* event on top of them.  The implementation is correct; the number was not.
+    assert plan.events_total == 7, "2 mothers x 3 events + L1's unresolved-source event"
     refs = {event.event_id: event.seed_ref for event in plan.events}
     assert len(set(refs.values())) == len(refs), "every event draws its own seed sub-stream"
-    assert [m.split for m in plan.mothers] == ["train", "gallery_distractor"]
+    # L1's fixture entry declares no ``split``, so the conservative default applies: a lineage
+    # whose split is not stated must never be silently enrolled as training data (plan 1.3
+    # train/val/confirm split ratios).  Only the *distractor* flag is an explicit override.
+    assert [m.split for m in plan.mothers] == ["dev", "gallery_distractor"]
     assert plan.events_of(0)[0].seed_ref != plan.events_of(1)[0].seed_ref
 
 
@@ -306,7 +314,9 @@ def test_discrimination_reports_a_real_auc_and_a_clustered_interval():
     assert report["positives"] == 2 and report["negatives"] == 2
     assert report["auc"] is not None and 0.0 <= report["auc"] <= 1.0
     assert report["auc_interval"] is not None
-    assert report["auc_interval"]["unit"] == "mother_pair_cluster"
+    # one cluster per independent mother (the unit `discrimination_auc` documents and the frozen
+    # convention of synlab.diagnostics.stats: `n_clusters = len(per_cluster)` over shape lineages)
+    assert report["auc_interval"]["unit"] == "mother_cluster"
     assert report["clusters"] == 2
 
 

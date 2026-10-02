@@ -133,6 +133,14 @@ def commit_library(store: AssetStore, library: Mapping[str, Any], *,
     fragments = library_fragments(library)
     content_hash = library_hash(library)
     directory = Path(mesh_dir) if mesh_dir is not None else None
+    # ``mask_semantics`` only: this library is built from **clean, undamaged** fracture bodies,
+    # so no physical damage recipe was applied and ``damage_semantics`` is deliberately *not*
+    # stamped -- claiming ``subset_v2`` here would assert an instrument that never ran
+    # (``docs/a12/data_semantics_versions.md``; the quality gate reports the missing marker as a
+    # measured fact instead of being fed a false one).
+    from ..observe.render import MASK_SEMANTICS
+
+    semantics = {"mask_semantics": MASK_SEMANTICS}
     committed: dict[str, Any] = {"schema": "synlab.relations.library_commit.v1",
                                  "version": NEGATIVES_VERSION,
                                  "library_hash": content_hash, "run_id": run_id,
@@ -164,6 +172,7 @@ def commit_library(store: AssetStore, library: Mapping[str, Any], *,
             "library_hash": content_hash, "library_version": MULTI_EVENT_VERSION,
             "event_seed_ref": str(info.get("event_seed_ref", "")),
             "history": history,
+            "data_semantics": dict(semantics),
         }
         if run_id is not None:
             meta["run_id"] = str(run_id)
@@ -195,7 +204,8 @@ def commit_library(store: AssetStore, library: Mapping[str, Any], *,
                      "backend": "plane_shared_cut", "component_id": 0,
                      "is_tiny": bool(info["is_tiny"]),
                      "volume_mm3": float(info.get("volume_mm3", 0.0)),
-                     "library_hash": content_hash}
+                     "library_hash": content_hash,
+                     "data_semantics": dict(semantics)}
         if run_id is not None:
             mesh_meta["run_id"] = str(run_id)
         mesh_record = store.commit_asset(
@@ -253,13 +263,30 @@ def commit_library(store: AssetStore, library: Mapping[str, Any], *,
 def observe_library(plan: Any, store: AssetStore, *, fracture_config: Any,
                     events: Sequence[str], run_id: str | None = None,
                     route: str = "proxy_scan", view_count: int = 12,
-                    renderer: str = "software_rasterizer") -> dict[str, Any]:
+                    renderer: str = "auto",
+                    library: Mapping[str, Any] | None = None,
+                    obs_spec: Any | None = None) -> dict[str, Any]:
     """Observe selected events of the library for real and commit features in the legal layout.
 
-    The fracture is re-run deterministically (same seeds, same event ids), then each **clean**
-    fragment is observed through the frozen ``synlab.observe`` route.  Clean (undamaged) bodies
-    are a legitimate observation tier -- plan 18.5 asks for at least 20% clean observations --
-    and are declared as such in every asset; nothing here claims a damaged state.
+    The fracture is re-run deterministically and each **clean** fragment is observed through the
+    frozen ``synlab.observe`` route.  Clean (undamaged) bodies are a legitimate observation tier
+    -- plan 18.5 asks for at least 20% clean observations -- and are declared as such in every
+    asset; nothing here claims a damaged state.
+
+    ``obs_spec`` lets the caller hand in the **pipeline's own resolved** ``ObsSpec``
+    (``synlab.pipeline._resolve_observe_spec``).  Without it the dataclass default is used, which
+    renders at the default supersample and therefore classifies a pixel as object only when every
+    supersample hits the same face -- the documented reason the pipeline renders the two-endpoint
+    path at ``supersample=1``.  Passing the resolved spec is what makes this route the *same*
+    observation route the pipeline uses, instead of a look-alike.
+
+    ``library`` is the measured library the labels came from.  It must be passed whenever the
+    events were planned with explicit cut planes: ``synlab.fracture.api._default_basis`` derives
+    a *body-determined* plane when the spec carries none, so re-running an event without its
+    recorded plane silently produces a different fracture and the observed fragments would no
+    longer be the bodies the relation labels were measured on.  With ``library`` given, the
+    recorded plane is reused and the produced fragment mesh hashes are compared against the
+    recorded ones -- a mismatch is reported and the fragment is **not** committed.
 
     The committed ``feature_bundle`` uses the array names ``relations.gallery._feature_payload``
     actually reads (``points``/``normals``/``point_valid``/``normal_valid``/``quality``/...).
@@ -272,14 +299,32 @@ def observe_library(plan: Any, store: AssetStore, *, fracture_config: Any,
     from ..observe.api import commit_observation, observe
     from ..observe.features import adapt_observed_features
     from ..observe.routes import ObsSpec
+    from ..pipeline import OBS_ROLE_EVENT_ENDPOINT, _stamp_obs_semantics, data_semantics
     from ..seeds import derive_named_rngs, make_rng
     from ..truth.api import finalize_clean_truth
 
+    semantics = data_semantics()
+
+    recorded: dict[str, dict[str, Any]] = {}
+    for mother in (library or {}).get("mothers", []):
+        for event in mother.get("events", []):
+            if event.get("ok"):
+                recorded[str(event["event_id"])] = {
+                    "fracture_spec": dict(event.get("fracture_spec") or {}),
+                    "mesh_hash": {str(f["fragment_id"]): str(f.get("mesh_hash", ""))
+                                  for f in event.get("fragments", [])},
+                }
     wanted = {str(e) for e in events}
     report: dict[str, Any] = {"schema": "synlab.relations.observe_library.v1",
                               "version": NEGATIVES_VERSION, "route": route,
                               "renderer": renderer, "run_id": run_id, "events": [],
-                              "observations": {}, "features": {}, "ok": False}
+                              "observations": {}, "features": {}, "ok": False,
+                              "library_supplied": library is not None,
+                              "obs_spec_source": ("pipeline._resolve_observe_spec"
+                                                  if obs_spec is not None
+                                                  else "observe.routes.ObsSpec defaults"),
+                              "data_semantics": semantics,
+                              "recorded_events": len(recorded)}
     for mother_plan in plan.mothers:
         plan_events = [e for e in plan.events_of(mother_plan.mother_index)
                        if e.event_id in wanted]
@@ -299,17 +344,44 @@ def observe_library(plan: Any, store: AssetStore, *, fracture_config: Any,
                                   "so no observation is produced for them")
                 continue
             try:
-                rng = make_rng(plan.master_seed, mother_plan.lineage_id, "cut", event_plan.event_id)
+                rng = make_rng(plan.master_seed, mother_plan.lineage_id, "cut", event_plan.event_id,
+                               0)
+                plan_spec = (recorded.get(event_plan.event_id) or {}).get("fracture_spec") or {}
+                plane_point = plan_spec.get("plane_point")
+                plane_normal = plan_spec.get("plane_normal")
                 spec = FractureSpec(
                     backend=BACKEND_PLANE,
                     error_budget_mm=float(getattr(fracture_config,
-                                                  "shared_surface_max_error_mm", 0.01)))
+                                                  "shared_surface_max_error_mm", 0.01)),
+                    plane_point=(None if plane_point is None
+                                 else np.asarray(plane_point, dtype=np.float64)),
+                    plane_normal=(None if plane_normal is None
+                                  else np.asarray(plane_normal, dtype=np.float64)))
+                entry["plane_source"] = ("recorded_library_plane" if plane_normal is not None
+                                         else "fracture_api_default_basis")
                 fracture = fracture_event(mother, spec, rng, event_id=event_plan.event_id)
                 audit_fracture(fracture, mother)
                 finalize_clean_truth(mother, fracture)
-                obs_spec = ObsSpec(master_seed=int(plan.master_seed),
-                                   lineage_id=mother_plan.lineage_id, route=route,
-                                   view_count=int(view_count), renderer=renderer)
+                expected = (recorded.get(event_plan.event_id) or {}).get("mesh_hash") or {}
+                from ..fracture.booleans import mesh_hash as _mesh_hash
+
+                produced = {str(f.fragment_id): _mesh_hash(f.mesh) for f in fracture.fragments}
+                mismatched = sorted(fid for fid, value in produced.items()
+                                    if fid in expected and expected[fid] and expected[fid] != value)
+                entry["mesh_hash_correspondence"] = {
+                    "compared": sum(1 for fid in produced if expected.get(fid)),
+                    "mismatched": mismatched,
+                    "produced": produced}
+                if mismatched:
+                    entry["error"] = (
+                        "the re-run geometry does not match the geometry the labels were "
+                        "measured on; refusing to commit observations for it")
+                    entry["seconds"] = time.perf_counter() - started
+                    continue
+                event_obs_spec = (obs_spec if obs_spec is not None else
+                                  ObsSpec(master_seed=int(plan.master_seed),
+                                          lineage_id=mother_plan.lineage_id, route=route,
+                                          view_count=int(view_count), renderer=renderer))
             except Exception as exc:  # noqa: BLE001 - a failure is an outcome
                 entry["error"] = f"{type(exc).__name__}: {exc}"
                 entry["seconds"] = time.perf_counter() - started
@@ -322,7 +394,14 @@ def observe_library(plan: Any, store: AssetStore, *, fracture_config: Any,
                 t0 = time.perf_counter()
                 try:
                     observation = observe(fragment, None, rngs, route=route,
-                                          spec=obs_spec)
+                                          spec=event_obs_spec)
+                    # the semantics this observation was rendered under travel with it, exactly
+                    # as ``synlab.pipeline`` stamps its own two-endpoint observations: the
+                    # fragment is a **clean, undamaged** endpoint of a fracture event, and the
+                    # delivered mask channels come from this checkout's renderer.
+                    observation.meta["data_semantics"] = semantics
+                    _stamp_obs_semantics(observation, role=OBS_ROLE_EVENT_ENDPOINT,
+                                         damage_state="UNDAMAGED")
                     obs_record = commit_observation(
                         store, observation, lineage_id=mother_plan.lineage_id,
                         split=mother_plan.split, run_id=run_id)
@@ -343,6 +422,7 @@ def observe_library(plan: Any, store: AssetStore, *, fracture_config: Any,
                                  "event_id": event_plan.event_id,
                                  "observation_id": obs_record.asset_id,
                                  "observation_tier": "CLEAN_UNDAMAGED",
+                                 "data_semantics": dict(semantics),
                                  "library_hash": library_hash({"plan": plan.as_dict()})})
                     if run_id is not None:
                         meta["run_id"] = str(run_id)
@@ -848,10 +928,16 @@ def discrimination_auc(pool: Any, relations: Sequence[Mapping[str, Any]], *,
     scores = np.asarray([p["score"] for p in pairs], dtype=np.float64)
     labels = np.asarray([p["positive"] for p in pairs], dtype=bool)
     auc = _auc(scores, labels)
-    # mother-clustered bootstrap: resample mothers with replacement, keep all their pairs
+    # Mother-clustered bootstrap: the resampling unit is **one cluster per independent mother**
+    # (plan 19.4; the frozen convention of ``synlab.diagnostics.stats`` is one cluster per shape
+    # lineage).  Every pair that names mother X is dependent on every other pair that names X --
+    # the fragments are drawn from one physical body -- so it has to move with X's draw.
+    # Grouping by the *mother pair* instead would split X's within-mother pairs from X's
+    # cross-mother pairs and report more independent clusters than there are independent
+    # mothers, which narrows the interval anti-conservatively.
     clusters: dict[str, list[int]] = {}
     for index, pair in enumerate(pairs):
-        key = f"{pair['mother_a']}|{pair['mother_b']}"
+        key = str(pair["mother_a"]) or str(pair["mother_b"])
         clusters.setdefault(key, []).append(index)
     keys = sorted(clusters)
     rng = np.random.default_rng(int(seed))
@@ -871,7 +957,7 @@ def discrimination_auc(pool: Any, relations: Sequence[Mapping[str, Any]], *,
         interval = {"low": float(np.percentile(draws, 2.5)),
                     "high": float(np.percentile(draws, 97.5)),
                     "replicates": len(draws), "degenerate_draws": degenerate,
-                    "unit": "mother_pair_cluster", "confidence": 0.95}
+                    "unit": "mother_cluster", "confidence": 0.95}
     positives = [p for p in pairs if p["positive"]]
     negatives = [p for p in pairs if not p["positive"]]
     accuracy = None
@@ -888,11 +974,12 @@ def discrimination_auc(pool: Any, relations: Sequence[Mapping[str, Any]], *,
         "pairs": len(pairs), "positives": len(positives), "negatives": len(negatives),
         "positive_kinds": list(positive_kinds),
         "negative_kinds": sorted({p["kind"] for p in negatives}),
-        "clusters": len(keys), "clusters_note": "independent mother pairs (plan 19.4 unit)",
+        "clusters": len(keys), "clusters_note": "independent mothers (plan 19.4 unit; one "
+                                                "cluster per mother, cf. diagnostics.stats)",
         "auc": auc, "accuracy_at_median_threshold": accuracy,
         "auc_interval": interval, "bootstrap_requested": int(bootstrap),
         "sample_note": (f"AUC over {len(pairs)} real labelled pairs from {len(vectors)} "
-                        f"observed fragments in {len(keys)} mother-pair clusters; the interval "
+                        f"observed fragments in {len(keys)} mother clusters; the interval "
                         f"is a mother-clustered percentile bootstrap and is wide by construction"),
         "per_pair": pairs,
     }

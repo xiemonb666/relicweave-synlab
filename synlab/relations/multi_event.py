@@ -71,20 +71,56 @@ from ..storage.store import QA_PASS, AssetStore
 
 MULTI_EVENT_VERSION = "relations.multi_event.v1"
 
-#: Roles of the events of one mother.  ``primary``/``secondary`` get an rng-chosen cut plane,
-#: ``grey_zone`` gets an explicitly dialled plane whose real interface area is meant to land in
-#: the frozen numerical grey zone (``TINY_CONTACT``) instead of above the R2 threshold.
+#: Roles of the events of one mother.  ``primary``/``secondary``/``extra`` get an rng-chosen cut
+#: plane drawn from their own base azimuth; ``grey_zone`` gets an explicitly dialled plane whose
+#: real interface area is meant to land in the frozen numerical grey zone (``TINY_CONTACT``)
+#: instead of above the R2 threshold.
 ROLE_PRIMARY = "primary"
 ROLE_SECONDARY = "secondary"
+#: The third (and every further) mutually exclusive event of a mother.  It is a **plain** cut on
+#: its own base azimuth -- not a grey-zone dial.  Measured reason (``data/a12/reports/
+#: relation_negatives_summary.json``, grey_zone ledger): dialling a plane into the grey band
+#: cost 16 attempts of which 15 were refused by the conservation audit (20-83 s each) and the one
+#: that succeeded produced fragments with **no** tagged new-fracture faces, so ``_event_plane``
+#: could not measure its cut plane at all.  A third event is needed for the legal-negative route
+#: ("a second event of the same mother" is what makes a non-adjacency claim decidable), and it
+#: must be cheap *and* measurable; the grey zone is an optional extra, requested explicitly
+#: through ``grey_zone_mothers``.
+ROLE_EXTRA = "extra"
 ROLE_GREY_ZONE = "grey_zone"
 #: An event whose fracture really ran but whose clean truth was deliberately **not** computed.
 #: Its fragments exist as real bodies while their relation evidence is missing, which is exactly
 #: ``UNKNOWN`` in plan 11.1 ("关系或来源无法确认", ``loss_mask=False``) -- it is never an R0.
 ROLE_UNRESOLVED = "unresolved"
-EVENT_ROLES: tuple[str, ...] = (ROLE_PRIMARY, ROLE_SECONDARY, ROLE_GREY_ZONE)
+EVENT_ROLES: tuple[str, ...] = (ROLE_PRIMARY, ROLE_SECONDARY, ROLE_EXTRA)
 
 #: Splits that the pool builder treats as a distractor-only lineage (``gallery.DISTRACTOR_SPLITS``).
 SPLIT_DISTRACTOR = "gallery_distractor"
+
+#: Base cut azimuth (rad) per event role.  A **measured** necessity, not decoration:
+#: ``synlab.fracture.api._default_basis`` derives its plane from the *body* (a hash of the
+#: mother's vertices/faces, ``del rng``) whenever the spec carries no explicit plane, so three
+#: events of one mother planned only with different event ids produced the **byte-identical**
+#: fragment mesh sets (measured: mother ``LIN0000_V01_M01_PAT01`` events E01/E02/EU all yielded
+#: meshes ``22f8746a...`` and ``ed9d25f6...``, and ``verify_event_exclusion`` reported
+#: ``distinct_plane`` with ``normal_alignment=1.0``, ``offset_gap_mm=0.0``).  They were therefore
+#: one fracture repeated, not mutually exclusive alternatives, and the exclusion check correctly
+#: withdrew every cross-event R1 label to UNKNOWN.
+#: Each role gets its own base azimuth; the per-event seed adds a small jitter and each retry
+#: rotates further, so the events of one mother cut along different planes by construction while
+#: staying fully reproducible from ``(master_seed, lineage_id, event_id)``.
+#: The four base azimuths are deliberately **not** 0 and pi apart in pairs: the check compares
+#: ``abs(dot(normal_a, normal_b))``, so two planes at opposite azimuths would count as the same
+#: plane whenever their offsets coincide.  0 / 60 / 120 / 270 degrees keep every pair at
+#: ``|dot| <= 0.5`` in the ideal case.
+ROLE_BASE_AZIMUTH: dict[str, float] = {
+    ROLE_PRIMARY: 0.0, ROLE_SECONDARY: np.pi / 3.0, ROLE_UNRESOLVED: 2.0 * np.pi / 3.0,
+    ROLE_EXTRA: 1.5 * np.pi,
+}
+#: Azimuth step between the retries of one event, and the jitter band around a base azimuth.
+PLANE_RETRY_STEP_RAD = np.pi / 5.0
+PLANE_JITTER_RAD = 0.15
+PLANE_TILT_RAD = 0.25
 
 #: Two cut planes count as "the same fracture surface" when their normals agree and their
 #: offsets coincide within these tolerances (mm / dimensionless).
@@ -188,7 +224,9 @@ def plan_event_library(mothers: Sequence[Mapping[str, Any]], *,
 
     The **last** event of a mother listed in ``grey_zone_mothers`` is planned with role
     ``grey_zone``; its plane is dialled at run time so that the *measured* interface area lands
-    in the frozen grey zone.  Nothing here invents an area.
+    in the frozen grey zone.  Nothing here invents an area.  Every other event (the third and
+    beyond) is a **plain** ``extra`` cut on its own base azimuth -- see ``ROLE_EXTRA`` for the
+    measured reason the third event must not default to a grey-zone dial.
     """
     if int(n_events) < 3:
         raise SynLabError(ErrorCode.SCHEMA_INVALID,
@@ -498,27 +536,56 @@ def _role_satisfied(measured: Mapping[str, Any], *, tallow: float,
 def _event_candidates(event_plan: EventPlan, fracture_config: Any, fracture_spec_cls: Any,
                       plane_backend: str, *, mother: Any, area_threshold: float,
                       tiny_threshold: float, master_seed: int,
-                      max_attempts: int = 4) -> list[tuple[Any, dict[str, Any]]]:
-    """Candidate specs for one event: one for a normal event, several for the grey zone.
+                      max_attempts: int = 5) -> list[tuple[Any, dict[str, Any]]]:
+    """Candidate specs for one event: an event-seeded plane, several dialled planes for the grey zone.
 
-    A grey-zone plane has to be *dialled*: the frozen area band
+    A **non-grey** event gets an explicit plane derived from its own event id and role
+    (``ROLE_BASE_AZIMUTH`` + seeded jitter + a rotation per retry), because the frozen default
+    basis of ``fracture.api`` is body-determined: without an explicit plane every event of one
+    mother is the same cut (measured, see ``ROLE_BASE_AZIMUTH``).  Retries rotate the plane
+    further, so a refused event is retried on genuinely different geometry and every attempt is
+    recorded.
+
+    A **grey-zone** plane has to be *dialled*: the frozen area band
     ``[max(1e-3, 1e-6 A_mother), max(0.1, 1e-4 A_mother))`` is wide but a real boolean can still
     refuse an extremely oblique sliver cut (``FRACTURE_CONSERVATION_FAIL``), so several
     directions/areas inside the band are tried in a deterministic order and every attempt is
     recorded -- including the ones that failed.
+
+    The targets are ordered from the **least oblique** cut that is still inside the band
+    (``0.95 * band_high``, just below the R2 threshold) downwards: a plane whose cross-section is
+    a sliver grazing the rim is what the conservation audit refuses, and the measured probe in
+    ``data/a12/reports/_neg_greyzone_probe.json`` shows the refusal is worst for the smallest
+    targets.  No threshold is touched: the band and the audit stay exactly as frozen.
     """
     if event_plan.role != ROLE_GREY_ZONE:
-        base = fracture_spec_cls(
-            backend=plane_backend,
-            error_budget_mm=float(getattr(fracture_config, "shared_surface_max_error_mm", 0.01)),
-            target_rms_mm=float(np.mean(getattr(fracture_config, "rough_amplitude_mm",
-                                                (0.02, 0.3)))),
-            meta={"plane_source": "seed", "event_role": event_plan.role})
-        return [(base, {"kind": "seed_plane", "attempt_index": index})
-                for index in range(int(max_attempts))]
+        points = np.asarray(mother.mesh.vertices, dtype=np.float64)
+        centre = points.mean(axis=0)
+        out_plain: list[tuple[Any, dict[str, Any]]] = []
+        base = float(ROLE_BASE_AZIMUTH.get(event_plan.role, 0.0))
+        for index in range(int(max_attempts)):
+            rng = make_rng(master_seed, event_plan.lineage_id, "cut_plane", event_plan.event_id,
+                           index)
+            azimuth = (base + index * float(PLANE_RETRY_STEP_RAD)
+                       + float(rng.uniform(-PLANE_JITTER_RAD, PLANE_JITTER_RAD)))
+            tilt = float(rng.uniform(-PLANE_TILT_RAD, PLANE_TILT_RAD))
+            normal = np.array([np.cos(azimuth), np.sin(azimuth), tilt])
+            normal = normal / max(float(np.linalg.norm(normal)), 1e-12)
+            out_plain.append((fracture_spec_cls(
+                backend=plane_backend,
+                error_budget_mm=float(getattr(fracture_config, "shared_surface_max_error_mm",
+                                              0.01)),
+                target_rms_mm=float(np.mean(getattr(fracture_config, "rough_amplitude_mm",
+                                                    (0.02, 0.3)))),
+                plane_point=centre, plane_normal=normal,
+                meta={"plane_source": "event_seeded", "event_role": event_plan.role,
+                      "plane_azimuth_rad": azimuth, "plane_tilt": tilt}),
+                {"kind": "event_seeded_plane", "attempt_index": index,
+                 "plane_azimuth_rad": azimuth, "plane_tilt": tilt}))
+        return out_plain
     band_low, band_high = float(tiny_threshold), float(area_threshold)
-    targets = [float(np.sqrt(band_low * band_high)), float(0.5 * (band_low + band_high)),
-               float(band_low + 0.1 * (band_high - band_low))]
+    targets = [0.95 * band_high, 0.80 * band_high, 0.60 * band_high, 0.40 * band_high,
+               float(np.sqrt(band_low * band_high))]
     out: list[tuple[Any, dict[str, Any]]] = []
     for index in range(int(max_attempts)):
         rng = make_rng(master_seed, event_plan.event_id, "grey_zone", index)
@@ -867,28 +934,48 @@ def classify_library(library: Mapping[str, Any]) -> list[dict[str, Any]]:
                                 "evidence": {"basis": "same_event_no_shared_patch",
                                              "event_id": a["event_id"]}})
                 continue
-            # same mother, different events: legal only when the library really is exclusive
-            genuine = bool((library.get("exclusion") or {}).get("ok", False))
-            shared = [p for p in (library.get("exclusion") or {}).get("problems", [])
+            # same mother, different events: legal only when **this pair of events** is verified
+            # to be mutually exclusive.
+            #
+            # The decision is per pair, not per library.  It used to read the library-global
+            # ``exclusion.ok`` flag, which is a coarse proxy: one unverifiable event anywhere
+            # (measured: a grey-zone event whose fragments carried no tagged new-fracture faces,
+            # so ``_event_plane`` returned ``None`` and the check reported ``plane_unmeasured``)
+            # withdrew *every* cross-event R1 row of *every* mother -- measured 24 rows became
+            # ``mutually_exclusive_library_not_verified`` and the whole library produced
+            # ``r1_cross_event = 0`` (``data/a12/reports/relation_negatives_summary.json``).
+            # Reading the three checks for the pair itself is **stricter**, not looser: a pair is
+            # R1 only when ``no_shared_patch`` and ``distinct_plane`` and ``distinct_mesh`` were
+            # all actually evaluated for it and none of them failed.  A library with no exclusion
+            # block at all, or a pair that appears in ``problems`` for any reason (including
+            # ``plane_unmeasured``), still yields UNKNOWN with ``loss_mask=False``.
+            exclusion = dict(library.get("exclusion") or {})
+            checks_run = {str(c) for c in (exclusion.get("checks") or [])}
+            verified_library = {"no_shared_patch", "distinct_plane", "distinct_mesh"} <= checks_run
+            shared = [p for p in (exclusion.get("problems") or [])
                       if set(p.get("events", [])) == {a["event_id"], b["event_id"]}]
-            if not genuine or shared:
+            pair_evidence = {
+                "basis": "mutually_exclusive_event",
+                "mother": a["mother_id"],
+                "events": [a["event_id"], b["event_id"]],
+                "shared_patch": None,
+                "exclusion_checks_run": sorted(checks_run),
+                "exclusion_problems_for_this_pair": shared[:4],
+                "library_exclusion_ok": bool(exclusion.get("ok", False)),
+            }
+            if not verified_library or shared:
                 out.append({**base, "kind": RELATION_UNKNOWN, "area_mm2": 0.0, "valid": False,
                             "loss_mask": False, "interface_id": None,
                             "reason": "mutually_exclusive_library_not_verified",
                             "decidability": "unverified", "measured_surface": False,
-                            "evidence": {"basis": "exclusion_check_failed",
-                                         "problems": shared[:4],
-                                         "library_exclusion_ok": genuine}})
+                            "evidence": {**pair_evidence, "basis": "exclusion_check_failed",
+                                         "problems": shared[:4]}})
                 continue
             out.append({**base, "kind": RELATION_R1, "area_mm2": 0.0, "valid": True,
                         "loss_mask": True, "interface_id": None,
                         "reason": "mutually_exclusive_event_no_shared_surface",
                         "decidability": "mutually_exclusive_event", "measured_surface": False,
-                        "evidence": {"basis": "mutually_exclusive_event",
-                                     "mother": a["mother_id"],
-                                     "events": [a["event_id"], b["event_id"]],
-                                     "shared_patch": None,
-                                     "library_exclusion_ok": genuine}})
+                        "evidence": pair_evidence})
     return out
 
 
@@ -941,7 +1028,8 @@ def library_hash(library: Mapping[str, Any]) -> str:
 
 
 __all__ = [
-    "MULTI_EVENT_VERSION", "EVENT_ROLES", "ROLE_PRIMARY", "ROLE_SECONDARY", "ROLE_GREY_ZONE",
+    "MULTI_EVENT_VERSION", "EVENT_ROLES", "ROLE_PRIMARY", "ROLE_SECONDARY", "ROLE_EXTRA",
+    "ROLE_GREY_ZONE",
     "SPLIT_DISTRACTOR", "PLANE_NORMAL_TOL", "PLANE_OFFSET_TOL_MM",
     "MotherPlan", "EventPlan", "LibraryPlan", "plan_event_library", "run_event_library",
     "dial_grey_zone_plane", "verify_event_exclusion", "classify_library",

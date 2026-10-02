@@ -19,6 +19,7 @@ import { useAppState } from '../state/app-state';
 
 const NAV: Array<{ to: string; label: string; plan: string }> = [
   { to: '/synlab', label: '实验室概览', plan: 'U01' },
+  { to: '/synlab/synthesis', label: '合成向导', plan: 'U14' },
   { to: '/synlab/mothers/new', label: '母体编辑', plan: 'U02' },
   { to: '/synlab/patterns', label: '花纹编辑', plan: 'U03' },
   { to: '/synlab/fracture', label: '断裂预览', plan: 'U04' },

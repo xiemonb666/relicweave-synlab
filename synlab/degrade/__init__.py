@@ -8,6 +8,21 @@ The package exports
   -- the frozen façade in ``docs/a12/interfaces.md`` section 2 (imported lazily so that
   importing the registry never drags in ``synlab.config``).
 
+Two **realism models** live beside the 31 axes and are not new axes (the axis set of
+``synlab.schemas.spec.AXIS_IDS`` is frozen at 31 x 5 and the audit contract 155/155 depends on it):
+
+* :mod:`synlab.degrade.wear` -- antique wear/aging, spatially structured and driven by measured
+  physical quantities (wall thickness, curvature, the measured L01/L03 layer interval, material
+  porosity/hardness);
+* :mod:`synlab.degrade.rig_error` -- capture-rig error for the documented hardware (rolling
+  shutter, manual-focus CoC, intrinsics/scale drift, the five documented light states,
+  resolution-at-distance, reconstruction error);
+* :mod:`synlab.degrade.mapping` -- the 14-component synthetic degradation vector vs. the 8-item
+  real quality vector, with the inversion used for real-statistics calibration;
+* :mod:`synlab.degrade.specs` -- the hardware/material catalogue with per-value provenance
+  (``DOCUMENTED`` / ``DERIVED`` / ``CANDIDATE`` / ``UNKNOWN``), which is what makes "which number
+  is measured and which still needs calibration" answerable.
+
 Nothing in this package re-writes the source at level 0 and nothing reports a declared
 effect that was not measured.
 """
@@ -43,6 +58,22 @@ _LAZY = {
     "commit_source": (".sources", "commit_source"),
     "load_source": (".sources", "load_source"),
     "run_recipe": (".api", "run_recipe"),
+    # degradation diversity (config-driven materialisation into the generation pipeline)
+    "load_diversity_config": (".diversity", "load_diversity_config"),
+    "materialize_lineage_diversity": (".diversity", "materialize_lineage_diversity"),
+    "ROLE_DEGRADE_SOURCE": (".diversity", "ROLE_DEGRADE_SOURCE"),
+    "ROLE_DEGRADE_VARIANT": (".diversity", "ROLE_DEGRADE_VARIANT"),
+    # realism models (not axes): wear/aging, capture-rig error, the 14<->8 mapping, the catalogue
+    "wear_apply": (".wear", "apply_wear"),
+    "WearModel": (".wear", "WearModel"),
+    "wear_legality_report": (".wear", "legality_report"),
+    "RigErrorModel": (".rig_error", "RigErrorModel"),
+    "scan_fault_ladder": (".rig_error", "scan_fault_ladder"),
+    "capture_rig_spec": (".specs", "capture_rig_spec"),
+    "light_modes": (".specs", "light_modes"),
+    "mapping_table": (".mapping", "mapping_table"),
+    "mapping_completeness": (".mapping", "mapping_completeness"),
+    "levels_from_quality": (".mapping", "levels_from_quality"),
 }
 
 __all__ = [
@@ -51,6 +82,11 @@ __all__ = [
     "compile_recipe", "apply_axis", "audit_axis", "audit_all_axes", "operator_audit_table",
     "write_operator_measurements", "run_recipe",
     "SourceBundle", "OutputRef", "commit_source", "load_source",
+    "load_diversity_config", "materialize_lineage_diversity",
+    "ROLE_DEGRADE_SOURCE", "ROLE_DEGRADE_VARIANT",
+    "wear_apply", "WearModel", "wear_legality_report", "RigErrorModel", "scan_fault_ladder",
+    "capture_rig_spec", "light_modes", "mapping_table", "mapping_completeness",
+    "levels_from_quality",
 ]
 
 

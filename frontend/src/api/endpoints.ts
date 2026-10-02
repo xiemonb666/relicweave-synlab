@@ -12,10 +12,14 @@ import type {
   AssetsPageResponse,
   AuditDetailResponse,
   AuditListResponse,
+  BatchPlanResponse,
+  BudgetReport,
   CameraProfileDetailResponse,
   CameraProfilesResponse,
   CapabilitiesResponse,
+  ChainPreviewResponse,
   ControlResponse,
+  DegradationPairsResponse,
   DiagnosticsRunDetailResponse,
   DiagnosticsRunsResponse,
   EpisodeResetResponse,
@@ -34,9 +38,9 @@ import type {
   ResearchTruthResponse,
   SpecValidationResponse,
   StagesResponse,
+  SynthesisInventoryResponse,
   TrainingRunDetailResponse,
   TrainingRunsResponse,
-  BudgetReport,
 } from './types';
 
 export type Query = RequestOptions['query'];
@@ -277,3 +281,53 @@ export const stepEpisode = (
 
 export const getEpisode = (episodeId: string, signal?: AbortSignal) =>
   request<EpisodeResponse>(`/episodes/${encodeURIComponent(episodeId)}`, { signal });
+
+/* ------------------------------------------- 只读聚合（synlab/api/routers/synthesis.py）
+ *
+ * 这些端点**只读**已经落盘的 store（资产表 / 报表 / 事件表），不创建 run、不写任何资产。
+ * 前端不再自己把 /jobs /assets /reports 拼成面板，也不需要任何 mock：
+ * 后端没有的字段它就是 null，页面显示“未提供”。
+ */
+
+export const getSynthesisInventory = (signal?: AbortSignal) =>
+  request<SynthesisInventoryResponse>('/synthesis/inventory', { signal, timeoutMs: 60_000 });
+
+export const getDegradationPairs = (axisId?: string | null, signal?: AbortSignal) =>
+  request<DegradationPairsResponse>('/synthesis/degradation-pairs', {
+    query: { axis_id: axisId || undefined },
+    signal,
+    timeoutMs: 60_000,
+  });
+
+export const postBatchPlan = (
+  body: {
+    spec: Record<string, unknown>;
+    requested?: number;
+    cursor?: number;
+    batch_size?: number;
+    resume?: boolean;
+    idempotency_key?: string | null;
+  },
+  signal?: AbortSignal,
+) => request<BatchPlanResponse>('/synthesis/batch-plan', { method: 'POST', body, signal, timeoutMs: 60_000 });
+
+export const postChainPreview = (
+  body: {
+    spec: Record<string, unknown>;
+    /** `pipeline` = 直接调用 façade 链（真实资产 + 真实阶段耗时）；`jobs` = 走 POST /jobs + worker。 */
+    mode?: 'pipeline' | 'jobs';
+    max_retries?: number;
+    /** 缺省 true：后端真实执行（pipeline 模式在请求内跑完一条谱系）。 */
+    run?: boolean;
+    timeout_seconds?: number;
+    idempotency_key?: string | null;
+  },
+  signal?: AbortSignal,
+) =>
+  request<ChainPreviewResponse>('/synthesis/chain-preview', {
+    method: 'POST',
+    body,
+    signal,
+    // 同步预览会真的把一条谱系跑完，超时给足。
+    timeoutMs: 900_000,
+  });

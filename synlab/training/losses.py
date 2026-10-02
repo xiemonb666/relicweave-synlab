@@ -535,7 +535,19 @@ class MultiTaskLoss:
         self.skipped_reasons = {}
 
     def combine(self, results: Mapping[str, Mapping[str, Any]]) -> dict[str, Any]:
-        """Combine task results, counting skipped tasks explicitly."""
+        """Combine task results, counting skipped tasks explicitly.
+
+        Every entry carries three supervision numbers, which are *not* the same thing:
+
+        ``n_valid``
+            rows the loss really consumed (its denominator); 0 for a skipped task;
+        ``n_allowed``
+            rows that survived every mask the task applies (equals ``n_valid`` when present);
+        ``n_valid_labels``
+            label rows that exist and are valid *before* encodability is considered.  A task with
+            ``n_valid_labels > 0`` and ``n_valid == 0`` is *blocked*, not unlabelled -- the
+            distinction a supervision report needs (see ``synlab.training.supervision``).
+        """
         torch = _torch()
         total = None
         report: dict[str, Any] = {}
@@ -544,12 +556,15 @@ class MultiTaskLoss:
             self.n_present[name] = self.n_present.get(name, 0) + (1 if present else 0)
             weight = _weight_of(self.loss_weights, name)
             if not present:
+                n_labels = int((res or {}).get("n_valid_labels", 0) or 0)
                 self.skipped[name] = self.skipped.get(name, 0) + 1
                 self.skipped_reasons[name] = (res or {}).get("reason") or "no_valid_supervision"
                 report[name] = {"skipped": True,
                                 "reason": self.skipped_reasons[name],
                                 "weight": weight, "loss": None, "n_valid": 0,
-                                "effective_supervision_ratio": 0.0}
+                                "n_allowed": 0, "n_valid_labels": n_labels,
+                                "effective_supervision_ratio": 0.0,
+                                "diagnostics": (res or {}).get("diagnostics", {})}
                 continue
             loss = res["loss"]
             contribution = loss * weight
@@ -558,6 +573,9 @@ class MultiTaskLoss:
                             "loss": float(loss.detach()),
                             "weighted": float(contribution.detach()),
                             "n_valid": int(res.get("n_valid", 0)),
+                            "n_allowed": int(res.get("n_valid", 0)),
+                            "n_valid_labels": int(res.get("n_valid_labels",
+                                                          res.get("n_valid", 0)) or 0),
                             "effective_supervision_ratio": _supervision_ratio(res),
                             "diagnostics": res.get("diagnostics", {})}
         if total is None:

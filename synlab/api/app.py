@@ -46,6 +46,7 @@ from .routers import jobs as jobs_router
 from .routers import learning as learning_router
 from .routers import meta as meta_router
 from .routers import showcase as showcase_router
+from .routers import synthesis as synthesis_router
 from .security import ROLES, validate_role
 
 API_PREFIX = "/api/synlab"
@@ -192,7 +193,7 @@ def create_app(
     # ------------------------------------------------------------------ mounts
     for router in (meta_router.router, jobs_router.router, assets_router.router,
                    governance_router.router, cameras_router.router, learning_router.router,
-                   showcase_router.router):
+                   showcase_router.router, synthesis_router.router):
         app.include_router(router, prefix=API_PREFIX)
 
     # 只读展示页的数据源（`tools/build_demo_assets.py` 产出的独立演示资产库）。

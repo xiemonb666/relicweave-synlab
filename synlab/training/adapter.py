@@ -246,7 +246,11 @@ def _prepare_tokens(payload: Mapping[str, Any], fragment_id: str,
     if dropped.size:
         upstream = np.where(upstream_index[dropped] >= 0,
                             upstream_index[dropped], dropped.astype(np.int32))
-        retrieval[: upstream.size] = upstream.astype(np.int32)
+        # ``keep`` may legitimately be empty: a fragment whose every validity mask is False is
+        # *unobserved* (the loader meets these in the real exported package), and then
+        # ``select_token_quota`` keeps nothing while every token counts as dropped.  Clamp to
+        # the receiving length instead of broadcasting a full-length array into an empty one.
+        retrieval[: min(retrieval.size, upstream.size)] = upstream[: retrieval.size].astype(np.int32)
 
     report = {k: v for k, v in report.items() if k != "indices"}
     report["dropped_upstream_indices"] = dropped.astype(np.int64)

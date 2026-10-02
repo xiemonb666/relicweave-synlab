@@ -33,6 +33,10 @@ from .spec import BACKEND_PLANE, BACKEND_ROUGH, FractureSpec
 BACKEND_SECONDARY = "secondary_fracture"
 BACKEND_WARPED = "warped_partition"
 BACKEND_FRACTURE_MODES = "fracture_modes"
+#: Multi-piece, physically constrained fragmentation (Voronoi cells + impact energy count law).
+#: Implemented in :mod:`synlab.fracture.voronoi_event` / ``impact`` / ``voronoi_frag`` / ``energy``;
+#: this façade only registers it, so nothing in the existing plane/rough paths changes.
+BACKEND_VORONOI = "warp_voronoi_cut"
 
 __all__ = [
     "make_closed_cutter", "fracture_event", "audit_fracture", "commit_fracture",
@@ -40,7 +44,7 @@ __all__ = [
 ]
 
 #: Backends implemented in this build; the pipeline records the honest status per event.
-BUILT_BACKENDS = ("plane_shared_cut", "rough_shared_cut", BACKEND_SECONDARY)
+BUILT_BACKENDS = ("plane_shared_cut", "rough_shared_cut", BACKEND_SECONDARY, BACKEND_VORONOI)
 PENDING_BACKENDS = (BACKEND_WARPED, BACKEND_FRACTURE_MODES)
 
 
@@ -84,8 +88,29 @@ def _backend_modes(spec: Any = None, **_: Any) -> str:  # pragma: no cover - reg
     return BACKEND_FRACTURE_MODES
 
 
+@register_fracture_backend(
+    BACKEND_VORONOI, "加权 Voronoi 多块碎裂",
+    applicable={"shell": True, "solid": True},
+    notes="piece count from the impact law (size x toughness x energy); material-volume seeds "
+          "weighted by wall thickness / curvature / impact proximity; one convex Voronoi cell per "
+          "piece; secondary and tertiary crushing of the largest pieces; physics-driven "
+          "deterministic fracture-surface roughness.  Entry point: "
+          "synlab.fracture.voronoi_event.run_voronoi_event")
+def _backend_voronoi(spec: Any = None, **_: Any) -> str:  # pragma: no cover - registry marker
+    return BACKEND_VORONOI
+
+
 # ---------------------------------------------------------------------------- cutter
 def _default_basis(mother: Any, rng: np.random.Generator, spec: FractureSpec) -> CutBasis:
+    """Cut basis for a mother: explicit when given, otherwise a body-determined default plane.
+
+    The default direction is a deterministic function of the *body* (its vertex/face content
+    hash), not of the per-backend random stream.  That is what makes a zero-amplitude rough cut
+    regress bit-for-bit to the plane cut: the two backends draw different sub-streams, so a
+    random azimuth would give them two different planes and the regression could never hold.
+    The per-event randomness of a rough cut lives entirely in the frozen height-field
+    coefficients, which stay drawn from ``rng``.
+    """
     mesh = mother.mesh
     points = np.asarray(mesh.vertices, dtype=np.float64)
     centroid = points.mean(axis=0)
@@ -95,11 +120,18 @@ def _default_basis(mother: Any, rng: np.random.Generator, spec: FractureSpec) ->
         anchor = np.asarray(spec.plane_point, dtype=np.float64).reshape(3) \
             if spec.plane_point is not None else centroid
     else:
-        azimuth = float(rng.uniform(0.0, 2.0 * np.pi))
+        digest = hash_json({
+            "v": np.round(points, 9).tolist(),
+            "f": np.asarray(mesh.faces, dtype=np.int64).tolist(),
+        }).split(":", 1)[-1]
+        unit_a = int(digest[0:8], 16) / float(1 << 32)
+        unit_b = int(digest[8:16], 16) / float(1 << 32)
+        azimuth = 2.0 * np.pi * unit_a
         # a mostly horizontal normal splits the body through its axis (a bowl into halves)
-        normal = np.array([np.cos(azimuth), np.sin(azimuth), float(rng.uniform(-0.25, 0.25))])
+        normal = np.array([np.cos(azimuth), np.sin(azimuth), -0.25 + 0.5 * unit_b])
         normal = normal / float(np.linalg.norm(normal))
         anchor = centroid
+    del rng  # the default basis is body-determined; the stream only feeds the height field
     return cut_mod.build_basis(points, normal, anchor=anchor, basis_id=spec_hash(spec))
 
 
@@ -122,8 +154,15 @@ def make_closed_cutter(mother: Any, spec: Any, rng: np.random.Generator,
     target_rms = 0.0 if backend == BACKEND_PLANE else float(fracture_spec.target_rms_mm)
     height = cut_mod.make_height_field(basis, rng, target_rms_mm=target_rms,
                                        n_bands=fracture_spec.n_bands)
+    if target_rms > 0.0:
+        # plan 10.1 step 3: high frequency only inside the material intersection band + halo,
+        # smooth decay on the far side.  Nothing is drawn here, so the shared surface stays
+        # frozen across both sides of the event.
+        height = cut_mod.attach_material_band(height, mother.mesh)
     mesh, report = cut_mod.build_closed_cutter(
-        basis, height, error_budget_mm=float(fracture_spec.error_budget_mm))
+        basis, height, error_budget_mm=float(fracture_spec.error_budget_mm),
+        max_cells=int(fracture_spec.max_cutter_cells),
+        max_triangles=int(fracture_spec.max_cutter_triangles))
     request_mm = float(fracture_spec.error_budget_mm)
     realized = float(report.get("realized_error_mm", float("inf")))
     if realized > request_mm + 1e-12:
@@ -138,11 +177,13 @@ def make_closed_cutter(mother: Any, spec: Any, rng: np.random.Generator,
     from .booleans import mesh_hash
 
     meta["cutter_hash"] = mesh_hash(mesh)
-    meta["height_field"] = height
+    #: JSON-serialisable coefficient/envelope record (the live ``HeightField`` travels through
+    #: ``h_fn``); ``tests/a12/fracture`` and the evidence probes read it as a mapping.
+    meta["height_field"] = height.as_dict()
     meta["backend"] = backend
     return CutterResult(
         mesh=mesh, basis=basis,
-        h_fn=(lambda u, v: np.asarray(height.raw(u, v), dtype=np.float64)),
+        h_fn=(lambda u, v: np.asarray(height(u, v), dtype=np.float64)),
         requested_error_mm=request_mm, realized_error_mm=realized,
         triangles=int(len(np.asarray(mesh.faces))), meta=meta,
     )

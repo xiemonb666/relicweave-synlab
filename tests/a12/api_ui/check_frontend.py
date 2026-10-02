@@ -54,9 +54,7 @@ COMPONENTS = (
     "MetricChart",
     "FailureDrawer",
     "ProvenanceDrawer",
-)
-
-#: 本次补齐降级项新增的组件（真实数组视图 / 负控 / 相机 U 预览 / I09 外参核对）
+)#: 本次补齐降级项新增的组件（真实数组视图 / 负控 / 相机 U 预览 / I09 外参核对）
 NEW_COMPONENTS = (
     "RealArrayHeatmap",
     "PointCloudDiffView",
@@ -80,6 +78,24 @@ E2E_FILES = (
     FRONTEND / "playwright.config.ts",
     FRONTEND / "e2e" / "ui-real-backend.spec.ts",
 )
+
+#: 操作逻辑改版新增的组件与 lib（合成向导 / 批量面板 / 退化配对 / 断面视图 / 错误卡 / YAML）
+SYNTHESIS_FILES = (
+    "pages/SynthesisWizard.tsx",
+    "components/BatchSynthesisPanel.tsx",
+    "components/DegradationPairPanel.tsx",
+    "components/FracturePreviewPanel.tsx",
+    "components/FragmentMeshViewport.tsx",
+    "components/RgbFrameView.tsx",
+    "components/AsyncOperation.tsx",
+    "lib/yaml.ts",
+)
+
+#: 新增页面路由（U14 合成向导）
+SYNTHESIS_ROUTES = ("/synlab/synthesis",)
+
+#: 新增端点的契约验收脚本（真实 app + 真实 store，见 --help）
+SYNTHESIS_CHECKER = REPO_ROOT / "tests" / "a12" / "api_ui" / "check_synthesis_ui.py"
 
 
 def run(cmd: list[str], *, cwd: Path) -> tuple[int, str]:
@@ -202,6 +218,26 @@ def main() -> int:
         # 用例文件缺失不算失败（Playwright 是可选环境），但要如实记录
         results.append({"missing_e2e_files": missing_e2e})
 
+        print(f"\n== 操作逻辑改版文件检查（向导 / 批量 / 退化配对 / 断面视图 / YAML）==")
+        missing_synthesis = [rel for rel in SYNTHESIS_FILES if not (src / rel).is_file()]
+        for rel in SYNTHESIS_FILES:
+            present = (src / rel).is_file()
+            print(f"  {'OK ' if present else 'MISS'} src/{rel}")
+        ok = ok and not missing_synthesis
+        results.append({"missing_synthesis_files": missing_synthesis})
+
+        print(f"\n== 新增路由检查（U14 合成向导 /synlab/synthesis）==")
+        for route in SYNTHESIS_ROUTES:
+            present = route in bundle
+            print(f"  {'OK ' if present else 'MISS'} {route}")
+            ok = ok and present
+        results.append({"missing_synthesis_routes": [r for r in SYNTHESIS_ROUTES if r not in bundle]})
+
+        print(f"\n== 新增端点契约脚本 ==")
+        checker_present = SYNTHESIS_CHECKER.is_file()
+        print(f"  {'OK ' if checker_present else 'MISS'} {SYNTHESIS_CHECKER.relative_to(REPO_ROOT)}")
+        results.append({"synthesis_checker_present": checker_present})
+
         print(f"\n== fixture 泄漏检查（默认构建不得包含 fixture 数据）==")
         # fixture 数据只在 VITE_SYNLAB_FIXTURES=1 时通过动态 import 进入产物；
         # 默认构建里 import.meta.env.VITE_SYNLAB_FIXTURES 被静态替换为 ""，整个分支被消除。
@@ -221,11 +257,12 @@ def main() -> int:
             print(f"  {'OK ' if present else 'MISS'} {token}")
             ok = ok and present
 
-    # 检查 12 个路由都在路由表里（源码级）
+    # 检查 12 个路由 + U14 向导都在路由表里（源码级）
     app = (FRONTEND / "src" / "App.tsx").read_text(encoding="utf-8")
-    missing_in_app = [route for route in ROUTES if f'path="{route.lstrip("/")}"' not in app]
+    all_routes = tuple(ROUTES) + tuple(SYNTHESIS_ROUTES)
+    missing_in_app = [route for route in all_routes if f'path="{route.lstrip("/")}"' not in app]
     print(f"\n== App.tsx 路由表 ==")
-    for route in ROUTES:
+    for route in all_routes:
         present = f'path="{route.lstrip("/")}"' in app
         print(f"  {'OK ' if present else 'MISS'} {route}")
     ok = ok and not missing_in_app

@@ -1,0 +1,1083 @@
+{
+  "action_proposal": {
+    "decision": "D1",
+    "ruling": "取并集 + 显式可选性：文档三处字段集全部保留，不丢任何一侧；每条字段带 source 与 optional_extension 标记。",
+    "ruling_source": "Lead 裁决（本次任务书 D1），冲突出处 docs/a12/rig_contract.md §12 裁决清单 #1",
+    "source": [
+      "p0276 (A7.2 建议语义 9 项)",
+      "p0638 (D5.1 台架执行参数 5 项)",
+      "p0574 (C10 rig_service 映射集)",
+      "docs/a12/rig_contract.md §12 #1",
+      "configs/a12/capture_contract.json:action_proposal"
+    ],
+    "assumption": false,
+    "tiers": {
+      "required_core": [
+        "query_id",
+        "evidence_revision",
+        "action_id",
+        "target_region",
+        "reason",
+        "expected_cost"
+      ],
+      "execution_block_nullable": [
+        "u_profile_id",
+        "distance_mode",
+        "focus_setting_id",
+        "intrinsics_profile_id",
+        "expected_roi"
+      ],
+      "optional_extension": [
+        "camera_id",
+        "target_pose_or_relative_angle",
+        "light_mode"
+      ]
+    },
+    "field_count": 14,
+    "fields": [
+      {
+        "name": "query_id",
+        "tier": "required_core",
+        "source": [
+          "p0276"
+        ],
+        "optional_extension": false,
+        "nullable": false
+      },
+      {
+        "name": "evidence_revision",
+        "tier": "required_core",
+        "source": [
+          "p0276"
+        ],
+        "optional_extension": false,
+        "nullable": false
+      },
+      {
+        "name": "action_id",
+        "tier": "required_core",
+        "source": [
+          "p0276"
+        ],
+        "optional_extension": false,
+        "nullable": false
+      },
+      {
+        "name": "target_region",
+        "tier": "required_core",
+        "source": [
+          "p0276"
+        ],
+        "optional_extension": false,
+        "nullable": false
+      },
+      {
+        "name": "reason",
+        "tier": "required_core",
+        "source": [
+          "p0276"
+        ],
+        "optional_extension": false,
+        "nullable": false
+      },
+      {
+        "name": "expected_cost",
+        "tier": "required_core",
+        "source": [
+          "p0276"
+        ],
+        "optional_extension": false,
+        "nullable": false
+      },
+      {
+        "name": "u_profile_id",
+        "tier": "execution_block_nullable",
+        "source": [
+          "p0638",
+          "p0574"
+        ],
+        "optional_extension": false,
+        "nullable": true
+      },
+      {
+        "name": "distance_mode",
+        "tier": "execution_block_nullable",
+        "source": [
+          "p0638"
+        ],
+        "optional_extension": false,
+        "nullable": true
+      },
+      {
+        "name": "focus_setting_id",
+        "tier": "execution_block_nullable",
+        "source": [
+          "p0638"
+        ],
+        "optional_extension": false,
+        "nullable": true
+      },
+      {
+        "name": "intrinsics_profile_id",
+        "tier": "execution_block_nullable",
+        "source": [
+          "p0638",
+          "p0574"
+        ],
+        "optional_extension": false,
+        "nullable": true
+      },
+      {
+        "name": "expected_roi",
+        "tier": "execution_block_nullable",
+        "source": [
+          "p0638"
+        ],
+        "optional_extension": false,
+        "nullable": true
+      },
+      {
+        "name": "camera_id",
+        "tier": "optional_extension",
+        "source": [
+          "p0276"
+        ],
+        "optional_extension": true,
+        "nullable": true
+      },
+      {
+        "name": "target_pose_or_relative_angle",
+        "tier": "optional_extension",
+        "source": [
+          "p0276"
+        ],
+        "optional_extension": true,
+        "nullable": true
+      },
+      {
+        "name": "light_mode",
+        "tier": "optional_extension",
+        "source": [
+          "p0276",
+          "p0574"
+        ],
+        "optional_extension": true,
+        "nullable": true
+      }
+    ],
+    "execution_block_rule": "执行块（u_profile_id/distance_mode/focus_setting_id/intrinsics_profile_id/expected_roi）字段必须存在但允许为 null；仅在 U 相关动作时必填。",
+    "rationale": "p0276 是『建议语义』、p0638 是『台架执行参数』，舍弃任一侧都会让 A/C/D 岗断链。",
+    "rig_service_mapping": "rig_service 把 ActionProposal 映射到已验收的 pose_id / u_profile_id / light_mode / intrinsics_profile_id（p0574）；未合格动作屏蔽，U 手动时产生人员任务而非电机命令。",
+    "unresolved": [
+      {
+        "item": "pose_id",
+        "why": "p0574 的映射集含 pose_id，Lead 的 D1 字段清单（14 项）未列出该字段；按『不丢任何一侧』的字面要求它需要一个落位，但 Lead 未裁决其 tier。",
+        "status": "unmapped",
+        "temporary_rule": "在裁决前，pose_id 既不加入也不剔除：任何写入方若产生 pose_id，必须同时保留 u_profile_id/light_mode/intrinsics_profile_id，并在产物中标注 pose_id 为 p0574-only 扩展；校验器记为 unresolved 而不判失败。",
+        "owner_decision": "D12.4"
+      }
+    ]
+  },
+  "stopping_rule": {
+    "decision": "D2",
+    "ruling": "不发明数字：最终 M 与停止 δ 都改为可复算定义；K 为最少 3 轮。",
+    "ruling_source": "Lead 裁决（本次任务书 D2），冲突出处 docs/a12/rig_contract.md §12 裁决清单 #3 / #4",
+    "source": [
+      "p0269 (A6.13 最多 4 tick / TopK 稳定且分数变化小于开发冻结 δ 连续两轮才停)",
+      "p0108 (2.2.1 单一评测公式)",
+      "t007 (retrieve 输入含 M)",
+      "p1093 / p1106 (CEIL 22k=0.9489 / full=0.9474)",
+      "docs/a12/v144_project_core.md §9 U17 / U18",
+      "docs/a12/v144_project_core.md §2.4 (母体簇配对双侧 95% 区间 / p0106)"
+    ],
+    "assumption": false,
+    "delta_definition": "δ := 当前样本量能分辨的最小差异 = 对象簇 bootstrap 95% CI 半宽（= 该 run 主指标的统计分辨率），在 dev 上冻结并写入结果",
+    "delta_formula": "delta(run) := (ci_high - ci_low) / 2, 其中 [ci_low, ci_high] 是该 run 主指标在对象簇（母体簇配对）bootstrap 下的双侧 95% 区间",
+    "delta_interval_source": "p0106：性能与增益区间一律用母体簇配对双侧 95% 区间",
+    "delta_freeze": {
+      "where": "dev split",
+      "when": "在写出任何能力主张之前",
+      "manner": "随结果文件逐 run 记录；冻结后不得回溯修改",
+      "recorded_with": [
+        "any@M",
+        "PoolCov@M",
+        "M"
+      ]
+    },
+    "K": 3,
+    "K_definition": "最少 3 轮，且必须满足『连续两轮变化 < δ』才允许停止",
+    "K_is_minimum": true,
+    "document_maximum_ticks": 4,
+    "combined_window": "3 <= rounds <= 4（K=3 为下界，p0269 的『最多 4 tick』为上界；两者并列成立，不覆盖）",
+    "combined_window_derived": true,
+    "M_definition": "M := 本次评测所用池的规模（逐 run 记录进结果），any@M / PoolCov@M 必须随 M 一起报",
+    "M_stratification": "文档只给首轮 M=50 与报告 M=20/50/100 曲线（p0149），未给最终冻结值；本裁决不改写文档分层，只要求逐 run 记录实际所用 M",
+    "gate": "未冻结 δ 之前，任何『已收敛』结论不得写入能力主张。",
+    "temporary_rule": "在 δ 冻结前，停止判定只允许使用文档的『最多 4 tick』上限；任何『已收敛 / 已稳定』措辞必须以『δ 未冻结』标注。"
+  },
+  "metric_contract": {
+    "decision": "D3",
+    "ruling": "主指标清单冻结为文档点名的 7 项；工时 −30% 作为过程指标单列；SY-Q ↔ Q1–Q3 按单调对应映射，SY-Q2 未校准前记 unmapped。",
+    "ruling_source": "Lead 裁决（本次任务书 D3），冲突出处 docs/a12/rig_contract.md §12 裁决清单 #7 / #14",
+    "source": [
+      "t005 (内部指标合同)",
+      "docs/a12/v144_project_core.md §2.3",
+      "p0106 (统计与风险上界规则)",
+      "p0330 (A9.1 主指标数量有限)",
+      "p0377 (A12.10)",
+      "t031 / t110 (SY-Q0_OBS…SY-Q5)",
+      "p0464 (Q1/Q2/Q3 三级验收)"
+    ],
+    "assumption": false,
+    "primary_frozen": [
+      {
+        "id": "any_at_50_macro",
+        "label": "any@50 宏",
+        "scope": "有邻片查询中至少一名真邻片进入初检 50 池",
+        "target": 0.95,
+        "aggregation": "macro",
+        "source": "t005 / §2.3"
+      },
+      {
+        "id": "hit_at_10_macro_with_lower95",
+        "label": "Hit@10 宏（含 95% 下界）",
+        "scope": "前 10 中至少一名库内真邻片",
+        "target": 0.9,
+        "lower95": 0.85,
+        "aggregation": "macro",
+        "source": "t005 / §2.3"
+      },
+      {
+        "id": "low_quality_hit_at_10",
+        "label": "低质 Hit@10",
+        "scope": "日常低质查询对清晰库，独立母体",
+        "target": 0.85,
+        "source": "t005 / §2.3"
+      },
+      {
+        "id": "new_method_gain_pt",
+        "label": "新方法增益 ≥3pt（簇 CI 下界>0）",
+        "target_pt": 3.0,
+        "ci_lower_strictly_gt": 0.0,
+        "comparison": "同查询同库相对验证集选出的强基线",
+        "source": "t005 / §2.3"
+      },
+      {
+        "id": "clean_guard_drop_pt",
+        "label": "干净守卫下降 ≤2pt",
+        "max_drop_pt": 2.0,
+        "comparison": "新方法相对同池强基线",
+        "source": "t005 / §2.3"
+      },
+      {
+        "id": "mate_absent_misdirection",
+        "label": "无邻片误导率 ≤5%（95% 上界 ≤10%）",
+        "target": 0.05,
+        "upper95": 0.1,
+        "source": "t005 / §2.3 / p0106"
+      },
+      {
+        "id": "mate_present_acceptance_coverage",
+        "label": "接受覆盖率 ≥80%",
+        "scope": "mate-present 中被系统接受输出的比例",
+        "target": 0.8,
+        "forbidden_shortcut": "不能靠全拒绝换低风险",
+        "source": "t005 / §2.3"
+      }
+    ],
+    "primary_count": 7,
+    "cost_accounting": {
+      "decision": "D7",
+      "ruling": "不发明：单件采集时间文档无数值；按文档的 cost_log 分列人时 / 机器时 / 墙钟，由真实会话测量填入。",
+      "source": [
+        "t044 (cost_log.csv：人时、机器时和墙钟分开)",
+        "p0881 / p0580 / p0680 / p0661 (要求测量『每片采集/计算时间』『动作时间』『耗时』『P95 时延』但无门)",
+        "p1148 (十分钟现场流程不承担每片数百帧重建)",
+        "docs/a12/v144_project_core.md §4.10 / §9 U7"
+      ],
+      "assumption": false,
+      "columns": [
+        "human_time",
+        "machine_time",
+        "wall_clock"
+      ],
+      "per_fragment_capture_time_s": null,
+      "per_fragment_capture_time_s_status": "unspecified_measure_from_real_session",
+      "forbidden": [
+        "不得先写目标值再当成绩",
+        "不得把兜底估值（capture_contract.json:per_fragment_capture_time_s.fallback_mainstream）当作文档要求"
+      ]
+    },
+    "process_metric_separate": [
+      {
+        "id": "workflow_median_time_reduction",
+        "label": "工时 −30%",
+        "kind": "process",
+        "target_median_reduction": 0.3,
+        "scope": "包括拍摄、补拍、检查的总任务时间；正确性不恶化",
+        "source": "t005 / §2.3"
+      }
+    ],
+    "diagnostics_not_primary": [
+      "CovRecall@10（与 Hit 单列，不低于冻结强基线）",
+      "EffectiveHit / EffectiveCov（拒识前排序与拒识时空列表）",
+      "接受后 Hit 与接受率",
+      "现场流程 20 次至少 19 次完成（彩排目标）",
+      "ConditionalCov（池内诊断，零池正例记 pool_miss）"
+    ],
+    "sy_q_to_q_mapping": {
+      "rule": "单调对应",
+      "source": [
+        "t031",
+        "t110",
+        "p0464",
+        "docs/a12/v144_project_core.md §10.3 第 5 项"
+      ],
+      "pairs": [
+        {
+          "sy_q": "SY-Q0_OBS",
+          "q": "Q1",
+          "stage": "现场验收",
+          "status": "mapped"
+        },
+        {
+          "sy_q": "SY-Q1",
+          "q": "Q1",
+          "stage": "现场验收",
+          "status": "mapped"
+        },
+        {
+          "sy_q": "SY-Q2",
+          "q": "Q2",
+          "stage": "当日入库",
+          "status": "unmapped",
+          "condition": "必须『实测统计校准』后才可声明等价；无实测时标为未校准候选（t110）"
+        },
+        {
+          "sy_q": "SY-Q3",
+          "q": "Q2",
+          "stage": "当日入库",
+          "status": "mapped"
+        },
+        {
+          "sy_q": "SY-Q4",
+          "q": "Q3",
+          "stage": "研究验收",
+          "status": "mapped"
+        },
+        {
+          "sy_q": "SY-Q5",
+          "q": "Q3",
+          "stage": "研究验收",
+          "status": "unmapped",
+          "condition": "SY-Q5 是证据移除的结构性消融（多子配置），不是更差工况；Owner=D12.7"
+        }
+      ],
+      "uncalibrated_rule": "未校准的 SY-Q2 记 unmapped，不得作为 Q2 等价物引用。",
+      "six_levels_not_linear": "六档不能解释为一个线性 quality 分数（t110 / p1511）",
+      "unresolved": [
+        {
+          "item": "SY-Q5 在映射表中的归类",
+          "why": "SY-Q5 是『证据移除的结构性消融』且有多个子配置（t110 / p1511），不是更差工况；Lead 的 D3 单调映射未覆盖它的归类。",
+          "status": "unmapped",
+          "temporary_rule": "在裁决前，SY-Q5 一律按消融单列，不得并入 Q1–Q3 的任何等价声明，也不得与 SY-Q0–Q4 一起做单调排序。",
+          "owner_decision": "D12.7"
+        }
+      ]
+    },
+    "real_side_quality_tiers": [
+      "clear",
+      "daily",
+      "poor"
+    ],
+    "real_side_quality_tier_source": "p0440 / t042；质量档不由文件大小或主观漂亮程度决定"
+  },
+  "surface_authority": {
+    "decision": "D4",
+    "ruling": "以 interface_id >= 0 为断面权威定义（它贯穿 clean truth 与 corr_* 的配对键）；origin_kind 降为派生标签；冲突计数逐 run 上报并由写入方修到 0，不得静默。",
+    "ruling_source": "Lead 裁决（本次任务书 D4），冲突出处 docs/a12/rig_contract.md §12 裁决清单 #17",
+    "source": [
+      "t101 (D09 区域 mask 整数 ID)",
+      "t117 (整数 ID 无有损压缩)",
+      "p1481 (渲染规则 / ID 严格可恢复)",
+      "docs/a12/modality_census.md §3.2 / §3.4",
+      "tools/build_demo_assets.py:582 (原并集口径)",
+      "synlab/physical/api.py:522-531 (origin_kind 全写 AMBIGUOUS 的根因)"
+    ],
+    "assumption": false,
+    "authoritative_predicate": "interface_id >= 0",
+    "derived_label": "origin_kind ∈ {0=mother_surface, 1=interface, 2=ambiguous}（降为派生标签，不再作为定义）",
+    "conflict_definition": "conflict := (origin_kind == 1) XOR (interface_id >= 0)",
+    "conflict_counter_field": "surface_group_authority.origin_interface_vs_interface_id_conflicts",
+    "conflict_accounting_rule": "冲突计数必须逐 run 上报，且分母（faces_total）同时上报；写入/导出方负责修到 0",
+    "silent_failure_forbidden": true,
+    "measured_baseline": {
+      "conflicts": 506,
+      "faces_total": 3610,
+      "pct": 14.0,
+      "store": "data/a12_demo/store",
+      "asset": "asset_b50819155e25ffe898c9",
+      "source": "docs/a12/modality_census.md §3.4"
+    },
+    "temporary_rule": "冲突未修到 0 之前，任何以『断面』为分母的统计必须同时报 conflicts 与 faces_total，并显式标注该口径混入比例（当前 14.0%）。",
+    "unresolved": [
+      {
+        "item": "physical_component 的 F_mm 局部帧是否强制回挂世界帧",
+        "why": "§12 #17 的第二问：实测 physical_component 55 件全在 F_mm（构件局部帧，不是世界帧）。Lead 的 D4 只裁决了断面的权威定义，未裁决是否强制回挂世界帧。",
+        "status": "unmapped",
+        "temporary_rule": "在裁决前，任何跨构件的毫米级比较必须显式声明帧（F_mm）并给出该构件的 4x4 变换；不得默认已在世界帧。",
+        "owner_decision": "D12.2"
+      }
+    ]
+  },
+  "structured_light": {
+    "decision": "D5",
+    "ruling": "文档 0 命中 → v1 明确排除结构光与激光；但保留钩子：合成深度只能作为上界提供，标 synthetic_only。",
+    "ruling_source": "Lead 裁决（本次任务书 D5），冲突出处 docs/a12/rig_contract.md §12 裁决清单 #13",
+    "source": [
+      "全文检索『结构光 / structured light / laser』命中 0 处",
+      "t094-P2（主动加密采集需 Gate 批准）",
+      "p0100（多个普通 RGB 相机也不自动产生可信深度）",
+      "t073 / t023（3D 不合格 → 标缺失，走经验证 2D；缺失不填 0 分）",
+      "docs/a12/rig_contract.md §8 拿不到项",
+      "docs/a12/v144_project_core.md §4.9 / §9 U9"
+    ],
+    "assumption": false,
+    "v1_excluded": true,
+    "excluded_modalities": [
+      "structured_light",
+      "laser_scan"
+    ],
+    "exclusion_basis": "台架是摄影测量 + 多普通 RGB；文档亦明确『可靠深度拿不到』",
+    "hook_retained": {
+      "name": "synthetic_depth",
+      "marker": "synthetic_only",
+      "allowed_use": "只能作为上界（upper bound）提供",
+      "upper_bound_only": true,
+      "forbidden_uses": [
+        "不得进入部署式输入",
+        "不得用于『合成已覆盖扫描台模态』的判定",
+        "不得替代 §8『拿不到』清单中的任何一项",
+        "不得标为真实域或扫描台等价能力"
+      ]
+    },
+    "reopen_path": "若未来引入结构光/激光，须走 t094-P2『按 Gate 批准』路径并重开采集契约（rig_contract §12 #13 建议裁决方向）",
+    "forbidden_claims": [
+      "合成侧不得声称拥有结构光或激光扫描的等价能力",
+      "合成深度不得以任何形式表述为扫描台可得模态"
+    ]
+  },
+  "assumed_optics": {
+    "decision": "D6",
+    "ruling": "文档未明确的镜头/畸变/景深/色温按假设落地并标注 assumption，Gate B 实测后重标定。",
+    "ruling_source": "Lead 裁决（本次任务书 D6），冲突出处 docs/a12/rig_contract.md §12 裁决清单 #8 / #9 / #10 / #11",
+    "source": [
+      "p0504 (SC3336 B / 84° 水平视场 / 2304×1296 / 手动对焦)",
+      "p0518 (理想针孔公式 d_ideal = a × N_x / [2 p × tan(FOV_h/2)])",
+      "t051 (分辨率表：50mm → 90.0mm 覆盖 / 0.039 mm/px)",
+      "p0511 (验收距离 10/15/20/25cm + 5–10cm 近摄)",
+      "p0535 (四组同色温白光 / CRI ≥ 90 候选)",
+      "p1159 (景深定性规则)",
+      "t096 (近摄是否需单独模型)",
+      "docs/a12/v144_project_core.md §9 U3 / U4 / U5 / U6"
+    ],
+    "assumption": true,
+    "relabel_condition": "Gate B 实测后重标定（本节全部条目）",
+    "items": {
+      "focal_length_mm": {
+        "value_derived_mm": 2.77,
+        "status": "derived_from_document_numbers",
+        "derivation": "f = (W_sensor / 2) / tan(FOV_h / 2)；W_sensor 由 1/2.8\" 光学格式对角 16/2.8 = 5.7143 mm 与文档自身的 2304:1296 = 16:9 画幅求得 W = 5.7143 × 16/√337 = 4.9804 mm；f = 2.4902 / tan(42°) = 2.766 mm",
+        "derivation_inputs": {
+          "fov_h_deg": 84.0,
+          "fov_h_source": "p0504",
+          "resolution_px": [
+            2304,
+            1296
+          ],
+          "resolution_source": "p0504",
+          "optical_format": "1/2.8\"",
+          "optical_format_source": "p1223（经 rig_contract §12 #8 转引）"
+        },
+        "cross_check": "t051：50 mm 距离 → 理想水平覆盖 2×50×tan(42°) = 90.0 mm，与文档表一致，说明文档用的就是同一针孔关系",
+        "differs_from_existing_fallback": "configs/a12/capture_contract.json:camera.lens.fallback_mainstream 为 3.6 mm（M12 定焦市面默认值）；二者不一致，本次不改写既有契约，只记录推导结果",
+        "assumption": true,
+        "relabel_after": "Gate B 实测（标定板 + 实测 px_per_mm 反解）"
+      },
+      "distortion_model": {
+        "model": "Brown–Conrady",
+        "radial_order": 2,
+        "tangential": true,
+        "opencv_parameter_vector": [
+          "k1",
+          "k2",
+          "p1",
+          "p2",
+          "k3"
+        ],
+        "opencv_parameter_count": 5,
+        "k3_policy": "必要时（近摄明显）启用",
+        "assumption": true,
+        "relabel_after": "Gate B 逐稳定工况实测标定（p1163 / p0579 / t096）",
+        "near_range_note": "t096 要求检查近摄焦距/畸变是否需单独模型；本裁决只给一套模型族，是否分档未裁决（Owner=D12，见 decision_record D6 落地动作）"
+      },
+      "depth_of_field_mm": {
+        "value": null,
+        "status": "unspecified_until_aperture_known",
+        "mark_out_criterion": "2.0 px 弥散圆",
+        "mark_out_criterion_assumption": true,
+        "circle_of_confusion_mm_by_distance": {
+          "50": 0.078,
+          "100": 0.156,
+          "150": 0.234,
+          "200": 0.312,
+          "250": 0.39
+        },
+        "circle_of_confusion_derivation": "c(d) = 2.0 px × mm_per_px(d)，mm_per_px 取文档 t051 表（0.039 / 0.078 / 0.117 / 0.156 / 0.195）",
+        "working_distances_mm": [
+          50,
+          100,
+          150,
+          200,
+          250
+        ],
+        "working_distance_source": "p0511 / t051",
+        "formula": "DOF ≈ 2·N·c(d)·d²/f²（远小于超焦距时）；d 接近或超过超焦距 H = f²/(N·c)+f 时按 1/(1−(d/H)²) 修正",
+        "missing_input": "光圈 f 值 N：文档未给任何光圈数值，故景深数值无法闭合",
+        "assumption": true,
+        "relabel_after": "Gate B 实测（逐距离实测清晰区间）",
+        "existing_fallback": "configs/a12/capture_contract.json:working_distance_and_resolution.depth_of_field_mm.fallback_mainstream = 近摄 5–10cm 档 ~±3–8 mm（市面默认值，未被本裁决替换）"
+      },
+      "color_temperature_K": {
+        "value": 5500,
+        "tolerance_K": 500,
+        "range_K": [
+          5000,
+          6000
+        ],
+        "cri_min": 90,
+        "assumption": true,
+        "relabel_after": "Gate B 实测后重标定（色卡核对：p0535 实际用色卡及样片检查）",
+        "documented_part": "四组同色温白光 / 低压同批白光 / 标称 CRI ≥ 90 为候选（p0535）"
+      }
+    },
+    "global_rule": "本节全部条目 assumption=true；在 Gate B 实测替换前，不得作为文档要求引用。",
+    "unresolved": [
+      {
+        "item": "仿真首版物理尺寸 vs 真实样片尺寸门限",
+        "why": "p1353 给仿真首版候选『最大尺寸 80–300 mm、正常壁厚 2–10 mm』并明确『参数属于仿真覆盖预算，真实采集后以尺寸分布校准，不自动称为出土文物分布』；但 B3/C3.1 的采集对象尺寸范围文档未给。§12 #16 未被 D1-D11 点名。",
+        "status": "unmapped",
+        "temporary_rule": "在裁决前，仿真尺寸只能作覆盖预算引用，不得当目标分布；任何跨域尺寸主张必须标注『仿真覆盖预算，未按真实样片校准』。",
+        "owner_decision": "D12.1"
+      }
+    ]
+  },
+  "quality_mapping": {
+    "decision": "D8",
+    "ruling": "8 项质量向量与 14 维退化向量是两个不同空间，禁止等同；映射表带方向（estimated_from / drives），未映射项记 unmapped。",
+    "ruling_source": "Lead 裁决（本次任务书 D8），冲突出处 docs/a12/rig_contract.md §12 裁决清单 #15",
+    "source": [
+      "p0236 (8 项质量向量)",
+      "t104 (每视图/每区域命名 float32 向量，每项附 valid 与来源 OBS_EST | GT_ORACLE)",
+      "p0365 (14 维退化向量 D)",
+      "docs/a12/v144_project_core.md §5.5 E6 / §10.3 第 9 项"
+    ],
+    "assumption": false,
+    "spaces": {
+      "quality_8": {
+        "role": "观测侧：『这份证据有多可用』",
+        "count": 8,
+        "components": [
+          "blur",
+          "exposure",
+          "coverage",
+          "occlusion",
+          "reconstruction_confidence",
+          "point_density",
+          "normal_stability",
+          "curvature_stability"
+        ],
+        "source": "p0236",
+        "permission_rule": "质量头只描述证据可用性；不得借 R2 标签把『邻接』偷换成『清晰』",
+        "storage_rule": "每视图和每区域命名的 float32 向量；每项附 valid 及来源 OBS_EST 或 GT_ORACLE"
+      },
+      "degradation_14": {
+        "role": "生成侧：『注入了什么损失』",
+        "count": 14,
+        "components": [
+          "fracture_smoothing",
+          "edge_rounding",
+          "fracture_missing",
+          "texture_loss",
+          "blur",
+          "glare",
+          "exposure",
+          "view_coverage",
+          "point_dropout",
+          "mesh_holes",
+          "depth_noise",
+          "normal_noise",
+          "curvature_noise",
+          "calibration_error"
+        ],
+        "source": "p0365",
+        "storage_rule": "每个分量保留物理或数值单位、随机种子和操作顺序；不要只存一个 quality=0.7"
+      }
+    },
+    "forbidden_equivalence": "禁止把 8 项质量向量与 14 维退化向量当作同一 schema 或彼此可换算；二者不合并。",
+    "mapping": [
+      {
+        "quality": "blur",
+        "estimated_from": [
+          "blur"
+        ],
+        "partial": false
+      },
+      {
+        "quality": "exposure",
+        "estimated_from": [
+          "exposure",
+          "glare"
+        ],
+        "partial": true,
+        "partial_note": "glare 只通过镜面高光造成局部过曝而影响曝光度量，不是一比一"
+      },
+      {
+        "quality": "coverage",
+        "estimated_from": [
+          "view_coverage",
+          "point_dropout",
+          "mesh_holes",
+          "fracture_missing"
+        ],
+        "partial": true,
+        "partial_note": "后三项只部分体现在覆盖上"
+      },
+      {
+        "quality": "occlusion",
+        "estimated_from": [],
+        "partial": false,
+        "status": "unmapped",
+        "unmapped_reason": "14 维退化向量中没有遮挡轴；遮挡只能由遮挡体几何/不确定像素推得（rig_contract §10 #12）"
+      },
+      {
+        "quality": "reconstruction_confidence",
+        "estimated_from": [
+          "depth_noise",
+          "calibration_error",
+          "texture_loss"
+        ],
+        "partial": true
+      },
+      {
+        "quality": "point_density",
+        "estimated_from": [
+          "point_dropout",
+          "mesh_holes"
+        ],
+        "partial": true
+      },
+      {
+        "quality": "normal_stability",
+        "estimated_from": [
+          "normal_noise",
+          "depth_noise"
+        ],
+        "partial": true
+      },
+      {
+        "quality": "curvature_stability",
+        "estimated_from": [
+          "curvature_noise"
+        ],
+        "partial": false
+      }
+    ],
+    "reverse_mapping": [
+      {
+        "degradation": "fracture_smoothing",
+        "drives": [],
+        "status": "unmapped",
+        "unmapped_reason": "观测侧 8 项没有断面形貌保真分量；且 p0236 禁止把邻接/形貌偷换成清晰度"
+      },
+      {
+        "degradation": "edge_rounding",
+        "drives": [],
+        "status": "unmapped",
+        "unmapped_reason": "同上"
+      },
+      {
+        "degradation": "fracture_missing",
+        "drives": [
+          "coverage"
+        ],
+        "partial": true
+      },
+      {
+        "degradation": "texture_loss",
+        "drives": [
+          "reconstruction_confidence"
+        ],
+        "partial": true
+      },
+      {
+        "degradation": "blur",
+        "drives": [
+          "blur"
+        ],
+        "partial": false
+      },
+      {
+        "degradation": "glare",
+        "drives": [
+          "exposure"
+        ],
+        "partial": true
+      },
+      {
+        "degradation": "exposure",
+        "drives": [
+          "exposure"
+        ],
+        "partial": false
+      },
+      {
+        "degradation": "view_coverage",
+        "drives": [
+          "coverage"
+        ],
+        "partial": false
+      },
+      {
+        "degradation": "point_dropout",
+        "drives": [
+          "point_density",
+          "coverage"
+        ],
+        "partial": true
+      },
+      {
+        "degradation": "mesh_holes",
+        "drives": [
+          "point_density",
+          "coverage"
+        ],
+        "partial": true
+      },
+      {
+        "degradation": "depth_noise",
+        "drives": [
+          "reconstruction_confidence",
+          "normal_stability"
+        ],
+        "partial": true
+      },
+      {
+        "degradation": "normal_noise",
+        "drives": [
+          "normal_stability"
+        ],
+        "partial": false
+      },
+      {
+        "degradation": "curvature_noise",
+        "drives": [
+          "curvature_stability"
+        ],
+        "partial": false
+      },
+      {
+        "degradation": "calibration_error",
+        "drives": [
+          "reconstruction_confidence"
+        ],
+        "partial": true
+      }
+    ],
+    "unmapped_count": {
+      "quality_side": 1,
+      "degradation_side": 2,
+      "total": 3
+    },
+    "expected_impact_table_use": "本表只用于诊断（退化轴 → 质量分量的预期影响），不得据此合并两套 schema。"
+  },
+  "misdirection_denominator": {
+    "decision": "D9",
+    "ruling": "R1 误排分母 := 实际给出的候选位总数（Σ 每 query 返回候选数）；mate-absent query 按文档退出 Hit/CovRecall 分母；R1 误排 := 被判为可接受（进 top-K 接受集）的 R1 对占比。",
+    "ruling_source": "Lead 裁决（本次任务书 D9），冲突出处 docs/a12/rig_contract.md §12 裁决清单 #5 / #6",
+    "source": [
+      "p0330 (A9.1 R1 误排 = Top10 中 R1 数量 ÷ 有效候选位数量)",
+      "p0108 (2.2.1 单一评测公式 / 全库 N_G 分母)",
+      "p0329 (误荐率与接受后风险两个分母不能混用)",
+      "p0106 (§2.2 第 5 条 mate-absent 不进 Hit/CovRecall 分母)",
+      "p0167 (A4.8 PairOutput『至少包括』8 项)"
+    ],
+    "assumption": false,
+    "r1_misdirection_denominator": "实际给出的候选位总数 = Σ_{query} (该 query 返回的候选数)",
+    "empty_slots_in_denominator": false,
+    "empty_slots_rule": "不足 Top-K 的空位不计入分母（分母是『实际给出的候选位』，不是 K × query 数）",
+    "mate_absent_rule": "mate-absent query 不进入 Hit 与 CovRecall 分母（p0106）；其误导率另有分母：无邻片查询被接受推荐的数量 ÷ 无邻片查询总数",
+    "two_denominators_must_not_mix": "误荐率分母（无邻片查询总数）与接受后风险分母（被接受查询数）不得混用（p0329）",
+    "r1_misdirection_definition": "R1 误排 := |{R1 对 ∈ 接受集}| / |接受集|，接受集 = 被判为可接受并进入 top-K 的候选对",
+    "secondary_report": "R1 排在第一名或首名 R2 之前的查询比例（另报，不作主指标）",
+    "unknown_rule": "UNKNOWN 位单独统计且不强当 R1",
+    "pair_output": {
+      "source": "p0167 (A4.8) 原文为『至少包括』",
+      "fields": [
+        "candidate_id",
+        "rank_score",
+        "score_type",
+        "support_regions",
+        "conflict_regions",
+        "observability",
+        "model_version",
+        "evidence_revision"
+      ],
+      "field_count": 8,
+      "score_type_enum": [
+        "ranking_score",
+        "calibrated_prob"
+      ],
+      "score_type_enum_status": "proposed_not_frozen",
+      "alignment_requirement": "support_regions/conflict_regions 的 ID 空间须与 t053 灯态、t042 区域 mask 对齐",
+      "unresolved": [
+        {
+          "item": "8 个字段的 dtype",
+          "why": "p0167 只写『至少包括』这 8 个字段名，未给任何类型。",
+          "status": "unmapped",
+          "temporary_rule": "在裁决前，任何写入方必须原样保留字段名并自行声明 dtype；跨模块消费必须做显式类型断言，不得假定。",
+          "owner_decision": "D12.5"
+        },
+        {
+          "item": "score_type 枚举值",
+          "why": "文档未给枚举；上列 {ranking_score, calibrated_prob} 是候选，未冻结（rig_contract §12 #5 建议裁决方向）。",
+          "status": "unmapped",
+          "temporary_rule": "在裁决前，score_type 只允许取候选两值，且必须在产物中标注『未冻结枚举』。",
+          "owner_decision": "D12.5"
+        },
+        {
+          "item": "support_regions / conflict_regions 的 ID 空间对齐方式",
+          "why": "文档只要求与 t053 灯态、t042 区域 mask 的 ID 空间对齐，未给对齐规则。",
+          "status": "unmapped",
+          "temporary_rule": "在裁决前，两个 regions 字段必须显式声明所用 ID 空间（灯态枚举 / 区域 mask 整数 ID）与其版本，不得混用。",
+          "owner_decision": "D12.5"
+        }
+      ]
+    }
+  },
+  "loss_mask_authority": {
+    "decision": "D10",
+    "ruling": "loss_mask 是唯一监督门；valid 降为派生别名（写明兼容用途）；eligible_as_negative 必须由 kind ∈ {R1,R0} ∧ loss_mask 计算，不得存在第二份真值口径。",
+    "ruling_source": "Lead 裁决（本次任务书 D10），冲突出处 docs/a12/rig_contract.md §12 裁决清单 #18",
+    "source": [
+      "t042 (关系证据)",
+      "t104 (每项附 valid 及来源)",
+      "synlab/storage/export.py:1115-1121 (eligible_as_negative 派生点)",
+      "synlab/storage/export.py:581 (合法负样本口径)",
+      "synlab/storage/export.py:1792 (valid and loss_mask 监督口径)",
+      "docs/a12/modality_census.md §6.4 / §7.2"
+    ],
+    "assumption": false,
+    "sole_gate": "loss_mask",
+    "derived_alias": {
+      "field": "valid",
+      "rule": "valid := loss_mask",
+      "compat_purpose": "仅为旧消费者兼容读法保留；不得被任何写入方独立定义或独立赋值",
+      "second_truth_forbidden": true
+    },
+    "eligible_as_negative_rule": "eligible_as_negative := (kind ∈ {R1, R0}) ∧ loss_mask",
+    "eligible_source_constants": "synlab/storage/export.py: NEGATIVE_KINDS = {R0, R1}",
+    "no_second_truth_clause": "禁止把 kind == 'R2'（或任何其它判据）另写一份监督门；所有下游必须读 loss_mask",
+    "measured_state_note": "现有导出中 loss_mask ≡ valid ≡ (kind == 'R2')（150/150）；在该口径下 eligible_as_negative 结构恒为 0，合法负样本供给为 0",
+    "coupled_consequence": "要让 legal negative 非零，必须改变 loss_mask 语义或引入 TINY_CONTACT/UNKNOWN 位；这是 D10 的联动约束，不是 D10 违规",
+    "unresolved": [
+      {
+        "item": "visible 层是否补齐 loss_mask / valid 列",
+        "why": "实测 visible.parquet 根本没有 loss_mask/valid 列（普查 §6.4/§7.2）；D10 只说 loss_mask 是唯一监督门与 valid 的派生别名，未说 visible 层是否必须承载监督门。",
+        "status": "unmapped",
+        "temporary_rule": "在裁决前，visible 层不承载监督门这一现状视为合规；任何消费者不得从 visible 层推断监督资格，必须回到 relations 层读 loss_mask。",
+        "owner_decision": "D12.3"
+      }
+    ]
+  },
+  "context_v1_fields": {
+    "decision": "D11",
+    "ruling": "按已落地实现冻结 v1 字段集（simulated=true + 出土区/网格/层位/层深/袋号/坑位/批次/共存物/尺度参考/会话），并要求 context_id/batch_id/bag_id 可查询。",
+    "ruling_source": "Lead 裁决（本次任务书 D11），冲突出处 docs/a12/rig_contract.md §12 裁决清单 #2",
+    "source": [
+      "t088 (模拟出土区、层位、袋号/坑位等可控元数据)",
+      "t101 (D23 受限的模拟出土上下文：有缺失冲突和噪声，不能等价母体 ID)",
+      "p1146 (坑位/层位只有真实可信字段时才使用)",
+      "p0412 (模型输入不包含母体 ID、袋号)",
+      "synlab/pipeline.py:1197-1246 (ContextPlan.as_dict 已落地字段)",
+      "synlab/storage/export.py:1263-1330 (deploy/context/packs.json 与 research/context_membership.json)"
+    ],
+    "assumption": false,
+    "simulated": true,
+    "schema_id": "synlab.context_pack.v1",
+    "v1_fields": [
+      {
+        "field": "simulated",
+        "group": "标注",
+        "value": true,
+        "source": "t088 / p1146"
+      },
+      {
+        "field": "schema",
+        "group": "标注",
+        "source": "synlab/pipeline.py:SCHEMA_CONTEXT"
+      },
+      {
+        "field": "pack_id",
+        "group": "批次",
+        "source": "synlab/pipeline.py"
+      },
+      {
+        "field": "context_id",
+        "group": "批次",
+        "query_key": true,
+        "source": "synlab/pipeline.py"
+      },
+      {
+        "field": "batch_id",
+        "group": "批次",
+        "query_key": true,
+        "source": "synlab/pipeline.py"
+      },
+      {
+        "field": "batch_index",
+        "group": "批次",
+        "source": "synlab/pipeline.py"
+      },
+      {
+        "field": "batch_size",
+        "group": "批次",
+        "source": "synlab/storage/export.py:1269"
+      },
+      {
+        "field": "batch_rule",
+        "group": "批次",
+        "source": "synlab/storage/export.py:1286"
+      },
+      {
+        "field": "bag_id",
+        "group": "袋号",
+        "query_key": true,
+        "source": "t088 / synlab/pipeline.py"
+      },
+      {
+        "field": "pit_id",
+        "group": "坑位",
+        "source": "t088 / synlab/pipeline.py"
+      },
+      {
+        "field": "site_id",
+        "group": "出土区",
+        "source": "t088 / synlab/pipeline.py"
+      },
+      {
+        "field": "institution_id",
+        "group": "出土区",
+        "source": "synlab/pipeline.py"
+      },
+      {
+        "field": "excavation_area_id",
+        "group": "出土区",
+        "source": "synlab/pipeline.py"
+      },
+      {
+        "field": "grid_ref",
+        "group": "网格",
+        "source": "synlab/pipeline.py CONTEXT_VOCABULARY.excavation_areas"
+      },
+      {
+        "field": "unit_code",
+        "group": "网格",
+        "source": "synlab/pipeline.py CONTEXT_VOCABULARY.excavation_areas"
+      },
+      {
+        "field": "stratum_id",
+        "group": "层位",
+        "source": "t088 / synlab/pipeline.py"
+      },
+      {
+        "field": "stratum_depth_mm",
+        "group": "层深",
+        "unit": "mm below the simulated site datum",
+        "source": "synlab/storage/export.py:1324"
+      },
+      {
+        "field": "session_id",
+        "group": "会话",
+        "source": "synlab/pipeline.py"
+      },
+      {
+        "field": "operator_id",
+        "group": "会话",
+        "source": "synlab/pipeline.py"
+      },
+      {
+        "field": "captured_at",
+        "group": "会话",
+        "source": "synlab/pipeline.py"
+      },
+      {
+        "field": "site_notes",
+        "group": "会话",
+        "source": "synlab/pipeline.py CONTEXT_VOCABULARY.note_template"
+      },
+      {
+        "field": "scale_reference",
+        "group": "尺度参考",
+        "source": "synlab/pipeline.py CONTEXT_VOCABULARY.scale_references"
+      },
+      {
+        "field": "coexistent_counts",
+        "group": "共存物",
+        "note": "只出计数；成员名单留在 research 侧",
+        "source": "synlab/storage/export.py:1284"
+      },
+      {
+        "field": "coexistence_scope",
+        "group": "共存物",
+        "source": "synlab/storage/export.py:1285"
+      }
+    ],
+    "query_keys": [
+      "context_id",
+      "batch_id",
+      "bag_id"
+    ],
+    "query_requirement": "context_id/batch_id/bag_id 必须可查询（deploy/context/packs.json 的 pack 列表 + 每 query 行自带这三个键）",
+    "forbidden_fields": [
+      "lineage_id",
+      "mother_id",
+      "fragment_id",
+      "event_id",
+      "split",
+      "seed",
+      "seed_ref",
+      "historical_R2",
+      "mate_present",
+      "relation",
+      "relations",
+      "interface_id",
+      "kind"
+    ],
+    "not_equivalent_to_mother_id": true,
+    "deploy_research_split": {
+      "deploy": "deploy/context/packs.json（pack 文档 + 计数式共存物）",
+      "research": "research/context_membership.json（真实 fragment id 列表）"
+    },
+    "no_field_level_doc_spec": "文档只给一句模态描述（t088），无字段名/类型/单位/枚举/缺失率上限；本 v1 字段集来自已落地实现，不是文档要求。",
+    "unresolved": [
+      {
+        "item": "缺失/冲突率上限与字段类型、枚举",
+        "status": "unmapped",
+        "why": "文档未给；X03 轴只给 0–50% 的字段级扰动范围",
+        "temporary_rule": "在裁决前，上下文字段一律标 simulated=true，缺失/冲突率按 X03 轴的 0–50% 记录实际取值，不设门。",
+        "owner_decision": "D12.6"
+      }
+    ]
+  }
+}

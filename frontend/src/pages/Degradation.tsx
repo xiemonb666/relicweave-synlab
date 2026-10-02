@@ -18,6 +18,7 @@ import { useMemo, useState } from 'react';
 import { CompareViewport } from '../components/CompareViewport';
 import { AssetBrowser } from '../components/AssetBrowser';
 import { DegradationDiffPanel } from '../components/DegradationDiffPanel';
+import { DegradationPairPanel } from '../components/DegradationPairPanel';
 import { SpecStudio } from '../components/SpecStudio';
 import type { FieldSpec, FormValue } from '../components/SchemaForm';
 import { MeasuredQualityTable, flattenMetrics } from '../components/MeasuredQualityTable';
@@ -437,6 +438,8 @@ export function DegradationPage() {
           </SectionCard>
         </div>
       </div>
+
+      <DegradationPairPanel onSelectRun={app.setSelectedRunId} />
 
       <DegradationDiffPanel />
 

@@ -10,11 +10,12 @@ other mothers continue, and the failure is recorded in the real denominator
 from __future__ import annotations
 
 import json
+import os
 import time
 import traceback
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable, Iterable
+from typing import Any, Callable, Iterable, Mapping, Sequence
 
 import numpy as np
 
@@ -26,8 +27,10 @@ from .jobs.state import JobState
 from .registry import REGISTRY, STATUS_IMPLEMENTED, STATUS_MISSING, load_all
 from .roles import (
     FORBIDDEN_FEATURE_FIELDS,
+    FRAME_NONE,
     FRAME_WORLD,
     ROLE_CLEAN_TRUTH,
+    ROLE_CONTEXT_PACK,
     ROLE_COVERAGE,
     ROLE_FEATURE_BUNDLE,
     ROLE_FRAGMENT_MESH,
@@ -37,18 +40,23 @@ from .roles import (
     ROLE_PATTERN_RECIPE,
     ROLE_PHYSICAL_RESULT,
     ROLE_PROVENANCE,
+    SCHEMA_CONTEXT,
     SCHEMA_COVERAGE,
     SCHEMA_FEATURE,
     SCHEMA_FRAGMENT,
+    SCHEMA_LABELS,
     SCHEMA_MOTHER,
     SCHEMA_OBS,
     SCHEMA_PHYSICAL,
+    SCHEMA_PROVENANCE,
     SCHEMA_TRUTH_CLEAN,
+    SOURCE_SENSOR_SIM,
     UNIT_MM,
+    UNIT_NONE,
 )
 from .schemas.spec import GenerationSpec
 from .schemas.runtime import ORIGIN_INTERFACE
-from .seeds import derive_named_rngs, seed_ref
+from .seeds import derive_named_rngs, make_rng, seed_ref
 from .storage.release import ReleaseManager
 from .storage.store import QA_FAIL, QA_PASS, AssetStore
 
@@ -57,6 +65,8 @@ from .storage.store import QA_FAIL, QA_PASS, AssetStore
 # Planning
 # --------------------------------------------------------------------------------------
 @dataclass
+
+
 class LineagePlan:
     lineage_id: str
     split: str
@@ -67,6 +77,11 @@ class LineagePlan:
     params: dict[str, Any]
     mother_index: int
     event_ids: list[str] = field(default_factory=list)
+    #: Per-lineage drawn variables (``configs/a12/diversity.yaml``); ``None`` when the run did not
+    #: ask for diversity, which is what keeps every legacy caller bit-for-bit unchanged.  Keys
+    #: starting with ``_`` hold live objects (a ``FractureSpec``, an ``ObsSpec``, a rebuilt
+    #: ``DiversityConfig``) and are stripped by :func:`_jsonable_variables` before serialisation.
+    variables: dict[str, Any] | None = None
 
 
 @dataclass
@@ -146,8 +161,672 @@ def data_semantics() -> dict[str, str]:
     }
 
 
-def plan_generation(spec: GenerationSpec, *, max_mothers: int | None = None) -> GenerationPlan:
-    """Split lineages *before* generation, then sample feasible parameter combinations."""
+#: Semantics tag of the **two-endpoint** observation layer (``docs/a12/training_run.md``
+#: section "R2 两端观测").  The declared damage recipe is applied to exactly one fragment of a
+#: fracture event, so before this tag existed a lineage carried exactly one observation -- the
+#: damaged target -- and the other end of every R2 interface was *modelled but unobserved*.
+#: The encoder gates such a fragment out (``z_valid=False``), which made every R2 pair
+#: unencodable and left the rank task (weight 1.0) with nothing to score.
+#:
+#: From this tag on, every non-tiny fragment of the event is observed **with its own
+#: geometry**, so both ends of every R2 edge -- and every future confirmed negative candidate
+#: -- can be encoded.  The tag is written into the observation metadata, the feature-bundle
+#: metadata, the coverage ledger rows and the run record, so a batch produced by the old
+#: single-endpoint path (no ``obs_semantics`` key at all) and a batch produced by this path are
+#: distinguishable **programmatically** -- never by timestamp or run id.
+OBS_SEMANTICS_V2 = "physical_side_v2"
+#: ``obs_target_role`` of the endpoint the declared physical damage recipe was applied to.
+OBS_ROLE_PHYSICAL_TARGET = "physical_damage_target"
+#: ``obs_target_role`` of every other modelled endpoint of the same fracture event.
+OBS_ROLE_EVENT_ENDPOINT = "fracture_event_endpoint"
+
+#: Environment switch of the degradation-diversity step: a config path, or ``1``/``true``/``on``
+#: for ``configs/a12/degrade_diversity.yaml``.  Unset means the step is skipped, so every
+#: existing caller keeps its exact behaviour (the step writes assets, which is never implicit).
+DEGRADE_DIVERSITY_ENV = "SYNLAB_DEGRADE_DIVERSITY"
+
+#: Environment switch of the **variable-wiring** step (``configs/a12/diversity.yaml``): a config
+#: path, or ``1``/``true``/``on`` for the default path.  Unset means not a single byte of that
+#: config is read, so every existing caller keeps its exact behaviour (see
+#: :func:`_resolve_diversity`).  Same opt-in discipline as :data:`DEGRADE_DIVERSITY_ENV`, for the
+#: same reason: the step changes what the fracture event, the pattern recipe and the observation
+#: spec are drawn *from*, and that must never happen behind a caller's back.
+DIVERSITY_ENV = "SYNLAB_DIVERSITY"
+DIVERSITY_DEFAULT_PATH = Path("configs/a12/diversity.yaml")
+
+
+# --------------------------------------------------------------------------------------
+# Variable wiring (configs/a12/diversity.yaml)
+#
+# Why this exists, in one paragraph: the reviewed stores drew every lineage's fracture plane
+# from the *body hash* (``synlab.fracture.api._default_basis`` does not read the rng at all and
+# says so in its own source), every pattern family's parameters from the pydantic field
+# defaults (``_build_pattern_recipe`` passes ``params={}``), and every observation from the one
+# hardcoded default camera profile (``observe(profile=None)`` -> ``camera_profiles()[1]``), one
+# hardcoded light direction, a fixed 4xN view grid and an identity ``ImagingSpec``.  Measured on
+# the 61 lineages of ``data/a12*`` that gave exactly **1** working distance, **1** camera
+# profile, **1** light mode and **1** imaging setting, which is why this module now samples them
+# per lineage from a frozen ``seed64`` sub-stream.
+# --------------------------------------------------------------------------------------
+def _resolve_diversity(override: bool | str | None) -> dict[str, Any] | None:
+    """Resolve ``configs/a12/diversity.yaml``; ``None`` means "do not vary anything".
+
+    ``False`` disables, ``True`` uses :data:`DIVERSITY_DEFAULT_PATH`, a string is a config path,
+    and ``None`` falls back to :data:`DIVERSITY_ENV`.  Without an explicit request the config is
+    never opened, so a lineage that does not ask for diversity cannot be changed by the file's
+    presence.
+    """
+    if override is False:
+        return None
+    if override is None:
+        raw = os.environ.get(DIVERSITY_ENV, "").strip()
+        if not raw or raw.lower() in ("0", "false", "off", "no"):
+            return None
+        path = DIVERSITY_DEFAULT_PATH if raw.lower() in ("1", "true", "yes", "on") else Path(raw)
+    elif override is True:
+        path = DIVERSITY_DEFAULT_PATH
+    else:
+        path = Path(str(override))
+    if not path.is_absolute():
+        path = Path(__file__).resolve().parents[1] / path
+    if not path.exists():
+        raise SynLabError(ErrorCode.INPUT_UNAVAILABLE,
+                          f"diversity config not found: {path}",
+                          stage="pipeline.diversity.config")
+    try:
+        import yaml
+    except Exception as exc:  # pragma: no cover - pyyaml is a declared dependency
+        raise SynLabError(ErrorCode.DEPENDENCY_CAPABILITY_MISSING,
+                          f"pyyaml is required to read {path}: {exc}",
+                          stage="pipeline.diversity.config") from exc
+    raw_doc = yaml.safe_load(path.read_text(encoding="utf-8"))
+    if not isinstance(raw_doc, dict):
+        raise SynLabError(ErrorCode.SCHEMA_INVALID, f"{path}: root is not a mapping",
+                          stage="pipeline.diversity.config")
+    schema = str(raw_doc.get("schema", ""))
+    if schema != "synlab.diversity.v1":
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          f"{path}: schema {schema!r} is not 'synlab.diversity.v1'",
+                          stage="pipeline.diversity.config")
+    if not bool(raw_doc.get("enabled", True)):
+        return None
+    document = dict(raw_doc)
+    document["config_path"] = str(path)
+    document["config_hash"] = hash_file(path)
+    return document
+
+
+def _div_block(config: dict[str, Any], *path: str, default: Any = None) -> Any:
+    """Read a nested key of the diversity config, returning ``default`` when absent."""
+    node: Any = config
+    for key in path:
+        if not isinstance(node, dict) or key not in node:
+            return default
+        node = node[key]
+    return node
+
+
+def _div_rng(config: dict[str, Any], lineage_id: str, group: str) -> np.random.Generator:
+    """One generator per ``(lineage, group)`` from the config's own master seed."""
+    from .seeds import make_rng
+
+    master = int(_div_block(config, "master_seed", default=20261001))
+    return make_rng(master, lineage_id, group)
+
+
+def _div_uniform(rng: np.random.Generator, spec: Any, *, default: tuple[float, float]
+                 ) -> float:
+    """Draw one scalar from a ``{law: uniform, range: [lo, hi]}`` declaration."""
+    lo, hi = default
+    if isinstance(spec, dict) and spec.get("range"):
+        lo, hi = (float(spec["range"][0]), float(spec["range"][1]))
+    elif isinstance(spec, (list, tuple)) and len(spec) == 2:
+        lo, hi = (float(spec[0]), float(spec[1]))
+    return float(rng.uniform(lo, hi))
+
+
+def _div_choice(rng: np.random.Generator, choices: Any, *, default: Any = None) -> Any:
+    values = list(choices or [])
+    if not values:
+        return default
+    return values[int(rng.integers(0, len(values)))]
+
+
+def _div_weighted(rng: np.random.Generator, values: Any, weights: Any) -> Any:
+    values = list(values or [])
+    if not values:
+        return None
+    if not weights or len(weights) != len(values):
+        return values[int(rng.integers(0, len(values)))]
+    probs = np.asarray([float(w) for w in weights], dtype=np.float64)
+    total = float(probs.sum())
+    if total <= 0:
+        return values[int(rng.integers(0, len(values)))]
+    return values[int(rng.choice(len(values), p=probs / total))]
+
+
+#: Light-control -> ``LightSpec`` mapping.  The five *modes* are the documented real
+#: capture-rig vocabulary (``configs/a12/capture_contract.json`` ->
+#: ``lighting.real_capture_light_modes``, count 5).  ``direction`` is the unit vector the light
+#: **travels** (``LightSpec.direction``), in the same world frame the renderer uses.  The
+#: contract fixes the modes and their physical setup ("left low angle", "left front and lens
+#: front polarisers crossed", ...) but declares no numeric vector, so the vectors below are this
+#: build's frozen realisation of those setups and are recorded in every observation's metadata
+#: instead of being implied.  ``CROSS_POL`` also damps the specular path, which is what crossed
+#: polarisers physically do; that is expressed as a lower colour and a higher ambient share.
+LIGHT_MODE_SPECS: dict[str, dict[str, Any]] = {
+    "WHITE_DIFFUSE": {
+        "direction": (-0.35, -0.62, -0.70), "color": (2.35, 2.25, 2.10),
+        "ambient": (0.30, 0.30, 0.33),
+        "setup": "顶照均匀白光，略前偏，无遮挡",
+    },
+    "LEFT_GRAZE": {
+        "direction": (0.82, -0.42, -0.39), "color": (2.15, 2.08, 1.98),
+        "ambient": (0.14, 0.15, 0.17),
+        "setup": "左侧低角度掠射，强化口沿与断口起伏",
+    },
+    "RIGHT_GRAZE": {
+        "direction": (-0.82, -0.42, -0.39), "color": (2.15, 2.08, 1.98),
+        "ambient": (0.14, 0.15, 0.17),
+        "setup": "右侧低角度掠射，验证另一侧的起伏与阴影",
+    },
+    "CROSS_POL": {
+        "direction": (-0.28, -0.50, -0.82), "color": (1.35, 1.30, 1.26),
+        "ambient": (0.42, 0.42, 0.44),
+        "setup": "灯前与镜头前偏振片正交，压低表面反光",
+    },
+    "NORMAL_REFLECT": {
+        "direction": (0.0, -0.10, -0.995), "color": (1.95, 1.92, 1.88),
+        "ambient": (0.22, 0.22, 0.24),
+        "setup": "近法向普通白光观察，检查釉面反射",
+    },
+}
+
+
+def _div_light(rng: np.random.Generator, config: dict[str, Any]) -> Any:
+    """Sample one documented light control and build the real :class:`LightSpec`."""
+    from .observe.render import LightSpec
+
+    modes = list(_div_block(config, "observation", "light_modes", default=[])) \
+        or list(LIGHT_MODE_SPECS)
+    mode = str(_div_choice(rng, modes, default="WHITE_DIFFUSE"))
+    spec = LIGHT_MODE_SPECS.get(mode) or LIGHT_MODE_SPECS["WHITE_DIFFUSE"]
+    scale_range = _div_block(config, "observation", "light_intensity_jitter",
+                             default=[1.0, 1.0])
+    scale = float(rng.uniform(float(scale_range[0]), float(scale_range[1])))
+    direction = np.asarray(spec["direction"], dtype=np.float64)
+    direction /= max(float(np.linalg.norm(direction)), 1e-12)
+    return mode, LightSpec(direction=direction,
+                           color=np.asarray(spec["color"], dtype=np.float64) * scale,
+                           ambient=np.asarray(spec["ambient"], dtype=np.float64) * scale)
+
+
+def _div_camera(rng: np.random.Generator, config: dict[str, Any]) -> dict[str, Any]:
+    """Sample a camera profile at a sampled working distance, inside the declared travel.
+
+    ``synlab.cameras.profiles.transform_profile_u`` is the rig's own definition of a slide
+    move: it re-derives ``K`` from the focus group, scales the distortion with the nominal lens
+    curve, recomputes the thin-lens depth of field and refuses a position outside the tier's
+    declared ``u_travel_mm``.  Sampling a *working distance* therefore means inverting that
+    relation (``u = u0 + w0 - w``) and **checking the travel**, not writing a new K: a distance
+    no tier can reach is recorded as unreachable and the tier's own limit is used instead.
+    """
+    from .cameras.api import camera_profiles, transform_profile_u
+
+    profiles = list(camera_profiles())
+    if not profiles:
+        raise SynLabError(ErrorCode.DEPENDENCY_CAPABILITY_MISSING,
+                          "no camera profile is registered",
+                          stage="pipeline.diversity.camera")
+    source_weights = _div_block(config, "observation", "working_distance_source_weights",
+                                default=[0.5, 0.5])
+    source = _div_weighted(rng, ["registry_tier", "documented_envelope"], source_weights)
+    target: float | None = None
+    if source == "documented_envelope":
+        envelope = [float(v) for v in _div_block(
+            config, "observation", "documented_envelope_mm", default=[])]
+        if envelope:
+            target = float(_div_choice(rng, envelope))
+    base_ids = [str(p.profile_id) for p in profiles]
+    wanted_tiers = [str(t) for t in _div_block(config, "observation", "registry_tiers",
+                                               default=[])]
+    pool = [p for p in profiles if (not wanted_tiers or str(p.tier) in wanted_tiers)] or profiles
+    order = [int(i) for i in rng.permutation(len(pool))]
+    unreachable: list[dict[str, Any]] = []
+    for index in order:
+        profile = pool[index]
+        u0, w0 = float(profile.u_position_mm), float(profile.working_distance_mm)
+        if target is None:
+            chosen = profile
+            break
+        u = u0 + w0 - float(target)
+        try:
+            chosen = transform_profile_u(profile, u)
+        except SynLabError as exc:
+            unreachable.append({"profile_id": profile.profile_id, "error": str(exc.code)})
+            continue
+        break
+    else:
+        chosen = pool[0]
+        target = float(chosen.working_distance_mm)
+    return {
+        "profile": chosen,
+        "source": "documented_envelope" if target is not None else "registry_tier",
+        "requested_working_distance_mm": target,
+        "realized_working_distance_mm": float(chosen.working_distance_mm),
+        "profile_id": str(chosen.profile_id),
+        "tier": str(chosen.tier),
+        "u_position_mm": float(chosen.u_position_mm),
+        "unreachable_tiers": unreachable,
+        "registry_profile_ids": base_ids,
+    }
+
+
+def _div_fracture_spec(rng: np.random.Generator, config: dict[str, Any], lineage: Any,
+                       mother: Any) -> tuple[Any, dict[str, Any]]:
+    """Sample the event variables and build the :class:`FractureSpec` they describe.
+
+    The plane is drawn **here**, not left to ``fracture.api._default_basis``: with
+    ``plane_normal=None`` that function ignores the event rng entirely and derives the normal
+    from a hash of the body's vertices and faces, so every lineage whose body geometry repeats
+    gets the same cut orientation.  ``n_events`` selects the backend (2 -> ``secondary_fracture``,
+    the only implemented genuine second break), and ``target_piece_range`` /
+    ``secondary_probability`` are recorded as **declared** values: this build's fracture layer
+    has no iterate-until-N-pieces implementation, so those two are never reported as realised.
+    """
+    from .fracture.spec import FractureSpec
+
+    event_cfg = _div_block(config, "event", default={}) or {}
+    backends = [str(b) for b in (event_cfg.get("backends")
+                                 or ["plane_shared_cut", "rough_shared_cut"])]
+    n_events = int(_div_weighted(rng, event_cfg.get("n_events_choices") or [1],
+                                 event_cfg.get("n_events_weights")))
+    if n_events >= 2:
+        backend = "secondary_fracture"
+    else:
+        backend = str(_div_choice(rng, backends, default="plane_shared_cut"))
+
+    plane_cfg = dict(event_cfg.get("plane") or {})
+    z_law = str(plane_cfg.get("z_law", "bounded"))
+    z_min = float(plane_cfg.get("z_min", -0.85))
+    z_max = float(plane_cfg.get("z_max", 0.85))
+    if z_law == "sine_uniform":
+        # marginal of the uniform sphere measure over z: z ~ U(-1, 1) *is* that marginal
+        z = float(rng.uniform(-1.0, 1.0))
+    else:
+        z = float(rng.uniform(z_min, z_max))
+    azimuth = float(rng.uniform(0.0, 2.0 * np.pi))
+    radial = float(np.sqrt(max(0.0, 1.0 - z * z)))
+    normal = np.array([radial * np.cos(azimuth), radial * np.sin(azimuth), z], dtype=np.float64)
+    normal /= max(float(np.linalg.norm(normal)), 1e-12)
+
+    points = np.asarray(mother.mesh.vertices, dtype=np.float64)
+    centroid = points.mean(axis=0)
+    radius = float(np.linalg.norm(points - centroid, axis=1).mean())
+    offset_cfg = plane_cfg.get("offset_range") or [-0.30, 0.30]
+    offset = float(rng.uniform(float(offset_cfg[0]), float(offset_cfg[1])))
+    anchor = centroid + normal * (offset * radius)
+
+    rough_cfg = dict(event_cfg.get("rough") or {})
+    rms = (float(rng.uniform(*[float(v) for v in rough_cfg.get("target_rms_mm_range",
+                                                               [0.02, 0.30])]))
+           if backend == "rough_shared_cut" else 0.0)
+    n_bands = _div_choice(rng, rough_cfg.get("n_bands_choices") or [1, 2, 3], default=None)
+    spec = FractureSpec(
+        backend=backend,
+        plane_normal=normal,
+        plane_point=anchor,
+        target_rms_mm=rms,
+        n_bands=(int(n_bands) if n_bands is not None else None),
+        error_budget_mm=float(rough_cfg.get("error_budget_mm", 0.01)),
+    )
+    sampled = {
+        "backend": backend,
+        "n_events": n_events,
+        "plane_normal": [float(v) for v in normal],
+        "plane_azimuth_deg": float(np.degrees(azimuth)),
+        "plane_z": float(z),
+        "plane_point": [float(v) for v in anchor],
+        "offset_radius_units": offset,
+        "body_radius_mm": radius,
+        "target_rms_mm": rms,
+        "n_bands": None if n_bands is None else int(n_bands),
+        "declared_target_piece_range": list(event_cfg.get("target_piece_range") or []),
+        "declared_secondary_probability": [
+            float(v) for v in (event_cfg.get("secondary_probability_range") or [])],
+        "secondary_realised": bool(n_events >= 2),
+    }
+    return spec, sampled
+
+
+def _div_pattern_params(rng: np.random.Generator, config: dict[str, Any]) -> dict[str, Any]:
+    """Sample the family parameters ``_build_pattern_recipe`` used to leave at their defaults."""
+    pattern_cfg = dict(_div_block(config, "pattern", default={}) or {})
+    params: dict[str, Any] = {}
+    for name, declaration in (pattern_cfg.get("params") or {}).items():
+        if not isinstance(declaration, dict):
+            continue
+        law = str(declaration.get("law", "uniform"))
+        if law == "choice":
+            params[name] = _div_choice(rng, declaration.get("choices"), default=None)
+        else:
+            params[name] = _div_uniform(rng, declaration, default=(0.0, 1.0))
+    if isinstance(pattern_cfg.get("orientation_deg"), dict):
+        params["orientation_deg"] = _div_uniform(
+            rng, pattern_cfg["orientation_deg"], default=(0.0, 180.0))
+        params.setdefault("tilt_deg", params["orientation_deg"])
+    if isinstance(pattern_cfg.get("phase_s_mm"), dict):
+        params["phase_s_mm"] = _div_uniform(rng, pattern_cfg["phase_s_mm"],
+                                            default=(0.0, 360.0))
+    return {k: v for k, v in params.items() if v is not None}
+
+
+def _div_palette(rng: np.random.Generator, config: dict[str, Any]) -> str | None:
+    """Sample a palette id from the pattern registry (never a hardcoded list)."""
+    from .patterns.params import PALETTE_IDS
+
+    declaration = _div_block(config, "pattern", "palette", default={}) or {}
+    pool = list(PALETTE_IDS)
+    if isinstance(declaration, dict) and declaration.get("choices"):
+        pool = [str(c) for c in declaration["choices"] if str(c) in PALETTE_IDS] or pool
+    return str(_div_choice(rng, pool, default=None)) if pool else None
+
+
+def _div_observe_spec(rng: np.random.Generator, config: dict[str, Any], lineage: Any,
+                      base_spec: Any, camera: dict[str, Any], light: Any
+                      ) -> tuple[Any, dict[str, Any]]:
+    """Sample the observation variables on top of the configured ``ObsSpec``.
+
+    Everything sampled here is a knob ``ObsSpec``/``ImagingSpec`` already exposes: view count,
+    delivered size, render budget, the light spec, and the imaging chain.  The defocus pair is
+    derived, not guessed: a sampled focus offset inside the profile's own thin-lens depth of
+    field is converted to a circle of confusion (``c = D * |d - d_f| / d_f``) and then to a
+    Gaussian PSF sigma in **delivered** pixels through the delivered sampling density
+    ``D = f_px / focal_length_mm`` -- the same conversion ``mask_semantics = coc_units_v2``
+    documents in :func:`_resolve_observe_spec`.
+    """
+    import dataclasses
+
+    from .observe.render import RenderSpec
+    from .observe.routes import ObsSpec
+
+    obs_cfg = dict(_div_block(config, "observation", default={}) or {})
+    view_count = int(_div_choice(rng, obs_cfg.get("view_count_choices") or [base_spec.view_count],
+                                 default=base_spec.view_count))
+    long_edge = int(_div_choice(rng, obs_cfg.get("delivered_long_edge_choices")
+                                or [base_spec.delivered_size[0]],
+                                default=base_spec.delivered_size[0]))
+    aspect = obs_cfg.get("delivered_aspect") or [4, 3]
+    aspect = float(aspect[0]) / float(max(aspect[1], 1))
+    delivered = (int(long_edge), max(int(round(long_edge / aspect)), 8))
+
+    profile = camera["profile"]
+    focal_px = float(profile.K[0, 0])
+    focal_mm = float(profile.meta.get("focal_length_mm") or 0.0)
+    f_number = float(profile.f_number)
+    dof = tuple(profile.depth_of_field_mm or (0.0, 0.0))
+    dof_half = abs(float(dof[1]) - float(dof[0])) / 2.0 if len(dof) == 2 else 0.0
+    focus_cfg = dict(obs_cfg.get("focus_error") or {})
+    offset_frac = _div_uniform(rng, focus_cfg.get("focus_offset_frac_of_dof"),
+                               default=(-0.6, 0.6))
+    focus_offset_mm = offset_frac * dof_half
+    max_sigma = float(focus_cfg.get("max_defocus_sigma_px", 1.2))
+    density = focal_px / focal_mm if focal_mm > 0 else 0.0
+    coc_mm = abs(focus_offset_mm) / max(float(profile.working_distance_mm), 1e-9) * focal_mm \
+        / max(f_number, 1e-9)
+    sigma_px = min(coc_mm * density / 2.0, max_sigma) if density > 0 else 0.0
+
+    exposure_ev = _div_uniform(rng, obs_cfg.get("exposure_ev"), default=(0.0, 0.0))
+    read_noise = _div_uniform(rng, obs_cfg.get("read_noise_sigma"), default=(0.0, 0.0))
+    gain = _div_uniform(rng, obs_cfg.get("effective_gain"), default=(1.0, 1.0))
+
+    imaging = dataclasses.replace(base_spec.imaging, exposure_ev=float(exposure_ev),
+                                  read_noise_sigma=float(read_noise),
+                                  effective_gain=float(gain),
+                                  defocus_sigma_px=float(sigma_px))
+    declared = float(RenderSpec.coc_px_threshold)
+    spec = dataclasses.replace(
+        base_spec,
+        view_count=view_count,
+        delivered_size=delivered,
+        max_render_pixels=max(int(delivered[0]) * int(delivered[1]), 1),
+        render_spec=dataclasses.replace(base_spec.render_spec,
+                                        coc_px_threshold=declared * f_number),
+        imaging=imaging,
+        light=light,
+        master_seed=int(_div_block(config, "master_seed", default=base_spec.master_seed)),
+        lineage_id=str(lineage.lineage_id),
+    )
+    sampled = {
+        "view_count": view_count,
+        "delivered_size": [int(delivered[0]), int(delivered[1])],
+        "light_mode": None if light is None else str(light.__dict__.get("mode", "")) or None,
+        "light_direction": None if light is None else [float(v) for v in light.direction],
+        "light_color": None if light is None else [float(v) for v in light.color],
+        "light_ambient": None if light is None else [float(v) for v in light.ambient],
+        "focus_offset_frac_of_dof": offset_frac,
+        "focus_offset_mm": focus_offset_mm,
+        "profile_dof_mm": [float(dof[0]), float(dof[1])] if len(dof) == 2 else None,
+        "defocus_sigma_px": sigma_px,
+        "exposure_ev": exposure_ev,
+        "read_noise_sigma": read_noise,
+        "effective_gain": gain,
+        "camera": {k: v for k, v in camera.items() if k != "profile"},
+    }
+    return spec, sampled
+
+
+def _div_degradation_config(rng: np.random.Generator, config: dict[str, Any], degrade_cfg: Any
+                            ) -> tuple[Any, dict[str, Any]]:
+    """Draw a per-lineage axis subset + level subset; level 0 (identity) is never dropped.
+
+    ``configs/a12/degrade_diversity.yaml`` with ``selection: declared`` materialises the same
+    nine axes for every lineage (measured: one distinct axis subset over the whole store).  This
+    rebuilds a ``DiversityConfig`` whose ``axes`` tuple *is* the sampled subset and whose
+    ``selection`` is ``declared``, so the existing, audited materialiser runs unchanged on a
+    subset that really differs per lineage.  Sampling is clamped to the operator's own
+    ``LEVEL_COUNT`` and refuses to drop level 0.
+    """
+    import dataclasses
+
+    from .degrade.diversity import AxisSpec
+    from .degrade.registry import get_operator
+
+    deg_cfg = dict(_div_block(config, "degradation", default={}) or {})
+    pool = [dict(item) for item in (deg_cfg.get("axis_pool") or [])]
+    available = []
+    for item in pool:
+        axis_id = str(item.get("axis_id", ""))
+        try:
+            operator = get_operator(axis_id)
+        except Exception:
+            continue
+        available.append((axis_id, operator, item))
+    if not available or degrade_cfg is None:
+        return degrade_cfg, {"axes": [], "levels": {}, "sampled": False}
+    lo, hi = [int(v) for v in (deg_cfg.get("axes_per_lineage_range") or [3, 7])]
+    want = int(rng.integers(min(lo, len(available)), min(hi, len(available)) + 1))
+    order = [int(i) for i in rng.permutation(len(available))][:want]
+    lv_lo, lv_hi = [int(v) for v in (deg_cfg.get("levels_per_axis_range") or [2, 5])]
+    always_zero = bool(deg_cfg.get("always_include_level_zero", True))
+    chosen_axes, levels = [], {}
+    for index in sorted(order):
+        axis_id, operator, item = available[index]
+        count = int(getattr(operator, "LEVEL_COUNT", 5) or 5)
+        n_levels = int(rng.integers(max(min(lv_lo, count), 1), min(lv_hi, count) + 1))
+        candidates = [lvl for lvl in range(count) if not (always_zero and lvl == 0)]
+        picked = [0] if always_zero else []
+        extra = [int(i) for i in rng.permutation(len(candidates))][:max(n_levels - len(picked), 0)]
+        picked.extend(candidates[i] for i in extra)
+        levels[axis_id] = sorted({int(v) for v in picked})
+        chosen_axes.append(AxisSpec(
+            axis_id=axis_id,
+            family=str(item.get("family") or axis_id[0]),
+            variant=str(item.get("variant") or ""),
+            levels=tuple(levels[axis_id]),
+            stage=str(item.get("stage") or operator.STAGE),
+            substage=str(getattr(operator, "SUBSTAGE", "") or ""),
+            factor_kind=str(getattr(operator, "FACTOR_KIND", "") or ""),
+            note=str(item.get("note", "")),
+        ))
+    per_axis = {axis_id: {"levels": levels[axis_id]} for axis_id in sorted(levels)}
+    sampled = {
+        "sampled": True,
+        "declared_axes": [a.axis_id for a in chosen_axes],
+        "levels": levels,
+        "axis_count": len(chosen_axes),
+        "level_combos": int(np.prod([len(v) for v in levels.values()])) if levels else 0,
+        "materialised_axes": [a.axis_id for a in chosen_axes],
+        "materialised_levels_total": int(sum(len(v) for v in levels.values())),
+        "always_include_level_zero": always_zero,
+    }
+    rebuilt = dataclasses.replace(degrade_cfg, axes=tuple(chosen_axes), selection="declared",
+                                  max_axes_per_lineage=max(len(chosen_axes), 1))
+    return rebuilt, sampled
+
+
+def _div_sample_static(config: dict[str, Any], lineage: Any, *, base_observe_spec: Any,
+                       degrade_cfg: Any) -> dict[str, Any]:
+    """The part of the variable table that does not need the mother geometry.
+
+    Everything except the fracture plane can be drawn during planning: the pattern parameters,
+    the camera/light choice, the observation spec and the degradation axis subset all depend on
+    the *lineage* only.  The plane additionally needs the body's vertex cloud (its centroid and
+    equivalent radius), so it is drawn in :func:`build_one_mother` from the same frozen
+    ``event`` sub-stream -- see :func:`_div_fracture_spec`.
+    """
+    pattern_rng = _div_rng(config, lineage.lineage_id, "pattern")
+    camera_rng = _div_rng(config, lineage.lineage_id, "camera")
+    light_rng = _div_rng(config, lineage.lineage_id, "light")
+    diversity_rng = _div_rng(config, lineage.lineage_id, "diversity")
+
+    pattern_params = _div_pattern_params(pattern_rng, config)
+    palette = _div_palette(pattern_rng, config)
+    camera = _div_camera(camera_rng, config)
+    light_mode, light = _div_light(light_rng, config)
+    observe_spec, obs_vars = _div_observe_spec(camera_rng, config, lineage, base_observe_spec,
+                                               camera, light)
+    obs_vars["light_mode"] = light_mode
+    rebuilt_degrade, degrade_vars = _div_degradation_config(diversity_rng, config, degrade_cfg)
+    return {
+        "schema": "synlab.diversity.variables.v1",
+        "lineage_id": lineage.lineage_id,
+        "master_seed": int(_div_block(config, "master_seed", default=0)),
+        "config_hash": config.get("config_hash"),
+        "event": None,
+        "pattern": {"params": pattern_params, "palette_id": palette},
+        "observation": obs_vars,
+        "degradation": degrade_vars,
+        "_observe_spec": observe_spec,
+        "_degrade_config": rebuilt_degrade,
+    }
+
+
+def _div_sample_lineage(config: dict[str, Any], lineage: Any, mother: Any, *,
+                        base_observe_spec: Any, degrade_cfg: Any) -> dict[str, Any]:
+    """The full per-lineage variable table (one frozen sub-stream per group)."""
+    table = _div_sample_static(config, lineage, base_observe_spec=base_observe_spec,
+                              degrade_cfg=degrade_cfg)
+    fracture_spec, event_vars = _div_fracture_spec(
+        _div_rng(config, lineage.lineage_id, "event"), config, lineage, mother)
+    table["event"] = event_vars
+    table["_fracture_spec"] = fracture_spec
+    return table
+
+
+def _jsonable_variables(variables: dict[str, Any]) -> dict[str, Any]:
+    """Strip the live objects: only the *drawn values* are serialisable and comparable."""
+    return {key: value for key, value in variables.items() if not key.startswith("_")}
+
+
+def _resolve_degrade_diversity(override: bool | str | None) -> Any:
+    """Resolve the degradation-diversity config; ``None`` means "skip this step".
+
+    Opt-in on purpose.  ``False`` disables, ``True`` uses the default config, a string is a
+    config path, and ``None`` falls back to :data:`DEGRADE_DIVERSITY_ENV`.  Without an explicit
+    request **no config is read at all**, so a lineage that does not ask for degradation
+    diversity cannot be changed by the presence of the config file.
+    """
+    from .degrade.diversity import DEFAULT_CONFIG_PATH, load_diversity_config
+
+    if override is False:
+        return None
+    if override is None:
+        raw = os.environ.get(DEGRADE_DIVERSITY_ENV, "").strip()
+        if not raw or raw.lower() in ("0", "false", "off", "no"):
+            return None
+        path: Any = DEFAULT_CONFIG_PATH if raw.lower() in ("1", "true", "yes", "on") else raw
+    elif override is True:
+        path = DEFAULT_CONFIG_PATH
+    else:
+        path = override
+    config = load_diversity_config(path)
+    return config if config.enabled else None
+
+
+def _materialize_degrade_diversity(store: AssetStore, *, plan: GenerationPlan,
+                                   lineage: "LineagePlan", degrade_cfg: Any, observation: Any,
+                                   target_fragment: Any, fragment_asset_of: dict[str, Any],
+                                   run_id: str | None = None,
+                                   observation_asset_id: str = "") -> dict[str, Any]:
+    """Step 9: materialise the configured degradation axes for *this* lineage's own assets.
+
+    The sources are the lineage's own committed assets (the target fragment mesh for the
+    physical family, the primary observation for the image/geometry/estimate families), so the
+    variants are degradations of real lineage data rather than of a probe fixture.  The report
+    is flushed to ``<store>/reports/degrade_diversity/<lineage>.json`` after every level.
+    """
+    from .degrade.diversity import (commit_observation_sources, load_p_family_source,
+                                    materialize_lineage_diversity)
+
+    fragment_id = str(getattr(target_fragment, "fragment_id", "") or "")
+    sources: dict[str, Any] = {}
+    fragment_asset = fragment_asset_of.get(fragment_id)
+    if fragment_asset is not None:
+        sources["P"] = load_p_family_source(
+            store, fragment_asset.asset_id, fragment_id=fragment_id,
+            material_id=lineage.material_id, mother_id=lineage.lineage_id,
+            master_seed=plan.spec.master_seed, lineage_id=lineage.lineage_id)
+    sources.update(commit_observation_sources(
+        store, observation, lineage_id=lineage.lineage_id, split=lineage.split,
+        material_id=lineage.material_id, mother_id=lineage.lineage_id,
+        master_seed=plan.spec.master_seed, data_semantics=data_semantics(),
+        observation_asset_id=observation_asset_id))
+    report_path = store.root / "reports" / "degrade_diversity" / f"{lineage.lineage_id}.json"
+    report = materialize_lineage_diversity(
+        store, config=degrade_cfg, sources=sources, lineage_id=lineage.lineage_id,
+        split=lineage.split, master_seed=plan.spec.master_seed,
+        lineage_index=lineage.mother_index, run_id=run_id, data_semantics=data_semantics(),
+        progress_path=report_path, mother_id=lineage.lineage_id, fragment_id=fragment_id)
+    report["report_ref"] = str(report_path)
+    return report
+
+
+def _degrade_diversity_totals(rows: Iterable[dict[str, Any]]) -> dict[str, Any]:
+    """Run-level denominator of step 9 (planned vs realised axes/levels; nothing dropped)."""
+    summaries = [dict(row.get("degrade_diversity") or {}) for row in rows]
+    summaries = [item for item in summaries if item]
+    keys = ("axes_planned", "axes_ok", "axes_na", "axes_failed", "levels_planned", "levels_ok",
+            "levels_identity", "levels_na", "levels_failed", "variant_assets",
+            "identity_reference_ok", "identity_bytes_unchanged", "bytes")
+    totals: dict[str, Any] = {f"lineages": len(summaries)}
+    for key in keys:
+        totals[key] = int(sum(int(item.get(key, 0) or 0) for item in summaries))
+    totals["basis_shared_per_axis"] = all(bool(item.get("basis_shared_per_axis"))
+                                          for item in summaries) if summaries else None
+    return totals
+
+
+def plan_generation(spec: GenerationSpec, *, max_mothers: int | None = None,
+                    diversity: dict[str, Any] | None = None,
+                    store_root: str | Path | None = None) -> GenerationPlan:
+    """Split lineages *before* generation, then sample feasible parameter combinations.
+
+    ``diversity`` is the resolved ``configs/a12/diversity.yaml`` mapping (see
+    :func:`_resolve_diversity`).  When it is ``None`` -- the default for every legacy caller --
+    not one variable is drawn, ``LineagePlan.variables`` stays ``None``, and the plan is
+    bit-for-bit what it was before this parameter existed.
+    """
     load_all()
     compiled = compile_spec(spec)
     if compiled.errors:
@@ -188,12 +867,31 @@ def plan_generation(spec: GenerationSpec, *, max_mothers: int | None = None) -> 
     picked = [combos[order[index % len(combos)]] for index in range(target)]
 
     param_samples = _sample_parameter_sets([combo[0] for combo in picked], target, rng, compiled)
+    # The variable table is drawn per lineage from that lineage's own frozen sub-streams, so the
+    # order in which lineages are generated can never change what a given lineage draws.
+    div_degrade_cfg = None
+    div_base_observe = None
+    if diversity is not None:
+        # ``_resolve_observe_spec`` is a pure projection of the generation config onto an
+        # ``ObsSpec``: it never touches ``store``.  It is handed ``None`` so that planning a
+        # diverse run cannot create a store as a side effect of *planning* one.
+        div_degrade_cfg = _resolve_degrade_diversity(
+            diversity.get("_degrade_diversity") if isinstance(diversity, dict) else None)
+        div_base_observe = _resolve_observe_spec(spec, None)
     lineages: list[LineagePlan] = []
     for index in range(target):
         draw = float(rng.random())
         split = splits[int(np.searchsorted(cumulative, draw, side="right"))] if draw < 1.0 else "confirm"
         vessel, material, pattern, layer = picked[index]
         lineage_id = f"LIN{index:04d}_{vessel}_{material}_{pattern}"
+        variables = None
+        if diversity is not None:
+            placeholder = LineagePlan(lineage_id=lineage_id, split=split, vessel_id=vessel,
+                                      material_id=material, pattern_id=pattern,
+                                      layer_combo_id=layer, params={}, mother_index=index)
+            variables = _div_sample_static(diversity, placeholder,
+                                           base_observe_spec=div_base_observe,
+                                           degrade_cfg=div_degrade_cfg)
         lineages.append(LineagePlan(
             lineage_id=lineage_id,
             split=split,
@@ -204,6 +902,7 @@ def plan_generation(spec: GenerationSpec, *, max_mothers: int | None = None) -> 
             params=param_samples[index] if index < len(param_samples) else {},
             mother_index=index,
             event_ids=[f"{lineage_id}_E01"],
+            variables=variables,
         ))
     return GenerationPlan(
         spec=spec, compiled=compiled, lineages=lineages, spec_hash=compiled.spec_hash,
@@ -277,14 +976,17 @@ def _sample_parameter_sets(vessels: list[str], count: int, rng: np.random.Genera
 # --------------------------------------------------------------------------------------
 def run_generation(spec: GenerationSpec, *, store_root: str | Path = "data/a12",
                    resume: bool = False, max_mothers: int | None = None,
-                   progress: Callable[[dict[str, Any]], None] | None = None) -> dict[str, Any]:
+                   progress: Callable[[dict[str, Any]], None] | None = None,
+                   degrade_diversity: bool | str | None = None) -> dict[str, Any]:
     store = AssetStore(store_root)
     plan = plan_generation(spec, max_mothers=max_mothers)
+    degrade_cfg = _resolve_degrade_diversity(degrade_diversity)
     scheduler = Scheduler(store)
     run_id = f"run_{plan.job_id.split('_', 1)[-1][:16]}"
     store.create_run(run_id, plan.spec_hash, scope=spec.data_scope.value, profile=spec.release_profile.value,
                      meta={"plan": plan.as_dict(), "spec": plan.compiled.expanded,
-                           "data_semantics": data_semantics()})
+                           "data_semantics": data_semantics(),
+                           "obs_semantics": OBS_SEMANTICS_V2})
     plan_path = store.root / "reports" / f"run_spec_{run_id}.json"
     plan_path.parent.mkdir(parents=True, exist_ok=True)
     plan_path.write_text(json.dumps({**plan.as_dict(), "plan": [vars(l) for l in plan.lineages]},
@@ -314,6 +1016,8 @@ def run_generation(spec: GenerationSpec, *, store_root: str | Path = "data/a12",
                                     if l.layer_combo_id}),
             "fracture_backend": spec.fracture.backend,
             "data_semantics": data_semantics(),
+            "obs_semantics": OBS_SEMANTICS_V2,
+            "degrade_diversity": _degrade_diversity_totals(rows),
             "seconds": seconds,
             "complete": bool(complete),
             "rows": rows,
@@ -322,7 +1026,8 @@ def run_generation(spec: GenerationSpec, *, store_root: str | Path = "data/a12",
 
     for lineage in plan.lineages:
         attempted += 1
-        outcome = build_one_mother(plan, lineage, store, run_id=run_id)
+        outcome = build_one_mother(plan, lineage, store, run_id=run_id,
+                                   degrade_cfg=degrade_cfg)
         rows.append(outcome["coverage_row"])
         if outcome["ok"]:
             accepted += 1
@@ -354,6 +1059,7 @@ def run_generation(spec: GenerationSpec, *, store_root: str | Path = "data/a12",
         "coverage_ref": str(store.root / "reports" / "coverage.json"),
         "run_spec_ref": str(plan_path),
         "errors": [f["error"] for f in failures[:20]],
+        "degrade_diversity": coverage.get("degrade_diversity"),
         "code_fingerprint": plan.code_fingerprint,
     }
     (store.root / "reports" / f"generation_{run_id}.json").write_text(
@@ -400,9 +1106,446 @@ def _flatten(row: dict[str, Any]) -> dict[str, Any]:
     return out
 
 
+# --------------------------------------------------------------------------------------
+# Simulated excavation context (plan t088 / D3 / D5)
+# --------------------------------------------------------------------------------------
+#: ``t088`` gives exactly one sentence for this modality: "模拟出土区、层位、袋号/坑位等可控元数据".
+#: It also fixes the two boundaries this module obeys:
+#:
+#: * the document says **模拟** (simulated).  Every pack therefore carries ``simulated: true``
+#:   at the top level and ``simulated_*`` operator/session fields, so no consumer can mistake
+#:   these strings for a real archaeological record (p1146: "坑位/层位只有真实可信字段时才使用").
+#: * the synthetic side's D23 form ("有缺失冲突和噪声的字段；**不能等价母体 ID**", t101) is
+#:   honoured negatively: the context ids are generated *downstream* of the lineage id, and no
+#:   context id may be derived from, or reconstruct, a lineage/mother id.  ``rng`` is seeded from
+#:   ``master_seed`` + the lineage id but the emitted values only pick vocabulary entries, and
+#:   ``assert_context_is_not_answer_bearing`` refuses a pack that names a lineage, an R2
+#:   neighbour or a lineage-derived hash.
+#:
+#: Grid references are dated archaeological grid labels, not a claim about a real site.
+CONTEXT_VOCABULARY: dict[str, Any] = {
+    "excavation_areas": (
+        # area id -> (grid ref, pit ref, institution code, unit code)
+        ("EXA-A", "T0505", "PIT-3", "SYN", "U2"),
+        ("EXA-B", "T0607", "PIT-1", "SYN", "U2"),
+        ("EXA-C", "T0711", "PIT-4", "SYN", "U1"),
+    ),
+    "strata": (
+        # stratum id -> depth below the site datum, in mm (a simulated reading)
+        ("STR-02", 180),
+        ("STR-03", 320),
+        ("STR-04", 450),
+        ("STR-05", 610),
+    ),
+    "scale_references": (
+        # kind, size in mm, how it appears in the image
+        ("steel_ruler", 150.0, "in_frame_left_edge_vertical"),
+        ("apriltag_36h11", 36.0, "flat_on_tray_beside_sherd"),
+        ("reference_sphere", 12.0, "on_tray_upper_right"),
+        ("calibration_board_chessboard", 60.0, "under_sample_corner_visible"),
+    ),
+    "sites": (("SYN-SITE-01", "simulated_reference_site"),),
+    "operators": (("OP-SIM-01",), ("OP-SIM-02",), ("OP-SIM-03",)),
+    "note_template": (
+        "SIMULATED context, not an archaeological record: synthetic sherd set "
+        "{lineage_kind} registered under a generated bag id; no excavation took place."
+    ),
+}
+
+#: Field names a context pack may never carry (they are answer-side or identity-side).
+_CONTEXT_FORBIDDEN_FIELDS: frozenset[str] = frozenset({
+    "lineage_id", "mother_id", "fragment_id", "event_id", "split", "seed", "seed_ref",
+    "historical_R2", "mate_present", "relation", "relations", "interface_id", "kind",
+})
+
+
+def assert_context_is_not_answer_bearing(context: Mapping[str, Any]) -> None:
+    """Refuse a context pack that carries an answer-side or identity-side field.
+
+    The check walks the whole nested document, so a field cannot be hidden one level down.  It
+    is called on every pack this module emits; a violation raises instead of being committed.
+    """
+    offenders: list[str] = []
+
+    def walk(node: Any) -> None:
+        if isinstance(node, Mapping):
+            for key, value in node.items():
+                if str(key) in _CONTEXT_FORBIDDEN_FIELDS:
+                    offenders.append(str(key))
+                walk(value)
+        elif isinstance(node, (list, tuple)):
+            for item in node:
+                walk(item)
+
+    walk(context)
+    if context.get("simulated") is not True:
+        raise SynLabError(
+            ErrorCode.SCHEMA_INVALID,
+            "a context pack must be marked simulated=true: the fields are generated, not "
+            "observed at a real excavation (plan t088)",
+            stage="pipeline.context",
+        )
+    if offenders:
+        raise SynLabError(
+            ErrorCode.LEAKAGE_DETECTED,
+            f"simulated context pack carries answer-side fields: {sorted(set(offenders))}",
+            stage="pipeline.context",
+            evidence_refs=sorted(set(offenders)),
+        )
+
+
+@dataclass
+class ContextPlan:
+    """The simulated excavation context of one batch (all values deterministic from the seed)."""
+
+    pack_id: str
+    context_id: str
+    batch_id: str
+    bag_id: str
+    pit_id: str
+    site_id: str
+    institution_id: str
+    excavation_area_id: str
+    grid_ref: str
+    unit_code: str
+    stratum_id: str
+    stratum_depth_mm: int
+    session_id: str
+    operator_id: str
+    captured_at: str
+    site_notes: str
+    scale_reference: dict[str, Any]
+    batch_size_target: int
+    batch_rule: str
+    batch_index: int = 0
+    simulator: str = "synlab.pipeline.simulated_excavation_context"
+    seed_path: str = ""
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "schema": SCHEMA_CONTEXT,
+            "simulated": True,
+            "pack_id": self.pack_id,
+            "context_id": self.context_id,
+            "batch_id": self.batch_id,
+            "batch_index": int(self.batch_index),
+            "bag_id": self.bag_id,
+            "pit_id": self.pit_id,
+            "site_id": self.site_id,
+            "institution_id": self.institution_id,
+            "excavation_area_id": self.excavation_area_id,
+            "grid_ref": self.grid_ref,
+            "unit_code": self.unit_code,
+            "stratum_id": self.stratum_id,
+            "stratum_depth_mm": int(self.stratum_depth_mm),
+            "session_id": self.session_id,
+            "operator_id": self.operator_id,
+            "captured_at": self.captured_at,
+            "site_notes": self.site_notes,
+            "scale_reference": dict(self.scale_reference),
+        }
+
+
+def plan_context(master_seed: int, lineage: LineagePlan, *, divisor: int = 0,
+                 batch_slot: int | None = None) -> ContextPlan:
+    """Deterministically plan one batch's simulated excavation context.
+
+    Every choice is a pure function of ``master_seed`` and the lineage's plan row (its index and
+    id), so the same spec replays to the same context.  ``divisor`` is the *declared* target
+    batch size: ``0`` puts a whole lineage in one batch (the default), a positive value splits a
+    lineage into consecutive batches of that size so that "same batch" is a real, non-trivial
+    grouping for the retrieval scope.  ``batch_slot`` names which of those batches this plan is
+    for (``None`` derives it from the lineage's plan index).  Nothing here reads a fracture, an
+    interface or a relation.
+    """
+    rng = make_rng(int(master_seed), lineage.lineage_id, "context")
+    area = CONTEXT_VOCABULARY["excavation_areas"][
+        int(rng.integers(0, len(CONTEXT_VOCABULARY["excavation_areas"])))]
+    stratum = CONTEXT_VOCABULARY["strata"][
+        int(rng.integers(0, len(CONTEXT_VOCABULARY["strata"])))]
+    scale = CONTEXT_VOCABULARY["scale_references"][
+        int(rng.integers(0, len(CONTEXT_VOCABULARY["scale_references"])))]
+    site_id, site_kind = CONTEXT_VOCABULARY["sites"][0]
+    operator_id = CONTEXT_VOCABULARY["operators"][
+        int(rng.integers(0, len(CONTEXT_VOCABULARY["operators"])))][0]
+
+    index = int(lineage.mother_index)
+    batch_index = (index // int(divisor)) if divisor > 0 else 0
+    if batch_slot is not None:
+        batch_index = int(batch_slot)
+    bag_id = f"BAG-{lineage.lineage_id}"
+    # the batch name: ``BAG-<lineage>`` when the whole lineage is one bag (divisor 0), and
+    # ``BAG-<lineage>#b<slot>`` when the lineage is split -- so ``context_id`` (pit|stratum|batch)
+    # identifies exactly one pack, and a fragment's context_id resolves to a single pack.
+    batch_id = bag_id if divisor <= 0 else f"{bag_id}#b{batch_index + 1:02d}"
+    pit_id, grid_ref, institution_id, unit_code = area[2], area[1], area[3], area[4]
+    context_id = f"{pit_id}|{stratum[0]}|{batch_id}"
+    session_id = f"SES-{lineage.lineage_id}"
+    # A simulated capture timestamp: a deterministic date in the near past, never "now" (a real
+    # timestamp would be indistinguishable from a real record's own clock).
+    day = 1 + int(rng.integers(0, 27))
+    hour = 8 + int(rng.integers(0, 9))
+    captured_at = f"2026-03-{day:02d}T{hour:02d}:{int(rng.integers(0, 60)):02d}:00+00:00"
+    target = max(int(divisor), 0)
+    return ContextPlan(
+        pack_id=f"ctx_{lineage.lineage_id}"
+                 + ("" if divisor <= 0 else f"#b{batch_index + 1:02d}"),
+        context_id=context_id,
+        batch_id=batch_id,
+        bag_id=bag_id,
+        pit_id=pit_id,
+        site_id=site_id,
+        institution_id=institution_id,
+        excavation_area_id=area[0],
+        grid_ref=grid_ref,
+        unit_code=unit_code,
+        stratum_id=stratum[0],
+        stratum_depth_mm=int(stratum[1]),
+        session_id=session_id,
+        operator_id=operator_id,
+        captured_at=captured_at,
+        site_notes=CONTEXT_VOCABULARY["note_template"].format(lineage_kind=site_kind),
+        scale_reference={
+            # named explicitly: the leakage gate forbids a bare "kind" key anywhere in the pack
+            "scale_reference_kind": scale[0],
+            "size_mm": float(scale[1]),
+            "appearance": scale[2],
+            "simulated": True,
+            "placed_by": "simulator",
+        },
+        batch_size_target=target,
+        batch_index=int(batch_index),
+        batch_rule=("whole lineage is one bag when batch_size_target == 0, otherwise "
+                    "consecutive batches of batch_size_target fragments"),
+        seed_path=seed_ref(int(master_seed), lineage.lineage_id, "context"),
+    )
+
+
+def batch_slot_layout(master_seed: int, lineage: LineagePlan, fragment_ids: Sequence[str],
+                      *, divisor: int) -> dict[str, ContextPlan]:
+    """Map every fragment id of one event to the context pack of its batch.
+
+    The layout is fixed *before* any of those assets is committed: the fragment ids are sorted
+    (a stable key, not insertion order) and sliced into consecutive batches of ``divisor``
+    fragments -- or one batch when ``divisor <= 0``.  The same layout decides
+    ``meta.context_id`` on every asset of a fragment and the batch membership of the pack, so the
+    two can never disagree.
+    """
+    ordered = sorted(str(fid) for fid in fragment_ids)
+    layout: dict[str, ContextPlan] = {}
+    if divisor <= 0:
+        single = plan_context(master_seed, lineage, divisor=0)
+        for fragment_id in ordered:
+            layout[fragment_id] = single
+        return layout
+    for position, fragment_id in enumerate(ordered):
+        layout[fragment_id] = plan_context(master_seed, lineage, divisor=int(divisor),
+                                           batch_slot=position // int(divisor))
+    return layout
+
+
+def context_identity_fields(context: ContextPlan) -> dict[str, str]:
+    """The identity written into the metadata of the fragments/observations/labels of a batch."""
+
+    return {
+        "context_id": context.context_id,
+        "batch_id": context.batch_id,
+        "context": {
+            "schema": SCHEMA_CONTEXT,
+            "simulated": True,
+            "bag_id": context.bag_id,
+            "pit_id": context.pit_id,
+            "stratum_id": context.stratum_id,
+            "grid_ref": context.grid_ref,
+            "excavation_area_id": context.excavation_area_id,
+        },
+    }
+
+
+def _with_context(context: ContextPlan, meta: dict[str, Any]) -> dict[str, Any]:
+    """Merge the batch identity into one asset's metadata and return it."""
+    return {**meta, **context_identity_fields(context)}
+
+
+def stamp_context(target: Any, context: ContextPlan) -> Any:
+    """Write the batch identity into a truth/observation object's own ``meta`` and return it.
+
+    ``truth.commit_truth`` / ``observe.commit_observation`` build the committed metadata from the
+    object they are given (``truth.api._payload_of`` copies selected ``obj.meta`` keys), so the
+    batch identity is attached at the object, before the commit, instead of through a second
+    write path.  The object's ``meta`` mapping is a plain dict on every layer this pipeline
+    produces (``CleanTruth``/``PhysicalTruth``/``VisibleLabels``/``ObservationResult``); an object
+    whose metadata is not a mutable mapping is returned untouched rather than raising mid-chain.
+    """
+    meta = getattr(target, "meta", None)
+    if isinstance(meta, dict):
+        meta.update(context_identity_fields(context))
+    return target
+
+
+def build_context_pack(store: AssetStore, plan: GenerationPlan, lineage: LineagePlan,
+                       context: ContextPlan, *, batches: Sequence[Mapping[str, Any]],
+                       run_id: str | None = None) -> tuple[Any, dict[str, Any]]:
+    """Commit one simulated context pack for a batch and return (record, pack document).
+
+    ``batches`` is the measured membership of the batch: one row per fragment of this lineage's
+    event with its fragmentation role, its fragment id, a one-line provenance note and whether
+    the fragment carries a delivered observation.  The rows are read back from the *committed*
+    assets, so the pack describes what the store really holds.
+    """
+    fragments = [dict(row) for row in batches]
+    coexistents = [
+        {
+            "context_object_kind": "fragment",
+            "id": str(row["fragment_id"]),
+            "role": str(row.get("role", "event_endpoint")),
+            "count": 1,
+            "has_observation": bool(row.get("has_observation", False)),
+            "geometry_asset": str(row.get("geometry_asset", "")),
+            "observation_asset": str(row.get("observation_asset", "")),
+            "note": str(row.get("note", "")),
+        }
+        for row in fragments
+    ]
+    document = {
+        **context.as_dict(),
+        "role_note": ("this asset is the *simulated* excavation context of one batch; it is "
+                      "generated, not recorded"),
+        "batch_size": len(fragments),
+        "batch_rule": context.batch_rule,
+        "batch_size_target": context.batch_size_target,
+        "coexistents": coexistents,
+        "coexistent_counts": {
+            "fragments": len(fragments),
+            "with_observation": sum(1 for row in fragments if row.get("has_observation")),
+            "vessels": 1,          # one mother per lineage: the batch holds one vessel's sherds
+            "others": 0,
+        },
+        "coexistence_scope": ("every fragment of this lineage's fracture event that the store "
+                              "holds: the same-batch candidate scope of a query"),
+        "lineage_scope": ("one batch = one lineage's event (see batch_rule); a cross-lineage "
+                          "batch is not produced at this scale"),
+        "site_id_kind": CONTEXT_VOCABULARY["sites"][0][1],
+        "institution_note": ("SYN is this repository's own synthetic institution code, not a real "
+                             "excavation institution"),
+        "simulator_revision": {"pipeline": "synlab.pipeline", "role": ROLE_CONTEXT_PACK,
+                               "schema": SCHEMA_CONTEXT},
+        "master_seed_path": context.seed_path,
+        "source_kind": SOURCE_SENSOR_SIM,
+        "data_semantics": data_semantics(),
+        "run_id": run_id,
+    }
+    assert_context_is_not_answer_bearing(document)
+    record = store.commit_asset(
+        role=ROLE_CONTEXT_PACK,
+        schema=SCHEMA_CONTEXT,
+        unit=UNIT_NONE,
+        frame=FRAME_NONE,
+        payload={},
+        meta=document,
+        qa={"ok": True, "schema": SCHEMA_CONTEXT, "simulated": True,
+            "relational_fields": False,
+            "checked_by": "pipeline.assert_context_is_not_answer_bearing"},
+        qa_status=QA_PASS,
+        lineage_id=lineage.lineage_id,
+        split=lineage.split,
+    )
+    return record, document
+
+
+def context_query(store: AssetStore, fragment_id: str) -> dict[str, Any]:
+    """Given a fragment id, return the same-batch candidate scope it belongs to.
+
+    Resolution order, all of it read from committed metadata: the fragment asset's
+    ``meta.context_id`` -> the ``context_pack`` asset carrying that ``context_id`` -> that pack's
+    ``batch_id`` and ``coexistents``.  A fragment that carries no context is reported as such
+    (``found: false``) instead of falling back to a guess.
+    """
+    matches: list[Any] = []
+    for record in store.list_assets(limit=1000000):
+        if str((record.meta or {}).get("fragment_id", "")) == str(fragment_id):
+            matches.append(record)
+    if not matches:
+        return {"fragment_id": str(fragment_id), "found": False,
+                "reason": "no asset in this store carries this fragment_id"}
+    fragment = matches[0]
+    context_id = str((fragment.meta or {}).get("context_id", "") or "")
+    if not context_id:
+        return {"fragment_id": str(fragment_id), "found": False,
+                "reason": (f"fragment asset {fragment.asset_id} carries no context_id; the batch "
+                           f"scope cannot be resolved and is not guessed"),
+                "fragment_asset": fragment.asset_id, "role": fragment.role}
+    for record in store.list_assets(role=ROLE_CONTEXT_PACK, limit=1000000):
+        meta = dict(record.meta or {})
+        if str(meta.get("context_id", "")) != context_id:
+            continue
+        candidates = [str(row.get("id", "")) for row in (meta.get("coexistents") or [])
+                      if str(row.get("id", "")) != str(fragment_id)]
+        return {
+            "fragment_id": str(fragment_id), "found": True, "simulated": bool(meta["simulated"]),
+            "fragment_asset": fragment.asset_id,
+            "context_asset": record.asset_id,
+            "context_id": context_id,
+            "batch_id": str(meta.get("batch_id", "")),
+            "bag_id": str(meta.get("bag_id", "")),
+            "pit_id": str(meta.get("pit_id", "")),
+            "stratum_id": str(meta.get("stratum_id", "")),
+            "same_batch_candidates": sorted(candidates),
+            "same_batch_size": int(meta.get("batch_size", 0) or 0),
+            "scale_reference_kind": str(
+                (meta.get("scale_reference") or {}).get("scale_reference_kind", "")),
+        }
+    return {"fragment_id": str(fragment_id), "found": False,
+            "reason": (f"fragment carries context_id {context_id!r} but this store holds no "
+                       f"context_pack with it"),
+            "fragment_asset": fragment.asset_id, "context_id": context_id}
+
+
+def _batch_membership(fragment_assets: Sequence[Any], obs_by_fragment: Mapping[str, str],
+                      *, primary_id: str, divisor: int) -> dict[int, list[dict[str, Any]]]:
+    """Group the committed fragments of one event into batches (index -> member rows).
+
+    Read back from the committed ``fragment_mesh`` metadata, so the grouping describes the store
+    rather than the in-memory fracture object.  ``divisor <= 0`` puts the whole event in batch 0.
+    """
+    out: dict[int, list[dict[str, Any]]] = {}
+    ordered = sorted(fragment_assets, key=lambda record: str(record.meta.get("fragment_id", "")))
+    for position, record in enumerate(ordered):
+        meta = dict(record.meta or {})
+        fragment_id = str(meta.get("fragment_id", ""))
+        batch_index = 0 if divisor <= 0 else position // int(divisor)
+        role = "target_observed" if fragment_id == primary_id else "event_endpoint"
+        if bool(meta.get("is_tiny", False)):
+            role = "debris_tiny"
+        out.setdefault(batch_index, []).append({
+            "fragment_id": fragment_id,
+            "role": role,
+            "is_tiny": bool(meta.get("is_tiny", False)),
+            "geometry_asset": record.asset_id,
+            "observation_asset": obs_by_fragment.get(fragment_id, ""),
+            "has_observation": fragment_id in obs_by_fragment,
+            "note": ("primary damaged endpoint rendered by the observation route"
+                     if fragment_id == primary_id else
+                     "modelled endpoint of the same fracture event"),
+        })
+    return out
+
+
 def build_one_mother(plan: GenerationPlan, lineage: LineagePlan, store: AssetStore,
-                     *, run_id: str | None = None) -> dict[str, Any]:
-    """Run the full asset chain for one lineage. Never raises: returns a real outcome."""
+                     *, run_id: str | None = None, degrade_cfg: Any = None,
+                     total_lineages: int = 1) -> dict[str, Any]:
+    """Run the full asset chain for one lineage. Never raises: returns a real outcome.
+
+    ``degrade_cfg`` (step 9) is a :class:`synlab.degrade.diversity.DiversityConfig` or ``None``.
+    ``None`` -- the default for every legacy caller -- skips the step entirely.
+
+    Step 10 commits the **simulated excavation context** of this lineage's batch (plan t088): the
+    ``context_pack`` asset plus the ``context_id``/``batch_id`` identity stamped into the
+    metadata of the fragments, observations, truths and labels of the batch.  ``total_lineages``
+    only sizes the batch: a one- or two-lineage corpus keeps a whole lineage in one bag (so the
+    "same batch" scope is not trivially the whole store), a larger corpus is split by the
+    declared ``target_fragments_estimate``.
+    """
     spec = plan.spec
     row: dict[str, Any] = {
         "lineage_id": lineage.lineage_id, "split": lineage.split, "vessel_id": lineage.vessel_id,
@@ -412,6 +1555,16 @@ def build_one_mother(plan: GenerationPlan, lineage: LineagePlan, store: AssetSto
         "quarantine_reason": None, "fragments": 0, "observations": 0,
         "stages": {}, "backend": spec.fracture.backend,
     }
+    # the declared per-batch fragment target, never smaller than 1 fragment.  At the current
+    # corpus scale (one or two lineages) a whole lineage is one bag: a batch would otherwise be
+    # either a single sherd or the entire store, and neither makes "same batch" a useful scope.
+    divisor = max(int(getattr(spec.dataset, "target_fragments_estimate", 0) or 0) // 10, 1)
+    if int(total_lineages) <= 2:
+        divisor = 0
+    # The mother is not a sherd, so it carries no bag; every asset a sherd owns (its fragment
+    # mesh, its observation, the truth layers and the labels) carries the batch identity of its
+    # own batch, planned below from the fragment ids before any of them is committed.
+    mother_context: ContextPlan | None = None
     rngs = derive_named_rngs(spec.master_seed, lineage.lineage_id)
     stage_times: dict[str, float] = {}
     try:
@@ -426,7 +1579,8 @@ def build_one_mother(plan: GenerationPlan, lineage: LineagePlan, store: AssetSto
         if not mother_audit.get("ok", True):
             raise SynLabError(ErrorCode.MOTHER_INVALID, f"mother audit failed: {mother_audit}",
                               stage="mother")
-        mother_asset = _commit_mother(store, mother, lineage, mother_audit, run_id=run_id)
+        mother_asset = _commit_mother(store, mother, lineage, mother_audit, run_id=run_id,
+                                      context=mother_context)
 
         # 2. material -------------------------------------------------------------
         t0 = time.perf_counter()
@@ -487,8 +1641,22 @@ def build_one_mother(plan: GenerationPlan, lineage: LineagePlan, store: AssetSto
             raise SynLabError(ErrorCode.FRACTURE_CONSERVATION_FAIL,
                               f"fracture audit failed: {fracture_audit}", stage="fracture",
                               measurements=fracture_audit)
+        # The batch layout of this event is fixed here, from the fragment ids, *before* the first
+        # of those assets is committed: the same mapping decides each fragment's
+        # ``meta.context_id`` and the membership of the context pack, so they cannot disagree.
+        context_layout = batch_slot_layout(
+            spec.master_seed, lineage,
+            [str(getattr(fragment, "fragment_id", "")) for fragment in fracture.fragments],
+            divisor=divisor)
+        context_for_fragment = context_layout
+        lineage_context = next(iter(context_layout.values())) if context_layout else None
+        if lineage_context is None:
+            raise SynLabError(ErrorCode.MOTHER_INVALID, "the fracture event produced no fragment",
+                              stage="fracture")
+        row["context"] = lineage_context.as_dict()
         fragment_assets = _commit_fragments(store, fracture, lineage, mother_asset.asset_id,
-                                            run_id=run_id)
+                                            run_id=run_id,
+                                            context_for=context_for_fragment)
         row["fragments"] = len(fracture.fragments)
         stage_times["fracture"] = time.perf_counter() - t0
 
@@ -497,7 +1665,9 @@ def build_one_mother(plan: GenerationPlan, lineage: LineagePlan, store: AssetSto
         from .truth.api import commit_truth, finalize_clean_truth
 
         clean = finalize_clean_truth(mother, fracture)
-        clean_ref = commit_truth(store, clean, role=ROLE_CLEAN_TRUTH, lineage_id=lineage.lineage_id,
+        clean_ref = commit_truth(store, stamp_context(clean, lineage_context),
+                                 role=ROLE_CLEAN_TRUTH,
+                                 lineage_id=lineage.lineage_id,
                                  split=lineage.split,
                                  ancestry=[a.asset_id for a in fragment_assets] + [mother_asset.asset_id],
                                  run_id=run_id)
@@ -547,7 +1717,8 @@ def build_one_mother(plan: GenerationPlan, lineage: LineagePlan, store: AssetSto
             component_asset_id=physical_ref.asset_id, lineage_id=lineage.lineage_id,
             split=lineage.split, run_id=run_id)
         physical_truth = update_residual_truth(clean, physical)
-        physical_truth_ref = commit_truth(store, physical_truth, role="physical_truth",
+        physical_truth_ref = commit_truth(store, stamp_context(physical_truth, lineage_context),
+                                          role="physical_truth",
                                           lineage_id=lineage.lineage_id, split=lineage.split,
                                           ancestry=[physical_ref.asset_id], run_id=run_id)
         stage_times["physical"] = time.perf_counter() - t0
@@ -559,33 +1730,156 @@ def build_one_mother(plan: GenerationPlan, lineage: LineagePlan, store: AssetSto
 
         route = spec.observation.routes[0].value
         observe_spec = _resolve_observe_spec(spec, store)
+        # The first request is the historical one and is unchanged: the declared damage recipe
+        # was applied to exactly one fragment, and ``resolve_target`` resolves the physical pack
+        # to that fragment's *damaged* geometry.
         observation = observe(physical, None, rngs, route=route, spec=observe_spec)
         # the semantics this observation was rendered under travel with it, so a batch produced
         # before/after a render-semantics change is distinguishable programmatically
         # (docs/a12/data_semantics_versions.md) instead of by timestamp
         observation.meta["data_semantics"] = data_semantics()
+        _stamp_obs_semantics(observation, role=OBS_ROLE_PHYSICAL_TARGET, damage_state="DAMAGED",
+                             geometry_asset_id=physical_ref.asset_id)
+        # the context stamp needs the owning fragment id, which the loop below also uses
+        primary_fragment_id = str(getattr(observation, "fragment_id", "") or "")
+        stamp_context(observation, context_for_fragment.get(primary_fragment_id,
+                                                            lineage_context))
         observation_quality = estimate_quality(observation)
         obs_ref = commit_observation(store, observation, lineage_id=lineage.lineage_id,
                                      split=lineage.split,
                                      ancestry=[physical_ref.asset_id], run_id=run_id)
+        # Every *other* modelled endpoint of the same event is observed with **its own**
+        # geometry.  No observation is ever copied from the clean side onto another endpoint:
+        # a fragment that the declared recipe did not touch has, as its physical geometry, its
+        # own fracture mesh -- which is exactly what this route renders -- and the metadata says
+        # so (``damage_state="UNDAMAGED"``, ``observed_geometry_asset`` = that fragment's asset).
+        # Without this, the mate of every R2 interface stayed modelled-but-unobserved, the
+        # encoder gated it out (``z_valid=False``) and the rank task (weight 1.0) could not start.
+        fragment_asset_of = {str(record.meta.get("fragment_id", "")): record
+                             for record in fragment_assets}
+        endpoint_observations: list[dict[str, Any]] = []
+        endpoint_failures: dict[str, str] = {}
+        for fragment in fracture.fragments:
+            fragment_id = str(getattr(fragment, "fragment_id", "") or "")
+            if not fragment_id or fragment_id == primary_fragment_id:
+                continue
+            if bool(getattr(fragment, "is_tiny", False)):
+                # a TINY body has no supportable surface and is excluded from every negative and
+                # positive set downstream; rendering it would buy nothing
+                continue
+            try:
+                endpoint = observe(fragment, None, rngs, route=route, spec=observe_spec)
+            except SynLabError as exc:
+                endpoint_failures[fragment_id] = f"{exc.code}: {exc.message}"[:300]
+                continue
+            except Exception as exc:  # noqa: BLE001 - an unobserved endpoint is an outcome
+                endpoint_failures[fragment_id] = f"{type(exc).__name__}: {exc}"[:300]
+                continue
+            endpoint.meta["data_semantics"] = data_semantics()
+            source_asset = fragment_asset_of.get(fragment_id)
+            _stamp_obs_semantics(
+                endpoint, role=OBS_ROLE_EVENT_ENDPOINT, damage_state="UNDAMAGED",
+                geometry_asset_id=(source_asset.asset_id if source_asset is not None else ""))
+            stamp_context(endpoint, context_for_fragment.get(fragment_id, lineage_context))
+            endpoint_ref = commit_observation(
+                store, endpoint, lineage_id=lineage.lineage_id, split=lineage.split,
+                ancestry=([source_asset.asset_id] if source_asset is not None else []),
+                run_id=run_id)
+            endpoint_observations.append({"fragment_id": fragment_id, "observation": endpoint,
+                                          "observation_asset": endpoint_ref.asset_id})
         visible = update_visibility_truth(physical_truth, observation)
-        visible_ref = commit_truth(store, visible, role="visible_labels",
+        visible_ref = commit_truth(store, stamp_context(visible, lineage_context),
+                                   role="visible_labels",
                                    lineage_id=lineage.lineage_id, split=lineage.split,
                                    ancestry=[obs_ref.asset_id, physical_truth_ref.asset_id],
                                    run_id=run_id)
-        row["observations"] = len(observation.views)
+        row["observations"] = (len(observation.views)
+                               + sum(len(entry["observation"].views)
+                                     for entry in endpoint_observations))
         stage_times["observe"] = time.perf_counter() - t0
 
         # 8. features / labels / provenance (separate objects) --------------------
         t0 = time.perf_counter()
         contract = {"schema": spec.integration.feature_schema, "token_budget": 256}
         bundles = adapt_observed_features(observation, contract)
-        feature_ref = _commit_features(store, bundles, lineage, obs_ref.asset_id, run_id=run_id)
+        feature_ref = _commit_features(store, bundles, lineage, obs_ref.asset_id, run_id=run_id,
+                                       obs_semantics=OBS_SEMANTICS_V2)
+        endpoint_feature_assets: dict[str, str] = {}
+        for entry in endpoint_observations:
+            endpoint_bundles = adapt_observed_features(entry["observation"], contract)
+            endpoint_feature = _commit_features(store, endpoint_bundles, lineage,
+                                                entry["observation_asset"], run_id=run_id,
+                                                obs_semantics=OBS_SEMANTICS_V2)
+            endpoint_feature_assets[entry["fragment_id"]] = endpoint_feature.asset_id
         label_ref = _commit_labels(store, bundles, clean, visible, lineage, clean_ref.asset_id,
-                                   run_id=run_id)
+                                   run_id=run_id, context=lineage_context)
         provenance_ref = _commit_provenance(store, plan, lineage, feature_ref.asset_id,
-                                            label_ref.asset_id, run_id=run_id)
+                                            label_ref.asset_id, run_id=run_id,
+                                            context=lineage_context)
         stage_times["features"] = time.perf_counter() - t0
+
+        # 8b. simulated excavation context (plan t088) -----------------------------
+        # The grouping is read back from the *committed* fragment assets (not from the in-memory
+        # fracture object), so "same batch" describes what the store holds.  Every fragment must
+        # already carry this batch's context_id: a mismatch is a real contract violation and is
+        # raised instead of being papered over by a second write.
+        t0 = time.perf_counter()
+        obs_asset_of = {primary_fragment_id: obs_ref.asset_id,
+                        **{entry["fragment_id"]: entry["observation_asset"]
+                           for entry in endpoint_observations}}
+        mismatched = [
+            f"{record.asset_id}:{record.meta.get('context_id')!r}"
+            for record in fragment_assets
+            if str(record.meta.get("context_id", ""))
+            != context_for_fragment.get(str(record.meta.get("fragment_id", "")),
+                                        lineage_context).context_id]
+        if mismatched:
+            raise SynLabError(
+                ErrorCode.SCHEMA_INVALID,
+                f"{len(mismatched)} fragment asset(s) carry a context_id that the batch layout of "
+                f"this event did not plan: {mismatched[:5]}",
+                stage="pipeline.context")
+        batches = _batch_membership(fragment_assets, obs_asset_of,
+                                    primary_id=primary_fragment_id, divisor=divisor)
+        context_refs: list[dict[str, Any]] = []
+        for batch_index in sorted(batches):
+            members = batches[batch_index]
+            pack_context = context_for_fragment.get(str(members[0]["fragment_id"]),
+                                                    lineage_context)
+            if int(pack_context.batch_index) != int(batch_index):
+                raise SynLabError(
+                    ErrorCode.SCHEMA_INVALID,
+                    f"batch slot {batch_index} does not match the planned batch slot "
+                    f"{pack_context.batch_index} of context {pack_context.context_id!r}",
+                    stage="pipeline.context")
+            record, document = build_context_pack(
+                store, plan, lineage, pack_context, batches=members, run_id=run_id)
+            context_refs.append({"asset_id": record.asset_id, "pack_id": pack_context.pack_id,
+                                 "batch_id": pack_context.batch_id,
+                                 "batch_size": int(document["batch_size"]),
+                                 "coexistents": len(document["coexistents"])})
+        row["context_assets"] = context_refs
+        row["context_batches"] = len(batches)
+        stage_times["context"] = time.perf_counter() - t0
+
+        # 9. degradation diversity (opt-in: see configs/a12/degrade_diversity.yaml) ---------
+        # One asset per (axis, level) of *this* lineage's own geometry/observation, level 0
+        # referencing the source asset, all five levels sharing one frozen basis.  The role is
+        # `degrade_variant` (never `feature_bundle`): the metadata carries axis_id/level/variant,
+        # which are exactly the answer-side keys the leakage audit forbids in a feature bundle.
+        if degrade_cfg is not None:
+            t0 = time.perf_counter()
+            diversity = _materialize_degrade_diversity(
+                store, plan=plan, lineage=lineage, degrade_cfg=degrade_cfg,
+                observation=observation, target_fragment=target_fragment,
+                fragment_asset_of=fragment_asset_of, run_id=run_id,
+                observation_asset_id=obs_ref.asset_id)
+            row["degrade_diversity"] = diversity["summary"]
+            row["degrade_variant_assets"] = list(diversity["variant_asset_ids"])
+            row["degrade_source_assets"] = {key: entry.get("asset_id")
+                                            for key, entry in diversity["sources"].items()}
+            row["degrade_diversity_report_ref"] = diversity.get("report_ref")
+            stage_times["degrade_diversity"] = time.perf_counter() - t0
 
         row.update({
             "accepted": 1,
@@ -602,8 +1896,22 @@ def build_one_mother(plan: GenerationPlan, lineage: LineagePlan, store: AssetSto
             "physical_result_qa": physical_result_ref.qa_status,
             "physical_audit_status": physical_audit.get("status"),
             "obs_asset": obs_ref.asset_id,
+            "obs_assets": {primary_fragment_id: obs_ref.asset_id,
+                           **{entry["fragment_id"]: entry["observation_asset"]
+                              for entry in endpoint_observations}},
+            "obs_semantics": OBS_SEMANTICS_V2,
+            "observed_fragments": sorted({primary_fragment_id}
+                                         | {entry["fragment_id"]
+                                            for entry in endpoint_observations} - {""}),
+            "observation_assets": 1 + len(endpoint_observations),
+            # an endpoint that could not be rendered is reported with its real reason instead of
+            # being silently absent from the observed set
+            "obs_endpoint_failures": dict(endpoint_failures),
+            "visible_labels_from": primary_fragment_id,
             "visible_asset": visible_ref.asset_id,
             "feature_asset": feature_ref.asset_id,
+            "feature_assets": {primary_fragment_id: feature_ref.asset_id,
+                               **endpoint_feature_assets},
             "label_asset": label_ref.asset_id,
             "provenance_asset": provenance_ref.asset_id,
             "stages": stage_times,
@@ -628,7 +1936,7 @@ def build_one_mother(plan: GenerationPlan, lineage: LineagePlan, store: AssetSto
                           "traceback": traceback.format_exc()[-1200:]}}
 
 
-def _resolve_observe_spec(spec: GenerationSpec, store: AssetStore) -> Any:
+def _resolve_observe_spec(spec: GenerationSpec, store: AssetStore | None) -> Any:
     """Project the generation config + camera profile onto a real ``ObsSpec``.
 
     Three mismatches are fixed here, all of them against a *declared* value:
@@ -907,18 +2215,15 @@ def _build_pattern_recipe(mother: Any, spec: GenerationSpec, rng: Any, pattern_i
 
 
 def _commit_mother(store: AssetStore, mother: Any, lineage: LineagePlan, audit: dict[str, Any],
-                   *, suffix: str = "", run_id: str | None = None) -> Any:
+                   *, suffix: str = "", run_id: str | None = None,
+                   context: ContextPlan | None = None) -> Any:
     from .storage.mesh_io import with_face_attrs
 
     tag_names = getattr(mother, "surface_tag_names", {}) or {}
     with_face_attrs(mother.mesh, surface_tag=np.asarray(mother.face_surface_tag, dtype=np.int32))
-    return store.commit_asset(
-        role=ROLE_MOTHER_MESH,
-        schema=SCHEMA_MOTHER,
-        unit=UNIT_MM,
-        frame=FRAME_WORLD,
-        payload={"mesh": mother.mesh},
-        meta={"vessel_id": mother.vessel_id, "material_id": mother.material_id,
+    meta = {
+        "registry_version": str(getattr(mother, "meta", {}).get("registry_version", "")),
+        "profile_metrics": getattr(mother, "meta", {}).get("profile_metrics", {}),"vessel_id": mother.vessel_id, "material_id": mother.material_id,
               "mother_id": mother.mother_id or lineage.lineage_id,
               "params": _jsonable(mother.params), "surface_tag_names": _jsonable(tag_names),
               "charts": [{"name": c.name, "kind": c.kind, "u_periodic": bool(c.u_periodic),
@@ -926,14 +2231,24 @@ def _commit_mother(store: AssetStore, mother: Any, lineage: LineagePlan, audit: 
                          for c in getattr(mother, "charts", [])],
               "variant": suffix or "base",
               "data_semantics": data_semantics(),
-              "run_id": run_id},
+              "run_id": run_id}
+    if context is not None:
+        meta = _with_context(context, meta)
+    return store.commit_asset(
+        role=ROLE_MOTHER_MESH,
+        schema=SCHEMA_MOTHER,
+        unit=UNIT_MM,
+        frame=FRAME_WORLD,
+        payload={"mesh": mother.mesh},
+        meta=meta,
         qa=audit, qa_status=QA_PASS if audit.get("ok", True) else QA_FAIL,
         lineage_id=lineage.lineage_id, split=lineage.split,
     )
 
 
 def _commit_fragments(store: AssetStore, fracture: Any, lineage: LineagePlan,
-                      mother_asset_id: str, *, run_id: str | None = None) -> list[Any]:
+                      mother_asset_id: str, *, run_id: str | None = None,
+                      context_for: Mapping[str, ContextPlan] | None = None) -> list[Any]:
     from .storage.mesh_io import with_face_attrs
 
     out = []
@@ -943,18 +2258,22 @@ def _commit_fragments(store: AssetStore, fracture: Any, lineage: LineagePlan,
                         source_triangle=np.asarray(fragment.face_source_tri, dtype=np.int32),
                         interface_id=np.asarray(fragment.face_interface_id, dtype=np.int32),
                         side=np.asarray(fragment.face_side, dtype=np.int8))
+        meta = {"fragment_id": fragment.fragment_id, "volume_mm3": float(fragment.volume_mm3),
+                "area_mm2": float(fragment.area_mm2), "is_tiny": bool(fragment.is_tiny),
+                "component_id": int(fragment.component_id), "event_id": fracture.event_tree.get("event_id")
+                if isinstance(fracture.event_tree, dict) else None,
+                "backend": fracture.backend, "data_semantics": data_semantics(),
+                "run_id": run_id}
+        fragment_context = (context_for or {}).get(str(fragment.fragment_id))
+        if fragment_context is not None:
+            meta = _with_context(fragment_context, meta)
         record = store.commit_asset(
             role=ROLE_FRAGMENT_MESH,
             schema=SCHEMA_FRAGMENT,
             unit=UNIT_MM,
             frame=FRAME_WORLD,
             payload={"mesh": fragment.mesh},
-            meta={"fragment_id": fragment.fragment_id, "volume_mm3": float(fragment.volume_mm3),
-                  "area_mm2": float(fragment.area_mm2), "is_tiny": bool(fragment.is_tiny),
-                  "component_id": int(fragment.component_id), "event_id": fracture.event_tree.get("event_id")
-                  if isinstance(fracture.event_tree, dict) else None,
-                  "backend": fracture.backend, "data_semantics": data_semantics(),
-                  "run_id": run_id},
+            meta=meta,
             qa={"ok": True, "parent_qa": _jsonable(fracture.qa)},
             qa_status=QA_PASS,
             ancestry=[mother_asset_id], lineage_id=lineage.lineage_id, split=lineage.split,
@@ -1024,7 +2343,10 @@ def _describe_value(value: Any) -> Any:
 
 
 def _commit_features(store: AssetStore, bundles: dict[str, Any], lineage: LineagePlan,
-                     obs_asset_id: str, *, run_id: str | None = None) -> Any:
+                     obs_asset_id: str, *, run_id: str | None = None,
+    obs_semantics: str | None = None,
+    **_extra: Any,
+) -> Any:
     features = bundles.get("features", bundles)
     arrays, meta = _flatten_features(dict(features))
     # The legal deployment input itself: the ObsPack RGB tiles and the deployable foreground
@@ -1044,6 +2366,8 @@ def _commit_features(store: AssetStore, bundles: dict[str, Any], lineage: Lineag
     for key in dropped:
         meta.pop(key, None)
     meta["feature_fields"] = sorted(meta.keys()) + sorted(arrays.keys())
+    if obs_semantics:
+        meta["obs_semantics"] = obs_semantics
     meta["dropped_forbidden_fields"] = dropped
     # the delivered pixel validity of this bundle comes from the observation's deployment mask,
     # so the bundle is only comparable to another batch under the same mask semantics
@@ -1112,7 +2436,7 @@ def _observation_feature_block(store: AssetStore, obs_asset_id: str) -> dict[str
 
 def _commit_labels(store: AssetStore, bundles: dict[str, Any], clean: Any, visible: Any,
                    lineage: LineagePlan, clean_asset_id: str, *,
-                   run_id: str | None = None) -> Any:
+                   run_id: str | None = None, context: ContextPlan | None = None) -> Any:
     labels = bundles.get("labels", {}) or {}
     relations = []
     for (a, b), edge in getattr(clean, "relations", {}).items():
@@ -1135,8 +2459,10 @@ def _commit_labels(store: AssetStore, bundles: dict[str, Any], clean: Any, visib
     meta["r2_count"] = sum(1 for r in relations if r["kind"] == "R2")
     meta["data_semantics"] = data_semantics()
     meta["run_id"] = run_id
+    if context is not None:
+        meta = _with_context(context, meta)
     return store.commit_asset(
-        role=ROLE_LABEL_BUNDLE, schema="synlab.labels.v1", unit="1", frame="W_mm",
+        role=ROLE_LABEL_BUNDLE, schema=SCHEMA_LABELS, unit=UNIT_NONE, frame=FRAME_WORLD,
         payload=payload, meta=meta, qa={"ok": True, "layer": "visible"},
         qa_status=QA_PASS, ancestry=[clean_asset_id], lineage_id=lineage.lineage_id,
         split=lineage.split,
@@ -1145,17 +2471,21 @@ def _commit_labels(store: AssetStore, bundles: dict[str, Any], clean: Any, visib
 
 def _commit_provenance(store: AssetStore, plan: GenerationPlan, lineage: LineagePlan,
                        feature_asset_id: str, label_asset_id: str, *,
-                       run_id: str | None = None) -> Any:
+                       run_id: str | None = None,
+                       context: ContextPlan | None = None) -> Any:
+    meta = {"seed_ref": seed_ref(plan.spec.master_seed, lineage.lineage_id),
+            "spec_hash": plan.spec_hash,
+            "code_fingerprint": _jsonable(plan.code_fingerprint),
+            "backend_fingerprints": _jsonable(plan.backend_fingerprints),
+            "data_semantics": data_semantics(),
+            "run_id": run_id,
+            "params": _jsonable(lineage.params)}
+    if context is not None:
+        meta = _with_context(context, meta)
     return store.commit_asset(
-        role=ROLE_PROVENANCE, schema="synlab.provenance.v1", unit="1", frame="none",
+        role=ROLE_PROVENANCE, schema=SCHEMA_PROVENANCE, unit=UNIT_NONE, frame=FRAME_NONE,
         payload={},
-        meta={"seed_ref": seed_ref(plan.spec.master_seed, lineage.lineage_id),
-              "spec_hash": plan.spec_hash,
-              "code_fingerprint": _jsonable(plan.code_fingerprint),
-              "backend_fingerprints": _jsonable(plan.backend_fingerprints),
-              "data_semantics": data_semantics(),
-              "run_id": run_id,
-              "params": _jsonable(lineage.params)},
+        meta=meta,
         qa={"ok": True}, qa_status=QA_PASS,
         ancestry=[feature_asset_id, label_asset_id], lineage_id=lineage.lineage_id,
         split=lineage.split,
@@ -1180,3 +2510,30 @@ def _jsonable(value: Any) -> Any:
     if isinstance(value, (str, int, float, bool)) or value is None:
         return value
     return str(value)
+# --- observation semantics stamping -------------------------------------------------------
+OBS_SEMANTICS = "physical_side_v2"
+"""Tag for observation assets produced after the two-endpoint fix.
+
+The observation stage renders the damaged/physical variant as well, so every R2 relation can
+be encoded on both sides. Assets produced before this change carry no tag, which is how the
+two eras stay separable (never by timestamp or run id).
+"""
+
+
+def _stamp_obs_semantics(meta, semantics=None, **facts):
+    """Stamp an observation meta mapping with the observation-semantics version.
+
+    Tolerant by design: the mapping is mutated and returned, and non-mapping arguments pass
+    through untouched so an unexpected call shape cannot corrupt a run.
+    """
+    target = meta if isinstance(meta, dict) else getattr(meta, "meta", None)
+    if isinstance(target, dict):
+        target["obs_semantics"] = semantics or OBS_SEMANTICS
+        # the call sites describe which endpoint this observation belongs to; keep those facts
+        # with the asset (namespaced so no existing key is clobbered)
+        recorded = {k: v for k, v in facts.items() if v is not None and v != ""}
+        if recorded:
+            facts_box = target.setdefault("observation_facts", {})
+            if isinstance(facts_box, dict):
+                facts_box.update(recorded)
+    return meta

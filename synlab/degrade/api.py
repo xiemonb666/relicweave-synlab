@@ -456,14 +456,27 @@ def observe_probe(*, size: tuple[int, int] = (128, 96), views: int = 4,
     The probe declares a realistic photon scale (``effective_gain=20000``) so the delivered
     linear plane is not quantised to {0, 1} by a gain of one photon per unit; the imaging
     parameters are part of the declared probe configuration, never a fabricated image.
+
+    The body also declares its **face provenance** (``origin_kind = ORIGIN_MOTHER_SURFACE`` for
+    every face, ``interface_id = -1``): the probe box has no fracture surface at all, and
+    ``observe.routes.resolve_target`` now refuses an unlabelled render target instead of emitting
+    an all-zero surface-tag map that is indistinguishable from "this body has no new surface".
+    The declared channel produces the *same* tag map as before (``ORIGIN_TO_TAG[0] == 0``) while
+    making the absence of a fracture surface a measurement rather than a missing channel.
     """
+    import numpy as np
     import trimesh
 
     from ..observe.api import ROUTE_PROXY_SCAN, ObsSpec, observe
     from ..observe.imaging import ImagingSpec
+    from ..schemas.runtime import ORIGIN_MOTHER_SURFACE
     from ..seeds import derive_named_rngs
+    from ..storage.mesh_io import with_face_attrs
 
     mesh = trimesh.creation.box(extents=(60.0, 45.0, 25.0))
+    with_face_attrs(mesh,
+                    origin_kind=np.full(len(mesh.faces), ORIGIN_MOTHER_SURFACE, dtype=np.uint8),
+                    interface_id=np.full(len(mesh.faces), -1, dtype=np.int32))
     spec = ObsSpec(view_count=int(views), delivered_size=(int(size[0]), int(size[1])),
                    max_render_pixels=int(size[0]) * int(size[1]), master_seed=int(seed),
                    lineage_id="probe_lineage",

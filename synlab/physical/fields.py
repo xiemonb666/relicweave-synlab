@@ -46,6 +46,15 @@ def _face_attr(mesh, fragment, name: str) -> np.ndarray | None:
     return None
 
 
+def face_channel(mesh, fragment, name: str) -> np.ndarray | None:
+    """Public name of :func:`_face_attr`: one face channel of the source, or ``None``.
+
+    ``None`` means *the channel is absent* - it never means "zero everywhere"; readers that need
+    a default must choose one explicitly (see ``physical.api._source_face_channels``).
+    """
+    return _face_attr(mesh, fragment, name)
+
+
 def roi_faces(mesh, fragment, spec: dict[str, Any] | None) -> tuple[np.ndarray, dict[str, Any]]:
     """Select the ROI faces (int interface / outer wall / explicit plane / normal cone)."""
     spec = dict(spec or {"kind": "interface"})

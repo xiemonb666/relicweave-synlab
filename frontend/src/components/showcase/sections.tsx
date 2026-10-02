@@ -88,6 +88,60 @@ function reproCommand(entry: ShowcaseEntry): string {
   return `& .venv\\Scripts\\python.exe tools\\build_demo_assets.py --unit ${entry.entry_id} --force`;
 }
 
+/**
+ * 展示着色说明（母体 / 纹样 / 退化共用）。
+ *
+ * 所有数字都从清单里该 GLB 的真实 meta 读出来（`normals` / `geometry_unchanged`），
+ * 清单里没有就显示“清单未记录”，绝不写一个好看的估计值。
+ * 边界：平滑着色只是展示变换；权威几何（顶点位置、面索引、绕向）没有变。
+ */
+export function DisplayShadingNote({
+  glbMetrics,
+  title = '显示着色（只影响观感，权威几何未变）',
+}: {
+  glbMetrics?: Record<string, unknown> | null;
+  title?: string;
+}) {
+  const metrics = asRecord(glbMetrics) ?? null;
+  if (!metrics) return null;
+  const normals = asRecord(metrics.normals) ?? {};
+  const geometry = asRecord(metrics.geometry_unchanged) ?? {};
+  const primitives = Array.isArray(normals.primitives) ? (normals.primitives as any[]) : [];
+  const allHaveNormal = normals.all_primitives_have_normal;
+  const threshold = num(normals.angle_threshold_deg);
+  const triangles = num(geometry.triangles_in_glb) ?? num(metrics.triangles);
+  const authorityFaces = num(geometry.authority_faces);
+  const positionError = num(geometry.position_max_abs_error_vs_authority_m);
+  const nodeNames = Array.isArray(metrics.scene_nodes) ? (metrics.scene_nodes as unknown[]) : [];
+  return (
+    <div className="banner banner--legend" role="note">
+      <div>{title}</div>
+      <div className="mono small">
+        {allHaveNormal === true
+          ? `全部 ${primitives.length} 个 primitive 实测带 NORMAL`
+          : allHaveNormal === false
+            ? '清单实测：有 primitive 缺 NORMAL（three.js 会 flatShading）'
+            : '清单未记录 NORMAL 实测值（该资产是修复前导出的旧字节）'}
+        {threshold !== null ? ` · 面积加权 + 角度阈值 ${threshold}° + 保持绕向` : ''}
+        {triangles !== null ? ` · GLB 三角面 ${triangles}` : ''}
+        {authorityFaces !== null ? `（权威面 ${authorityFaces}）` : ''}
+        {positionError !== null
+          ? ` · 顶点位置与权威最大偏差 ${positionError.toExponential(2)} m（float32 舍入）`
+          : ''}
+        {geometry.winding_matches_authority !== undefined
+          ? ` · 绕向与权威一致：${geometry.winding_matches_authority ? '是' : '否'}`
+          : ''}
+        {nodeNames.length > 0 ? ` · 场景节点 ${nodeNames.join('/')}` : ''}
+      </div>
+      <div className="muted small">
+        页面显示的是这份展示几何（<code className="mono">{nodeNames.join('/') || 'L0'}</code>）的平滑着色；
+        平滑只写 GLB 的 <code className="mono">NORMAL</code> 属性，权威网格（mm/Z-up）一字未改，
+        也不会让几何更精细。轮廓的棱角来自网格本身的离散化，只能靠更高精度的权威几何解决。
+      </div>
+    </div>
+  );
+}
+
 function unavailable(title: string, reason: string, code = 'SHOWCASE_DATA_MISSING') {
   return (
     <EmptyState
@@ -169,6 +223,10 @@ export function MothersSection({ entries }: { entries: ShowcaseEntry[] }) {
                     ? `展示资产 ${glb.asset_id}（display_lod_glb）`
                     : '该条目没有派生展示 GLB 资产'
                 }
+              />
+              <DisplayShadingNote
+                glbMetrics={asRecord(glb?.metrics)}
+                title="母体显示着色（平滑法线由权威网格算出；权威几何未变）"
               />
 
               <div className="showcase-cols">
@@ -376,6 +434,10 @@ export function PatternsSection({ entries }: { entries: ShowcaseEntry[] }) {
                       + '请运行 --only patterns --force 重新生成。',
                   )
                 )}
+                <DisplayShadingNote
+                  glbMetrics={asRecord(asRecord(patternGlb?.metrics))}
+                  title="纹样器物显示着色（贴图 + 平滑法线都只是展示）"
+                />
                 <KeyValueList
                   rows={[
                     { label: 'UV → 图卡', value: <span className="small">{str(bake.uv_mapping) ?? '未提供'}</span> },
@@ -512,10 +574,52 @@ export function FractureSection({
         file_key: str(glb.key) ?? 'glb',
         volume_mm3: num(rec.volume_mm3),
         label: str(rec.fragment_id) ?? undefined,
+        surface_groups: (asRecord(rec.surface_groups) ?? undefined) as FragmentRef['surface_groups'],
+        geometry_check: (asRecord(rec.display_geometry_check) ?? undefined) as
+          FragmentRef['geometry_check'],
       });
     }
     return out;
   }, [fragmentsRaw]);
+
+  // 断面分色的一致性来自清单里的真实测量（权威面属性 vs GLB 导出后的复算），不是前端推断。
+  const groupTotals = useMemo(() => {
+    const rows = new Map<string, { faces: number; area: number }>();
+    for (const item of fragmentsRaw) {
+      const rec = asRecord(item) ?? {};
+      const groups = asRecord(rec.surface_groups) ?? {};
+      for (const [name, raw] of Object.entries(groups)) {
+        const row = asRecord(raw) ?? {};
+        const current = rows.get(name) ?? { faces: 0, area: 0 };
+        current.faces += num(row.faces) ?? 0;
+        current.area += num(row.area_mm2) ?? 0;
+        rows.set(name, current);
+      }
+    }
+    return [...rows.entries()];
+  }, [fragmentsRaw]);
+  const geometryChecks = useMemo(
+    () => fragmentsRaw
+      .map((item) => asRecord(asRecord(item)?.display_geometry_check))
+      .filter((row): row is Record<string, unknown> => Boolean(row)),
+    [fragmentsRaw],
+  );
+  const displayFacesTotal = geometryChecks.reduce(
+    (sum, row) => sum + (num(row.triangles_in_glb) ?? 0), 0);
+  const authorityFacesTotal = geometryChecks.reduce(
+    (sum, row) => sum + (num(row.authority_faces) ?? 0), 0);
+  const maxPositionError = geometryChecks.length
+    ? Math.max(...geometryChecks.map((row) => num(row.position_max_abs_error_vs_authority_m) ?? 0))
+    : null;
+  const windingAllMatch = geometryChecks.length
+    ? geometryChecks.every((row) => row.winding_matches_authority !== false)
+    : null;
+  const normalsReady = fragmentsRaw.length > 0 && fragmentsRaw.every((item) => {
+    const glb = asRecord(asRecord(item)?.glb) ?? {};
+    const metrics = asRecord(glb.metrics) ?? {};
+    const normals = asRecord(metrics.normals) ?? {};
+    return normals.all_primitives_have_normal === true;
+  });
 
   const motherEntry = mothers.find((m) => m.entry_id === `mother:${current?.vessel_id ?? ''}`) ?? null;
   const motherGlb = artifactOf(motherEntry, 'glb');
@@ -617,6 +721,45 @@ export function FractureSection({
                     </button>
                   </div>
                   <FragmentAssemblyViewport fragments={fragments} explode={explode} height={340} />
+                  <div className="banner banner--legend" role="note">
+                    <div>
+                      显示着色：碎片 GLB 带<b>逐顶点 NORMAL</b>
+                      （面积加权 + 角度阈值平滑 + 保持绕向，阈值{' '}
+                      <code className="mono">
+                        {num(asRecord(asRecord(asRecord(fragmentsRaw[0])?.glb)?.metrics)?.normals
+                          ?.angle_threshold_deg) ?? '—'}
+                      </code>{' '}
+                      度）
+                      {normalsReady ? '；本事件全部碎片的每个 primitive 都实测带 NORMAL' : '；有碎片缺 NORMAL，见下方测量值'}。
+                      新断面 / 原表面是<b>显示着色</b>，来自权威面属性{' '}
+                      <code className="mono">origin_kind</code> / <code className="mono">interface_id</code>，
+                      <b>不代表几何真实起伏</b>。
+                    </div>
+                    <div className="mono small">
+                      本次事件权威碎片面数合计 {authorityFacesTotal}；GLB 里三角面合计 {displayFacesTotal}
+                      {maxPositionError !== null
+                        ? `；顶点位置与权威最大偏差 ${maxPositionError.toExponential(2)} m（float32 舍入）`
+                        : ''}
+                      {windingAllMatch !== null ? `；绕向一致：${windingAllMatch ? '是' : '否'}` : ''}
+                    </div>
+                    {groupTotals.length > 0 ? (
+                      <ul>
+                        {groupTotals.map(([name, row]) => (
+                          <li key={name} className="mono small">
+                            {name}：权威面 {row.faces} · 权威面积 {row.area.toFixed(3)} mm²
+                          </li>
+                        ))}
+                      </ul>
+                    ) : null}
+                    <div className="muted small">
+                      这里显示的是展示几何 <b>L0</b> 的平滑着色（本事件各碎片面数见下方表格），
+                      <b>权威几何未变</b>：顶点位置、面索引与绕向与权威逐位一致，新增的只有 NORMAL 属性。
+                      若轮廓仍显棱角，那是 L0 离散化的真实限制（粗网格 + 平面切割后端），
+                      可选展示策略是改用清单里已实测的 L1/L2 + 同一套平滑法线（会<b>降低</b>精度）。
+                      真实断口起伏需要 <code className="mono">rough_shared_cut</code>（本机 FAILED）等后端，
+                      本页不做噪声位移假装断口。
+                    </div>
+                  </div>
                 </>
               ) : (
                 <>
@@ -1025,6 +1168,10 @@ export function DegradeSection({
               )}
             </figure>
           </div>
+          <DisplayShadingNote
+            glbMetrics={asRecord(asRecord(levelArtifact(currentEntry, level, 'glb')?.metrics))}
+            title={`退化几何显示着色（level ${level}；平滑法线是展示变换）`}
+          />
 
           <div className="showcase-cols">
             <div>

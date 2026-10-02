@@ -14,15 +14,17 @@ import { DiagnosticsPage } from './pages/Diagnostics';
 import { EpisodesPage } from './pages/Episodes';
 import { QualityPage } from './pages/Quality';
 import { ShowcasePage } from './pages/Showcase';
+import { SynthesisWizardPage } from './pages/SynthesisWizard';
 import { NotFoundPage } from './pages/NotFound';
 
-/** 12 个页面 + 首页重定向 + 404（计划 20.2–20.13）+ U13 合成数据展示页。 */
+/** 12 个页面 + 首页重定向 + 404（计划 20.2–20.13）+ U13 合成数据展示页 + U14 合成向导。 */
 export function App() {
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={<Navigate to="/synlab" replace />} />
         <Route path="synlab" element={<OverviewPage />} />
+        <Route path="synlab/synthesis" element={<SynthesisWizardPage />} />
         <Route path="synlab/mothers/new" element={<MotherEditorPage />} />
         <Route path="synlab/patterns" element={<PatternsPage />} />
         <Route path="synlab/fracture" element={<FracturePage />} />
