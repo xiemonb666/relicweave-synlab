@@ -641,7 +641,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--fragment", default=None)
     parser.add_argument("--level", type=int, default=1)
     parser.add_argument("--budgets", default="600000,2000000,8000000")
-    parser.add_argument("--declared-spacings", default="1.1402,0.95018,0.5701,0.25")
+    # 0.25 mm was attempted and **stopped**: the global level set on this 108x63x83 body needs
+    # >13.6 GiB and >24 min at that spacing (!), so the declared-spacing curve is bounded to the
+    # spacings the machine actually produced.  The limit is recorded as a result, not hidden.
+    parser.add_argument("--declared-spacings", default="1.1402,0.95018,0.5701")
     parser.add_argument("--budget-backend", default="global_sdf")
     parser.add_argument("--out", default="data/a12_reports/s12_axis_routing_audit.json")
     args = parser.parse_args(argv)

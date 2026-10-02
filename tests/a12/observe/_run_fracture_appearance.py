@@ -1,4 +1,4 @@
-"""Fracture-appearance run: relief through the normal channel, measured on real renders.
+﻿"""Fracture-appearance run: relief through the normal channel, measured on real renders.
 
 Stages (all outputs under the allowed write scope):
 
@@ -95,7 +95,8 @@ def rung_long_edge(mm_per_px: float, *, working_distance_mm: float, f_px_native:
 
 def render_and_image(*, target, frame, appearance, relief, obs_spec, imaging_seed: int,
                      supersample: int, albedo=None, shading_gain: float = 1.0e6,
-                     delivered_exposure_ev: float | None = None):
+                     delivered_exposure_ev: float | None = None,
+                     delivered_effective_gain: float | None = None):
     """One appearance render through the project's own imaging chain (mirrors render_frame_bundles).
 
     ``render_frame_bundles`` is the single implementation of "frame -> ViewBundle"; the appearance
@@ -151,6 +152,8 @@ def render_and_image(*, target, frame, appearance, relief, obs_spec, imaging_see
     delivered_spec = copy.copy(imaging_spec)
     if delivered_exposure_ev is not None:
         delivered_spec.exposure_ev = float(delivered_exposure_ev)
+    if delivered_effective_gain is not None:
+        delivered_spec.effective_gain = float(delivered_effective_gain)
     shading_res, shading_dn = _chain(shading_spec, imaging_seed)
     delivered_res, delivered_dn = _chain(delivered_spec, imaging_seed)
     lin = np.asarray(shading_res.linear, dtype=np.float64)
@@ -162,7 +165,8 @@ def render_and_image(*, target, frame, appearance, relief, obs_spec, imaging_see
             "image_delivered": delivered_res.image, "dn_delivered": delivered_dn,
             "imaging_delivered": delivered_res,
             "imaging_gain_shading": float(shading_gain),
-            "delivered_exposure_ev": delivered_exposure_ev}
+            "delivered_exposure_ev": delivered_exposure_ev,
+            "delivered_effective_gain": float(delivered_spec.effective_gain)}
 
 
 
@@ -1230,16 +1234,16 @@ def stage_snr_gain(*, config, target, body, mesh, roi, rng, light=None) -> dict:
                     if n_faces > 0 else np.full(3, 0.5))
     smooth_albedo = np.tile(palette_mean, (n_faces, 1))
 
-    def _delivered(*, relief, seed: int, gain: float, ev: float) -> dict:
+    def _delivered(*, relief, seed: int, gain: float, ev: float = 0.0) -> dict:
         """One delivered image at a chosen photon scale / exposure, through the frozen chain."""
-        res = render_and_image(
+        return render_and_image(
             target=target, frame=frame,
             appearance=fa.AppearanceSpec(normal_mode="FLAT", relief=relief is not None,
                                          interpolation="PERSPECTIVE_CORRECT",
                                          label=f"snr gain={gain:g} ev={ev:g}", **common),
             relief=relief, obs_spec=spec_obs, imaging_seed=seed, supersample=ss,
-            albedo=smooth_albedo, shading_gain=float(gain), delivered_exposure_ev=float(ev))
-        return res
+            albedo=smooth_albedo, shading_gain=float(gain), delivered_exposure_ev=float(ev),
+            delivered_effective_gain=float(gain))
 
     def _no_tex(*, relief, seed: int, gain: float) -> dict:
         return _delivered(relief=relief, seed=seed, gain=gain, ev=0.0)
@@ -1958,6 +1962,7 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
 
 
 
