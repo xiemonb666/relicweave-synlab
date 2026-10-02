@@ -102,10 +102,18 @@ export function SceneViewport({
     const meta = asset?.meta ?? {};
     const levels = meta.lod_levels;
     const notes = Array.isArray(meta.lod_notes) ? (meta.lod_notes as unknown[]).map(String) : [];
-    const levelKeys = levels && typeof levels === 'object' ? Object.keys(levels as Record<string, unknown>) : [];
-    if (levelKeys.length > 1) return `展示简化 LOD（${levelKeys.join('/')}）`;
-    if (levelKeys.length === 1 && notes.length > 0) return `仅 ${levelKeys[0]}：未简化（${notes[0]}）`;
-    if (levelKeys.length === 1) return `仅 ${levelKeys[0]}（无简化层级）`;
+    const table = levels && typeof levels === 'object' ? (levels as Record<string, any>) : {};
+    const levelKeys = Object.keys(table);
+    // 只有 `exported_as_scene_node !== false` 的层级真的在这个 GLB 的场景里；
+    // 清单可能额外记录了"量过但没放进场景"的层级（视口会同时渲染所有节点，重叠会 z-fighting）
+    const sceneNodes = levelKeys.filter((key) => table[key]?.exported_as_scene_node !== false);
+    const measuredOnly = levelKeys.filter((key) => !sceneNodes.includes(key));
+    if (sceneNodes.length > 1) return `展示简化 LOD（${sceneNodes.join('/')}）`;
+    if (sceneNodes.length === 1 && measuredOnly.length > 0) {
+      return `场景仅 ${sceneNodes[0]}（清单另记录 ${measuredOnly.join('/')} 的简化指标，未放进场景）`;
+    }
+    if (sceneNodes.length === 1 && notes.length > 0) return `仅 ${sceneNodes[0]}：未简化（${notes[0]}）`;
+    if (sceneNodes.length === 1) return `仅 ${sceneNodes[0]}（无简化层级）`;
     return null;
   }, [asset]);
   const badgeNotice = notice ?? derivedNotice;

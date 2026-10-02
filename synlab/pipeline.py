@@ -1,8 +1,8 @@
 """Generation pipeline: one mother per lineage, exactly as plan 22.5 prescribes.
 
-``build_one_mother`` runs the real chain mother → pattern (frozen before fracture) →
-shared fracture → clean truth → physical damage → observation → visible truth →
-features/labels/provenance → atomic commit.  A failure in one mother is isolated: the
+``build_one_mother`` runs the real chain mother 鈫?pattern (frozen before fracture) 鈫?
+shared fracture 鈫?clean truth 鈫?physical damage 鈫?observation 鈫?visible truth 鈫?
+features/labels/provenance 鈫?atomic commit.  A failure in one mother is isolated: the
 other mothers continue, and the failure is recorded in the real denominator
 (planned/attempted/accepted/quarantined/failed) instead of being hidden.
 """
@@ -47,6 +47,7 @@ from .roles import (
     UNIT_MM,
 )
 from .schemas.spec import GenerationSpec
+from .schemas.runtime import ORIGIN_INTERFACE
 from .seeds import derive_named_rngs, seed_ref
 from .storage.release import ReleaseManager
 from .storage.store import QA_FAIL, QA_PASS, AssetStore
@@ -123,6 +124,28 @@ def backend_fingerprints() -> dict[str, Any]:
     return out
 
 
+def data_semantics() -> dict[str, str]:
+    """Semantic versions of the render/damage products of this checkout (one definition).
+
+    A change that alters *what the numbers mean* (the delivered mask channels, the legal
+    physical-damage result) is a semantics change, not a bug fix a reader can infer: two batches
+    produced under different versions look alike on disk.  The versions are therefore stamped
+    into the run record, the coverage ledger and the observation metadata of everything this
+    module writes, so the two batches can be separated programmatically
+    (docs/a12/data_semantics_versions.md).  The assets produced before this marker exists carry
+    no ``data_semantics`` key at all, which is itself the discriminator for the old batch.
+    """
+    from .observe.render import MASK_SEMANTICS
+    from .physical.api import DAMAGE_SEMANTICS
+
+    return {
+        "mask_semantics": MASK_SEMANTICS,
+        "damage_semantics": DAMAGE_SEMANTICS,
+        "subset_instrument": "trimesh.proximity.signed_distance (exact, float64)",
+        "defined_in": "docs/a12/data_semantics_versions.md",
+    }
+
+
 def plan_generation(spec: GenerationSpec, *, max_mothers: int | None = None) -> GenerationPlan:
     """Split lineages *before* generation, then sample feasible parameter combinations."""
     load_all()
@@ -142,15 +165,34 @@ def plan_generation(spec: GenerationSpec, *, max_mothers: int | None = None) -> 
     patterns = list(spec.dataset.pattern_ids)
     layers = list(spec.dataset.layer_combo_ids)
 
-    param_samples = _sample_parameter_sets(vessels, target, rng, compiled)
+    # Balanced coverage: enumerate every (vessel, material, pattern[, layer]) combination and
+    # walk it in a deterministic frozen order, so ANY prefix of N mothers covers N distinct
+    # combinations. The previous index//stride scheme only changed the pattern every
+    # |vessels|*|materials| mothers (288), which made pattern coverage unreachable in a 100-200
+    # mother batch (plan 1.2 requires 16 pattern families and >=12 vessels in the pilot).
+    #
+    # The order is drawn ONCE (a per-mother re-draw made the prefix property false and could
+    # repeat one combination), and the parameter sampler is handed the *picked* vessel sequence:
+    # ``_sample_parameter_sets`` hands out ``vessels[index % len(vessels)]``, so passing the
+    # catalog order while the lineages walk the permuted order gave each mother another vessel's
+    # parameters (measured: 3/4 lineages, e.g. V02 receiving V01's ``depth_ratio``/``rim_flare``
+    # -> MOTHER_INVALID).  See data/a12/reports/plan_param_mapping_probe.json.
+    combos = [
+        (v, m, pt, ly)
+        for v in vessels
+        for m in materials
+        for pt in patterns
+        for ly in (layers if layers else [None])
+    ]
+    order = [int(i) for i in rng.permutation(len(combos))]
+    picked = [combos[order[index % len(combos)]] for index in range(target)]
+
+    param_samples = _sample_parameter_sets([combo[0] for combo in picked], target, rng, compiled)
     lineages: list[LineagePlan] = []
     for index in range(target):
         draw = float(rng.random())
         split = splits[int(np.searchsorted(cumulative, draw, side="right"))] if draw < 1.0 else "confirm"
-        vessel = vessels[index % len(vessels)]
-        material = materials[(index // max(1, len(vessels))) % len(materials)]
-        pattern = patterns[(index // max(1, len(vessels) * len(materials))) % len(patterns)]
-        layer = layers[index % len(layers)] if layers else None
+        vessel, material, pattern, layer = picked[index]
         lineage_id = f"LIN{index:04d}_{vessel}_{material}_{pattern}"
         lineages.append(LineagePlan(
             lineage_id=lineage_id,
@@ -172,25 +214,60 @@ def plan_generation(spec: GenerationSpec, *, max_mothers: int | None = None) -> 
 
 def _sample_parameter_sets(vessels: list[str], count: int, rng: np.random.Generator,
                            compiled: CompiledSpec) -> list[dict[str, Any]]:
-    """Use the mothers sampler when available; otherwise fall back to a documented default."""
-    per_vessel: dict[str, list[dict[str, Any]]] = {}
+    """Sample one parameter set per lineage with **each lineage's own vessel schema**.
+
+    The sampler is called per vessel id (``synlab.mothers.api.sample_parameters`` draws from
+    the registered pydantic model of *that* vessel and returns only the fields that model
+    declares), and the handout walks the same ``vessels`` sequence the lineages use, so
+    lineage *i* always receives parameters that belong to the vessel lineage *i* builds.
+    Passing the catalogue order while the lineages walk a permuted order is exactly the
+    cross-vessel defect that produced ``MOTHER_INVALID`` (V12 received ``depth_ratio`` /
+    ``rim_flare``, V07 received ``with_handle`` - see
+    ``data/a12/reports/plan_param_mapping_probe.json``), so the picked sequence must stay the
+    only source of the vessel order here.
+
+    Every handed-out dictionary is then verified against its vessel's own model
+    (:func:`synlab.mothers.api.params_model_ok`); a failure raises ``MOTHER_INVALID`` with the
+    offending fields instead of being replaced by a default dictionary, and the vessel
+    announcement is never silently dropped (no ``try/except`` around the sampler).
+    """
+    from .mothers.api import declared_fields, declared_only, params_model_ok, sample_parameters
+
     counts: dict[str, int] = {}
     for index in range(count):
-        counts[vessels[index % len(vessels)]] = counts.get(vessels[index % len(vessels)], 0) + 1
-    try:
-        from .mothers.api import sample_parameters
-
-        for vessel, n in counts.items():
-            per_vessel[vessel] = list(sample_parameters(vessel, n, rng))
-    except Exception:
-        per_vessel = {vessel: [{} for _ in range(n)] for vessel, n in counts.items()}
+        vessel = vessels[index % len(vessels)]
+        counts[vessel] = counts.get(vessel, 0) + 1
+    per_vessel: dict[str, list[dict[str, Any]]] = {
+        vessel: list(sample_parameters(vessel, n, rng)) for vessel, n in counts.items()
+    }
     out: list[dict[str, Any]] = []
     cursors = {vessel: 0 for vessel in per_vessel}
     for index in range(count):
         vessel = vessels[index % len(vessels)]
-        items = per_vessel.get(vessel, [{}])
+        items = per_vessel.get(vessel) or []
+        if not items:  # pragma: no cover - sample_parameters raises instead of returning none
+            raise SynLabError(
+                ErrorCode.MOTHER_INVALID,
+                f"{vessel}: the parameter sampler returned no set for a planned mother",
+                stage="pipeline.plan",
+                measurements={"lineage_index": index, "planned_for_vessel": counts.get(vessel)},
+            )
         cursor = cursors.get(vessel, 0)
-        out.append(dict(items[cursor % len(items)]) if items else {})
+        params = declared_only(vessel, items[cursor % len(items)])
+        ok, why = params_model_ok(vessel, params)
+        if not ok:
+            raise SynLabError(
+                ErrorCode.MOTHER_INVALID,
+                f"{vessel}: sampled parameters do not validate against the vessel's own model: "
+                f"{why}",
+                stage="pipeline.plan",
+                measurements={"lineage_index": index, "vessel_id": vessel,
+                              "params": params,
+                              "declared_fields": sorted(declared_fields(vessel)),
+                              "note": "the field list of another vessel is never substituted "
+                                      "here; the draw is rejected with its model error"},
+            )
+        out.append(params)
         cursors[vessel] = cursor + 1
     return out
 
@@ -206,7 +283,8 @@ def run_generation(spec: GenerationSpec, *, store_root: str | Path = "data/a12",
     scheduler = Scheduler(store)
     run_id = f"run_{plan.job_id.split('_', 1)[-1][:16]}"
     store.create_run(run_id, plan.spec_hash, scope=spec.data_scope.value, profile=spec.release_profile.value,
-                     meta={"plan": plan.as_dict(), "spec": plan.compiled.expanded})
+                     meta={"plan": plan.as_dict(), "spec": plan.compiled.expanded,
+                           "data_semantics": data_semantics()})
     plan_path = store.root / "reports" / f"run_spec_{run_id}.json"
     plan_path.parent.mkdir(parents=True, exist_ok=True)
     plan_path.write_text(json.dumps({**plan.as_dict(), "plan": [vars(l) for l in plan.lineages]},
@@ -235,6 +313,7 @@ def run_generation(spec: GenerationSpec, *, store_root: str | Path = "data/a12",
             "layer_combos": sorted({l.layer_combo_id for l in plan.lineages
                                     if l.layer_combo_id}),
             "fracture_backend": spec.fracture.backend,
+            "data_semantics": data_semantics(),
             "seconds": seconds,
             "complete": bool(complete),
             "rows": rows,
@@ -360,7 +439,8 @@ def build_one_mother(plan: GenerationPlan, lineage: LineagePlan, store: AssetSto
             material_params = _material_params(lineage.material_id, lineage.params)
             profile = build_material_profile(lineage.material_id, material_params, rngs["material"])
             material_asset = commit_material(store, profile, lineage_id=lineage.lineage_id,
-                                             split=lineage.split, ancestry=[mother_asset.asset_id])
+                                             split=lineage.split, ancestry=[mother_asset.asset_id],
+                                             run_id=run_id)
         except SynLabError:
             raise
         except Exception as exc:
@@ -379,7 +459,7 @@ def build_one_mother(plan: GenerationPlan, lineage: LineagePlan, store: AssetSto
         channels = evaluate(recipe, mother, sample_points, sample_tags)
         pattern_asset = commit_pattern(store, recipe, lineage_id=lineage.lineage_id,
                                        split=lineage.split, ancestry=[mother_asset.asset_id],
-                                       channels=channels)
+                                       channels=channels, run_id=run_id)
         if spec.pattern.height_policy != "none" or getattr(recipe, "params", {}).get("height_mm", 0):
             mother = apply_pattern_geometry(mother, recipe, rngs["pattern"])
             mother_asset = _commit_mother(store, mother, lineage, mother_audit, suffix="patterned",
@@ -419,30 +499,57 @@ def build_one_mother(plan: GenerationPlan, lineage: LineagePlan, store: AssetSto
         clean = finalize_clean_truth(mother, fracture)
         clean_ref = commit_truth(store, clean, role=ROLE_CLEAN_TRUTH, lineage_id=lineage.lineage_id,
                                  split=lineage.split,
-                                 ancestry=[a.asset_id for a in fragment_assets] + [mother_asset.asset_id])
+                                 ancestry=[a.asset_id for a in fragment_assets] + [mother_asset.asset_id],
+                                 run_id=run_id)
         r2_pairs = sum(1 for edge in clean.relations.values() if edge.kind == "R2")
         stage_times["clean_truth"] = time.perf_counter() - t0
 
         # 6. physical damage ------------------------------------------------------
         t0 = time.perf_counter()
         physical_ref = None
+        physical_result_ref = None
         physical_truth_ref = None
-        from .physical.api import apply_damage, audit_physical, commit_physical
+        from .physical.api import apply_damage, audit_physical, commit_physical, commit_physical_result
         from .truth.api import update_residual_truth
 
         target_fragment = _pick_fragment(fracture)
         recipe_id = (spec.physical.recipes[0] if spec.physical.recipes else "P03_depth_light")
+        # the choice is a real measurement, not a hidden heuristic: the coverage row says which
+        # piece was damaged, how much new surface it carries and how many pieces were eligible
+        target_ids, target_origin = _fragment_interface_faces(target_fragment)
+        row["physical_target"] = {
+            "fragment_id": str(getattr(target_fragment, "fragment_id", "")),
+            "volume_mm3": float(getattr(target_fragment, "volume_mm3", 0.0)),
+            "faces": int(len(np.asarray(getattr(target_fragment, "face_side", np.zeros(0))))),
+            "interface_faces_by_id": int(target_ids),
+            "interface_faces_by_origin": int(target_origin),
+            "fragments_carrying_an_interface": int(sum(
+                1 for f in fracture.fragments
+                if any(count > 0 for count in _fragment_interface_faces(f)))),
+            "fragments_total": int(len(fracture.fragments)),
+            "rule": "largest non-tiny fragment that carries an interface face (declared ROI)",
+        }
         damage_recipe = _load_damage_recipe(recipe_id, spec, fragment=target_fragment,
                                             master_seed=spec.master_seed,
                                             lineage_id=lineage.lineage_id)
         physical = apply_damage(clean, target_fragment, damage_recipe, rngs["damage"])
         physical_audit = audit_physical(physical, clean)
         physical_ref = commit_physical(store, physical, lineage_id=lineage.lineage_id,
-                                       split=lineage.split)
+                                       split=lineage.split, run_id=run_id)
+        # Plan 4.1: the PhysicalPack carries the damaged component *and* the result record
+        # (recipe, survivor map, lost volume, revision/hash, clean reference).  The record is a
+        # real measurement from `audit_physical`; its verdict is that audit's own status, so a
+        # level the auditor did not confirm enters the store as QA_FAIL instead of silently
+        # passing as an unjudged asset.
+        physical_result_ref = commit_physical_result(
+            store, physical, audit=physical_audit, clean_asset_id=clean_ref.asset_id,
+            clean_asset_hash=clean_ref.blob_hash,
+            component_asset_id=physical_ref.asset_id, lineage_id=lineage.lineage_id,
+            split=lineage.split, run_id=run_id)
         physical_truth = update_residual_truth(clean, physical)
         physical_truth_ref = commit_truth(store, physical_truth, role="physical_truth",
                                           lineage_id=lineage.lineage_id, split=lineage.split,
-                                          ancestry=[physical_ref.asset_id])
+                                          ancestry=[physical_ref.asset_id], run_id=run_id)
         stage_times["physical"] = time.perf_counter() - t0
 
         # 7. observation ----------------------------------------------------------
@@ -453,14 +560,19 @@ def build_one_mother(plan: GenerationPlan, lineage: LineagePlan, store: AssetSto
         route = spec.observation.routes[0].value
         observe_spec = _resolve_observe_spec(spec, store)
         observation = observe(physical, None, rngs, route=route, spec=observe_spec)
+        # the semantics this observation was rendered under travel with it, so a batch produced
+        # before/after a render-semantics change is distinguishable programmatically
+        # (docs/a12/data_semantics_versions.md) instead of by timestamp
+        observation.meta["data_semantics"] = data_semantics()
         observation_quality = estimate_quality(observation)
         obs_ref = commit_observation(store, observation, lineage_id=lineage.lineage_id,
                                      split=lineage.split,
-                                     ancestry=[physical_ref.asset_id])
+                                     ancestry=[physical_ref.asset_id], run_id=run_id)
         visible = update_visibility_truth(physical_truth, observation)
         visible_ref = commit_truth(store, visible, role="visible_labels",
                                    lineage_id=lineage.lineage_id, split=lineage.split,
-                                   ancestry=[obs_ref.asset_id, physical_truth_ref.asset_id])
+                                   ancestry=[obs_ref.asset_id, physical_truth_ref.asset_id],
+                                   run_id=run_id)
         row["observations"] = len(observation.views)
         stage_times["observe"] = time.perf_counter() - t0
 
@@ -486,6 +598,9 @@ def build_one_mother(plan: GenerationPlan, lineage: LineagePlan, store: AssetSto
             "pattern_asset": pattern_asset.asset_id,
             "clean_truth": clean_ref.asset_id,
             "physical_asset": physical_ref.asset_id,
+            "physical_result_asset": physical_result_ref.asset_id,
+            "physical_result_qa": physical_result_ref.qa_status,
+            "physical_audit_status": physical_audit.get("status"),
             "obs_asset": obs_ref.asset_id,
             "visible_asset": visible_ref.asset_id,
             "feature_asset": feature_ref.asset_id,
@@ -522,18 +637,21 @@ def _resolve_observe_spec(spec: GenerationSpec, store: AssetStore) -> Any:
         Ignored entirely when the observation runs with the default ``ObsSpec`` (12 views at
         512 px regardless of the config).  The delivered product of a run follows its config.
 
-    the aperture basis of the software rasteriser
-        ``render_view`` marks a pixel uncertain when ``circle_of_confusion_px(...)`` exceeds
-        ``RenderSpec.coc_px_threshold``, and it always evaluates that formula with
-        ``aperture=1.0`` (f/1) while **every shipped camera profile declares f/8**.  The CoC
-        is linear in the aperture, so the rendered ``uncertain_mask`` is 8x too wide.  On
-        this bench the declared depth-of-field interval is 300-700 mm at f/8 over fragments
-        whose camera-z spans ~64 mm, i.e. the CoC predicted by the *declared* optics stays
-        far below the declared 0.75 px mark-out and no object pixel may be dropped for
-        defocus.  The threshold handed to the renderer is scaled by the declared f-number so
-        the *declared* mark-out is what gets applied.  This corrects a renderer/config
-        mismatch; the underlying hard-coded f/1 lives in :mod:`synlab.observe.render` and is
-        raised in the closed-loop report rather than patched around silently.
+    the defocus mark-out of the software rasteriser
+        ``render_view`` marks a pixel uncertain when the delivered circle of confusion exceeds
+        ``RenderSpec.coc_px_threshold``.  Under ``mask_semantics = coc_units_v2`` the CoC is
+        evaluated with the *declared* optics (focal length and f-number from ``ViewFrame.meta``
+        or the camera-profile registry) and converted into pixels with the delivered sampling
+        density ``D = f_px / focal_length_mm``; the superseded pixel-unit expression -- which fed
+        a pixel focal length into the millimetre formula, dropped ``D`` and always used f/1 --
+        inflated the CoC by ``D * f_number`` (measured 74.105 on the delivered L0 views,
+        data/a12/reports/visible_labels_coc_units.json) and eroded the deployable mask to
+        0.26-7.2 % of the object.  The threshold handed to the renderer stays scaled by the
+        declared f-number: that is the conservative mark-out this loop has always applied
+        (0.75 px x 2.2 = 1.65 px on CAM_MID_V3, i.e. *stricter* than the profile's own 2.0 px
+        ``coC_px``), so the renderer/config contract does not change with the unit fix.  Measured
+        consequence: every object pixel of the L0 loop is now inside the mark-out
+        (data/a12/reports/coc_units_v2_verification_l0.json).
 
     the supersample block-disagreement channel
         ``deployment_mask_from_render`` requires every supersample of a block to hit the same
@@ -623,11 +741,47 @@ def _material_params(material_id: str, vessel_params: dict[str, Any]) -> dict[st
         return {}
 
 
+def _fragment_interface_faces(fragment: Any) -> tuple[int, int]:
+    """``(faces with an interface id, faces whose origin is the fracture interface)``.
+
+    Mirrors the acceptance rule of :func:`synlab.physical.fields.roi_faces` for
+    ``{"kind": "interface"}``: a fragment can host an interface operator when **either**
+    channel is non-empty, because the ROI falls back from ``face_interface_id`` to
+    ``face_origin_kind`` when no face was paired into a patch.
+    """
+    ids = np.asarray(getattr(fragment, "face_interface_id", np.zeros(0, dtype=np.int32)))
+    origin = np.asarray(getattr(fragment, "face_origin_kind", np.zeros(0, dtype=np.uint8)))
+    n_ids = int(np.count_nonzero(ids >= 0)) if ids.size else 0
+    n_origin = int(np.count_nonzero(origin == ORIGIN_INTERFACE)) if origin.size else 0
+    return n_ids, n_origin
+
+
 def _pick_fragment(fracture: Any) -> Any:
+    """The fragment the declared damage recipe is applied to.
+
+    Every physical recipe of this plan addresses the *fracture interface* as its ROI (P01,
+    P02 and P03 all declare ``{"kind": "interface"}`` in :mod:`synlab.degrade.axes`), and a
+    fracture event can return bodies the cutter never touched.  Two cases are real in this
+    store: a composite mother whose separate pre-break body (the V10 lid) is entirely on one
+    side of the cut, and a stray body created by the vessel builder.  Such a body keeps every
+    face tagged ``mother_surface``, so it carries no interface attribute *because it has no
+    new surface* - the attribute is not lost, the surface does not exist.
+
+    Selecting the largest fragment by volume alone therefore picks an untouched body whenever
+    it is the biggest piece: measured on ``LIN0004_V10_M06_PAT03`` the untouched lid is
+    394 820 mm^3 against 168 026 mm^3 for the largest cut piece, and the interface ROI then
+    answers ``NA_NOT_APPLICABLE`` for the whole lineage although the event *does* have a new
+    surface.  The target is the largest fragment that really carries an interface face; when
+    no fragment carries one (a genuinely interface-free event) the previous largest-volume
+    choice is kept, so the honest ``NA`` answer is still produced instead of being hidden.
+    """
     fragments = [f for f in fracture.fragments if not getattr(f, "is_tiny", False)]
     if not fragments:
         fragments = list(fracture.fragments)
-    return max(fragments, key=lambda f: float(getattr(f, "volume_mm3", 0.0)))
+    capable = [f for f in fragments
+               if any(count > 0 for count in _fragment_interface_faces(f))]
+    pool = capable or fragments
+    return max(pool, key=lambda f: float(getattr(f, "volume_mm3", 0.0)))
 
 
 def _load_damage_recipe(recipe_id: str, spec: GenerationSpec, *, fragment: Any = None,
@@ -890,7 +1044,6 @@ def _commit_features(store: AssetStore, bundles: dict[str, Any], lineage: Lineag
     meta["feature_fields"] = sorted(meta.keys()) + sorted(arrays.keys())
     meta["dropped_forbidden_fields"] = dropped
     meta["run_id"] = run_id
-    meta["fragment_id"] = encoded.get("fragment_id") if encoded else None
     return store.commit_asset(
         role=ROLE_FEATURE_BUNDLE, schema=SCHEMA_FEATURE, unit=UNIT_MM, frame="S_mm",
         payload={**arrays}, meta=_jsonable(meta), qa={"ok": True, "whitelist_checked": True},

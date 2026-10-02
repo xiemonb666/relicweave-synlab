@@ -160,12 +160,22 @@ class GlyphLayout:
 def layout_text_run(*, text: str, font: FontResource, font_size_mm: float,
                     letter_spacing_mm: float, px_per_mm: float, tile_width_mm: float,
                     run_gap_mm: float, baseline_s_mm: float, s0_mm: float,
-                    height_px: int, copies_hint: int = 1) -> GlyphLayout:
+                    height_px: int, copies_hint: int = 1,
+                    width_px: int | None = None) -> GlyphLayout:
     """Lay out the whole text run once into a periodic tile canvas.
 
     The run is repeated with a constant pitch so the tile closes exactly; each
     repetition is drawn at shifts ``-W, 0, +W`` pixels so glyphs crossing the seam land
     on both sides.  Pillow owns the metrics and the drawing.
+
+    ``width_px`` is the canvas width.  A caller that already owns a frozen raster plan must
+    pass ``plan["width_px"]``: ``plan_raster`` snaps ``px_per_mm = width_px / width_mm``, so
+    ``tile_width_mm * px_per_mm`` only reproduces the frozen integer up to floating-point
+    error, and one ulp of excess used to ``ceil`` to a canvas one column wider than the plan
+    (measured on V23/PAT12: a frozen 984-column plan produced a 985-column mask, which then
+    failed ``np.maximum(cov, layout.mask)`` with
+    ``operands could not be broadcast together with shapes (685,984) (685,985)``).  When the
+    width is derived from millimetres instead, the conversion tolerates that rounding.
     """
     font_px = max(4, int(round(float(font_size_mm) * px_per_mm)))
     try:
@@ -175,7 +185,10 @@ def layout_text_run(*, text: str, font: FontResource, font_size_mm: float,
                           f"Pillow could not load font {font.path!r}: {exc}",
                           stage="patterns.glyphs.layout_text_run") from exc
 
-    width_px = max(8, int(np.ceil(float(tile_width_mm) * px_per_mm)))
+    if width_px is None:
+        width_px = max(8, int(np.ceil(float(tile_width_mm) * px_per_mm - 1e-6)))
+    else:
+        width_px = max(8, int(width_px))
     canvas = Image.new("L", (width_px, int(height_px)), 0)
     draw = ImageDraw.Draw(canvas)
     spacing_px = float(letter_spacing_mm) * px_per_mm

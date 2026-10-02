@@ -12,6 +12,8 @@ from ..canonical import hash_json
 from ..errors import ErrorCode, SynLabError
 from ..roles import (
     FRAME_FRAGMENT,
+    ROLE_PHYSICAL_COMPONENT,
+    ROLE_PHYSICAL_RESULT,
     SCHEMA_PHYSICAL,
     UNIT_MM,
 )
@@ -41,6 +43,239 @@ def _geometry_hash(mesh: trimesh.Trimesh) -> str:
                       "area": round(float(mesh.area), 9), "volume": round(float(mesh.volume), 9)})
 
 
+#: Semantic version of the physical-damage *result* contract (docs/a12/data_semantics_versions.md).
+#: ``subset_v2`` means: (1) a delivered body is closed -- sub-micron boundary loops a boolean
+#: engine leaves behind are filled and the closure is *proven* with ``is_watertight``; (2) only
+#: bodies carrying measurable volume enter the component list, so a connected leftover with
+#: exactly 0 mm3 is reported as engine debris instead of becoming a component with a
+#: non-positive volume; (3) ``damaged ⊆ clean`` is measured with the exact float64 point-to-mesh
+#: instrument below instead of Open3D's approximate signed distance, whose measured floor on the
+#: L0 clean fragment is 0.0161 mm / 0.28 % of samples *for the mesh measured against itself*.
+DAMAGE_SEMANTICS = "subset_v2"
+DAMAGE_SEMANTICS_V1 = "subset_v1_as_shipped"
+
+#: A connected body whose volume is at or below this carries no material: boolean engines emit
+#: coincident opposite-winding triangle pairs (measured on the L0 P03 result: 2 bodies with 2
+#: faces each and exactly 0.0 mm3) that are leftovers, not debris
+#: (data/a12/reports/a09_p03_probe.json).
+MIN_MATERIAL_VOLUME_MM3 = 1e-9
+
+#: Boundary loops no larger than this are boolean pinholes (measured: 2 loops of 50 nm / 23 nm
+#: bounding-box diagonal and ~0 mm2 area on the L0 P03 body); anything larger is a real hole and
+#: is reported instead of being patched.
+MAX_PINHOLE_DIAGONAL_MM = 1e-3
+MAX_PINHOLE_AREA_MM2 = 1e-6
+
+
+def _boundary_loops(mesh: trimesh.Trimesh) -> tuple[list[list[int]], dict[str, Any]]:
+    """Directed boundary cycles of ``mesh`` (edges used by exactly one face), in vertex order.
+
+    A face (i, j, k) contributes the directed edges i->j, j->k, k->i; an edge whose *undirected*
+    key occurs once is on the boundary, and its direction is the direction the surface travels
+    there.  A well-formed boundary is a permutation of those directions, so the loops are traced
+    by following each vertex's single outgoing edge.
+    """
+    faces = np.asarray(mesh.faces, dtype=np.int64)
+    if len(faces) == 0:
+        return [], {"boundary_edges": 0, "reason": "empty mesh"}
+    directed = np.concatenate([faces[:, [0, 1]], faces[:, [1, 2]], faces[:, [2, 0]]], axis=0)
+    keys = np.sort(directed, axis=1)
+    _unique, inverse, counts = np.unique(keys, axis=0, return_inverse=True, return_counts=True)
+    inverse = np.asarray(inverse).reshape(-1)
+    boundary = directed[np.asarray(counts, dtype=np.int64)[inverse] == 1]
+    if len(boundary) == 0:
+        return [], {"boundary_edges": 0, "reason": "no boundary edge"}
+    out_map: dict[int, list[int]] = {}
+    in_map: dict[int, list[int]] = {}
+    for a, b in boundary:
+        out_map.setdefault(int(a), []).append(int(b))
+        in_map.setdefault(int(b), []).append(int(a))
+    info: dict[str, Any] = {"boundary_edges": int(len(boundary)),
+                            "boundary_vertices": int(len(out_map))}
+    if (sorted(out_map) != sorted(in_map)
+            or any(len(v) != 1 for v in out_map.values())
+            or any(len(v) != 1 for v in in_map.values())):
+        info["reason"] = "boundary edges do not form simple directed cycles"
+        return [], info
+    loops: list[list[int]] = []
+    visited: set[int] = set()
+    for start in sorted(out_map):
+        if start in visited:
+            continue
+        loop = [start]
+        visited.add(start)
+        cursor = out_map[start][0]
+        while cursor != start:
+            if cursor in visited:
+                info["reason"] = "boundary walk revisited a vertex before closing"
+                return [], info
+            loop.append(cursor)
+            visited.add(cursor)
+            cursor = out_map[cursor][0]
+        loops.append(loop)
+    info["loops"] = len(loops)
+    info["loop_sizes"] = [len(loop) for loop in loops]
+    return loops, info
+
+
+def close_numerical_pinholes(mesh: trimesh.Trimesh, *,
+                             max_diagonal_mm: float = MAX_PINHOLE_DIAGONAL_MM,
+                             max_area_mm2: float = MAX_PINHOLE_AREA_MM2
+                             ) -> tuple[trimesh.Trimesh, dict[str, Any]]:
+    """Close sub-micron boundary loops so the delivered body is a closed solid.
+
+    A boolean intersection of an extracted body with the source can leave boundary loops at the
+    engine's own precision: measured on the L0 P03 result, 6 boundary edges forming 2 loops of
+    50 nm and 23 nm bounding-box diagonal with ~0 mm2 area.  ``trimesh.repair.fill_holes`` does
+    not repair them in this trimesh build (its ``extend_faces`` call adds no face -- measured:
+    data/a12/reports/a09_p03_seam.json), so the patch face is added here directly: the boundary
+    is traversed as a directed cycle and closed with the reversed polygon.
+
+    Only loops *smaller than the declared pinhole scale* are filled, the result is accepted only
+    when it is watertight, winding-consistent and volume-neutral, and any larger or non-cyclic
+    boundary is left exactly as the operator produced it -- a real hole must still fail the
+    watertight audit instead of being patched away.
+    """
+    watertight_before = bool(mesh.is_watertight) and bool(mesh.is_winding_consistent)
+    report: dict[str, Any] = {"applied": False, "watertight_before": watertight_before,
+                              "faces_added": 0, "volume_delta_mm3": 0.0,
+                              "max_pinhole_diagonal_mm": float(max_diagonal_mm),
+                              "max_pinhole_area_mm2": float(max_area_mm2)}
+    if watertight_before:
+        report["reason"] = "already watertight"
+        return mesh, report
+    loops, loop_info = _boundary_loops(mesh)
+    report["boundary"] = loop_info
+    if not loops:
+        report["reason"] = loop_info.get("reason", "no boundary loop")
+        return mesh, report
+    vertices = np.asarray(mesh.vertices, dtype=np.float64)
+    rows = []
+    for loop in loops:
+        points = vertices[np.asarray(loop, dtype=np.int64)]
+        diagonal = float(np.linalg.norm(points.max(axis=0) - points.min(axis=0)))
+        normal = np.zeros(3, dtype=np.float64)
+        for index in range(len(loop)):   # Newell area of the (planar-ish) loop polygon
+            normal += np.cross(points[index], points[(index + 1) % len(loop)])
+        area = 0.5 * float(np.linalg.norm(normal))
+        rows.append({"vertices": [int(v) for v in loop], "diagonal_mm": diagonal,
+                     "area_mm2": area,
+                     "fillable": bool(diagonal <= max_diagonal_mm and area <= max_area_mm2)})
+    report["loops"] = rows
+    if not all(row["fillable"] for row in rows):
+        report["reason"] = "boundary loop larger than the declared pinhole scale"
+        return mesh, report
+    volume_before = float(abs(mesh.volume))
+    candidate = mesh.copy()
+    # the patch face traverses the boundary in the opposite direction of the surface edge
+    patch = [np.asarray(loop[::-1], dtype=np.int64)[None, :] for loop in loops]
+    candidate.faces = np.vstack([np.asarray(mesh.faces, dtype=np.int64)] + patch)
+    candidate.merge_vertices()
+    candidate.remove_unreferenced_vertices()
+    closed = bool(candidate.is_watertight) and bool(candidate.is_winding_consistent)
+    report["faces_added"] = int(len(loops))
+    report["volume_delta_mm3"] = float(abs(candidate.volume) - volume_before)
+    if not closed:
+        report["reason"] = ("filling the pinholes did not yield a watertight, "
+                            "winding-consistent body")
+        return mesh, report
+    report["applied"] = True
+    report["watertight_after"] = True
+    return candidate, report
+
+
+def subset_outside_stats(damaged: trimesh.Trimesh, reference: trimesh.Trimesh, *,
+                         n_samples: int = 1200, tol_mm: float = 1e-3,
+                         seed: int = 0) -> dict[str, Any]:
+    """How much of ``damaged``'s surface lies outside ``reference`` -- measured exactly.
+
+    Instrument: sample the damaged surface, then evaluate the *exact* closest point on the
+    reference plus a normal-projection sign in float64 (``trimesh.proximity.signed_distance``,
+    whose convention is **positive = inside**).  The superseded instrument
+    (``sdf.outside_fraction``) uses Open3D's approximate signed distance on float32 points, whose
+    measured floor on the L0 clean fragment is ``max_outside_mm = 0.0161`` with 0.28 % of samples
+    beyond the 1e-3 mm tolerance *for the mesh measured against itself*; a level-0 identity result
+    (whose component **is** the clean mesh object) therefore failed the shipped check, measured:
+    data/a12/reports/a09_subset_instrument.json.  The same control with this instrument reports
+    1.4e-10 mm and 0 outside samples.  The tolerance is unchanged by the swap, and the superseded
+    numbers are returned beside the exact ones so nothing is hidden.
+    """
+    points, _face_ids = trimesh.sample.sample_surface(
+        damaged, int(n_samples), seed=int(seed) % (2 ** 31))
+    points = np.asarray(points, dtype=np.float64)
+    signed_inside = np.asarray(trimesh.proximity.signed_distance(reference, points),
+                               dtype=np.float64)
+    outside = -signed_inside                      # >= 0 = outside the reference body
+    outside_distance = np.where(outside > 0.0, outside, 0.0)
+    stats: dict[str, Any] = {
+        "instrument": "trimesh.proximity.signed_distance (exact, float64; positive = inside)",
+        "samples": int(len(points)),
+        "outside_points": int(np.count_nonzero(outside > float(tol_mm))),
+        "outside_fraction": float(np.mean(outside > float(tol_mm))) if len(points) else 0.0,
+        "max_outside_mm": float(outside_distance.max()) if len(points) else 0.0,
+        "p99_outside_mm": float(np.percentile(outside_distance, 99)) if len(points) else 0.0,
+        "signed_max_outside_mm": float(outside.max()) if len(points) else 0.0,
+        "tol_mm": float(tol_mm),
+    }
+    try:  # the superseded instrument, kept beside the exact one so nothing is hidden
+        stats["approx_open3d"] = S.outside_fraction(damaged, reference, n_samples=n_samples,
+                                                    tol_mm=tol_mm, seed=seed)
+    except Exception as exc:  # noqa: BLE001 - reported, never silently dropped
+        stats["approx_open3d"] = {"error": f"{type(exc).__name__}: {exc}"}
+    return stats
+
+
+def material_volume_floor(source_volume_mm3: float, override: float | None = None) -> float:
+    """Volume at or below which a connected body carries no material (one definition)."""
+    return max(float(override if override is not None else MIN_MATERIAL_VOLUME_MM3),
+               MIN_MATERIAL_VOLUME_MM3, 1e-12 * max(float(source_volume_mm3), 0.0))
+
+
+def assemble_damage_bodies(mesh: trimesh.Trimesh, *, source_volume_mm3: float,
+                           min_material_volume_mm3: float | None = None
+                           ) -> tuple[list[trimesh.Trimesh], dict[str, Any]]:
+    """Turn one raw operator body into the delivered bodies of ``damage_semantics = subset_v2``.
+
+    Order matters and is measured: the boolean engine emits coincidence *pairs* of
+    opposite-winding triangles with zero volume (2 of them on the L0 P03 result).  Those pairs
+    are not connected to the material body, so ``component_split`` hands them out as separate
+    "debris" components -- but their edges are the very edges that make the material body look
+    open, so the pinholes can only be closed **after** they are removed.  Closing them first was
+    measured to fail (the patch would make those edges used three times).
+
+    Returns the material bodies (engine debris dropped and counted) plus the assembly record.
+    """
+    floor = material_volume_floor(source_volume_mm3, min_material_volume_mm3)
+    parts = S.component_split(mesh)
+    material = [p for p in parts if float(abs(p.volume)) > floor]
+    dropped = [p for p in parts if float(abs(p.volume)) <= floor]
+    floor_overridden = False
+    if parts and not material:      # never deliver an empty body list: fail visibly
+        material = [max(parts, key=lambda p: float(abs(p.volume)))]
+        dropped = [p for p in parts if p is not material[0]]
+        floor_overridden = True
+    bodies: list[trimesh.Trimesh] = []
+    closures: list[dict[str, Any]] = []
+    for part in material:
+        closed, closure = close_numerical_pinholes(part)
+        bodies.append(closed)
+        closures.append(closure)
+    record: dict[str, Any] = {
+        "connected_bodies": len(parts),
+        "material_bodies": len(material),
+        "non_material_bodies": len(dropped),
+        "non_material_faces": [int(len(p.faces)) for p in dropped],
+        "non_material_volume_mm3": float(sum(abs(p.volume) for p in dropped)),
+        "material_floor_mm3": float(floor),
+        "material_floor_overridden": bool(floor_overridden),
+        "pinhole_closures": closures,
+        "pinholes_filled": int(sum(int(c.get("faces_added", 0)) for c in closures)),
+        "watertight_bodies": int(sum(1 for body in bodies if bool(body.is_watertight))),
+        "bodies": len(bodies),
+    }
+    return bodies, record
+
+
 def register_components(
     parts: list[trimesh.Trimesh],
     *,
@@ -49,6 +284,7 @@ def register_components(
     min_support_abs_mm3: float = 1e-3,
     min_support_rel: float = 0.005,
     added_bodies: list[tuple[trimesh.Trimesh, str]] | None = None,
+    min_material_volume_mm3: float | None = None,
 ) -> tuple[list[PhysicalComponent], dict[str, str], dict[str, Any]]:
     """§30.8 identity policy: keep every connected body, choose one representative.
 
@@ -56,8 +292,16 @@ def register_components(
     the frozen geometry key.  Everything else is kept as ``DEBRIS`` and still enters the
     material ledger; same-ancestor sub-fragments are flagged so they are never used as
     ordinary negatives downstream.
+
+    ``damage_semantics = subset_v2``: a connected body with **no measurable volume** is not
+    material and is not a component.  Boolean engines emit coincident opposite-winding triangle
+    pairs (measured on the L0 P03 result: 2 bodies, 2 faces each, exactly 0.0 mm3), and keeping
+    them produced ``NON_POSITIVE_VOLUME`` on a result whose material body was fine.  Such bodies
+    are counted in the ledger (``non_material_*``) instead of disappearing, and if a result
+    consists of nothing else the largest body is still kept so the failure stays visible.
     """
     threshold = max(float(min_support_abs_mm3), float(min_support_rel) * max(float(source_volume_mm3), 0.0))
+    material_floor = material_volume_floor(source_volume_mm3, min_material_volume_mm3)
     entries = []
     for index, part in enumerate(parts):
         volume = float(abs(part.volume))
@@ -69,14 +313,21 @@ def register_components(
         entries.append({"mesh": part, "volume": volume, "index": len(entries),
                         "supportable": False, "contamination": True,
                         "material_class": material_class, "key": S.geometry_key(part)})
-    supportable = [e for e in entries if e["supportable"]]
+    material = [e for e in entries if e["volume"] > material_floor]
+    dropped = [e for e in entries if e["volume"] <= material_floor]
+    floor_overridden = False
+    if entries and not material:      # never deliver an empty component list: fail visibly
+        material = [max(entries, key=lambda e: e["volume"])]
+        dropped = [e for e in entries if e is not material[0]]
+        floor_overridden = True
+    supportable = [e for e in material if e["supportable"]]
     representative_key = None
     if supportable:
         best = sorted(supportable, key=lambda e: (-e["volume"], e["key"]))[0]
         representative_key = (best["index"], best["key"])
     components: list[PhysicalComponent] = []
     representative_map: dict[str, str] = {}
-    for entry in sorted(entries, key=lambda e: (-e["volume"], e["key"])):
+    for entry in sorted(material, key=lambda e: (-e["volume"], e["key"])):
         component_id = f"{clean_fragment_id}#c{entry['index']}"
         is_representative = (representative_key is not None
                              and entry["index"] == representative_key[0]
@@ -102,12 +353,18 @@ def register_components(
             representative_map[clean_fragment_id] = component_id
     ledger = {
         "source_volume_mm3": float(source_volume_mm3),
-        "component_count": len(entries),
-        "original_component_count": int(sum(1 for e in entries if not e["contamination"])),
-        "contamination_component_count": int(sum(1 for e in entries if e["contamination"])),
-        "damaged_volume_mm3": float(sum(e["volume"] for e in entries if not e["contamination"])),
-        "added_volume_mm3": float(sum(e["volume"] for e in entries if e["contamination"])),
-        "debris_volume_mm3": float(sum(e["volume"] for e in entries if not e["supportable"])),
+        "component_count": len(material),
+        "raw_connected_bodies": len(entries),
+        "non_material_body_count": len(dropped),
+        "non_material_body_faces": [int(len(e["mesh"].faces)) for e in dropped],
+        "non_material_body_volume_mm3": float(sum(e["volume"] for e in dropped)),
+        "material_floor_mm3": float(material_floor),
+        "material_floor_overridden": bool(floor_overridden),
+        "original_component_count": int(sum(1 for e in material if not e["contamination"])),
+        "contamination_component_count": int(sum(1 for e in material if e["contamination"])),
+        "damaged_volume_mm3": float(sum(e["volume"] for e in material if not e["contamination"])),
+        "added_volume_mm3": float(sum(e["volume"] for e in material if e["contamination"])),
+        "debris_volume_mm3": float(sum(e["volume"] for e in material if not e["supportable"])),
         "support_threshold_mm3": threshold,
         "representative_component_id": (representative_map.get(clean_fragment_id)
                                         if representative_map else None),
@@ -120,7 +377,7 @@ def register_components(
     ledger["conservation_ok"] = bool(
         abs(ledger["source_volume_mm3"] - ledger["damaged_volume_mm3"] - ledger["lost_volume_mm3"]) <= 1e-6
         * max(ledger["source_volume_mm3"], 1.0))
-    if len(entries) > 1 and not ledger["representative_available"]:
+    if len(material) > 1 and not ledger["representative_available"]:
         ledger["representative_status"] = "INPUT_UNAVAILABLE"
     return components, representative_map, ledger
 
@@ -161,6 +418,7 @@ def apply_damage(clean_truth: Any, fragment: Any, recipe: DamageRecipe,
             "source_geometry_hash": _geometry_hash(mesh),
             "result_geometry_hash": _geometry_hash(ledger_components[0].mesh),
             "bytes_identical": True, "resampled": False,
+            "damage_semantics": DAMAGE_SEMANTICS,
             "note": "level 0 returns the source asset reference/bytes without resampling",
         }
         return PhysicalResult(
@@ -171,20 +429,43 @@ def apply_damage(clean_truth: Any, fragment: Any, recipe: DamageRecipe,
             meta={"declared": declared, "identity": True, "ledger": ledger,
                   "source_geometry_hash": _geometry_hash(mesh), "axis_id": recipe.axis_id,
                   "variant": recipe.variant, "level": int(recipe.level),
+                  "damage_semantics": DAMAGE_SEMANTICS,
                   "geometry_changed": False, "frozen": recipe.frozen()},
         )
 
     outcome = OPS.run_damage(mesh, recipe, fragment=fragment)
     geometry_changed = outcome.mesh is not None and outcome.mesh is not mesh and recipe.touches_geometry
     damaged_mesh = outcome.mesh if outcome.mesh is not None else mesh
-    if recipe.touches_geometry:
-        parts = S.component_split(damaged_mesh) if geometry_changed else [mesh]
+    closure: dict[str, Any] = {"applied": False, "reason": "not a geometry-changing operator"}
+    if recipe.touches_geometry and geometry_changed:
+        # damage_semantics = subset_v2: the delivered bodies must be closed solids and must carry
+        # material.  The boolean engine leaves coincidence triangle pairs with zero volume (which
+        # make the material body look open) and sub-micron pinholes; both are handled here, and a
+        # larger boundary is left untouched so a real hole still fails the watertight audit.
+        parts, closure = assemble_damage_bodies(
+            damaged_mesh, source_volume_mm3=source_volume,
+            min_material_volume_mm3=recipe.meta.get("min_material_volume_mm3"))
+        damaged_mesh = parts[0] if len(parts) == 1 else damaged_mesh
+    elif recipe.touches_geometry:
+        parts = [mesh]
     else:
         parts = [mesh]
     components, representative_map, ledger = register_components(
         parts, clean_fragment_id=clean_fragment_id, source_volume_mm3=source_volume,
         min_support_rel=float(recipe.meta.get("min_representative_ratio", 0.005)),
         added_bodies=[(body, "CONTAMINATION") for body in outcome.added_bodies])
+    if isinstance(closure, dict) and "connected_bodies" in closure:
+        # one readable place for the assembly accounting: register_components only ever sees the
+        # material bodies, so the engine debris dropped before it must be reported here
+        ledger["assembly"] = {
+            "connected_bodies": int(closure["connected_bodies"]),
+            "material_bodies": int(closure["material_bodies"]),
+            "non_material_bodies": int(closure["non_material_bodies"]),
+            "non_material_faces": list(closure["non_material_faces"]),
+            "non_material_volume_mm3": float(closure["non_material_volume_mm3"]),
+            "pinholes_filled": int(closure["pinholes_filled"]),
+            "watertight_bodies": int(closure["watertight_bodies"]),
+        }
     lost_volume = float(ledger["lost_volume_mm3"])
     qa = {
         "status": "PASS" if outcome.realized else "FAIL",
@@ -195,6 +476,9 @@ def apply_damage(clean_truth: Any, fragment: Any, recipe: DamageRecipe,
         "geometry_hash_unchanged": bool(_geometry_hash(damaged_mesh) == _geometry_hash(mesh)),
         "component_count": len(components),
         "ledger": ledger,
+        "damage_semantics": DAMAGE_SEMANTICS,
+        "assembly": closure,
+        "pinhole_closure": closure,
         "sdf_pipeline": outcome.details.get("sdf_pipeline", {}),
         "failure_code": outcome.failure_code,
     }
@@ -211,6 +495,9 @@ def apply_damage(clean_truth: Any, fragment: Any, recipe: DamageRecipe,
             "axis_id": recipe.axis_id, "variant": recipe.variant, "level": int(recipe.level),
             "geometry_changed": bool(geometry_changed), "frozen": recipe.frozen(),
             "source_geometry_hash": _geometry_hash(mesh),
+            "damage_semantics": DAMAGE_SEMANTICS,
+            "assembly": closure,
+            "pinhole_closure": closure,
             "measured": dict(outcome.measurements),
             "measurement_units": dict(outcome.units),
             "details": outcome.details,
@@ -315,14 +602,22 @@ def audit_physical(result: PhysicalResult, clean: Any = None) -> dict[str, Any]:
     for component in result.components:
         if component.meta.get("is_contamination"):
             continue
-        stats = S.outside_fraction(component.mesh, clean_mesh, n_samples=1200, tol_mm=tol_mm,
-                                   seed=len(outside_stats))
+        stats = subset_outside_stats(component.mesh, clean_mesh, n_samples=1200, tol_mm=tol_mm,
+                                     seed=len(outside_stats))
         outside_stats.append(stats)
     worst_outside = max((s["max_outside_mm"] for s in outside_stats), default=0.0)
     worst_fraction = max((s["outside_fraction"] for s in outside_stats), default=0.0)
+    legacy_outside = [s.get("approx_open3d") or {} for s in outside_stats]
     checks["damaged_subset_clean"] = {
         "tol_mm": tol_mm, "max_outside_mm": worst_outside, "outside_fraction": worst_fraction,
         "samples": int(sum(s["samples"] for s in outside_stats)),
+        "outside_points": int(sum(s["outside_points"] for s in outside_stats)),
+        "p99_outside_mm": max((s["p99_outside_mm"] for s in outside_stats), default=0.0),
+        "instrument": "trimesh.proximity.signed_distance (exact, float64; positive = inside)",
+        # the superseded Open3D instrument, kept beside the exact numbers (plan 12.4 evidence):
+        # its own floor on this data is 0.0161 mm / 0.28 % for a surface measured against itself
+        "approx_open3d_max_outside_mm": max((s.get("max_outside_mm", 0.0)
+                                             for s in legacy_outside), default=0.0),
         "pass": bool(worst_outside <= max(tol_mm, 5e-4)),
     }
     metrics["max_outside_mm"] = worst_outside
@@ -475,6 +770,9 @@ def audit_physical(result: PhysicalResult, clean: Any = None) -> dict[str, Any]:
         "clean_source": clean_source, "checks": checks, "failure_codes": sorted(set(failures)),
         "warnings": warnings, "measured": metrics, "declared": declared,
         "ledger": ledger, "no_auto_repair": no_repair,
+        "damage_semantics": str((result.meta or {}).get("damage_semantics", DAMAGE_SEMANTICS_V1)),
+        "subset_instrument": checks["damaged_subset_clean"]["instrument"],
+        "pinhole_closure": dict((result.meta or {}).get("pinhole_closure") or {}),
         "representative_map": dict(result.representative_map),
         "components": [{"component_id": c.component_id, "status": c.status,
                         "volume_mm3": c.volume_mm3, "is_representative": c.is_representative,
@@ -493,9 +791,32 @@ def _context_recipe(result: PhysicalResult, axis_id: str, variant: str, level: i
                         meta={"shortest_structure_mm": None})
 
 
+def _component_payload(component: PhysicalComponent) -> dict[str, Any]:
+    """Mesh payload of one physical component (one writer for both commit helpers)."""
+    from ..storage.mesh_io import mesh_arrays
+
+    return dict(mesh_arrays(component.mesh))
+
+
+def _component_meta(component: PhysicalComponent, result: PhysicalResult) -> dict[str, Any]:
+    """Component metadata; the single place that defines the component asset contract."""
+    return {"component_id": component.component_id, "volume_mm3": component.volume_mm3,
+            "is_representative": component.is_representative, "status": component.status,
+            "ancestor": component.meta.get("clean_fragment_ancestor"),
+            "recipe_id": result.recipe_id, "clean_ref": result.clean_ref,
+            "axis_id": result.meta.get("axis_id"), "level": result.meta.get("level")}
+
+
 def commit_physical(store: Any, result: PhysicalResult, *, lineage_id: str | None = None,
-                    split: str | None = None, component_index: int = 0) -> Any:
-    """Commit the representative component mesh as a physical asset (role from roles.py)."""
+                    split: str | None = None, component_index: int = 0,
+                    run_id: str | None = None) -> Any:
+    """Commit the representative component mesh as a physical asset (role from roles.py).
+
+    ``run_id`` is an optional addition to the frozen signature: written into the asset metadata
+    only when supplied, so existing callers keep their exact metadata and asset id.  It is what
+    makes the component visible to the run-scoped gate/audit readers, which select assets by
+    ``meta["run_id"]``.
+    """
     if not result.components:
         raise SynLabError(ErrorCode.DAMAGE_EFFECT_MISSING, "physical result has no components",
                           stage="physical.commit")
@@ -505,21 +826,159 @@ def commit_physical(store: Any, result: PhysicalResult, *, lineage_id: str | Non
             representative = component
             break
     component = representative or result.components[int(component_index)]
-    from ..storage.mesh_io import mesh_arrays
-
-    payload = dict(mesh_arrays(component.mesh))
+    meta = _component_meta(component, result)
+    if run_id is not None:
+        meta["run_id"] = str(run_id)
     return store.commit_asset(
-        role="physical_component", schema=SCHEMA_PHYSICAL, unit=UNIT_MM, frame=FRAME_FRAGMENT,
-        payload=payload,
-        meta={"component_id": component.component_id, "volume_mm3": component.volume_mm3,
-              "is_representative": component.is_representative, "status": component.status,
-              "ancestor": component.meta.get("clean_fragment_ancestor"),
-              "recipe_id": result.recipe_id, "clean_ref": result.clean_ref,
-              "axis_id": result.meta.get("axis_id"), "level": result.meta.get("level")},
+        role=ROLE_PHYSICAL_COMPONENT, schema=SCHEMA_PHYSICAL, unit=UNIT_MM,
+        frame=FRAME_FRAGMENT,
+        payload=_component_payload(component),
+        meta=meta,
         qa=dict(result.qa), lineage_id=lineage_id, split=split,
         ancestry=[result.clean_ref] if result.clean_ref else [],
     )
 
 
-__all__ = ["apply_damage", "audit_physical", "register_components", "commit_physical",
-           "DamageRecipe", "DamageOutcome"]
+#: Units of the metrics ``audit_physical`` measures.  Anything the operator itself measured keeps
+#: the unit it declared in ``result.meta["measurement_units"]``; the audit metrics are named by
+#: suffix so a new metric cannot silently claim a unit it does not have.
+_AUDIT_METRIC_BASE_UNITS = {
+    "component_count": "1", "declared_level": "1", "measured_lost_volume_mm3": "mm3",
+    "lost_volume_mm3": "mm3", "lost_volume_ratio": "1", "source_residue_fraction": "1",
+    "appearance_arrays": "1", "appearance_texels_touched": "px",
+}
+
+
+def _measured_units(name: str, declared: dict[str, Any]) -> str:
+    if name in declared:
+        return str(declared[name])
+    if name in _AUDIT_METRIC_BASE_UNITS:
+        return _AUDIT_METRIC_BASE_UNITS[name]
+    for suffix, unit in (("_mm3", "mm3"), ("_mm2", "mm2"), ("_mm", "mm"),
+                         ("_ratio", "1"), ("_fraction", "1"), ("_px", "px")):
+        if name.endswith(suffix):
+            return unit
+    return "1"
+
+
+def _audit_verdict(audit: dict[str, Any] | None) -> str:
+    """QA verdict of a physical result: only an explicitly measured PASS passes (fail closed)."""
+    from ..storage.store import QA_FAIL, QA_PASS
+
+    return QA_PASS if str((audit or {}).get("status", "")) == "PASS" else QA_FAIL
+
+
+def commit_physical_result(store: Any, result: PhysicalResult, *, audit: dict[str, Any],
+                           clean_asset_id: str | None = None, clean_asset_hash: str | None = None,
+                           component_asset_id: str | None = None, revision: int | None = None,
+                           lineage_id: str | None = None, split: str | None = None,
+                           run_id: str | None = None) -> Any:
+    """Commit the PhysicalPack *result* asset (plan 4.1, 30.8): recipe + loss + survivors.
+
+    Plan 4.1 requires the PhysicalPack to carry, besides the damaged mesh, the damage recipe,
+    the survivor map, the lost volume and a revision/hash that preserves the clean reference.
+    ``commit_physical`` commits the *component* (the mesh); this helper commits the result
+    record of the same operator run:
+
+    * ``measurement``            -- the metrics ``audit_physical`` actually measured, with units;
+    * ``representative_map``     -- clean fragment id -> surviving representative component id;
+    * ``components``             -- counts including debris / contamination / supportable;
+    * ``lost_volume_mm3`` / ``lost_volume_ratio`` / ``ledger`` -- the material ledger;
+    * ``recipe_id`` / ``axis_id`` / ``variant`` / ``level`` / ``recipe`` -- the frozen factor;
+    * ``revision`` and the input hash (``source_asset_id`` + ``source_hash`` = the committed
+      clean asset the damage was applied to, plus the clean *geometry* hash);
+    * ``qa``                     -- the full audit block; the asset verdict is its ``status``.
+
+    Nothing here is a default: without an audit result (a real measurement) the call fails,
+    and a level the auditor did not confirm as ``PASS`` is committed as ``QA_FAIL`` instead of
+    being promoted by hand.
+    """
+    if not isinstance(audit, dict) or not audit:
+        raise SynLabError(ErrorCode.DAMAGE_EFFECT_MISSING,
+                          "commit_physical_result needs the audit_physical() measurement",
+                          stage="physical.commit_result")
+    if not result.components:
+        raise SynLabError(ErrorCode.DAMAGE_EFFECT_MISSING, "physical result has no components",
+                          stage="physical.commit_result")
+    measured = {str(k): float(v) for k, v in (audit.get("measured") or {}).items()}
+    declared_units = dict((result.meta or {}).get("measurement_units") or {})
+    names = sorted(measured)
+    payload: dict[str, Any] = {
+        "component_volume_mm3": np.asarray([float(c.volume_mm3) for c in result.components],
+                                           dtype=np.float64),
+        "component_is_representative": np.asarray(
+            [bool(c.is_representative) for c in result.components], dtype=bool),
+        "component_supportable": np.asarray(
+            [bool(c.meta.get("supportable", c.is_representative)) for c in result.components],
+            dtype=bool),
+        "component_is_contamination": np.asarray(
+            [bool(c.meta.get("is_contamination", False)) for c in result.components], dtype=bool),
+        "measurement_values": np.asarray([measured[k] for k in names], dtype=np.float64),
+    }
+    status = str(audit.get("status", ""))
+    meta = {
+        "layer": "physical",
+        "role": "physical_pack_result",
+        "recipe_id": result.recipe_id,
+        "axis_id": (result.meta or {}).get("axis_id"),
+        "variant": (result.meta or {}).get("variant"),
+        "level": (result.meta or {}).get("level"),
+        "identity": bool((result.meta or {}).get("identity", False)),
+        "revision": int(result.version if revision is None else revision),
+        "lost_volume_mm3": float(result.lost_volume_mm3),
+        "lost_volume_ratio": float(result.lost_volume_ratio),
+        "representative_map": {str(k): str(v) for k, v in (result.representative_map or {}).items()},
+        "components": {
+            "count": len(result.components),
+            "core": int(sum(1 for c in result.components if c.status == "CORE")),
+            "debris": int(sum(1 for c in result.components if c.status == "DEBRIS")),
+            "supportable": int(sum(1 for c in result.components
+                                   if c.meta.get("supportable", c.is_representative))),
+            "contamination": int(sum(1 for c in result.components
+                                     if c.meta.get("is_contamination", False))),
+            "component_ids": [c.component_id for c in result.components],
+        },
+        "clean_ref": result.clean_ref,
+        "mother_id": result.mother_id,
+        "event_id": result.event_id,
+        "source_asset_id": clean_asset_id,
+        "source_hash": clean_asset_hash,
+        "source_geometry_hash": (result.meta or {}).get("source_geometry_hash"),
+        "result_geometry_hash": (result.qa or {}).get("result_geometry_hash"),
+        "component_asset_id": component_asset_id,
+        "ledger": dict((result.meta or {}).get("ledger") or audit.get("ledger") or {}),
+        "recipe": {"params": (result.meta or {}).get("declared", {}).get("params"),
+                   "roi": (result.meta or {}).get("declared", {}).get("roi"),
+                   "frozen": (result.meta or {}).get("frozen"),
+                   "basis_source": ((result.meta or {}).get("frozen") or {}).get("basis_source")},
+        "measurement": measured,
+        "measurement_names": names,
+        "measurement_units": {k: _measured_units(k, declared_units) for k in names},
+        "measurement_units_declared": {str(k): str(v) for k, v in declared_units.items()},
+        "qa": dict(audit),
+        "qa_status_source": "physical.audit_physical.status",
+        "qa_fail_closed": True,
+        "audit_status": status,
+        "audit_failure_codes": list(audit.get("failure_codes") or []),
+        # the semantics marker of the damage contract this asset was produced under: a later
+        # reader can tell a subset_v1 asset from a subset_v2 one without looking at timestamps
+        # (docs/a12/data_semantics_versions.md)
+        "damage_semantics": str((result.meta or {}).get("damage_semantics",
+                                                        DAMAGE_SEMANTICS_V1)),
+        "subset_instrument": ((audit.get("checks") or {}).get("damaged_subset_clean") or {}
+                              ).get("instrument"),
+        "run_id": run_id,
+    }
+    ancestry = [a for a in (clean_asset_id, component_asset_id) if a]
+    record = store.commit_asset(
+        role=ROLE_PHYSICAL_RESULT, schema=SCHEMA_PHYSICAL, unit=UNIT_MM, frame=FRAME_FRAGMENT,
+        payload=payload, meta=meta, qa=dict(audit), qa_status=_audit_verdict(audit),
+        ancestry=ancestry, lineage_id=lineage_id, split=split,
+    )
+    return record
+
+
+__all__ = ["apply_damage", "assemble_damage_bodies", "audit_physical", "close_numerical_pinholes",
+           "material_volume_floor", "register_components", "commit_physical",
+           "commit_physical_result", "subset_outside_stats",
+           "DAMAGE_SEMANTICS", "DAMAGE_SEMANTICS_V1", "DamageRecipe", "DamageOutcome"]

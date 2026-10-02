@@ -1202,8 +1202,16 @@ def truth_summary(obj: Any) -> dict[str, Any]:
 
 # ------------------------------------------------------------------- persistence
 def commit_truth(store: Any, obj: Any, *, role: str | None = None, lineage_id: str,
-                 split: str, ancestry: Iterable[str] = ()) -> Any:
-    """Persist one truth layer (clean / physical / visible) idempotently."""
+                 split: str, ancestry: Iterable[str] = (), run_id: str | None = None) -> Any:
+    """Persist one truth layer (clean / physical / visible) idempotently.
+
+    ``run_id`` is an *optional* addition to the frozen signature and is written into the asset
+    metadata only when it is supplied, so every existing caller keeps its exact behaviour and its
+    exact asset id.  It matters for the release gates: ``qc.gates.evaluate_gates`` resolves a
+    run's assets through ``meta["run_id"]``, so a truth layer produced by a run but not carrying
+    that key is invisible to every run-scoped check (``fracture_operator_runs`` reads
+    ``clean_truth``, and the run-scoped release scope reads all three layers).
+    """
     if isinstance(obj, CleanTruth):
         obj_role, schema = ROLE_CLEAN_TRUTH, SCHEMA_TRUTH_CLEAN
     elif isinstance(obj, PhysicalTruth):
@@ -1227,6 +1235,8 @@ def commit_truth(store: Any, obj: Any, *, role: str | None = None, lineage_id: s
     meta["relation_count"] = len(relations)
     meta["r2_count"] = sum(1 for row in relations if row["kind"] == RELATION_R2)
     meta["truth_hash"] = _truth_hash(obj, relations)
+    if run_id is not None:
+        meta["run_id"] = str(run_id)
     qa = dict(getattr(obj, "qa", {}) or {})
     payload: dict[str, Any] = dict(arrays)
     payload["relations"] = json.dumps(relations, ensure_ascii=False).encode("utf-8")

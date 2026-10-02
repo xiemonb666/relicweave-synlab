@@ -50,6 +50,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import io
 import json
 import os
@@ -69,6 +70,8 @@ DEFAULT_DEMO_ROOT = REPO_ROOT / "data" / "a12_demo"
 MANIFEST_SCHEMA = "synlab.showcase.demo_manifest.v1"
 MANIFEST_NAME = "demo_manifest.json"
 STORE_DIRNAME = "store"
+#: 素面展示资产的**展示用**中性陶土色（不是权威材质；authority 的 materials 集成是 PENDING）
+DISPLAY_NEUTRAL_BODY_U8 = [214, 208, 196, 255]
 
 MASTER_SEED = 20261001
 LINEAGE_ID = "a12_demo"
@@ -413,8 +416,14 @@ def _store(demo_root: Path) -> Any:
 
 
 def _export_display_glb(store: Any, mesh: Any, *, source_asset: str | None,
-                        label: str, extra_meta: dict[str, Any] | None = None) -> tuple[Any, dict[str, Any]]:
-    """权威 mm/Z-up mesh → 米/Y-up 的 ``display_lod_glb`` 派生资产（与 worker 同一套契约）。"""
+                        label: str, extra_meta: dict[str, Any] | None = None,
+                        bake: dict[str, Any] | None = None) -> tuple[Any, dict[str, Any]]:
+    """权威 mm/Z-up mesh → 米/Y-up 的 ``display_lod_glb`` 派生资产（与 worker 同一套契约）。
+
+    ``bake`` 非空时导出**带纹样贴图**的展示几何：两个 primitive（带图卡 UV 的外壁 +
+    纯 body 颜色的其余面），贴图就是卡片上那张 albedo PNG；法线从完整母体网格算一次后共用。
+    没有 ``bake`` 时行为与以前完全一致（只有位置，没有材质）。
+    """
     import numpy as np
     import trimesh
 
@@ -424,29 +433,102 @@ def _export_display_glb(store: Any, mesh: Any, *, source_asset: str | None,
     authority_vertices = np.asarray(mesh.vertices, dtype=np.float64)
     authority_extent = np.asarray(mesh.bounds[1]) - np.asarray(mesh.bounds[0])
     display_vertices = display.transform_vertices(authority_vertices)
-    display_mesh = trimesh.Trimesh(vertices=display_vertices, faces=np.asarray(mesh.faces),
-                                   process=False)
-    display_extent = np.asarray(display_mesh.bounds[1]) - np.asarray(display_mesh.bounds[0])
+    display_extent = display_vertices.max(axis=0) - display_vertices.min(axis=0)
 
-    levels: dict[str, Any] = {"L0": {"faces": int(len(display_mesh.faces)),
-                                     "vertices": int(len(display_mesh.vertices))}}
+    levels: dict[str, Any] = {}
     lod_notes: list[str] = []
     scene = trimesh.Scene()
-    scene.add_geometry(display_mesh, node_name="L0")
-    for level, ratio in (("L1", 0.3), ("L2", 0.08)):
-        try:
-            simplified = display_mesh.simplify_quadric_decimation(
-                face_count=max(4, int(len(display_mesh.faces) * ratio)))
-        except BaseException as exc:  # noqa: BLE001 - 简化后端是可选的，缺失要如实记录
-            lod_notes.append(f"{level} skipped: {type(exc).__name__}: {exc}")
-            continue
-        if simplified is None or len(simplified.faces) == 0:
-            lod_notes.append(f"{level} skipped: decimation returned no faces")
-            continue
-        scene.add_geometry(simplified.copy(), node_name=level)
-        levels[level] = {"faces": int(len(simplified.faces)),
-                         "vertices": int(len(simplified.vertices))}
-    glb = scene.export(file_type="glb")
+    bake_stats: dict[str, Any] = {}
+    geometry_totals = {"faces": 0, "vertices": 0}
+
+    if bake is None:
+        display_mesh = trimesh.Trimesh(vertices=display_vertices, faces=np.asarray(mesh.faces),
+                                       process=False)
+        # 没有花纹的展示资产也必须显式给一个展示材质：glTF 里 primitive 不带 material 时
+        # 走规范的默认材质（metallic=1），浏览器里会渲染成一块没有漫反射的金属。
+        # 这是**展示用**中性陶土色，不是权威材质（authority 的 materials 集成仍是 PENDING）。
+        display_mesh.visual = trimesh.visual.TextureVisuals(
+            material=trimesh.visual.material.PBRMaterial(
+                baseColorFactor=DISPLAY_NEUTRAL_BODY_U8, metallicFactor=0.0,
+                roughnessFactor=0.72))
+        levels["L0"] = {"faces": int(len(display_mesh.faces)),
+                        "vertices": int(len(display_mesh.vertices))}
+        geometry_totals = {"faces": int(len(display_mesh.faces)),
+                           "vertices": int(len(display_mesh.vertices))}
+        scene.add_geometry(display_mesh, node_name="L0")
+        # L1/L2 的简化结果**照实测量并记录**，但不放进同一个场景：展示页的视口把场景里的
+        # 所有节点一起渲染（`SceneViewport` 没有 LOD 选择器），多层级重叠会 z-fighting，
+        # 而二次误差简化的 L2 实测外扩到 193.95 mm（L0 是 182.45 mm），会直接穿出器壁。
+        lod_nodes = ["L0"]
+        for level, ratio in (("L1", 0.3), ("L2", 0.08)):
+            try:
+                simplified = display_mesh.simplify_quadric_decimation(
+                    face_count=max(4, int(len(display_mesh.faces) * ratio)))
+            except BaseException as exc:  # noqa: BLE001 - 简化后端是可选的，缺失要如实记录
+                lod_notes.append(f"{level} skipped: {type(exc).__name__}: {exc}")
+                continue
+            if simplified is None or len(simplified.faces) == 0:
+                lod_notes.append(f"{level} skipped: decimation returned no faces")
+                continue
+            extent = np.asarray(simplified.bounds[1]) - np.asarray(simplified.bounds[0])
+            levels[level] = {"faces": int(len(simplified.faces)),
+                             "vertices": int(len(simplified.vertices)),
+                             "display_extent_m": extent.tolist(),
+                             "exported_as_scene_node": False}
+            lod_notes.append(
+                f"{level} measured only (faces={int(len(simplified.faces))}, "
+                f"extent_m={np.round(extent, 6).tolist()}): 不放进场景，避免与 L0 重叠渲染")
+        levels["L0"]["exported_as_scene_node"] = True
+        lod_notes.append("scene_nodes=" + ",".join(lod_nodes) +
+                         "（展示视口同时渲染场景所有节点，因此只放 L0）")
+    else:
+        from PIL import Image
+
+        rotation = np.asarray(display.T_DISPLAY_AUTHORITY, dtype=np.float64)[:3, :3]
+        normals = np.asarray(mesh.vertex_normals, dtype=np.float64) @ rotation.T
+        lengths = np.linalg.norm(normals, axis=1, keepdims=True)
+        normals = normals / np.where(lengths > 0, lengths, 1.0)
+        texture = Image.open(io.BytesIO(bytes(bake["albedo_png"])))
+        texture.load()
+        roughness = float(bake.get("roughness", 0.65))
+        body_color = np.asarray(bake.get("body_color_linear", (0.5, 0.5, 0.5)),
+                                dtype=np.float64)
+
+        textured = bake["textured"]
+        wall = trimesh.Trimesh(
+            vertices=display.transform_vertices(np.asarray(textured["vertices_mm"], dtype=np.float64)),
+            faces=np.asarray(textured["faces"], dtype=np.int64), process=False)
+        wall.visual = trimesh.visual.TextureVisuals(
+            uv=np.asarray(textured["uv"], dtype=np.float64),
+            material=trimesh.visual.material.PBRMaterial(
+                baseColorFactor=[255, 255, 255, 255], metallicFactor=0.0,
+                roughnessFactor=roughness, baseColorTexture=texture))
+        body = bake["body"]
+        parts = [("wall", wall, np.asarray(textured["normal_index"], dtype=np.int64))]
+        if len(np.asarray(body["faces"])) > 0:
+            shell = trimesh.Trimesh(
+                vertices=display.transform_vertices(np.asarray(body["vertices_mm"], dtype=np.float64)),
+                faces=np.asarray(body["faces"], dtype=np.int64), process=False)
+            shell.visual = trimesh.visual.TextureVisuals(
+                material=trimesh.visual.material.PBRMaterial(
+                    baseColorFactor=np.rint(np.clip(body_color, 0.0, 1.0) * 255.0).astype(np.uint8),
+                    metallicFactor=0.0, roughnessFactor=roughness))
+            parts.append(("body", shell, np.asarray(body["normal_index"], dtype=np.int64)))
+        for name, part, normal_index in parts:
+            # 法线从完整母体网格算一次后按索引取，两个 primitive 共用 → tag 边界与 UV 解缠缝
+            # 上都不会出现假折线（trimesh 只在 cache 里有 vertex_normals 时才导出 NORMAL）
+            part._cache["vertex_normals"] = np.ascontiguousarray(normals[normal_index])
+            scene.add_geometry(part, node_name=name)
+            levels[name] = {"faces": int(len(part.faces)), "vertices": int(len(part.vertices)),
+                            "uv": bool(getattr(part.visual, "uv", None) is not None)}
+        lod_notes.append("LOD skipped: 顶点色/贴图是逐原始顶点烘焙的，简化会重采样它们")
+        bake_stats = {"primitives": [name for name, _, _ in parts],
+                      "texture_bytes": len(bytes(bake["albedo_png"]))}
+        geometry_totals = {
+            "faces": int(sum(len(part.faces) for _, part, _ in parts)),
+            "vertices": int(sum(len(part.vertices) for _, part, _ in parts)),
+        }
+    glb = scene.export(file_type="glb", include_normals=True)
 
     transform = display.describe()
     record = store.commit_asset(
@@ -464,6 +546,16 @@ def _export_display_glb(store: Any, mesh: Any, *, source_asset: str | None,
             "display_extent_m": display_extent.tolist(),
             "lod_levels": levels,
             "lod_notes": lod_notes,
+            "bake": bake_stats or None,
+            "display_material": (
+                {"mode": "pattern_texture", "metallicFactor": 0.0}
+                if bake is not None else
+                {"mode": "neutral_display_body", "baseColorFactor": DISPLAY_NEUTRAL_BODY_U8,
+                 "metallicFactor": 0.0, "roughnessFactor": 0.72,
+                 "note": "展示用中性陶土色，不是权威材质；synlab.materials 的集成仍是 PENDING"}),
+            "normals": ("顶点法线随 GLB 导出：three.js GLTFLoader 在几何没有 NORMAL 时会设 "
+                        "flatShading=true（node_modules/three/examples/jsm/loaders/GLTFLoader.js:"
+                        "3522/3581），那样每个三角面都是平色块"),
             "note": "display-only derivation; authoritative geometry remains mm/Z-up and is untouched",
             **(extra_meta or {}),
         },
@@ -483,11 +575,12 @@ def _export_display_glb(store: Any, mesh: Any, *, source_asset: str | None,
         "glb_bytes": len(glb),
         "authority_extent_mm": authority_extent.tolist(),
         "display_extent_m": display_extent.tolist(),
-        "triangles": int(len(display_mesh.faces)),
-        "vertices": int(len(display_mesh.vertices)),
+        "triangles": int(geometry_totals["faces"]),
+        "vertices": int(geometry_totals["vertices"]),
         "lod_levels": sorted(levels),
         "lod_notes": lod_notes,
         "display_transform_id": transform["transform_id"],
+        "bake": bake_stats or None,
     }
     return record, metrics
 
@@ -586,89 +679,353 @@ def task_mother(demo_root: Path, task: dict[str, Any], manifest: Manifest) -> di
 # ======================================================================================
 # 任务：纹样
 # ======================================================================================
-def _pattern_channel_images(mother: Any, recipe: Any, channels: Any, *, rng: Any,
-                            n_samples: int = 600_000, width: int = 256, height: int = 128
-                            ) -> tuple[dict[str, bytes], dict[str, Any]]:
-    """在真实母体上按面积加权采样 → ``evaluate`` → (x,s) 网格分箱 → 三通道 PNG。"""
+#: 纹样通道栅格的采样预算：一次 ``evaluate`` 调用的总点数（含超采样与像素中心点）。
+PATTERN_RASTER_SAMPLE_BUDGET = 1_200_000
+#: 每像素 2×2 超采样 → 线性空间面积平均（抗锯齿）；全程确定性，不抽随机数。
+PATTERN_RASTER_SUPERSAMPLE = 2
+PATTERN_RASTER_MIN_COLS = 64
+PATTERN_RASTER_MAX_COLS = 1280
+PATTERN_RASTER_MIN_ROWS = 8
+PATTERN_RASTER_MAX_ROWS = 1280
+
+
+def _chart_parts(frame: Any) -> tuple[dict[str, Any], dict[str, Any], str]:
+    """图卡冻结时一起落盘的数值数组 / 规格 / 真实类型（母体把数组存在 ``meta["arrays"]``）。"""
+    meta = dict(getattr(getattr(frame, "chart", None), "meta", None) or {})
+    return (dict(meta.get("arrays") or {}), dict(meta.get("spec") or {}),
+            str((meta.get("spec") or {}).get("kind") or frame.kind))
+
+
+def _chart_inverse(frame: Any) -> tuple[Any, str]:
+    """``(x_mm, s_mm) -> 母体毫米坐标``：只用图卡冻结时自带的数据重建。
+
+    母体图卡**不带** ``chart.meta["uv_to_xyz"]`` 闭包（``synlab/mothers/charts.py`` 从不写它，
+    只有 ``synlab/patterns/fixtures.py`` 的测试实体提供），所以逆映射从图卡自带的冻结数组重建：
+
+    * ``revolve``：``profile_rzs`` 是母线折线 ``(r, z)``，``s`` 是沿母线的弧长（与 ``to_uv``
+      里 ``poly.project`` 同一张弧长表），``u = x_mm / x_period_mm`` 是方位角分数；
+    * ``prism``：``ring_xy`` 是挤出环，``u`` 是环周长分数、``s`` 是高度；
+    * ``sweep``（开放）：``x`` 本身就是沿路径的毫米弧长，``s`` 是 z。
+
+    重建点与 ``to_chart_mm`` 的往返误差在 1e-13 mm 量级（生成时实测并写进清单）。
+    """
+    import numpy as np
+
+    arrays, spec, kind = _chart_parts(frame)
+    if kind == "revolve":
+        profile = np.asarray(arrays.get("profile_rzs"), dtype=np.float64)
+        if profile.ndim != 2 or profile.shape[1] < 2 or profile.shape[0] < 2:
+            raise RuntimeError("revolve 图卡缺少 profile_rzs，无法重建 (x,s) → 世界坐标")
+        rz = profile[:, :2]
+        s_tab = np.concatenate([[0.0], np.cumsum(np.linalg.norm(np.diff(rz, axis=0), axis=1))])
+        period = float(spec.get("x_period_mm") or frame.x_period_mm or 0.0)
+        if not period > 0:
+            raise RuntimeError("revolve 图卡缺少正周期，无法重建 (x,s) → 世界坐标")
+
+        def inverse_revolve(x_mm: Any, s_mm: Any) -> Any:
+            x = np.asarray(x_mm, dtype=np.float64)
+            s = np.asarray(s_mm, dtype=np.float64)
+            r = np.interp(s, s_tab, rz[:, 0])
+            z = np.interp(s, s_tab, rz[:, 1])
+            theta = 2.0 * np.pi * np.mod(x, period) / period
+            return np.column_stack([r * np.cos(theta), r * np.sin(theta), z])
+
+        return inverse_revolve, kind
+
+    if kind == "prism":
+        ring = np.asarray(arrays.get("ring_xy"), dtype=np.float64)
+        if ring.ndim != 2 or ring.shape[1] != 2 or ring.shape[0] < 3:
+            raise RuntimeError("prism 图卡缺少 ring_xy，无法重建 (x,s) → 世界坐标")
+        closed = np.vstack([ring, ring[:1]])
+        s_tab = np.concatenate([[0.0], np.cumsum(np.linalg.norm(np.diff(closed, axis=0), axis=1))])
+        perimeter = float(s_tab[-1])
+        z0 = float(spec.get("z_min_mm", 0.0))
+
+        def inverse_prism(x_mm: Any, s_mm: Any) -> Any:
+            x = np.asarray(x_mm, dtype=np.float64)
+            s = np.asarray(s_mm, dtype=np.float64)
+            s_ring = np.mod(x, perimeter)
+            return np.column_stack([np.interp(s_ring, s_tab, closed[:, 0]),
+                                    np.interp(s_ring, s_tab, closed[:, 1]),
+                                    z0 + s])
+
+        return inverse_prism, kind
+
+    if kind == "sweep":
+        path = np.asarray(arrays.get("path_xyz"), dtype=np.float64)
+        if path.ndim != 2 or path.shape[1] != 3 or path.shape[0] < 2:
+            raise RuntimeError("sweep 图卡缺少 path_xyz，无法重建 (x,s) → 世界坐标")
+        s_tab = np.concatenate([[0.0], np.cumsum(np.linalg.norm(np.diff(path, axis=0), axis=1))])
+
+        def inverse_sweep(x_mm: Any, s_mm: Any) -> Any:
+            x = np.asarray(x_mm, dtype=np.float64)
+            s = np.asarray(s_mm, dtype=np.float64)
+            return np.column_stack([np.interp(x, s_tab, path[:, 0]),
+                                    np.interp(x, s_tab, path[:, 1]), s])
+
+        return inverse_sweep, kind
+
+    raise RuntimeError(f"图卡类型 {kind!r} 没有 (x,s) → 世界坐标的逆映射")
+
+
+def _measure_chart_x_range(mother: Any, frame: Any) -> tuple[float, float]:
+    """开放图卡（planar/sweep）没有声明 x 范围：从真实网格量出来，不猜。"""
     import numpy as np
 
     from synlab.patterns.api import to_chart_mm
-    from synlab.patterns.charts import face_centre_chart, resolve_frame
 
-    tag_name = str((recipe.meta.get("chart") or {}).get("surface_tag") or "outer_wall")
-    frame = resolve_frame(mother, tag_name)
     faces = np.asarray(mother.mesh.faces, dtype=np.int64)
     tags = np.asarray(mother.face_surface_tag)
     mask = tags == int(frame.tag)
     if not bool(np.any(mask)):
-        raise RuntimeError(f"母体上没有 surface_tag={tag_name} 的面，无法做纹样通道分箱")
-    triangles = np.asarray(mother.mesh.triangles, dtype=np.float64)[mask]
-    areas = np.asarray(mother.mesh.area_faces, dtype=np.float64)[mask]
-    weights = areas / float(areas.sum())
+        raise RuntimeError(f"母体上没有 surface_tag={frame.tag_name!r} 的面，无法建纹样栅格")
+    vidx = np.unique(faces[mask].reshape(-1))
+    verts = np.asarray(mother.mesh.vertices, dtype=np.float64)[vidx]
+    x_mm, _ = to_chart_mm(frame, verts)
+    return float(x_mm.min()), float(x_mm.max())
 
-    index = rng.choice(len(triangles), size=int(n_samples), p=weights)
-    uv = rng.random((int(n_samples), 2))
-    flip = uv.sum(axis=1) > 1.0
-    uv[flip] = 1.0 - uv[flip]
-    origin = triangles[index, 0]
-    points = (origin
-              + (triangles[index, 1] - origin) * uv[:, 0:1]
-              + (triangles[index, 2] - origin) * uv[:, 1:2])
 
-    channels_eval = _evaluate_pattern(recipe, mother, points, int(frame.tag))
-    x_mm, s_mm = to_chart_mm(frame, points)
+def _pattern_raster_plan(frame: Any, mother: Any, *, footprint_mm: float | None = None
+                         ) -> dict[str, Any]:
+    """栅格几何：周期列 ``u_k = (k + 0.5) / W``、行 ``s_j = s_lo + j * ds``（``ds = span/(H-1)``）。
 
-    period = float(frame.x_period_mm) if frame.x_period_mm else float(x_mm.max() - x_mm.min())
-    periodic = bool(frame.u_periodic)
-    x_lo = 0.0 if periodic else float(x_mm.min())
+    列一定是 ``[0,1)`` 上的周期采样（**不含**端点 1）：``u=0`` 与 ``u=1`` 落在同一列上，
+    接缝天然闭合，回绕列差就是普通相邻列差。行取满 ``[s_lo, s_hi]`` 且**端点即首末行中心**，
+    于是贴图 v 坐标严格落在 ``[0.5/H, 1-0.5/H]`` 内——采样器的 wrap 模式（REPEAT/CLAMP）
+    在 v 上不可能造成任何差异。
+
+    分辨率：texel 近似正方形，先受 :data:`PATTERN_RASTER_SAMPLE_BUDGET` 约束，再**不必细于
+    场自带的特征尺度** ``footprint_mm``（小于它只是重复采样同一个平滑场）。
+    """
+    import numpy as np
+
+    supersample = max(int(PATTERN_RASTER_SUPERSAMPLE), 1)
+    periodic = bool(frame.u_periodic) and bool(frame.x_period_mm)
+    if periodic:
+        period: float | None = float(frame.x_period_mm)
+        x_lo, x_span = 0.0, period
+    else:
+        period = None
+        x_lo, x_hi = _measure_chart_x_range(mother, frame)
+        x_span = max(x_hi - x_lo, 1e-9)
     s_lo, s_hi = float(frame.s_min_mm), float(frame.s_max_mm)
-    s_span = max(s_hi - s_lo, 1e-9)
+    s_span = s_hi - s_lo
+    if not s_span > 0:
+        raise RuntimeError(f"图卡 {frame.name!r} 的 s 范围为空 [{s_lo}, {s_hi}]，无法建纹样栅格")
+    aspect = s_span / x_span
+    pixels_budget = max(PATTERN_RASTER_SAMPLE_BUDGET // (supersample * supersample + 1), 1)
+    width = int(np.clip(round(np.sqrt(pixels_budget / max(aspect, 1e-12))),
+                        PATTERN_RASTER_MIN_COLS, PATTERN_RASTER_MAX_COLS))
+    footprint = None if footprint_mm is None or footprint_mm <= 0 else float(footprint_mm)
+    if footprint is not None:  # 不比场自己的特征尺度更细
+        cap = int(np.ceil(x_span / footprint))
+        if PATTERN_RASTER_MIN_COLS <= cap < width:
+            width = cap
+    height = int(np.clip(round(width * aspect), PATTERN_RASTER_MIN_ROWS, PATTERN_RASTER_MAX_ROWS))
+    total = width * height * (supersample * supersample + 1)
+    if total > PATTERN_RASTER_SAMPLE_BUDGET:  # 仍超预算：等比缩到预算内
+        scale = float(np.sqrt(PATTERN_RASTER_SAMPLE_BUDGET / float(total)))
+        width = max(int(width * scale), PATTERN_RASTER_MIN_COLS)
+        height = max(int(height * scale), PATTERN_RASTER_MIN_ROWS)
+    ds = s_span / float(max(height - 1, 1))
+    texel = [float(x_span) / float(width), float(ds)]
+    return {
+        "width": width, "height": height, "supersample": supersample,
+        "x_lo": float(x_lo), "x_span": float(x_span), "x_period_mm": period,
+        "x_periodic": periodic, "s_lo": s_lo, "s_hi": s_hi, "s_span": float(s_span), "ds": float(ds),
+        "texel_mm": texel,
+        "footprint_mm": footprint,
+        "texel_over_footprint": (None if footprint is None
+                                 else float(np.hypot(texel[0], texel[1]) / footprint)),
+        "u_rule": "u_k = (k + 0.5) / W，k = 0..W-1（周期 [0,1)，不含端点 1）",
+        "s_rule": "s_j = s_lo + j * ds，ds = (s_hi - s_lo) / (H - 1)（端点即首末行中心）",
+    }
 
-    col = np.floor((x_mm - x_lo) / max(period, 1e-9) * width).astype(np.int64)
-    col = np.mod(col, width) if periodic else np.clip(col, 0, width - 1)
-    row = np.clip(np.floor((s_mm - s_lo) / s_span * height).astype(np.int64), 0, height - 1)
-    flat = row * width + col
 
-    counts = np.bincount(flat, minlength=width * height).astype(np.float64)
-    filled = counts > 0
+def _texel_face_coverage(mother: Any, frame: Any, plan: dict[str, Any]) -> dict[str, Any]:
+    """实测：图卡矩形里到底有多少 texel 真的被 tagged 面占据（逐面精确点内测试）。
 
-    pixels_albedo = np.zeros((width * height, 3), dtype=np.float64)
-    pixels_rough = np.zeros((width * height,), dtype=np.float64)
-    pixels_height = np.zeros((width * height,), dtype=np.float64)
-    albedo = np.asarray(channels_eval.albedo, dtype=np.float64)
-    roughness = np.asarray(channels_eval.roughness, dtype=np.float64)
-    height_mm = np.asarray(channels_eval.height_mm, dtype=np.float64)
-    for channel_index in range(3):
-        pixels_albedo[:, channel_index] = np.bincount(
-            flat, weights=albedo[:, channel_index], minlength=width * height)
-    pixels_rough = np.bincount(flat, weights=roughness, minlength=width * height)
-    pixels_height = np.bincount(flat, weights=height_mm, minlength=width * height)
-    denom = np.where(filled, counts, 1.0)
-    binned_albedo = (pixels_albedo / denom[:, None]).reshape(height, width, 3)
-    binned_rough = (pixels_rough / denom).reshape(height, width)
-    binned_height = (pixels_height / denom).reshape(height, width)
-    covered = filled.reshape(height, width)
-    has_data = bool(np.any(filled))
+    这不是"有没有花纹"的指标，而是"这张图卡贴图有多少面积在网格上真的可见"的诚实披露：
+    图卡坐标是 (u, s) 的展开矩形，而真实网格只占据其中一部分（例如内壁与外壁共享同一个
+    ``(u,s)``，被占据的 texel 也会多于外壁；反过来某段 ``s`` 可能只有部分方位角有面）。
+    """
+    import numpy as np
 
-    albedo_u8 = _linear_to_display_u8(binned_albedo)
-    rough_u8 = _gray_u8(binned_rough)
-    amp = float(np.max(np.abs(binned_height[covered]))) if has_data else 0.0
-    amp = max(amp, 1e-6)
-    height_u8 = _diverging_bwr(binned_height / amp)
+    from synlab.patterns.charts import to_chart_mm
 
-    # 未覆盖的 bin 保持黑色：诚实标注覆盖率，不用插值填洞
-    coverage = float(counts[filled].size) / float(width * height)
+    width, height = int(plan["width"]), int(plan["height"])
+    faces = np.asarray(mother.mesh.faces, dtype=np.int64)
+    tags = np.asarray(mother.face_surface_tag)
+    mask = tags == int(frame.tag)
+    if not bool(np.any(mask)):
+        return {"fraction": 0.0, "texels": 0, "faces": 0}
+    vertices = np.asarray(mother.mesh.vertices, dtype=np.float64)
+    x_mm, s_mm = to_chart_mm(frame, vertices)
+    if plan["x_periodic"]:
+        u = np.mod(x_mm, float(plan["x_period_mm"])) / float(plan["x_period_mm"])
+    else:
+        u = (x_mm - plan["x_lo"]) / max(plan["x_span"], 1e-9)
+    u = u * width - 0.5
+    v = (s_mm - plan["s_lo"]) / max(plan["ds"], 1e-12)
+
+    covered = np.zeros((height, width), dtype=bool)
+    tri = faces[mask]
+    for corners in (tri,):
+        cu = u[corners]
+        cv = v[corners]
+        if plan["x_periodic"]:
+            lo = cu.min(axis=1, keepdims=True)
+            wrapped = (cu.max(axis=1, keepdims=True) - lo) > 0.5 * width
+            shift = np.where(cu < (lo + 0.5 * width), width, 0.0)
+            cu = np.where(wrapped, cu + shift, cu)
+        for k in range(cu.shape[0]):
+            xu, yv = cu[k], cv[k]
+            x0, x1 = int(np.floor(xu.min())), int(np.ceil(xu.max()))
+            y0, y1 = int(np.floor(yv.min())), int(np.ceil(yv.max()))
+            if x1 < x0 or y1 < y0:
+                continue
+            cols = np.arange(x0, x1 + 1, dtype=np.int64)
+            rows = np.arange(max(y0, 0), min(y1, height - 1) + 1, dtype=np.int64)
+            if cols.size == 0 or rows.size == 0:
+                continue
+            gx, gy = np.meshgrid(cols.astype(np.float64), rows.astype(np.float64))
+            # 重心坐标点内测试（像素中心 = texel 中心）
+            ax, ay = xu[0], yv[0]
+            bx, by = xu[1], yv[1]
+            cx, cy = xu[2], yv[2]
+            den = (by - cy) * (ax - cx) + (cx - bx) * (ay - cy)
+            if abs(float(den)) < 1e-12:
+                continue
+            w0 = ((by - cy) * (gx - cx) + (cx - bx) * (gy - cy)) / den
+            w1 = ((cy - ay) * (gx - cx) + (ax - cx) * (gy - cy)) / den
+            w2 = 1.0 - w0 - w1
+            inside = (w0 >= -1e-9) & (w1 >= -1e-9) & (w2 >= -1e-9)
+            if not bool(np.any(inside)):
+                continue
+            hit_rows, hit_cols = np.nonzero(inside)
+            covered[rows[hit_rows], np.mod(cols[hit_cols], width)] = True
+    texels = int(covered.sum())
+    return {"fraction": float(texels) / float(width * height), "texels": texels,
+            "faces": int(tri.shape[0])}
+
+
+def _pattern_chart_raster(mother: Any, recipe: Any, frame: Any, plan: dict[str, Any]
+                          ) -> dict[str, Any]:
+    """冻结 recipe 在真实图卡坐标上的**确定性**求值 → 三通道栅格 + 三张 PNG。
+
+    每个像素取 ``supersample²`` 个 texel 内子样点 + 1 个 texel 中心点；所有点先在
+    ``(x_mm, s_mm)`` 上构造，再用图卡逆映射变成真实母体毫米坐标，交给
+    ``synlab.patterns.api.evaluate``（场本身是纯函数、不抽随机数）。三通道用**同一网格、
+    同一 recipe、同一次调用**，所以 albedo/roughness/height 逐像素对齐；超采样在线性空间
+    取面积平均（抗锯齿）。栅格**没有**"未覆盖像素"：整张图卡矩形都被解析求值覆盖，
+    同时实测并记录"矩形里到底有多少 texel 真的被 tagged 面占据"。
+    """
+    import numpy as np
+
+    from synlab.patterns.api import evaluate
+    from synlab.patterns.charts import to_chart_mm
+
+    inverse, chart_kind = _chart_inverse(frame)
+    width, height, ss = int(plan["width"]), int(plan["height"]), int(plan["supersample"])
+    n_texels = width * height
+    ku = (np.arange(width, dtype=np.float64) + 0.5) / float(width)
+    ks = np.arange(height, dtype=np.float64)
+    grid_x = np.broadcast_to((plan["x_lo"] + ku * plan["x_span"])[None, :], (height, width))
+    grid_s = np.broadcast_to((plan["s_lo"] + ks * plan["ds"])[:, None], (height, width))
+
+    step_x, step_s = float(plan["texel_mm"][0]), float(plan["ds"])
+    half = (np.arange(ss, dtype=np.float64) + 0.5) / float(ss) - 0.5  # ss=2 → [-0.25, +0.25]
+    offsets = [(du, dv) for dv in half for du in half] if ss > 1 else []
+    # 超采样只在图卡的合法范围内取样（边界行/列按 clamp 处理）：图卡外的点会被
+    # ``to_uv`` 的 clip 折叠回边界，那会让"逆映射往返"变成假误差
+    layers = [np.clip(grid_x + du * step_x, plan["x_lo"], plan["x_lo"] + plan["x_span"])
+              for du, _ in offsets] + [grid_x]
+    layers_s = [np.clip(grid_s + dv * step_s, plan["s_lo"], plan["s_hi"])
+                for _, dv in offsets] + [grid_s]
+    x_all = np.concatenate([a.reshape(-1) for a in layers])
+    s_all = np.concatenate([a.reshape(-1) for a in layers_s])
+    points = inverse(x_all, s_all)
+
+    x_back, s_back = to_chart_mm(frame, points)
+    if plan["x_periodic"]:
+        period = float(plan["x_period_mm"])
+        dx = np.abs(np.mod(x_back - x_all + 0.5 * period, period) - 0.5 * period)
+    else:
+        dx = np.abs(x_back - x_all)
+    roundtrip = {"x_max_mm": float(dx.max()), "s_max_mm": float(np.abs(s_back - s_all).max())}
+
+    channels_eval = evaluate(recipe, mother, points, int(frame.tag))
+    n_layers = len(layers)
+    albedo_layers = np.asarray(channels_eval.albedo, dtype=np.float64).reshape(n_layers, n_texels, 3)
+    rough_layers = np.asarray(channels_eval.roughness, dtype=np.float64).reshape(n_layers, n_texels)
+    height_layers = np.asarray(channels_eval.height_mm, dtype=np.float64).reshape(n_layers, n_texels)
+    region_layers = np.asarray(channels_eval.pattern_region, dtype=np.uint8).reshape(
+        n_layers, n_texels)
+
+    n_sub = len(offsets)
+    if n_sub:
+        albedo = albedo_layers[:n_sub].mean(axis=0)
+        roughness = rough_layers[:n_sub].mean(axis=0)
+        height_mm = height_layers[:n_sub].mean(axis=0)
+    else:  # 没有超采样时唯一一层就是像素中心
+        albedo = albedo_layers[0]
+        roughness = rough_layers[0]
+        height_mm = height_layers[0]
+    centre_albedo, centre_rough, centre_height = albedo_layers[-1], rough_layers[-1], height_layers[-1]
+    in_region = region_layers.any(axis=0)
+
+    albedo = albedo.reshape(height, width, 3)
+    roughness = roughness.reshape(height, width)
+    height_mm = height_mm.reshape(height, width)
+    centre_albedo = centre_albedo.reshape(height, width, 3)
+    centre_rough = centre_rough.reshape(height, width)
+    centre_height = centre_height.reshape(height, width)
+    in_region = in_region.reshape(height, width)
+
+    # 逐像素来看，超采样面积均值与"像素中心解析值"的差就是抗锯齿低通量（如实记录，不掩饰）
+    dev_albedo = np.abs(albedo - centre_albedo).reshape(n_texels, 3)
+    dev_rough = np.abs(roughness - centre_rough).reshape(n_texels)
+    dev_height = np.abs(height_mm - centre_height).reshape(n_texels)
+
+    albedo_u8 = _linear_to_display_u8(albedo)
+    rough_u8 = _gray_u8(roughness)
+    amp = max(float(np.max(np.abs(height_mm))) if height_mm.size else 0.0, 1e-6)
+    height_u8 = _diverging_bwr(height_mm / amp)
+
+    # 连续性：列均值（x 方向）与行均值（s 方向）的相邻差、以及回绕列差
+    def _continuity(plane: Any) -> dict[str, float]:
+        cols = np.asarray(plane, dtype=np.float64).mean(axis=0)
+        rows = np.asarray(plane, dtype=np.float64).mean(axis=1)
+        adj_col = np.abs(np.diff(cols))
+        adj_row = np.abs(np.diff(rows))
+        return {
+            "column_adjacent_mean_abs": float(adj_col.mean()) if adj_col.size else 0.0,
+            "column_adjacent_max_abs": float(adj_col.max()) if adj_col.size else 0.0,
+            "column_wrap_abs": float(abs(cols[0] - cols[-1])) if cols.size else 0.0,
+            "row_adjacent_mean_abs": float(adj_row.mean()) if adj_row.size else 0.0,
+            "row_max_abs": float(adj_row.max()) if adj_row.size else 0.0,
+        }
+
+    continuity = {"albedo_linear": _continuity(albedo.mean(axis=2)),
+                  "roughness": _continuity(roughness),
+                  "height_mm": _continuity(height_mm)}
+
+    # 图卡矩形被 tagged 面真实占据的比例（逐面点内测试；没被占据的 texel 在网格上不可见）
+    coverage = _texel_face_coverage(mother, frame, plan)
+    face_coverage = float(coverage["fraction"])
+
     legend = {
-        "albedo_png": f"{PNG_ENCODING_LEGEND['albedo']}；网格 {width}×{height}，"
-                      f"面积加权随机采样 n={int(n_samples)}，分箱覆盖 {coverage:.1%}；未覆盖像素为黑",
-        "roughness_png": (f"{PNG_ENCODING_LEGEND['roughness']}；分箱均值实测范围 "
-                          f"[{float(binned_rough[covered].min()):.4f}, "
-                          f"{float(binned_rough[covered].max()):.4f}]"
-                          if has_data else PNG_ENCODING_LEGEND["roughness"]),
+        "albedo_png": (f"{PNG_ENCODING_LEGEND['albedo']}；网格 {width}×{height}（texel "
+                       f"{plan['texel_mm'][0]:.4f}×{plan['texel_mm'][1]:.4f} mm），"
+                       f"每像素 {ss}×{ss} 超采样在线性空间取面积平均；"
+                       f"整张图卡矩形都被求值覆盖，没有空洞像素"),
+        "roughness_png": (f"{PNG_ENCODING_LEGEND['roughness']}；同一网格、同一 recipe 的同一次 "
+                          f"evaluate() 调用；实测范围 [{float(roughness.min()):.4f}, "
+                          f"{float(roughness.max()):.4f}]"),
         "height_png": (f"{PNG_ENCODING_LEGEND['height_mm']}；对称幅度 amax={amp:.6f} mm，"
-                       f"分箱均值实测 min={float(binned_height[covered].min()):.6f} mm、"
-                       f"max={float(binned_height[covered].max()):.6f} mm"
-                       if has_data else PNG_ENCODING_LEGEND["height_mm"]),
+                       f"实测 min={float(height_mm.min()):.6f} mm、"
+                       f"max={float(height_mm.max()):.6f} mm；"
+                       f"height 是几何通道，展示 GLB 只烘焙 albedo，不做位移"),
     }
     images = {
         "albedo_png": _png_bytes(albedo_u8),
@@ -677,16 +1034,34 @@ def _pattern_channel_images(mother: Any, recipe: Any, channels: Any, *, rng: Any
     }
     stats = {
         "raster": {
-            "width": width, "height": height, "n_samples": int(n_samples),
-            "bin_coverage": coverage, "filled_bins": int(counts[filled].size),
-            "mean_samples_per_filled_bin": (float(counts[filled].mean())
-                                            if bool(np.any(filled)) else 0.0),
-            "chart": frame.as_dict(), "x_period_mm": period, "x_periodic": periodic,
-            "s_range_mm": [s_lo, s_hi],
-            "method": "面元面积加权随机采样 → evaluate() → (x,s) 网格分箱算术平均；"
-                      "不是逐像素解析真值，未覆盖 bin 保持黑色；"
-                      "bin 内残余颗粒是采样噪声，不是纹样结构",
-            "rng": f"make_rng({MASTER_SEED}, {LINEAGE_ID}, patterns, {recipe.family_id})",
+            "width": width, "height": height, "supersample": ss,
+            "n_samples": int(x_all.size),
+            "method": ("确定性图卡栅格：像素中心 (u_k, s_j) 经图卡逆映射回到母体毫米坐标后调用 "
+                       "evaluate()，每像素 ss×ss 超采样在线性空间取面积平均；不抽随机数、无空洞"),
+            "grid": {"u_rule": plan["u_rule"], "s_rule": plan["s_rule"],
+                     "texel_mm": [float(plan["texel_mm"][0]), float(plan["ds"])],
+                     "width": width, "height": height},
+            "footprint_mm": plan["footprint_mm"],
+            "texel_over_footprint": plan["texel_over_footprint"],
+            "chart": frame.as_dict(), "chart_kind": chart_kind,
+            "x_period_mm": (None if plan["x_period_mm"] is None else float(plan["x_period_mm"])),
+            "x_periodic": bool(plan["x_periodic"]),
+            "s_range_mm": [float(plan["s_lo"]), float(plan["s_hi"])],
+            "inverse_mapping": ("(x_mm, s_mm) → 母体 mm：由图卡自带的 "
+                                f"{'profile_rzs' if chart_kind == 'revolve' else 'ring_xy' if chart_kind == 'prism' else 'path_xyz'} "
+                                "数组重建；往返误差见 inverse_roundtrip_mm"),
+            "inverse_roundtrip_mm": roundtrip,
+            "face_coverage_fraction": face_coverage,
+            "texels_in_pattern_region_fraction": float(in_region.mean()),
+            "continuity": continuity,
+            "analytic_deviation": {
+                "note": "超采样面积均值 vs 像素中心解析值（抗锯齿低通量，不是误差掩盖）",
+                "albedo_max_abs": float(dev_albedo.max()) if dev_albedo.size else 0.0,
+                "albedo_p95_abs": float(np.percentile(dev_albedo, 95)) if dev_albedo.size else 0.0,
+                "roughness_max_abs": float(dev_rough.max()) if dev_rough.size else 0.0,
+                "height_mm_max_abs": float(dev_height.max()) if dev_height.size else 0.0,
+            },
+            "rng": "NONE：栅格是冻结 recipe 的确定性求值",
         },
         "channel_stats": {
             "albedo_linear_min": (float(albedo.min()) if albedo.size else None),
@@ -698,16 +1073,132 @@ def _pattern_channel_images(mother: Any, recipe: Any, channels: Any, *, rng: Any
             "pattern_region_fraction": (float(np.mean(np.asarray(channels_eval.pattern_region,
                                                                  dtype=bool)))
                                         if channels_eval.pattern_region is not None else None),
+            "albedo_at_pixel_centre_min": float(centre_albedo.min()),
+            "albedo_at_pixel_centre_max": float(centre_albedo.max()),
         },
         "legend": legend,
     }
-    return images, stats
+    return {"images": images, "stats": stats, "plan": plan, "frame": frame,
+            "x_mm": (plan["x_lo"] + ku * plan["x_span"]), "s_mm": (plan["s_lo"] + ks * plan["ds"]),
+            "n_texels": n_texels}
 
 
-def _evaluate_pattern(recipe: Any, mother: Any, points: Any, tag: int) -> Any:
-    from synlab.patterns.api import evaluate
+def _pattern_texture_bake(mother: Any, recipe: Any, frame: Any, plan: dict[str, Any], *,
+                          albedo_png: bytes, albedo_sha256: str,
+                          texture_asset: str | None) -> tuple[dict[str, Any], dict[str, Any]]:
+    """把同一份冻结栅格贴到母体真实图卡坐标上 → 展示 GLB 的贴图 primitive + UV + 统计。
 
-    return evaluate(recipe, mother, points, tag)
+    * **图卡坐标 → UV**：``u = x_mm / x_period_mm``（周期，采样器 wrapS=REPEAT），
+      ``v = ((s_mm - s_lo) / ds + 0.5) / H``（texel 中心对齐，严格落在 ``(0,1)`` 内）；
+    * **接缝**：跨 ``u=0/1`` 的面按面做 UV 解缠（给小于半周的一侧 ``+1`` 一整周），并把解缠后的
+      角点拆成独立顶点，于是同一三角形内不会出现"绕整张贴图倒着插值"；又因为场本身周期，
+      缝两侧的色值本来就相等；
+    * **未带纹样的面**（rim/foot/base/inner_wall…）单独一个 primitive、用 recipe 的 body 颜色：
+      内壁与外壁共享同一个 ``(u,s)``，拿外壁的 UV 去采样贴图会把图案画到内壁；
+    * **法线**：从完整母体网格算一次（面积加权）后由两个 primitive 共用，tag 边界与解缠缝上
+      都不会出现假折线。
+    """
+    import numpy as np
+
+    from synlab.patterns.charts import to_chart_mm
+
+    vertices = np.asarray(mother.mesh.vertices, dtype=np.float64)
+    faces = np.asarray(mother.mesh.faces, dtype=np.int64)
+    tags = np.asarray(mother.face_surface_tag)
+    x_mm, s_mm = to_chart_mm(frame, vertices)
+    width, height = int(plan["width"]), int(plan["height"])
+
+    if plan["x_periodic"]:
+        period = float(plan["x_period_mm"])
+        u_chart = np.mod(x_mm, period) / period
+    else:
+        u_chart = (x_mm - plan["x_lo"]) / max(plan["x_span"], 1e-9)
+    row_coord = (s_mm - plan["s_lo"]) / max(plan["ds"], 1e-12)
+    v_target = (row_coord + 0.5) / float(height)
+    v_lo, v_hi = 0.5 / float(height), 1.0 - 0.5 / float(height)
+    v_clamped = int(np.count_nonzero((v_target < v_lo) | (v_target > v_hi)))
+    v_target = np.clip(v_target, v_lo, v_hi)
+
+    wall_mask = tags == int(frame.tag)
+    wall_faces = faces[wall_mask]
+    body_faces = faces[~wall_mask]
+    if wall_faces.size == 0:
+        raise RuntimeError(f"母体上没有 surface_tag={frame.tag_name!r} 的面，无法烘焙纹样贴图")
+    wall_vidx_all = np.unique(wall_faces.reshape(-1))
+    wall_v_clamped = int(np.count_nonzero((row_coord[wall_vidx_all] < 0.0)
+                                          | (row_coord[wall_vidx_all] > float(height - 1))))
+
+    # 面级 UV 解缠：同一三角形内的 u 跨度不超过半周，否则给小的一侧 +1
+    u_corner = u_chart[wall_faces].copy()
+    if plan["x_periodic"]:
+        u_lo = u_corner.min(axis=1, keepdims=True)
+        wrapped = (u_corner.max(axis=1, keepdims=True) - u_lo) > 0.5
+        if bool(np.any(wrapped)):
+            shift = np.where(u_corner < (u_lo + 0.5), 1.0, 0.0)
+            u_corner = np.where(wrapped, u_corner + shift, u_corner)
+    offset = np.rint(u_corner - u_chart[wall_faces]).astype(np.int64)
+    corner_key = wall_faces.astype(np.int64) * 4 + offset
+    unique_key, inverse_index = np.unique(corner_key.reshape(-1), return_inverse=True)
+    vidx = unique_key // 4
+    u_unique = u_chart[vidx] + (unique_key % 4).astype(np.float64)
+    wall_vertices = vertices[vidx]
+    # trimesh 导出 GLB 时会做 uv[:, 1] = 1 - uv[:, 1]（见 trimesh/exchange/gltf 的
+    # _append_mesh），所以这里先取补，写进 GLB 的 TEXCOORD_0.v 才等于 v_target。
+    wall_uv = np.column_stack([u_unique, 1.0 - v_target[vidx]])
+    wall_faces_idx = np.asarray(inverse_index, dtype=np.int64).reshape(-1, 3)
+
+    body_vidx = (np.unique(body_faces.reshape(-1)) if body_faces.size
+                 else np.zeros(0, dtype=np.int64))
+    remap = np.full(vertices.shape[0], -1, dtype=np.int64)
+    remap[body_vidx] = np.arange(body_vidx.size, dtype=np.int64)
+    body_faces_idx = (remap[body_faces] if body_faces.size
+                      else np.zeros((0, 3), dtype=np.int64))
+
+    palette = dict((recipe.meta or {}).get("palette") or {})
+    body = np.asarray(palette.get("body", (recipe.palette or [(0.5, 0.5, 0.5)])[0]),
+                      dtype=np.float64)
+    body_color = np.clip(body, 0.0, 1.0)
+    body_roughness = float(palette.get("body_roughness", 0.6))
+
+    stats = {
+        "mode": "chart_texture",
+        "uv_mapping": ("TEXCOORD_0.u = x_mm / x_period_mm（周期，sampler wrapS=REPEAT）；"
+                       "TEXCOORD_0.v = ((s_mm - s_lo) / ds + 0.5) / H"
+                       "（texel 中心对齐，v ∈ (0,1)）"),
+        "texture_source": ("与卡片同一份 albedo PNG（同一冻结 recipe、同一栅格、同一份字节），"
+                           "以 glTF baseColorTexture（sRGB）嵌进 GLB"),
+        "texture_asset": texture_asset,
+        "texture_sha256": albedo_sha256,
+        "texture_key": "albedo_png",
+        "wall_faces": int(wall_faces_idx.shape[0]),
+        "wall_vertices": int(wall_vertices.shape[0]),
+        "body_faces": int(body_faces_idx.shape[0]),
+        "body_vertices": int(body_vidx.size),
+        "body_color_linear": [float(c) for c in body_color],
+        "body_roughness": body_roughness,
+        "seam_unwrapped_corners": int(np.count_nonzero(offset)),
+        "uv_v_clamped_vertices": v_clamped,
+        "uv_v_clamped_wall_vertices": wall_v_clamped,
+        "uv_u_range": [float(wall_uv[:, 0].min()), float(wall_uv[:, 0].max())],
+        "uv_v_range_gltf": [float((1.0 - wall_uv[:, 1]).min()),
+                            float((1.0 - wall_uv[:, 1]).max())],
+        "normals": "完整母体网格的面积加权顶点法线，两个 primitive 共用（无缝、无假折线）",
+        "height_channel_in_glb": False,
+        "height_note": ("height_mm 是几何通道（PAT14 relief / PAT15 engrave），由 "
+                        "synlab.patterns.api.apply_pattern_geometry 在断裂前作用到完整母体；"
+                        "展示 GLB 只烘焙 albedo，不做位移"),
+    }
+    bake = {
+        "textured": {"vertices_mm": wall_vertices, "faces": wall_faces_idx, "uv": wall_uv,
+                     "normal_index": vidx},
+        "body": {"vertices_mm": (vertices[body_vidx] if body_vidx.size
+                                 else np.zeros((0, 3), dtype=np.float64)),
+                 "faces": body_faces_idx, "normal_index": body_vidx},
+        "albedo_png": albedo_png,
+        "body_color_linear": body_color,
+        "roughness": body_roughness,
+    }
+    return bake, stats
 
 
 def task_pattern(demo_root: Path, task: dict[str, Any], manifest: Manifest) -> dict[str, Any]:
@@ -742,7 +1233,14 @@ def task_pattern(demo_root: Path, task: dict[str, Any], manifest: Manifest) -> d
         rng = make_rng(MASTER_SEED, LINEAGE_ID, "patterns", family)
         spec = PatternSpec(family=family)
         recipe = build_pattern(mother, spec, rng)
-        images, raster_stats = _pattern_channel_images(mother, recipe, None, rng=rng)
+        from synlab.patterns.charts import resolve_frame
+
+        frame = resolve_frame(mother, str((recipe.meta.get("chart") or {}).get("surface_tag")
+                                          or "outer_wall"))
+        plan = _pattern_raster_plan(frame, mother,
+                                    footprint_mm=recipe.meta.get("footprint_mm"))
+        raster = _pattern_chart_raster(mother, recipe, frame, plan)
+        images, raster_stats = raster["images"], raster["stats"]
         audit = audit_pattern(recipe, mother, geometry_probe=False)
         recipe_record = commit_pattern(store, recipe, None, lineage_id=LINEAGE_ID, split=SPLIT,
                                        ancestry=[mother_asset], mother_id=mother.mother_id,
@@ -754,11 +1252,36 @@ def task_pattern(demo_root: Path, task: dict[str, Any], manifest: Manifest) -> d
             meta={"family_id": family, "mother_asset": mother_asset,
                   "recipe_hash": recipe_record.meta.get("recipe_hash"),
                   "chart": raster_stats["raster"]["chart"],
+                  "raster": raster_stats["raster"],
                   "channel_stats": raster_stats["channel_stats"],
                   "legend": raster_stats["legend"]},
             qa={"pass": bool(audit.get("pass")), "failures": _jsonable(audit.get("failures"))},
             ancestry=[mother_asset, recipe_record.asset_id],
             label=f"pattern:{family}:channels")
+        # ---- 器物三维烘焙：同一份冻结栅格贴到该母体真实图卡坐标上
+        albedo_png = images["albedo_png"]
+        albedo_sha = "sha256:" + hashlib.sha256(albedo_png).hexdigest()
+        bake, bake_stats = _pattern_texture_bake(
+            mother, recipe, frame, plan, albedo_png=albedo_png, albedo_sha256=albedo_sha,
+            texture_asset=image_record.asset_id)
+        glb_record, glb_metrics = _export_display_glb(
+            store, mother.mesh, source_asset=mother_asset,
+            label=f"pattern:{family}:{mother_entry_id}",
+            extra_meta={
+                "family_id": family,
+                "family_name": recipe.meta.get("family_name"),
+                "mother_entry": mother_entry_id,
+                "mother_asset": mother_asset,
+                "mother_vessel_id": mother_entry.get("vessel_id"),
+                "recipe_hash": recipe_record.meta.get("recipe_hash"),
+                "raster_asset": image_record.asset_id,
+                "raster_size": [int(plan["width"]), int(plan["height"])],
+                "chart": raster_stats["raster"]["chart"],
+                "uv": bake_stats,
+                "note": ("pattern-baked display derivation: 同一冻结 recipe 的同一张 albedo 栅格"
+                         "贴在母体真实图卡坐标上；权威几何仍是 mm/Z-up 且未被修改"),
+            },
+            bake=bake)
         entry.update({
             "status": "OK" if audit.get("pass") else "FAILED",
             "asset_id": recipe_record.asset_id,
@@ -789,11 +1312,32 @@ def task_pattern(demo_root: Path, task: dict[str, Any], manifest: Manifest) -> d
                 "channel_stats": raster_stats["channel_stats"],
                 "legend": raster_stats["legend"],
                 "audit_source": "synlab.patterns.audit.audit_pattern",
+                "texture_bake": bake_stats,
+                "provenance": {
+                    "family_id": family,
+                    "family_name": recipe.meta.get("family_name"),
+                    "recipe_hash": recipe_record.meta.get("recipe_hash"),
+                    "recipe_asset": recipe_record.asset_id,
+                    "mother_entry": mother_entry_id,
+                    "mother_asset": mother_asset,
+                    "mother_vessel_id": mother_entry.get("vessel_id"),
+                    "raster_asset": image_record.asset_id,
+                    "raster_png_keys": {"albedo": "albedo_png", "roughness": "roughness_png",
+                                        "height_mm": "height_png"},
+                    "albedo_png_sha256": albedo_sha,
+                    "pattern_glb_asset": glb_record.asset_id,
+                    "note": "族名 / recipe hash / PNG 文件名 / 贴图 GLB 四者由同一次单元生成写入，"
+                            "可在清单与资产 meta 里逐项核对",
+                },
             },
             "artifacts": {
                 "channels": {"asset_id": image_record.asset_id, "role": image_record.role,
                              "keys": {"albedo": "albedo_png", "roughness": "roughness_png",
                                       "height_mm": "height_png"}},
+                "pattern_glb": {"asset_id": glb_record.asset_id, "role": glb_record.role,
+                                "key": "glb", "metrics": glb_metrics,
+                                "raster_asset": image_record.asset_id,
+                                "albedo_png_sha256": albedo_sha},
             },
             "failure": (None if audit.get("pass") else _failure(
                 "PATTERN_AUDIT_FAIL", f"audit_pattern 判定 {family} 未通过",

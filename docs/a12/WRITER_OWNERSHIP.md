@@ -126,3 +126,22 @@ $ts = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
 2. **授权 c772fce6 处理存量**：把那 8 个受影响 feature bundle 按与之前 degrade 角色修复**同样的字节级一致方式重新提交为新资产**（`interpret_hash` 含 role，禁止就地改 role/就地改文件），并写墓碑 + 映射报告 `data/a12/reports/feature_leak_repair.json`；随后重跑 `run_negative_control`，目标是 `truth_isolation=true`。若重提交后仍为 false，保留真实原因与精确资产清单，不得改检查来通过。
 3. 该授权仅限 `synlab/pipeline.py`（Lead 已改）、`synlab/qc/**`、`tools/closed_loop.py`、`data/a12/**`、`docs/a12/**`；其余模块仍按原范围。
 4. 认可其对 `tools/closed_loop.py` 硬编码 `GATE_DOWNGRADES` 强判 PASS 的删除 —— 那是伪造通过，符合计划 §30.18「任何 REQUIRED 门 FAIL/PENDING 都不得发布」。
+
+## 追加（批产期间的计划身份与配置冻结裁决）
+
+2026-10-02 10:47:15，批产队友（74522d92）报告 `configs/a12/next_experiment.yaml` 在其跑批期间被改动（10:26 → 10:34），导致计划身份漂移、lineage_id 命名空间与批次 1 撞名；并请 Lead 二选一。
+
+### 裁决：**(A) 以当前文件为准**
+
+- 当前文件 sha256 = `8186653101612cbc20e9eeba3f60ffbc241e3d1e3ebd690fdecb60746ab1fb16`；**自此冻结**：在批产跑完前，任何人（含 Lead）不得再改 `configs/a12/next_experiment.yaml`。
+- 理由：当前计划能给出 Lead 要求的覆盖（**12 材料 + 16 纹样全族**；24 母体实测 16 器型/12 材料/14 纹样/4 层），而 10:26 那份的口径是"材料只到 M01–M05、纹样只有 PAT01"，拿不到纹样族覆盖。
+- 批次 1 已入库的 9 条谱系**保留**，按"**不同 spec、同名不同物**"单独统计：报告必须按 `spec_hash` 分组，把批次 1 与当前 spec 的谱系分列，并明确写出 `lineage_id` 撞名的边界（同名不同物、可能不同 split）。
+
+### 记录的真缺陷（**暂不修，避免再次漂移**）
+
+`synlab/pipeline.py` 的 `lineage_id = f"LIN{index:04d}_{vessel}_{material}_{pattern}"` **不含 spec 身份** → 不同 spec 可产生同名谱系。正确修法是纳入 spec 短哈希（例如 `LIN{spec_hash[:8]}_{index:04d}_...`），但**必须等本批产结束后**与新 run 一起生效；届时需要一次性说明：旧名与新名的映射、已入库资产的归属、以及是否重新生成。**在此之前不得改 `lineage_id` 格式**（否则同一批内会再次叠加同名谱系）。
+
+### 同时更正两条早前口径（以队友实测为准）
+
+1. `plane_shared_cut` 的真实片数**不是恒定 2**：实测 2/3/4 片都出现过（一次共享切割出两半，每半再按连通分量拆），配置 `target_piece_range` 已改为实测区间 **[2,4]**。
+2. 失败真实存在：批次 1 有 **1/6** 母体失败（`LIN0004_V05`，manifold 布尔 "Not all meshes are volumes"），**已计入失败分母**。

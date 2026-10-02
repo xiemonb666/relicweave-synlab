@@ -26,7 +26,10 @@ Two exports live here and they are deliberately different objects:
         separation explicitly.
 
 Nothing in the exported feature side is derived from clean/physical truth: geometry comes
-from the delivered observation payload and tokens come from the ObsPack RGB tiles.
+from the delivered observation payload and tokens come from the ObsPack RGB tiles.  The
+manifest's ``separation`` block is a *measurement of the package that was just written* (a
+field scan of the deployment view intersected with ``roles.FORBIDDEN_FEATURE_FIELDS``, plus
+content-based truth detection per view), never a declaration.
 """
 
 from __future__ import annotations
@@ -43,6 +46,7 @@ import numpy as np
 from ..canonical import array_hash, hash_bytes, hash_file, hash_json
 from ..errors import ErrorCode, SynLabError
 from ..roles import (
+    FORBIDDEN_FEATURE_FIELDS,
     ROLE_CLEAN_TRUTH,
     ROLE_FEATURE_BUNDLE,
     ROLE_LABEL_BUNDLE,
@@ -66,6 +70,11 @@ VIEWS = (VIEW_DEPLOY, VIEW_RESEARCH)
 
 #: Formats :func:`export_training_package` can materialise.
 TRAINING_FORMATS = ("parquet", "npz", "zarr", "tar")
+
+#: Directory *inside a view* that holds the zarr replica of the geometry shards.  The writer
+#: and the manifest scanner both derive their path from :func:`_zarr_root`, so the replica can
+#: never be written into a directory that the manifest does not walk.
+ZARR_DIR_NAME = "zarr"
 
 #: Relation kinds that may serve as an ordinary negative (plan 18.2).
 NEGATIVE_KINDS = frozenset({"R1", "R0"})
@@ -191,6 +200,16 @@ def _record(files: list[dict[str, Any]], path: Path, out: Path, *, note: str = "
     if note:
         entry["note"] = note
     files.append(entry)
+
+
+def _zarr_root(view_root: Path) -> Path:
+    """The **one** place that decides where the zarr replica of a view lives.
+
+    Writing the replica and walking it to fill ``files[]`` used to be two independently spelled
+    literals that disagreed (``<view>/geometry/zarr`` was written, ``<view>/zarr`` was scanned),
+    so every zarr file stayed out of the manifest.  Both sides now go through this function.
+    """
+    return Path(view_root) / ZARR_DIR_NAME
 
 
 # --------------------------------------------------------------------------------------
@@ -361,8 +380,12 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
                         info.mtime = 0
                         tar.addfile(info, io.BytesIO(data))
                     obs_index[fragment_id] = {
-                        "opaque": opaque, "shard": name, "split": payload["split"],
-                        "lineage_id": payload["lineage_id"], "views": payload["views"],
+                        # No ``split`` and no ``lineage_id``: they are answer-side bookkeeping
+                        # (both are in ``roles.FORBIDDEN_FEATURE_FIELDS``) and the deployment
+                        # view declares that it carries no lineage/split information.  The
+                        # research view keeps split/lineage per pair in ``relations.parquet``
+                        # and per label row in ``labels/<layer>.parquet``.
+                        "opaque": opaque, "shard": name, "views": payload["views"],
                         "shape": list(payload["rgb"].shape),
                         "hash": array_hash(payload["rgb"]),
                         "truth_channels": [],
@@ -436,11 +459,15 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
         _record(files, index_path, out)
 
     if geometry_by_fragment and "zarr" in formats:
-        _write_zarr(deploy_root / "geometry", "zarr", geometry_by_fragment)
+        # write and register the replica through the same path helper: a file that is written
+        # is a file that is declared (and therefore hash-checked by ``TrainingPackage``).
+        zarr_root = _zarr_root(deploy_root)
+        _write_zarr(zarr_root, geometry_by_fragment)
         counts["zarr_arrays"] = len(geometry_by_fragment)
-        for path in sorted((deploy_root / "zarr").rglob("*")):
-            if path.is_file():
-                _record(files, path, out, note="zarr replica of the geometry shards")
+        zarr_files = [path for path in sorted(zarr_root.rglob("*")) if path.is_file()]
+        counts["zarr_files"] = len(zarr_files)
+        for path in zarr_files:
+            _record(files, path, out, note="zarr replica of the geometry shards")
 
     # ---------------- token cache ------------------------------------------------------
     tokens_by_fragment: dict[str, dict[str, np.ndarray]] = {}
@@ -575,7 +602,11 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
         mates = sorted({r["candidate"] for r in relation_rows
                         if r["query"] == fragment_id and r["kind"] == "R2"})
         queries_rows.append({
-            "query_id": f"q::{fragment_id}", "fragment_id": fragment_id,
+            # ``fragment_id`` is deliberately not a column: it is a forbidden feature-field name
+            # and it would only duplicate ``query_id`` (``q::<fragment_id>``) and ``fragment``.
+            # The loader derives the row identity from ``query_id``
+            # (``qc.loader_probe._query_fragment``).
+            "query_id": f"q::{fragment_id}",
             "lineage": obs.get("lineage_id") or _lineage_of(feature_meta, obs_by_fragment,
                                                             fragment_id),
             "mother": str(meta.get("mother_id", "") or _mother_of(fragment_id)),
@@ -647,6 +678,12 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
     counts["label_layers"] = len(label_files)
 
     # ---------------- truth separation declaration --------------------------------------
+    # The separation claim is *measured on the package that was just written*, never stated:
+    # the field scan reads every JSON/parquet/npz/tar container of the deployment view and
+    # intersects the keys it finds with ``roles.FORBIDDEN_FEATURE_FIELDS``, and
+    # ``contains_truth`` is decided from each view's real content (supervision columns, a
+    # non-empty truth-channel list, or an opaque-name -> id map).  Hits and skipped containers
+    # travel in the manifest, so a leak cannot be shipped as a clean declaration.
     deploy_files = [f for f in files if f["path"].startswith(VIEW_DEPLOY + "/")]
     research_files = [f for f in files if f["path"].startswith(VIEW_RESEARCH + "/")]
     forbidden_in_deploy = [f["path"] for f in deploy_files
@@ -659,6 +696,15 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
             stage="export.export_training_package",
             evidence_refs=forbidden_in_deploy,
         )
+
+    deploy_scan = scan_view_fields(deploy_root)
+    research_scan = scan_view_fields(research_root)
+    forbidden_names = {str(name).lower() for name in FORBIDDEN_FEATURE_FIELDS}
+    answer_hits = [{"file": rel, "field": key}
+                   for rel, keys in sorted(deploy_scan["keys_by_container"].items())
+                   for key in keys if key.lower() in forbidden_names]
+    deploy_truth_content = truth_bearing_files(deploy_root, deploy_scan)
+    research_truth_content = truth_bearing_files(research_root, research_scan)
 
     manifest_payload: dict[str, Any] = {
         "schema": PACKAGE_MANIFEST_SCHEMA,
@@ -676,7 +722,8 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
             VIEW_DEPLOY: {
                 "role": "deployment",
                 "purpose": "features only: ObsPack RGB shards, geometry, token cache, query roster",
-                "contains_truth": False,
+                # measured from the written content, not declared (see ``separation``)
+                "contains_truth": bool(deploy_truth_content),
                 "files": len(deploy_files),
                 "bytes": int(sum(f["bytes"] for f in deploy_files)),
                 "forbidden": ["labels", "relation kinds", "lineage", "split",
@@ -685,15 +732,43 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
             VIEW_RESEARCH: {
                 "role": "research",
                 "purpose": "supervision: relation labels, layered labels, opaque-name map",
-                "contains_truth": True,
+                # measured from the written content, not declared (see ``separation``)
+                "contains_truth": bool(research_truth_content),
                 "files": len(research_files),
                 "bytes": int(sum(f["bytes"] for f in research_files)),
             },
         },
         "separation": {
             "deploy_truth_files": forbidden_in_deploy,
+            "deploy_truth_content_files": deploy_truth_content,
             "labels_kept_beside_features": True,
-            "features_carry_answer_fields": False,
+            "features_carry_answer_fields": bool(answer_hits),
+            "features_carry_answer_fields_source": (
+                "content scan of the written deployment view: keys read from its "
+                "JSON/parquet/npz/tar containers and intersected with "
+                "roles.FORBIDDEN_FEATURE_FIELDS"),
+            "answer_field_scan": {
+                "view": VIEW_DEPLOY,
+                "forbidden_fields": sorted(FORBIDDEN_FEATURE_FIELDS),
+                "hits": answer_hits,
+                "hits_by_field": _hits_by_field(answer_hits),
+                "keys_scanned": deploy_scan["keys_scanned"],
+                "unique_keys": len(deploy_scan["unique_keys"]),
+                "containers": deploy_scan["containers"],
+                "not_read": _grouped_skips(deploy_scan["skipped"]),
+            },
+            "truth_content_scan": {
+                VIEW_DEPLOY: {
+                    "contains_truth": bool(deploy_truth_content),
+                    "truth_bearing_files": deploy_truth_content,
+                    "keys_scanned": deploy_scan["keys_scanned"],
+                },
+                VIEW_RESEARCH: {
+                    "contains_truth": bool(research_truth_content),
+                    "truth_bearing_files": research_truth_content,
+                    "keys_scanned": research_scan["keys_scanned"],
+                },
+            },
             "statement": ("the deployment view is safe to ship to an unprivileged loader; the "
                           "research view must never be merged into it"),
         },
@@ -897,11 +972,14 @@ def _write_parquet(path: Path, rows: Sequence[Mapping[str, Any]], row_group_size
     pq.write_table(table, path, row_group_size=max(int(row_group_size), 1), compression="snappy")
 
 
-def _write_zarr(root: Path, name: str, geometry: Mapping[str, Mapping[str, np.ndarray]]) -> None:
-    """A tiny, dependency-light zarr replica: one 1-D array per fragment/array, JSON attrs."""
+def _write_zarr(store_root: Path, geometry: Mapping[str, Mapping[str, np.ndarray]]) -> None:
+    """A tiny, dependency-light zarr replica: one 1-D array per fragment/array, JSON attrs.
+
+    ``store_root`` is produced by :func:`_zarr_root`, never spelled here.
+    """
     import zarr
 
-    store_root = root / name
+    store_root = Path(store_root)
     store_root.mkdir(parents=True, exist_ok=True)
     group = zarr.open_group(str(store_root), mode="w")
     for fragment_id in sorted(geometry):
@@ -912,6 +990,209 @@ def _write_zarr(root: Path, name: str, geometry: Mapping[str, Mapping[str, np.nd
     group.attrs["schema"] = "synlab.geometry.zarr.v1"
     group.attrs["arrays"] = ["points", "normals", "point_valid", "normal_valid",
                             "scale_valid", "frame_id"]
+
+
+# --------------------------------------------------------------------------------------
+# separation evidence: measure the package that was just written
+# --------------------------------------------------------------------------------------
+#: Content signals that make a packaged file *truth-bearing*: the supervision column names the
+#: exporter itself writes on the research side (relation labels, layered labels).  They are
+#: looked up in the real files of a view -- a declaration is never the evidence.
+TRUTH_BEARING_FIELDS = frozenset({
+    "kind", "loss_mask", "eligible_as_negative", "label_layer", "candidate", "candidate_id",
+    "query", "area_mm2", "reason", "lineage_cluster", "unique_source_triangle",
+    "relation", "relations", "labels",
+})
+
+#: Storage-format metadata (zarr v2/v3) describes *how* an array is chunked and compressed; its
+#: keys (the zstd codec's ``level``, ``chunk_grid``, ...) are the format's vocabulary, not the
+#: package's fields.  Such files are skipped by the field scan, and every skip is recorded in
+#: the manifest instead of being silent.
+STORAGE_METADATA_NAMES = frozenset({"zarr.json", ".zarray", ".zattrs", ".zgroup",
+                                    ".zmetadata"})
+
+
+def _looks_opaque(name: Any) -> bool:
+    """``sha256(fragment id)[:24]`` -- the deployment view's opaque name form."""
+    text = str(name)
+    return len(text) == 24 and all(char in "0123456789abcdef" for char in text)
+
+
+def _field_name(raw: str) -> str:
+    """``<opaque>__points`` -> ``points``; ``<opaque>/tiles.npy`` -> ``tiles``."""
+    text = str(raw).replace("\\", "/").rsplit("/", 1)[-1]
+    if "__" in text:
+        text = text.rsplit("__", 1)[-1]
+    for suffix in (".npy", ".npz", ".json"):
+        if text.endswith(suffix):
+            text = text[: -len(suffix)]
+    return text
+
+
+def _json_key_set(node: Any, out: set[str]) -> None:
+    """Every object key at every depth of a JSON document."""
+    if isinstance(node, Mapping):
+        for key, value in node.items():
+            out.add(str(key))
+            _json_key_set(value, out)
+    elif isinstance(node, (list, tuple)):
+        for item in node:
+            _json_key_set(item, out)
+
+
+def _container_fields(path: Path) -> tuple[set[str] | None, str]:
+    """Field names one real file carries, or ``(None, reason)`` when it carries none."""
+    suffix = path.suffix.lower()
+    try:
+        if suffix == ".json":
+            out: set[str] = set()
+            _json_key_set(json.loads(path.read_text(encoding="utf-8")), out)
+            return out, ""
+        if suffix == ".parquet":
+            import pyarrow.parquet as pq
+
+            return {str(name) for name in pq.read_schema(path).names}, ""
+        if suffix == ".npz":
+            with np.load(path, allow_pickle=False) as data:
+                return {_field_name(name) for name in data.files}, ""
+        if suffix == ".tar":
+            with tarfile.open(path, "r") as tar:
+                return ({_field_name(member.name) for member in tar.getmembers()
+                         if member.isfile()}, "")
+    except Exception as exc:  # noqa: BLE001 - recorded in the manifest, never dropped
+        return None, f"{type(exc).__name__}: {exc}"
+    return None, "binary payload (carries no field name)"
+
+
+def _zarr_declared_arrays(zarr_root: Path) -> set[str]:
+    """Array names a written zarr replica declares (read from its own group attributes)."""
+    root = Path(zarr_root)
+    meta = root / "zarr.json"
+    if not meta.exists():
+        return set()
+    try:
+        payload = json.loads(meta.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return set()
+    attrs = payload.get("attributes") if isinstance(payload, Mapping) else None
+    declared = attrs.get("arrays") if isinstance(attrs, Mapping) else None
+    if isinstance(declared, (list, tuple)):
+        return {str(item) for item in declared}
+    return {child.name for child in root.iterdir() if child.is_dir()}
+
+
+def scan_view_fields(view_root: Path) -> dict[str, Any]:
+    """Read every container of one view and return the field names it really carries.
+
+    JSON metadata documents contribute every object key at every depth, parquet tables their
+    column names, ``npz`` archives their array names and tar shards their member names; a zarr
+    replica contributes the array names it declares.  ``keys_scanned`` is the denominator of the
+    separation claim, ``skipped`` names what could not be read (and why).
+    """
+    containers: dict[str, int] = {}
+    keys_by_container: dict[str, list[str]] = {}
+    skipped: list[dict[str, str]] = []
+    fields: set[str] = set()
+    root = Path(view_root)
+    if root.exists():
+        for path in sorted(root.rglob("*")):
+            if not path.is_file():
+                continue
+            rel = str(path.relative_to(root)).replace("\\", "/")
+            if path.name in STORAGE_METADATA_NAMES:
+                skipped.append({"file": rel, "reason": "storage-format metadata "
+                                                       "(zarr chunk/compression vocabulary)"})
+                continue
+            found, reason = _container_fields(path)
+            if found is None:
+                skipped.append({"file": rel, "reason": reason})
+                continue
+            keys_by_container[rel] = sorted(found)
+            containers[rel] = len(found)
+            fields |= found
+        declared = _zarr_declared_arrays(_zarr_root(root))
+        if declared:
+            label = f"{ZARR_DIR_NAME}/* (declared array names)"
+            keys_by_container[label] = sorted(declared)
+            containers[label] = len(declared)
+            fields |= declared
+    return {
+        "containers": containers,
+        "keys_by_container": keys_by_container,
+        "keys_scanned": int(sum(containers.values())),
+        "unique_keys": sorted(fields),
+        "skipped": skipped,
+    }
+
+
+def _declares_truth_channels(node: Any) -> bool:
+    """A non-empty ``truth_channels`` list: the document says a truth channel is carried."""
+    if isinstance(node, Mapping):
+        channels = node.get("truth_channels")
+        if isinstance(channels, (list, tuple)) and len(channels) > 0:
+            return True
+        return any(_declares_truth_channels(value) for value in node.values())
+    if isinstance(node, (list, tuple)):
+        return any(_declares_truth_channels(item) for item in node)
+    return False
+
+
+def _maps_opaque_names_to_ids(node: Any) -> bool:
+    """The answer to the deployment view's opaque naming: ``{opaque: real id}``."""
+    if isinstance(node, Mapping):
+        for key, value in node.items():
+            if _looks_opaque(key) and isinstance(value, str) and not _looks_opaque(value):
+                return True
+        return any(_maps_opaque_names_to_ids(value) for value in node.values())
+    if isinstance(node, (list, tuple)):
+        return any(_maps_opaque_names_to_ids(item) for item in node)
+    return False
+
+
+def _truth_signal(path: Path) -> str | None:
+    """One file's content-level truth signal, or ``None`` when its own content has none."""
+    if path.suffix.lower() != ".json" or not path.exists():
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    if _declares_truth_channels(payload):
+        return "declares truth channels"
+    if _maps_opaque_names_to_ids(payload):
+        return "maps the deployment view's opaque names back to real ids"
+    return None
+
+
+def truth_bearing_files(view_root: Path, scan: Mapping[str, Any]) -> list[dict[str, str]]:
+    """Files of one view whose *real content* carries supervision or the answer."""
+    out: list[dict[str, str]] = []
+    for rel, keys in sorted((scan.get("keys_by_container") or {}).items()):
+        supervision = sorted(set(keys) & TRUTH_BEARING_FIELDS)
+        if supervision:
+            out.append({"file": rel,
+                        "reason": "carries supervision fields: " + ", ".join(supervision)})
+            continue
+        signal = _truth_signal(Path(view_root) / rel)
+        if signal:
+            out.append({"file": rel, "reason": signal})
+    return out
+
+
+def _grouped_skips(skipped: Sequence[Mapping[str, str]]) -> list[dict[str, Any]]:
+    """Group the scan's unreadable containers by reason (keeps the manifest readable)."""
+    by_reason: dict[str, list[str]] = {}
+    for entry in skipped:
+        by_reason.setdefault(str(entry.get("reason", "")), []).append(str(entry.get("file", "")))
+    return [{"reason": reason, "files": len(files), "examples": sorted(files)[:5]}
+            for reason, files in sorted(by_reason.items())]
+
+
+def _hits_by_field(hits: Sequence[Mapping[str, Any]]) -> dict[str, list[str]]:
+    out: dict[str, list[str]] = {}
+    for hit in hits:
+        out.setdefault(str(hit["field"]), []).append(str(hit["file"]))
+    return {name: sorted(set(files)) for name, files in sorted(out.items())}
 
 
 # --------------------------------------------------------------------------------------
@@ -1025,6 +1306,7 @@ class TrainingPackage:
 __all__ = [
     "REGISTERED_FORMATS", "TRAINING_FORMATS", "PACKAGE_SCHEMA", "PACKAGE_MANIFEST_SCHEMA",
     "VIEW_DEPLOY", "VIEW_RESEARCH", "VIEWS", "NEGATIVE_KINDS", "EXCLUDED_NEGATIVE_KINDS",
-    "TOKEN_DIM", "TOKEN_POLICY_ID", "ENCODER_ID",
+    "TOKEN_DIM", "TOKEN_POLICY_ID", "ENCODER_ID", "ZARR_DIR_NAME", "TRUTH_BEARING_FIELDS",
     "export_release", "export_training_package", "TrainingPackage",
+    "scan_view_fields", "truth_bearing_files",
 ]

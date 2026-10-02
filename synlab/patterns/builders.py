@@ -995,7 +995,8 @@ def build_glyph(model: GlyphParams, ctx: BuildContext) -> dict[str, Any]:
                                  tile_width_mm=ctx.x_period_mm,
                                  run_gap_mm=float(model.run_gap_mm),
                                  baseline_s_mm=baseline, s0_mm=ctx.s_min_mm,
-                                 height_px=int(plan["height_px"]), copies_hint=0)
+                                 height_px=int(plan["height_px"]),
+                                 width_px=int(plan["width_px"]), copies_hint=0)
         layouts.append({"ring": ring_index, "s_centre_mm": s_centre, "size_mm": size_mm,
                         "baseline_s_mm": baseline, **layout.metrics,
                         "missing_glyphs": layout.missing_glyphs})
@@ -1392,15 +1393,48 @@ def freeze_family(family_id: str, params: dict[str, Any] | BaseFamilyParams,
     return FAMILY_BUILDERS[family_id](model, ctx)
 
 
+def effective_x_period_mm(chart_meta: dict[str, Any]) -> float:
+    """The ``x`` period the frozen fields were built with, read from the recipe's chart.
+
+    ``ChartFrame.as_dict()`` records ``x_period_mm = None`` for a chart that is **not**
+    periodic in ``u`` (the planar charts of the sheet/composite families, e.g. V21
+    ``panel_plane`` and V23 ``figurine_plane``).  The build path normalises such a chart to its
+    profile span -- ``BuildContext.x_period_mm`` is ``frame.x_period_mm or frame.s_span_mm`` --
+    and every coefficient (Fourier bases, raster tiles, measured spectra) is frozen against
+    that number.  ``evaluate``/``pattern_field``/``apply_pattern_geometry`` must therefore
+    resolve the *same* number from the frozen payload; reading ``x_period_mm`` raw and calling
+    ``float()`` on it raised ``TypeError: float() argument must be ... not 'NoneType'`` for
+    every planar-chart mother (measured on V21/PAT16 and V23/PAT06 in the next-experiment
+    batch).  ``s`` is untouched: it stays the profile arc length in both cases.
+    """
+    period = chart_meta.get("x_period_mm")
+    if period is not None:
+        return float(period)
+    span = chart_meta.get("s_range_mm")
+    if span is not None and len(span) == 2:
+        span_mm = float(span[1]) - float(span[0])
+        if span_mm > 0.0:
+            return span_mm
+    raise SynLabError(
+        ErrorCode.SCHEMA_INVALID,
+        "the frozen recipe declares neither a chart period nor a profile span; the field "
+        "context has no x axis to evaluate on",
+        stage="patterns.builders.field_context",
+        measurements={"chart": {k: v for k, v in chart_meta.items()
+                                if k in ("name", "kind", "x_period_mm", "s_range_mm")}},
+    )
+
+
 def field_context(recipe_meta: dict[str, Any], palette_payload: dict[str, Any],
                   warp: WarpField) -> FieldContext:
     regions = recipe_meta.get("regions") or [{}]
     region = regions[0]
+    chart = dict(recipe_meta.get("chart") or {})
     return FieldContext(
-        x_period_mm=float(recipe_meta["chart"]["x_period_mm"]),
+        x_period_mm=effective_x_period_mm(chart),
         s_min_mm=float(region.get("s_min_mm", 0.0)),
         s_max_mm=float(region.get("s_max_mm", 1.0)),
-        s_periodic=bool(recipe_meta["chart"].get("s_periodic", False)),
+        s_periodic=bool(chart.get("s_periodic", False)),
         footprint_mm=float(recipe_meta["footprint_mm"]),
         body=np.asarray(palette_payload["body"], dtype=np.float64),
         body_roughness=float(palette_payload["body_roughness"]),

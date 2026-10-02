@@ -464,8 +464,16 @@ def combo_geometric_layers(combo_id: str, params: dict | None = None,
 # store round-trip
 # ---------------------------------------------------------------------------------------
 def commit_material(store: AssetStore, profile: Mapping[str, Any], *, lineage_id: str,
-                    split: str, ancestry: Iterable[str] = ()) -> AssetRecord:
-    """Persist one material profile as ``role="material_profile"``."""
+                    split: str, ancestry: Iterable[str] = (),
+                    run_id: str | None = None) -> AssetRecord:
+    """Persist one material profile as ``role="material_profile"``.
+
+    ``run_id`` is an optional addition to the frozen signature: it is written into the asset
+    metadata only when it is supplied, so every existing caller keeps its exact behaviour and its
+    exact asset id.  Without it the asset is invisible to every run-scoped reader
+    (``qc.gates.evaluate_gates`` and ``qc.audit.audit_run`` both select assets by
+    ``meta["run_id"]``).
+    """
     if not isinstance(store, AssetStore):
         raise SynLabError(ErrorCode.SCHEMA_INVALID, "commit_material needs an AssetStore",
                           stage=f"{STAGE}.commit_material")
@@ -489,6 +497,8 @@ def commit_material(store: AssetStore, profile: Mapping[str, Any], *, lineage_id
         "mechanics_status": str((profile.get("mechanics") or {}).get("status", "UNKNOWN")),
         "provenance": _jsonable(dict(profile.get("provenance") or {})),
     }
+    if run_id is not None:
+        meta["run_id"] = str(run_id)
     return store.commit_asset(
         role=ROLE_MATERIAL_PROFILE, schema=SCHEMA_MATERIAL, unit=UNIT_MM, frame=FRAME_WORLD,
         payload=payload, meta=meta,

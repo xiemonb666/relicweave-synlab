@@ -26,6 +26,8 @@ from ..config import load_document
 from ..errors import ErrorCode, SynLabError
 from ..roles import (
     FRAME_WORLD,
+    ROLE_CLEAN_TRUTH,
+    ROLE_LABEL_BUNDLE,
     ROLE_POOL,
     ROLE_ROSTER,
     SCHEMA_POOL,
@@ -545,8 +547,16 @@ def pool_arrays(pool: RelationPool) -> dict[str, np.ndarray]:
 
 def commit_pool(store: AssetStore, pool: RelationPool, *, lineage_id: str | None = None,
                 split: str | None = None, ancestry: Sequence[str] = (),
-                qa: Mapping[str, Any] | None = None) -> Any:
-    """Persist the sparse pool under role ``relation_pool`` (never the N^2 relation table)."""
+                qa: Mapping[str, Any] | None = None, run_id: str | None = None) -> Any:
+    """Persist the sparse pool under role ``relation_pool`` (never the N^2 relation table).
+
+    ``run_id`` is an *optional* addition to the frozen signature and is written into the asset
+    metadata only when it is supplied, so every existing caller keeps its exact behaviour and its
+    exact asset id (the same contract as ``truth.commit_truth``).  It matters for the release
+    gates: ``qc.gates.evaluate_gates`` resolves a run's assets through ``meta["run_id"]``, so a
+    pool committed without a run id is invisible to ``relations_complete`` (a PILOT required gate)
+    and that gate can only ever read PENDING.
+    """
     arrays = pool_arrays(pool)
     meta = {
         "schema": POOL_SCHEMA,
@@ -564,6 +574,8 @@ def commit_pool(store: AssetStore, pool: RelationPool, *, lineage_id: str | None
         "relation_storage": "sparse_non_r0_edges_only",
         "n2_materialised": False,
     }
+    if run_id is not None:
+        meta["run_id"] = str(run_id)
     record = store.commit_asset(
         role=ROLE_POOL, schema=SCHEMA_POOL, unit=UNIT_NONE, frame=FRAME_WORLD,
         payload=arrays, meta=meta, qa=dict(qa or {"ok": True, "n2_materialised": False}),
@@ -585,13 +597,22 @@ def _roster_dict(entry: QueryRosterEntry) -> dict[str, Any]:
 
 
 def commit_roster(store: AssetStore, pool: RelationPool, *, lineage_id: str | None = None,
-                  split: str | None = None, ancestry: Sequence[str] = ()) -> Any:
+                  split: str | None = None, ancestry: Sequence[str] = (),
+                  run_id: str | None = None) -> Any:
+    """Persist the frozen query roster (role ``query_roster``).
+
+    ``run_id`` behaves exactly as in :func:`commit_pool`: optional, written only when supplied,
+    so the metadata *and* the asset id of every existing caller are unchanged.
+    """
+    meta = {"pool_id": pool.pool_id, "queries": len(pool.roster),
+            "frozen": True, "hash": pool.hash}
+    if run_id is not None:
+        meta["run_id"] = str(run_id)
     return store.commit_asset(
         role=ROLE_ROSTER, schema=SCHEMA_ROSTER, unit=UNIT_NONE, frame=FRAME_WORLD,
         payload={"roster": [_roster_dict(q) for q in pool.roster], "pool_id": pool.pool_id,
                  "gallery_version": pool.gallery_version, "hash": pool.hash},
-        meta={"pool_id": pool.pool_id, "queries": len(pool.roster),
-              "frozen": True, "hash": pool.hash},
+        meta=meta,
         qa={"ok": True, "frozen_query_ids": True}, ancestry=list(ancestry),
         lineage_id=lineage_id, split=split,
     )
@@ -767,8 +788,46 @@ def load_roster_json(path: str | Path) -> list[dict[str, Any]]:
 # --------------------------------------------------------------------------------------
 # config-driven build (CLI / evidence chain)
 # --------------------------------------------------------------------------------------
-def build_pool_from_config(store: AssetStore, release: str, config_path: str | Path) -> dict[str, Any]:
-    """``synlab build-pool --release --config``: build, freeze and persist one gallery."""
+def contributing_run_ids(store: AssetStore, pool: RelationPool) -> list[str]:
+    """The generation runs whose committed assets this pool was assembled from.
+
+    A pool is built from the store's fragments, and every fragment belongs to a lineage whose
+    ``clean_truth`` / ``label_bundle`` asset carries the ``meta.run_id`` of the run that produced
+    it.  The set of those run ids is the pool's real provenance; it is measured here instead of
+    being guessed from a lineage id (a lineage id repeats whenever the same plan is generated
+    again, so it cannot identify a run).
+    """
+    lineages = {pool.lineage_of[fid] for fid in pool.lineup if pool.lineage_of.get(fid)}
+    if not lineages:
+        return []
+    run_ids: set[str] = set()
+    for asset in store.list_assets(limit=500000):
+        if asset.role not in (ROLE_CLEAN_TRUTH, ROLE_LABEL_BUNDLE):
+            continue
+        if asset.lineage_id not in lineages:
+            continue
+        run_id = (asset.meta or {}).get("run_id")
+        if run_id:
+            run_ids.add(str(run_id))
+    return sorted(run_ids)
+
+
+def build_pool_from_config(store: AssetStore, release: str, config_path: str | Path, *,
+                           run_id: str | None = None) -> dict[str, Any]:
+    """``synlab build-pool --release --config``: build, freeze and persist one gallery.
+
+    ``run_id`` is an optional addition to the frozen signature.  The pool/roster assets are only
+    attributed to a run when the attribution is *unambiguous*:
+
+    * an explicitly supplied ``run_id`` is used as given (``source="caller"``);
+    * otherwise, when every ``clean_truth`` / ``label_bundle`` asset the gallery was assembled
+      from names exactly **one** generation run, that run is used
+      (``source="contributing_runs"``) -- this is what makes ``build-pool`` from the command line
+      work for a single-run store;
+    * when the gallery draws on several runs (or on none that name a run), nothing is stamped and
+      the reason is recorded in ``run_id_attribution``; the gate then reports PENDING instead of
+      reading an invented attribution.
+    """
     path = Path(config_path)
     document = load_document(path)
     cfg = PoolConfig.from_mapping(document)
@@ -780,8 +839,31 @@ def build_pool_from_config(store: AssetStore, release: str, config_path: str | P
         return report
 
     pool: RelationPool = report["pool"]
-    asset = commit_pool(store, pool, split=cfg.split)
-    roster_asset = commit_roster(store, pool, split=cfg.split, ancestry=[asset.asset_id])
+    candidates = contributing_run_ids(store, pool)
+    attribution: dict[str, Any] = {"run_id": None, "source": None,
+                                   "contributing_run_ids": candidates,
+                                   "lineage_count": len({pool.lineage_of[fid] for fid in pool.lineup
+                                                         if pool.lineage_of.get(fid)})}
+    if run_id is not None:
+        attribution.update(run_id=str(run_id), source="caller",
+                           caller_run_id_is_contributing=str(run_id) in candidates)
+    elif len(candidates) == 1:
+        attribution.update(run_id=candidates[0], source="contributing_runs")
+    elif not candidates:
+        attribution["source"] = "unavailable"
+        attribution["reason"] = ("no clean_truth / label_bundle asset of this gallery names a "
+                                 "generation run: the pool is committed without meta.run_id")
+    else:
+        attribution["source"] = "ambiguous"
+        attribution["reason"] = (f"the gallery is assembled from {len(candidates)} runs "
+                                 f"({candidates}); a pool is only attributed to a run when the "
+                                 f"attribution is unambiguous -- pass run_id explicitly")
+    report["run_id_attribution"] = attribution
+    stamp = attribution["run_id"]
+
+    asset = commit_pool(store, pool, split=cfg.split, run_id=stamp)
+    roster_asset = commit_roster(store, pool, split=cfg.split, ancestry=[asset.asset_id],
+                                 run_id=stamp)
     pools_dir = store.root / "pools"
     portable = save_pool_json(pool, pools_dir / f"{cfg.pool_id}.json")
     roster_file = save_roster_json(pool, pools_dir / f"{cfg.pool_id}_queries.json")
@@ -792,6 +874,7 @@ def build_pool_from_config(store: AssetStore, release: str, config_path: str | P
     report["pool_id"] = cfg.pool_id
     report["metrics"]["pool_asset"] = asset.asset_id
     report["metrics"]["portable_json"] = portable.get("status")
+    report["metrics"]["run_id"] = stamp
     report.pop("pool", None)
     return report
 
@@ -818,7 +901,7 @@ def _jsonable(value: Any) -> Any:
 
 __all__ = [
     "API_VERSION", "PORTABLE_JSON_LIMIT", "PoolConfig", "build_pool", "build_pool_from_config",
-    "commit_pool", "commit_roster", "load_pool", "pool_from_asset", "pool_arrays",
-    "save_pool_json", "save_roster_json", "load_pool_json", "load_roster_json",
+    "commit_pool", "commit_roster", "contributing_run_ids", "load_pool", "pool_from_asset",
+    "pool_arrays", "save_pool_json", "save_roster_json", "load_pool_json", "load_roster_json",
     "resolve_release", "sample_training_batch", "mine_hard_negatives",
 ]

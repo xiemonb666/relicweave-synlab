@@ -21,12 +21,30 @@ from .serialize import (CHANNELS, channels_from_arrays, channels_payload, recipe
                         recipe_hash, recipe_to_dict)
 
 
+def _run_meta(run_id: str | None) -> dict[str, Any]:
+    """``meta["run_id"]`` for a run-scoped asset; *nothing* when no run was declared.
+
+    The key is omitted rather than written as ``null`` so that a caller which never declared a
+    run keeps the exact metadata (and therefore the exact asset id) it had before this parameter
+    existed: the asset id is derived from the payload hash, which includes the metadata.
+    """
+    return {} if run_id is None else {"run_id": str(run_id)}
+
+
 def commit_pattern(store: AssetStore, recipe: PatternRecipe, channels: PatternChannels | None = None,
                    *, lineage_id: str | None = None, split: str | None = None,
                    ancestry: Sequence[str] = (), mother_id: str | None = None,
                    qa: dict[str, Any] | None = None, qa_status: str = QA_PENDING,
-                   channels_key: str = "pattern_channels") -> AssetRecord:
-    """Commit the frozen recipe (and optionally its evaluated channels)."""
+                   channels_key: str = "pattern_channels",
+                   run_id: str | None = None) -> AssetRecord:
+    """Commit the frozen recipe (and optionally its evaluated channels).
+
+    ``run_id`` is an optional addition to the frozen signature: it stamps both the recipe asset
+    and the sibling channels asset with the generation run that produced them, which is what the
+    run-scoped release gates and the release scope resolve their assets by
+    (``qc.gates.evaluate_gates`` reads ``meta["run_id"]``).  The frozen recipe document itself is
+    *not* touched: it is hashed into ``recipe_hash``, so only the asset metadata carries the run.
+    """
     if not isinstance(store, AssetStore):
         raise SynLabError(ErrorCode.SCHEMA_INVALID,
                           f"commit_pattern expects an AssetStore, got {type(store)!r}",
@@ -49,7 +67,7 @@ def commit_pattern(store: AssetStore, recipe: PatternRecipe, channels: PatternCh
     if channels is None:
         record = store.commit_asset(
             role=ROLE_PATTERN_RECIPE, schema=SCHEMA_PATTERN, unit=UNIT_MM, frame=FRAME_WORLD,
-            payload=meta, meta={"family_id": recipe.family_id},
+            payload=meta, meta={"family_id": recipe.family_id, **_run_meta(run_id)},
             qa=dict(qa or {}), qa_status=qa_status, ancestry=list(ancestry),
             lineage_id=lineage_id, split=split,
             interpretation_extra={"family_id": recipe.family_id,
@@ -67,6 +85,7 @@ def commit_pattern(store: AssetStore, recipe: PatternRecipe, channels: PatternCh
         "shape": [int(v.shape[0]) for v in arrays.values()],
         "units": {"albedo": "linear rgb", "roughness": "1", "height_mm": "mm",
                   "pattern_region": "mask"},
+        **_run_meta(run_id),
     }
     channels_record = store.commit_asset(
         role=ROLE_PATTERN_CHANNELS, schema=SCHEMA_PATTERN, unit=UNIT_MM, frame=FRAME_WORLD,
@@ -78,7 +97,7 @@ def commit_pattern(store: AssetStore, recipe: PatternRecipe, channels: PatternCh
     record = store.commit_asset(
         role=ROLE_PATTERN_RECIPE, schema=SCHEMA_PATTERN, unit=UNIT_MM, frame=FRAME_WORLD,
         payload=meta, meta={"family_id": recipe.family_id,
-                            "channels_asset": channels_record.asset_id},
+                            "channels_asset": channels_record.asset_id, **_run_meta(run_id)},
         qa=dict(qa or {}), qa_status=qa_status, ancestry=list(ancestry) + [channels_record.asset_id],
         lineage_id=lineage_id, split=split,
         interpretation_extra={"family_id": recipe.family_id, "recipe_hash": meta["recipe_hash"]})

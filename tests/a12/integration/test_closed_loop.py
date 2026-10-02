@@ -43,12 +43,16 @@ from synlab.roles import (  # noqa: E402
     ROLE_FEATURE_BUNDLE,
     ROLE_FRAGMENT_MESH,
     ROLE_LABEL_BUNDLE,
+    ROLE_MATERIAL_PROFILE,
     ROLE_MOTHER_MESH,
     ROLE_OBS_RESULT,
+    ROLE_PATTERN_CHANNELS,
     ROLE_PATTERN_RECIPE,
+    ROLE_PHYSICAL_COMPONENT,
     ROLE_PHYSICAL_TRUTH,
     ROLE_POOL,
     ROLE_PROVENANCE,
+    ROLE_ROSTER,
 )
 from synlab.storage.export import (  # noqa: E402
     EXCLUDED_NEGATIVE_KINDS,
@@ -56,6 +60,7 @@ from synlab.storage.export import (  # noqa: E402
     TrainingPackage,
     export_release,
     export_training_package,
+    scan_view_fields,
 )
 from synlab.storage.release import PROFILE_GATES, ReleaseManager  # noqa: E402
 from synlab.storage.store import QA_PASS, AssetStore  # noqa: E402
@@ -117,12 +122,19 @@ def loop(tmp_path_factory: pytest.TempPathFactory) -> dict:
                                      ancestry=[pool_asset.asset_id])
         store.set_qa(roster_asset.asset_id, QA_PASS, dict(roster_asset.qa or {}))
 
+    # The shipped tool's own pool step, run for this generation run: it is what stamps
+    # ``meta.run_id`` on the pool/roster (and therefore what makes ``relations_complete`` -- a
+    # PILOT required gate -- answerable for this run).  Run *after* the freeze so the frozen
+    # manifest of this fixture keeps exactly the scope it had before.
+    tool_pool = tool.step_build_pool(store, release_id=None, out_dir=root, ledger=None,
+                                     run_id=run_id)
+
     gates, _asset_ids, profile = gates_mod.evaluate_gates(store, run_id)
     return {
         "root": root, "store_root": store_root, "store": store, "spec": spec,
         "generation": generation, "run_id": run_id, "audit": audit,
         "tool": tool, "tool_audit": tool_audit, "tool_freeze": tool_freeze,
-        "tool_finite": tool_finite,
+        "tool_finite": tool_finite, "tool_pool": tool_pool,
         "release_id": release_id,
         "pool_report": pool_report, "pool_asset": pool_asset, "roster_asset": roster_asset,
         "gates": gates, "profile": profile,
@@ -243,6 +255,83 @@ def test_pool_r2_edges_are_a_symmetric_closure(loop: dict) -> None:
     assert pool.r2_edges == pool.index.r2_edges
 
 
+def test_tool_pool_step_stamps_the_generation_run(loop: dict) -> None:
+    """``step_build_pool`` attributes the pool/roster to the generation run it was given.
+
+    ``relations_complete`` (a PILOT required gate) resolves a run's assets through
+    ``meta["run_id"]``; a pool committed without one can never satisfy it.  The tool's own pool
+    step is the shipped path that writes the stamp.
+    """
+    store: AssetStore = loop["store"]
+    run_id = loop["run_id"]
+    tool_pool = loop["tool_pool"]
+    assert tool_pool["status"] in ("OK", "DEGRADED"), tool_pool
+    attribution = tool_pool["run_id_attribution"]
+    assert attribution["run_id"] == run_id, attribution
+    committed = tool_pool["committed"]
+    pool_asset = store.get_asset(committed["pool_asset"])
+    roster_asset = store.get_asset(committed["roster_asset"])
+    assert pool_asset.role == ROLE_POOL and roster_asset.role == ROLE_ROSTER
+    assert pool_asset.meta["run_id"] == run_id
+    assert roster_asset.meta["run_id"] == run_id
+    assert pool_asset.qa_status == QA_PASS and roster_asset.qa_status == QA_PASS
+    # the legacy pool of this fixture (committed without a run id) is *not* counted for the run
+    assert loop["pool_asset"] is not None
+    assert loop["pool_asset"].meta.get("run_id") is None
+
+
+def test_relations_complete_is_decided_from_the_run_scoped_pool(loop: dict) -> None:
+    gates: dict[str, str] = loop["gates"]
+    assert "relations_complete" in PROFILE_GATES["PILOT"]
+    assert gates["relations_complete"] == "PASS", gates
+    # ... and it is evidence, not a blanket PASS: it follows this run's pool asset
+    store: AssetStore = loop["store"]
+    run_id = loop["run_id"]
+    counted = [a for a in store.list_assets(role=ROLE_POOL, limit=100)
+               if (a.meta or {}).get("run_id") == run_id and a.qa_status == QA_PASS]
+    assert counted, "relations_complete passed without a run-scoped QA_PASS pool"
+
+
+# ------------------------------------------------------------------------------------
+# 3b. run attribution and the cross-run coverage aggregate
+# ------------------------------------------------------------------------------------
+def test_every_role_of_a_fresh_run_carries_its_run_id_at_commit(loop: dict) -> None:
+    """No role needs the after-the-fact attribution repair in a store generated now."""
+    store: AssetStore = loop["store"]
+    run_id = loop["run_id"]
+    tagging = loop["tool_audit"]["run_id_tagged"]
+    assert tagging["tagged"] == [], tagging
+    assert tagging["candidate_asset_ids"] == len(tagging["already_attributed"])
+    for role in (ROLE_MOTHER_MESH, ROLE_MATERIAL_PROFILE, ROLE_PATTERN_RECIPE,
+                 ROLE_PATTERN_CHANNELS, ROLE_FRAGMENT_MESH, ROLE_CLEAN_TRUTH,
+                 ROLE_PHYSICAL_COMPONENT, ROLE_PHYSICAL_TRUTH, ROLE_OBS_RESULT,
+                 ROLE_FEATURE_BUNDLE, ROLE_LABEL_BUNDLE, ROLE_PROVENANCE, ROLE_POOL,
+                 ROLE_ROSTER):
+        assets = [a for a in store.list_assets(role=role, limit=100)]
+        assert assets, f"role {role} committed nothing"
+        missing = [a.asset_id for a in assets if (a.meta or {}).get("run_id") != run_id]
+        assert not missing, f"{role} assets without meta.run_id: {missing}"
+
+
+def test_audit_step_writes_the_cross_run_coverage_aggregate(loop: dict) -> None:
+    """The coverage gates read the aggregate the audit step derives from the store."""
+    aggregate = loop["tool_audit"]["coverage_aggregate"]
+    assert aggregate["written"] is True, aggregate
+    assert Path(aggregate["path"]).exists()
+    assert aggregate["runs"] >= 1
+    assert aggregate["totals"]["run_id_attribution"]["repair"] == 0
+
+    measured = gates_mod.gate_measurements(loop["store"], loop["run_id"])
+    assert measured["coverage_source"].endswith("coverage_aggregate.json")
+    entry = measured["gates"]["coverage_24_vessels"]
+    assert entry["target"] == 24 and entry["present"] >= 1
+    assert entry["shortfall"] == max(0, entry["target"] - entry["present"])
+    # the aggregate's own numbers agree with the gate's reading of it
+    payload = json.loads(Path(aggregate["path"]).read_text(encoding="utf-8"))
+    assert entry["present"] == len(payload["vessels"])
+    assert payload["content_hash"] == aggregate["content_hash"]
+
+
 def test_unknown_and_tiny_never_enter_the_negative_set(loop: dict) -> None:
     store: AssetStore = loop["store"]
     if loop["pool_asset"] is None:
@@ -355,6 +444,108 @@ def test_export_produces_every_declared_artifact(package: dict) -> None:
     assert (out / "deploy" / "zarr").exists()
 
 
+def test_export_manifest_and_disk_agree_in_both_directions(package: dict) -> None:
+    """``files[]`` must be exactly the set of files the package wrote (and every hash must hold).
+
+    The zarr replica used to be written to ``deploy/geometry/zarr`` while the manifest scanner
+    walked ``deploy/zarr``, so 41 real files were absent from ``files[]`` and no hash covered
+    them.  A one-way check ("everything declared exists") cannot see that, so both differences
+    are asserted.
+    """
+    from synlab.canonical import hash_file
+
+    out: Path = package["dir"]
+    declared = {str(entry["path"]) for entry in package["manifest"]["files"]}
+    on_disk = {str(path.relative_to(out)).replace("\\", "/")
+               for path in out.rglob("*") if path.is_file()}
+    on_disk.discard("export_manifest.json")  # the manifest cannot declare itself
+    assert on_disk - declared == set(), f"written but not declared: {sorted(on_disk - declared)}"
+    assert declared - on_disk == set(), f"declared but not written: {sorted(declared - on_disk)}"
+    zarr_files = sorted(name for name in on_disk if name.startswith("deploy/zarr/"))
+    assert zarr_files, "the zarr replica is missing from the deployment view"
+    assert set(zarr_files) <= declared
+    for entry in package["manifest"]["files"]:
+        assert hash_file(out / entry["path"]) == entry["hash"], entry["path"]
+
+
+def test_separation_block_is_measured_on_the_written_package(package: dict) -> None:
+    """``separation`` must report a scan of the real files, not a declared constant."""
+    separation = package["manifest"]["separation"]
+    scan = separation["answer_field_scan"]
+    assert scan["view"] == "deploy"
+    assert scan["keys_scanned"] >= 40, scan          # a real denominator, not an empty scan
+    assert scan["unique_keys"] >= 20, scan
+    assert scan["containers"], scan                  # every scanned container is named
+    assert scan["hits"] == [], scan["hits"]
+    assert separation["features_carry_answer_fields"] is False
+    assert separation["features_carry_answer_fields_source"]
+    assert scan["forbidden_fields"] == sorted(FORBIDDEN_FEATURE_FIELDS)
+    # the deployment view really carries none of them, read back independently here
+    deploy = package["dir"] / "deploy"
+    keys: set[str] = set()
+    for path in sorted(deploy.rglob("*.json")):
+        if path.name == "zarr.json":                 # zarr chunk/codec metadata, not a field
+            continue
+        keys |= _json_keys(json.loads(path.read_text(encoding="utf-8")))
+    import pyarrow.parquet as pq
+
+    for path in sorted(deploy.rglob("*.parquet")):
+        keys |= {str(name) for name in pq.read_schema(path).names}
+    assert keys, "the independent re-read found no key at all"
+    assert not (keys & FORBIDDEN_FEATURE_FIELDS), sorted(keys & FORBIDDEN_FEATURE_FIELDS)
+
+
+def _json_keys(node: object) -> set[str]:
+    if isinstance(node, dict):
+        out: set[str] = set()
+        for key, value in node.items():
+            out.add(str(key))
+            out |= _json_keys(value)
+        return out
+    if isinstance(node, list):
+        out = set()
+        for item in node:
+            out |= _json_keys(item)
+        return out
+    return set()
+
+
+def test_the_answer_field_scan_notices_an_injected_answer_field(package: dict,
+                                                               tmp_path: Path) -> None:
+    """The scan is a measurement: an injected forbidden key must show up as a hit."""
+    clone = tmp_path / "injected"
+    (clone / "deploy" / "obs").mkdir(parents=True)
+    payload = json.loads((package["dir"] / "deploy" / "obs" / "index.json")
+                         .read_text(encoding="utf-8"))
+    payload["rows"]["injected"] = {"split": "train", "lineage_id": "LINJ"}
+    (clone / "deploy" / "obs" / "index.json").write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    probe = scan_view_fields(clone / "deploy")
+    keys = {key for entries in probe["keys_by_container"].values() for key in entries}
+    hits = sorted(keys & FORBIDDEN_FEATURE_FIELDS)
+    assert hits == ["lineage_id", "split"], hits
+    assert probe["keys_scanned"] > 0
+
+
+def test_separation_flags_are_not_hardcoded_constants() -> None:
+    """Regression guard: the two separation flags used to be written literals.
+
+    ``features_carry_answer_fields`` was ``False`` and both ``contains_truth`` flags were
+    ``True``/``False``, so the manifest claimed a separation no measurement backed.  Every
+    assignment of those keys must now be an expression over measured content.
+    """
+    source = (REPO_ROOT / "synlab" / "storage" / "export.py").read_text(encoding="utf-8")
+    assert '"features_carry_answer_fields": False' not in source
+    assert '"contains_truth": False' not in source
+    assert '"contains_truth": True' not in source
+    contains_truth = source.count('"contains_truth":')
+    assert contains_truth >= 2, "contains_truth is written for both views"
+    assert source.count('"contains_truth": bool(') == contains_truth
+    flags = source.count('"features_carry_answer_fields":')
+    assert flags == 1
+    assert source.count('"features_carry_answer_fields": bool(') == flags
+
+
 def test_export_manifest_records_hashes_and_counts(package: dict) -> None:
     manifest = package["manifest"]
     assert manifest["schema"] == "synlab.training_package_manifest.v1"
@@ -380,6 +571,13 @@ def test_deployment_view_carries_no_truth(package: dict) -> None:
     assert separation["deploy_truth_files"] == []
     assert package["manifest"]["views"]["deploy"]["contains_truth"] is False
     assert package["manifest"]["views"]["research"]["contains_truth"] is True
+    # ``contains_truth`` is read out of the package content, so it must agree with the scan
+    content_scan = separation["truth_content_scan"]
+    assert content_scan["deploy"]["contains_truth"] is False
+    assert content_scan["deploy"]["truth_bearing_files"] == []
+    assert content_scan["research"]["contains_truth"] is True
+    assert content_scan["research"]["truth_bearing_files"], (
+        "the research view must name the files whose content carries supervision")
 
     package_reader = TrainingPackage(out)
     index = package_reader.observation_index()

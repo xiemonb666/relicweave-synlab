@@ -7,8 +7,10 @@ import pytest
 
 from synlab.errors import ErrorCode, SynLabError
 from synlab.mothers.api import (audit_mother, canonical_params, commit_mother, create_mother,
-                                last_sampling_report, load_mother, sampler_spec,
+                                declared_fields, declared_only, last_sampling_report,
+                                load_mother, params_model_ok, sampler_spec,
                                 sample_parameters, vessel_ids)
+from synlab.pipeline import _sample_parameter_sets
 from synlab.registry import REGISTRY
 from synlab.roles import ROLE_MOTHER_MESH, SCHEMA_MOTHER
 from synlab.seeds import make_rng
@@ -175,3 +177,60 @@ def test_registry_exposes_all_families():
                 for vid in vessel_ids()}
     assert len(families) >= 8, f"only {len(families)} construction families: {families}"
     assert all(family and family != "None" for family in families)
+
+
+# ---------------------------------------------------------------------------------------
+# one vessel, one schema: the sampler may never hand a vessel another vessel's parameters
+# ---------------------------------------------------------------------------------------
+def test_params_model_ok_is_a_real_check_not_a_formality():
+    """A field that belongs to another vessel is reported, never absorbed or dropped."""
+    v12 = canonical_params("V12", {})
+    assert "depth_ratio" not in declared_fields("V12")
+    assert "depth_ratio" in declared_fields("V01") or "depth_ratio" in declared_fields("V02")
+    ok, why = params_model_ok("V12", {**v12, "depth_ratio": 0.35, "rim_flare": 0.33})
+    assert not ok
+    assert "extra_forbidden" in why, why
+    v07 = canonical_params("V07", {})
+    ok, why = params_model_ok("V07", {**v07, "with_handle": True, "handle_thickness_mm": 12.8})
+    assert not ok
+    assert "extra_forbidden" in why, why
+    # the vessel's own dictionary is accepted, and projection keeps exactly its own fields
+    ok, why = params_model_ok("V12", v12)
+    assert ok, why
+    assert declared_only("V12", {**v12, "with_handle": True}) == v12
+
+
+def test_create_mother_rejects_a_foreign_field_with_the_real_error():
+    """The failure the batch ledger recorded (`V12` receiving `depth_ratio`)."""
+    rng = make_rng(SEED_A, "shape")
+    with pytest.raises(SynLabError) as info:
+        create_mother("V12", "M01", {"depth_ratio": 0.35, "rim_flare": 0.33}, rng)
+    assert info.value.code == ErrorCode.MOTHER_INVALID
+    assert "extra_forbidden" in info.value.message or "Extra inputs" in info.value.message
+
+
+def test_sampler_returns_only_the_vessels_own_declared_fields():
+    """Every sampled dictionary is schema-clean and validates against *its own* model."""
+    rng = make_rng(SEED_A, "sampler")
+    for vessel_id in ("V07", "V12", "V18", "V21"):
+        declared = declared_fields(vessel_id)
+        samples = sample_parameters(vessel_id, 2, rng, require_feasible=False)
+        assert samples, vessel_id
+        for params in samples:
+            assert set(params) <= set(declared), (vessel_id, sorted(set(params) - declared))
+            ok, why = params_model_ok(vessel_id, params)
+            assert ok, (vessel_id, why)
+        assert last_sampling_report()["schema_rejections"] == 0
+
+
+def test_plan_hands_each_lineage_parameters_of_its_own_vessel():
+    """``_sample_parameter_sets`` is keyed by the picked vessel sequence, index by index."""
+    vessels = ["V12", "V07", "V18", "V23"]
+    rng = make_rng(SEED_A, "plan-sampler")
+    params = _sample_parameter_sets(vessels, 8, rng, None)
+    assert len(params) == 8
+    for index, item in enumerate(params):
+        vessel = vessels[index % len(vessels)]
+        assert set(item) <= set(declared_fields(vessel)), (index, vessel, sorted(item))
+        ok, why = params_model_ok(vessel, item)
+        assert ok, (index, vessel, why)

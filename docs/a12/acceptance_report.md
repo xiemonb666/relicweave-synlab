@@ -1,15 +1,15 @@
 # A12 验收报告（A01–A36）
 
-- 生成时间：2026-10-02 09:46:50
+- 生成时间：2026-10-02 10:06:27
 - 发布 profile：`SANDBOX_CORE`
 - 平台：Windows-11-10.0.26200-SP0 / Python 3.12.14
-- 统计：{'FAIL': 5, 'PASS': 12, 'PENDING': 6, 'NOT_RUN': 6, 'NA': 7}
+- 统计：{'PASS': 13, 'PENDING': 6, 'FAIL': 4, 'NOT_RUN': 6, 'NA': 7}
 
 > 本报告的每一项都由实际命令产生。`NOT_RUN` 表示未运行，`PENDING` 表示前置条件（外部后端、实拍数据、规模运行）尚未具备，`NA` 表示该 profile 下不适用。没有任何一项用推测或复制设计值充当实测结果。
 
 | ID | 验收对象 | 状态 | 关键实测 | 证据 | 说明 |
 |---|---|---|---|---|---|
-| A01 | 合同与权限（六 pack、features/labels 边界） | **FAIL** | {"unknown_field_rejected": true, "leakage_detector": true, "forbidden_fields_in_committed_features": ["fragment_id", "mother_id", "fragment_id", "mother_id", "fragment_id", "mother_id", "fragment_id", "mother_id", "fragment_id", "mother_id", "fragment_id", "mother_id", "fragment_id", "mother_id", "f | synlab/observe/features.py::assert_no_leakage | schema rejection + recursive whitelist + committed feature audit |
+| A01 | 合同与权限（六 pack、features/labels 边界） | **PASS** | {"unknown_field_rejected": true, "leakage_detector": true, "forbidden_fields_in_committed_features": []} | synlab/observe/features.py::assert_no_leakage | schema rejection + recursive whitelist + committed feature audit |
 | A02 | 坐标投影（mm、K、T、depth/range、crop） | **PASS** | {"max_mm_error": 1.4210854715202004e-14, "max_px_error": 0.0} | docs/a12/env_report.json | analytic projection/back-projection round trip |
 | A03 | 母体（24 族 × ≥20 独立母体） | **PENDING** | {"vessels_present": 3, "min_lineages_per_vessel": 1, "total_mothers": 13} | - | counts come from committed mother assets; 24x20 requires the L2 run |
 | A04 | 材料层（12 材料 / 4 层结构） | **PENDING** | {"materials_present": 2, "ids": ["M01", "M04"]} | - | shading vs geometric layers must be distinguishable |

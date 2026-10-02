@@ -202,6 +202,47 @@ def shape_parameters(vessel_id: str) -> list[str]:
     return list((entry.applicable or {}).get("shape_parameters") or [])
 
 
+def declared_fields(vessel_id: str) -> frozenset[str]:
+    """Names of the parameters the vessel's *own* pydantic model declares.
+
+    This is the authoritative field list for one vessel: a parameter dictionary handed to
+    :func:`create_mother` for ``vessel_id`` may only contain these names, because every model
+    is declared ``extra="forbid"`` (``depth_ratio`` belongs to the deep-plate family, not to
+    V12; ``with_handle`` belongs to the handled family, not to V07).
+    """
+    entry = vessel_entry(vessel_id)
+    model = entry.param_model
+    return frozenset(model.model_fields) if model is not None else frozenset()
+
+
+def params_model_ok(vessel_id: str, params: Mapping[str, Any]) -> tuple[bool, str]:
+    """Deterministic validation: build the vessel's params model from ``params``.
+
+    Returns ``(True, "")`` only when the vessel's own model **accepts** the dictionary, with
+    the missing fields filled from the schema midpoints exactly as :func:`canonical_params`
+    does (the values handed in are never replaced, and a wrong-vessel field is never dropped
+    silently here: the model's own ``extra_forbidden`` error is what gets reported).
+    ``extra="forbid"`` is never relaxed and the error text is returned to the caller instead
+    of being swallowed, so a caller that ignores the verdict still has the real reason.
+    """
+    entry = vessel_entry(vessel_id)
+    model = entry.param_model
+    if model is None:  # pragma: no cover - every registered vessel ships a model
+        return True, ""
+    payload = {**prototype_params(vessel_id), **dict(params or {})}
+    try:
+        model.model_validate(payload)
+    except Exception as exc:  # reported, never swallowed by this function
+        return False, f"{type(exc).__name__}: {exc}"
+    return True, ""
+
+
+def declared_only(vessel_id: str, params: Mapping[str, Any]) -> dict[str, Any]:
+    """Project ``params`` onto the fields ``vessel_id`` declares (never adds or invents one)."""
+    declared = declared_fields(vessel_id)
+    return {key: value for key, value in dict(params or {}).items() if key in declared}
+
+
 # ---------------------------------------------------------------------------------------
 # mother construction
 # ---------------------------------------------------------------------------------------
@@ -466,10 +507,15 @@ def sample_parameters(vessel_id: str, n: int, rng, *,
 
     The draw is *not* a full Cartesian product: SciPy's ``LatinHypercube`` fills the unit
     cube with one point per stratum in every dimension, then the per-field bounds map the
-    design onto the registered schema.  Each candidate passes a cheap analytic pre-gate, and by
-    default (``require_feasible``) it is also really built and audited, so ``sample_parameters``
-    only returns parameter sets that produce a mother.  Rejected candidates are counted and
-    reported; a draw that cannot be filled raises ``SynLabError(TARGET_INFEASIBLE)``.
+    design onto the registered schema.  Every drawing is made **from this vessel's own
+    schema** (``sampler_spec``/``default_params`` both read ``entry.param_model``) and every
+    accepted dictionary is projected onto :func:`declared_fields`, so a parameter set can
+    never carry a field that belongs to another vessel.  Each candidate passes a cheap
+    analytic pre-gate, then a deterministic schema gate that constructs the vessel's own
+    pydantic model (:func:`params_model_ok`), and by default (``require_feasible``) it is also
+    really built and audited, so ``sample_parameters`` only returns parameter sets that
+    validate *and* produce a mother.  Rejected candidates are counted and reported with their
+    reason; a draw that cannot be filled raises ``SynLabError(TARGET_INFEASIBLE)``.
 
     The function returns a plain ``list[dict]`` as the frozen interface requires; the
     rejection statistics are appended to ``synlab.mothers.api.LAST_SAMPLING_REPORT`` and are
@@ -490,13 +536,14 @@ def sample_parameters(vessel_id: str, n: int, rng, *,
                           f"{vessel_id} exposes no continuous sampler fields",
                           stage=f"{STAGE}.sample_parameters")
     names = sorted(spec)
-    model = vessel_entry(vessel_id).param_model
+    declared = declared_fields(vessel_id)
     baseline = default_params(vessel_id)
 
     attempts_limit = int(max_attempts) if max_attempts is not None else max(8 * n, 64)
     accepted: list[dict[str, Any]] = []
     rejected: list[dict[str, Any]] = []
     attempted = 0
+    schema_rejections = 0
     while len(accepted) < n and attempted < attempts_limit:
         block = min(max(n - len(accepted), 1) * 2 + 4, attempts_limit - attempted)
         unit = _latin_hypercube(block, len(names), rng)
@@ -510,8 +557,17 @@ def sample_parameters(vessel_id: str, n: int, rng, *,
             reason = _pre_gate(vessel_id, candidate)
             if reason is None and require_feasible:
                 reason = _build_gate(vessel_id, candidate, rng)
+            # the deterministic gate: only the fields this vessel declares may travel, and the
+            # vessel's own model must accept the result.  A violation is a recorded rejection
+            # with the model's message - never a silently repaired or dropped candidate.
+            projected = {key: value for key, value in candidate.items() if key in declared}
             if reason is None:
-                accepted.append(_jsonable_params(candidate))
+                ok, why = params_model_ok(vessel_id, projected)
+                if not ok:
+                    reason = f"SCHEMA_INVALID:{why}"
+                    schema_rejections += 1
+            if reason is None:
+                accepted.append(_jsonable_params(projected))
             else:
                 rejected.append({"reason": reason, "params": _jsonable_params(candidate)})
             if len(accepted) >= n or attempted >= attempts_limit:
@@ -521,7 +577,8 @@ def sample_parameters(vessel_id: str, n: int, rng, *,
             "vessel_id": vessel_id, "planned": n, "attempted": attempted,
             "accepted": len(accepted), "rejected": len(rejected),
             "rejection_reasons": _reason_counts(rejected),
-            "fields": names,
+            "fields": names, "declared_fields": sorted(declared),
+            "schema_rejections": int(schema_rejections),
         }
         _LAST_SAMPLING_REPORT = report
         raise SynLabError(
@@ -541,6 +598,9 @@ def sample_parameters(vessel_id: str, n: int, rng, *,
         "fields": names, "bound_overrides": sorted(bounds) if bounds else [],
         "accepted_fraction": float(len(accepted)) / float(attempted) if attempted else 0.0,
         "feasibility_gate": "real build + audit" if require_feasible else "analytic pre-gate only",
+        "declared_fields": sorted(declared),
+        "schema_gate": "vessel's own pydantic model (extra=forbid), fields projected onto it",
+        "schema_rejections": int(schema_rejections),
     }
     _LAST_SAMPLING_REPORT = report
     return accepted
@@ -768,6 +828,7 @@ def _strip_arrays(payload: Mapping[str, Any]) -> dict[str, Any]:
 __all__ = [
     "create_mother", "audit_mother", "sample_parameters", "commit_mother", "load_mother",
     "sampler_spec", "shape_parameters", "default_params", "canonical_params",
+    "declared_fields", "declared_only", "params_model_ok",
     "vessel_entry", "vessel_ids", "ensure_registered", "last_sampling_report",
     "geometry_hash", "raise_on_failure",
 ]

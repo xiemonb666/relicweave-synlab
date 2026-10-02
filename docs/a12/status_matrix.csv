@@ -91,7 +91,7 @@ capability,vessel,V21,曲面板,IMPLEMENTED,synlab.mothers.vessels.group_sheet,d
 capability,vessel,V22,碑板,IMPLEMENTED,synlab.mothers.vessels.group_extrude,thick slab with a real chamfer and an engraved inscription band
 capability,vessel,V23,小雕像,IMPLEMENTED,synlab.mothers.vessels.group_composite,closed superquadric torso/head plus swept limbs with real root overlap
 capability,vessel,V24,装饰构件,IMPLEMENTED,synlab.mothers.vessels.group_sheet,superquadric base body with a real repetition field and relief pads
-acceptance,A-item,A01,合同与权限（六 pack、features/labels 边界）,FAIL,synlab/observe/features.py::assert_no_leakage,schema rejection + recursive whitelist + committed feature audit
+acceptance,A-item,A01,合同与权限（六 pack、features/labels 边界）,PASS,synlab/observe/features.py::assert_no_leakage,schema rejection + recursive whitelist + committed feature audit
 acceptance,A-item,A02,坐标投影（mm、K、T、depth/range、crop）,PASS,docs/a12/env_report.json,analytic projection/back-projection round trip
 acceptance,A-item,A03,母体（24 族 × ≥20 独立母体）,PENDING,data/a12/reports,counts come from committed mother assets; 24x20 requires the L2 run
 acceptance,A-item,A04,材料层（12 材料 / 4 层结构）,PENDING,data/a12/reports,shading vs geometric layers must be distinguishable

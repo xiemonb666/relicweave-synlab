@@ -387,8 +387,21 @@ def probe_training_package(package_dir: str | Path, *, max_fragments: int = 16,
     report["negative_audit"] = audit
     report["relation_kinds_in_batch"] = _kind_counts_from_codes(
         batch.labels_relation[batch.pair_valid])
-    report["ok"] = bool(audit and audit.get("ok"))
-    if not report["ok"]:
+    # ``ok`` is the *whole* claim: the package must verify against its own manifest hashes
+    # (``package.verify_files``) **and** the batch must pass its negative audit.  Reporting only
+    # the audit made a package whose declared hashes do not verify load "ok" -- a loader that
+    # accepts tampered bytes is not a loader.
+    integrity_ok = bool(report.get("files_ok"))
+    report["ok"] = bool(integrity_ok and audit and audit.get("ok"))
+    if not integrity_ok:
+        report["error"] = {
+            "code": ErrorCode.ASSET_HASH_MISMATCH.value,
+            "message": ("the package failed its own file-hash check (package.verify_files); a "
+                        "loader must refuse a package whose declared hashes do not verify"),
+            "problems": (verify or {}).get("problems", []) if isinstance(verify, dict) else [],
+        }
+        report.setdefault("blocking_attempt", "package.verify_files")
+    elif not report["ok"]:
         report["error"] = {"code": ErrorCode.STOP_QA.value,
                            "message": "the batch failed its own negative audit"}
     if batch.pos_mask.sum() == 0:

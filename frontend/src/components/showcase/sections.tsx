@@ -249,19 +249,27 @@ export function PatternsSection({ entries }: { entries: ShowcaseEntry[] }) {
   const [selected, setSelected] = useState<string | null>(null);
   const current = patterns.find((e) => e.entry_id === selected) ?? patterns[0] ?? null;
   const channels = artifactOf(current, 'channels');
+  const patternGlb = artifactOf(current, 'pattern_glb');
   const metrics = asRecord(current?.metrics) ?? {};
   const raster = asRecord(metrics.raster) ?? {};
+  const grid = asRecord(raster.grid) ?? {};
+  const texel = Array.isArray(grid.texel_mm) ? (grid.texel_mm as number[]) : null;
   const legend = asRecord(metrics.legend) ?? {};
   const seam = asRecord(metrics.seam) ?? {};
   const seamChart = asRecord(seam.chart_space) ?? {};
   const scale = asRecord(metrics.scale) ?? {};
   const spectrum = asRecord(scale.spectrum) ?? {};
   const channelStats = asRecord(metrics.channel_stats) ?? {};
+  const bake = asRecord(metrics.texture_bake) ?? {};
+  const continuity = asRecord(asRecord(raster.continuity)?.albedo_linear) ?? {};
+  const provenance = asRecord(metrics.provenance) ?? {};
+  const rasterWidth = num(raster.width);
+  const rasterHeight = num(raster.height);
 
   return (
     <SectionCard
       title="2 · 纹样通道"
-      subtitle="build_pattern → evaluate（真实母体上面积加权采样）→ (x,s) 网格分箱 → albedo / roughness / height_mm 三通道 PNG；PNG 是显示编码，非线性真值。"
+      subtitle="build_pattern → 在真实图卡坐标 (u,s) 上确定性求值（周期列 u_k=(k+0.5)/W）→ albedo / roughness / height_mm 三通道 PNG；同一张 albedo 栅格同时作为器物 GLB 的 baseColorTexture，所以卡片与器物看到的是同一份花纹。"
       anchor="patterns"
       actions={<Badge tone="info">真实条目 {patterns.length}</Badge>}
     >
@@ -303,8 +311,8 @@ export function PatternsSection({ entries }: { entries: ShowcaseEntry[] }) {
                           <img
                             src={showcaseAssetUrl(channels.asset_id, 'png', { name: payloadKey })}
                             alt={`${current.entry_id} ${channel.label} 通道（显示编码 PNG）`}
-                            width={256}
-                            height={128}
+                            width={rasterWidth ?? 256}
+                            height={rasterHeight ?? 128}
                             loading="lazy"
                           />
                           <figcaption>
@@ -327,18 +335,59 @@ export function PatternsSection({ entries }: { entries: ShowcaseEntry[] }) {
                       ))}
                     </ul>
                     <div className="muted small">
-                      栅格方法：{str(raster.method) ?? '未提供'}；网格 {num(raster.width) ?? '?'}×
-                      {num(raster.height) ?? '?'}，采样 n={num(raster.n_samples) ?? '?'}，
-                      分箱覆盖{' '}
-                      {num(raster.bin_coverage) !== null
-                        ? `${((num(raster.bin_coverage) as number) * 100).toFixed(1)}%`
+                      栅格方法：{str(raster.method) ?? '未提供'}；网格 {rasterWidth ?? '?'}×
+                      {rasterHeight ?? '?'}
+                      {texel ? `（texel ${texel[0].toFixed(4)}×${texel[1].toFixed(4)} mm）` : ''}，采样 n=
+                      {num(raster.n_samples) ?? '?'}，超采样 {num(raster.supersample) ?? '?'}×
+                      {num(raster.supersample) ?? '?'}
+                      。图卡矩形里被 tagged 面真实占据的 texel 比例{' '}
+                      {num(raster.face_coverage_fraction) !== null
+                        ? `${((num(raster.face_coverage_fraction) as number) * 100).toFixed(1)}%`
                         : '未提供'}
-                      ，每有效 bin 平均样本{' '}
-                      {num(raster.mean_samples_per_filled_bin)?.toFixed(2) ?? '未提供'}。
+                      （没被占据的 texel 在网格上不可见，但仍按解析场求值，不留黑洞）。
                     </div>
                   </div>
                 </>
               )}
+
+              {/* ------------------------------------------------- 器物上的同一份花纹 */}
+              <div className="showcase-detail">
+                <div className="row">
+                  <Badge tone={patternGlb ? 'ok' : 'warn'}>
+                    器物三维：{patternGlb ? '带该族花纹（同一 albedo 栅格贴图）' : '清单未提供 pattern_glb'}
+                  </Badge>
+                  <Badge tone="neutral">母体 {current.mother_entry ?? '未提供'}</Badge>
+                  <Badge tone="info">族 {str(metrics.family_id) ?? '未提供'}</Badge>
+                </div>
+                {patternGlb ? (
+                  <SceneViewport
+                    assetId={patternGlb.asset_id}
+                    role={patternGlb.role ?? 'display_lod_glb'}
+                    fileKey={patternGlb.key ?? 'glb'}
+                    source="showcase"
+                    title={`器物 ${str(metrics.mother_vessel_id) ?? ''} + 族 ${str(metrics.family_id) ?? ''} 三维视口`}
+                    height={340}
+                    notice={`同一冻结 recipe 的同一张 albedo 栅格（asset ${str(bake.texture_asset) ?? channels?.asset_id ?? '未提供'}）作为 baseColorTexture`}
+                  />
+                ) : (
+                  unavailable(
+                    '该纹样没有烘焙到器物的展示 GLB',
+                    'artifact pattern_glb 缺失：本次演示集是在加入贴图烘焙之前生成的，'
+                      + '请运行 --only patterns --force 重新生成。',
+                  )
+                )}
+                <KeyValueList
+                  rows={[
+                    { label: 'UV → 图卡', value: <span className="small">{str(bake.uv_mapping) ?? '未提供'}</span> },
+                    { label: '贴图来源', value: <span className="small">{str(bake.texture_source) ?? '未提供'}</span> },
+                    { label: 'albedo PNG sha256', value: <span className="mono small">{str(bake.texture_sha256) ?? '未提供'}</span> },
+                    { label: '贴图 primitive', value: `${num(bake.wall_faces) ?? '?'} 面 / ${num(bake.wall_vertices) ?? '?'} 顶点；其余 ${num(bake.body_faces) ?? '?'} 面用 body 色（内壁与外壁共享 (u,s)，不能一起贴图）` },
+                    { label: 'UV 解缠角点 / clamp 顶点', value: `${num(bake.seam_unwrapped_corners) ?? '?'} / ${num(bake.uv_v_clamped_wall_vertices) ?? num(bake.uv_v_clamped_vertices) ?? '?'}` },
+                    { label: 'UV v 实测范围', value: Array.isArray(bake.uv_v_range_gltf) ? (bake.uv_v_range_gltf as number[]).map((v) => v.toFixed(6)).join(' … ') : '未提供' },
+                    { label: 'height 通道', value: str(bake.height_note) ?? '未提供' },
+                  ]}
+                />
+              </div>
 
               <div className="showcase-cols">
                 <div>
@@ -353,6 +402,12 @@ export function PatternsSection({ entries }: { entries: ShowcaseEntry[] }) {
                       { label: '接缝采样对 n', value: num(seamChart.n_pairs) ?? '未提供' },
                       { label: 'x 周期', value: num(raster.x_period_mm) !== null ? `${(num(raster.x_period_mm) as number).toFixed(3)} mm（周期性=${raster.x_periodic === true ? '是' : '否'}）` : '未提供' },
                       { label: 's 范围', value: Array.isArray(raster.s_range_mm) ? `${(raster.s_range_mm as number[]).map((v) => v.toFixed(3)).join(' … ')} mm` : '未提供' },
+                      { label: '网格周期采样规则', value: <span className="small">{str(grid.u_rule) ?? '未提供'}；{str(grid.s_rule) ?? '未提供'}</span> },
+                      { label: '列回绕差 vs 相邻列差（线性 albedo）', value: num(continuity.column_wrap_abs) !== null ? `${num(continuity.column_wrap_abs)} vs 平均 ${num(continuity.column_adjacent_mean_abs)} / 最大 ${num(continuity.column_adjacent_max_abs)}` : '未提供' },
+                      { label: '逆映射往返误差（x / s）', value: asRecord(raster.inverse_roundtrip_mm) ? `${num(asRecord(raster.inverse_roundtrip_mm)?.x_max_mm)?.toExponential(2) ?? '—'} / ${num(asRecord(raster.inverse_roundtrip_mm)?.s_max_mm)?.toExponential(2) ?? '—'} mm` : '未提供' },
+                      { label: 'texel / footprint', value: num(raster.texel_over_footprint) !== null ? `${(num(raster.texel_over_footprint) as number).toFixed(3)}×（footprint ${num(raster.footprint_mm)?.toFixed(4) ?? '—'} mm）` : '未提供' },
+                      { label: '亚 texel 抗锯齿低通（albedo max/p95）', value: asRecord(raster.analytic_deviation) ? `${num(asRecord(raster.analytic_deviation)?.albedo_max_abs)?.toFixed(5) ?? '—'} / ${num(asRecord(raster.analytic_deviation)?.albedo_p95_abs)?.toFixed(5) ?? '—'}` : '未提供' },
+                      { label: 'provenance（族 / recipe / PNG / GLB）', value: <span className="small mono">{str(provenance.family_id) ?? '—'} · {str(provenance.recipe_hash)?.slice(0, 18) ?? '—'} · {str(provenance.raster_asset) ?? '—'} · {str(provenance.pattern_glb_asset) ?? '—'}</span> },
                       { label: '声明线宽', value: num(scale.declared_line_width_mm) !== null ? `${(num(scale.declared_line_width_mm) as number).toFixed(4)} mm` : '未提供' },
                       { label: '线宽实测', value: str(asRecord(scale.line_width_mm)?.status) === 'OK' ? `${num(asRecord(scale.line_width_mm)?.value_mm) ?? '未提供'} mm` : `NA：${str(asRecord(scale.line_width_mm)?.reason) ?? '未提供'}` },
                       { label: '主波长', value: num(spectrum.dominant_wavelength_mm) !== null ? `${(num(spectrum.dominant_wavelength_mm) as number).toFixed(4)} mm` : '未提供' },

@@ -252,6 +252,9 @@ A01 的实测明细变了但判定不变：
 | 其中 `fragment_id`/`mother_id`（pipeline 特征 meta） | 16 条（8 资产 × 2 键） | 16 条（未变） |
 | `A01.status` | FAIL | **FAIL（口径未放宽）** |
 
+> 上表是收口轮当时的快照。其中 `fragment_id`/`mother_id` 的 16 条（8 资产）已在 **§9** 修复：
+> 现为 **0 条 / 0 资产**、`A01.status=PASS`（判定口径未改）。
+
 ### 8.3 泄漏修复与残余（A01 / leakage）
 
 - **代码**：`synlab/roles.py` 新增 `ROLE_DEGRADE_MEASUREMENT="degrade_measurement"`；
@@ -276,6 +279,10 @@ A01 的实测明细变了但判定不变：
   （被 run 覆盖与闭包引用，meta 参与 `payload_hash`/`asset_id`），故不删不改，如实保留 FAIL
   并写明修法。闭环 store 自己的审计也抓到同一缺陷（`legal_inputs` 门因此 PENDING）。
 
+> **本节该结论已被 §9 取代**：这 8 个资产已在 §9 用“重提交字节一致孪生 + 退役旧行 + 改指派生边”
+> 全部修掉 —— `forbidden_fields_in_committed_features` 16 → **0**、`A01` FAIL → **PASS**、
+> `truth_isolation` false → **true**。代码侧残余（`synlab/pipeline.py:893`）见 §9.6 第 1 条。
+
 ### 8.4 release 与导出（最小闭环）
 
 - **已冻结**：`rel_852ab2a1e4c3_1790905541`，`profile=SANDBOX_CORE`，`scope=SYNTHETIC`，
@@ -299,6 +306,16 @@ A01 的实测明细变了但判定不变：
   fragments 6（有观测 3 / 无观测 3）、points_valid 6049、tokens 576；
   batch `n_queries=3 / positives=3 / negatives=0`，`negative_audit.ok=true`（负例为 0 的原因是
   exposure 直方图 `none=3`、其余桶全 0：本环 pool 只有 R2，合法负例确实不存在）。
+- **本轮修掉的一个 loader 完整性漏洞**（`synlab/qc/loader_probe.py`）：
+  `probe_training_package` 的 `ok` 只看 `negative_audit.ok`，**忽略 `package.verify_files`**，
+  于是 manifest 哈希对不上的包也报 `ok=true`（集成测试
+  `test_loader_refuses_a_tampered_package` 因此失败）。现在
+  `ok = files_ok ∧ negative_audit.ok`，完整性问题落
+  `error.code=ASSET_HASH_MISMATCH` + `blocking_attempt=package.verify_files`；
+  真实包复跑结果不变（`files_ok=true`、`files_checked=13`、`ok=true/PASS`）。
+  集成测试随之从 20 通过 / 2 失败变为 **21 通过 / 1 失败**，剩余 1 项是
+  `synlab/storage/export.py` 的 zarr 路径缺陷（写入 `deploy/geometry/zarr`、登记扫描
+  `deploy/zarr`，越权未改，见 `docs/a12/closed_loop.md` 第 8 节第 8 条）。
 
 ### 8.5 诚实性说明（最终轮）
 
@@ -314,6 +331,139 @@ A01 的实测明细变了但判定不变：
    `_run_contract_item` 旧实现把 markdown 写成 `.json` 的遗留物，保留未删（它本身就是该 bug 的证据）。
 4. **`audit` DEGRADED 未消除**：3 个 `visible_labels` 资产 QA_FAIL 是真实缺口（交付前景 mask 为空），
    不是流程噪声；它们被排除出冻结范围并逐个记录。
-5. **越权项**：`synlab/pipeline.py`（A01 残余）、`synlab/storage/export.py`（常量字段）不在写入范围，
-   均只报告不改动；`tools/evidence_min.py` 的 `leakage` 步骤同样是 run 范围口径，未修改，
-   全店/干净-run/残余原因写进同一份报告。
+5. **越权项**：`synlab/pipeline.py`（A01 残余）、`synlab/storage/export.py`（常量字段 +
+   zarr 路径登记缺陷）不在写入范围，均只报告不改动；`tools/evidence_min.py` 的 `leakage` 步骤
+   同样是 run 范围口径，未修改，全店/干净-run/残余原因写进同一份报告。
+6. **测试**（按目录分开跑，避免两个同名 `conftest.py` 冲突）：
+   `tests/a12/operators` 148 项通过（exit 0）、`tests/a12/api/test_roles_and_isolation.py`
+   21 项通过（exit 0）、`tests/a12/integration/test_closed_loop.py` 修复前 20/2、
+   修 loader 完整性后 21 通过 / 1 失败（唯一失败项为 export.py 的 zarr 路径缺陷，见 8.4）。
+
+## 9. feature 泄漏修复（A01 存量收口：76 → 16 → 0）
+
+本节收口 §8.3 留下的**最后 8 个残余资产**。8 个历史 `feature_bundle` 全部处理完毕：
+用**原特征数组重提交为字节一致的孪生资产**（meta 去掉身份字段），再退役旧行（SQLite 行 +
+`assets/<id>` 目录，写完整墓碑），最后把它在**派生边（`ancestry`）**上的引用改指到孪生资产。
+A01 的 `forbidden_fields_in_committed_features` 由 **16 条 → 0 条**。
+**A01 判定口径、`FORBIDDEN_FEATURE_FIELDS`、`qc/leakage.py`、`qc/audit.py` 与各 release 门一行未改。**
+
+### 9.1 命令与退出码
+
+| 命令 | 退出码 | 结果 |
+|---|---|---|
+| `python tools\repair_feature_leak.py --store data/a12 --plan` | 0 | 复现：8 个资产 / 16 条 forbidden（每资产 `fragment_id`+`mother_id`） |
+| `python tools\repair_feature_leak.py --store data/a12 --apply` | 0 | `repaired=8` / `refused=0`，8/8 `faithful=true`，派生边 8/8 改指成功 |
+| `python tools\repair_feature_leak.py --store data/a12 --verify` | 0 | 全店 `forbidden_entries_total=0`；`truth_isolation=true` |
+| `python tools\repair_feature_leak.py --store data/a12 --freeze --apply` | 0 | 两个 run 的 release **均未冻结**（门未过，见 9.5） |
+| `python tools\evidence_min.py --step leakage --data-root data/a12 --run-id run_2fad0ac4d3b67098` | 0 | `ok=true` / `status=PASS`（原为 `ok=false`） |
+| `python data\a12\reports\augment_leakage_report.py --store data/a12` | 0 | 追加 `runs_scoped` 等范围与修复摘要 |
+| `python -m synlab.cli acceptance --profile SANDBOX_CORE --json` | **1** | FAIL 5→**4**、PASS 12→**13**；**A01 FAIL→PASS**；退出码 1 由 A05/A06/A09/A24 造成（与本轮无关） |
+| `python tools\gen_status_matrix.py --data-root data/a12` | 0 | `docs/a12/status_matrix.csv` 中 A01 行 = `PASS` |
+
+### 9.2 A01 前后明细（同一口径，三次快照）
+
+| 快照 | forbidden 条目 | 其中 `axis_id/level/variant` | 其中 `fragment_id/mother_id` | 相关资产数 | A01 |
+|---|---|---|---|---|---|
+| 基线 `acceptance_summary.before.json` | **76** | 60（20 个错挂退化资产 × 3） | 32→16 | **28**（20+8） | FAIL |
+| 收口前 `acceptance_summary.before_feature_leak_repair.json` | **16** | 0 | 16（8 资产 × 2） | **8** | FAIL |
+| 本轮后 `acceptance_summary.json` | **0** | 0 | **0** | **0** | **PASS** |
+
+`leakage_detector=true`、`unknown_field_rejected=true` 三项均未变；`summary_hash=sha256:d8fb0f7455abd8a88de52604b1c55bad083646129b429089a7fe5a4a7de046a1`。
+
+### 9.3 8 个资产的处理结果与 faithful 证据
+
+规则：`asset_id = interpret_hash(role, schema, unit, frame, payload_hash)`，meta 参与 `payload_hash`，
+因此**不就地改 meta / 不就地改 role**；做法是重提交 + 退役 + 墓碑 + 映射
+（`data/a12/reports/feature_leak_repair.json`，风格与 `repair_degrade_role.py` 一致）。
+
+| 退役资产 | run | lineage | 孪生资产（新 id） | 数组数 | 逐数组 hash 全等 | 改指的派生边 |
+|---|---|---|---|---|---|---|
+| `asset_2ddeda824c6b7dec8a95` | `run_404bbe3c80f2c04e` | LIN0000_V01_M01_PAT01 | `asset_fded2bb0ae17aa1f409f` | 17 | **true** | `asset_4775c2eea78e597a1b16`（provenance） |
+| `asset_846bd1b7cf1e44d139d0` | `run_404bbe3c80f2c04e` | LIN0001_V02_M01_PAT01 | `asset_b9a422864590b8115042` | 17 | **true** | `asset_272a76eaee10000431d8` |
+| `asset_0bcbf10e87b9b54fbbc2` | `run_404bbe3c80f2c04e` | LIN0002_V13_M01_PAT01 | `asset_8c29450b0260f5726bd3` | 17 | **true** | `asset_c572dfecc0fdaeeb764b` |
+| `asset_e612e193c8fa59f47aa5` | `run_404bbe3c80f2c04e` | LIN0003_V01_M04_PAT01 | `asset_cadb60574457189e9b22` | 17 | **true** | `asset_b52990143d30b5a65140` |
+| `asset_2e59947b6438587153b5` | `run_2fad0ac4d3b67098` | LIN0000_V01_M01_PAT01 | `asset_219282d10ed84ad8cc9a` | 17 | **true** | `asset_b768b19b90557e4baa6c` |
+| `asset_b31e078177be3f23c81b` | `run_2fad0ac4d3b67098` | LIN0001_V02_M01_PAT01 | `asset_fb073cc932fc7661d49a` | 17 | **true** | `asset_fe93f6a83a4b83beec5c` |
+| `asset_5bb19a7894def812c16e` | `run_2fad0ac4d3b67098` | LIN0002_V13_M01_PAT01 | `asset_1214795958e2a814c8b6` | 17 | **true** | `asset_f6b04f527062b33badf7` |
+| `asset_b438e92147420409adae` | `run_2fad0ac4d3b67098` | LIN0003_V01_M04_PAT01 | `asset_433cc1381e62aa47d28a` | 17 | **true** | `asset_22a81af62755ab7bcbb1` |
+
+- **faithful 的判定方式**：`store.load_arrays` 读出的**原始数组**逐个算
+  `synlab.canonical.array_hash`，新资产再读一遍逐数组比对 —— `array_keys_equal=true`、
+  `array_hashes_equal=true`（8/8）、keys/shape/dtype 全等，`differences=[]`；
+  每个资产 17 个数组（含 `global_rgb`〔4,192,256,3〕uint8、`pixel_valid`、`point_cloud__xyz`、
+  `curvature_field__*`、`quality__*`、`view_tokens` 等）。
+- **meta 处置**：剔除 `fragment_id`/`mother_id`（在 `FORBIDDEN_FEATURE_FIELDS` 内）与
+  `component_id`/`observation_id`（同一身份链，非表内但同属身份）；重算
+  `meta["feature_fields"]`（不再声明身份键），并记 `dropped_forbidden_fields` +
+  `leak_repair`（含 `source_asset_id`）；保留有特征含义的
+  `n_views`/`image_size`/`tokens_total`/`scale_valid`（在 `a12.obs.v1` 标量契约内）。
+- **为什么必须改指派生边**：退役 id 出现在同 run 的 provenance 资产 `ancestry`
+  （`[feature, label]`）里，共 8 条；不改指则 `ReleaseManager.verify_closure` 会报
+  `missing asset`。`ancestry` 不参与 `interpret_hash`/`blob_hash`，改指不改变任何资产的 id
+  与文件哈希；每条改动的前后值与原因都逐条写在报告里。冻结清单内的引用会被**拒绝改写**
+  （本次 0 条命中）。
+- **store 复核**：`health_check ok=true`（247 资产 / 250 文件 / 0 问题）；
+  退役行与目录均已删除，旧 id 只保留在 events 追加日志与本次报告/墓碑中（有意留痕）。
+
+### 9.4 负控复验（`data/a12/reports/leakage_negative_control.json`）
+
+| 范围 | features | `truth_isolation` | `ok` |
+|---|---|---|---|
+| run `run_2fad0ac4d3b67098` | 4 | **true** | **true** |
+| run `run_404bbe3c80f2c04e` | 4 | **true** | **true** |
+| 全店（无 run 过滤） | 12 | **true** | **true** |
+| 干净对照 `run_23664ddb26eada4b` | 4 | **true** | **true** |
+
+`residual.offending_assets` 现为 `[]`（报告里仍保留 `repair_mapping` 与 `still_open` 字段）。
+`metadata_permutation`、`row_permutation_invariance` 仍为 `true`。
+
+### 9.5 release：**未重新冻结成功**（被必需门拦下，未放宽任何门）
+
+- **`data/a12` 里原本没有任何已冻结 release**：`releases` 表 0 行、`data/a12/releases/` 为空。
+  因此**不存在“闭包里的 8 个引用失效”**：8 个旧 id 从未被任何 release manifest 引用
+  （全仓字节级扫描：只有 `_scratch` 笔记、旧 store 备份与本次墓碑/报告提到它们）。
+- 仍按要求**真实尝试**了冻结（新 id，从不覆盖同名 release），两次尝试都**被拒**并落盘
+  `data/a12/reports/release_freeze_after_feature_leak_repair.json`
+  （门全部来自 `qc.gates.evaluate_gates` 的 store 证据，`gate_overrides` 为空）：
+  - 全范围（run 的 24 个 QA_PASS 资产）：闭包**不通过**，引用遍历到
+    `asset_6351703c8814ff83c390`（`physical_component`，`QA_PENDING`）与其
+    `ancestry` 里的 `LIN0000_V01_M01_PAT01:LIN0000_V01_M01_PAT01_E01:v1`（**是 fragment id、
+    不是 asset id**）；
+  - 缩减范围（自身闭包可验证的 16 个资产，排除 8 个 provenance/feature）：闭包可过，
+    但仍被 `STOP_QA` 拦下 —— 必需门 `fracture_operator_runs`、`observation_operator_runs`
+    为 PENDING（本 store 的 truth/observation 资产没有 `meta["run_id"]`，而这两个门按 run 统计
+    QA_PASS 资产）。
+  - 结论：**两个 run 的 `frozen=false`，本次没有产生任何新 manifest**（不制造“看起来成功”的发行版）。
+- **旧 release 只读未动**：`data/a12_exports/closed_loop/store/releases/` 下 5 个 manifest
+  在修复前后**逐文件哈希完全相同**（`external_releases_untouched=true`）。
+
+### 9.6 仍未解决项 / 诚实性（本节）
+
+1. **代码侧残余仍在**（未改，越权）：`synlab/pipeline.py:893`
+   `meta["fragment_id"] = encoded.get("fragment_id") if encoded else None` 位于剔除逻辑
+   （887–889 行）**之后**，所以任何走 `_commit_features` 的**新**生成仍会把 `fragment_id`
+   写进特征 meta。实测证据（不是推断）：
+   `pytest tests/a12/integration/test_l0_loop.py -q` →
+   `test_features_and_labels_are_separate_and_clean` FAIL：
+   `AssertionError: features carry forbidden fields: ['fragment_id']`（退出码 1，输出
+   `data/a12_exports/_scratch/l0_gap_probe.txt`）；闭环 store 的 21 个特征资产也全带
+   `fragment_id/mother_id` 且已进 5 个已冻结 manifest。最小修法是**删掉第 893 行**
+   （`relations/gallery.py::attach_features` 与 `storage/export.py` 都有 provenance/obs 回退路径），
+   但该改动会牵动 pool 装配与训练包导出两条正在并行开发的路径，故**本任务只报告、不代改**。
+2. **闭环 store 的 5 个已冻结 release 仍含带 `fragment_id/mother_id` 的特征资产**
+   （`rel_8049cf187288_*`/`rel_fda083aa68a8_*`/`rel_b06f9f7e9508_*`/`rel_852ab2a1e4c3_*`×2，
+   12–21 个/份）。按“旧 release 只读”规则未动；要修必须在该 store **重新生成 + 重新冻结新版本**，
+   不在本任务范围。
+3. **陈旧派生台账**：`data/a12/reports/coverage_rows.json`（4 个旧 id）、
+   `coverage.parquet`（2 个旧 id）仍提到退役 id；它们由 `synlab/pipeline.py::_write_coverage`
+   在**下一次生成**时重写，本次不手改（`coverage.json` 本身不含 asset id，不受影响）。
+4. **门状态没有因本轮修复而变化**：`legal_inputs` 等门仍取决于 run 标注与闭环 store 的缺陷；
+   本轮只让 A01 从 FAIL 变 PASS（这一项本来就是被这 8 个资产卡住的）。
+5. **pool 装配没有因此变差（实测，不是推断）**：`relations.gallery.attach_features` 的映射阶段
+   在修前把 4 个 fragment 映射到 4 个**退役**资产（走 `meta["fragment_id"]`），修后同样映射到
+   4 个**孪生**资产（走 provenance `ancestry` 回退路径）—— 映射未断。payload 阶段两边都是 0：
+   `_feature_payload` 要求 payload 里有 `points` 键，而本 store 的特征数组是
+   `point_cloud__xyz`/`global_rgb`/`view_tokens`，**未修过的干净 run 特征资产同样返回空 payload**
+   （实测 `payload_empty=True`），所以 `attached=0` 是既有缺陷、与本轮修复无关。
+   证据：`data/a12_exports/_scratch/probe_attach_stages.txt`（映射/载荷两阶段分别测量）。
+

@@ -60,6 +60,7 @@ from ..schemas.runtime import (
 from .imaging import ImagingResult, ImagingSpec, apply_imaging_chain
 from .quality import OBS_EST_VERSION, estimate_quality
 from .render import (
+    BACKEND_BLENDER,
     BACKEND_SOFTWARE,
     LightSpec,
     RenderSpec,
@@ -103,6 +104,49 @@ ORIGIN_TO_TAG: dict[int, int] = {
 #: Default 3-layer x 4-azimuth cache (plan 13.1).
 DEFAULT_VIEW_COUNT = 12
 
+# --------------------------------------------------------------------------------------
+# renderer selection (plan 13.2: the Blender worker is the physical reference backend)
+# --------------------------------------------------------------------------------------
+#: Values accepted for ``spec.observation.renderer`` / :attr:`ObsSpec.renderer` /
+#: ``observe(..., renderer=...)``.  ``auto`` keeps the historical behaviour: the in-process
+#: software rasteriser.  Nothing here changes the default of a run that does not ask for
+#: Blender: the *request* is the only thing that selects the backend.
+RENDERER_AUTO = "auto"
+RENDERER_SOFTWARE = "software_rasterizer"
+RENDERER_BLENDER = "blender"
+
+#: Declared vocabulary -> backend constant of :mod:`synlab.observe.render`.  An unknown
+#: value is refused; there is no implicit "closest match".
+RENDERER_TO_BACKEND: dict[str, str] = {
+    RENDERER_AUTO: BACKEND_SOFTWARE,
+    "auto_software": BACKEND_SOFTWARE,
+    RENDERER_SOFTWARE: BACKEND_SOFTWARE,
+    "software": BACKEND_SOFTWARE,
+    "rasterizer": BACKEND_SOFTWARE,
+    RENDERER_BLENDER: BACKEND_BLENDER,
+    "blender_cycles": BACKEND_BLENDER,
+    "cycles": BACKEND_BLENDER,
+}
+
+#: Distortion handling of a Blender frame (the Blender worker renders an ideal pinhole):
+#: ``error`` refuses a distorted frame with a structured error (default, unchanged),
+#: ``undistort`` renders the *undistorted* pinhole camera (``cv2.undistort`` with the
+#: nominal ``K`` as the new camera matrix), ``ignore`` renders the pinhole camera anyway and
+#: records the dropped coefficients together with their measured pixel effect.
+DISTORTION_POLICY_ERROR = "error"
+DISTORTION_POLICY_UNDISTORT = "undistort"
+DISTORTION_POLICY_IGNORE = "ignore"
+DISTORTION_POLICIES: tuple[str, ...] = (DISTORTION_POLICY_ERROR, DISTORTION_POLICY_UNDISTORT,
+                                        DISTORTION_POLICY_IGNORE)
+
+#: Evidence text attached to the structured refusal of a distorted Blender frame.
+DISTORTION_REFUSAL_DETAIL = (
+    "the Blender worker renders an ideal pinhole camera and cannot represent OpenCV "
+    "distortion; render a PINHOLE frame, set distortion_policy='undistort' (render the "
+    "undistorted pinhole camera) or distortion_policy='ignore' (render anyway and record "
+    "the dropped coefficients).  The software rasteriser handles distortion directly."
+)
+
 
 @dataclass
 class ObsSpec:
@@ -129,6 +173,19 @@ class ObsSpec:
     master_seed: int = 20261001
     lineage_id: str = "lineage_default"
     frame_id: str = "S_mm"
+    #: Which render backend the view cache uses: ``auto``/``software_rasterizer`` (the
+    #: historical default, in-process NumPy rasteriser) or ``blender`` (the portable Blender
+    #: Cycles worker, :mod:`synlab.observe.blender`).  Mirrors
+    #: ``ObservationConfig.renderer`` of the generation spec; ``auto`` never silently
+    #: becomes Blender and a ``blender`` request never silently becomes the rasteriser.
+    renderer: str = RENDERER_AUTO
+    #: OpenCV-distortion handling of the Blender backend (see
+    #: :data:`DISTORTION_POLICIES`).  Ignored by the software rasteriser, which applies the
+    #: frame's distortion directly.
+    distortion_policy: str = DISTORTION_POLICY_ERROR
+    #: Optional :class:`synlab.observe.blender.BlenderBackendConfig` passthrough (samples,
+    #: filter width, denoise, work directory, timeout); ``None`` means the adapter default.
+    blender_config: Any = None
 
     def resolved_light(self) -> LightSpec:
         if self.light is not None:
@@ -199,6 +256,7 @@ def resolve_target(physical_or_fragment: Any, fragment_id: str | None = None) ->
     mother_id = str(getattr(obj, "mother_id", "") or "")
     component_id = ""
     face_origin_kind = None
+    surface_tag_override = None
     meta: dict[str, Any] = {}
 
     if hasattr(obj, "components") and hasattr(obj, "representative_map"):
@@ -235,6 +293,33 @@ def resolve_target(physical_or_fragment: Any, fragment_id: str | None = None) ->
         frag_id = str(obj.fragment_id)
         component_id = f"comp_{frag_id}"
         face_origin_kind = np.asarray(getattr(obj, "face_origin_kind", None))
+    elif hasattr(obj, "mesh") and hasattr(obj, "face_surface_tag"):
+        # MotherGeometry: closed body with the mother's own face-tag vocabulary, which is the
+        # vocabulary ``ORIGIN_TO_TAG``/``surface_tag_names`` speaks (0 outer_wall, 2 rim,
+        # 6 interface).  A mother has no fracture interface, so tag 2 is its vessel mouth rim
+        # there; the tag is *passed through*, never relabelled.
+        mesh = trimesh.Trimesh(vertices=np.asarray(obj.mesh.vertices),
+                               faces=np.asarray(obj.mesh.faces), process=False)
+        tags = np.asarray(obj.face_surface_tag, dtype=np.int32).reshape(-1)
+        if tags.shape[0] != int(np.asarray(mesh.faces).shape[0]):
+            raise SynLabError(
+                ErrorCode.SCHEMA_INVALID,
+                f"mother {getattr(obj, 'mother_id', '')!r}: {tags.shape[0]} face tags for "
+                f"{int(np.asarray(mesh.faces).shape[0])} faces",
+                stage="observe.routes.resolve_target",
+            )
+        frag_id = str(getattr(obj, "mother_id", "") or f"{getattr(obj, 'vessel_id', 'mother')}")
+        component_id = f"comp_{frag_id}"
+        surface_tag_override = tags.astype(np.int16)
+        meta.update({
+            "input_kind": "mother_geometry",
+            "vessel_id": str(getattr(obj, "vessel_id", "")),
+            "material_id": str(getattr(obj, "material_id", "")),
+            "mother_params": {str(k): _jsonable(v)
+                              for k, v in dict(getattr(obj, "params", {}) or {}).items()},
+            "surface_tag_source": "MOTHER_FACE_SURFACE_TAG",
+            "truth_channels_role": "research_label_only",
+        })
     elif hasattr(obj, "vertices") and hasattr(obj, "faces"):
         mesh = trimesh.Trimesh(vertices=np.asarray(obj.vertices),
                                faces=np.asarray(obj.faces), process=False)
@@ -261,7 +346,9 @@ def resolve_target(physical_or_fragment: Any, fragment_id: str | None = None) ->
     if n == 0:
         raise SynLabError(ErrorCode.INPUT_UNAVAILABLE, "target mesh has no faces",
                           stage="observe.routes.resolve_target")
-    if face_origin_kind is not None and face_origin_kind.shape[0] == n:
+    if surface_tag_override is not None:
+        surface_tag = np.asarray(surface_tag_override, dtype=np.int16)
+    elif face_origin_kind is not None and face_origin_kind.shape[0] == n:
         surface_tag = np.vectorize(lambda k: ORIGIN_TO_TAG.get(int(k), 6),
                                    otypes=[np.int16])(face_origin_kind)
     else:
@@ -281,6 +368,195 @@ def resolve_target(physical_or_fragment: Any, fragment_id: str | None = None) ->
 # --------------------------------------------------------------------------------------
 # rendering + imaging
 # --------------------------------------------------------------------------------------
+def blender_binary() -> str | None:
+    """A usable Blender executable, or ``None`` (delegates to the adapter's discovery)."""
+    from .blender import find_blender_binary
+
+    return find_blender_binary()
+
+
+def resolve_render_backend(renderer: Any = None, *,
+                           spec: "ObsSpec | None" = None,
+                           verify_available: bool = True) -> str:
+    """Resolve the requested renderer onto a backend constant of :mod:`synlab.observe.render`.
+
+    Precedence: an explicit ``renderer`` argument (the ``observe(..., renderer=...)``
+    parameter) wins over ``spec.renderer`` (``configs/**.yaml: observation.renderer``); when
+    neither is given the historical default :data:`BACKEND_SOFTWARE` is returned, so a caller
+    that does not name a renderer keeps exactly the behaviour it had before this parameter
+    existed.
+
+    A ``blender`` request is *checked* against the host: when no Blender binary can be found
+    the call raises ``ENV_CAPABILITY_MISSING`` with the probe evidence instead of returning
+    the software backend (which would relabel a rasterised frame as Blender).
+    """
+    requested = renderer
+    if requested is None and spec is not None:
+        requested = getattr(spec, "renderer", None)
+    if requested is None:
+        return BACKEND_SOFTWARE
+    if isinstance(requested, str):
+        name = requested.strip()
+    else:
+        name = str(getattr(requested, "backend", requested)).strip()
+    backend = RENDERER_TO_BACKEND.get(name.lower())
+    if backend is None:
+        raise SynLabError(
+            ErrorCode.SCHEMA_INVALID,
+            f"unknown renderer {name!r}; expected one of "
+            f"{sorted(set(RENDERER_TO_BACKEND))} or a backend constant of "
+            f"synlab.observe.render ({BACKEND_SOFTWARE!r}, {BACKEND_BLENDER!r})",
+            stage="observe.routes.resolve_render_backend",
+            measurements={"requested": name, "known": sorted(set(RENDERER_TO_BACKEND))},
+        )
+    if backend == BACKEND_BLENDER and verify_available:
+        exe = blender_binary()
+        if exe is None:
+            probe: dict[str, Any] = {}
+            try:
+                from .blender import selftest
+
+                probe = selftest()
+            except Exception as exc:  # noqa: BLE001 - the refusal keeps the probe error
+                probe = {"status": "FAIL", "error": f"{type(exc).__name__}: {exc}"}
+            raise SynLabError(
+                ErrorCode.ENV_CAPABILITY_MISSING,
+                "renderer='blender' was requested but no Blender binary is available on this "
+                "host (BLENDER_BIN / PATH / persisted user env / project third_party portable "
+                "build).  The request is refused; it is NOT downgraded to the software "
+                "rasteriser and no frame is labelled Blender.",
+                stage="observe.routes.resolve_render_backend",
+                evidence_refs=[json.dumps(probe, default=str)],
+            )
+    return backend
+
+
+def frame_has_distortion(frame: ViewFrame) -> bool:
+    """True when the frame carries non-zero OpenCV distortion coefficients."""
+    dist = getattr(frame, "dist", None)
+    if dist is None:
+        return False
+    arr = np.asarray(dist, dtype=np.float64).ravel()
+    return bool(arr.size and float(np.abs(arr).max()) > 0.0)
+
+
+def distortion_pixel_effect_px(frame: ViewFrame) -> float | None:
+    """Max pixel effect of the frame's distortion over its own image (``None`` when none).
+
+    The coefficients are evaluated at the extreme normalized coordinates the frame can see,
+    so the number is the *measured* bound of what dropping them costs, not a claim.
+    """
+    if not frame_has_distortion(frame):
+        return None
+    from ..cameras.projection import distort_normalized
+
+    K = np.asarray(frame.K, dtype=np.float64)
+    width, height = int(frame.image_size[0]), int(frame.image_size[1])
+    xs = (np.array([0.0, width - 1.0, 0.0, width - 1.0, (width - 1.0) / 2.0])
+          - K[0, 2]) / K[0, 0]
+    ys = (np.array([0.0, 0.0, height - 1.0, height - 1.0, (height - 1.0) / 2.0])
+          - K[1, 2]) / K[1, 1]
+    xd, yd = distort_normalized(xs, ys, np.asarray(frame.dist, dtype=np.float64),
+                               frame.camera_model or "OPENCV")
+    du = K[0, 0] * (np.asarray(xd) - xs)
+    dv = K[1, 1] * (np.asarray(yd) - ys)
+    return float(np.max(np.hypot(du, dv)))
+
+
+def blender_config_for(spec: ObsSpec, *, frame: ViewFrame | None = None,
+                       base: Any = None) -> Any:
+    """The :class:`~synlab.observe.blender.BlenderBackendConfig` for one Blender request.
+
+    ``base`` overrides ``spec.blender_config`` (the ``render_views(..., blender_config=...)``
+    argument).  Only two knobs are derived here: the distortion policy of the spec and a
+    per-view ``run_label`` so the work directories of a 12-view cache are distinguishable.
+    """
+    import dataclasses
+
+    from .blender import BlenderBackendConfig
+
+    config = base if base is not None else spec.blender_config
+    if config is None:
+        config = BlenderBackendConfig()
+    elif not isinstance(config, BlenderBackendConfig):
+        raise SynLabError(
+            ErrorCode.SCHEMA_INVALID,
+            f"blender_config must be a BlenderBackendConfig or None, got "
+            f"{type(config).__name__}",
+            stage="observe.routes.blender_config_for",
+        )
+    overrides: dict[str, Any] = {}
+    if str(spec.distortion_policy or "").lower() == DISTORTION_POLICY_IGNORE:
+        overrides["distortion_policy"] = DISTORTION_POLICY_IGNORE
+    if frame is not None:
+        overrides["run_label"] = f"{spec.lineage_id}_{frame.view_id}"
+    return dataclasses.replace(config, **overrides) if overrides else config
+
+
+def render_frame_for_backend(frame: ViewFrame, *, backend: str, spec: ObsSpec
+                             ) -> tuple[ViewFrame, dict[str, Any]]:
+    """The frame actually handed to ``render_view`` plus the distortion provenance.
+
+    * software backend: returned unchanged (it applies ``dist`` itself).
+    * Blender backend, undistorted frame: returned unchanged.
+    * Blender backend, ``distortion_policy='error'``: structured refusal
+      (``ENV_CAPABILITY_MISSING``), never a silently dropped coefficient.
+    * Blender backend, ``distortion_policy='undistort'``: the *undistorted* pinhole camera.
+      ``cv2.undistort`` with the nominal ``K`` as the new camera matrix maps the distorted
+      image onto a pinhole image with that same ``K``; rendering the pinhole camera of that
+      ``K`` is exactly that image, so the delivered frame declares ``dist=None``.
+    * Blender backend, ``distortion_policy='ignore'``: rendered as an ideal pinhole and the
+      dropped coefficients (with their measured pixel effect) are recorded.
+    """
+    policy = str(spec.distortion_policy or DISTORTION_POLICY_ERROR).lower()
+    if policy not in DISTORTION_POLICIES:
+        raise SynLabError(
+            ErrorCode.SCHEMA_INVALID,
+            f"unknown distortion_policy {spec.distortion_policy!r}; expected one of "
+            f"{list(DISTORTION_POLICIES)}",
+            stage="observe.routes.render_frame_for_backend",
+        )
+    provenance: dict[str, Any] = {"distortion_policy": policy}
+    if backend != BACKEND_BLENDER or not frame_has_distortion(frame):
+        return frame, provenance
+    dist = np.asarray(frame.dist, dtype=np.float64).ravel()
+    provenance.update({
+        "distortion_coefficients": dist.tolist(),
+        "distortion_model": frame.camera_model,
+        "distortion_max_pixel_effect_px": distortion_pixel_effect_px(frame),
+        "distortion_frame_model": frame.camera_model,
+    })
+    if policy == DISTORTION_POLICY_ERROR:
+        raise SynLabError(
+            ErrorCode.ENV_CAPABILITY_MISSING,
+            f"view {frame.view_id}: {DISTORTION_REFUSAL_DETAIL}",
+            stage="observe.routes.render_frame_for_backend",
+            measurements={"view_id": frame.view_id, "model": frame.camera_model,
+                          "dist": dist.tolist(),
+                          "max_pixel_effect_px": provenance["distortion_max_pixel_effect_px"]},
+            evidence_refs=[DISTORTION_REFUSAL_DETAIL],
+        )
+    if policy == DISTORTION_POLICY_IGNORE:
+        provenance["distortion_ignored"] = True
+        provenance["distortion_note"] = (
+            "coefficients dropped: the Blender render is an ideal pinhole; the delivered "
+            "frame keeps the declared distortion and the pixel effect is recorded")
+        return frame, provenance
+    out = copy.copy(frame)
+    out.dist = None
+    out.camera_model = "PINHOLE"
+    out.meta = dict(frame.meta)
+    out.meta["distortion_policy"] = policy
+    out.meta["undistorted_from"] = {"camera_model": frame.camera_model,
+                                    "dist": dist.tolist()}
+    provenance["distortion_undistorted"] = True
+    provenance["distortion_note"] = (
+        "rendered as the undistorted pinhole camera with the nominal K (equivalent to "
+        "cv2.undistort with K as the new camera matrix); the delivered frame declares "
+        "dist=None")
+    return out, provenance
+
+
 @dataclass
 class ViewBundle:
     frame: ViewFrame
@@ -292,6 +568,10 @@ class ViewBundle:
     object_pose: np.ndarray
     A: np.ndarray
     K: np.ndarray
+    #: Backend that produced ``render`` (``SOFTWARE_RASTERIZER`` / ``BLENDER_CYCLES``).
+    backend: str = BACKEND_SOFTWARE
+    #: Distortion provenance of the Blender request (policy, coefficients, pixel effect).
+    distortion: dict[str, Any] = field(default_factory=dict)
 
     @property
     def render_mm_per_px(self) -> float:
@@ -299,10 +579,19 @@ class ViewBundle:
 
 
 def render_views(target: Target, profile: CameraProfile, spec: ObsSpec,
-                 rng: np.random.Generator) -> list[ViewBundle]:
-    """Render the 3 x 4 cache and run the ordered imaging chain for every view."""
+                 rng: np.random.Generator, *, backend: str | None = None,
+                 blender_config: Any = None) -> list[ViewBundle]:
+    """Render the 3 x 4 cache and run the ordered imaging chain for every view.
+
+    ``backend`` selects the render backend explicitly (see
+    :func:`resolve_render_backend`); ``None`` falls back to ``spec.renderer``, whose default
+    ``auto`` keeps the in-process software rasteriser.  ``blender_config`` overrides
+    ``spec.blender_config`` for the Blender path.
+    """
     from ..cameras.viewframes import make_view_frames
 
+    resolved = resolve_render_backend(backend, spec=spec)
+    requested_config = blender_config if blender_config is not None else spec.blender_config
     scene: Scene = build_scene(target.mesh, surface_tag=target.surface_tag,
                                face_id=target.face_id, name=target.fragment_id)
     frames = make_view_frames(profile, target.bbox, spec.view_count, rng,
@@ -319,9 +608,18 @@ def render_views(target: Target, profile: CameraProfile, spec: ObsSpec,
         pose_json = frame.meta.get("object_pose_T_WO")
         if pose_json is not None:
             object_pose = np.asarray(pose_json, dtype=np.float64)
+        # -- backend selection + distortion policy (plan 13.2, R7)
+        render_frame, distortion = render_frame_for_backend(render_frame, backend=resolved,
+                                                            spec=spec)
+        cfg = None
+        if resolved == BACKEND_BLENDER:
+            cfg = blender_config_for(spec, frame=render_frame, base=requested_config)
         render = render_view(scene, render_frame, light=light, spec=spec.render_spec,
                              object_pose=object_pose,
-                             focus_distance_mm=render_frame.working_distance_mm)
+                             focus_distance_mm=render_frame.working_distance_mm,
+                             backend=resolved, blender_config=cfg)
+        render_frame.meta = dict(render_frame.meta)
+        render_frame.meta.update(distortion)
         cluster = _resize_to(render.uncertain_mask, render_size)
         imaging = apply_imaging_chain(
             render.rgb_linear, K=render_frame.K, dist=render_frame.dist,
@@ -335,7 +633,7 @@ def render_views(target: Target, profile: CameraProfile, spec: ObsSpec,
             frame=frame, render_frame=render_frame, render=render, imaging=imaging,
             deploy_mask=deploy, roi=roi,
             object_pose=(object_pose if object_pose is not None else np.eye(4)),
-            A=imaging.A, K=imaging.K_new,
+            A=imaging.A, K=imaging.K_new, backend=resolved, distortion=distortion,
         ))
     return bundles
 
@@ -390,12 +688,23 @@ def _frame_for_delivered(view: ViewBundle, spec: ObsSpec) -> ViewFrame:
     frame.meta["pipeline_image_size"] = list(view.render.rgb_linear.shape[:2][::-1])
     frame.meta["delivered_image_size"] = list(frame.image_size)
     frame.meta["pixel_convention"] = "opencv_pixel_center_0_0"
-    frame.meta["backend"] = render_backend_name()
+    frame.meta["backend"] = render_backend_name(view.backend)
+    frame.meta["distortion"] = dict(view.distortion)
+    if view.distortion.get("distortion_undistorted"):
+        # the delivered image is the *undistorted* pinhole image of the nominal K
+        frame.dist = None
+        frame.camera_model = "PINHOLE"
     return frame
 
 
-def render_backend_name() -> str:
-    return BACKEND_SOFTWARE
+def render_backend_name(backend: str | None = None) -> str:
+    """Backend name recorded in the observation; the default is the historical one."""
+    return str(backend or BACKEND_SOFTWARE)
+
+
+def render_backend_class(backend: str | None = None) -> str:
+    """Evidence class of a backend: the rasteriser is a declared ``CUSTOM_GAP``."""
+    return "CUSTOM_GAP" if render_backend_name(backend) == BACKEND_SOFTWARE else "ADAPTER"
 
 
 # --------------------------------------------------------------------------------------
@@ -509,8 +818,9 @@ def _voxel_of(points: np.ndarray, voxel_mm: float) -> np.ndarray:
 # route: ideal_visible
 # --------------------------------------------------------------------------------------
 def route_ideal_visible(target: Target, profile: CameraProfile, spec: ObsSpec,
-                        rng: np.random.Generator) -> tuple[ObservationResult, list[ViewBundle]]:
-    bundles = render_views(target, profile, spec, rng)
+                        rng: np.random.Generator, *,
+                        backend: str | None = None) -> tuple[ObservationResult, list[ViewBundle]]:
+    bundles = render_views(target, profile, spec, rng, backend=backend)
     params = dict(spec.route_params or {})
     voxel = float(params.get("voxel_mm", 0.0)) or max(
         bundles[0].render_mm_per_px * 2.0 if bundles else 0.5, 0.05)
@@ -551,6 +861,10 @@ def route_ideal_visible(target: Target, profile: CameraProfile, spec: ObsSpec,
             "route": ROUTE_IDEAL_VISIBLE,
             "evidence_class": ROUTE_SPECS[ROUTE_IDEAL_VISIBLE]["evidence_class"],
             "claim_boundary": ROUTE_SPECS[ROUTE_IDEAL_VISIBLE]["claim_boundary"],
+            "renderer_backend": render_backend_name(bundles[0].backend if bundles else None),
+            "renderer_requested": str(spec.renderer),
+            "renderer_class": render_backend_class(bundles[0].backend if bundles else None),
+            "distortion_policy": str(spec.distortion_policy),
             "depth_source": "RENDERER_EXACT_DEPTH_Z",
             "pose_source": "REFERENCE_VIEW_FRAME",
             "voxel_mm": voxel,
@@ -571,7 +885,12 @@ def route_ideal_visible(target: Target, profile: CameraProfile, spec: ObsSpec,
                         if view_of.size else [],
                     "provenance_head": [(int(v), int(p[0]), int(p[1]))
                                         for v, p in list(zip(view_of, pix_of))[:5]],
-                    "renderer_backend": render_backend_name()},
+                    "renderer_backend": render_backend_name(
+                        bundles[0].backend if bundles else None),
+                    "renderer_requested": str(spec.renderer),
+                    "renderer_class": render_backend_class(
+                        bundles[0].backend if bundles else None),
+                    "distortion_policy": str(spec.distortion_policy)},
     )
     return obs, bundles
 
@@ -580,7 +899,8 @@ def route_ideal_visible(target: Target, profile: CameraProfile, spec: ObsSpec,
 # route: proxy_scan
 # --------------------------------------------------------------------------------------
 def route_proxy_scan(target: Target, profile: CameraProfile, spec: ObsSpec,
-                     rng: np.random.Generator) -> tuple[ObservationResult, list[ViewBundle]]:
+                     rng: np.random.Generator, *,
+                     backend: str | None = None) -> tuple[ObservationResult, list[ViewBundle]]:
     """Partial observation + controlled degradation of the depth/pose it holds (plan 14.2).
 
     Degradations are applied to the *depth-view* route only: correlated low-frequency depth
@@ -588,7 +908,7 @@ def route_proxy_scan(target: Target, profile: CameraProfile, spec: ObsSpec,
     are all applied before fusion, and normals/curvature/validity are re-estimated
     afterwards.
     """
-    bundles = render_views(target, profile, spec, rng)
+    bundles = render_views(target, profile, spec, rng, backend=backend)
     params = dict(spec.route_params or {})
     depth_sigma = float(params.get("depth_error_sigma_mm", 0.35))
     depth_corr_mm = float(params.get("depth_error_correlation_mm", 8.0))
@@ -798,8 +1118,10 @@ def _obs_views(bundles: list[ViewBundle], spec: ObsSpec) -> list[ObsView]:
             quality={},
             source_kind=SOURCE_SENSOR_SIM,
             meta={
-                "render_backend": render_backend_name(),
-                "render_backend_class": "CUSTOM_GAP",
+                "render_backend": render_backend_name(bundle.backend),
+                "render_backend_class": render_backend_class(bundle.backend),
+                "render_backend_requested": str(spec.renderer),
+                "distortion": dict(bundle.distortion),
                 "view_meta": dict(bundle.frame.meta),
                 "render_grid": {"size": list(bundle.render_frame.image_size),
                                 "mm_per_pixel": bundle.render_mm_per_px,
@@ -885,7 +1207,13 @@ def _assemble_result(*, target: Target, route: str, spec: ObsSpec, bundles: list
                 "lineage_id": spec.lineage_id,
                 "imaging_identity": bool(spec.imaging.is_identity()),
                 "freeze_label_files": bool(spec.freeze_label_files),
+                "renderer_requested": str(spec.renderer),
+                "distortion_policy": str(spec.distortion_policy),
             },
+            "renderer": render_backend_name(bundles[0].backend if bundles else None),
+            "renderer_requested": str(spec.renderer),
+            "renderer_class": render_backend_class(bundles[0].backend if bundles else None),
+            "distortion_policy": str(spec.distortion_policy),
             "target_meta": dict(target.meta),
             "surface_tag_names": {"0": "outer_wall", "2": "rim", "6": "attachment"},
             "pixel_convention": "opencv_pixel_center_0_0",
@@ -941,7 +1269,7 @@ def _colmap_help(argv: list[str], status: str = "NOT_RUN") -> dict[str, Any]:
 
 
 def route_photo_mvs(target: Target, profile: CameraProfile, spec: ObsSpec,
-                    rng: np.random.Generator
+                    rng: np.random.Generator, *, backend: str | None = None
                     ) -> tuple[ObservationResult, list[ViewBundle], dict[str, Any]]:
     """Run real pycolmap SfM on the rendered RGB (+ deployable mask), then dense.
 
@@ -961,7 +1289,7 @@ def route_photo_mvs(target: Target, profile: CameraProfile, spec: ObsSpec,
         dense_backend=str(params.get("dense_backend", "SPARSE_DEPTH_PRIOR")),
         keep_workdir=bool(params.get("keep_workdir", True)),
     )
-    bundles = render_views(target, profile, spec, rng)
+    bundles = render_views(target, profile, spec, rng, backend=backend)
     report: dict[str, Any] = {
         "route": ROUTE_PHOTO_MVS,
         "evidence_class": ROUTE_SPECS[ROUTE_PHOTO_MVS]["evidence_class"],
@@ -970,6 +1298,9 @@ def route_photo_mvs(target: Target, profile: CameraProfile, spec: ObsSpec,
         "input_profile": "PHONE_RGB",
         "source_kind": "SYNTHETIC_RENDER",
         "real_capture": False,
+        "renderer_backend": render_backend_name(bundles[0].backend if bundles else None),
+        "renderer_requested": str(spec.renderer),
+        "distortion_policy": str(spec.distortion_policy),
         "capability_probe": _pycolmap_probe(),
         "argv_log": [],
         "gt_poses_used": False,
@@ -1574,4 +1905,9 @@ __all__ = [
     "backproject_depth", "fuse_points", "estimate_normals_open3d",
     "route_ideal_visible", "route_proxy_scan", "route_photo_mvs",
     "observation_to_dict", "observation_meta", "observation_from_dict",
+    "RENDERER_AUTO", "RENDERER_SOFTWARE", "RENDERER_BLENDER", "RENDERER_TO_BACKEND",
+    "DISTORTION_POLICIES", "DISTORTION_POLICY_ERROR", "DISTORTION_POLICY_UNDISTORT",
+    "DISTORTION_POLICY_IGNORE", "blender_binary", "blender_config_for",
+    "resolve_render_backend", "render_frame_for_backend", "frame_has_distortion",
+    "distortion_pixel_effect_px", "render_backend_name", "render_backend_class",
 ]

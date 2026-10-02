@@ -319,10 +319,15 @@ def _lid_part(*, r_mouth: float, lid_height_mm: float, seat_mm: float, knob_r: f
         raise SynLabError(ErrorCode.MOTHER_INVALID, "lid body is not a closed solid",
                           stage="mothers.vessels.V10.lid")
     mesh.apply_translation([0.0, 0.0, float(z_lid_base)])
-    # the skirt reaches *below* the mouth plane: a real volumetric lap, not a point contact
+    # the skirt reaches *below* the mouth plane: a real volumetric lap, not a point contact.
+    # It is placed in the lid's own frame (``z_lid_base``), not around the world origin: an
+    # un-translated skirt becomes a *second, disconnected body* floating under the vessel
+    # (measured on V10/M06 ``LIN0004_V10_M06_PAT03``: a 256-face, 13 045 mm^3 ring at
+    # z = -5.06..1.69, i.e. below the base, which the fracture then reports as a fragment of
+    # its own).  With ``z_lid_base = 0`` the placement is unchanged.
     skirt = trimesh.creation.cylinder(radius=r_out, height=max(float(seat_mm), 1.0) * 2.0,
                                       sections=64)
-    skirt.apply_translation([0.0, 0.0, -0.5 * max(float(seat_mm), 1.0)])
+    skirt.apply_translation([0.0, 0.0, float(z_lid_base) - 0.5 * max(float(seat_mm), 1.0)])
     mesh = trimesh.util.concatenate([mesh, skirt])
     mesh, _ = cleanup(mesh)
     if not mesh.is_watertight:

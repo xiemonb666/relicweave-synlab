@@ -2,7 +2,7 @@
 
     observe(physical_or_fragment, compiled, rngs, *, route, profile, renderer=None)
         -> ObservationResult
-    commit_observation(store, obs, *, lineage_id, split, ancestry) -> AssetRecord
+    commit_observation(store, obs, *, lineage_id, split, ancestry, run_id=None) -> AssetRecord
     load_observation(store, asset_id) -> ObservationResult
     adapt_observed_features(obs, contract) -> dict
     estimate_quality(obs) -> dict
@@ -20,7 +20,7 @@ from ..schemas.runtime import CameraProfile, ObservationResult
 from .features import FEATURE_SCHEMA, adapt_observed_features, assert_no_leakage
 from .quality import OBS_EST_VERSION
 from .quality import estimate_quality as _estimate_quality
-from .render import BACKEND_SOFTWARE, BLENDER_GAP, capability_probe
+from .render import BACKEND_BLENDER, BACKEND_SOFTWARE, BLENDER_GAP, capability_probe
 from .routes import (
     ROUTE_IDEAL_VISIBLE,
     ROUTE_PHOTO_MVS,
@@ -31,6 +31,7 @@ from .routes import (
     observation_meta,
     observation_to_dict,
     render_backend_name,
+    resolve_render_backend,
     resolve_target,
     route_ideal_visible,
     route_photo_mvs,
@@ -42,8 +43,8 @@ ROUTES: tuple[str, ...] = (ROUTE_IDEAL_VISIBLE, ROUTE_PROXY_SCAN, ROUTE_PHOTO_MV
 __all__ = [
     "observe", "commit_observation", "load_observation", "adapt_observed_features",
     "estimate_quality", "ROUTES", "ROUTE_SPECS", "ObsSpec", "capability_probe",
-    "BACKEND_SOFTWARE", "BLENDER_GAP", "assert_no_leakage", "FEATURE_SCHEMA",
-    "OBS_EST_VERSION",
+    "BACKEND_SOFTWARE", "BACKEND_BLENDER", "BLENDER_GAP", "assert_no_leakage",
+    "FEATURE_SCHEMA", "OBS_EST_VERSION", "resolve_render_backend",
 ]
 
 
@@ -110,31 +111,27 @@ def observe(physical_or_fragment: Any, compiled: Any, rngs: Any, *, route: str,
                           stage="observe.observe")
     spec = spec or ObsSpec()
     _apply_compiled(compiled, spec, route)
-    if renderer is not None:
-        name = str(getattr(renderer, "backend", renderer))
-        if name.upper() not in ("SOFTWARE_RASTERIZER", "AUTO", "AUTO_SOFTWARE"):
-            raise SynLabError(
-                ErrorCode.ENV_CAPABILITY_MISSING,
-                f"renderer {name!r} is not available here: Blender/bpy has no Windows "
-                f"py3.12 wheel.  Use the software rasteriser or the Blender worker "
-                f"adapter (blender_scripts/render_worker.py) on a host with bpy; the "
-                f"request is not silently downgraded.",
-                stage="observe.observe",
-                evidence_refs=[BLENDER_GAP["detail"]],
-            )
+    # -- renderer dispatch (plan 13.2).  An explicit ``renderer`` argument wins over
+    #    ``spec.renderer`` (``configs/**.yaml: observation.renderer``).  ``auto`` /
+    #    ``software_rasterizer`` keep the historical in-process software rasteriser;
+    #    ``blender`` selects the Blender subprocess worker and is refused with a structured
+    #    ``ENV_CAPABILITY_MISSING`` when this host has no usable Blender binary - it is never
+    #    downgraded to the rasteriser while the result claims Blender.
+    backend = resolve_render_backend(renderer, spec=spec)
     camera = _resolve_profile(profile)
     cam_rng = _resolve_rng(rngs, "camera", master_seed=spec.master_seed,
                            lineage_id=spec.lineage_id)
     target = resolve_target(physical_or_fragment, None)
 
     if route == ROUTE_IDEAL_VISIBLE:
-        result, _ = route_ideal_visible(target, camera, spec, cam_rng)
+        result, _ = route_ideal_visible(target, camera, spec, cam_rng, backend=backend)
     elif route == ROUTE_PROXY_SCAN:
-        result, _ = route_proxy_scan(target, camera, spec, cam_rng)
+        result, _ = route_proxy_scan(target, camera, spec, cam_rng, backend=backend)
     else:
-        result, _, _ = route_photo_mvs(target, camera, spec, cam_rng)
+        result, _, _ = route_photo_mvs(target, camera, spec, cam_rng, backend=backend)
     result.meta.setdefault("seed_ref", f"{spec.master_seed}:{spec.lineage_id}")
-    result.meta.setdefault("renderer", render_backend_name())
+    result.meta.setdefault("renderer", backend)
+    result.meta.setdefault("renderer_requested", str(spec.renderer))
     result.meta.setdefault("route_boundary", ROUTE_SPECS[route]["claim_boundary"])
     result.quality = estimate_quality(result)
     return result
@@ -199,10 +196,19 @@ def estimate_quality(obs: ObservationResult, *, mask: np.ndarray | None = None
 
 
 def commit_observation(store: Any, obs: ObservationResult, *, lineage_id: str,
-                       split: str, ancestry: Any = ()) -> Any:
-    """Persist one observation under ``ROLE_OBS_RESULT`` (idempotent by interpretation)."""
+                       split: str, ancestry: Any = (), run_id: str | None = None) -> Any:
+    """Persist one observation under ``ROLE_OBS_RESULT`` (idempotent by interpretation).
+
+    ``run_id`` is optional and written into the asset metadata only when supplied, so the frozen
+    signature and the asset id of every existing caller are unchanged.  The release gates resolve
+    a run's assets through ``meta["run_id"]`` (``qc.gates.evaluate_gates``), and
+    ``observation_operator_runs`` reads exactly this role: an observation that does not carry the
+    key cannot prove that the run ran the observation operators.
+    """
     payload = observation_to_dict(obs)
     meta = observation_meta(obs)
+    if run_id is not None:
+        meta["run_id"] = str(run_id)
     return store.commit_asset(
         role=ROLE_OBS_RESULT,
         schema=SCHEMA_OBS,

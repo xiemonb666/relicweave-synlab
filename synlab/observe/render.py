@@ -26,7 +26,10 @@ Semantics that are deliberately *not* softened
 * ``depth_z`` is camera-frame depth in mm (not ray length, plan 4.3).
 * ``uncertain_mask`` marks pixels where a single surface cannot be assigned: mixed
   primitive edges (detected by disagreement between the supersamples) and pixels whose
-  circle of confusion is larger than the pixel pitch (defocus).
+  circle of confusion exceeds ``RenderSpec.coc_px_threshold`` (defocus).  The CoC is evaluated
+  in millimetres under the *declared* optics and converted with the delivered sampling density
+  ``D = f_px / focal_length_mm`` (``mask_semantics = "coc_units_v2"``); see
+  :func:`circle_of_confusion_px` and docs/a12/data_semantics_versions.md.
 """
 
 from __future__ import annotations
@@ -44,6 +47,18 @@ from ..roles import SOURCE_SENSOR_SIM
 BACKEND_SOFTWARE = "SOFTWARE_RASTERIZER"
 BACKEND_BLENDER = "BLENDER_CYCLES"
 BACKEND_BLENDER_EEVEE = "BLENDER_EEVEE"
+
+#: Semantic version of the delivered *mask* channels (``uncertain_mask`` -> ``deployment_mask``
+#: -> ``visible``).  ``coc_units_v2`` is the thin-lens CoC evaluated in mm and converted to
+#: delivered pixels with the sensor sampling density ``D = f_px / focal_length_mm`` under the
+#: declared f-number.  ``coc_units_v1_pixel_units`` is the superseded expression that fed a
+#: *pixel* focal length into the mm formula and dropped ``D`` (inflation factor ``D * N``,
+#: measured 74.105 on the L0 views); it survives only for frames that declare no optics at all
+#: (synthetic test/audit frames), and a render that uses it says so in ``meta``.  Every render
+#: records the version it used, so two batches can be told apart programmatically
+#: (docs/a12/data_semantics_versions.md).
+MASK_SEMANTICS = "coc_units_v2"
+MASK_SEMANTICS_PIXEL_UNITS_V1 = "coc_units_v1_pixel_units"
 
 #: Structured record of what the software rasteriser is *not* equivalent to.  The Blender
 #: reference path is the portable worker (``synlab.observe.blender``); ``status`` is filled
@@ -199,6 +214,12 @@ class RenderSpec:
     coc_px_threshold: float = 0.75
     max_pixels: int = 4_000_000
     shade: str = "LAMBERT_AMBIENT"
+    #: Declared optics of the defocus mark-out.  ``None`` resolves from the frame
+    #: (``ViewFrame.meta["focal_length_mm"]`` / ``["f_number"]``) and then from the camera
+    #: profile registry through ``frame.profile_id``; a frame that declares no optics at all
+    #: falls back to the pre-v2 pixel-unit expression and is labelled as such in the metadata.
+    focal_length_mm: float | None = None
+    f_number: float | None = None
 
 
 def build_scene(mesh: Any, *, surface_tag: np.ndarray, face_id: np.ndarray | None = None,
@@ -361,26 +382,116 @@ def _disagreement_i(buf: np.ndarray, factor: int) -> np.ndarray:
     return (blocks != blocks[:, :1, :, :1]).any(axis=(1, 3))
 
 
-def circle_of_confusion_px(z_mm: np.ndarray, focus_distance_mm: float, f_number: float,
-                           f_px: float, *, image_distance_mm: float | None = None
-                           ) -> np.ndarray:
-    """Approximate circle of confusion (pixels) for a thin lens at ``focus_distance_mm``.
+def profile_optics(profile_id: str) -> dict[str, float]:
+    """Declared focal length and f-number of one camera profile (empty when unresolvable)."""
+    if not profile_id:
+        return {}
+    try:  # a profile registry that is unavailable must never be faked
+        from ..cameras.profiles import profile_by_id
 
-    ``CoC = f^2 / (N * (z - f)) * |z - z_f| / z_f`` with ``f`` expressed in pixels through
-    ``f_px``; depth is only trustworthy inside the depth-of-field interval and the mask
-    marks everything outside it.
+        profile = profile_by_id(str(profile_id))
+    except Exception:  # noqa: BLE001 - any failure means "not declared"
+        return {}
+    focal = profile.meta.get("focal_length_mm")
+    return {"focal_length_mm": float(focal) if focal else 0.0,
+            "f_number": float(profile.f_number) if profile.f_number else 0.0,
+            "sensor_width_mm": float(profile.meta.get("sensor_width_mm") or 0.0)}
+
+
+def resolve_declared_optics(frame: ViewFrame, spec: RenderSpec | None = None) -> dict[str, Any]:
+    """Resolve the *declared* optics of one frame into the numbers the CoC needs.
+
+    The delivered circle of confusion is a length in millimetres (on the sensor) converted to
+    pixels by the sampling density ``D = f_px / focal_length_mm`` (px per mm of sensor).  Both
+    the focal length and the f-number are resolved from the first source that declares them:
+
+    1. ``RenderSpec.focal_length_mm`` / ``RenderSpec.f_number`` (an explicit caller override),
+    2. ``ViewFrame.meta`` (what :func:`synlab.cameras.viewframes.make_view_frames` writes),
+    3. the camera-profile registry entry named by ``frame.profile_id``.
+
+    ``declared`` is False only when neither source provides a focal length, i.e. the frame is a
+    synthetic one (test/audit fixtures) that carries no optics; the returned
+    ``sampling_px_per_mm`` is then ``None`` and the caller falls back to the documented
+    pre-v2 pixel-unit expression instead of inventing a sensor.
+    """
+    spec = spec or RenderSpec()
+    f_px = 0.5 * (float(frame.K[0, 0]) + float(frame.K[1, 1]))
+    meta = dict(getattr(frame, "meta", {}) or {})
+    focal = spec.focal_length_mm or meta.get("focal_length_mm")
+    f_number = spec.f_number or meta.get("f_number")
+    registry: dict[str, float] = {}
+    if not focal or not f_number:
+        registry = profile_optics(str(getattr(frame, "profile_id", "") or ""))
+        focal = focal or registry.get("focal_length_mm")
+        f_number = f_number or registry.get("f_number")
+    focal = float(focal) if focal else 0.0
+    f_number = float(f_number) if f_number else 0.0
+    return {
+        "f_px": float(f_px),
+        "focal_length_mm": focal,
+        "f_number": f_number,
+        "sampling_px_per_mm": float(f_px / focal) if focal > 0 else None,
+        "declared": bool(focal > 0 and f_number > 0),
+        "profile_id": str(getattr(frame, "profile_id", "") or ""),
+        "sensor_width_mm": float(registry.get("sensor_width_mm") or 0.0),
+        "source": {"focal_length_mm": ("render_spec" if spec.focal_length_mm else
+                                      "frame_meta" if meta.get("focal_length_mm") else
+                                      "camera_profile" if registry.get("focal_length_mm") else
+                                      "NONE"),
+                   "f_number": ("render_spec" if spec.f_number else
+                                "frame_meta" if meta.get("f_number") else
+                                "camera_profile" if registry.get("f_number") else "NONE")},
+    }
+
+
+def circle_of_confusion_px(z_mm: np.ndarray, focus_distance_mm: float, f_number: float,
+                           f_px: float, *, sampling_px_per_mm: float | None = None,
+                           image_distance_mm: float | None = None) -> np.ndarray:
+    """Thin-lens circle of confusion **in delivered pixels** for focus at ``focus_distance_mm``.
+
+    Units, which is what this function is about
+    -------------------------------------------
+    The thin-lens blur diameter is an *image-space length in millimetres*::
+
+        c_mm = f_mm^2 / (N * (z - f_mm)) * |z - z_f| / z_f
+
+    with ``f_mm`` the focal length, ``N`` the f-number and ``z``, ``z_f`` the object distances
+    (all mm).  Converting it to delivered pixels needs the sampling density of the delivered
+    grid, ``D = width_px / sensor_width_mm = f_px / f_mm`` (px per mm of sensor)::
+
+        c_px = D * c_mm = f_px^2 / (D * N * (z - f_px / D)) * |z - z_f| / z_f
+
+    ``f_px`` alone is therefore *not* enough.  Feeding a pixel focal length into the mm
+    expression and dropping ``D`` inflates the result by ``D * N``: measured on the delivered
+    L0 views the renderer/declared ratio is exactly ``74.105 = D * f_number``
+    (data/a12/reports/visible_labels_coc_units.json).  ``image_distance_mm`` is accepted for
+    backward compatibility only: the form above already evaluates the sensor at the focused
+    image distance, so it is not used.
+
+    ``sampling_px_per_mm=None`` declares "one pixel is one millimetre of sensor" (``D = 1``) and
+    keeps the **pre-v2 expression bit for bit** (``f_px^2 / (N * z) * |z - z_f| / z_f``, with the
+    pixel focal length standing in for a millimetre one) so that a frame which declares no optics
+    reproduces the shipped numbers; :func:`render_view` labels such a render
+    (``mask_semantics = "coc_units_v1_pixel_units"``) instead of mixing it with v2 numbers
+    (docs/a12/data_semantics_versions.md).
     """
     z = np.asarray(z_mm, dtype=np.float64)
     if f_px <= 0 or f_number <= 0:
         return np.zeros_like(z)
-    f_mm_equiv = f_px  # work in "pixel focal length" units: image-space CoC is what matters
-    denom = np.maximum(z, 1e-6)
-    # image-space CoC in pixels for a lens of focal length f_px (in pixels)
-    coc = np.abs(f_mm_equiv ** 2 / (f_number * denom) * (z - focus_distance_mm)
-                 / max(focus_distance_mm, 1e-6))
-    if image_distance_mm is not None:
-        coc = coc * (image_distance_mm / max(image_distance_mm, 1e-6))
-    return np.nan_to_num(coc, nan=0.0, posinf=1e6, neginf=0.0)
+    z_f = max(float(focus_distance_mm), 1e-6)
+    if sampling_px_per_mm is None:
+        # pre-v2: a *pixel* focal length inside the millimetre expression, no sampling density.
+        coc = np.abs(float(f_px) ** 2 / (float(f_number) * np.maximum(z, 1e-6))
+                     * (z - z_f) / z_f)
+        return np.nan_to_num(coc, nan=0.0, posinf=1e6, neginf=0.0)
+    density = float(sampling_px_per_mm)
+    if density <= 0:
+        return np.zeros_like(z)
+    f_mm = float(f_px) / density
+    # object distance measured from the lens plane; the focused image distance is f*z_f/(z_f-f)
+    z_rel = np.maximum(z - f_mm, 1e-6)
+    coc_mm = (f_mm ** 2) / (float(f_number) * z_rel) * np.abs(z - z_f) / z_f
+    return np.nan_to_num(density * coc_mm, nan=0.0, posinf=1e6, neginf=0.0)
 
 
 def render_view(scene: Scene, frame: ViewFrame, *, light: LightSpec,
@@ -456,12 +567,17 @@ def render_view(scene: Scene, frame: ViewFrame, *, light: LightSpec,
     focus = float(frame.working_distance_mm if focus_distance_mm is None
                   else focus_distance_mm)
     f_px = 0.5 * (float(frame.K[0, 0]) + float(frame.K[1, 1]))
+    optics = resolve_declared_optics(frame, spec)
     with np.errstate(invalid="ignore"):
-        coc = circle_of_confusion_px(depth.astype(np.float64), focus, 1.0, f_px)
+        coc = circle_of_confusion_px(depth.astype(np.float64), focus, optics["f_number"],
+                                     f_px,
+                                     sampling_px_per_mm=optics["sampling_px_per_mm"])
     uncertain = (mixed_id | mixed_tag | (coc > spec.coc_px_threshold)) \
         & (id_map >= 0)
     uncertain |= (~np.isfinite(depth)) & (id_map >= 0)
 
+    mask_semantics = (MASK_SEMANTICS if optics["declared"]
+                      else MASK_SEMANTICS_PIXEL_UNITS_V1)
     meta = {
         "backend": backend,
         "backend_class": "CUSTOM_GAP" if backend == BACKEND_SOFTWARE else "ADAPTER",
@@ -481,6 +597,19 @@ def render_view(scene: Scene, frame: ViewFrame, *, light: LightSpec,
                              if object_pose is not None else None),
         "focus_distance_mm": focus,
         "coc_threshold_px": spec.coc_px_threshold,
+        "mask_semantics": mask_semantics,
+        "coc_optics": {
+            "rule": "c_px = D * f_mm^2 / (N * (z - f_mm)) * |z - z_f| / z_f, "
+                    "D = f_px / focal_length_mm",
+            "f_px": float(f_px),
+            "focal_length_mm": float(optics["focal_length_mm"]),
+            "f_number": float(optics["f_number"]),
+            "sampling_px_per_mm": (None if optics["sampling_px_per_mm"] is None
+                                   else float(optics["sampling_px_per_mm"])),
+            "declared": bool(optics["declared"]),
+            "profile_id": optics["profile_id"],
+            "source": dict(optics["source"]),
+        },
         "coc_p95_px": float(np.nanpercentile(coc, 95)) if np.isfinite(coc).any() else 0.0,
         "surface_visible_fraction": float(np.mean(id_map >= 0)),
         "uncertain_fraction": float(np.mean(uncertain)),
@@ -563,7 +692,9 @@ def write_mask_png(mask: np.ndarray, path: str) -> str:
 
 __all__ = [
     "BACKEND_SOFTWARE", "BACKEND_BLENDER", "BACKEND_BLENDER_EEVEE", "BLENDER_GAP",
-    "CAMERA_MODELS", "LightSpec", "MaterialSpec", "RenderSpec", "Scene",
+    "CAMERA_MODELS", "MASK_SEMANTICS", "MASK_SEMANTICS_PIXEL_UNITS_V1", "LightSpec",
+    "MaterialSpec", "RenderSpec", "Scene",
     "build_scene", "capability_probe", "circle_of_confusion_px",
-    "deployment_mask_from_render", "procedural_albedo", "render_view", "write_mask_png",
+    "deployment_mask_from_render", "procedural_albedo", "profile_optics", "render_view",
+    "resolve_declared_optics", "write_mask_png",
 ]

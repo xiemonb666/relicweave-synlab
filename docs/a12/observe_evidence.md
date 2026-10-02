@@ -313,3 +313,32 @@ pytest tests/a12/observe/test_mvs_subset.py -q -k "source_dependency"          #
 7. **越界缺陷**：`synlab/api/display.py::authority_to_display` 的 1e6 尺度错误（§5.2），
    以及 `render.py` 默认 `effective_gain=1.0` 造成的“光子饥饿”渲染（§3.1）——
    两者都在本任务写入范围之外，仅记录并给出最小修法。
+
+---
+
+## 8. Blender 渲染后端接入观测路线（1024 px × 12 视图，plan 13.2 / G14.1）
+
+完整证据与复现命令见 [`docs/a12/blender_route_wiring.md`](blender_route_wiring.md)，原始产物在
+`data/a12/reports/blender/1024_12/`。与本文相关的要点：
+
+1. **接线完成**：`ObsSpec.renderer`（`auto` / `software_rasterizer` / `blender`）+ 显式
+   `observe(..., renderer=...)`；三条路线（`ideal_visible` / `proxy_scan` / `photo_mvs`）都能选
+   Blender。改动只在 `synlab/observe/{routes.py,api.py}`。
+2. **默认未变**：`renderer: auto`（`configs/a12/next_experiment.yaml`）仍走软件光栅器；
+   `observe()` 不带 renderer 的批量路径逐视图仍是 `SOFTWARE_RASTERIZER`（测试断言 + 真实配置投影）。
+3. **1024 px × 12 视图达标**：真实母体 V01 + `CAM_MID_V3`（批量管线默认档）+ Cycles 32 spp，
+   交付 1024×768；每视图 15.5–17.4 s（均值 16.2 s）、12 视图 194.5 s、产物 545 MB；
+   `id_map` int32 全整数（exact pass 非整数像素 0）、背景 −1、可见类 3541–3667；
+   12 视图全部 `samples_used=32`，manifest 带每文件 sha256。
+4. **深度可核验**：解析平面 1024 px 上误差 **0.0 mm**；真实母体 12 视图与独立射线投射对照，
+   可见性分歧 0.03–0.16 %、深度中位 **0.074–0.134 mm**、p99.9 0.87–4.13 mm。
+   同一对照下软件光栅器局部更准（中位 0.004–0.013 mm）但尾部差得多（最大 **17.7–48.6 mm**、
+   1.2–1.3 % 轮廓分歧），成因是屏幕空间线性 z 插值（§5.2 的斜面夹具给出 8.885 mm 上界）。
+5. **与 §7.5 掩码缺口的关系**：1024 px 下 `uncertain` 覆盖物体像素 **≈81 %**，部署 mask 仅
+   10–13 %。分解后主因是**声明景深**（`CAM_MID_V3` DOF [206.3, 235.6] mm 仅 30 mm，而物体 z
+   跨度 104 mm），叠加密集网格的 AA 混合规则；渲染器 CoC 公式以**像素焦距**为单位，
+   0.75 px 声明阈值只覆盖 ±0.6 mm ⇒ 讨论掩码策略时应连同 CoC 单位约定一起修，而不是只调阈值。
+6. **两处写入范围之外的缺陷被实测暴露**（细节见新文档 §8）：Blender exact pass 相对项目像素
+   中心约定存在**半像素采样相位**；PLY 轴声明使 **`object_pose=None`** 的直接渲染被 180°(Z) 翻转
+   （观测路线每个视图都传姿态，故 12 视图实测不受影响）。
+

@@ -45,7 +45,7 @@ def _assemble(mesh: trimesh.Trimesh, source: trimesh.Trimesh, recipe: Any, *,
               measurements: dict[str, float], units: dict[str, str], details: dict[str, Any],
               realized: bool, fragment: Any) -> PhysicalResult:
     """Wrap a damaged body into a ``PhysicalResult`` with the plan-30.8 component ledger."""
-    from ..physical.api import register_components
+    from ..physical.api import DAMAGE_SEMANTICS, register_components
 
     source_volume = float(abs(source.volume))
     min_ratio = float(recipe.meta.get("min_representative_ratio", 0.005))
@@ -66,6 +66,7 @@ def _assemble(mesh: trimesh.Trimesh, source: trimesh.Trimesh, recipe: Any, *,
         "result_geometry_hash": _geometry_hash(mesh),
         "geometry_hash_unchanged": bool(_geometry_hash(mesh) == _geometry_hash(source)),
         "component_count": len(components), "ledger": ledger,
+        "damage_semantics": DAMAGE_SEMANTICS,
         "sdf_pipeline": details.get("sdf_pipeline", {}),
         "narrowband": details.get("narrowband", {}),
         "failure_code": None if realized else ErrorCode.OPERATOR_NOT_REALIZED.value,
@@ -75,6 +76,7 @@ def _assemble(mesh: trimesh.Trimesh, source: trimesh.Trimesh, recipe: Any, *,
         "axis_id": recipe.axis_id, "variant": recipe.variant, "level": int(recipe.level),
         "geometry_changed": True, "frozen": recipe.frozen(),
         "source_geometry_hash": _geometry_hash(source),
+        "damage_semantics": DAMAGE_SEMANTICS,
         "measured": dict(measurements), "measurement_units": dict(units),
         "details": details, "appearance": None, "appearance_updated": False,
         "damage_backend": "synlab.degrade.physical_narrowband",

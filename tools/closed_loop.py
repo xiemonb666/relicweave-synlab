@@ -29,7 +29,7 @@ import sys
 import time
 import traceback
 from pathlib import Path
-from typing import Any, Callable, Sequence
+from typing import Any, Callable, Mapping, Sequence
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
@@ -43,7 +43,7 @@ from synlab.qc import gates as gates_mod  # noqa: E402
 from synlab.qc.audit import audit_run, write_audit_report  # noqa: E402
 from synlab.qc.loader_probe import probe_training_package  # noqa: E402
 from synlab.relations.api import build_pool, commit_pool, commit_roster  # noqa: E402
-from synlab.relations.api import save_pool_json, save_roster_json  # noqa: E402
+from synlab.relations.api import contributing_run_ids, save_pool_json, save_roster_json  # noqa: E402
 from synlab.roles import (  # noqa: E402
     ROLE_CLEAN_TRUTH,
     ROLE_FEATURE_BUNDLE,
@@ -55,6 +55,7 @@ from synlab.roles import (  # noqa: E402
     ROLE_PATTERN_CHANNELS,
     ROLE_PATTERN_RECIPE,
     ROLE_PHYSICAL_COMPONENT,
+    ROLE_PHYSICAL_RESULT,
     ROLE_PHYSICAL_TRUTH,
     ROLE_POOL,
     ROLE_VISIBLE_LABELS,
@@ -64,8 +65,8 @@ from synlab.storage.release import PROFILE_GATES, ReleaseManager  # noqa: E402
 from synlab.storage.store import QA_FAIL, QA_PASS, QA_PENDING, AssetStore  # noqa: E402
 
 STEP_ORDER: tuple[str, ...] = (
-    "generate", "audit", "build_pool", "release_freeze", "export_training_package",
-    "loader_probe", "report",
+    "generate", "audit", "build_pool", "coverage_aggregate", "release_freeze",
+    "export_training_package", "loader_probe", "report",
 )
 
 #: Default locations (overridable on the command line).
@@ -344,58 +345,103 @@ def _redirect_reference(store: AssetStore, records: dict[str, Any], reference: s
     return None
 
 
-def _tag_run_assets(store: AssetStore, run_id: str) -> dict[str, Any]:
-    """Stamp ``meta.run_id`` on the assets a run produced.
+#: Asset-id fields a coverage row writes.  They are the *exact* evidence of which asset a run
+#: committed, so run attribution never has to be guessed from a lineage id (a lineage id repeats
+#: whenever the same plan is generated again, and guessing by it stamped earlier runs' assets with
+#: a later run's id).
+_COVERAGE_ROW_ASSET_KEYS: tuple[str, ...] = (
+    "mother_asset", "material_asset", "pattern_asset", "clean_truth", "physical_asset",
+    "physical_result_asset", "obs_asset", "visible_asset", "feature_asset", "label_asset",
+    "provenance_asset",
+)
 
-    ``qc.audit.audit_run`` resolves a run's assets through ``meta["run_id"]``.  The pipeline
-    stamps it on the assets it commits itself; ``truth.commit_truth`` and
-    ``observe.commit_observation`` build their own meta, so their assets (clean/physical/visible
-    truth, observation) and the physical component would stay invisible to the audit -- "run
-    produced no assets".  The attribution is derived from the run's own coverage ledger
-    (``coverage.json.lineage_ids`` -> asset ``lineage_id``), and every stamp is recorded.
-    """
-    coverage_path = store.root / "reports" / "coverage.json"
-    lineage_ids: set[str] = set()
+
+def _run_coverage_asset_ids(store: AssetStore, run_id: str) -> dict[str, Any]:
+    """The asset ids the run's own coverage ledger names, plus the file they were read from."""
+    summary_path = store.root / "reports" / "coverage.json"
     rows_path = store.root / "reports" / "coverage_rows.json"
-    source: str | None = None
-    for path in (rows_path, coverage_path):
-        if not path.exists():
-            continue
+    out: dict[str, Any] = {"asset_ids": [], "source": None, "ledger_run_id": None,
+                           "reason": None}
+    summary: dict[str, Any] = {}
+    if summary_path.exists():
         try:
-            payload = json.loads(path.read_text(encoding="utf-8"))
+            summary = json.loads(summary_path.read_text(encoding="utf-8"))
         except (OSError, ValueError):
+            summary = {}
+    out["ledger_run_id"] = summary.get("run_id")
+    if summary.get("run_id") != run_id:
+        out["reason"] = (f"{summary_path} describes run {summary.get('run_id')!r}, not {run_id!r}; "
+                         "no asset is attributed by guesswork")
+        return out
+    rows: list[Any] = []
+    if rows_path.exists():
+        try:
+            payload = json.loads(rows_path.read_text(encoding="utf-8"))
+            rows = payload if isinstance(payload, list) else list(payload.get("rows") or [])
+        except (OSError, ValueError):
+            rows = []
+    ids: list[str] = []
+    for row in rows:
+        if not isinstance(row, Mapping):
             continue
-        entries = payload if isinstance(payload, list) else (payload.get("rows") or [])
-        for row in entries:
-            lineage = str(row.get("lineage_id") or "")
-            if lineage:
-                lineage_ids.add(lineage)
-        if lineage_ids:
-            source = str(path)
-            break
-    tagged: list[str] = []
-    if not lineage_ids:
-        return {"tagged": tagged, "lineage_ids": [], "source": None}
-    import sqlite3
+        for key in _COVERAGE_ROW_ASSET_KEYS:
+            value = row.get(key)
+            if isinstance(value, str) and value.startswith("asset_") and value not in ids:
+                ids.append(value)
+    out["asset_ids"] = ids
+    out["source"] = str(rows_path) if ids else None
+    if rows and not ids:
+        out["reason"] = f"{rows_path} names no asset id for run {run_id}"
+    return out
 
+
+def _tag_run_assets(store: AssetStore, run_id: str) -> dict[str, Any]:
+    """Stamp ``meta.run_id`` on the run's own assets, by asset id, from the run's coverage ledger.
+
+    The pipeline stamps ``run_id`` on every asset it commits itself -- the three truth layers
+    (``truth.commit_truth``), the observation (``observe.commit_observation``), the pattern
+    recipe/channels (``patterns.commit.commit_pattern``), the material profile
+    (``materials.commit_material``), the physical component/result (``physical.commit_physical`` /
+    ``commit_physical_result``) and the pool/roster (``relations.commit_pool``/``commit_roster``).
+    This repair therefore has nothing to do for a store generated by the current code; it exists
+    for stores whose assets were committed by an older build (``run_id_attribution`` in the
+    release coverage counts how many stamps came from here instead of from the commit path, and a
+    release whose repair count is not 0 is carrying history).
+
+    The attribution is taken from the numbers the run wrote about itself: the coverage rows name
+    the asset id of every stage of every lineage.  It is *exact* -- a lineage id is not evidence
+    (the same plan generated twice produces the same lineage ids, so a lineage-based stamp moved
+    an earlier run's assets into a later run), and every stamp is recorded with its source.  When
+    the ledger does not describe this run, nothing is tagged and the reason is returned instead.
+    """
+    ledger = _run_coverage_asset_ids(store, run_id)
+    candidates: list[str] = list(ledger["asset_ids"])
+    tagged: list[str] = []
+    already: list[str] = []
+    unresolved: list[str] = []
+    if not candidates:
+        return {"tagged": tagged, "already_attributed": already, "source": ledger["source"],
+                "candidate_asset_ids": 0, "ledger_run_id": ledger["ledger_run_id"],
+                "reason": ledger["reason"] or "the run wrote no coverage rows"}
     with store.connect() as conn:
-        rows = conn.execute("SELECT asset_id, role, meta_json FROM assets").fetchall()
-        for row in rows:
+        for asset_id in candidates:
+            row = conn.execute("SELECT role, meta_json FROM assets WHERE asset_id=?",
+                               (asset_id,)).fetchone()
+            if row is None:
+                unresolved.append(asset_id)
+                continue
             meta = json.loads(row["meta_json"] or "{}")
             if meta.get("run_id") == run_id:
-                continue
-            lineage = str(meta.get("lineage_id") or "")
-            if not lineage:
-                asset = store.get_asset(row["asset_id"])
-                lineage = str(asset.lineage_id or "")
-            if not lineage or lineage not in lineage_ids:
+                already.append(asset_id)
                 continue
             meta["run_id"] = run_id
-            meta["run_id_source"] = "closed_loop._tag_run_assets"
+            meta["run_id_source"] = "closed_loop._tag_run_assets:run_coverage_row"
             conn.execute("UPDATE assets SET meta_json=? WHERE asset_id=?",
-                         (json.dumps(meta, sort_keys=True, default=str), row["asset_id"]))
-            tagged.append(row["asset_id"])
-    return {"tagged": tagged, "lineage_ids": sorted(lineage_ids), "source": source}
+                         (json.dumps(meta, sort_keys=True, default=str), asset_id))
+            tagged.append(asset_id)
+    return {"tagged": tagged, "already_attributed": already, "unresolved": unresolved,
+            "candidate_asset_ids": len(candidates), "source": ledger["source"],
+            "ledger_run_id": ledger["ledger_run_id"], "reason": ledger["reason"]}
 
 
 def _run_contract_item(store: AssetStore) -> dict[str, Any]:
@@ -543,6 +589,7 @@ def step_audit(store: AssetStore, *, run_id: str, evidence_dirs: Sequence[str],
     contract = _run_contract_item(store)
     fixture = _stage_fixture_contract(store)
     finite = _sanitise_non_finite(store, run_id)
+    aggregate = _write_coverage_aggregate(store)
     roles: dict[str, dict[str, int]] = {}
     for asset in store.list_assets(limit=100000):
         if (asset.meta or {}).get("run_id") != run_id:
@@ -561,6 +608,7 @@ def step_audit(store: AssetStore, *, run_id: str, evidence_dirs: Sequence[str],
         "store_health_ok": bool((report.get("store_health") or {}).get("ok")),
         "lineage_splits": report.get("lineage_splits", {}),
         "coverage": report.get("coverage", {}),
+        "coverage_aggregate": aggregate,
         "roles": roles,
         "qa_failed": failed,
         "promotion": promotion,
@@ -573,8 +621,55 @@ def step_audit(store: AssetStore, *, run_id: str, evidence_dirs: Sequence[str],
     }
 
 
+def _write_coverage_aggregate(store: AssetStore) -> dict[str, Any]:
+    """Write the cross-run coverage aggregate the coverage gates read (see ``qc.gates``).
+
+    ``reports/coverage.json`` is store-global and is overwritten by every generation, so it can
+    only describe the newest run; a batch is many runs.  The aggregate is derived from the
+    store's ``runs``/``assets`` plus the per-lineage coverage rows, and it is written here (and
+    never invented): a store with one run and no rows still produces a real, if small, aggregate.
+    """
+    try:
+        payload = gates_mod.write_coverage_aggregate(store)
+    except Exception as exc:  # noqa: BLE001 - the step records the failure instead of hiding it
+        return {"written": False, "error": f"{type(exc).__name__}: {exc}",
+                "traceback": traceback.format_exc()[-800:]}
+    return {
+        "written": True,
+        "path": payload["artifacts"]["json"],
+        "parquet": payload["artifacts"]["parquet"],
+        "sha256": payload["artifacts"]["json_sha256"],
+        "content_hash": payload["content_hash"],
+        "runs": payload["run_count"],
+        "totals": {key: payload["totals"][key] for key in
+                   ("assets", "assets_qa_pass", "mothers", "lineages", "fragments",
+                    "observations", "run_id_attribution")},
+        "vessels": len(payload["vessels"]), "materials": len(payload["materials"]),
+        "patterns": len(payload["patterns"]), "layer_combos": len(payload["layer_combos"]),
+        "fracture_backends": payload["fracture_backends"],
+        "axes": len(payload["axes"]), "axes_missing": payload["axes_missing"],
+        "gaps": payload["gaps"],
+    }
+
+
+def step_coverage_aggregate(store: AssetStore, *, out_dir: Path,
+                            ledger: Ledger) -> dict[str, Any]:
+    """Standalone step: refresh ``reports/coverage_aggregate.json`` for an existing store.
+
+    Run against a store the loop did not generate (for example the long-lived ``data/a12``
+    evidence store) it writes only that one report file: no asset, no QA verdict and no run
+    status is touched.
+    """
+    aggregate = _write_coverage_aggregate(store)
+    return {
+        "status": "OK" if aggregate.get("written") else "FAILED",
+        **aggregate,
+        "artifacts": [str(aggregate.get("path"))] if aggregate.get("path") else [],
+    }
+
+
 def step_build_pool(store: AssetStore, *, release_id: str | None, out_dir: Path,
-                    ledger: Ledger) -> dict[str, Any]:
+                    ledger: Ledger, run_id: str | None = None) -> dict[str, Any]:
     config = {
         "pool_id": "pool_closed_loop", "gallery_version": "v1", "scope": "FULL",
         "split": "dev", "size_target": 200, "exclude_training_lineages": False,
@@ -585,17 +680,45 @@ def step_build_pool(store: AssetStore, *, release_id: str | None, out_dir: Path,
     pools_dir = store.root / "pools"
     artifacts: list[str] = []
     committed: dict[str, Any] = {}
+    attribution: dict[str, Any] = {"run_id": run_id, "source": "caller" if run_id else None,
+                                   "contributing_run_ids": []}
     pool = report.get("pool")
     if pool is not None:
         qa = {"ok": True, "n2_materialised": False,
               "gallery_hash": report.get("hash"), "candidates": report.get("candidates"),
               "queries": report.get("queries"), "r2_edges": report.get("r2_edges"),
               "has_r2": bool(report.get("r2_edges")), "verdict": "PASS"}
-        asset = commit_pool(store, pool, split="dev", qa=qa, ancestry=[])
+        stamp: str | None = run_id
+        try:
+            contributing = contributing_run_ids(store, pool)
+        except Exception as exc:  # noqa: BLE001 - the reason travels with the report
+            contributing = []
+            attribution["error"] = f"{type(exc).__name__}: {exc}"
+        attribution["contributing_run_ids"] = contributing
+        if stamp is None:
+            if len(contributing) == 1:
+                stamp = contributing[0]
+                attribution["source"] = "contributing_runs"
+            elif contributing:
+                attribution["source"] = "ambiguous"
+                attribution["reason"] = (
+                    f"the gallery is assembled from {len(contributing)} runs "
+                    f"({contributing[:8]}); pass --run/run_id explicitly to attribute the pool")
+            else:
+                attribution["source"] = "unavailable"
+                attribution["reason"] = ("no clean_truth / label_bundle asset names a generation "
+                                         "run, so the pool carries no meta.run_id")
+        elif stamp not in contributing:
+            attribution["caller_run_id_is_contributing"] = False
+        else:
+            attribution["caller_run_id_is_contributing"] = True
+        attribution["run_id"] = stamp
+        asset = commit_pool(store, pool, split="dev", qa=qa, ancestry=[], run_id=stamp)
         # ``commit_pool`` leaves the asset QA_PENDING; the gallery just built and audited is the
         # evidence, so the verdict is recorded here and the honest caveat travels with it.
         store.set_qa(asset.asset_id, QA_PASS, qa)
-        roster_asset = commit_roster(store, pool, split="dev", ancestry=[asset.asset_id])
+        roster_asset = commit_roster(store, pool, split="dev", ancestry=[asset.asset_id],
+                                     run_id=stamp)
         store.set_qa(roster_asset.asset_id, QA_PASS, dict(roster_asset.qa or {}))
         portable = save_pool_json(pool, pools_dir / f"{config['pool_id']}.json")
         roster_file = save_roster_json(pool, pools_dir / f"{config['pool_id']}_queries.json")
@@ -625,6 +748,7 @@ def step_build_pool(store: AssetStore, *, release_id: str | None, out_dir: Path,
         "metrics": report.get("metrics"),
         "features": report.get("features"),
         "variants": _jsonable(report.get("variants")),
+        "run_id_attribution": attribution,
         "committed": committed,
         "artifacts": artifacts,
         "config": config,
@@ -647,34 +771,328 @@ def step_build_pool(store: AssetStore, *, release_id: str | None, out_dir: Path,
 #: not support it instead of applying it.
 GATE_DOWNGRADES: dict[str, dict[str, str]] = {}
 
-#: Roles deliberately left out of the frozen scope, with the reason (also written to the
-#: release manifest so the omission is auditable).  A QA_FAIL asset must never enter a
-#: release, and the reason it was left out is recorded next to the release.
-EXCLUDED_ROLE_REASONS: dict[str, str] = {
+#: Roles deliberately left out of the frozen scope.  What is written here is the *contract* a
+#: role has to satisfy, never a result: the measured reason an individual asset was left out is
+#: read out of that asset's own ``qa`` block by :func:`_exclusion_entry`, so one run's numbers can
+#: never travel into another run's manifest.  (This dict used to hold a prose paragraph quoting a
+#: specific run's pixel counts and gate excuses; a fabricated conclusion is not evidence.)
+EXCLUDED_ROLE_CONTRACTS: dict[str, str] = {
     ROLE_VISIBLE_LABELS: (
-        "one of three visible_labels assets carries QA_FAIL ('no correspondence sample is "
-        "visible in any view': the deliverable foreground mask is empty for that fragment) and "
-        "a release may not reference a failed asset"),
+        "truth.update_visibility_truth decides the verdict of a visible_labels asset from the "
+        "delivered views; a release may not reference an asset whose verdict is not QA_PASS"),
+    ROLE_PHYSICAL_RESULT: (
+        "a physical_result asset carries the verdict of physical.audit_physical for the applied "
+        "damage level; a level the auditor did not confirm may not enter a release"),
 }
 
 
+def _qa_reasons(asset: Any) -> list[str]:
+    """The asset's own recorded failure reasons (never a summary written by hand)."""
+    qa = dict(getattr(asset, "qa", {}) or {})
+    reasons: list[str] = []
+    for key in ("failures", "failure_codes", "problems"):
+        value = qa.get(key)
+        if isinstance(value, (list, tuple)):
+            reasons.extend(str(item) for item in value)
+        elif isinstance(value, str) and value:
+            reasons.append(value)
+    return reasons
+
+
+def _exclusion_entry(asset: Any) -> dict[str, Any]:
+    """One excluded asset, with the verdict that excluded it."""
+    return {
+        "asset_id": asset.asset_id,
+        "role": asset.role,
+        "qa_status": asset.qa_status,
+        "lineage_id": asset.lineage_id,
+        "reasons": _qa_reasons(asset),
+        "contract": EXCLUDED_ROLE_CONTRACTS.get(
+            asset.role, "an asset that is not QA_PASS may not enter a release"),
+    }
+
+
+def _exclusion_digest(excluded: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    """Per-role digest of the *measured* exclusion reasons: ``{role: {qa_status: [reasons]}}``."""
+    out: dict[str, dict[str, list[str]]] = {}
+    for entry in excluded:
+        bucket = out.setdefault(str(entry["role"]), {}).setdefault(str(entry["qa_status"]), [])
+        for reason in (entry.get("reasons") or ["no failure reason recorded in the asset's qa"]):
+            if reason not in bucket:
+                bucket.append(reason)
+    return out
+
+
+#: Roles whose assets carry the frozen relation edges.  ``label_bundle`` is the supervision layer
+#: the training package writes; the three truth layers carry the same edges, so each role is
+#: counted separately and the counts are cross-checked instead of being added up twice.
+RELATION_ROLES: tuple[str, ...] = (ROLE_LABEL_BUNDLE, ROLE_CLEAN_TRUTH, ROLE_PHYSICAL_TRUTH,
+                                   ROLE_VISIBLE_LABELS)
+#: The role ``coverage.r2_relations_in_scope`` is counted from.
+RELATION_SUPERVISION_ROLE = ROLE_LABEL_BUNDLE
+
+
+def _relation_rows(asset: Any) -> list[dict[str, Any]]:
+    """The relation rows an asset really stores (``meta.relations_json`` / ``meta.relations``)."""
+    meta = dict(getattr(asset, "meta", {}) or {})
+    rows: Any = None
+    raw = meta.get("relations_json")
+    if isinstance(raw, str):
+        try:
+            rows = json.loads(raw)
+        except ValueError:
+            rows = None
+    elif isinstance(raw, list):
+        rows = raw
+    if rows is None and isinstance(meta.get("relations"), list):
+        rows = meta["relations"]
+    return [dict(row) for row in (rows or []) if isinstance(row, Mapping)]
+
+
+def _relation_summary(assets: Sequence[Any]) -> dict[str, Any]:
+    """Count the relation labels the frozen scope really carries, per role and per kind."""
+    by_role: dict[str, Any] = {}
+    for role in RELATION_ROLES:
+        kinds: dict[str, int] = {}
+        reasons: dict[str, int] = {}
+        edges = 0
+        assets_with_edges = 0
+        for asset in assets:
+            if asset.role != role:
+                continue
+            rows = _relation_rows(asset)
+            if rows:
+                assets_with_edges += 1
+            edges += len(rows)
+            for row in rows:
+                kind = str(row.get("kind") or "UNKNOWN")
+                kinds[kind] = kinds.get(kind, 0) + 1
+                for reason in str(row.get("reason") or "").split(";"):
+                    reason = reason.strip()
+                    if reason:
+                        reasons[reason] = reasons.get(reason, 0) + 1
+        by_role[role] = {"assets": assets_with_edges, "edges": edges, "kinds": kinds,
+                         "reasons": reasons}
+    supervision = by_role.get(RELATION_SUPERVISION_ROLE) or {"edges": 0, "kinds": {}, "reasons": {}}
+    kinds = dict(supervision.get("kinds") or {})
+    clean_kinds = dict((by_role.get(ROLE_CLEAN_TRUTH) or {}).get("kinds") or {})
+    summary = {
+        "by_role": by_role,
+        "kinds": kinds,
+        "relations_in_scope": int(supervision.get("edges", 0)),
+        # the two spellings are kept because both have appeared in frozen manifests
+        "r2_relations_in_scope": int(kinds.get("R2", 0)),
+        "r2_edges": int(kinds.get("R2", 0)),
+        "r1_edges": int(kinds.get("R1", 0)),
+        "tiny_edges": int(kinds.get("TINY_CONTACT", 0)),
+        "unknown_edges": int(kinds.get("UNKNOWN", 0)),
+        "reason_histogram": dict(supervision.get("reasons") or {}),
+        "source": (f"{RELATION_SUPERVISION_ROLE}.meta.relations_json over the frozen scope, "
+                   "one asset per accepted lineage"),
+        "cross_check": {
+            "clean_truth_r2": int(clean_kinds.get("R2", 0)),
+            "label_bundle_r2": int(kinds.get("R2", 0)),
+            "agree": int(clean_kinds.get("R2", 0)) == int(kinds.get("R2", 0)),
+            "note": ("the label bundle is built from the clean relation graph, so the two counts "
+                     "have to agree; a disagreement is reported, never averaged away"),
+        },
+    }
+    return summary
+
+
+def _run_coverage_rows(store: AssetStore, run_id: str, scope_ids: set[str]) -> dict[str, Any]:
+    """The run's own per-lineage coverage rows, accepted only when they name this run's assets.
+
+    ``reports/coverage.json`` is store-global: it is overwritten by every generation, so reading
+    it for a run that did not write it would attribute another run's coverage to this one.  The
+    rows are therefore used only when the summary names this run *and* the row numbers the asset
+    ids of this run.
+    """
+    summary_path = store.root / "reports" / "coverage.json"
+    rows_path = store.root / "reports" / "coverage_rows.json"
+    out: dict[str, Any] = {"summary_ref": str(summary_path), "rows_ref": str(rows_path),
+                           "ledger_run_id": None, "run_id_matches": False, "total_rows": 0,
+                           "rows": [], "reason": None}
+    summary: dict[str, Any] = {}
+    if summary_path.exists():
+        try:
+            summary = json.loads(summary_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            summary = {}
+    out["ledger_run_id"] = summary.get("run_id")
+    out["run_id_matches"] = summary.get("run_id") == run_id
+    if not out["run_id_matches"]:
+        out["reason"] = (f"{summary_path} describes run {summary.get('run_id')!r}, not "
+                         f"{run_id!r}: its per-lineage rows are not attributed to this run")
+        return out
+    rows: list[Any] = []
+    if rows_path.exists():
+        try:
+            payload = json.loads(rows_path.read_text(encoding="utf-8"))
+            rows = payload if isinstance(payload, list) else list(payload.get("rows") or [])
+        except (OSError, ValueError):
+            rows = []
+    matched = [dict(row) for row in rows if isinstance(row, Mapping)
+               and scope_ids & {str(value) for value in row.values()
+                                if isinstance(value, str) and value.startswith("asset_")}]
+    out["total_rows"] = len(rows)
+    out["rows"] = matched
+    if rows and not matched:
+        out["reason"] = (f"{rows_path} carries no row whose asset ids belong to run {run_id}; "
+                         "the rows are not attributed to this run")
+    return out
+
+
+def _measured_coverage(assets: Sequence[Any], run_id: str, store: AssetStore,
+                       relations: Mapping[str, Any]) -> dict[str, Any]:
+    """Every number the manifest's ``coverage`` block states, recomputed from the store."""
+    roles = _role_counts(assets)
+
+    def values(key: str, role: str | None = None) -> list[str]:
+        out: set[str] = set()
+        for asset in assets:
+            if role is not None and asset.role != role:
+                continue
+            value = (asset.meta or {}).get(key)
+            if value not in (None, "", []):
+                out.add(str(value))
+        return sorted(out)
+
+    mothers = values("mother_id", ROLE_MOTHER_MESH)
+    vessels = values("vessel_id", ROLE_MOTHER_MESH)
+    materials = values("material_id", ROLE_MOTHER_MESH)
+    patterns = values("family_id", ROLE_PATTERN_RECIPE)
+    lineages = sorted({str(a.lineage_id) for a in assets if a.lineage_id})
+    splits: dict[str, int] = {}
+    for asset in assets:
+        splits[str(asset.split)] = splits.get(str(asset.split), 0) + 1
+    ledger = _run_coverage_rows(store, run_id, {a.asset_id for a in assets})
+    rows = ledger.get("rows") or []
+    layer_combos = sorted({str(row.get("layer_combo_id")) for row in rows
+                           if row.get("layer_combo_id")})
+    attribution = {"stamped_at_commit": 0, "stamped_by_run_attribution_repair": 0}
+    for asset in assets:
+        source = str((asset.meta or {}).get("run_id_source") or "")
+        if source.startswith("closed_loop._tag_run_assets"):
+            attribution["stamped_by_run_attribution_repair"] += 1
+        else:
+            attribution["stamped_at_commit"] += 1
+    attribution["note"] = (
+        "how each asset of the scope got its meta.run_id: 'stamped_at_commit' means the module "
+        "that produced it wrote the run id itself (every role now does); "
+        "'stamped_by_run_attribution_repair' means the asset was committed by an older build whose "
+        "commit path carried no run id and closed_loop attributed it from the run's own coverage "
+        "row.  A scope with a non-zero repair count is carrying history: re-generate into a fresh "
+        "store instead of reading those counts as this run's coverage")
+    return {
+        "run_id": run_id,
+        "roles": roles,
+        "lineages": lineages,
+        "lineage_count": len(lineages),
+        "mothers": len(mothers),
+        "mother_ids": mothers,
+        "vessels": vessels,
+        "materials": materials,
+        "patterns": patterns,
+        "layer_combos": layer_combos,
+        "splits": splits,
+        "fragment_assets_in_scope": int(roles.get(ROLE_FRAGMENT_MESH, 0)),
+        "observations": int(roles.get(ROLE_OBS_RESULT, 0)),
+        "r2_relations_in_scope": int(relations.get("r2_relations_in_scope", 0)),
+        "relations_in_scope": int(relations.get("relations_in_scope", 0)),
+        "run_id_attribution": attribution,
+        "ledger": {"summary_ref": ledger["summary_ref"], "rows_ref": ledger["rows_ref"],
+                   "ledger_run_id": ledger["ledger_run_id"],
+                   "run_id_matches": ledger["run_id_matches"], "total_rows": ledger["total_rows"],
+                   "rows_attributed_to_this_run": len(rows), "reason": ledger["reason"]},
+        "sources": {
+            "roles/fragments/observations/lineages/splits": "assets.meta.run_id == run_id",
+            "run_id_attribution": "assets.meta.run_id_source",
+            "mothers/vessels/materials": "mother_mesh.meta.mother_id/vessel_id/material_id",
+            "patterns": "pattern_recipe.meta.family_id",
+            "layer_combos": ("reports/coverage_rows.json, rows whose asset ids belong to this run"
+                             if layer_combos else "unavailable for this run (see ledger.reason)"),
+            "r2_relations_in_scope": relations.get("source"),
+        },
+    }
+
+
+def _visibility_status(assets: Sequence[Any]) -> dict[str, Any]:
+    """The measured visible_labels verdicts of the frozen scope, with their own reasons."""
+    buckets: dict[str, list[Any]] = {QA_PASS: [], QA_FAIL: [], QA_PENDING: []}
+    for asset in assets:
+        if asset.role == ROLE_VISIBLE_LABELS:
+            buckets.setdefault(asset.qa_status, []).append(asset)
+    return {
+        "visible_labels_passed": len(buckets.get(QA_PASS, [])),
+        "visible_labels_failed": len(buckets.get(QA_FAIL, [])),
+        "visible_labels_pending": len(buckets.get(QA_PENDING, [])),
+        "failures": [{"asset_id": a.asset_id, "lineage_id": a.lineage_id,
+                      "reasons": _qa_reasons(a)} for a in buckets.get(QA_FAIL, [])],
+        "source": ("assets(role=visible_labels, meta.run_id == run_id).qa_status and .qa.failures "
+                   "as written by truth.update_visibility_truth"),
+    }
+
+
+def _scope_declaration(run_id: str, coverage: Mapping[str, Any], relations: Mapping[str, Any],
+                       closure: Mapping[str, Any], required: Sequence[str],
+                       gates: Mapping[str, str]) -> str:
+    """The frozen scope, described by the numbers that were just measured from the store."""
+    r2 = int(relations.get("r2_relations_in_scope", 0))
+    total = int(relations.get("relations_in_scope", 0))
+    completed = [gate for gate in required if gates.get(gate) == "PASS"]
+    parts = [
+        f"SANDBOX_CORE release of the closed loop. The frozen scope is every QA_PASS asset whose "
+        f"meta.run_id is generation run {run_id}: {coverage['mothers']} mother(s) / "
+        f"{len(coverage['materials'])} material(s) / {len(coverage['patterns'])} pattern(s) / "
+        f"{len(coverage['layer_combos'])} layer combo(s) / "
+        f"{coverage['fragment_assets_in_scope']} fragment asset(s) / "
+        f"{coverage['observations']} observation(s) over {coverage['lineage_count']} accepted "
+        f"lineage(s); reference closure verified over {closure.get('files_checked')} file(s). "
+        f"All {len(completed)}/{len(required)} required gates of this profile are PASS.",
+        f"Measured relation content of that scope: {r2} R2 / "
+        f"{int(relations.get('r1_edges', 0))} R1 / {int(relations.get('tiny_edges', 0))} "
+        f"TINY_CONTACT / {int(relations.get('unknown_edges', 0))} UNKNOWN over {total} frozen "
+        f"relation edge(s) ({relations.get('source')}).",
+    ]
+    if r2:
+        parts.append(
+            f"This release contains {r2} relation(s) with an R2 label, counted from the frozen "
+            f"label bundles; the pool's positives and this count are the same measurement.")
+    else:
+        parts.append(
+            "This release contains no relation with an R2 label: the frozen scope's label "
+            f"bundles carry 0 R2 over {total} relation edge(s), so the pool has candidates but "
+            "zero positives. The measured classification reasons are in relation_status.")
+    parts.append(
+        "Every number in this declaration was recomputed from the store when the release was "
+        "frozen (see coverage.sources and relation_status.by_role); it exists to validate the "
+        "export / loader / release machinery end to end and states nothing the store does not "
+        "carry.")
+    return " ".join(parts)
+
+
 def step_release_freeze(store: AssetStore, *, run_id: str, out_dir: Path,
-                        evidence_dirs: Sequence[str], ledger: Ledger) -> dict[str, Any]:
-    gates, gate_asset_ids, profile = gates_mod.evaluate_gates(
+                        evidence_dirs: Sequence[str], ledger: Ledger,
+                        profile: str | None = None) -> dict[str, Any]:
+    profile = (profile or PROFILE).upper()
+    gates, gate_asset_ids, run_profile = gates_mod.evaluate_gates(
         store, run_id, evidence_dirs=evidence_dirs)
+    if profile not in PROFILE_GATES:
+        raise SynLabError(ErrorCode.SCHEMA_INVALID, f"unknown release profile {profile}",
+                          stage="closed_loop.release_freeze")
     evidence = gates_mod.gate_evidence(store, run_id, evidence_dirs)
+    measurements = gates_mod.gate_measurements(store, run_id, evidence_dirs)
     (out_dir / "gates_evaluated.json").write_text(
-        json.dumps({"profile": profile, "gates": gates, "evidence": evidence},
+        json.dumps({"profile": profile, "run_profile": run_profile, "gates": gates,
+                    "evidence": evidence, "measurements": measurements},
                    ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8")
 
     # --- scope: every QA_PASS asset of this run, whatever its role -------------------------
     run_assets = [a for a in store.list_assets(limit=100000)
                   if (a.meta or {}).get("run_id") == run_id]
     keep = [a for a in run_assets if a.qa_status == QA_PASS]
-    excluded = [{"asset_id": a.asset_id, "role": a.role, "qa_status": a.qa_status,
-                 "reason": EXCLUDED_ROLE_REASONS.get(
-                     a.role, "asset is not QA_PASS and may not enter a release")}
-                for a in run_assets if a.qa_status != QA_PASS]
+    excluded = [_exclusion_entry(a) for a in run_assets if a.qa_status != QA_PASS]
     if not keep:
         return {
             "status": "FAILED",
@@ -731,59 +1149,40 @@ def step_release_freeze(store: AssetStore, *, run_id: str, out_dir: Path,
                           "reason": verdict["reason"],
                           "store_derived_evidence": evidence.get(gate)})
 
-    required = PROFILE_GATES[PROFILE]
+    required = PROFILE_GATES[profile]
     scope_completed = [g for g in required if applied_gates.get(g) == "PASS"]
     # ``ReleaseManager.freeze`` blocks on any required gate that is not PASS, so NA is a *pending*
     # verdict here as well; the NA list is kept separately for the manifest.
     scope_pending = [g for g in required if applied_gates.get(g) != "PASS"]
     scope_not_applicable = [g for g in required if applied_gates.get(g) == "NA"]
     release_id = f"rel_{run_id.split('_', 1)[-1][:12]}_{int(time.time())}"
+    # --- everything the manifest states is measured here, from the frozen scope itself -------
+    relations = _relation_summary(keep)
+    coverage = _measured_coverage(keep, run_id, store, relations)
+    visibility = _visibility_status(keep)
     release_extra = {
         "gate_overrides": overrides,
         "refused_gate_overrides": refused_overrides,
         "store_derived_gates": gates,
         "scope_not_applicable": scope_not_applicable,
         "evidence_reports": evidence,
+        "gate_measurements": measurements,
         "excluded_assets": excluded,
-        "excluded_role_reasons": EXCLUDED_ROLE_REASONS,
-        "scope_declaration": (
-            "SANDBOX_CORE release of the closed loop. The frozen scope is every QA_PASS "
-            "asset of one real generation run (3 mothers / 3 materials / 3 patterns / 6 "
-            "fragments / clean + physical + visible truth / 3 observations / features / "
-            "labels / provenance) and its reference closure verifies. It contains NO "
-            "relation with an R2 label: every interface patch of every event is classified "
-            "UNKNOWN, so the pool has candidates but zero positives. This release exists to "
-            "validate the export / loader / release machinery end to end; it is not a "
-            "supervision release."),
-        "relation_status": {
-            "r2_edges": 0,
-            "unknown_edges": 3,
-            "reason": ("truth.CleanTruth classifies every interface patch as UNKNOWN "
-                       "because patch.ambiguity_area_ratio (0.13-0.28) exceeds "
-                       "ambiguity_max (0.02); the fracture auditor's own "
-                       "ambiguous_area_ratio_max records the same number"),
-        },
-        "visibility_status": {
-            "visible_labels_passed": 2, "visible_labels_failed": 1,
-            "reason": ("for one mother the fragments' camera-z span (~64 mm) is far wider "
-                       "than the declared depth of field at the delivered resolution, so "
-                       "no correspondence sample is visible in any view"),
-        },
+        "excluded_role_contracts": EXCLUDED_ROLE_CONTRACTS,
+        "excluded_role_reasons": _exclusion_digest(excluded),
+        "scope_declaration": _scope_declaration(run_id, coverage, relations, closure, required,
+                                                applied_gates),
+        "relation_status": relations,
+        "visibility_status": visibility,
+        "coverage_sources": coverage["sources"],
+        "release_profile_requested": profile,
+        "generation_run_profile": run_profile,
     }
     try:
         record = manager.freeze(
-            release_id=release_id, profile=PROFILE, scope="SYNTHETIC",
+            release_id=release_id, profile=profile, scope="SYNTHETIC",
             asset_ids=[a.asset_id for a in keep], gates=applied_gates,
-            coverage={
-                "roles": _role_counts(keep),
-                "vessels": sorted({str((a.meta or {}).get("vessel_id", "")) for a in keep
-                                   if (a.meta or {}).get("vessel_id")}),
-                "materials": sorted({str((a.meta or {}).get("material_id", "")) for a in keep
-                                     if (a.meta or {}).get("material_id")}),
-                "fragment_assets_in_scope": len([a for a in keep
-                                                 if a.role == ROLE_FRAGMENT_MESH]),
-                "r2_relations_in_scope": 0,
-            },
+            coverage=coverage,
             scope_pending=scope_pending,
             extra=release_extra)
     except SynLabError as exc:
@@ -793,7 +1192,7 @@ def step_release_freeze(store: AssetStore, *, run_id: str, out_dir: Path,
         code = exc.code.value if isinstance(exc.code, ErrorCode) else str(exc.code)
         blocked_payload = {
             "schema": "synlab.release_freeze_blocked.v1",
-            "run_id": run_id, "release_id_attempted": release_id, "profile": PROFILE,
+            "run_id": run_id, "release_id_attempted": release_id, "profile": profile,
             "frozen": False, "error": {"code": code, "stage": exc.stage,
                                        "message": exc.message, "measurements": exc.measurements},
             "required_gates": required, "gates": applied_gates, "store_derived_gates": gates,
@@ -801,10 +1200,15 @@ def step_release_freeze(store: AssetStore, *, run_id: str, out_dir: Path,
             "scope_not_applicable": scope_not_applicable,
             "gate_overrides": overrides, "refused_gate_overrides": refused_overrides,
             "evidence_reports": evidence,
-            "note": ("SANDBOX_CORE is the lowest stage in storage.release.PROFILE_GATES, so a "
-                     "required gate that is not PASS cannot be answered by freezing under a "
-                     "lower profile: the release stays unfrozen and every unpassed required "
-                     "gate is listed in scope_pending."),
+            "gate_measurements": measurements,
+            # the measured scope of the release that was *refused*, so the numbers travel with
+            # the refusal instead of being lost with it
+            "coverage": coverage, "relation_status": relations, "visibility_status": visibility,
+            "excluded_assets": excluded,
+            "note": ("No gate was relaxed, overridden or downgraded to obtain this release: every "
+                     "required gate of the requested profile that is not PASS stays in "
+                     "scope_pending, and the reasons (with the measured value and the shortfall) "
+                     "are in gate_measurements."),
         }
         blocked_path = out_dir / "release_freeze_blocked.json"
         blocked_path.write_text(json.dumps(blocked_payload, ensure_ascii=False, indent=2,
@@ -813,7 +1217,8 @@ def step_release_freeze(store: AssetStore, *, run_id: str, out_dir: Path,
             "status": "FAILED",
             "frozen": False,
             "release_id_attempted": release_id,
-            "release_profile": PROFILE,
+            "release_profile": profile,
+            "generation_run_profile": run_profile,
             "gates": applied_gates,
             "store_derived_gates": gates,
             "required_gates": required,
@@ -823,6 +1228,11 @@ def step_release_freeze(store: AssetStore, *, run_id: str, out_dir: Path,
             "gate_overrides": overrides,
             "refused_gate_overrides": refused_overrides,
             "evidence_reports": evidence,
+            "gate_measurements": measurements,
+            "excluded_assets": excluded,
+            "coverage": coverage,
+            "relation_status": relations,
+            "visibility_status": visibility,
             "assets": len(keep),
             "error": {"code": code, "stage": exc.stage, "message": exc.message,
                       "measurements": exc.measurements},
@@ -833,6 +1243,7 @@ def step_release_freeze(store: AssetStore, *, run_id: str, out_dir: Path,
         "status": "OK",
         "release_id": record.release_id,
         "release_profile": record.profile,
+        "generation_run_profile": run_profile,
         "manifest_hash": record.manifest_hash,
         "manifest_path": record.manifest_path,
         "assets": len(record.asset_ids),
@@ -846,7 +1257,13 @@ def step_release_freeze(store: AssetStore, *, run_id: str, out_dir: Path,
         "refused_gate_overrides": refused_overrides,
         "store_derived_gates": gates,
         "evidence_reports": evidence,
+        "gate_measurements": measurements,
         "excluded_assets": excluded,
+        "excluded_role_reasons": _exclusion_digest(excluded),
+        "coverage": coverage,
+        "relation_status": relations,
+        "visibility_status": visibility,
+        "scope_declaration": release_extra["scope_declaration"],
         "closure": manifest.get("closure"),
         "artifacts": [record.manifest_path, str(out_dir / "gates_evaluated.json")],
     }
@@ -949,6 +1366,17 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--evidence", default=DEFAULT_EVIDENCE,
                         help="long-lived evidence store whose reports the gates may read")
     parser.add_argument("--report", default=None, help="closed-loop report path")
+    parser.add_argument("--run", default=None,
+                        help="generation run id the release is frozen for / the pool is attributed "
+                             "to (default: the ledger's run, else reports/generation.json)")
+    parser.add_argument("--profile", default=None,
+                        help=f"release profile to attempt ({', '.join(PROFILE_GATES)}); default: "
+                             f"{PROFILE}.  A stricter profile is allowed (PILOT on a SANDBOX_CORE "
+                             f"run); the required gates of the requested profile are never "
+                             f"relaxed, so a profile whose gates are not all PASS stays unfrozen "
+                             f"and is recorded in scope_pending")
+    parser.add_argument("--profile-as-run-profile", action="store_true",
+                        help="use the run's own generation profile instead of --profile")
     args = parser.parse_args(argv)
 
     steps = list(STEP_ORDER) if args.step == "all" else [args.step]
@@ -971,6 +1399,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         ledger.data["steps"] = []
         if args.reset:
             ledger.data["run_id"] = None
+        ledger.flush()
+
+    if args.run:
+        # an explicit run id wins over the ledger's (a store may hold many runs; the operator
+        # names the one this release is about).  Applied after --reset so it is not cleared.
+        ledger.data["run_id"] = str(args.run)
         ledger.flush()
 
     def run(name: str, fn: Callable[[], dict[str, Any]]) -> dict[str, Any] | None:
@@ -1012,8 +1446,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             run(name, lambda: step_audit(store, run_id=run_id, evidence_dirs=evidence_dirs,
                                          ledger=ledger))
         elif name == "build_pool":
+            pool_run_id = _resolved_run_id(ledger, out_dir)
             run(name, lambda: step_build_pool(store, release_id=None, out_dir=out_dir,
-                                              ledger=ledger))
+                                              ledger=ledger, run_id=pool_run_id))
+        elif name == "coverage_aggregate":
+            run(name, lambda: step_coverage_aggregate(store, out_dir=out_dir, ledger=ledger))
         elif name == "release_freeze":
             run_id = _resolved_run_id(ledger, out_dir)
             if not run_id:
@@ -1021,8 +1458,10 @@ def main(argv: Sequence[str] | None = None) -> int:
                             error={"code": ErrorCode.INPUT_UNAVAILABLE.value,
                                    "message": "no run_id: run the generate step first"})
                 continue
+            release_profile = None if args.profile_as_run_profile else args.profile
             run(name, lambda: step_release_freeze(store, run_id=run_id, out_dir=out_dir,
-                                                  evidence_dirs=evidence_dirs, ledger=ledger))
+                                                  evidence_dirs=evidence_dirs, ledger=ledger,
+                                                  profile=release_profile))
         elif name == "export_training_package":
             release_id = _last_release_id(ledger)
             if not release_id:
