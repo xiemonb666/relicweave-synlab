@@ -106,9 +106,29 @@ class VoxelGrid:
 def choose_spacing(*, min_wall_thickness_mm: float | None = None,
                    shortest_structure_mm: float | None = None,
                    requested_mm: float | None = None, max_nodes: int = 4_000_000,
-                   bbox_mm: tuple[float, float, float] | None = None) -> dict[str, Any]:
-    """Initial spacing = min(wall/6, structure/4) with an explicit node budget (plan 12.1)."""
+                   bbox_mm: tuple[float, float, float] | None = None,
+                   explicit_mm: float | None = None) -> dict[str, Any]:
+    """Initial spacing = min(wall/6, structure/4) with an explicit node budget (plan 12.1).
+
+    ``explicit_mm`` (S12) is the **declarable** form of the decision: it is used verbatim and the
+    node budget is then *reported*, never applied -- so a recipe can ask for a spacing and get
+    exactly it, while :func:`spacing_budget_report` says how many nodes that costs.  Without it
+    the shipped rule applies: the budget relaxes the spacing by 1.2x per step and the returned
+    ``basis`` carries ``+node_budget_relaxation``.
+
+    S12 measured the silent case this makes visible: a P03 recipe *requested* 0.95018 mm
+    (``min_wall_thickness/6``) and the 600 000-node budget returned **1.1402 mm** (a 20 % coarser
+    grid), with the request effectively ignored (requesting 1.1402 or 2.2804 both landed on
+    1.1402; requesting 0.5701 landed on 1.1822).
+    """
     candidates: list[tuple[str, float]] = []
+    explicit = None if explicit_mm is None else float(explicit_mm)
+    if explicit is not None:
+        if not (explicit > 0.0):
+            raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                              f"damage_spacing_mm must be > 0, got {explicit_mm!r}",
+                              stage="physical.sdf.choose_spacing")
+        candidates.append(("explicit", explicit))
     if min_wall_thickness_mm and min_wall_thickness_mm > 0:
         candidates.append(("min_wall_thickness/6", float(min_wall_thickness_mm) / 6.0))
     if shortest_structure_mm and shortest_structure_mm > 0:
@@ -120,15 +140,70 @@ def choose_spacing(*, min_wall_thickness_mm: float | None = None,
     spacing = min(value for _, value in candidates)
     basis = min(candidates, key=lambda kv: kv[1])[0]
     budget_ok = True
-    if bbox_mm is not None:
+    relaxation_steps = 0
+    budget_limited = False
+    if bbox_mm is not None and explicit is None:
         extent = np.asarray(bbox_mm, dtype=np.float64)
         while float(np.prod(np.ceil(extent / spacing) + 3)) > max_nodes and spacing < 100.0:
             spacing *= 1.2
+            relaxation_steps += 1
             budget_ok = False
+            budget_limited = True
             basis += "+node_budget_relaxation"
+    requested = None if requested_mm is None else float(requested_mm)
     return {"spacing_mm": float(spacing), "basis": basis, "budget_ok": budget_ok,
             "criteria": {name: float(value) for name, value in candidates},
-            "max_nodes": int(max_nodes)}
+            "max_nodes": int(max_nodes),
+            "declared_spacing_mm": explicit,
+            "requested_spacing_mm": requested,
+            "budget_limited": bool(budget_limited),
+            "relaxation_steps": int(relaxation_steps),
+            "relaxation_factor": float(1.2 ** relaxation_steps)}
+
+
+def grid_nodes_for(bbox_mm: tuple[float, float, float] | None, spacing: float,
+                   pad_mm: float = 0.0) -> int:
+    """Node count the *grid builder* will allocate for this bbox/spacing (same formula)."""
+    if bbox_mm is None or not (float(spacing) > 0):
+        return 0
+    extent = np.asarray(bbox_mm, dtype=np.float64) + 2.0 * float(pad_mm)
+    return int(np.prod(np.ceil(extent / float(spacing)) + 1))
+
+
+def spacing_budget_report(choice: dict[str, Any], *,
+                          bbox_mm: tuple[float, float, float] | None = None,
+                          grid: Any = None) -> dict[str, Any]:
+    """Requested vs realised spacing and node count of one grid decision (S12).
+
+    ``realised`` is measured on the grid object that was actually built (shape/nodes/spacing), so
+    the report cannot drift from the voxel field it describes; the pre-build estimate is included
+    for comparison and both numbers are reported instead of one being called "the" spacing.
+    """
+    requested = choice.get("requested_spacing_mm")
+    declared = choice.get("declared_spacing_mm")
+    realised = float(choice.get("spacing_mm", 0.0) or 0.0)
+    est_nodes = grid_nodes_for(bbox_mm, realised, pad_mm=float(choice.get("pad_mm", 0.0) or 0.0))
+    out: dict[str, Any] = {
+        "requested_mm": None if requested is None else float(requested),
+        "declared_mm": None if declared is None else float(declared),
+        "spacing_mm": realised,
+        "basis": str(choice.get("basis", "")),
+        "budget_limited": bool(choice.get("budget_limited", False)),
+        "max_nodes": int(choice.get("max_nodes", 0) or 0),
+        "relaxation_steps": int(choice.get("relaxation_steps", 0) or 0),
+        "relaxation_factor": float(choice.get("relaxation_factor", 1.0) or 1.0),
+        "estimated_nodes": int(est_nodes),
+        "criteria": dict(choice.get("criteria", {}) or {}),
+    }
+    if requested and realised > 0:
+        out["requested_over_realised"] = float(realised / float(requested))
+        out["request_honoured"] = bool(abs(realised - float(requested)) <= 1e-12)
+    if grid is not None:
+        out["realised_shape"] = list(getattr(grid, "shape", ()) or ())
+        out["realised_nodes"] = int(getattr(grid, "n_nodes", 0) or 0)
+        if getattr(grid, "spacing", None) is not None:
+            out["realised_spacing_mm"] = float(grid.spacing)
+    return out
 
 
 def grid_for_mesh(mesh: trimesh.Trimesh, spacing: float, *, pad_mm: float = 2.0,

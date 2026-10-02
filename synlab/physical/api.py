@@ -1037,8 +1037,24 @@ def audit_physical(result: PhysicalResult, clean: Any = None) -> dict[str, Any]:
         checks["source_residue"] = {"measured": False, "reason": residue["unavailable"]}
     if drift is not None:
         metrics["roi_external_drift_mm"] = float(drift)
-        checks["roi_external_drift"] = {"max_mm": float(drift),
-                                        "pass": bool(float(drift) <= 1e-3)}
+        # S12: the max is decided by the few samples that land on the worst representable
+        # feature, so the operator also reports the quantiles of the same population.  The key
+        # names and the `max_mm` semantics are unchanged; the quantiles are additive, and they
+        # are reported only when the operator produced them (a missing p95 means "not measured",
+        # never 0).
+        drift_checks: dict[str, Any] = {"max_mm": float(drift),
+                                        "pass": bool(float(drift) <= 1e-3),
+                                        "population": "non-ROI source-surface samples whose "
+                                                      "material is gone from the delivered body"}
+        for q in (50, 95, 99):
+            key = f"roi_external_drift_p{q}_mm"
+            if measured.get(key) is not None:
+                drift_checks[f"p{q}_mm"] = float(measured[key])
+                metrics[key] = float(measured[key])
+        for key in ("roi_external_drift_samples", "roi_external_drift_moved_samples"):
+            if measured.get(key) is not None:
+                drift_checks[key.replace("roi_external_drift_", "")] = float(measured[key])
+        checks["roi_external_drift"] = drift_checks
 
     # ---- appearance axes must not change geometry
     if appearance_axes:

@@ -6,8 +6,18 @@
 (:func:`synlab.fracture.event.run_shared_cut`) consumes it unchanged -- which is what makes the
 conjugacy constructive: both halves are cut by **one** mesh instance.
 
-The stage timings and the peak memory of the build are recorded per stage (sampling,
-triangulation, closure, verification) because the plan asks for a per-stage cost report.
+Two measured fixed points drive the build (both are reported with the numbers that decided them):
+
+* **spacing**: the interpolation budget needs ``C * delta^2 / 8 <= budget`` (``C`` measured on the
+  realized surface), the sampling contract needs ``delta <= lambda_min / 4..5``, and the triangle
+  budget needs ``delta >= sqrt(2 * block_area / max_triangles)``.  The sheet is refined until the
+  *measured* error is inside the budget, and if the triangle budget blocks that, the footprint mask
+  is widened (its curvature falls as ``1 / width^2``) -- never the other way round, and never by
+  relaxing a threshold;
+* **slope**: the relief amplitudes are scaled until the measured P95 slope of the realized surface
+  enters the declared band (see :func:`synlab.fracture.implicit.field.calibrate_slope`).
+
+Stage timings and the build's peak memory are recorded per stage.
 """
 
 from __future__ import annotations
@@ -43,9 +53,13 @@ DEFAULTS_PROVENANCE = {
     "slope_p95_target_deg": "LITERATURE/ENGINEERING: a real ceramic fracture surface slopes a few "
                             "degrees up to ~20 deg away from the mean plane (A12 realism doc 9.4); "
                             "18 deg is the shipped target",
-    "max_sheet_triangles": "ENGINEERING: memory/time guard for the boolean; the morphology "
-                           "spectrum is band-limited (and the dropped bands are named) instead of "
-                           "silently coarsening the mesh",
+    "max_sheet_triangles": "ENGINEERING: memory/time guard for the boolean; when it binds, the "
+                           "footprint mask is widened (the relief near the rim is damped, which is "
+                           "measured and published) instead of sampling the field below the "
+                           "contract",
+    "envelope_width_mm": "ENGINEERING: width of the footprint mask transition; widened "
+                         "automatically while the measured curvature does not fit the spacing the "
+                         "triangle budget allows",
 }
 
 
@@ -73,8 +87,9 @@ def build_implicit_cutter(
     """Build the shared implicit-sheet cutter and its parameter/realization record.
 
     ``options`` (from ``spec.meta['implicit']``) may carry ``samples_per_wavelength``,
-    ``slope_p95_target_deg``, ``max_sheet_triangles``, ``strategy`` (``"tensor"``) and
-    ``coarse_max_mm``.  Every default used is published under ``report['defaults']``.
+    ``slope_p95_target_deg``, ``max_sheet_triangles``, ``envelope_width_mm``, ``strategy``
+    (``"tensor"``) and ``coarse_max_mm``.  Every default used is published under
+    ``report['defaults']``.
     """
     from ...schemas.runtime import CutterResult
     from .. import morphology as morphology_mod
@@ -96,6 +111,12 @@ def build_implicit_cutter(
             stage="fracture.implicit.build",
         )
     budget = float(error_budget_mm)
+    if float(max_triangles) < 2 * triangle_budget:
+        raise SynLabError(
+            ErrorCode.SCHEMA_INVALID,
+            f"the sheet triangle budget ({triangle_budget}) does not fit the cutter budget "
+            f"({max_triangles}); the cutter budget is never exceeded silently",
+            stage="fracture.implicit.build")
     timings: dict[str, float] = {}
     tracemalloc.start()
     started = time.time()
@@ -128,53 +149,110 @@ def build_implicit_cutter(
     margin = float(opts.get("fine_margin_mm", 0.0) or 0.0)
     requested_lambda = min([float(b[1]) for b in base_params.bands if float(b[0]) > 0.0]
                            or [float("inf")])
-    #: bbox of the material cross-section: the fine block of the tensor grid
     fine_u = (float(pts[:, 0].min()) - margin, float(pts[:, 0].max()) + margin)
     fine_v = (float(pts[:, 1].min()) - margin, float(pts[:, 1].max()) + margin)
     block_area = max((fine_u[1] - fine_u[0]) * (fine_v[1] - fine_v[0]), 1.0e-9)
-    delta_from_budget = float(np.sqrt(2.0 * block_area / max(triangle_budget, 1)))
-    delta = max(delta_from_budget, requested_lambda / samples_per_wavelength)
-    delta = float(min(delta, max(requested_lambda, 1.0e-3)))
-    timings["planning_seconds"] = time.time() - started
+    delta_sampling = float(requested_lambda) / samples_per_wavelength
+    delta_budget = float(np.sqrt(2.0 * block_area / max(triangle_budget, 1)))
+    if delta_budget > delta_sampling:
+        # the triangle budget cannot even sample the requested spectrum: band-limit explicitly
+        delta_sampling = delta_budget
+    envelope_width = float(opts.get("envelope_width_mm", 0.0) or 0.0)
+    if envelope_width <= 0.0:
+        envelope_width = max(10.0 * delta_sampling, 1.4)
 
-    # ------------------------------------------------------------------ field (sampling stage)
+    # ------------------------------------------------------------------ field
     stage = time.time()
     field, field_info = build_implicit_field(
         basis, mesh, base_params, rng=rng,
         cross_section=(tris_uv, core_area, prepared["cross_info"]),
-        delta_mm=delta, samples_per_wavelength=samples_per_wavelength,
-        slope_target_p95_deg=slope_target,
-        envelope_width_mm=opts.get("envelope_width_mm"),
-        raster_step_mm=opts.get("raster_step_mm"),
-        slope_step_mm=opts.get("slope_step_mm"))
+        delta_mm=delta_sampling, samples_per_wavelength=samples_per_wavelength,
+        slope_target_p95_deg=slope_target, envelope_width_mm=envelope_width,
+        raster_step_mm=opts.get("raster_step_mm"), slope_step_mm=opts.get("slope_step_mm"))
     timings["field_seconds"] = time.time() - stage
     envelope = field.envelope
     lambda_realized = float(field.meta["spectrum"]["shortest_mm"])
     if not np.isfinite(lambda_realized):
         lambda_realized = float(requested_lambda)
-
-    # ------------------------------------------------------------------ sheet + closure
-    stage = time.time()
+    h_fn = lambda u, v: np.asarray(field(u, v), dtype=np.float64)  # noqa: E731
+    inside_fn = lambda u, v: envelope.smoothness(u, v) > 0.5  # noqa: E731
     coarse_max = float(opts.get("coarse_max_mm", 0.0) or 0.0)
     if coarse_max <= 0.0:
-        coarse_max = max(4.0 * delta,
+        coarse_max = max(4.0 * delta_sampling,
                          float(np.hypot(basis.u_range[1] - basis.u_range[0],
                                         basis.v_range[1] - basis.v_range[0])) / 24.0)
-    h_fn = lambda u, v: np.asarray(field(u, v), dtype=np.float64)  # noqa: E731
-    sheet = build_tensor_sheet(
-        basis, h_fn, delta_mm=delta,
-        fine_u=(fine_u[0] - 4.0 * delta, fine_u[1] + 4.0 * delta),
-        fine_v=(fine_v[0] - 4.0 * delta, fine_v[1] + 4.0 * delta),
-        coarse_max_mm=coarse_max)
-    timings["sheet_seconds"] = time.time() - stage
-
-    world = _sheet_to_world(basis, sheet)
     w_min = float(basis.meta.get("w_min_mm", -1.0))
     depth_margin = float(basis.meta.get("depth_margin_mm", 2.0))
     bottom_w = float(w_min - depth_margin)
+
+    # ------------------------------------------------------------------ sheet + closure loop
+    #
+    # The predictor ``error <= C * delta^2 / 8`` is only a bound; the loop below refines the sheet
+    # on the *measured* error until it is inside the budget, and widens the footprint mask (then
+    # rebuilds the field) when the triangle budget blocks the refinement.
+    attempts: list[dict[str, Any]] = []
+    delta = float(min(delta_sampling, max(delta_budget, delta_sampling)))
+    sheet = None
+    error: dict[str, Any] = {}
+    closure: dict[str, Any] = {}
+    vertices = faces = None
+    outer_attempts = int(opts.get("outer_attempts", 3))
+    for outer in range(1, outer_attempts + 1):
+        for inner in range(1, 5):
+            stage = time.time()
+            sheet = build_tensor_sheet(
+                basis, h_fn, delta_mm=delta,
+                fine_u=(fine_u[0] - 4.0 * delta, fine_u[1] + 4.0 * delta),
+                fine_v=(fine_v[0] - 4.0 * delta, fine_v[1] + 4.0 * delta),
+                coarse_max_mm=coarse_max)
+            timings["sheet_seconds"] = timings.get("sheet_seconds", 0.0) + (time.time() - stage)
+            stage = time.time()
+            error = measure_realized_error(h_fn, sheet, budget_mm=budget,
+                                           lambda_min_mm=lambda_realized, inside_fn=inside_fn)
+            timings["verify_seconds"] = timings.get("verify_seconds", 0.0) + (time.time() - stage)
+            attempts.append({"outer": outer, "inner": inner, "delta_mm": float(delta),
+                             "realized_error_mm": float(error["realized_error_mm"]),
+                             "triangles": int(sheet.faces.shape[0])})
+            if error["within_budget"] or delta <= delta_budget * (1.0 + 1e-12):
+                break
+            shrink = float(np.sqrt(0.85 * budget / max(error["realized_error_mm"], 1e-12)))
+            delta = float(max(delta_budget, delta * min(0.9, max(0.5, shrink))))
+        if error["within_budget"]:
+            break
+        if outer >= outer_attempts:
+            break
+        # the triangle budget blocks the refinement: widen the mask and rebuild the field
+        envelope_width = float(min(4.0 * envelope_width, envelope_width * 1.4))
+        stage = time.time()
+        field, field_info = build_implicit_field(
+            basis, mesh, base_params, rng=rng,
+            cross_section=(tris_uv, core_area, prepared["cross_info"]),
+            delta_mm=delta_sampling, samples_per_wavelength=samples_per_wavelength,
+            slope_target_p95_deg=slope_target, envelope_width_mm=envelope_width,
+            raster_step_mm=opts.get("raster_step_mm"), slope_step_mm=opts.get("slope_step_mm"))
+        timings["field_seconds"] = timings.get("field_seconds", 0.0) + (time.time() - stage)
+        envelope = field.envelope
+        h_fn = lambda u, v: np.asarray(field(u, v), dtype=np.float64)  # noqa: E731
+        inside_fn = lambda u, v: envelope.smoothness(u, v) > 0.5  # noqa: E731
+        delta = float(delta_budget)
+
+    if sheet is None or not error.get("within_budget", False):
+        raise SynLabError(
+            ErrorCode.PRECISION_NOT_REALIZED,
+            f"the implicit sheet realizes {error.get('realized_error_mm', float('nan')):.6f} mm "
+            f"interpolation error, above the {budget:.6f} mm budget, after refining to the "
+            f"triangle-budget spacing {delta:.6f} mm and widening the footprint mask to "
+            f"{envelope_width:.4f} mm; the budget is not relaxed and the spacing is not raised "
+            f"above the sampling contract",
+            stage="fracture.implicit.verify",
+            measurements={"realized_error_mm": error.get("realized_error_mm"),
+                          "budget_mm": budget, "delta_mm": float(delta),
+                          "delta_budget_mm": delta_budget, "attempts": attempts},
+        )
+    world = _sheet_to_world(basis, sheet)
     stage = time.time()
     vertices, faces, closure = close_sheet(world, sheet.faces, bottom_w=bottom_w)
-    timings["closure_seconds"] = time.time() - stage
+    timings["closure_seconds"] = timings.get("closure_seconds", 0.0) + (time.time() - stage)
 
     import trimesh
 
@@ -191,34 +269,18 @@ def build_implicit_cutter(
             measurements={"bad_edges": topology["bad_edges"],
                           "edge_use_histogram": topology["edge_use_histogram"]},
         )
-    inside_fn = lambda u, v: envelope.smoothness(u, v) > 0.5  # noqa: E731
-    error = measure_realized_error(h_fn, sheet, budget_mm=budget, lambda_min_mm=lambda_realized,
-                                  inside_fn=inside_fn)
     sampling = measure_sampling_density(sheet, lambda_min_mm=lambda_realized, core_fn=inside_fn)
-    timings["verify_seconds"] = time.time() - stage
-    _current, peak = tracemalloc.get_traced_memory()
-    tracemalloc.stop()
-    timings["total_seconds"] = time.time() - started
-
-    if not error["within_budget"]:
-        raise SynLabError(
-            ErrorCode.PRECISION_NOT_REALIZED,
-            f"the implicit sheet realizes {error['realized_error_mm']:.6f} mm interpolation error, "
-            f"above the {budget:.6f} mm budget (measured on the emitted triangles with "
-            f"{error['probes_per_triangle']} probes each); the budget is not relaxed",
-            stage="fracture.implicit.verify",
-            measurements={"realized_error_mm": error["realized_error_mm"], "budget_mm": budget,
-                          "worst_uv_mm": error["worst_uv_mm"], "delta_mm": float(delta)},
-        )
+    timings["verify_seconds"] = timings.get("verify_seconds", 0.0) + (time.time() - stage)
     if not sampling["meets_4_per_lambda"]:
         raise SynLabError(
             ErrorCode.PRECISION_NOT_REALIZED,
             f"the sheet samples the shortest retained wavelength only "
             f"{sampling['samples_per_lambda_p95_worst']:.2f} times (>= 4 required, >= 5 with the "
             f"shipped default); the mesh is not coarsened to hide it",
-            stage="fracture.implicit.verify",
-            measurements=sampling,
-        )
+            stage="fracture.implicit.verify", measurements=sampling)
+    _current, peak = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+    timings["total_seconds"] = time.time() - started
 
     report: dict[str, Any] = {
         "backend": BACKEND_IMPLICIT, "strategy": strategy,
@@ -226,15 +288,19 @@ def build_implicit_cutter(
         "options": {"samples_per_wavelength": samples_per_wavelength,
                     "slope_p95_target_deg": slope_target,
                     "max_sheet_triangles": triangle_budget,
-                    "coarse_max_mm": coarse_max},
+                    "coarse_max_mm": coarse_max,
+                    "envelope_width_mm": float(envelope_width)},
         "sampling_plan": {
             "requested_lambda_min_mm": float(requested_lambda),
-            "delta_from_triangle_budget_mm": delta_from_budget,
-            "delta_mm": float(delta), "triangle_budget": triangle_budget,
+            "lambda_min_realized_mm": float(lambda_realized),
+            "delta_sampling_mm": float(delta_sampling),
+            "delta_triangle_budget_mm": float(delta_budget),
+            "delta_final_mm": float(delta),
+            "triangle_budget": int(triangle_budget),
             "fine_block_u_mm": [float(x) for x in fine_u],
             "fine_block_v_mm": [float(x) for x in fine_v],
-            "fine_block_area_mm2": float(block_area),
-            "core_area_mm2": core_area,
+            "fine_block_area_mm2": float(block_area), "core_area_mm2": core_area,
+            "refinement_attempts": attempts,
         },
         "field": field_info,
         "sheet": {

@@ -59,18 +59,27 @@ class SdfContext:
         if structure <= 0:
             structure = float(np.min(extent))
         grid_spec = dict(recipe.grid or {})
+        requested = grid_spec.get("spacing_mm")
+        explicit = grid_spec.get("damage_spacing_mm")
         spacing_choice = S.choose_spacing(
             min_wall_thickness_mm=max(thickness["p05_mm"], 1e-3),
             shortest_structure_mm=structure,
-            requested_mm=grid_spec.get("spacing_mm"),
+            requested_mm=requested,
             max_nodes=int(grid_spec.get("max_nodes", 1_500_000)),
             bbox_mm=tuple(float(v) for v in extent),
+            explicit_mm=explicit,
         )
         self.spacing_info = {**spacing_choice, "measured_thickness": thickness}
         self.spacing = float(spacing_choice["spacing_mm"])
         self.pad_mm = float(grid_spec.get("pad_mm", max(1.0, 2.0 * self.spacing)))
         self.grid = S.grid_for_mesh(mesh, self.spacing, pad_mm=self.pad_mm,
                                     backend=recipe.sdf_backend or S.DEFAULT_SDF_BACKEND)
+        # S12: the node budget is a *decision*, and it has to be readable from the result.
+        # ``requested_mm`` is what the axis asked for, ``spacing_mm`` is what the budget allowed,
+        # and both the realised grid shape/nodes and the relaxation factor are recorded so a
+        # "0.95 requested -> 1.14 realised" (the measured P03 case) can never be silent again.
+        self.spacing_info["realised"] = S.spacing_budget_report(
+            spacing_choice, bbox_mm=tuple(float(v) for v in extent), grid=self.grid)
         self.d0, self.sdf_info = S.signed_distance_field(
             mesh, self.grid, backend=recipe.sdf_backend,
             surface_check_samples=int(grid_spec.get("surface_check_samples", 800)),
@@ -162,6 +171,9 @@ class SdfContext:
             "chunk": chunk_info, "clip": clip_info, "nesting": nesting_info,
             "sdf": {k: v for k, v in self.sdf_info.items() if k != "grid"},
             "grid": self.grid.as_dict(), "spacing": self.spacing_info,
+            # S12: requested vs realised spacing/node budget in one place, measured on the grid
+            # that was actually built, so the decision is readable from the result itself.
+            "spacing_budget": dict(self.spacing_info.get("realised") or {}),
             "roi": self.roi_info, "mesh": S.watertight_report(accepted),
             **info_extra,
         }
@@ -325,7 +337,7 @@ def polish_interface(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: A
         "lost_volume_mm3": float(abs(ctx.mesh.volume) - abs(body.volume)),
         "min_thickness_mm": thickness["min_mm"],
         "p05_thickness_mm": thickness["p05_mm"],
-        "roi_external_drift_mm": _roi_external_drift(body, ctx, halo_mm=halo),
+        **_drift_measurements(body, ctx, halo_mm=halo),
     }
     measurements["edge_localization_within_2r"] = _edge_localization(
         removed, _roi_edge_samples(ctx), radius_mm)["within_2r_fraction"]
@@ -340,7 +352,10 @@ def polish_interface(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: A
                          units={"max_recession_mm": "mm", "hf_rms_before_mm": "mm",
                                 "hf_rms_after_mm": "mm", "hf_rms_reduction": "mm",
                                 "lost_volume_mm3": "mm3", "min_thickness_mm": "mm",
-                                "roi_external_drift_mm": "mm"},
+                                "roi_external_drift_mm": "mm",
+                                "roi_external_drift_p50_mm": "mm",
+                                "roi_external_drift_p95_mm": "mm",
+                                "roi_external_drift_p99_mm": "mm"},
                          details=details, realized=realized)
 
 
@@ -349,20 +364,79 @@ def _roi_edge_samples(ctx: SdfContext, *, min_angle_deg: float = 25.0) -> np.nda
     return F.edge_sample_points(ctx.mesh, edges, density_mm=max(ctx.spacing, 0.3))
 
 
-def _roi_external_drift(body: trimesh.Trimesh, ctx: SdfContext, *, halo_mm: float,
-                        n: int = 1500, seed: int = 7) -> float:
-    """Max displacement of the *non-ROI* surface: must stay ~0 (plan 12.2 P03/P07)."""
+#: S12: quantiles of the drift population that are reported beside the max.  The max is a
+#: two-sided statistic: it is decided by the few samples that land on the worst representable
+#: feature, so it is an upper-bound probe, not a typical displacement.  The quantiles are
+#: **additive**: ``roi_external_drift_mm`` keeps its exact meaning and its exact value.
+DRIFT_QUANTILES: tuple[float, ...] = (50.0, 95.0, 99.0)
+
+
+def _roi_external_drift_stats(body: trimesh.Trimesh, ctx: SdfContext, *, halo_mm: float,
+                              n: int = 1500, seed: int = 7) -> dict[str, float]:
+    """Displacement of the *non-ROI* surface: the max (plan 12.2 P03/P07) plus its quantiles.
+
+    ``max_mm`` is bit-for-bit the number the shipped :func:`_roi_external_drift` returned: the
+    same seed, the same ``n``, the same halo test and the same occupancy/distance instrument.
+    The population the max is taken over is the set of **non-ROI source surface samples whose
+    material is gone** from the delivered body; a sample that is still covered never moved and
+    contributes 0, which is why the quantiles are taken over the *moved* subsamples and
+    ``populated_by`` says so explicitly.
+    """
+    out: dict[str, float] = {"max_mm": 0.0, "samples": 0.0, "outside_samples": 0.0,
+                             "moved_samples": 0.0}
+    for q in DRIFT_QUANTILES:
+        out[f"p{q:g}_mm"] = 0.0
     pts, _fid = trimesh.sample.sample_surface(ctx.mesh, int(n), seed=int(seed))
     pts = np.asarray(pts, dtype=np.float64)
     dist, _ = ctx.tree.query(pts, workers=1)
     outside = pts[dist > float(halo_mm)]
+    out["samples"] = float(len(pts))
+    out["outside_samples"] = float(len(outside))
     if len(outside) == 0:
-        return 0.0
+        return out
     inside = S.scene_for(body).occupancy(outside)
     moved = outside[~inside]
+    out["moved_samples"] = float(len(moved))
     if len(moved) == 0:
-        return 0.0
-    return float(S.scene_for(body).unsigned_distance(moved).max())
+        return out
+    values = np.asarray(S.scene_for(body).unsigned_distance(moved), dtype=np.float64)
+    values = values[np.isfinite(values)]
+    if values.size == 0:
+        return out
+    out["max_mm"] = float(values.max())
+    for q in DRIFT_QUANTILES:
+        out[f"p{q:g}_mm"] = float(np.percentile(values, q))
+    return out
+
+
+def _roi_external_drift(body: trimesh.Trimesh, ctx: SdfContext, *, halo_mm: float,
+                        n: int = 1500, seed: int = 7) -> float:
+    """Max displacement of the *non-ROI* surface: must stay ~0 (plan 12.2 P03/P07)."""
+    return float(_roi_external_drift_stats(body, ctx, halo_mm=halo_mm, n=n,
+                                           seed=seed)["max_mm"])
+
+
+def _drift_measurements(body: trimesh.Trimesh, ctx: SdfContext, *, halo_mm: float,
+                        n: int = 1500, seed: int = 7) -> dict[str, float]:
+    """The ``roi_external_drift*`` measurement block (max + p50/p95/p99, S12).
+
+    Raises ``SynLabError`` if the max would differ from what :func:`_roi_external_drift` returns,
+    so the additive keys can never silently replace the shipped statistic.
+    """
+    stats = _roi_external_drift_stats(body, ctx, halo_mm=halo_mm, n=n, seed=seed)
+    out = {"roi_external_drift_mm": float(stats["max_mm"]),
+           "roi_external_drift_p50_mm": float(stats["p50_mm"]),
+           "roi_external_drift_p95_mm": float(stats["p95_mm"]),
+           "roi_external_drift_p99_mm": float(stats["p99_mm"]),
+           "roi_external_drift_samples": float(stats["samples"]),
+           "roi_external_drift_moved_samples": float(stats["moved_samples"])}
+    shipped = float(_roi_external_drift(body, ctx, halo_mm=halo_mm, n=n, seed=seed))
+    if shipped != out["roi_external_drift_mm"]:  # pragma: no cover - guards the refactor
+        raise SynLabError(
+            ErrorCode.SCHEMA_INVALID,
+            f"roi_external_drift max moved: {shipped!r} != {out['roi_external_drift_mm']!r}",
+            stage="physical.operators.drift")
+    return out
 
 
 # ---------------------------------------------------------------------------- P02
@@ -432,7 +506,7 @@ def round_edge(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any = N
         "new_sharp_edge_ratio": float(sharp_after / max(sharp_before, 1)),
         "chamfer_variant": 1.0 if chamfer else 0.0,
         "min_thickness_mm": S.ray_thickness(body, n_samples=160, seed=4)["min_mm"],
-        "roi_external_drift_mm": _roi_external_drift(body, ctx, halo_mm=2.0 * radius_mm + ctx.spacing),
+        **_drift_measurements(body, ctx, halo_mm=2.0 * radius_mm + ctx.spacing),
     }
     realized = bool(measurements["lost_volume_mm3"] > 0 and localization["within_2r_fraction"] > 0.5)
     details = {"sdf_pipeline": detail, "edges_before": int(len(edges)), "edges_after": int(len(after_edges)),
@@ -440,7 +514,10 @@ def round_edge(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any = N
     return DamageOutcome(mesh=body, measurements=measurements,
                          units={"max_recession_mm": "mm", "lost_volume_mm3": "mm3",
                                 "edge_width_mm": "mm", "min_thickness_mm": "mm",
-                                "roi_external_drift_mm": "mm"},
+                                "roi_external_drift_mm": "mm",
+                                "roi_external_drift_p50_mm": "mm",
+                                "roi_external_drift_p95_mm": "mm",
+                                "roi_external_drift_p99_mm": "mm"},
                          details=details, realized=realized)
 
 
@@ -479,7 +556,7 @@ def _smooth_recession(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: 
         "realized_mean_recession_mm": float(detail["field_mean_roi_mm"]),
         "lost_volume_mm3": float(abs(ctx.mesh.volume) - abs(body.volume)),
         "lost_volume_ratio": float(1.0 - abs(body.volume) / max(abs(ctx.mesh.volume), 1e-12)),
-        "roi_external_drift_mm": _roi_external_drift(body, ctx, halo_mm=halo),
+        **_drift_measurements(body, ctx, halo_mm=halo),
         "contact_lost_fraction": float(contact["lost_fraction"]),
         "contact_residual_area_mm2": float(contact["residual_area_mm2"]),
         "min_thickness_mm": thickness["min_mm"],

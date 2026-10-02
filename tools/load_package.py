@@ -103,6 +103,31 @@ FILE_PURPOSE: dict[str, dict[str, str]] = {
                     "unit": "mm for points/normals", "frame": "S_mm"},
     "deploy/degrade": {"purpose": "degradation-diversity index (axis x level variants of the release)",
                        "unit": "1", "frame": "-"},
+    # ---- the merged experiment-ready dimensions (tools/a12_experiment_ready_export.py) --------
+    "research/roi_views": {"purpose": "whole-slice + fracture-ROI close-up view family, copied "
+                                      "from data/a12_roi/store; one npz per body plus its own "
+                                      "observation metadata (research side: the payload carries "
+                                      "id_map/surface_tag/T_WC/dist)",
+                           "unit": "count for rgb, mm for depth_z/K/T_WC/depth, 1 for masks",
+                           "frame": "S_mm"},
+    "research/synthetic_extras": {"purpose": "nine bench-unobtainable modalities as declared "
+                                              "upper-bound simulations (claim_ban applies)",
+                                   "unit": "per-modality (see the index)", "frame": "W_mm"},
+    "research/context": {"purpose": "simulated excavation context pack metadata "
+                                    "(area/grid/layer/bag/coexistence/scale reference)",
+                         "unit": "1", "frame": "-"},
+    "research/degrade": {"purpose": "the 31-axis degradation registry with its materialised "
+                                    "variants and the producer's own index",
+                         "unit": "per-variant (see the index)", "frame": "S_mm / W_mm"},
+    "research/fracture": {"purpose": "fracture-surface channels and per-patch amplitude "
+                                     "statistics selected by face__origin_kind == INTERFACE",
+                          "unit": "mm for areas/residuals/amplitudes", "frame": "W_mm"},
+    "research/hard_negatives.index.json": {"purpose": "the recorded gap: no hard-negative table "
+                                                      "exists, with its unlock condition",
+                                           "unit": "1", "frame": "-"},
+    "ablation_index.json": {"purpose": "one row per switchable data dimension: switch field, "
+                                       "hypothesis, positive/negative gain yardsticks",
+                            "unit": "1", "frame": "-"},
     "export_manifest.json": {"purpose": "package manifest: per-file sha256, counts, views",
                              "unit": "1", "frame": "-"},
 }
@@ -217,6 +242,70 @@ COLUMN_SEMANTICS: dict[str, dict[str, Any]] = {
                "label": False},
     "stratum_id": {"meaning": "simulated stratum of the query", "label": False},
     "excavation_area_id": {"meaning": "simulated excavation area of the query", "label": False},
+    # ---- S3 direction completion (both role assignments of every unordered pair) --------------
+    "direction": {"meaning": "which role assignment this row is: 'canonical' (query=a) or "
+                             "'reverse' (query=b); the kind/valid/loss_mask labels of a pair are "
+                             "identical in both directions",
+                  "label": False},
+    "pair_key": {"meaning": "canonical unordered pair key 'a|b' shared by the two direction rows",
+                 "label": False},
+    # ---- the merged fracture-interface dimension (research/fracture/*.parquet) ----------------
+    "lineage_id": {"meaning": "lineage (mother vessel) the row belongs to", "label": True},
+    "qa_status": {"meaning": "store QA verdict of the asset the row was measured from",
+                  "label": False},
+    "n_faces": {"meaning": "faces in the mesh (or in the interface patch)", "label": False},
+    "n_interface_faces": {"meaning": "faces whose face__origin_kind is ORIGIN_INTERFACE",
+                          "label": False},
+    "interface_fraction": {"meaning": "n_interface_faces / n_faces", "unit": "rate 0..1",
+                           "label": False},
+    "interface_ids": {"meaning": "the face__interface_id values present on this fragment",
+                      "label": False},
+    "n_patches": {"meaning": "interface patches (one per distinct face__interface_id)",
+                  "label": False},
+    "planar_geometry": {"meaning": "every interface patch of the fragment is numerically coplanar "
+                                   "(max |vertex - area-weighted patch plane| <= 1e-9 mm)",
+                        "label": False},
+    "planar_patches": {"meaning": "how many of the fragment's patches are coplanar", "label": False},
+    "planar": {"meaning": "this patch is numerically coplanar", "label": False},
+    "planar_geometry_rule": {"meaning": "the written rule that makes planar_geometry reproducible",
+                             "label": False},
+    "why_planar_is_null": {"meaning": "why planarity could not be measured for this fragment",
+                           "label": False},
+    "patch_residual_max_mm": {"meaning": "largest patch plane residual of the fragment",
+                              "unit": "mm", "label": False},
+    "patch_ra_below_1mm_min_mm": {"meaning": "smallest below_1mm Ra over the fragment's patches",
+                                  "unit": "mm", "label": False},
+    "patch_ra_below_1mm_max_mm": {"meaning": "largest below_1mm Ra over the fragment's patches",
+                                  "unit": "mm", "label": False},
+    "plane_residual_max_mm": {"meaning": "largest |vertex - area-weighted patch plane|",
+                              "unit": "mm", "label": False},
+    "plane_residual_rms_mm": {"meaning": "RMS of the same plane residual", "unit": "mm",
+                              "label": False},
+    "centroid_height_ra_mm": {"meaning": "area-weighted mean |face-centroid height| over the patch "
+                                         "plane", "unit": "mm", "label": False},
+    "n_height_samples": {"meaning": "patch vertices the amplitude statistics were computed on",
+                         "label": False},
+    "plane": {"meaning": "whole-patch amplitude statistics (Ra/Rq/Rz/Rt) relative to the fitted "
+                         "plane", "label": False},
+    "mean_normal": {"meaning": "area-weighted mean unit normal of the patch", "unit": "1",
+                    "label": False},
+    "plane_centre_mm": {"meaning": "area-weighted centroid of the patch", "unit": "mm",
+                        "label": False},
+    "ra_below_5mm_mm": {"meaning": "Ra of the locally detrended field below a 5 mm ball",
+                        "unit": "mm", "label": False},
+    "ra_below_1mm_mm": {"meaning": "Ra of the locally detrended field below a 1 mm ball (the band "
+                                   "docs/a12/fracture_visible.md 2.3 reports)",
+                        "unit": "mm", "label": False},
+    "ra_below_0.25mm_mm": {"meaning": "Ra of the locally detrended field below a 0.25 mm ball",
+                           "unit": "mm", "label": False},
+    "rq_below_5mm_mm": {"meaning": "Rq of the locally detrended field below a 5 mm ball",
+                        "unit": "mm", "label": False},
+    "rq_below_1mm_mm": {"meaning": "Rq of the locally detrended field below a 1 mm ball",
+                        "unit": "mm", "label": False},
+    "rq_below_0.25mm_mm": {"meaning": "Rq of the locally detrended field below a 0.25 mm ball",
+                           "unit": "mm", "label": False},
+    "fracture_signal_channels": {"meaning": "the face__* channels this mesh really carries",
+                                 "label": False},
 }
 
 
@@ -792,7 +881,8 @@ def batch_shapes(built: Mapping[str, Any]) -> dict[str, Any]:
 # --------------------------------------------------------------------------------------
 def _file_family(relative: str) -> str:
     for prefix in ("deploy/obs/shard", "deploy/geometry/shard", "deploy/tokens/shard",
-                   "deploy/zarr"):
+                   "deploy/zarr", "research/roi_views", "research/synthetic_extras",
+                   "research/context", "research/degrade", "research/fracture"):
         if relative.startswith(prefix):
             return prefix
     return relative

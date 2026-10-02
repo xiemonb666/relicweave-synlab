@@ -174,8 +174,7 @@ def _round_edge(mesh: trimesh.Trimesh, recipe: Any, *, fragment: Any = None) -> 
         "clipped_volume_mm3": float(clip_info["clipped_volume_mm3"]),
         "watertight": 1.0 if report["watertight"] else 0.0,
         "min_thickness_mm": float(S.ray_thickness(accepted, n_samples=200, seed=4)["min_mm"]),
-        "roi_external_drift_mm": float(_outside_drift(accepted, mesh, roi_ids,
-                                                      seed=int(recipe.basis.get("seed", 0)) + 3)),
+        **_drift_measurements(accepted, mesh, roi_ids, seed=int(recipe.basis.get("seed", 0)) + 3),
         "max_outside_clean_mm": float(inside["max_outside_mm"]),
     }
     measurements["components"] = float(len(S.component_split(accepted)))
@@ -185,7 +184,7 @@ def _round_edge(mesh: trimesh.Trimesh, recipe: Any, *, fragment: Any = None) -> 
     units = {"lost_volume_mm3": "mm3", "measured_max_recession_mm": "mm",
              "measured_mean_recession_mm": "mm", "planned_max_recession_mm": "mm",
              "edge_width_mm": "mm", "effective_fillet_radius_mm": "mm",
-             "edge_length_total_mm": "mm", "roi_external_drift_mm": "mm",
+             "edge_length_total_mm": "mm", **_drift_units(),
              "min_thickness_mm": "mm", "max_outside_clean_mm": "mm",
              "planned_contact_width_mm": "mm"}
     details = {
@@ -301,8 +300,7 @@ def _erode_interface(mesh: trimesh.Trimesh, recipe: Any, *, fragment: Any = None
         "thickness_guard_satisfied": 1.0 if guard_satisfied else 0.0,
         "thickness_guard_scale": float(scale),
         "clipped_volume_mm3": float(clip_info["clipped_volume_mm3"]),
-        "roi_external_drift_mm": float(_outside_drift(accepted, mesh, roi_ids,
-                                                      seed=int(recipe.basis.get("seed", 0)) + 3)),
+        **_drift_measurements(accepted, mesh, roi_ids, seed=int(recipe.basis.get("seed", 0)) + 3),
         "rim_vertices_pinned": float(detail["rim_vertices_pinned"]),
         "narrowband_vertices": float(detail["roi_vertices"]),
         "max_outside_clean_mm": float(inside["max_outside_mm"]),
@@ -312,7 +310,7 @@ def _erode_interface(mesh: trimesh.Trimesh, recipe: Any, *, fragment: Any = None
     hard = bool(measurements["lost_volume_mm3"] > 1e-9 and report["watertight"])
     units = {"depth_mm": "mm", "applied_depth_mm": "mm", "lost_volume_mm3": "mm3",
              "measured_max_recession_mm": "mm", "measured_max_vertex_shift_mm": "mm",
-             "min_thickness_mm": "mm", "roi_external_drift_mm": "mm",
+             "min_thickness_mm": "mm", **_drift_units(),
              "linearised_predicted_loss_mm3": "mm3", "planned_max_recession_mm": "mm"}
     details = {
         "narrowband": {"backend": "degrade.physical_narrowband.erode_interface",
@@ -521,11 +519,12 @@ def _chip_material(mesh: trimesh.Trimesh, recipe: Any, *, fragment: Any = None) 
         "largest_component_ratio": float(best["volume_ratio"]),
         "min_thickness_mm": float(S.ray_thickness(body, n_samples=200, seed=11)["min_mm"]),
         "measured_max_displacement_mm": float(inside["max_outside_mm"]),
+        **_drift_from_inside(inside, samples=float(inside["samples"])),
     }
     units = {"achieved_contact_loss": "1", "contact_loss_target": "1",
              "contact_lost_area_mm2": "mm2", "cutter_radius_mm": "mm",
              "cutter_scale": "1", "lost_volume_mm3": "mm3", "min_thickness_mm": "mm",
-             "measured_max_displacement_mm": "mm"}
+             "measured_max_displacement_mm": "mm", **_drift_units()}
     details = {
         "narrowband": {"backend": "degrade.physical_narrowband.chip_material",
                        "method": "frozen cutter position/direction, 1-D geometric search on the "
@@ -564,42 +563,135 @@ def _removed_surface_points(body: trimesh.Trimesh, source: trimesh.Trimesh, *, n
             "mean_mm": float(dist.mean()), "p95_mm": float(np.percentile(dist, 95))}
 
 
+def _drift_from_inside(inside: dict[str, float], *, samples: int) -> dict[str, float]:
+    """``roi_external_drift*`` block computed from the already-taken ``_inside_mask`` sample.
+
+    P04 is an **analytic** cutter (a boolean with an ellipsoid), not a surface operator and not a
+    level set, so there is no "non-ROI source sample" population to re-sample: the population that
+    matters is the delivered surface itself, and its outward displacement is already measured by
+    :func:`_inside_mask` (``max_outside_mm`` = max signed distance of the damaged surface outside
+    the clean body).  Its quantiles are therefore reported under the same keys, from the same
+    instrument, with ``population`` naming the difference.  ``max_mm`` is the shipped
+    ``measured_max_displacement_mm`` value, bit for bit.
+    """
+    return {"roi_external_drift_mm": float(inside["max_outside_mm"]),
+            "roi_external_drift_p50_mm": float(inside.get("p50_outside_mm", 0.0)),
+            "roi_external_drift_p95_mm": float(inside.get("p95_outside_mm", 0.0)),
+            "roi_external_drift_p99_mm": float(inside.get("p99_outside_mm", 0.0)),
+            "roi_external_drift_samples": float(samples),
+            "roi_external_drift_moved_samples": float(inside.get("outside_samples", 0.0))}
+
+
 def _inside_mask(reference: trimesh.Trimesh, body: trimesh.Trimesh, *, n: int = 3000,
                  seed: int = 0) -> dict[str, float]:
-    """``damaged ⊆ clean`` and the displacement of the damaged surface (plan 12.4)."""
+    """``damaged ⊆ clean`` and the displacement of the damaged surface (plan 12.4).
+
+    S12: the outward population (``signed > 1e-6``) also reports p50/p95/p99 so the drift family
+    has one key set on every backend; ``max_outside_mm`` is unchanged.
+    """
     points, _ = trimesh.sample.sample_surface(body, int(n), seed=int(seed) % (2 ** 31))
     points = np.asarray(points, dtype=np.float64)
     signed = S.scene_for(reference).signed_distance(points)
     outside = signed > 1e-6
-    return {"samples": float(len(points)), "outside_fraction": float(outside.mean()),
-            "max_outside_fraction": float(outside.mean()),
-            "max_outside_mm": float(signed.max()) if len(points) else 0.0}
+    out = {"samples": float(len(points)), "outside_fraction": float(outside.mean()),
+           "max_outside_fraction": float(outside.mean()),
+           "max_outside_mm": float(signed.max()) if len(points) else 0.0,
+           "outside_samples": float(int(outside.sum())),
+           "p50_outside_mm": 0.0, "p95_outside_mm": 0.0, "p99_outside_mm": 0.0}
+    values = signed[outside]
+    values = values[np.isfinite(values)]
+    if values.size:
+        out["p50_outside_mm"] = float(np.percentile(values, 50))
+        out["p95_outside_mm"] = float(np.percentile(values, 95))
+        out["p99_outside_mm"] = float(np.percentile(values, 99))
+    return out
 
 
 def _outside_drift(body: trimesh.Trimesh, source: trimesh.Trimesh, roi_faces: np.ndarray,
                    *, n: int = 1500, seed: int = 7) -> float:
     """Maximum displacement of the source surface *away* from the ROI (must stay ~0)."""
+    return float(_outside_drift_stats(body, source, roi_faces, n=n, seed=seed)["max_mm"])
+
+
+#: S12: the quantiles reported beside the max, matching ``physical.operators.DRIFT_QUANTILES``.
+DRIFT_QUANTILES: tuple[float, ...] = (50.0, 95.0, 99.0)
+
+
+def _outside_drift_stats(body: trimesh.Trimesh, source: trimesh.Trimesh,
+                         roi_faces: np.ndarray, *, n: int = 1500,
+                         seed: int = 7) -> dict[str, float]:
+    """The narrow-band drift population: max (shipped statistic) plus p50/p95/p99.
+
+    The *instrument* is deliberately the narrow-band one: the ROI is the set of ROI **face
+    centres** and "outside" is ``distance > p5(distance) + 1 mm`` (a compact support test on the
+    surface operator's own ROI), whereas the global path uses the voxel halo.  The two paths
+    therefore produce different populations and different maxima -- that difference is part of
+    what the routing audit measures -- but the reported key set is identical, so a consumer reads
+    the same keys from either backend.
+
+    ``max_mm`` is bit-for-bit the value the shipped :func:`_outside_drift` returned (same seed,
+    same ``n``, same test) and ``_drift_measurements`` re-checks that equality.
+    """
     from scipy.spatial import cKDTree
 
+    out: dict[str, float] = {"max_mm": 0.0, "samples": 0.0, "outside_samples": 0.0,
+                             "moved_samples": 0.0}
+    for q in DRIFT_QUANTILES:
+        out[f"p{q:g}_mm"] = 0.0
     faces = np.asarray(source.faces, dtype=np.int64)
     roi = np.asarray(roi_faces, dtype=np.int64)
     mask = np.zeros(len(faces), dtype=bool)
     mask[roi] = True
     anchors = np.asarray(source.triangles_center, dtype=np.float64)[mask]
     if len(anchors) == 0:
-        return 0.0
+        return out
     tree = cKDTree(anchors)
     points, _ = trimesh.sample.sample_surface(source, int(n), seed=int(seed) % (2 ** 31))
     points = np.asarray(points, dtype=np.float64)
     dist, _ = tree.query(points, workers=1)
     halo = float(np.percentile(dist, 5.0)) + 1.0
     outside = points[dist > halo]
+    out["samples"] = float(len(points))
+    out["outside_samples"] = float(len(outside))
     if len(outside) == 0:
-        return 0.0
+        return out
     moved = outside[~_occupancy(body, outside)]
+    out["moved_samples"] = float(len(moved))
     if len(moved) == 0:
-        return 0.0
-    return float(S.scene_for(body).unsigned_distance(moved).max())
+        return out
+    values = np.asarray(S.scene_for(body).unsigned_distance(moved), dtype=np.float64)
+    values = values[np.isfinite(values)]
+    if values.size == 0:
+        return out
+    out["max_mm"] = float(values.max())
+    for q in DRIFT_QUANTILES:
+        out[f"p{q:g}_mm"] = float(np.percentile(values, q))
+    return out
+
+
+def _drift_measurements(body: trimesh.Trimesh, source: trimesh.Trimesh,
+                        roi_faces: np.ndarray, *, n: int = 1500,
+                        seed: int = 7) -> dict[str, float]:
+    """The ``roi_external_drift*`` block of the narrow-band backend (max + p50/p95/p99, S12)."""
+    stats = _outside_drift_stats(body, source, roi_faces, n=n, seed=seed)
+    out = {"roi_external_drift_mm": float(stats["max_mm"]),
+           "roi_external_drift_p50_mm": float(stats["p50_mm"]),
+           "roi_external_drift_p95_mm": float(stats["p95_mm"]),
+           "roi_external_drift_p99_mm": float(stats["p99_mm"]),
+           "roi_external_drift_samples": float(stats["samples"]),
+           "roi_external_drift_moved_samples": float(stats["moved_samples"])}
+    shipped = float(_outside_drift(body, source, roi_faces, n=n, seed=seed))
+    if shipped != out["roi_external_drift_mm"]:  # pragma: no cover - guards the refactor
+        raise SynLabError(
+            ErrorCode.SCHEMA_INVALID,
+            f"roi_external_drift max moved: {shipped!r} != {out['roi_external_drift_mm']!r}",
+            stage="degrade.physical_narrowband.drift")
+    return out
+
+
+def _drift_units(key_prefix: str = "roi_external_drift") -> dict[str, str]:
+    return {f"{key_prefix}_mm": "mm", f"{key_prefix}_p50_mm": "mm",
+            f"{key_prefix}_p95_mm": "mm", f"{key_prefix}_p99_mm": "mm"}
 
 
 def _occupancy(body: trimesh.Trimesh, points: np.ndarray) -> np.ndarray:

@@ -990,15 +990,16 @@ class _Quadtree:
         leave a hanging vertex (measured in ``docs/a12/fracture_realism.md`` §11).
         """
         span = int(span)
-        half = 1 << (span - 1)
+        edge_length = 1 << span
+        half = edge_length >> 1
         c00 = (i << span, j << span)
-        c10 = (c00[0] + (1 << span), c00[1])
-        c11 = (c00[0] + (1 << span), c00[1] + (1 << span))
-        c01 = (c00[0], c00[1] + (1 << span))
+        c10 = (c00[0] + edge_length, c00[1])
+        c11 = (c00[0] + edge_length, c00[1] + edge_length)
+        c01 = (c00[0], c00[1] + edge_length)
         m_v0 = (c00[0], c00[1] + half)              # left edge midpoint
         m_u0 = (c00[0] + half, c00[1])              # bottom edge midpoint
-        m_v1 = (c00[0] + (1 << span), c00[1] + half)  # right edge midpoint
-        m_u1 = (c00[0] + half, c00[1] + (1 << span))  # top edge midpoint
+        m_v1 = (c00[0] + edge_length, c00[1] + half)  # right edge midpoint
+        m_u1 = (c00[0] + half, c00[1] + edge_length)  # top edge midpoint
         s = self.edge_splits(i, j, level)
         n_split = int(sum(s))
         if edge_extra is None:
@@ -1048,36 +1049,39 @@ class _Quadtree:
             #: split cell therefore still returns the same 8 ``pts`` and the same 8 ``tris``.
             centre = (c00[0] + half, c00[1] + half)
             pts = [c00, c10, c11, c01, m_u0, m_v1, m_u1, m_v0, centre]
+            #: the second corner of each edge in walk order, so every edge gets an explicit
+            #: direction.  Relying on "which axis" alone is not enough: the walk goes *down* the
+            #: right edge and *up* the left one, so the sign differs per edge (measured: a point
+            #: at ``u = 20e6`` for a 16e6-wide cell, i.e. outside its own boundary).
+            walk_end = (1, 2, 3, 0)
             ring: list[int] = []
             for edge, (start_corner, end_corner, midpoint) in enumerate(walk):
                 ring.append(start_corner)
                 if not s[edge]:
                     continue
                 #: one ordered walk from the edge's own start corner.  ``extra == 0`` emits the
-                #: single midpoint (a step of ``half``); ``extra == d >= 1`` needs the edges's
-                #: interior points at the dyadic positions the facing side owns, which are the
-                #: multiples of ``half >> (d + 1)``: ``d == 1`` puts the point at one quarter of
-                #: the edge, ``d == 2`` at one quarter and the eighths.  (``half >> d`` would be
-                #: half the intended spacing and silently collide with neighbouring lattice
-                #: points — measured, and the reason the first version of this fix still left
-                #: duplicated directed edges.)  Every point is a key-lattice integer the facing
-                #: side computes as well; the midpoint is reused from ``pts`` rather than emitted
+                #: single midpoint (a step of ``half``); ``extra == d >= 1`` splits the edge into
+                #: ``2 ** (d + 1)`` sub-edges, so the interior points sit at the multiples of
+                #: ``half >> d`` — one quarter of the edge for ``d == 1``, one quarter *and* the
+                #: eighths for ``d == 2``.  Every point is a key-lattice integer the facing side
+                #: computes as well; the midpoint is reused from ``pts`` rather than emitted
                 #: twice, or the assembler would create two global vertices for one key point.
                 sub = int(extra[edge])
-                segment = half if sub == 0 else (half >> (sub + 1))
+                segment = half if sub == 0 else (half >> sub)
                 steps = 1 << sub
                 corner = pts[start_corner]
-                corner = pts[start_corner]
                 origin = (int(corner[0]), int(corner[1]))
-                midpoint_point = pts[midpoint]      # ``walk`` carries the *index*, not the point
+                target = pts[walk_end[edge]]
+                direction = (int(target[0]) - origin[0], int(target[1]) - origin[1])
+                step_u = direction[0] // steps
+                step_v = direction[1] // steps
+                midpoint_point = pts[midpoint]      # ``walk`` carries an *index*, not a point
                 for q in range(1, steps + 1):
-                    along = q * segment
-                    point = (origin[0] + along, origin[1]) if edge % 2 == 0 \
-                        else (origin[0], origin[1] + along)
+                    point = (origin[0] + q * step_u, origin[1] + q * step_v)
                     if point == midpoint_point:
-                        #: the midpoint is already in ``pts`` and must be *reused*, otherwise the
-                        #: same key point is emitted twice and the assembler creates two global
-                        #: vertices for it (measured: a ring with 12 points where 9 suffice)
+                        #: reuse, never re-emit: a duplicate point makes the assembler build two
+                        #: global vertices for one key position (measured as duplicated directed
+                        #: edges and a non-manifold top surface)
                         ring.append(midpoint)
                         continue
                     p = len(pts)
@@ -1091,6 +1095,45 @@ class _Quadtree:
 
 
 # ---------------------------------------------------------------------------- cutter
+
+
+def _edge_depth(table: dict[tuple[int, int, int], int], side: int,
+                 i: int, j: int, level: int, vertical: bool,
+                 target: int, sub_level: int) -> int:
+    """How many halvings of the cell edge at ``(target, sub_level)`` the facing leaves need.
+
+    ``table`` marks the refined cells; the edge under inspection belongs to a cell one level
+    coarser than the sub-lattice position being examined.  ``sub_level`` is the dyadic resolution
+    of ``target`` — a key-lattice coordinate *of the starting point of the sub-edge*, so at the
+    entry call ``target`` is a multiple of ``2 ** sub_level`` — and the walk descends into the
+    neighbour cell ``(i, j, level)`` while that neighbour is refined.
+
+    Recursion is what makes this exact: a refined neighbour contributes one halving (its children
+    own the midpoint of the sub-edge), and the child that contains ``target`` is then inspected one
+    level finer, **even when it is not refined itself** (a coarse child can still sit next to
+    deeper leaves).  Two earlier formulations were measured wrong on the thin-bowl fixture: a
+    one-pass loop that stopped at the first unrefined sub-cell reported depth 1 for an edge whose
+    facing leaves owned a ``2 ** 18`` vertex, and reading the child index off the cell's *start*
+    corner instead of the sub-edge's own start point picked the wrong half from the second level on.
+    Both left the T-junction unresolved, which surfaced as a duplicated directed edge in the
+    assembled solid.
+    """
+    if sub_level <= 0 or not table.get((int(i), int(j), int(level)), 0):
+        return 0
+    half = 1 << (sub_level - 1)
+    lo_half = int(target) < half
+    sub = 0 if lo_half else 1
+    child_target = int(target) if lo_half else (int(target) - half)
+    children = ((0, sub), (1, sub)) if vertical else ((sub, 0), (sub, 1))
+    best = 0
+    for child in children:
+        ci, cj = 2 * int(i) + child[0], 2 * int(j) + child[1]
+        limit = int(side) << (int(level) + 1)
+        if not (0 <= ci < limit and 0 <= cj < limit):
+            continue
+        best = max(best, 1 + _edge_depth(table, side, ci, cj, int(level) + 1, vertical,
+                                         child_target, sub_level - 1))
+    return best
 
 
 def edge_extra_all(tree: "_Quadtree", block: np.ndarray, key_level: int) -> np.ndarray:
@@ -1109,96 +1152,43 @@ def edge_extra_all(tree: "_Quadtree", block: np.ndarray, key_level: int) -> np.n
     ``needs_balance`` already answers "is a leaf at ``level + 2`` present across this edge" — one
     boolean per edge.  This walk asks the same question on the **dyadic sublattice at the key
     resolution** (``cell_size(level) / 2 ** span``, the lattice :meth:`_Quadtree.cell_triangles`
-    emits on) and continues while the neighbour is refined: step ``t`` looks at the sub-cells
-    facing the ``t``-th sub-edge of my own edge, so each step costs one index shift and one
-    membership test for the whole generation.
+    emits on), which is exactly the set of vertices a conforming ring has to carry.  See
+    :func:`_edge_depth` for why the descent continues through *unrefined* neighbours.
 
     Returns an ``(N, 4)`` array: ``[row, e]`` = how many halvings *beyond one* of edge ``e``
     (0 left, 1 bottom, 2 right, 3 top, the order of :meth:`_Quadtree.edge_splits`) the facing leaf
-    structure requires.  0 means "the midpoint is enough".  The cost is bounded by the 2:1 grading
-    of the refinement fixed point: refining a cell pulls its 1-neighbourhood up, so the walk stops
-    as soon as a sub-cell is not refined.
+    structure requires.  0 means "the midpoint is enough"; ``d >= 1`` asks for the interior points
+    at the multiples of ``half >> (d + 1)``.
     """
     rows = np.asarray(block, dtype=np.int64).reshape(-1, 3)
     n = int(rows.shape[0])
-    if n == 0:
-        return np.zeros((0, 4), dtype=np.int64)
-    #: the refined set as one packed array, so membership is a vectorised ``isin``
-    lookup = np.fromiter(
-        (int(i) * (1 << 32) + int(j) * (1 << 8) + int(level)
-         for (i, j, level) in tree.refined),
-        dtype=np.int64, count=len(tree.refined)) if tree.refined else np.zeros(0, dtype=np.int64)
-
-    level = np.repeat(rows[:, 2], 4).astype(np.int64)
-    span = np.repeat(int(key_level) - rows[:, 2], 4).astype(np.int64)
-    corner_u = np.repeat(rows[:, 0], 4) << span
-    corner_v = np.repeat(rows[:, 1], 4) << span
-    edge = np.tile(np.arange(4, dtype=np.int64), n)
-    vertical = (edge % 2) == 0
-    lo_side = np.tile(np.array([True, True, False, False]), n)
-    #: index of the neighbour cell across the ``lo``/``hi`` side, on *its own* level lattice
-    si = np.where(vertical, np.repeat(rows[:, 0], 4) + np.where(lo_side, -1, 1),
-                  np.repeat(rows[:, 0], 4))
-    sj = np.where(vertical, np.repeat(rows[:, 1], 4),
-                  np.repeat(rows[:, 1], 4) + np.where(lo_side, -1, 1))
-    limit = np.int64(tree.side) << level
-    alive = (si >= 0) & (sj >= 0) & (si < limit) & (sj < limit)
-    #: The key-lattice position of the sub-edge being inspected, at the current sub-lattice
-    #: resolution: it starts at my own edge's start corner and is halved on every descent, so
-    #: "which half of the neighbour's cell am I facing" is one bit of *this* value.  Deriving it
-    #: from the edge's start corner alone instead (as the first version did) is exact only for the
-    #: first level: from the second level on, the accumulated sub-offsets move the target inside
-    #: the sub-lattice and the bit read off the corner points at the wrong half (measured: a
-    #: 2 ** 18 T-junction left unresolved while the walk reported depth 1).
-    target_u = corner_u.copy()
-    target_v = corner_v.copy()
-    sub_along = np.int64(1) - ((np.where(vertical, target_v, target_u) >> (span - 1))
-                               & np.int64(1))
-    sub_fixed = np.int64(1) - ((np.where(vertical, target_u, target_v) >> (span - 1))
-                               & np.int64(1))
-    depth = np.zeros(n * 4, dtype=np.int64)
-    #: halvings still available on my own edge (it is ``2 ** (span - 1)`` key units long)
-    remaining = span - 1
-    while True:
-        present = np.zeros(alive.shape, dtype=bool)
-        if lookup.size:
-            live = np.flatnonzero(alive)
-            if live.size:
-                keys = si[live] * (1 << 32) + sj[live] * (1 << 8) + level[live]
-                present[live] = np.isin(keys, lookup)
-        if _AUDIT_TRACE:
-            for slot in range(n * 4):
-                if tuple(int(v) for v in rows[slot // 4]) in _AUDIT_CELLS and slot % 4 == 1:
-                    if _AUDIT_EDGE_STEP[0] < 4:
-                        print(f"[walk] cell={tuple(int(v) for v in rows[slot // 4])} edge=1 "
-                              f"step={_AUDIT_EDGE_STEP[0]} si={int(si[slot])} sj={int(sj[slot])} "
-                              f"level={int(level[slot])} alive={bool(alive[slot])} "
-                              f"present={bool(present[slot])} remaining={int(remaining[slot])} "
-                              f"depth={int(depth[slot])}")
-            if bool(np.any(_AUDIT_EDGE_STEP[0] == 1)):
-                for probe in ((229, 207, 3), (228, 207, 4), (229, 207, 4), (228, 207, 3)):
-                    print(f"[walk]   refined{probe}={(probe in tree.refined)}")
-            _AUDIT_EDGE_STEP[0] += 1
-        #: a refined neighbour puts its children's corner in the middle of the sub-edge
-        depth = np.where(present, depth + 1, depth)
-        remaining = np.where(present & (remaining > 0), remaining - 1, 0)
-        if not bool(np.any(present & (remaining > 0))):
-            break
-        #: descend one level: the neighbour's children that face my edge are ``2 * s + sub``,
-        #: and the target halving follows the sub-lattice
-        si = 2 * si + sub_along
-        sj = 2 * sj + sub_fixed
-        level = level + 1
-        target_u = target_u >> 1
-        target_v = target_v >> 1
-        shift_1 = remaining - 1
-        sub_along = np.int64(1) - ((np.where(vertical, target_v, target_u) >> shift_1)
-                                   & np.int64(1))
-        sub_fixed = np.int64(1) - ((np.where(vertical, target_u, target_v) >> shift_1)
-                                   & np.int64(1))
-        limit = np.int64(tree.side) << level
-        alive = (si >= 0) & (sj >= 0) & (si < limit) & (sj < limit)
-    return depth.reshape(n, 4)
+    out = np.zeros((n, 4), dtype=np.int64)
+    if n == 0 or not tree.refined:
+        return out
+    #: the refined set as a plain mapping, so the recursive descent is a dictionary lookup
+    table: dict[tuple[int, int, int], int] = {
+        (int(i), int(j), int(level)): 1 for (i, j, level) in tree.refined}
+    side = int(tree.side)
+    for row in range(n):
+        i, j, level = (int(rows[row, 0]), int(rows[row, 1]), int(rows[row, 2]))
+        span = int(key_level) - level
+        limit = side << level
+        for edge_index in range(4):
+            vertical = (edge_index % 2) == 0
+            if vertical:
+                lo_side = edge_index == 0
+                si, sj = (i - 1 if lo_side else i + 1), j
+            else:
+                lo_side = edge_index == 1
+                si, sj = i, (j - 1 if lo_side else j + 1)
+            if not (0 <= si < limit and 0 <= sj < limit):
+                continue
+            #: a "v" edge sits at a fixed u and runs along v, so the along-axis key coordinate of
+            #: the sub-edge's start is the cell's own v origin, and vice versa
+            along_start = (j << span) if vertical else (i << span)
+            out[row, edge_index] = _edge_depth(table, side, si, sj, level, vertical,
+                                               along_start, span - 1)
+    return out
 
 
 def build_closed_cutter(

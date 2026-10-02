@@ -81,6 +81,23 @@ class PoolIndex:
             return set(self.pool.neighbours(fragment_id))
         return set()
 
+    def mates(self, fragment_id: str) -> set[str]:
+        """The historical R2 mate set, under the protocol name of ``synlab.qc.pool_contract``.
+
+        Identical to :meth:`neighbours` by construction: this adapter is where the mate-set
+        meaning is *consumed* (``_sample_row`` draws negatives around it), so a pool that answers
+        ``neighbours`` with anything else is the divergence the contract suite refuses
+        (``neighbours_are_mates``)."""
+        return set(self.neighbours(fragment_id))
+
+    def legal_negatives(self, fragment_id: str) -> set[str]:
+        """Set spelling of :meth:`legal_pool` (same candidates, same exclusions)."""
+        return set(self.legal_pool(fragment_id))
+
+    def candidate_ids(self, fragment_id: str) -> list[str]:
+        """The pool's universe minus the query itself (the query is never a candidate)."""
+        return [str(fid) for fid in self.lineage if str(fid) != str(fragment_id)]
+
     def history_exclusions(self, fragment_id: str) -> set[str]:
         """Fragments that may never be an ordinary negative of ``fragment_id``."""
         out = set(self.neighbours(fragment_id))

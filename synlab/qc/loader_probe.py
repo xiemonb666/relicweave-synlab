@@ -82,6 +82,13 @@ class ExportedRelationPool:
         self.event_of: dict[str, str] = dict(event_of or {})
         self.lineage_cluster_of: dict[str, str] = {}
         self.split_of: dict[str, str] = {}
+        #: The pool's candidate universe, under the name ``training.sampler.PoolIndex`` reads
+        #: (``PoolIndex.lineage`` -> ``pool.lineup``).  It is the same fragment set
+        #: :meth:`candidate_ids` already derives from the table; exposing it is what makes this
+        #: reader usable as a ``PoolIndex`` carrier at all (without it the sampler sees an empty
+        #: lineage and produces no candidate).  ``training.smoke.TrainingPoolView`` overwrites it
+        #: with the caller's lineup, which is the same attribute the frozen readers expect.
+        self.lineup: list[str] = []
         for row in rows:
             query = str(row.get("query", ""))
             candidate = str(row.get("candidate", ""))
@@ -111,6 +118,7 @@ class ExportedRelationPool:
             if split:
                 self.split_of.setdefault(query, split)
                 self.split_of.setdefault(candidate, split)
+        self.lineup = sorted({a for a, _ in self._kinds} | {b for _, b in self._kinds})
 
     # ------------------------------------------------------------------ pool protocol
     def relation(self, a: str, b: str) -> str:

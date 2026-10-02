@@ -414,6 +414,20 @@ class _PhysicalAxis(_BaseAxis):
             measured["grid_spacing_requested_mm"] = float(
                 grid_info.get("requested_mm") or grid_info.get("spacing_mm") or 0.0)
             measured["grid_nodes"] = float(grid_info.get("nodes", 0) or 0)
+        # S12: the node budget is a *declared* decision, not an accident.  The S11 probe measured a
+        # request of 0.95018 mm coming out as 1.1402 mm (a 20 % coarser grid chosen by
+        # ``max_nodes``), which used to be visible only inside ``details``.  The realised report is
+        # promoted to measurements so the budget-limited case is readable from the audit table too.
+        budget = dict(((result.meta.get("details") or {}).get("sdf_pipeline") or {}
+                       ).get("spacing_budget") or {})
+        if budget:
+            measured["grid_spacing_measured_mm"] = float(
+                budget.get("realised_spacing_mm", budget.get("spacing_mm", 0.0)) or 0.0)
+            measured["grid_nodes_realised"] = float(budget.get("realised_nodes", 0) or 0)
+            measured["grid_node_budget"] = float(budget.get("max_nodes", 0) or 0)
+            measured["grid_request_honoured"] = 1.0 if budget.get("request_honoured") else 0.0
+            measured["grid_budget_limited"] = 1.0 if budget.get("budget_limited") else 0.0
+            measured["grid_relaxation_steps"] = float(budget.get("relaxation_steps", 0) or 0)
         return _with(
             source,
             payload={"physical_result": result, "mesh": representative.mesh,
@@ -453,7 +467,10 @@ class P01(_PhysicalAxis):
     factor_kind = "SINGLE_PARAMETER"
     VARIANT_KINDS = {"fixed_radius_basis": "SINGLE_PARAMETER",
                      "radius_sweep": "ONE_DIMENSIONAL_RECIPE"}
-    ALIASES = {"polish": "fixed_radius_basis"}
+    #: S12: ``configs/a12/physical_recipes.json`` names this axis's variant after the *parameter*
+    #: it moves (``recession_strength``), which is the same convention P02/P03 already alias.  The
+    #: declared recipe must resolve to a registered variant instead of raising SCHEMA_INVALID.
+    ALIASES = {"polish": "fixed_radius_basis", "recession_strength": "fixed_radius_basis"}
     SUPPORTED_MATERIALS = POLISHABLE
     GRID = {"spacing_mm": None, "max_nodes": 600_000, "chunk": 24, "halo": 1,
             "roi_density_mm": 0.25}
@@ -546,6 +563,9 @@ class P04(_PhysicalAxis):
     default_variant = "contact_loss"
     factor_kind = "SINGLE_PARAMETER"
     VARIANT_KINDS = {"contact_loss": "SINGLE_PARAMETER", "volume_loss": "ONE_DIMENSIONAL_RECIPE"}
+    #: S12: the declared recipe ``P04_chip_mid`` names the variant after the parameter
+    #: (``contact_loss_target``); alias it instead of refusing to build the declared recipe.
+    ALIASES = {"contact_loss_target": "contact_loss"}
     SUPPORTED_MATERIALS = BRITTLE
     #: frozen acceptance contract of the declared target: achieving it inside this tolerance is
     #: the realized effect (plan 30.7).  The search below converges far tighter (measured
@@ -619,6 +639,8 @@ class P05(_PhysicalAxis):
     default_variant = "paint_removal"
     factor_kind = "SINGLE_PARAMETER"
     VARIANT_KINDS = {"paint_removal": "SINGLE_PARAMETER"}
+    #: S12: ``P05_paint_loss_mid`` declares the variant as its parameter name.
+    ALIASES = {"retained_fraction": "paint_removal"}
     SUPPORTED_MATERIALS = COATED
     LEVELS = tuple({"retained_fraction": f} for f in (1.0, 0.75, 0.5, 0.25, 0.0))
     NOTES = ("nested paint masks from one frozen rank field; the geometry hash must stay "
@@ -654,6 +676,8 @@ class P06(_PhysicalAxis):
     factor_kind = "SINGLE_PARAMETER"
     VARIANT_KINDS = {"dirt_appearance": "SINGLE_PARAMETER",
                      "dirt_geometry": "ONE_DIMENSIONAL_RECIPE"}
+    #: S12: ``P06_dirt_mid`` declares the variant as its parameter name.
+    ALIASES = {"coverage": "dirt_appearance"}
     SUPPORTED_MATERIALS = ALL_MATERIALS
     LEVELS = tuple({"coverage": c, "layer_thickness_mm": 0.3}
                    for c in (0.0, 0.2, 0.4, 0.6, 0.8))
@@ -691,6 +715,8 @@ class P07(_PhysicalAxis):
     default_variant = "outer_recession_field"
     factor_kind = "ONE_DIMENSIONAL_RECIPE"
     VARIANT_KINDS = {"outer_recession_field": "ONE_DIMENSIONAL_RECIPE"}
+    #: S12: ``P07_erode_outer_light`` declares the variant as its parameter name.
+    ALIASES = {"depth_mm": "outer_recession_field"}
     SUPPORTED_MATERIALS = ERODIBLE
     MIN_WALL_MM = 0.5
     SPACING_FROM = None  # the frozen auto spacing (min wall/6, structure/4)

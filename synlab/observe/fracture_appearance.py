@@ -168,6 +168,143 @@ def shade_world_normals(*, normals_world: np.ndarray, albedo: np.ndarray,
 
 
 # ======================================================================================
+# A1: the contract's documented light states, and which one a fracture view can respond to
+# ======================================================================================
+#: The five light states of the capture contract (``configs/a12/capture_contract.json`` ->
+#: ``lighting.real_capture_light_modes``; table t053 in ``docs/a12/v144_project_core.md`` §4.4,
+#: documented in ``synlab/degrade/specs.py::LIGHT_MODE_NAMES``).  This layer **invents no light**:
+#: it selects among these, and the numeric vectors it uses are the frozen realisation already in
+#: ``synlab.pipeline.LIGHT_MODE_SPECS`` - the same ``LightSpec`` a real observation is rendered
+#: with.  ``purpose`` is the contract's own statement of what the state is for.
+CONTRACT_LIGHT_MODES: tuple[str, ...] = ("WHITE_DIFFUSE", "LEFT_GRAZE", "RIGHT_GRAZE",
+                                         "CROSS_POL", "NORMAL_REFLECT")
+
+CONTRACT_LIGHT_PURPOSE: dict[str, str] = {
+    "WHITE_DIFFUSE": "轮廓、颜色和基础纹饰",
+    "LEFT_GRAZE": "断口起伏和裂纹",
+    "RIGHT_GRAZE": "验证另一方向纹理与阴影",
+    "CROSS_POL": "降低部分釉面高光",
+    "NORMAL_REFLECT": "保留光泽等材质证据",
+}
+
+
+def contract_light(mode: str) -> LightSpec:
+    """One of the five documented light states as the frozen :class:`LightSpec` of the pipeline.
+
+    The vectors come from ``synlab.pipeline.LIGHT_MODE_SPECS`` (this build's frozen realisation of
+    the contract's qualitative setups, recorded in every observation's metadata).  No new light is
+    defined here; an unknown mode is an error, never silently mapped.
+    """
+    from ..pipeline import LIGHT_MODE_SPECS
+
+    key = str(mode).upper()
+    if key not in CONTRACT_LIGHT_MODES or key not in LIGHT_MODE_SPECS:
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          f"light mode {mode!r} is not one of the contract's five "
+                          f"{list(CONTRACT_LIGHT_MODES)}",
+                          stage="observe.fracture_appearance.contract_light")
+    spec = LIGHT_MODE_SPECS[key]
+    direction = np.asarray(spec["direction"], dtype=np.float64).reshape(3)
+    direction = direction / max(float(np.linalg.norm(direction)), 1e-30)
+    return LightSpec(direction=direction,
+                     color=np.asarray(spec["color"], dtype=np.float64).reshape(3),
+                     ambient=np.asarray(spec["ambient"], dtype=np.float64).reshape(3))
+
+
+def lambert_response_score(*, normal_world: np.ndarray, light: LightSpec) -> float:
+    """``-(n . light.direction)``: the fraction of the frozen Lambert term a flat fracture gets.
+
+    The frozen model is ``albedo * (ambient + color * clip(-(n . l), 0, 1))`` with the Lambert term
+    clipped at 0, so on a fracture patch whose normal faces away from the light the shading is
+    ``albedo * ambient`` everywhere and **no** per-pixel normal perturbation can change a code
+    value.  This score is therefore the measured gate on whether a light state can show relief at
+    all: ``<= 0`` means zero response, ``>= 1`` means the term is clipped at the top (also zero
+    response), and a mid value means the surface sits inside the linear part of the response.
+    """
+    n = np.asarray(normal_world, dtype=np.float64).reshape(3)
+    n = n / max(float(np.linalg.norm(n)), 1e-30)
+    return float(-(n @ np.asarray(light.direction, dtype=np.float64).reshape(3)))
+
+
+@dataclass(frozen=True)
+class LightChoice:
+    """The light state chosen for one fracture view out of the contract's five."""
+
+    mode: str
+    direction: tuple[float, float, float]
+    color: tuple[float, float, float]
+    ambient: tuple[float, float, float]
+    response_score: float
+    #: every candidate of the contract, measured - so the choice is auditable, not asserted
+    ranking: tuple[dict[str, Any], ...]
+    rule: str = "MAX_LAMBERT_RESPONSE_IN_LINEAR_BAND"
+
+    @property
+    def light(self) -> LightSpec:
+        return LightSpec(direction=np.asarray(self.direction, dtype=np.float64),
+                         color=np.asarray(self.color, dtype=np.float64),
+                         ambient=np.asarray(self.ambient, dtype=np.float64))
+
+    def as_dict(self) -> dict[str, Any]:
+        return {"mode": self.mode, "rule": self.rule,
+                "response_score": float(self.response_score),
+                "purpose": CONTRACT_LIGHT_PURPOSE.get(self.mode, ""),
+                "direction": [float(x) for x in self.direction],
+                "color": [float(x) for x in self.color],
+                "ambient": [float(x) for x in self.ambient],
+                "source": ("synlab.pipeline.LIGHT_MODE_SPECS - this build's frozen realisation of "
+                           "the five documented light states (t053); no light is invented here"),
+                "candidates": [dict(r) for r in self.ranking],
+                "n_candidates": len(self.ranking)}
+
+
+def _interior_linear_band_score(raw: float) -> float:
+    """Reward the *interior* of the Lambert response, where a normal change still moves the image.
+
+    ``raw <= 0`` is clipped to 0 by the frozen model; ``raw >= 1`` is clipped to 1.  Both give a
+    zero derivative.  The useful band is ``0 < raw < 1``, and the response to a normal tilt is
+    proportional to the component of the light perpendicular to the surface, so the score is
+    ``sin(acos(raw))`` = ``sqrt(1 - raw^2)`` inside the band and 0 outside it.
+    """
+    r = float(raw)
+    if r <= 0.0 or r >= 1.0:
+        return 0.0
+    return float(math.sqrt(max(0.0, 1.0 - r * r)))
+
+
+def choose_contract_light(*, normal_world: np.ndarray,
+                          modes: Sequence[str] = CONTRACT_LIGHT_MODES) -> LightChoice:
+    """Pick the contract light state with the largest usable normal response for this view.
+
+    The selection is a measurement, not a preference: for each of the five documented states the
+    signed Lambert response ``-(n . l)`` of the fracture normal is evaluated, and the state that
+    puts the surface deepest inside the linear band (``0 < response < 1``) wins.  The whole ranking
+    is returned so a reader can see the losers and by how much.  Ties break on the contract's
+    declared order, so the choice is deterministic.
+    """
+    rows: list[dict[str, Any]] = []
+    for mode in modes:
+        light = contract_light(mode)
+        raw = lambert_response_score(normal_world=normal_world, light=light)
+        rows.append({"mode": mode, "purpose": CONTRACT_LIGHT_PURPOSE.get(mode, ""),
+                     "lambert_response": raw,
+                     "raw_negative": bool(raw <= 0.0), "raw_clipped_high": bool(raw >= 1.0),
+                     "usable_response": _interior_linear_band_score(raw),
+                     "direction": [float(x) for x in np.asarray(light.direction).reshape(3)]})
+    ranking = tuple(sorted(rows, key=lambda r: (-float(r["usable_response"]),
+                                                CONTRACT_LIGHT_MODES.index(str(r["mode"])))))
+    best = ranking[0]
+    light = contract_light(str(best["mode"]))
+    return LightChoice(mode=str(best["mode"]),
+                       direction=tuple(float(x) for x in np.asarray(light.direction).reshape(3)),
+                       color=tuple(float(x) for x in np.asarray(light.color).reshape(3)),
+                       ambient=tuple(float(x) for x in np.asarray(light.ambient).reshape(3)),
+                       response_score=float(lambert_response_score(normal_world=normal_world,
+                                                                   light=light)),
+                       ranking=ranking)
+
+
+# ======================================================================================
 # geometry hashing (so "the geometry did not change" is checkable)
 # ======================================================================================
 def geometry_hash(vertices: np.ndarray, faces: np.ndarray) -> str:

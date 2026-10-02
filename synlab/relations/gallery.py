@@ -54,6 +54,10 @@ SCOPES = ("FULL", "MATE_REMOVED", "NESTED", "DISTRACTOR_ONLY")
 #: Relation names that may carry supervision; everything else is R0 (implicit).
 EXPLICIT_KINDS = (RELATION_R2, RELATION_R1, RELATION_TINY, RELATION_UNKNOWN)
 
+#: Relation kinds an *ordinary negative* may carry (``synlab.qc.pool_contract``,
+#: ``relations.pool_protocol.v1``): a confirmed ``R1``/``R0`` and nothing else.
+NEGATIVE_KINDS: tuple[str, ...] = (RELATION_R1, RELATION_R0)
+
 _KIND_CODE = {RELATION_R2: 2, RELATION_R1: 1, RELATION_R0: 0,
               RELATION_TINY: 3, RELATION_UNKNOWN: 4}
 _CODE_KIND = {v: k for k, v in _KIND_CODE.items()}
@@ -365,6 +369,95 @@ class RelationPool:
     def historical_r2(self, fragment_id: str) -> list[str]:
         """Including neighbours that were removed from the gallery line-up."""
         return self.neighbours(fragment_id)
+
+    # ------------------------------------------------------------------ pool protocol
+    # The four relation-pool readers of this repository are held to one contract by
+    # ``synlab.qc.pool_contract`` (``relations.pool_protocol.v1``).  The accessors below are the
+    # protocol spelling of readings this pool already has; none of them changes an existing
+    # method or a stored relation.  In this pool ``neighbours()`` *is* the historical R2 set, so
+    # ``mates()`` returns exactly it -- the two names exist because the other three readers had
+    # drifted apart on that one meaning and every legal negative of the exported package was
+    # refused as a "mate" (``docs/a12/relation_negatives.md`` §1, defect (B)).
+    def mates(self, fragment_id: str) -> set[str]:
+        """The historical R2 mate set of ``fragment_id`` (the fragment itself excluded)."""
+        fid = str(fragment_id)
+        return {str(m) for m in self.neighbours(fid) if str(m) != fid}
+
+    def history_exclusions(self, fragment_id: str) -> set[str]:
+        """Fragments that may never be an ordinary negative of ``fragment_id``.
+
+        The mate set, the query itself and every fragment whose relation is not a measured
+        adjacency (``UNKNOWN``/``TINY_CONTACT``, or ``ABSENT`` for a non-member) -- the same
+        reading ``training.sampler.PoolIndex.history_exclusions`` uses.
+        """
+        fid = str(fragment_id)
+        out = set(self.mates(fid))
+        out.add(fid)
+        for candidate in self.lineup:
+            candidate = str(candidate)
+            if candidate in out:
+                continue
+            if self.relation(fid, candidate) in (RELATION_UNKNOWN, RELATION_TINY,
+                                                 ABSENT_RELATION, SELF_RELATION):
+                out.add(candidate)
+        return out
+
+    def legal_pool(self, fragment_id: str, *, relation: str | None = None) -> list[str]:
+        """Confirmed ``R1``/``R0`` candidates that may serve as ordinary negatives.
+
+        ``R2``/``TINY_CONTACT``/``UNKNOWN`` and unconfirmed candidates are never offered; neither
+        is the query itself nor any of its mates.  ``relation=`` narrows the answer to one kind
+        (the sampler draws ``R1`` and ``R0`` separately).
+        """
+        fid = str(fragment_id)
+        if relation is not None and str(relation) not in NEGATIVE_KINDS:
+            return []
+        banned = self.history_exclusions(fid)
+        out: list[str] = []
+        for candidate in self.candidate_ids(fid):
+            candidate = str(candidate)
+            if candidate in banned:
+                continue
+            if self.relation(fid, candidate) not in NEGATIVE_KINDS:
+                continue
+            if relation is not None and self.relation(fid, candidate) != str(relation):
+                continue
+            if not self.confirmed(fid, candidate):
+                continue
+            out.append(candidate)
+        return sorted(out)
+
+    def legal_negatives(self, fragment_id: str) -> set[str]:
+        """Set spelling of :meth:`legal_pool` (the same candidates, no ordering)."""
+        return set(self.legal_pool(fragment_id))
+
+    def assert_legal_negative(self, query_id: str, candidate_id: str) -> None:
+        """Raise ``LEAKAGE_DETECTED`` unless ``candidate_id`` may be an ordinary negative.
+
+        The same four refusals ``training.batch.assert_legal_negative`` and
+        ``training.sampler.PoolIndex.assert_legal_negative`` make: the query itself, a historical
+        ``R2`` mate, a ``TINY_CONTACT``/``UNKNOWN`` (or absent) candidate, and an unconfirmed
+        candidate.  It accepts exactly the candidates :meth:`legal_pool` offers.
+        """
+        query, candidate = str(query_id), str(candidate_id)
+        if query == candidate:
+            raise SynLabError(ErrorCode.LEAKAGE_DETECTED,
+                              f"{candidate} is the query itself and cannot be a negative",
+                              stage="relations.gallery.RelationPool.assert_legal_negative")
+        rel = self.relation(query, candidate)
+        if candidate in self.mates(query) or rel == RELATION_R2:
+            raise SynLabError(ErrorCode.LEAKAGE_DETECTED,
+                              f"historical R2 {candidate} used as an ordinary negative of "
+                              f"{query}",
+                              stage="relations.gallery.RelationPool.assert_legal_negative")
+        if rel in (RELATION_UNKNOWN, RELATION_TINY, ABSENT_RELATION, SELF_RELATION):
+            raise SynLabError(ErrorCode.LEAKAGE_DETECTED,
+                              f"{rel} candidate {candidate} used as a negative of {query}",
+                              stage="relations.gallery.RelationPool.assert_legal_negative")
+        if not self.confirmed(query, candidate):
+            raise SynLabError(ErrorCode.LEAKAGE_DETECTED,
+                              f"unconfirmed candidate {candidate} used as a negative of {query}",
+                              stage="relations.gallery.RelationPool.assert_legal_negative")
 
     def candidate_ids(self, fragment_id: str) -> list[str]:
         """The query itself is never a candidate (plan 16.1)."""
@@ -685,7 +778,8 @@ def gallery_hash(payload: Mapping[str, Any]) -> str:
 
 
 __all__ = [
-    "POOL_SCHEMA", "SCOPES", "EXPLICIT_KINDS", "DISTRACTOR_SPLITS", "SELF_RELATION",
+    "POOL_SCHEMA", "SCOPES", "EXPLICIT_KINDS", "NEGATIVE_KINDS", "DISTRACTOR_SPLITS",
+    "SELF_RELATION",
     "ABSENT_RELATION", "canonical_pair", "FragmentRecord", "RelationsIndex", "RelationPool",
     "collect_fragments", "load_relations_into", "attach_features", "gallery_hash",
 ]
