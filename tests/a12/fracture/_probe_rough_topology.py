@@ -350,7 +350,8 @@ def main() -> int:
         m = mesh_use.get(key, 0)
         if c != m:
             diff.append((key, int(c), int(m), sorted(census["owners"].get(key, []))))
-    info["edge_segment_census"] = {k: v for k, v in census.items() if k != "use"}
+    info["edge_segment_census"] = {k: v for k, v in census.items()
+                                   if k not in ("use", "owners")}
     info["edge_segment_census"]["mismatch_vs_mesh"] = len(diff)
     info["edge_segment_census"]["mismatch_examples"] = [
         {"seg": [list(k[0]), list(k[1])], "ownership": c, "mesh_use": m, "owners": o}

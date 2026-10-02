@@ -670,7 +670,8 @@ def _field_for_polygon(polygon: np.ndarray,
 
 
 def _displaced_cell_mesh(cell: ConvexCell, facets: dict[int, RoughnessField],
-                         *, refinement: str = "lattice", refine_mm: float = 0.0) -> trimesh.Trimesh:
+                         *, refinement: str = "lattice", refine_mm: float = 0.0,
+                         merge_tol_mm: float = 1.0e-6) -> trimesh.Trimesh:
     """Triangulate the cell, then displace every vertex by the shared spatial roughness field.
 
     Two properties matter and both are structural rather than tolerance-based:
@@ -732,6 +733,27 @@ def _displaced_cell_mesh(cell: ConvexCell, facets: dict[int, RoughnessField],
     if not bool(np.all(keep)):
         mesh.update_faces(keep)
     mesh.remove_unreferenced_vertices()
+    # **Merge coincident vertices once more, at the configured merge tolerance.**  The polygon
+    # corners of one facet are produced by that facet's own half-space clipping, so a corner shared
+    # with a neighbouring facet can differ from it by the clip tolerance; at the package quantum
+    # (1e-9 mm) those two descriptions stay distinct, the edge is then used by one triangle only and
+    # the cell is not closed -- which makes ``manifold3d`` answer with an *empty* intersection and
+    # silently drops the whole cell (measured on V01, 4-cell partition, seed 7: all four cells
+    # unclosed before this merge, all four closed after it).
+    merge_tol = max(float(merge_tol_mm), FACET_QUANTUM_MM)
+    if merge_tol > FACET_QUANTUM_MM:
+        points = np.asarray(mesh.vertices, dtype=np.float64)
+        if points.shape[0]:
+            quantised = np.round(points / merge_tol) * merge_tol
+            uniq, inverse = np.unique(quantised, axis=0, return_inverse=True)
+            faces_now = inverse[np.asarray(mesh.faces, dtype=np.int64)].reshape(-1, 3)
+            mesh = trimesh.Trimesh(vertices=uniq, faces=faces_now, process=False)
+            keep = np.asarray(mesh.nondegenerate_faces(), dtype=bool)
+            if not bool(np.all(keep)):
+                mesh.update_faces(keep)
+            mesh.remove_unreferenced_vertices()
+    mesh.metadata = dict(mesh.metadata or {})
+    mesh.metadata["vertex_merge_tol_mm"] = float(merge_tol)
     # **Fallback to the facet corners when the refinement is not conforming.**  ``manifold3d``
     # refuses a mesh whose edges are not shared by exactly two triangles (``Error.NotManifold``)
     # and answers with an *empty* intersection, i.e. a silent volume loss; a cheap fan of each
@@ -1243,7 +1265,9 @@ def run_voronoi_event(
             if key in roughness_fields:
                 fields[facet_index] = roughness_fields[key]
         cell_mesh = _displaced_cell_mesh(cell, fields, refinement=config.roughness.facet_refinement,
-                                         refine_mm=config.roughness.facet_refine_mm)
+                                         refine_mm=config.roughness.facet_refine_mm,
+                                         merge_tol_mm=float(
+                                             config.tolerance.get("cell_merge_tol_mm", 1.0e-6)))
         cell_meshes.append(cell_mesh)
         face_counts.append(int(len(np.asarray(cell_mesh.faces))))
         if not bool(cell_mesh.is_watertight) or float(abs(cell_mesh.volume)) <= 1.0e-9:

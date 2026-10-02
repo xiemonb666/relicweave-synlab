@@ -1,0 +1,130 @@
+﻿FIELD
+{
+ "wavelength_min_mm": 0.65,
+ "target_rms_mm": 0.41028,
+ "realized_rms_mm": 2.067597856813887,
+ "relief_amplitude_mm": 0.7,
+ "relief_rms_mm": 0.4927442316106597,
+ "relief_peak_to_valley_mm": 2.9226835022444186,
+ "max_slope": 2.2246688235206764,
+ "curvature_bound_per_mm": 4.83504200384779,
+ "curvature_requested_per_mm": 4.539135412470889,
+ "curvature_budget_per_mm": 8.434594375086451,
+ "predicted_amplitude_scale": 1.0,
+ "window": {
+  "shape": [
+   683,
+   235
+  ],
+  "step_mm": 0.25,
+  "halo_mm": 5.6,
+  "margin_mm": 5.42336,
+  "core_area_mm2": 2817.6875,
+  "window_area_mm2": 4977.0,
+  "value_range": [
+   0.0,
+   1.0
+  ],
+  "source": "flat_cross_section_boolean+surface_probe",
+  "band_core_from_raster": true,
+  "core_depth_min_mm": 6.25,
+  "probe_points": 143579,
+  "probe_inside_points": 40286,
+  "probe_core_miss_before": 47,
+  "probe_core_miss_after": 0,
+  "flat_cutter_cells": 4096,
+  "flat_cut_faces": 949,
+  "flat_cross_section_area_mm2": 840.7334508129313
+ },
+ "components": {
+  "dome_radius_mm": 1335.7245869065016,
+  "dome_amplitude_mm": 1.64112,
+  "hackle_count": 4,
+  "hackle_amplitude_mm": 0.225654,
+  "rib_amplitude_mm": 0.18462599999999998,
+  "rib_spacing_mm": 3.3453262244542183,
+  "pit_count": 11,
+  "fiber_amplitude_mm": 0.0,
+  "glaze_modulation": false,
+  "origin_uv_mm": [
+   62.15669035702536,
+   7.501029748156584
+  ]
+ }
+}
+DEMAND
+{
+ "predicted_cells": 84206.90187192346,
+ "step_mm": 0.05208333333333333,
+ "samples": 2006472,
+ "envelope_area_mm2": 5002.319335937499,
+ "core_area_mm2": 3020.0520833333326,
+ "curvature_p50": 0.9765139552038271,
+ "curvature_p95": 2.0877507216717497,
+ "curvature_max": 38.12067893300514,
+ "cell_size_median_mm": 0.28622381528289287,
+ "cell_size_p05_mm": 0.1957517585469625,
+ "safety_factor": 1.3,
+ "fits_frozen_cell_budget": true
+}
+MODELLED
+{
+ "samples": 400000,
+ "waviness_rms_mm": 1.3884523200995698,
+ "Ra_mm": 0.6228494855676885,
+ "Rq_mm": 0.7900328374722515,
+ "Rz_mm": 0.8294193251745178,
+ "Rt_mm": 4.351668365161229,
+ "correlation_length_mm": 11.44,
+ "ridge_lines_per_mm": 1.9572113310823942,
+ "normals": {
+  "angle_mean_deg": 70.16797614927904,
+  "angle_p50_deg": 71.5213726586154,
+  "angle_p95_deg": 88.17827294040109,
+  "angle_p99_deg": 89.63387673667593,
+  "angle_max_deg": 89.99969872281817,
+  "frac_gt_0p5deg": 1.0,
+  "frac_gt_2deg": 1.0
+ },
+ "gradient": {
+  "slope_p50_deg": 33.350670345046325,
+  "slope_p95_deg": 53.057648920399714,
+  "slope_max_deg": 65.7404895933757
+ },
+ "curvature": {
+  "grid_step_mm": 0.25,
+  "grid_inside_cells": 48395,
+  "k_abs_p50_per_mm": 0.6311821548699728,
+  "k_abs_p95_per_mm": 1.5377321654048786,
+  "k_abs_p99_per_mm": 1.9275617542029537,
+  "k_abs_max_per_mm": 3.1140756438875536,
+  "turning_p95_deg_per_mm": 88.10556309921256,
+  "turning_max_deg_per_mm": 178.42339147924113,
+  "requested_curvature_per_mm": 4.539135412470889,
+  "curvature_budget_per_mm": 8.434594375086451
+ },
+ "zones": {
+  "mirror": {
+   "samples": 4588,
+   "Ra_mm": 0.4698124958596617,
+   "Rq_mm": 0.5944847747301389,
+   "Rz_mm": 0.6254054357693485,
+   "Rt_mm": 1.654484382979299
+  },
+  "mist": {
+   "samples": 10338,
+   "Ra_mm": 0.4481735296186997,
+   "Rq_mm": 0.5461574133219528,
+   "Rz_mm": 0.7176217296338456,
+   "Rt_mm": 1.845096905400378
+  },
+  "hackle": {
+   "samples": 385074,
+   "Ra_mm": 0.6293623473588796,
+   "Rq_mm": 0.7975750991574025,
+   "Rz_mm": 0.8235563489540814,
+   "Rt_mm": 4.359172533109551
+  }
+ }
+}
+SAMPLING {"core_bins": 49005, "cell_area_mm2": 0.0625, "core_area_mm2": 3062.8125, "window_shape": [683, 235], "step_mm": 0.25}

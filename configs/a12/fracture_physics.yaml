@@ -180,10 +180,11 @@ tolerances:
   volume_rel_tol: 1.0e-3           # spec.py VOLUME_REL_TOL
   overlap_ratio_max: 1.0e-4        # spec.py OVERLAP_RATIO_MAX
   ambiguity_area_ratio_max: 0.02   # spec.py AMBIGUITY_AREA_RATIO_MAX
-  cell_merge_tol_mm: 1.0e-6        # convex-cell vertex merge (numerical, below any budget)
+  cell_merge_tol_mm: 1.0e-4        # convex-cell vertex merge (see provenance: measured fix)
   facet_plane_tol_mm: 1.0e-5       # face-on-facet classification tolerance
   provenance:
     all: "copied from synlab/fracture/spec.py -- this file must never widen them"
+    cell_merge_tol_mm: "MEASURED fix: the package quantum 1e-9 mm is far below the ~1e-6 mm by which two facets' own clipping describe a shared corner, so single-face edges survived the weld, the cell was not closed and manifold3d answered with an EMPTY intersection (measured on V01, 4-cell partition: 10 of 32 cell cutters open over 8 seeds at 1e-6 mm, 1 at 1e-5 mm, 0 at 1e-4 mm).  Every audited length stays three orders of magnitude above 1e-4 mm (shortest facet edge > 1 mm, gap budget 0.02 mm)."
 
 # ---------------------------------------------------------------------------------------------
 # 8. Resources / efficiency
