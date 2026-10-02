@@ -117,10 +117,23 @@ class ExportedRelationPool:
         return self._kinds.get((str(a), str(b)), "UNKNOWN")
 
     def neighbours(self, fragment_id: str) -> set[str]:
-        return set(self._neighbours.get(str(fragment_id), set()))
+        """Historical R2 mate set -- the meaning the pool protocol gives this method.
+
+        ``training.batch`` reads ``neighbours(q)`` as the *mate* set when it checks that a
+        negative is not a historical R2 pair.  Returning the confirmed R1/R0 set here made
+        every legal negative look like a mate and tripped the anti-shortcut guard for all 55
+        queries of the exported package; the three other pool implementations in the repo
+        (``training.sampler.PoolIndex``, ``training.smoke.TrainingPoolView``,
+        ``relations.gallery.RelationPool``) all define it as the mate set.
+        """
+        return self.mates(fragment_id)
 
     def mates(self, fragment_id: str) -> set[str]:
         return set(self._r2.get(str(fragment_id), set()))
+
+    def legal_negatives(self, fragment_id: str) -> set[str]:
+        """Confirmed R1/R0 candidates; deliberately NOT what ``neighbours`` returns."""
+        return set(self._neighbours.get(str(fragment_id), set()))
 
     def confirmed(self, a: str, b: str) -> bool:
         return bool(self._confirmed.get((str(a), str(b)), False))
