@@ -1,0 +1,14 @@
+﻿{
+ "sigma_f": "sigma_f = sigma_ref * exp(-b * porosity) * (wall_ref / wall_p05) ** (1 / m)",
+ "mirror_radius": "r_mirror[mm] = ((A_m[MPa m^0.5] / sigma_f[MPa]) * sqrt(1000)) ** 2",
+ "mist_radius": "r_mist = k_mh * r_mirror",
+ "hackle_count": "N_hackle = clip(round(2*pi*r_mirror / (2*grain)), 3, 48)",
+ "roughness_rms": "sigma_r0 = c_g * grain * (1 + c_p * porosity)",
+ "roughness_spectrum": "a(k) = a_ref * (k/k_ref)^-(H+0.5) with k_ref = 2*pi/correlation_length, renormalised so that sum(a_i^2/2) = sigma_r0^2",
+ "curvature_requested": "C_requested = sum(a_i*k_i^2) + hackle + ribs + pits, all area-weighted",
+ "precision_budget": "C_budget = safety * max_cells * 8 * error_budget / effective_band_area_mm2; predicted_amplitude_scale = min(1, C_budget / C_requested)",
+ "pits": "N_pit = porosity * core_area / (pi * pit_radius^2); depth = c_pit * pit_radius; positions are a stratified jittered scatter",
+ "glaze": "strip = t_glaze * k_geo along the cross-section boundary; relief *= ratio",
+ "conchoidal": "R_conchoidal = max(k_R * wall_p05, D^2 / (8 * sag_max)), sag_max = 4*sigma_r0"
+}
+NOTES ["unglazed profile: no glaze strip, the body relief applies to the whole face", "no fibre field in this profile: the periodic fibre term is inactive"]

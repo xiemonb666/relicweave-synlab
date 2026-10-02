@@ -1,0 +1,18 @@
+﻿==== V18 OK | wall_p05=6.243 sigma_f=43.2 r_mir=3.345 N_h=4 sigma_r0=0.4103 lc_req=2.60 pits=11
+  field wl_min=0.650 realized_rms=2.0676 relief_rms=0.4927 relief_pv=2.9227 max_slope=2.2247 curv_bound=4.835/mm
+  demand pred_cells=84207 fits400k=True curv_p95=2.088
+  form+rough  Ra=0.62285 Rz=0.82942 Rt=4.35167 lc=11.440 ridges=1.9572/mm
+  rough-only  Ra=0.39243 Rq=0.47139 Rz=0.82503 Rt=2.56747 lc=11.440
+  slope analytic p50=33.35 p95=53.06 max=65.74 deg
+  normals analytic p50=17.81 p95=33.75 max=50.85 | grid p50=nan p95=0.00 max=0.00 (cells=45969)
+  curvature k_p50=0.6318 k_p95=1.5394 k_max=3.1141 /mm (requested 4.539, budget 8.435)
+  zones {"mirror": {"samples": 4588, "Ra_mm": 0.4698, "Rq_mm": 0.5945, "Rz_mm": 0.6254, "Rt_mm": 1.6545}, "mist": {"samples": 10338, "Ra_mm": 0.4482, "Rq_mm": 0.5462, "Rz_mm": 0.7176, "Rt_mm": 1.8451}, "hackle": {"samples": 385074, "Ra_mm": 0.6294, "Rq_mm": 0.7976, "Rz_mm": 0.8236, "Rt_mm": 4.3592}}
+==== V01 OK | wall_p05=6.037 sigma_f=43.4 r_mir=3.320 N_h=4 sigma_r0=0.4103 lc_req=2.60 pits=9
+  field wl_min=0.650 realized_rms=2.2046 relief_rms=0.5111 relief_pv=2.8256 max_slope=1.9813 curv_bound=4.500/mm
+  demand pred_cells=183038 fits400k=True curv_p95=1.913
+  form+rough  Ra=0.38749 Rz=0.76085 Rt=2.43141 lc=35.600 ridges=1.9497/mm
+  rough-only  Ra=0.37697 Rq=0.44959 Rz=0.75916 Rt=2.24231 lc=34.640
+  slope analytic p50=32.85 p95=52.35 max=64.92 deg
+  normals analytic p50=16.63 p95=31.79 max=48.54 | grid p50=nan p95=0.00 max=0.00 (cells=107794)
+  curvature k_p50=0.6287 k_p95=1.5165 k_max=2.9081 /mm (requested 5.332, budget 9.266)
+  zones {"mirror": {"samples": 1911, "Ra_mm": 0.356, "Rq_mm": 0.4455, "Rz_mm": 0.6327, "Rt_mm": 1.5775}, "mist": {"samples": 4263, "Ra_mm": 0.4686, "Rq_mm": 0.576, "Rz_mm": 0.694, "Rt_mm": 1.9771}, "hackle": {"samples": 393826, "Ra_mm": 0.3868, "Rq_mm": 0.4658, "Rz_mm": 0.7575, "Rt_mm": 2.4333}}

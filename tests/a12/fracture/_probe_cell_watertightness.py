@@ -1,4 +1,4 @@
-"""Root-cause probe: non-watertight Voronoi cell cutters vs the volume a partition delivers.
+﻿"""Root-cause probe: non-watertight Voronoi cell cutters vs the volume a partition delivers.
 
 For a piece count the cell mesh that the event feeds to the boolean must be a closed positive
 solid; when it is not, the boolean returns nothing for that cell and the mother loses exactly that
@@ -62,7 +62,8 @@ def _cells_report(partition, config, body, material) -> list[dict]:
             if key in fields:
                 own[facet_index] = fields[key]
         cm = _displaced_cell_mesh(cell, own, refinement=config.roughness.facet_refinement,
-                                  refine_mm=config.roughness.facet_refine_mm)
+                                  refine_mm=config.roughness.facet_refine_mm,
+                                  merge_tol_mm=float(config.tolerance.get("cell_merge_tol_mm", 1.0e-6)))
         rows.append({
             "cell": position,
             "facets": int(len(cell.facet_neighbours)),
@@ -128,3 +129,4 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

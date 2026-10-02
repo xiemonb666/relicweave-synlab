@@ -295,6 +295,49 @@ def edge_segment_census(tree, leaves, key_level: int = 23):
     }
 
 
+def offending_cells(tree, leaves, top_index, diff, vertices, key_level: int = 23, limit: int = 6):
+    """For the first few bad segments, show every leaf whose box touches that segment.
+
+    Prints the exact ``cell_triangles`` output of each such leaf so the disagreement between the
+    ownership model and the emitted triangles is visible instead of inferred.
+    """
+    by_key = {int(v): (int(k[0]), int(k[1])) for k, v in top_index.items()}
+    bad = [(k, c, m, o) for (k, c, m, o) in diff if m != 2]
+    verts = np.asarray(vertices, dtype=np.float64)
+    out = []
+    for (seg, own, mesh_use, owners) in bad[:limit]:
+        (ax, ay), (bx, by) = seg
+        ua = tree.u0 + ax * (tree.hx / (1 << key_level))
+        va = tree.v0 + ay * (tree.hy / (1 << key_level))
+        ub = tree.u0 + bx * (tree.hx / (1 << key_level))
+        vb = tree.v0 + by * (tree.hy / (1 << key_level))
+        entry = {
+            "seg": [list(seg[0]), list(seg[1])],
+            "seg_world_mm": [[ua, va], [ub, vb]],
+            "seg_len_mm": float(np.hypot(ub - ua, vb - va)),
+            "ownership": own, "mesh_use": mesh_use, "owners": owners,
+            "owner_cells": [],
+        }
+        for (i, j, level) in leaves:
+            u_lo, u_hi, v_lo, v_hi = cell_uv(tree, i, j, level)
+            if (max(u_lo, min(ua, ub)) - 1e-9 <= min(u_hi, max(ua, ub))
+                    and max(v_lo, min(va, vb)) - 1e-9 <= min(v_hi, max(va, vb))):
+                span = key_level - level
+                pts_ij, tris = tree.cell_triangles(i, j, level, span)
+                entry["owner_cells"].append({
+                    "cell": [i, j, level],
+                    "splits": [bool(x) for x in tree.edge_splits(i, j, level)],
+                    "cell_size_mm": list(tree.cell_size(level)),
+                    "cell_uv": [u_lo, u_hi, v_lo, v_hi],
+                    "pts_ij": pts_ij.tolist(),
+                    "tris": tris.tolist(),
+                    "owner_verts": [top_index.get((int(p[0]), int(p[1]))) for p in pts_ij],
+                })
+        out.append(entry)
+    del by_key
+    return out
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--fixture", default="box")
@@ -340,16 +383,22 @@ def main() -> int:
     info["tree"]["leaf_sample"] = sorted(leaves)[:12]
     info["split_mismatch"] = diagnose_mismatch(tree, leaves)
     census = edge_segment_census(tree, leaves)
+    vert_to_key = {int(v): (int(k[0]), int(k[1])) for k, v in top_index.items()}
     mesh_use = {}
     for (a, b), uses in top_edge_use.items():
-        key = (min(a, b), max(a, b))
+        ka, kb = vert_to_key.get(int(a)), vert_to_key.get(int(b))
+        if ka is None or kb is None:
+            continue
+        key = (min(ka, kb), max(ka, kb))
         mesh_use[key] = mesh_use.get(key, 0) + uses
+    census_use = dict(census["use"])
+    census_owners = dict(census["owners"])
     diff = []
-    for key in sorted(set(census["use"]) | set(mesh_use)):
-        c = census["use"].get(key, 0)
+    for key in sorted(set(census_use) | set(mesh_use)):
+        c = census_use.get(key, 0)
         m = mesh_use.get(key, 0)
         if c != m:
-            diff.append((key, int(c), int(m), sorted(census["owners"].get(key, []))))
+            diff.append((key, int(c), int(m), sorted(census_owners.get(key, []))))
     info["edge_segment_census"] = {k: v for k, v in census.items()
                                    if k not in ("use", "owners")}
     info["edge_segment_census"]["mismatch_vs_mesh"] = len(diff)
@@ -357,6 +406,11 @@ def main() -> int:
         {"seg": [list(k[0]), list(k[1])], "ownership": c, "mesh_use": m, "owners": o}
         for (k, c, m, o) in diff[:12]
     ]
+    info["bad_top_edges"] = [
+        {"seg": [list(k[0]), list(k[1])], "ownership": c, "mesh_use": m, "owners": o}
+        for (k, c, m, o) in diff if m != 2
+    ][:20]
+    info["offending_cells"] = offending_cells(tree, leaves, top_index, diff, vertices)
     text = json.dumps(info, indent=2, ensure_ascii=False)
     if args.json:
         Path(args.json).write_text(text, encoding="utf-8")

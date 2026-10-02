@@ -1,0 +1,194 @@
+# =============================================================================================
+# A12 imaging -- fracture-local ROI close-up view family (switchable, DEFAULT OFF)
+# =============================================================================================
+# New file.  It does NOT touch configs/a12/next_experiment.yaml (frozen) and does not change the
+# default behaviour of any batch run: `fracture_roi.enabled: false` is the shipped value, and the
+# whole-fragment 12-view cache is produced exactly as before either way.
+#
+# What it switches on: the contract's SECOND 2D view family, which did not exist in this
+# repository before (`docs/a12/precision_audit.md` §7.4 defect 4, `docs/a12/fracture_visible.md`):
+#
+#   capture_checklist.fracture_local_2d      "逐真实断口多角度近摄" + 每断口 3-6 有效方向
+#                                            (t042 / p0431 / p0881; count = 工程约定)
+#   working_distance_and_resolution
+#     .closeup_local_cm                      [5, 10] cm 局部近摄 (p0511)
+#   calibration.global_vs_local_calibration  近摄与全局是两套独立标定工况 (p1155)
+#   working_distance_and_resolution
+#     .must_report_separately                px_per_mm / r_eff_mm 必须分开报告 (p0515)
+#   working_distance_and_resolution
+#     .structure_sampling_targets            "0.2mm 结构 ≥4 像素" 是 pilot 采样起点 (p0517)
+#
+# The implementation is `synlab.observe.fracture_roi`; it appends views to the same observation
+# (`views_added_not_replaced: true`) and renders them through the same
+# `synlab.observe.routes.render_frame_bundles` path as the whole-fragment views, so both families
+# share one basis (same scene, light, render spec, imaging spec, backend, seed stream).
+#
+# Provenance classes as in configs/a12/fracture_physics.yaml -- never mixed silently:
+#   DOCUMENTED  read from configs/a12/capture_contract.json (with its p####/t### pointer)
+#   ENGINEERING an assumption of this implementation, reported as such in every view meta
+#
+# HONEST LIMITS OF THIS ARTEFACT (read before quoting it)
+#   1. `synlab.cli validate` validates the nested `generation_spec:` block only (the same
+#      convention configs/a12/fracture_morphology.yaml uses).  The `fracture_roi:` block is
+#      validated by `synlab.observe.fracture_roi.load_fracture_roi_config`, which fails closed
+#      (unknown key -> SCHEMA_INVALID, 3-6 directions, 5-10 cm window, tilt 0 or 30-60 deg).
+#   2. A 5-10 cm object distance lies OUTSIDE the declared U travel of every camera tier
+#      (configs/a12/camera_profiles.json: GLOBAL -100..-40 / MID -30..30 / LOCAL 40..70 mm).
+#      The close-up is therefore a declared, unverified condition (p0511 "机械安全且能对焦时再
+#      测试"), labelled CLOSEUP_DECLARED_NOT_CALIBRATED in every view meta.  The *geometry* of
+#      the render is exact; the *calibration* of the real bench is not claimed.
+#   3. Nothing in this family upsamples an image to fake resolution: views are rendered at the
+#      requested grid and every mm/px written into the observation is measured from that view's
+#      own delivered depth (see `resolution_ledger.per_view`).
+# =============================================================================================
+schema: synlab.imaging_fracture_roi.v1
+units: mm
+version: "1.0.0"
+
+# ---------------------------------------------------------------------------------------------
+# 1. Switch + geometry of the close-up family
+# ---------------------------------------------------------------------------------------------
+fracture_roi:
+  # DEFAULT OFF: a run that does not ask for close-ups is byte-for-byte a run without them.
+  enabled: false
+  # contract capture_checklist.fracture_local_2d.effective_directions_per_fracture = [3, 6]
+  directions: 4
+  # 0 deg = along the measured patch normal; every other entry is inside +/-[30, 60] deg
+  # (contract wording "沿断口法向 ±30–60°").  The loader refuses anything else.
+  direction_offsets_deg: [0.0, 35.0, -35.0, 55.0, -55.0, 45.0]
+  # p0511 closeup_local_cm = [5, 10] cm -> 60 mm is inside the documented window.
+  working_distance_mm: 60.0
+  # Delivered long edge per resolution rung.  1024 = the contract's training-image tier
+  # (G14.1 "起步 1024 方形或按长边 1024").  A rung is *rendered*, never resized into existence.
+  resolution_ladder_px: [1024]
+  # Cost guard: at most this many fractures per target are photographed, largest area first.
+  # The contract's 3-6 directions apply per fracture; the number of fractures per fragment is
+  # bounded only by how many the fragment has (measured: 5-16 patches on the study bodies).
+  max_fractures_per_target: 3
+  # A patch below either bound is not a photographer-relevant fracture.
+  min_patch_area_mm2: 25.0
+  min_patch_faces: 24
+  # origin_kind == ORIGIN_INTERFACE faces whose source face carried no interface id are still
+  # fracture surface (born in the declared ROI band); excluding them would drop the largest
+  # measured patches, so they are kept and their id (-1) is recorded verbatim.
+  include_unassigned_interface_faces: true
+  # Camera tier whose lens / f-number / distortion the close-up condition reuses.
+  base_tier: LOCAL
+  # Inverse-solve target: the contract's tightest documented rung (t051, 50 mm -> 0.039 mm/px).
+  target_mm_per_px: 0.039
+  # Local-detrend radii of the measured height field (mm): plane residual besides the bands.
+  height_bands_mm: [5.0, 1.0, 0.25]
+  # Rays per patch used for the occlusion test that orients the normal and scores a direction.
+  visibility_rays: 400
+  # A direction counts as showing the fracture when it delivers at least this many rim pixels.
+  effective_rim_px_min: 200
+  # Contract pointers, kept next to the numbers they justify.
+  contract_pointers:
+    fracture_local_2d: capture_checklist.fracture_local_2d (t042/p0431/p0881)
+    directions_per_fracture: 工程约定 [3, 6] (capture_contract.json)
+    closeup_local_cm: working_distance_and_resolution.closeup_local_cm (p0511) = [5, 10] cm
+    sampling_target: working_distance_and_resolution.structure_sampling_targets (p0517)
+    separate_calibration: calibration.global_vs_local_calibration (p1155)
+    must_report_separately: working_distance_and_resolution.must_report_separately (p0515)
+
+# ---------------------------------------------------------------------------------------------
+# 2. The generation spec this view family belongs to (validated by `synlab.cli validate`)
+#    Values are those of the executed pilot batch (configs/a12/next_experiment.yaml) so that
+#    `synlab.cli validate --config configs/a12/imaging_fracture_roi.yaml` proves the family is
+#    requested on a *legal* spec; this block is not used to generate anything by itself.
+# ---------------------------------------------------------------------------------------------
+generation_spec:
+  schema: synlab.v3
+  data_scope: SYNTHETIC
+  release_profile: PILOT
+  experiment_purpose: DEVELOPMENT
+  master_seed: 20261001
+  units: mm
+  integration:
+    mode: standalone
+    feature_schema: a12.obs.v1
+    external_contract_ref: null
+  implementation:
+    policy: open_source_first
+    reuse_manifest_ref: docs/a12/reuse_manifest.json
+    require_poc_before_custom: true
+    require_gap_evidence: true
+  dataset:
+    target_mothers: 120
+    target_fragments_estimate: 240
+    shape_lineage_split: {train: 0.8, dev: 0.1, confirm: 0.1}
+    split_before_generation: true
+    replacement_fractures_share_lineage: true
+    include_all_components: true
+    debris_policy: quarantine_and_record
+    vessel_ids: [V01, V02, V03, V04, V05, V06, V07, V08, V09, V10, V11, V12,
+                 V13, V14, V15, V16, V17, V18, V19, V20, V21, V22, V23, V24]
+    material_ids: [M01, M02, M03, M04, M05, M06, M07, M08, M09, M10, M11, M12]
+    pattern_ids: [PAT01, PAT02, PAT03, PAT04, PAT05, PAT06, PAT07, PAT08,
+                  PAT09, PAT10, PAT11, PAT12, PAT13, PAT14, PAT15, PAT16]
+    layer_combo_ids: [L01, L02, L03, L04]
+    parameter_bounds_ref: configs/a12/registry_bounds.json
+  sampling:
+    method: latin_hypercube
+    quota_policy: registry_balanced
+    seed_stride: 1
+    sobol_power_of_two: true
+  pattern:
+    coordinate_space: mother_surface_mm
+    periodic_azimuth: true
+    geometry_before_fracture: true
+    antialias: analytic_or_mipmap
+    height_policy: none
+  fracture:
+    backend: plane_shared_cut
+    target_piece_range: [2, 4]
+    min_feature_wavelength_mm: 0.24
+    shared_surface_max_error_mm: 0.01
+    max_attempts: 3
+    secondary_probability: 0.0
+    keep_parent_history: true
+    rough_amplitude_mm: [0.02, 0.3]
+    seed_count_range: [12, 28]
+  physical:
+    recipe_registry_ref: configs/a12/physical_recipes.json
+    preserve_clean_assets: true
+    recipes: [P03_depth_light, P01_polish_mid]
+  observation:
+    input_profile: SENSOR_PROXY
+    routes: [proxy_scan]
+    views_per_fragment: 12
+    image_long_edge_px: 1024
+    point_count: 8192
+    camera_profile_ref: configs/a12/camera_profiles.json
+    persist_depth: selected_qa_only
+    persist_view_geometry: false
+    persist_fused_geometry: true
+    truth_channels_role: research_label_only
+    renderer: auto
+  resources:
+    cpu_workers: 2
+    threads_per_worker: 2
+    cpu_rss_budget_gb: 30
+    gpu_device: 0
+    gpu_concurrency: 1
+    gpu_budget_gb: 26
+    disk_soft_fraction: 0.70
+    disk_restrict_fraction: 0.80
+    disk_stop_fraction: 0.90
+    reserve_temp_peak: true
+  storage:
+    root: data/a12_roi
+    database: data/a12_roi/metadata.sqlite
+    shard_target_mb: 512
+    mutable_release: false
+  quality:
+    protocol_ref: configs/a12/qa_protocol_v1.json
+    fail_closed: true
+    freeze_before_confirmation: true
+  degraded_recipe_refs:
+    - configs/a12/degrade_recipes/paired_plane_levels.yaml
+    - configs/a12/degrade_recipes/paired_edgewear_blur_bump.yaml
+  notes: >-
+    Fracture-local ROI close-up family (switchable, default OFF).  Same pilot spec as
+    configs/a12/next_experiment.yaml; storage points at the separate data/a12_roi store so the
+    ROI study never overwrites a production asset.

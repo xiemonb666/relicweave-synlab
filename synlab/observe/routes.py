@@ -720,24 +720,22 @@ class ViewBundle:
         return float(self.render_frame.working_distance_mm / self.render_frame.K[0, 0])
 
 
-def render_views(target: Target, profile: CameraProfile, spec: ObsSpec,
-                 rng: np.random.Generator, *, backend: str | None = None,
-                 blender_config: Any = None) -> list[ViewBundle]:
-    """Render the 3 x 4 cache and run the ordered imaging chain for every view.
+def render_frame_bundles(target: Target, frames: Sequence[ViewFrame], spec: ObsSpec,
+                         rng: np.random.Generator, *, backend: str | None = None,
+                         blender_config: Any = None) -> list[ViewBundle]:
+    """Render an **explicit** frame list through the frozen render + imaging chain.
 
-    ``backend`` selects the render backend explicitly (see
-    :func:`resolve_render_backend`); ``None`` falls back to ``spec.renderer``, whose default
-    ``auto`` keeps the in-process software rasteriser.  ``blender_config`` overrides
-    ``spec.blender_config`` for the Blender path.
+    This is the single implementation of "one camera frame -> one :class:`ViewBundle`"; the
+    12-view cache (:func:`render_views`) and any additional view family (the fracture-local ROI
+    close-ups of :mod:`synlab.observe.fracture_roi`) go through it, so a second view family is
+    rendered with the *same* scene, light, render spec, imaging spec and backend as the whole
+    fragment views instead of a parallel code path that could drift.  ``frames`` is the caller's
+    list: the function adds no view of its own and removes none.
     """
-    from ..cameras.viewframes import make_view_frames
-
     resolved = resolve_render_backend(backend, spec=spec)
     requested_config = blender_config if blender_config is not None else spec.blender_config
     scene: Scene = build_scene(target.mesh, surface_tag=target.surface_tag,
                                face_id=target.face_id, name=target.fragment_id)
-    frames = make_view_frames(profile, target.bbox, spec.view_count, rng,
-                              tiers=spec.tiers, orbit=True)
     light = spec.resolved_light()
     bundles: list[ViewBundle] = []
     for frame in frames:
@@ -778,6 +776,24 @@ def render_views(target: Target, profile: CameraProfile, spec: ObsSpec,
             A=imaging.A, K=imaging.K_new, backend=resolved, distortion=distortion,
         ))
     return bundles
+
+
+def render_views(target: Target, profile: CameraProfile, spec: ObsSpec,
+                 rng: np.random.Generator, *, backend: str | None = None,
+                 blender_config: Any = None) -> list[ViewBundle]:
+    """Render the 3 x 4 cache and run the ordered imaging chain for every view.
+
+    ``backend`` selects the render backend explicitly (see
+    :func:`resolve_render_backend`); ``None`` falls back to ``spec.renderer``, whose default
+    ``auto`` keeps the in-process software rasteriser.  ``blender_config`` overrides
+    ``spec.blender_config`` for the Blender path.
+    """
+    from ..cameras.viewframes import make_view_frames
+
+    frames = make_view_frames(profile, target.bbox, spec.view_count, rng,
+                              tiers=spec.tiers, orbit=True)
+    return render_frame_bundles(target, frames, spec, rng, backend=backend,
+                                blender_config=blender_config)
 
 
 def _rescaled_frame(frame: ViewFrame, size: tuple[int, int]) -> ViewFrame:
@@ -1419,6 +1435,17 @@ def _obs_views(bundles: list[ViewBundle], spec: ObsSpec) -> list[ObsView]:
             },
         ))
     return views
+
+
+def observation_views(bundles: list[ViewBundle], spec: ObsSpec) -> list[ObsView]:
+    """Public entry point of :func:`_obs_views` for view families built outside this module.
+
+    The fracture-local ROI close-ups (:mod:`synlab.observe.fracture_roi`) are appended to the
+    same observation as *additional* views; they must be turned into :class:`ObsView` by the
+    same delivered-grid code as the whole-fragment views, so the conversion is exposed instead
+    of being duplicated.
+    """
+    return _obs_views(bundles, spec)
 
 
 def _resize_int(arr: np.ndarray, size: tuple[int, int], *, fill: int) -> np.ndarray:

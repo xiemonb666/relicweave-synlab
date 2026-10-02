@@ -50,10 +50,41 @@ def ladder(contract: dict[str, Any]) -> list[dict[str, float]]:
 
 
 def measure_features(report: dict[str, Any]) -> dict[str, Any]:
-    """Measured relief amplitude and lateral scale per variant of one report."""
+    """Measured relief amplitude and lateral scale per variant of one report.
+
+    Two report kinds are accepted:
+
+    * ``field_morphology_*.json`` (``surface_kind = "analytic_field_request"``) -- the modelled
+      fracture surface, whose ``roughness_only`` block is the conchoidal bow removed, i.e. the
+      signal an ``Ra``/``Rz`` number is supposed to describe;
+    * ``fracture_realism_*.json`` -- realized events, per variant.
+    """
     out: dict[str, Any] = {"vessel_id": report.get("vessel_id"),
                            "material_id": report.get("material_id"),
-                           "source_report": report.get("_source"), "variants": {}}
+                           "source_report": report.get("_source"),
+                           "surface_kind": report.get("surface_kind", "realized_event"),
+                           "variants": {}}
+    if "modelled_surface" in report:
+        ms = report["modelled_surface"]
+        ro = ms.get("roughness_only") or {}
+        out["variants"]["morphology_modelled"] = {
+            "status": report.get("status", "OK"),
+            "Ra_mm": ro.get("Ra_mm"), "Rz_mm": ro.get("Rz_mm"), "Rt_mm": ro.get("Rt_mm"),
+            "correlation_length_mm": ro.get("correlation_length_mm"),
+            "ridge_lines_per_mm": ms.get("ridge_lines_per_mm"),
+            "measured_area_mm2": (report.get("sampling") or {}).get("core_area_mm2"),
+            "form_and_roughness_Ra_mm": ms.get("Ra_mm"),
+            "form_and_roughness_Rt_mm": ms.get("Rt_mm"),
+            "normal_angle_p95_deg": (ms.get("normals") or {}).get("angle_p95_deg"),
+            "curvature_k_p95_per_mm": (ms.get("curvature") or {}).get("k_abs_p95_per_mm"),
+            # the lateral resolution limit is the SHORTEST wavelength in the relief, not the
+            # correlation length: the correlation length of this model is dominated by the
+            # radial hackle pattern (tens of mm) and says nothing about the finest structure.
+            "shortest_wavelength_mm": (report.get("field") or {}).get("wavelength_min_mm"),
+            "material_correlation_length_mm": (report.get("params") or {}).get(
+                "correlation_length_mm"),
+        }
+        return out
     for label, block in (report.get("variants") or {}).items():
         if not isinstance(block, dict) or block.get("status") != "OK":
             out["variants"][label] = {"status": (block or {}).get("status", "MISSING"),
@@ -74,9 +105,20 @@ def measure_features(report: dict[str, Any]) -> dict[str, Any]:
 
 def table_for(mm_per_px: float, *, correlation_length_mm: float | None,
               peak_to_valley_mm: float | None, noise_floor_mm: float,
-              contract_structure_px: float) -> dict[str, Any]:
+              contract_structure_px: float,
+              shortest_wavelength_mm: float | None = None) -> dict[str, Any]:
     row: dict[str, Any] = {"mm_per_px": mm_per_px,
                            "contract_structure_0p2mm_px": contract_structure_px}
+    if shortest_wavelength_mm:
+        row["px_per_shortest_wavelength"] = shortest_wavelength_mm / mm_per_px
+        row["shortest_wavelength_resolved_contract_4px"] = (
+            row["px_per_shortest_wavelength"] >= MIN_PX_PER_FEATURE)
+        row["shortest_wavelength_above_nyquist"] = (
+            row["px_per_shortest_wavelength"] >= NYQUIST_PX)
+    else:
+        row["px_per_shortest_wavelength"] = None
+        row["shortest_wavelength_resolved_contract_4px"] = False
+        row["shortest_wavelength_above_nyquist"] = False
     if correlation_length_mm:
         row["px_per_correlation_length"] = correlation_length_mm / mm_per_px
         row["lateral_resolved_contract_4px"] = row["px_per_correlation_length"] >= MIN_PX_PER_FEATURE
@@ -91,7 +133,10 @@ def table_for(mm_per_px: float, *, correlation_length_mm: float | None,
     else:
         row["amplitude_over_noise_floor"] = None
         row["amplitude_visible"] = False
-    row["can_see_feature"] = bool(row["lateral_resolved_contract_4px"] and row["amplitude_visible"])
+    row["can_see_feature"] = bool(row["lateral_resolved_contract_4px"] and row["amplitude_visible"]
+                                  and row["shortest_wavelength_resolved_contract_4px"])
+    row["sees_amplitude_and_correlation"] = bool(row["lateral_resolved_contract_4px"]
+                                                 and row["amplitude_visible"])
     return row
 
 
@@ -138,6 +183,8 @@ def main() -> int:
                 continue
             entry["tables"][label] = {
                 "correlation_length_mm": feat["correlation_length_mm"],
+                "shortest_wavelength_mm": feat.get("shortest_wavelength_mm"),
+                "material_correlation_length_mm": feat.get("material_correlation_length_mm"),
                 "peak_to_valley_mm": feat["Rt_mm"],
                 "Ra_mm": feat["Ra_mm"],
                 "Rz_mm": feat["Rz_mm"],
@@ -145,11 +192,15 @@ def main() -> int:
                                    correlation_length_mm=feat["correlation_length_mm"],
                                    peak_to_valley_mm=feat["Rt_mm"],
                                    noise_floor_mm=noise_floor,
-                                   contract_structure_px=r["contract_structure_0p2mm_px"])
+                                   contract_structure_px=r["contract_structure_0p2mm_px"],
+                                   shortest_wavelength_mm=feat.get("shortest_wavelength_mm"))
                          for r in rungs],
             }
             entry["tables"][label]["visible_rung_count"] = int(sum(
                 1 for row in entry["tables"][label]["rows"] if row["can_see_feature"]))
+            entry["tables"][label]["visible_rung_count_amplitude_and_correlation"] = int(sum(
+                1 for row in entry["tables"][label]["rows"]
+                if row["sees_amplitude_and_correlation"]))
         payload["reports"].append(entry)
 
     out = REPO_ROOT / args.out
@@ -164,10 +215,15 @@ def main() -> int:
                 continue
             print(f"  {entry['vessel_id']}/{entry['material_id']} {label}: "
                   f"lc={table['correlation_length_mm']:.4f}mm Rt={table['peak_to_valley_mm']:.5f}mm "
-                  f"visible rungs={table['visible_rung_count']}/5")
+                  f"lambda_min={table.get('shortest_wavelength_mm')} "
+                  f"visible(amp+lc)={table['visible_rung_count_amplitude_and_correlation']}/5 "
+                  f"visible(amp+lc+lam)={table['visible_rung_count']}/5")
             for row in table["rows"]:
-                print(f"    {row['mm_per_px']:.3f} mm/px -> "
-                      f"{row['px_per_correlation_length']:.2f} px/lc, "
+                lam = row["px_per_shortest_wavelength"]
+                lam_text = f"{lam:.2f} px/lam_min" if lam is not None else "n/a (no relief)"
+                lc_px = row["px_per_correlation_length"]
+                lc_text = f"{lc_px:.2f} px/lc" if lc_px is not None else "n/a"
+                print(f"    {row['mm_per_px']:.3f} mm/px -> {lc_text}, {lam_text}, "
                       f"amp/floor={row['amplitude_over_noise_floor']:.3f}, "
                       f"see={row['can_see_feature']}")
     return 0

@@ -125,6 +125,31 @@ def sample_field_points(field: Any, *, n_samples: int, rng: np.random.Generator
     return u, v, info
 
 
+def _gradient_by_radius(inside: np.ndarray, radius: np.ndarray, grad_mag: np.ndarray,
+                        mirror_mm: float) -> list[dict[str, Any]]:
+    """Slope statistics per radial band from the fracture origin.
+
+    The hackle term is ``a * ramp(r) * growth(r) * cos(N * theta)``; ``theta`` is singular at
+    ``r = 0``, so ``|dh/dx|`` carries an ``a * N / r`` term that grows without bound at the
+    initiation point.  Binning the measured slope by radius is what separates that singularity
+    from the ordinary roughness slope.
+    """
+    edges = [0.0, 0.05, 0.1, 0.25, 0.5, 1.0, 2.0, mirror_mm, 2.0 * mirror_mm, 4.0 * mirror_mm,
+             float(radius.max()) + 1.0]
+    out: list[dict[str, Any]] = []
+    for lo, hi in zip(edges, edges[1:]):
+        sel = inside & (radius >= lo) & (radius < hi)
+        n = int(sel.sum())
+        if n < 8:
+            continue
+        g = grad_mag[sel]
+        out.append({"r_lo_mm": float(lo), "r_hi_mm": float(hi), "cells": n,
+                    "slope_p50_deg": float(np.degrees(np.arctan(np.percentile(g, 50)))),
+                    "slope_p95_deg": float(np.degrees(np.arctan(np.percentile(g, 95)))),
+                    "slope_max_deg": float(np.degrees(np.arctan(g.max())))})
+    return out
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--vessel", default="V18")
@@ -245,8 +270,10 @@ def main() -> int:
         du, dv = field.gradient(u, v)
         normals = np.stack([-du, -dv, np.ones_like(du)], axis=1)
         normals /= np.linalg.norm(normals, axis=1)[:, None]
-        axis_n = np.asarray(basis.normal, dtype=np.float64)
-        axis_n = axis_n / np.linalg.norm(axis_n)
+        # NOTE: the field is sampled in the cut basis, so its gradient is already expressed in the
+        # local (u, v, w) frame; the reference direction is therefore the local +w axis (0, 0, 1),
+        # NOT the world-space basis normal (mixing the two frames produced meaningless angles).
+        axis_n = np.array([0.0, 0.0, 1.0])
         angles_analytic = np.degrees(np.arccos(np.clip(np.abs(normals @ axis_n), 0.0, 1.0)))
 
         # roughness only: the conchoidal bow (dome) removed, i.e. exactly what a "Ra/Rz" number is
@@ -377,6 +404,10 @@ def main() -> int:
                 "slope_max_deg": float(np.degrees(np.arctan(np.max(np.hypot(du, dv))))),
             },
             "curvature": curvature,
+            "gradient_by_radius": _gradient_by_radius(
+                inside_core, np.hypot(GU - float(params.origin_uv_mm[0]),
+                                      GV - float(params.origin_uv_mm[1])),
+                np.hypot(wu, wv), float(params.mirror_radius_mm)),
             "zones": zones,
         }
         ms = report["modelled_surface"]

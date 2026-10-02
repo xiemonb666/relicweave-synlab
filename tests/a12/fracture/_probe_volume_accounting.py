@@ -102,7 +102,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                 if key in fields:
                     own[facet_index] = fields[key]
             cm = _displaced_cell_mesh(cell, own, refinement=cfg.roughness.facet_refinement,
-                                      refine_mm=cfg.roughness.facet_refine_mm)
+                                      refine_mm=cfg.roughness.facet_refine_mm,
+                                      merge_tol_mm=float(
+                                          cfg.tolerance.get("cell_merge_tol_mm", 1.0e-6)))
             cutter = tag_source(trimesh.Trimesh(
                 vertices=np.asarray(cm.vertices, dtype=np.float64),
                 faces=np.asarray(cm.faces, dtype=np.int64), process=False),
