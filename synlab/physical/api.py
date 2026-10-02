@@ -805,7 +805,10 @@ def _component_meta(component: PhysicalComponent, result: PhysicalResult) -> dic
             "is_representative": component.is_representative, "status": component.status,
             "ancestor": component.meta.get("clean_fragment_ancestor"),
             "recipe_id": result.recipe_id, "clean_ref": result.clean_ref,
-            "axis_id": result.meta.get("axis_id"), "level": result.meta.get("level")}
+            "axis_id": result.meta.get("axis_id"), "level": result.meta.get("level"),
+            # the delivered mesh is closed/legal under this semantics version
+            "damage_semantics": str((result.meta or {}).get("damage_semantics",
+                                                            DAMAGE_SEMANTICS_V1))}
 
 
 def commit_physical(store: Any, result: PhysicalResult, *, lineage_id: str | None = None,

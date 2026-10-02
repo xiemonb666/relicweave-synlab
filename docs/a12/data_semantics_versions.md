@@ -223,11 +223,17 @@ Open3D 正值=外部；`trimesh.proximity.signed_distance` 正值=内部。
 
 | 位置 | 键 | 取值 |
 |---|---|---|
-| run 记录（`metadata.sqlite` 的 `runs.meta`） | `data_semantics` | `{mask_semantics, damage_semantics, subset_instrument, defined_in}` |
+| run 记录（`metadata.sqlite` 的 `runs.meta_json`） | `data_semantics` | `{mask_semantics, damage_semantics, subset_instrument, defined_in}` |
 | `reports/coverage.json` 与 `coverage.parquet`/`coverage_rows.json` | `data_semantics` | 同上 |
 | `obs_result` 资产 `meta.meta.data_semantics` | `data_semantics` | 同上 |
 | `physical_result` 资产 `meta` | `damage_semantics`、`subset_instrument` | `subset_v2` / 精确量具名 |
+| `physical_component` 资产 `meta` | `damage_semantics` | `subset_v2` |
+| `mother_mesh` / `fragment_mesh` / `feature_bundle` / `label_bundle` / `provenance` 资产 `meta` | `data_semantics` | 同上 |
 | 每个渲染输出的 `RenderOutput.meta` | `mask_semantics`、`coc_optics` | `coc_units_v2` 等 |
+
+**尚未带标记的角色**（其提交入口在本次写入范围之外）：`clean_truth`、`physical_truth`、
+`visible_labels`、`pattern_recipe`、`pattern_channels`、`material_profile`。它们必须用
+**所属 run 的标记**判别（同一个 run 的 `obs_result`/`physical_result`/`mother_mesh` 等一定带标记）。
 
 **判别式**（可直接抄）：
 
@@ -236,22 +242,47 @@ Open3D 正值=外部；`trimesh.proximity.signed_distance` 正值=内部。
 sem = (record.meta or {}).get("damage_semantics")          # 缺失 => subset_v1_as_shipped
 # 一个 observation 资产渲染时用的掩码语义
 sem = ((record.meta or {}).get("meta") or {}).get("data_semantics", {}).get("mask_semantics")
-# 一个 run 属于哪一代
-sem = (store.get_run(run_id)["meta"] or {}).get("data_semantics")   # 缺失 => 旧语义
+# 一个 run 属于哪一代：看它自己产出的带标记角色（旧 run 一个都没有）
+def run_semantics(store, run_id):
+    for role in ("obs_result", "physical_result", "mother_mesh", "feature_bundle"):
+        for asset in store.list_assets(role=role, limit=10000):
+            meta = dict(asset.meta or {})
+            if str(meta.get("run_id")) != str(run_id):
+                continue
+            sem = meta.get("data_semantics") or (
+                {"damage_semantics": meta["damage_semantics"]}
+                if meta.get("damage_semantics") else
+                ((meta.get("meta") or {}).get("data_semantics")))
+            if sem:
+                return sem
+    return {"mask_semantics": "coc_units_v1_pixel_units",
+            "damage_semantics": "subset_v1_as_shipped"}   # 无标记 = 变更前
 ```
 
 ```sql
--- 直接查库：老批次（无标记）与新批次（有标记）
-SELECT run_id, json_extract(meta, '$.data_semantics.mask_semantics')   AS mask_semantics,
-                json_extract(meta, '$.data_semantics.damage_semantics') AS damage_semantics
-FROM runs ORDER BY rowid;
+-- 直接查库（assets.meta_json / runs.meta_json 是 JSON 文本列）
+SELECT run_id,
+       json_extract(meta_json, '$.data_semantics.mask_semantics')   AS mask_semantics,
+       json_extract(meta_json, '$.data_semantics.damage_semantics') AS damage_semantics
+FROM runs ORDER BY created_at;
+-- 逐资产：physical_result 的 damage_semantics / obs_result 的 mask_semantics
+SELECT role, qa_status,
+       json_extract(meta_json, '$.damage_semantics')                          AS dmg,
+       json_extract(meta_json, '$.meta.data_semantics.mask_semantics')         AS mask,
+       COUNT(*) FROM assets GROUP BY role, dmg, mask;
 ```
 
-兜底（只在标记缺失时使用，不如标记可靠）：`physical_result.qa.checks.damaged_subset_clean`
-是否带 `instrument` 键（新量具才有）、`physical_result.qa.damage_semantics`、以及
-`data/a12/reports/l0_role_census.json`（旧）/`data/a12/reports/l0_after_fix_census.json`
-（新）两份 census 的 run_id：旧 `run_563ae39481ee5ff5`（`run_*` 前缀由 spec/job 哈希
-决定，重跑同一 spec 得到同一 id，故 run_id 不能单独作为代际判据）。
+**实测的批产混批情况（重要）**：`tools/batch_generate.py` 的每个批次是一个独立进程，
+本次语义变更落地时该队友正在跑批，因此 `data/a12` 里**同一个 run 也会混代**——
+实测 `run_c1bf35c0ae7b0387`（变更落地瞬间在跑的那一批）里既有带标记的
+`obs_result`（`mask_semantics=coc_units_v2`）/`physical_result`（`damage_semantics=subset_v2`），
+也有不带标记的旧语义资产；变更之前的 7 个 run（`run_e69efa4c…`、`run_c8e819f2…`、
+`run_1f0eb1ef…`、`run_bdc7b25b…`、`run_92f4b8e5…`、`run_e031b565…`、`run_2fad0ac4…` 等）
+**全部**无标记（实测脚本 `data/a12/reports/probe_batch_semantics.py`，结果
+`data/a12/reports/batch_data_semantics.json`）。
+结论：**按资产/按角色的 meta 判别，不要按 run_id 或时间戳判别**；混批 run 的数据要么按标记
+分开用，要么整批重生成。`configs/a12/next_experiment.yaml`（sha256 `81866531…`）与
+`tools/batch_generate.py` 未被改动。
 
 ---
 
@@ -291,14 +322,28 @@ FROM runs ORDER BY rowid;
 | `data/a12/reports/a09_signed_distance_convention.json` | 两个库的符号约定 |
 | `data/a12/reports/a09_acceptance_after.json` | 四个对照的审核结论 |
 | `data/a12/reports/l0_after_fix_census.json` | 新语义下的单母体端到端 census |
+| `data/a12/reports/l0_after_fix_v2_census.json` | 追加标记后的复验 census（全角色标记覆盖） |
+| `data/a12/reports/batch_data_semantics.json` + `probe_batch_semantics.py` | 批产 store 的逐 run/逐资产标记实测（混批证据） |
 | `data/a12/reports/l0_role_census.json` | 旧语义下的同一 census（对照组） |
 
-测试（退出码）：
+测试（退出码；junit XML 留档 `data/a12/reports/junit_*_after_fix.xml`）：
 
-| 命令 | 退出码 |
-|---|---|
-| `-m pytest tests/a12/observe -q` | **0**（55 passed / 1 skipped） |
-| `-m pytest tests/a12/truth tests/a12/operators -q` | **0**（171 passed / 1 xfailed） |
+| 命令 | 退出码 | 计数 |
+|---|---|---|
+| `-m pytest tests/a12/observe -q` | **0** | 60 tests / 0 failed / 1 skipped（skip = 本机无 Blender 的用例） |
+| `-m pytest tests/a12/truth -q` | **0** | 24 tests / 0 failed / 1 skipped |
+| `-m pytest tests/a12/operators -q` | **0** | 156 tests / 0 failed / 0 skipped |
+| `-m pytest tests/a12/integration -q` | **0** | 39 tests / 0 failed / 0 skipped |
+| 三个套件合并一次跑（要求项） | **0** | 240 tests / 0 failed / 0 errors / 2 skipped |
+
+新增回归测试（锁死两处语义，判据未放宽）：
+
+- `tests/a12/observe/test_coc_units.py`：v2 = 毫米制薄透镜式 × `D`；反演 profile 声明 DOF；
+  旧表达式被 `D·N·(z-f)/z` 放大；光学解析来源（spec/frame/注册表）；`mask_semantics` 标记；
+  合焦平板物体像素无一被 defocus 丢弃。
+- `tests/a12/operators/test_damage_legality.py`：0 体积残留不当组件（且"全残留"时仍保留最大体，
+  失败可见）；纳米孔补面（水密+体积不变）；真洞拒补；"先丢残留再补孔"的顺序；
+  精确量具在自身对照下为 0 越界；恒等结果必须 PASS；真正越界仍 FAIL。
 
 ## 6. 单母体端到端验收（新语义）
 
@@ -319,3 +364,17 @@ FROM runs ORDER BY rowid;
 
 QA_PENDING 的 3 个角色（`pattern_channels`、`pattern_recipe`、`physical_component`）是
 release 准备阶段才定判的既有设计，与本次语义无关。
+
+**可复现性 + 标记覆盖**：换一个全新 store 重跑同一 config（
+`data/a12/reports/l0_after_fix_v2/store`，`data/a12/reports/l0_after_fix_v2_census.json`）
+得到**逐位相同**的数值（mask 2533/2029/1553/1558 px、覆盖率 0.8941051888457465…、
+CoC p95 0.5460063742385314…、`lost_volume_mm3 276.58071298516006`、visible 146/1448、
+QA_PASS 12 / QA_PENDING 3 / QA_FAIL 0）。该 run 的 15 个资产里 **9 个自带标记**：
+
+| 角色 | 标记 |
+|---|---|
+| `mother_mesh`、`fragment_mesh`×2、`feature_bundle`、`label_bundle`、`provenance` | `meta.data_semantics` |
+| `obs_result` | `meta.meta.data_semantics`（`mask_semantics=coc_units_v2`） |
+| `physical_result` | `meta.damage_semantics=subset_v2` + `meta.subset_instrument` |
+| `physical_component` | `meta.damage_semantics=subset_v2` |
+| `clean_truth`、`physical_truth`、`visible_labels`、`pattern_recipe`、`pattern_channels`、`material_profile` | 无（提交入口在本次写入范围外）→ 按所属 run 的上面 9 个角色判别 |

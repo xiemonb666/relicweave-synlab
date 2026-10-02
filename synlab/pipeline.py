@@ -925,6 +925,7 @@ def _commit_mother(store: AssetStore, mother: Any, lineage: LineagePlan, audit: 
                           "area_mm2": float(c.area_mm2), "x_period_mm": c.x_period_mm}
                          for c in getattr(mother, "charts", [])],
               "variant": suffix or "base",
+              "data_semantics": data_semantics(),
               "run_id": run_id},
         qa=audit, qa_status=QA_PASS if audit.get("ok", True) else QA_FAIL,
         lineage_id=lineage.lineage_id, split=lineage.split,
@@ -952,7 +953,8 @@ def _commit_fragments(store: AssetStore, fracture: Any, lineage: LineagePlan,
                   "area_mm2": float(fragment.area_mm2), "is_tiny": bool(fragment.is_tiny),
                   "component_id": int(fragment.component_id), "event_id": fracture.event_tree.get("event_id")
                   if isinstance(fracture.event_tree, dict) else None,
-                  "backend": fracture.backend, "run_id": run_id},
+                  "backend": fracture.backend, "data_semantics": data_semantics(),
+                  "run_id": run_id},
             qa={"ok": True, "parent_qa": _jsonable(fracture.qa)},
             qa_status=QA_PASS,
             ancestry=[mother_asset_id], lineage_id=lineage.lineage_id, split=lineage.split,
@@ -1043,6 +1045,9 @@ def _commit_features(store: AssetStore, bundles: dict[str, Any], lineage: Lineag
         meta.pop(key, None)
     meta["feature_fields"] = sorted(meta.keys()) + sorted(arrays.keys())
     meta["dropped_forbidden_fields"] = dropped
+    # the delivered pixel validity of this bundle comes from the observation's deployment mask,
+    # so the bundle is only comparable to another batch under the same mask semantics
+    meta["data_semantics"] = data_semantics()
     meta["run_id"] = run_id
     return store.commit_asset(
         role=ROLE_FEATURE_BUNDLE, schema=SCHEMA_FEATURE, unit=UNIT_MM, frame="S_mm",
@@ -1128,6 +1133,7 @@ def _commit_labels(store: AssetStore, bundles: dict[str, Any], clean: Any, visib
             meta[key] = _jsonable(value)
     meta["relation_count"] = len(relations)
     meta["r2_count"] = sum(1 for r in relations if r["kind"] == "R2")
+    meta["data_semantics"] = data_semantics()
     meta["run_id"] = run_id
     return store.commit_asset(
         role=ROLE_LABEL_BUNDLE, schema="synlab.labels.v1", unit="1", frame="W_mm",
@@ -1147,6 +1153,7 @@ def _commit_provenance(store: AssetStore, plan: GenerationPlan, lineage: Lineage
               "spec_hash": plan.spec_hash,
               "code_fingerprint": _jsonable(plan.code_fingerprint),
               "backend_fingerprints": _jsonable(plan.backend_fingerprints),
+              "data_semantics": data_semantics(),
               "run_id": run_id,
               "params": _jsonable(lineage.params)},
         qa={"ok": True}, qa_status=QA_PASS,

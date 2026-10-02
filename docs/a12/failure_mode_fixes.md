@@ -18,13 +18,20 @@ before/after 实测数字，以及**未解决项**。
 | 用途 | 文件 |
 | --- | --- |
 | 失败类 1：48 条谱系逐器型 schema 校验 | `data/a12/reports/failure_fix_validate_params48.py` → `failure_class1_param_validation.json` |
-| 失败类 1：4 条真实跨器型反例（负对照） | `data/a12/reports/failure_fix_schema_negative_control.py` → `failure_class1_negative_control.json` |
+| 失败类 1：4 条真实跨器型反例（负对照） | `data/a12/reports/failure_fix_schema_negative_control.py` → `failure_class1_negative_control.json` + `.txt` |
 | 失败类 2：真实母体上的 pattern 阶段复现 | `data/a12/reports/failure_fix_class2_repro.py` → `failure_fix_class2_repro.txt` |
 | 失败类 3：属性来源与连通分量普查 | `data/a12/reports/failure_fix_class3_rootcause.py` → `failure_class3_rootcause.txt` |
 | 失败类 3：P 轴 `NA → 可用` 实测 | `data/a12/reports/failure_fix_class3_axis_evidence.py` → `failure_class3_axis_evidence.json` |
-| before/after 接受率与三类计数 | `data/a12/reports/failure_fix_acceptance_compare.py` → `failure_mode_before_after.json`（表见 `failure_mode_before_after.txt`） |
+| 失败类 3：pipeline 真正打到的碎片 | `data/a12/reports/failure_fix_class3_pipeline_target.py` → `failure_class3_pipeline_target.json` |
+| 失败类 3：V10 连通分量普查 | `data/a12/reports/failure_fix_class3_fragment_probe.py` → `failure_class3_fragment_probe.txt`、`failure_fix_v10_components_after_skirt_fix.txt` |
+| before/after 接受率与三类计数 | `data/a12/reports/failure_fix_acceptance_compare.py` → `failure_mode_before_after.json` + `.txt` |
 | 每次批产调用的 run 归属 | `data/a12/reports/failure_fix_runs.py` → `failure_fix_runs.txt` |
-| fix 后 pattern/接缝审计 | `data/a12/reports/pytest_patterns_after_class2_fix.txt` |
+| 计划稳定性（批产 params vs 当前 plan） | `data/a12/reports/failure_fix_plan_drift.py` → `failure_fix_plan_drift.json` |
+| physical 阶段既有 QA 基线 | `data/a12/reports/failure_fix_physical_stage_baseline.json` |
+| 第四类失败（observe，非本次范围）复现 | `data/a12/reports/failure_fix_class4_real_params.py` → `failure_class4_pat08_real_params.json` + `.txt` |
+| fix 后 pattern/接缝审计 | `data/a12/reports/pytest_patterns_after_class2_fix.txt` + `_exit.txt` |
+| fix 后 mothers+fracture 套件 | `data/a12/reports/pytest_mothers_fracture_after_fix.txt` + `_exit.txt` |
+| 旧树（commit `e392c12`）对照 | `data/a12/reports/pytest_fracture_baseline_head.txt` |
 | 回归测试 | `tests/a12/patterns/test_patterns_open_chart_and_glyph_width.py`、`tests/a12/fracture/test_target_selection_and_lid_skirt.py`、`tests/a12/mothers/test_sampling_and_store.py` |
 
 ---
@@ -252,27 +259,47 @@ pattern)` 与本次修复后的规划逐条比对 → **12/12 完全一致、0 �
 **失败类 3 = 4 次**（1 条独立谱系 V10/PAT03 重试 4 次）、失败类 1 = 0（已由计划的
 "被选 vessel 序列"修复挡掉，其 4 次出现在更早的旧 plan run 里）。
 
-全量 ledger 口径（含旧 plan 行）同一时刻快照：`attempted=35, accepted=14 → 40.0%`，
-类 1 × 4、类 2 × 12、类 3 × 4、其它（精度）× 1。数字随队友继续产数据而增长，
-`failure_fix_acceptance_compare.py` 可随时重算。
+全量 ledger 口径（含旧 plan 行）同一时刻快照：`attempted=43, accepted=21 → 48.8%`，
+类 1 × 4（4 条谱系）、类 2 × 13（4 条谱系）、类 3 × 4（1 条谱系）、其它（精度）× 1。
+数字随队友继续产数据而增长，`failure_fix_acceptance_compare.py` 可随时重算。
 
 ### 4.3 after（修复后）
 
 | 来源 | attempted | accepted | 接受率 | 三类计数 |
 | --- | --- | --- | --- | --- |
-| 隔离验证 6 条谱系（`failure_fix_store`） | 见 §4.4 | 见 §4.4 | 见 §4.4 | 见 §4.4 |
-| 队友同一批产的独立复跑（`run_e031b5651fb7f7ff`, 11:11:03, LIN0001_V21_M06_PAT16） | 1 | 1 | 100% | 类 2 归零：`TypeError: float(None)` 不再出现（123.6 s，frag=2 obs=12 r2=1） |
+| **隔离验证 6 条谱系**（`failure_fix_store`，`--only 1,2,3,4,9,10`） | **6** | **6** | **100%** | 类 1 = 0、类 2 = 0、类 3 = 0 |
+| 队友同一批产的 fix 后 run（`run_e031b5651fb7f7ff`、`run_c1bf35c0ae7b0387`、`run_c75cafbb10b008c4`；快照 11:46） | 13 | 10 | 76.9% | 类 1 = 0、类 2 = 3（两个**新到达**谱系：`LIN0016_V19_M04_PAT08`、`LIN0019_V12_M05_PAT11`，见 §5.7/§5.9）、类 3 = 0 |
 
-pattern/接缝审计：`pytest tests/a12/patterns -q` → **退出码 0**（见 §4.4 记录的实测输出）。
+隔离验证逐条（`failure_fix_batches.json`，run `run_2703b03b77f58bb0`，总 1167 s，
+每条母体 194.6 s）：
 
-### 4.4 实测数字（本文件写作时的 after 快照）
+| # | 谱系 | 器型/材料/纹样 | 修复前 | 修复后 |
+| --- | --- | --- | --- | --- |
+| 1 | `LIN0001_V21_M06_PAT16` | V21/M06/PAT16 | `UNEXPECTED`（类 2a） | **OK** 131.9 s，frag=2 obs=12 r2=1 |
+| 2 | `LIN0002_V23_M07_PAT12` | V23/M07/PAT12 | `UNEXPECTED`（类 2b） | **OK** 198.2 s，frag=2 obs=12 r2=1 |
+| 3 | `LIN0003_V23_M11_PAT06` | V23/M11/PAT06 | `UNEXPECTED`（类 2a） | **OK** 221.9 s，frag=2 obs=12 r2=1 |
+| 4 | `LIN0004_V10_M06_PAT03` | V10/M06/PAT03 | `NA_NOT_APPLICABLE`（类 3） | **OK** 130.0 s，frag=4 obs=12 r2=1 |
+| 5 | `LIN0009_V04_M01_PAT02` | V04/M01/PAT02 | OK（对照） | **OK** 238.5 s |
+| 6 | `LIN0010_V07_M10_PAT08` | V07/M10/PAT08 | OK（对照） | **OK** 179.1 s |
 
-> 本节由 `failure_fix_acceptance_compare.py` 的 `after_fixed_code_attempts` 与
-> `_fix_validation_batch.out` 生成，命令与文件均留档，可复算。
+类 3 的谱系在真实 pipeline 里打到的碎片（`failure_fix_class3_pipeline_target.json`）：
+`LIN0004_V10_M06_PAT03` → `damaged=LIN0004_V10_M06_PAT03_E01-p`（带断面的那一块），
+而不是修复前那块"没被切到的盖"。P03 的审计状态仍是 `FAIL`
+（`DAMAGED_NOT_SUBSET_OF_CLEAN`、`NON_POSITIVE_VOLUME`、`NOT_WATERTIGHT`，见 §5.2）。
 
-* 隔离 6 条谱系（`--only 1,2,3,4,9,10`）：见下方"after 逐条结果"。
-* 结论：**失败类 2 的 3 条谱系全部通过 pattern 阶段**（不再 `UNEXPECTED`），
-  **失败类 3 的谱系 P 轴可用**（`physical_target` 带断面，见 §3）。
+**计划稳定性**（`failure_fix_plan_drift.json`）：当前工作树重新规划 120 条谱系，
+与队友已提交的批产母体参数逐条比对 → **20/20 完全一致**，即本次修复**没有改变**
+同种子下的计划（谱系三元组 120/120 一致）。
+注意：`failure_class1_param_validation.json` 是 `max_mothers=48` 的计划快照，
+其**参数值**与 120 目标计划天然不同（每个器型抽样个数不同 ⇒ LHS 流不同），
+因此不能拿它逐值对比批产；三元组对比才是口径。
+
+### 4.4 测试与审计退出码
+
+| 命令 | 结果 |
+| --- | --- |
+| `pytest tests/a12/patterns -q` | **退出码 0**（226 项，`pytest_patterns_after_class2_fix_exit.txt` = `exit=0`） |
+| `pytest tests/a12/mothers tests/a12/fracture -q` | **退出码 1**，但失败集合与旧树**完全相同**：当前树 3 FAILED + 3 ERROR，全部落在 `tests/a12/fracture/test_shared_cutter.py` 与 `test_event_qa.py`；在修复前的 commit `e392c12` 上跑同两个文件得到**同样的 3 FAILED + 3 ERROR**（逐条同名，`pytest_fracture_baseline_head.txt`）。根因是 `tests/a12/fracture/fixtures.py::thin_bowl_mother` 的 `trimesh.boolean.difference(..., engine="manifold")` → `ValueError: Not all meshes are volumes!`（fixture 级，与本次三处修改无关，且这三个文件都不在本次改动范围内）。`tests/a12/mothers` 14 项全绿；本次新增/改动文件的测试全绿（patterns 8 项、fracture 5 项、mothers 新增 4 项） |
 
 ---
 
@@ -301,4 +328,46 @@ pattern/接缝审计：`pytest tests/a12/patterns -q` → **退出码 0**（见 
 6. **归属口径**：run 的代码状态按 `run_id` 分组 + 时间窗推断（`run_92f4b8e5…` 之后的一次
    调用为 fix 后代码）。`run_id` 由 git dirty diff 哈希派生，任何写者的工作区改动都会改变它，
    因此 run_id 变化**不能**用来判断某一处 fix 是否已加载；`failure_fix_runs.txt` 给出全部
-   证据以便独立复核。
+   证据以便独立复核。计划是否漂移另有独立证据（§4.3 的 20/20 参数一致）。
+7. **第四类失败（observe 阶段，不在本次写入范围，未修）**：
+   `LIN0016_V19_M04_PAT08`（V19/M04/PAT08，19.75 s，ledger 11:39:07）报
+   `IndexError: index 1024 is out of bounds for axis 1 with size 1024`。
+   ledger 的 `stages` 只到 `physical`（说明 physical 块已跑完），用当前 plan 的**真实参数**
+   重放（`failure_fix_class4_real_params.json`）确认炸点在观测阶段：
+
+   ```
+   synlab/observe/api.py:129   route_proxy_scan(target, camera, spec, cam_rng, backend=backend)
+   synlab/observe/routes.py:949  depth = _carve_holes(depth, hole_count, rng, min_radius_px=3, max_radius_px=7)
+   synlab/observe/routes.py:1063 out[yy[disc], xx[disc]] = np.nan      ← index 1024 vs size 1024
+   ```
+
+   即 proxy_scan 路线挖孔时，某个孔盘越过了 1024 宽的深度图边界（列索引 == W）。
+   修法很小（在 `_carve_holes` 里把盘坐标裁进图像范围），但 `synlab/observe/**` 属另一写者、
+   不在本次允许写入范围，故**只记录不修**。它独立于本次三类修复：该谱系位于 index 16，
+   在修复前从未被批产走到（队友最新 run 才第一次到达）。
+8. **`LIN0004_V10_M06_PAT03` 的 P03 审计多一条 `DAMAGED_NOT_SUBSET_OF_CLEAN`**：
+   该谱系以前在 P 轴之前就失败，所以这是它第一次真正跑完 P03；审计口径属
+   `synlab/physical/**`，未在本次范围内改动。
+9. **第五类失败（physical 阶段，不在本次写入范围，未修）**：
+   `LIN0019_V12_M05_PAT11`（V12/M05/PAT11，ledger 11:44:22）报
+   `ValueError: all the input array dimensions except for the concatenation axis must match
+   exactly … the array at index 0 has size 3 and the array at index 12 has size 4`，
+   `stages` 无 `physical` 键 ⇒ 炸点在 physical 块内。用当前 plan 的真实参数重放
+   （`failure_fix_class5_v12_attribution.py` / `.txt`）确认：
+
+   ```
+   synlab/physical/api.py:446  apply_damage → assemble_damage_bodies
+   synlab/physical/api.py:261  close_numerical_pinholes(part)
+   synlab/physical/api.py:172  candidate.faces = np.vstack([mesh.faces] + patch)   ← (N,3) vs (N,4)
+   ```
+
+   即"数值针孔"补片数组有 4 列（四边形）却与 (N,3) 三角形面表 `vstack`。
+   **与本次 class-3 目标选择无关**：同一条谱系在"旧规则（最大体积）"和"新规则"下
+   报出**同一个**错误与同一段 traceback（`failure_class5_LIN0019_attribution.json`）。
+   修法在 `synlab/physical/api.py`（生成补片时三角化，或写入前裁剪到 3 列），
+   该文件不在本次允许写入范围，故只记录。
+10. **fix 后窗口的 after 数字（快照 11:46）**：
+    队友 fix 后 run（`run_e031b5651fb7f7ff`、`run_c1bf35c0ae7b0387`、`run_c75cafbb10b008c4`）
+    `attempted=13 accepted=10 → 76.9%`，其中类 1/类 3 均为 0，3 次失败全部是上面 #7/#9
+    两个**新到达谱系**（index 16/19，修复前批产从未走到）；隔离 6 条谱系 6/6 = 100%。
+    全量 ledger（47 行，含旧 plan 行）= 23/47 = 48.9%，可作为"修复前计入分母"的完整口径。
