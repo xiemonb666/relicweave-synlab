@@ -258,3 +258,200 @@ def test_the_cutfix_measurement_is_recorded(backend: str) -> None:
         assert entry["faces_bitwise_equal"], key
         assert entry["all_identical"], key
 
+
+# ---------------------------------------------------------------------------------------------
+# Assembler-level T-junction resolution (docs/a12/fracture_realism.md 搂11)
+# ---------------------------------------------------------------------------------------------
+
+TARGET_CELL = (1, 1, 0)
+ROOT_SIDE = 4
+
+
+def _tj_tree(refined: list[tuple[int, int, int]]) -> cut_mod._Quadtree:
+    """A four-cell quadtree with the given cells refined (never a refined cell below a refined
+    ancestor: such a set is not a quadtree and ``leaves`` would not be a partition)."""
+    tree = cut_mod._Quadtree(0.0, 4.0, 0.0, 4.0, 2)
+    for cell in refined:
+        ci, cj, cl = (int(v) for v in cell)
+        ok = True
+        while cl > 0:
+            cl, ci, cj = cl - 1, ci >> 1, cj >> 1
+            if (ci, cj, cl) in tree.refined:
+                ok = False
+                break
+        if ok:
+            tree.refined.add((int(cell[0]), int(cell[1]), int(cell[2])))
+    return tree
+
+
+def _child_facing(cell: tuple[int, int, int], orient: str, lo: bool,
+                  sub: int) -> tuple[int, int, int]:
+    i, j, level = (int(v) for v in cell)
+    if orient == "v":
+        return (2 * i + (0 if lo else 1), 2 * j + int(sub), level + 1)
+    return (2 * i + int(sub), 2 * j + (0 if lo else 1), level + 1)
+
+
+def _edge_corner_points(tree: cut_mod._Quadtree, cell: tuple[int, int, int], orient: str,
+                        lo: bool, key_level: int) -> set[tuple[int, int]]:
+    """Key points strictly inside one edge of ``cell`` that are corners of *other* leaves.
+
+    This is the ground truth for a conforming ring: every one of them must be a point of the ring
+    ``cell_triangles`` emits, otherwise the facing leaf traverses an edge this cell never emits
+    (a T-junction), and the assembler compensates with a spurious side quad.
+    """
+    i, j, level = (int(v) for v in cell)
+    span = int(key_level) - level
+    step = 1 << span
+    gu, gv = i << span, j << span
+    if orient == "v":
+        line, lo_k, hi_k = (gu if lo else gu + step), gv, gv + step
+    else:
+        line, lo_k, hi_k = (gv if lo else gv + step), gu, gu + step
+    points: set[tuple[int, int]] = set()
+    for (li, lj, ll) in tree.leaves():
+        if (int(li), int(lj), int(ll)) == (i, j, level):
+            continue
+        lspan = int(key_level) - int(ll)
+        lstep = 1 << lspan
+        lu, lv = int(li) << lspan, int(lj) << lspan
+        for (cu, cv) in ((lu, lv), (lu + lstep, lv), (lu + lstep, lv + lstep), (lu, lv + lstep)):
+            if orient == "v" and cu == line and lo_k < cv < hi_k:
+                points.add((cu, cv))
+            elif orient == "u" and cv == line and lo_k < cu < hi_k:
+                points.add((cu, cv))
+    return points
+
+
+def _ring_points_on_edge(ring: np.ndarray, cell: tuple[int, int, int], orient: str, lo: bool,
+                         key_level: int) -> set[tuple[int, int]]:
+    i, j, level = (int(v) for v in cell)
+    span = int(key_level) - level
+    step = 1 << span
+    gu, gv = i << span, j << span
+    if orient == "v":
+        line, lo_k, hi_k, row_axis, position_axis = (gu if lo else gu + step), gv, gv + step, 0, 1
+    else:
+        line, lo_k, hi_k, row_axis, position_axis = (gv if lo else gv + step), gu, gu + step, 1, 0
+    return {(int(p[0]), int(p[1])) for p in ring
+            if int(p[row_axis]) == line and lo_k < int(p[position_axis]) < hi_k}
+
+
+def _lattice_step(tree: cut_mod._Quadtree, cell: tuple[int, int, int], key_level: int) -> int:
+    """One key unit of the cell's own lattice at ``key_level`` (the finest point it can emit)."""
+    del tree
+    return 1 << (int(key_level) - int(cell[2]))
+
+
+@pytest.mark.parametrize("refined,bottom_extra,right_extra", [
+    ([], 0, 0),
+    ([(0, 1, 0)], 1, 0),
+    ([(0, 1, 0), (0, 2, 1)], 2, 0),
+    ([(2, 1, 0)], 0, 1),
+    ([(0, 1, 0), (0, 2, 1), (2, 1, 0), (4, 2, 1)], 2, 1),
+])
+def test_the_ring_carries_every_facing_leaf_corner(refined, bottom_extra, right_extra) -> None:
+    """No T-junction: every facing leaf corner on an edge is a point of the emitted ring.
+
+    The extra-halving walk is measured against the *ground truth* of the leaf set (the corners of
+    other leaves lying strictly inside the edge), not against a second copy of the walk.  The
+    parametrisation covers: no refinement; a plain 2:1 interface; two levels on one side; two
+    levels on the other side; and both sides at once.
+    """
+    tree = _tj_tree(refined)
+    extras = cut_mod.edge_extra_all(tree, np.asarray([TARGET_CELL], dtype=np.int64), KEY_LEVEL)[0]
+    span = KEY_LEVEL - TARGET_CELL[2]
+    ring, _tris = tree.cell_triangles(*TARGET_CELL, span, extras)
+    assert int(extras[1]) == bottom_extra, ("bottom edge extra", tuple(extras))
+    assert int(extras[2]) == right_extra, ("right edge extra", tuple(extras))
+    for orient, lo in (("v", True), ("u", True), ("v", False), ("u", False)):
+        missing = _edge_corner_points(tree, TARGET_CELL, orient, lo, KEY_LEVEL) \
+            - _ring_points_on_edge(ring, TARGET_CELL, orient, lo, KEY_LEVEL)
+        assert not missing, (orient, lo, sorted(missing))
+
+
+def test_the_extra_points_sit_where_the_facing_side_has_them() -> None:
+    """``extra == 1`` must put one *quarter* point on the edge, not a half-quarter.
+
+    Measured regression: the first version stepped by ``half >> extra``, i.e. half the intended
+    spacing, so the extra point landed on a key-lattice position no neighbour owned; the assembler
+    then created a second global vertex for a point that was already there and the solid stayed
+    non-manifold (86 duplicated directed edges on the thin-bowl fixture).
+    """
+    tree = _tj_tree([(0, 1, 0), (0, 2, 1)])
+    extras = cut_mod.edge_extra_all(tree, np.asarray([TARGET_CELL], dtype=np.int64), KEY_LEVEL)[0]
+    assert int(extras[1]) == 2
+    span = KEY_LEVEL - TARGET_CELL[2]
+    ring, _tris = tree.cell_triangles(*TARGET_CELL, span, extras)
+    gu = TARGET_CELL[0] << span
+    gv = TARGET_CELL[1] << span
+    unit = _lattice_step(tree, TARGET_CELL, KEY_LEVEL)
+    want = {1 * unit, 2 * unit, 3 * unit}
+    got = {int(p[0]) - gu for p in ring if int(p[1]) == gv and gu < int(p[0]) < gu + (1 << span)}
+    assert want <= got, (sorted(want), sorted(got))
+
+
+def test_the_ring_visits_the_boundary_in_one_direction() -> None:
+    """The fan's boundary walk must not go backwards, and must not reuse a point.
+
+    Measured regression: the ring used to append the edge's start corner *before* the midpoint, so
+    a split edge came out as ``corner -> corner -> midpoint`` — the fan still covered the cell, but
+    the boundary was walked backwards and two neighbours then traversed their shared edge in the
+    *same* direction (a directed edge used twice, which the assembler turns into a duplicate side
+    wall).
+    """
+    tree = _tj_tree([(0, 1, 0), (0, 2, 1), (2, 1, 0), (4, 2, 1)])
+    extras = cut_mod.edge_extra_all(tree, np.asarray([TARGET_CELL], dtype=np.int64), KEY_LEVEL)[0]
+    span = KEY_LEVEL - TARGET_CELL[2]
+    pts, tris = tree.cell_triangles(*TARGET_CELL, span, extras)
+    key = np.asarray(pts, dtype=np.float64)
+    assert len({tuple(int(x) for x in p) for p in pts}) == pts.shape[0], "a point is emitted twice"
+    #: the ring is the first vertex of every fan triangle, in order
+    ring = [int(t[0]) for t in tris]
+    assert len(ring) == len(set(ring)), "the ring visits a vertex twice"
+    #: consecutive ring points must be connected by an axis-aligned segment or share the centre
+    centre = ring[-1]
+    for k in range(len(ring) - 1):
+        a, b = ring[k], ring[k + 1]
+        if a == centre or b == centre:
+            continue
+        same_u = key[a][0] == key[b][0]
+        same_v = key[a][1] == key[b][1]
+        assert same_u or same_v, (a, b)
+    #: the ring is an exact traversal of the cell boundary
+    x0, y0 = key.min(axis=0)
+    x1, y1 = x0 + float(1 << span), y0 + float(1 << span)
+    for index in ring[:-1]:
+        p = key[index]
+        assert (p[0] in (x0, x1)) or (p[1] in (y0, y1)) or (
+            p[0] == (x0 + x1) / 2 and p[1] == (y0 + y1) / 2), p
+
+
+def test_the_plane_cutter_reports_no_hanging_corner() -> None:
+    """The plane control must report zero unresolved T-junctions (it has none to resolve)."""
+    mother = fx.thin_bowl_mother()
+    cutter = make_closed_cutter(
+        mother, FractureSpec(backend=BACKEND_PLANE),
+        make_rng(MASTER_SEED, "cutfix_test", "plane-audit"))
+    assert cutter.meta["hanging_corner_points"] == 0
+    assert cutter.meta["edges_missing_a_hanging_point"] == 0
+    assert cutter.meta["edge_extra_histogram"] == {"0": 4 * cutter.meta["cells"]}
+
+
+@pytest.mark.xfail(strict=False, reason=(
+    "the assembler resolves every T-junction (hanging_corner_points == 0) but the assembled "
+    "rough solid still has 76 duplicated directed edges on the thin-bowl fixture, so it is not "
+    "watertight yet; recorded in docs/a12/fracture_realism.md 搂11 as still open"))
+def test_the_rough_cutter_is_watertight_on_the_thin_bowl() -> None:
+    """Landing claim: a refined rough cutter closes with every edge used exactly twice."""
+    mother = fx.thin_bowl_mother()
+    spec = FractureSpec(backend=BACKEND_ROUGH, target_rms_mm=0.02,
+                        error_budget_mm=0.011, max_cutter_cells=90000)
+    cutter = make_closed_cutter(mother, spec, make_rng(MASTER_SEED, "cutfix_test", "tj-rough"))
+    faces = np.asarray(cutter.mesh.faces, dtype=np.int64)
+    a = faces[:, [0, 1, 2]].ravel()
+    b = faces[:, [1, 2, 0]].ravel()
+    keys = np.stack([np.minimum(a, b), np.maximum(a, b)], axis=1)
+    _unique, counts = np.unique(keys, axis=0, return_counts=True)
+    assert set(Counter(counts.tolist())) == {2}
+

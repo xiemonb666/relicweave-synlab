@@ -29,7 +29,6 @@ for _path in (str(REPO_ROOT), str(TESTS_A12)):
         sys.path.insert(0, _path)
 
 from synlab.errors import SynLabError  # noqa: E402
-from synlab.fracture import cut as cut_mod  # noqa: E402
 from synlab.fracture.booleans import mesh_hash  # noqa: E402
 from synlab.fracture.spec import BACKEND_PLANE, BACKEND_ROUGH, FractureSpec  # noqa: E402
 from synlab.seeds import make_rng  # noqa: E402
@@ -93,7 +92,8 @@ def run_case(name: str, *, rms: float, budget: float, max_cells: int, seed: int,
         for key in ("cells", "leaf_level", "root_level", "key_level", "top_triangles",
                     "bottom_triangles", "side_triangles", "triangles", "error_samples",
                     "refine_iterations", "cells_tested", "cutter_local_hash",
-                    "analytic_cell_size_for_budget_mm"):
+                    "analytic_cell_size_for_budget_mm", "hanging_corner_points",
+                    "edges_missing_a_hanging_point", "edge_extra_histogram"):
             if key in meta:
                 row[key] = _json(meta[key])
         row["reported_edge_use_histogram"] = meta.get("edge_use_histogram")
@@ -160,11 +160,15 @@ def main() -> int:
         row = run_case(name, rms=rms, budget=args.budget, max_cells=args.max_cells,
                        seed=args.seed, backend=backend)
         rows.append(row)
-        summary = {k: v for k, v in row.items() if k not in ("measurements", "height_field")}
+        summary = {k: v for k, v in row.items()
+                   if k not in ("measurements", "height_field")
+                   and not (k == "measurements")}
         print(f"  -> {json.dumps(summary, ensure_ascii=False)}", flush=True)
         if row.get("measurements"):
-            print(f"     measurements: "
-                  f"{json.dumps(row['measurements'], ensure_ascii=False)[:900]}", flush=True)
+            compact = {k: v for k, v in row["measurements"].items()
+                       if k not in ("first_missing", "ambiguous_directed_examples",
+                                    "bad_edge_details")}
+            print(f"     measurements: {json.dumps(compact, ensure_ascii=False)[:900]}", flush=True)
     out = Path(args.out) if args.out else (
         REPO_ROOT / "data" / "a12_reports" / "tjunction" / f"measure_{args.label}.json")
     out.parent.mkdir(parents=True, exist_ok=True)
