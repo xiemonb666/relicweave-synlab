@@ -1,4 +1,4 @@
-﻿"""One multi-piece fracture event: physically driven count, Voronoi cells, rough shared facets.
+"""One multi-piece fracture event: physically driven count, Voronoi cells, rough shared facets.
 
 This is the module that turns the partition built by :mod:`synlab.fracture.voronoi_frag` into a
 complete :class:`~synlab.schemas.runtime.FractureResult`, i.e. into the same object the existing
@@ -1224,6 +1224,14 @@ def run_voronoi_event(
             for part, ids in shells]
     records: list[PieceRecord] = []
     dropped_cells: list[int] = []
+    #: Cells whose discretised cutter is **not** a closed solid.  A non-manifold cutter makes
+    #: ``manifold3d`` answer with an *empty* intersection, so that cell's material never reaches a
+    #: piece and the conservation audit reports a volume shortfall.  The condition is measured here,
+    #: per cell, and published in the event meta: without it the shortfall is indistinguishable from
+    #: a boolean/overlap defect, and ``docs/a12/fracture_calibration.md`` has to guess.  Measured on
+    #: V02/M01: every empty cell of the 8-cell partition was an unclosed cutter (2 of 8).
+    open_cutters: list[int] = []
+    empty_cutters: list[int] = []
     cell_meshes: list[trimesh.Trimesh] = []
     face_counts: list[int] = []
     for position, cell in enumerate(partition.cells):
@@ -1238,6 +1246,8 @@ def run_voronoi_event(
                                          refine_mm=config.roughness.facet_refine_mm)
         cell_meshes.append(cell_mesh)
         face_counts.append(int(len(np.asarray(cell_mesh.faces))))
+        if not bool(cell_mesh.is_watertight) or float(abs(cell_mesh.volume)) <= 1.0e-9:
+            open_cutters.append(int(cell.index))
         mesh_id = float(1000 + position)
         cutter_source = tag_source(trimesh.Trimesh(
             vertices=np.asarray(cell_mesh.vertices, dtype=np.float64),
@@ -1251,6 +1261,8 @@ def run_voronoi_event(
                  for shell in shell_inputs], label=f"piece_{position}")
         if tagged.n_faces == 0 or float(abs(tagged.mesh.volume)) <= 1.0e-9:
             dropped_cells.append(int(cell.index))
+            if bool(cell_mesh.is_watertight):
+                empty_cutters.append(int(cell.index))
             continue
         records.append(PieceRecord(index=len(records), cell_index=int(cell.index),
                                    mesh_id=int(mesh_id), tagged=tagged, facet_faces={}))
@@ -1258,7 +1270,12 @@ def run_voronoi_event(
         raise SynLabError(ErrorCode.FRACTURE_CONSERVATION_FAIL,
                           "the Voronoi partition produced no piece with material in it",
                           stage="fracture.voronoi.event",
-                          measurements={"cells": len(partition.cells)})
+                          measurements={"cells": len(partition.cells),
+                                        "open_cutters": open_cutters,
+                                        "open_cutter_count": len(open_cutters),
+                                        "closed_but_empty_cells": empty_cutters,
+                                        "why": ("every cell was dropped: an unclosed cutter "
+                                                "makes the boolean answer empty")})
 
     # ---------------------------------------------------------------- classification
     resolver = SourceResolver([mother_source], tolerance_mm=1e-4)
@@ -1341,6 +1358,9 @@ def run_voronoi_event(
             "roughness_fields": [field.as_dict() for field in roughness_fields.values()],
             "energy_ledger": ledger.as_dict(),
             "dropped_cells": dropped_cells,
+            "open_cutters": open_cutters,
+            "open_cutter_count": int(len(open_cutters)),
+            "closed_but_empty_cells": empty_cutters,
             "cells_total": len(partition.cells),
             "pieces_produced": len(fragments),
             "faces_total": int(sum(fragment.n_faces for fragment in fragments)),

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Callable, Sequence
+from typing import Any, Callable, Mapping, Sequence
 
 import numpy as np
 import trimesh
@@ -14,6 +14,7 @@ from ..schemas.runtime import (
     ORIGIN_AMBIGUOUS,
     ORIGIN_INTERFACE,
     ORIGIN_MOTHER_SURFACE,
+    CutBasis,
     CutterResult,
     FractureResult,
     Fragment,
@@ -43,10 +44,111 @@ from .spec import (
     INTERFACE_GAP_P95_MM,
 )
 
-__all__ = ["run_shared_cut", "SIDE_MINUS", "SIDE_PLUS"]
+__all__ = [
+    "run_shared_cut", "SIDE_MINUS", "SIDE_PLUS",
+    "BASIS_META_KEY", "BASIS_RECORD_META_KEY", "result_basis", "basis_record",
+]
 
 SIDE_MINUS = -1
 SIDE_PLUS = 1
+
+#: key under which the **live** :class:`~synlab.schemas.runtime.CutBasis` of the shared cutter
+#: travels on :attr:`~synlab.schemas.runtime.FractureResult.meta`.
+#:
+#: The measurement tools of :mod:`synlab.fracture.surface_features` (``measure_interface_surface``,
+#: ``conjugate_profile_consistency``, ``ridge_density``, ``triangle_vertices_local``) all need the
+#: ``(u, v, w)`` frame the cut was expressed in.  Before this key existed, the only way to obtain
+#: that frame was to keep the ``CutterResult`` alive next to the result, so every measurement on a
+#: *real* event result was impossible from the result alone.  The live object is published here (it
+#: is what those functions consume) and its JSON-safe projection under
+#: :data:`BASIS_RECORD_META_KEY` below.
+BASIS_META_KEY = "basis"
+#: JSON-serialisable record of the same basis (``origin_mm`` / ``e_u`` / ``e_v`` / ``normal`` /
+#: ``u_range`` / ``v_range`` / ``h_scale_mm`` / ``basis_id`` / ``meta``).  A live ``CutBasis`` is
+#: not JSON-serialisable, so a caller that persists ``result.meta`` needs this projection; the
+#: round trip back to a ``CutBasis`` is :func:`basis_from_record`.
+BASIS_RECORD_META_KEY = "basis_record"
+
+
+def basis_record(basis: Any) -> dict[str, Any]:
+    """JSON-safe projection of one :class:`~synlab.schemas.runtime.CutBasis`."""
+    meta = dict(getattr(basis, "meta", {}) or {})
+
+    def conv(value: Any) -> Any:
+        if isinstance(value, np.ndarray):
+            return np.asarray(value, dtype=np.float64).tolist()
+        if isinstance(value, (list, tuple)):
+            return [conv(v) for v in value]
+        if isinstance(value, dict):
+            return {str(k): conv(v) for k, v in value.items()}
+        if isinstance(value, (np.integer,)):
+            return int(value)
+        if isinstance(value, (np.floating,)):
+            return float(value)
+        if isinstance(value, (np.bool_,)):
+            return bool(value)
+        if value is None or isinstance(value, (str, int, float, bool)):
+            return value
+        return str(value)
+
+    return {
+        "basis_id": str(getattr(basis, "basis_id", "")),
+        "origin_mm": conv(np.asarray(basis.origin, dtype=np.float64)),
+        "e_u": conv(np.asarray(basis.e_u, dtype=np.float64)),
+        "e_v": conv(np.asarray(basis.e_v, dtype=np.float64)),
+        "normal": conv(np.asarray(basis.normal, dtype=np.float64)),
+        "u_range": conv(np.asarray(basis.u_range, dtype=np.float64)),
+        "v_range": conv(np.asarray(basis.v_range, dtype=np.float64)),
+        "h_scale_mm": float(getattr(basis, "h_scale_mm", 0.0)),
+        "meta": conv(meta),
+    }
+
+
+def basis_from_record(record: Mapping[str, Any]) -> CutBasis:
+    """Rebuild a live :class:`~synlab.schemas.runtime.CutBasis` from :func:`basis_record`.
+
+    The frame is orthonormal by construction, so the rebuild is exact to double precision and
+    ``measure_*`` on a reloaded result reproduces the numbers measured before the round trip.
+    """
+    if not isinstance(record, Mapping):
+        raise SynlabError(ErrorCode.SCHEMA_INVALID,
+                          f"basis record must be a mapping, got {type(record).__name__}",
+                          stage="fracture.event.basis_from_record")
+    u_range = tuple(float(x) for x in np.asarray(record["u_range"]).reshape(-1)[:2])
+    v_range = tuple(float(x) for x in np.asarray(record["v_range"]).reshape(-1)[:2])
+    return CutBasis(
+        origin=np.asarray(record["origin_mm"], dtype=np.float64).reshape(3),
+        e_u=np.asarray(record["e_u"], dtype=np.float64).reshape(3),
+        e_v=np.asarray(record["e_v"], dtype=np.float64).reshape(3),
+        normal=np.asarray(record["normal"], dtype=np.float64).reshape(3),
+        u_range=u_range, v_range=v_range,
+        h_scale_mm=float(record.get("h_scale_mm", 0.0)),
+        basis_id=str(record.get("basis_id", "")),
+        meta=dict(record.get("meta") or {}),
+    )
+
+
+def result_basis(result: Any, *, cutter_mesh: Any = None) -> CutBasis:
+    """The cut basis of one :class:`~synlab.schemas.runtime.FractureResult`.
+
+    Reads :data:`BASIS_META_KEY` and falls back to :data:`BASIS_RECORD_META_KEY` (a result that was
+    serialised and reloaded carries only the record).  Raises instead of inventing a frame: a
+    measurement taken in the wrong ``(u, v, w)`` frame is worse than no measurement.
+    """
+    meta = getattr(result, "meta", None) or {}
+    basis = meta.get(BASIS_META_KEY)
+    if basis is not None and hasattr(basis, "to_local"):
+        return basis
+    record = meta.get(BASIS_RECORD_META_KEY)
+    if isinstance(record, Mapping):
+        return basis_from_record(record)
+    del cutter_mesh
+    raise SynlabError(
+        ErrorCode.SCHEMA_INVALID,
+        f"fracture result {getattr(result, 'backend', '?')!r} carries no cut basis: "
+        f"neither meta[{BASIS_META_KEY!r}] nor meta[{BASIS_RECORD_META_KEY!r}] is present",
+        stage="fracture.event.result_basis",
+    )
 
 
 @dataclass
@@ -211,6 +313,17 @@ def run_shared_cut(
         "fragment_volume_mm3": fragment_volume,
     }
     debts = [f for f in fragments if f.is_tiny]
+    # The cut basis travels on the result so the surface-measurement tools can run on a *delivered*
+    # event result instead of only on the cutter object that produced it.  Both projections are
+    # published: the live ``CutBasis`` (what ``surface_features`` consumes) and its JSON-safe
+    # record (what a persisted ``result.meta`` needs).  ``extra_meta`` is applied last, so a caller
+    # that supplies its own ``basis`` key keeps it -- this addition cannot override a caller.
+    basis_meta: dict[str, Any] = {
+        BASIS_META_KEY: cutter.basis,
+        BASIS_RECORD_META_KEY: basis_record(cutter.basis),
+        "basis_id": str(getattr(cutter.basis, "basis_id", "")),
+        "basis_source": "fracture.event.run_shared_cut:cutter.basis",
+    }
     result = FractureResult(
         fragments=fragments,
         interfaces=interfaces,
@@ -240,6 +353,7 @@ def run_shared_cut(
                     "vertices": int(value["vertex_origin"].shape[0]),
                 } for name, value in classifications.items()
             },
+            **basis_meta,
             **dict(extra_meta or {}),
         },
     )

@@ -8,13 +8,14 @@ entry point the pipeline and the CLI use, and it is where the backend registry l
 
 from __future__ import annotations
 
-from typing import Any
+import os
+from typing import Any, Mapping
 
 import numpy as np
 
 from ..canonical import hash_json
 from ..errors import ErrorCode, SynLabError
-from ..registry import register_fracture_backend
+from ..registry import STATUS_SPECIFIED, register_fracture_backend
 from ..roles import (
     FRAME_WORLD,
     ROLE_CUTTER,
@@ -37,15 +38,61 @@ BACKEND_FRACTURE_MODES = "fracture_modes"
 #: Implemented in :mod:`synlab.fracture.voronoi_event` / ``impact`` / ``voronoi_frag`` / ``energy``;
 #: this façade only registers it, so nothing in the existing plane/rough paths changes.
 BACKEND_VORONOI = "warp_voronoi_cut"
+#: Physics-driven fracture-surface morphology: the shared height field is derived from the
+#: *measured* wall thickness and the real material profile instead of being drawn from the RNG.
+#: Implemented in :mod:`synlab.fracture.morphology`.  Wired here behind a switch that is
+#: **OFF by default**, so no existing caller silently changes behaviour, cost or QA numbers.
+BACKEND_MORPHOLOGY = "morphology_shared_cut"
+#: Opt-in switch for :data:`BACKEND_MORPHOLOGY` (``1``/``true``/``yes``/``on`` enables it).
+MORPHOLOGY_SWITCH_ENV = "SYNLAB_FRACTURE_MORPHOLOGY"
 
 __all__ = [
     "make_closed_cutter", "fracture_event", "audit_fracture", "commit_fracture",
     "commit_cutter", "BUILT_BACKENDS", "PENDING_BACKENDS",
+    "BACKEND_MORPHOLOGY", "MORPHOLOGY_SWITCH_ENV", "morphology_backend_enabled",
 ]
 
 #: Backends implemented in this build; the pipeline records the honest status per event.
 BUILT_BACKENDS = ("plane_shared_cut", "rough_shared_cut", BACKEND_SECONDARY, BACKEND_VORONOI)
 PENDING_BACKENDS = (BACKEND_WARPED, BACKEND_FRACTURE_MODES)
+#: Implemented but *gated*: not part of :data:`BUILT_BACKENDS` on purpose, because a caller that
+#: iterates the built set must not start paying for (or silently switching to) morphology.
+GATED_BACKENDS = (BACKEND_MORPHOLOGY,)
+
+_TRUTHY = {"1", "true", "yes", "on", "enabled"}
+
+
+def morphology_backend_enabled(spec: Any = None) -> bool:
+    """Is the morphology backend switched on for this call?
+
+    Two independent opt-ins, both off by default:
+
+    * the environment variable :data:`MORPHOLOGY_SWITCH_ENV` is truthy, or
+    * ``spec.meta["morphology_backend"]`` is truthy, or ``spec.meta["morphology"]`` is a mapping
+      (the mapping form is how per-event morphology options are passed).
+
+    Keeping the switch out of ``FractureSpec`` means the frozen dataclass in
+    :mod:`synlab.fracture.spec` and its hash are untouched.
+    """
+    if str(os.environ.get(MORPHOLOGY_SWITCH_ENV, "")).strip().lower() in _TRUTHY:
+        return True
+    meta = getattr(spec, "meta", None)
+    if isinstance(meta, Mapping):
+        if bool(meta.get("morphology_backend")):
+            return True
+        if isinstance(meta.get("morphology"), Mapping):
+            return True
+    return False
+
+
+def morphology_options(spec: Any) -> tuple[Any, dict[str, Any]]:
+    """``(material_profile, options)`` carried by ``spec.meta`` (both may be empty)."""
+    meta = getattr(spec, "meta", None)
+    meta = dict(meta) if isinstance(meta, Mapping) else {}
+    profile = meta.get("material_profile")
+    options = meta.get("morphology")
+    return profile, (dict(options) if isinstance(options, Mapping) else {})
+
 
 
 # ---------------------------------------------------------------------------- registry
@@ -100,6 +147,19 @@ def _backend_voronoi(spec: Any = None, **_: Any) -> str:  # pragma: no cover - r
     return BACKEND_VORONOI
 
 
+@register_fracture_backend(
+    BACKEND_MORPHOLOGY, "物理驱动断口形态学",
+    status=STATUS_SPECIFIED,
+    applicable={"shell": True, "solid": True},
+    notes="wall-thickness + material driven fracture-surface morphology (mirror/mist/hackle/ribs/"
+          "pull-out pits) on one shared cutter.  Implemented and measured (see "
+          "docs/a12/fracture_realism.md), but GATED: it is NOT in BUILT_BACKENDS and refuses to run "
+          f"unless switched on via {MORPHOLOGY_SWITCH_ENV}=1 or spec.meta['morphology'].  Entry "
+          "point: synlab.fracture.morphology.build_morphology_cutter")
+def _backend_morphology(spec: Any = None, **_: Any) -> str:  # pragma: no cover - registry marker
+    return BACKEND_MORPHOLOGY
+
+
 # ---------------------------------------------------------------------------- cutter
 def _default_basis(mother: Any, rng: np.random.Generator, spec: FractureSpec) -> CutBasis:
     """Cut basis for a mother: explicit when given, otherwise a body-determined default plane.
@@ -149,6 +209,8 @@ def make_closed_cutter(mother: Any, spec: Any, rng: np.random.Generator,
                        basis: CutBasis | None = None) -> CutterResult:
     """Build the single closed cutter body shared by both sides of the cut."""
     fracture_spec = _coerce_spec(spec)
+    if str(fracture_spec.backend) == BACKEND_MORPHOLOGY:
+        return _make_morphology_cutter(mother, fracture_spec, rng, basis=basis)[0]
     basis = basis or _default_basis(mother, rng, fracture_spec)
     backend = str(fracture_spec.backend)
     target_rms = 0.0 if backend == BACKEND_PLANE else float(fracture_spec.target_rms_mm)
@@ -223,8 +285,141 @@ def fracture_event(mother: Any, spec: Any, rng: np.random.Generator, *, event_id
         )
     if backend == BACKEND_SECONDARY:
         return _secondary_event(mother, fracture_spec, rng, event_id=event_id)
+    if backend == BACKEND_VORONOI:
+        return _voronoi_event(mother, fracture_spec, rng, event_id=event_id)
+    if backend == BACKEND_MORPHOLOGY:
+        return _morphology_event(mother, fracture_spec, rng, event_id=event_id)
     cutter = make_closed_cutter(mother, fracture_spec, rng)
     return event_mod.run_shared_cut(mother, cutter, event_id=event_id, backend=backend)
+
+
+def _voronoi_event(mother: Any, spec: FractureSpec, rng: np.random.Generator, *,
+                   event_id: str) -> FractureResult:
+    """One multi-piece event through the physics-driven Voronoi backend.
+
+    ``warp_voronoi_cut`` is a *physical* split, not a cut plane: it needs the measured body and
+    material statistics plus the declared impact scenario.  They are built here from the live
+    mother -- wall thickness from ``synlab.mothers.measure`` (measured median, never a constant),
+    volume/area from the mesh, material statistics from the material profile -- and handed to
+    :func:`synlab.fracture.voronoi_event.run_voronoi_event`, whose entry point the backend registry
+    documents.  The physics parameters are read from ``configs/a12/fracture_physics.yaml``
+    (:func:`synlab.fracture.physics.load_physics_config`).
+
+    The three backend-specific inputs travel in ``FractureSpec.meta`` (the spec's own documented
+    extension point, so the frozen dataclass's field set does not change):
+
+    ``meta["physics_config_path"]``   which physics config to load (default: the shipped one)
+    ``meta["drop_height_mm"]``        the declared impact scenario (default: the config's own)
+    ``meta["target_pieces"]``         the sweep override; ``> 0`` forces a count and the record
+                                      says ``count_source=explicit_override``
+    """
+    from . import voronoi_event as voronoi_mod
+    from .calibration import body_stats_of, material_stats_of
+    from .impact import MaterialStats
+    from .physics import load_physics_config
+
+    meta = dict(getattr(mother, "meta", {}) or {})
+    vessel_id = str(getattr(mother, "vessel_id", "") or meta.get("vessel_id", "") or "")
+    material_id = str(getattr(mother, "material_id", "") or meta.get("material_id", "") or "")
+    spec_meta = dict(getattr(spec, "meta", {}) or {})
+    config_path = str(spec_meta.get("physics_config_path", "") or "")
+    config = load_physics_config(config_path) if config_path else load_physics_config()
+    body = body_stats_of(mother, vessel_id)
+    material = (material_stats_of(material_id) if material_id
+                else MaterialStats(material_id="", provenance={
+                    "source": "mother carries no material id: the config's fallback fracture "
+                              "energy and density apply, and the count record says so"}))
+    drop_height = float(spec_meta.get("drop_height_mm", 0.0) or 0.0)
+    target = int(spec_meta.get("target_pieces", 0) or 0)
+    return voronoi_mod.run_voronoi_event(
+        mother, event_id=event_id, config=config, rng=rng, body=body, material=material,
+        target_pieces=(target if target > 0 else None),
+        impact_point=None,
+        drop_height_mm=(drop_height if drop_height > 0.0 else None),
+        extra_meta={"fracture_spec_hash": spec_hash(spec),
+                    "target_rms_mm": float(spec.target_rms_mm),
+                    "physics_config_path": str(config.path),
+                    "physics_config_hash": config.hash})
+
+
+def _gate_morphology(spec: FractureSpec, *, stage: str) -> None:
+    """Refuse the gated backend unless it was explicitly switched on.
+
+    The refusal is the *default*, and it is a real refusal (not a silent fall back to a plane):
+    a caller that asked for morphology and did not switch it on gets an error naming the switch,
+    never a planar surface labelled "morphology".
+    """
+    if morphology_backend_enabled(spec):
+        return
+    raise SynLabError(
+        ErrorCode.OPERATOR_NOT_REALIZED,
+        f"backend {BACKEND_MORPHOLOGY!r} is implemented but GATED OFF by default so that no "
+        f"existing caller changes cost or QA numbers; opt in with {MORPHOLOGY_SWITCH_ENV}=1 or "
+        f"spec.meta['morphology']/spec.meta['morphology_backend']",
+        stage=stage,
+        measurements={"switch_env": MORPHOLOGY_SWITCH_ENV, "gated": True},
+    )
+
+
+def _make_morphology_cutter(mother: Any, spec: FractureSpec, rng: np.random.Generator,
+                            *, basis: CutBasis | None = None, event_id: str = ""
+                            ) -> tuple[CutterResult, Any, Any, dict[str, Any]]:
+    from . import morphology as morphology_mod
+
+    _gate_morphology(spec, stage="fracture.make_closed_cutter")
+    profile, options = morphology_options(spec)
+    if profile is None:
+        raise SynLabError(
+            ErrorCode.SCHEMA_INVALID,
+            "the morphology backend needs the real material profile in "
+            "spec.meta['material_profile'] (it is what drives the amplitudes)",
+            stage="fracture._make_morphology_cutter",
+        )
+    return morphology_mod.build_morphology_cutter(
+        mother, material_profile=profile, rng=rng, basis=basis, event_id=str(event_id),
+        error_budget_mm=float(spec.error_budget_mm), max_cells=int(spec.max_cutter_cells),
+        max_triangles=int(spec.max_cutter_triangles),
+        origin_uv=options.get("origin_uv"),
+        wall_probes=int(options.get("wall_probes", 320)),
+    )
+
+
+def _morphology_event(mother: Any, spec: FractureSpec, rng: np.random.Generator,
+                      *, event_id: str) -> FractureResult:
+    """One morphology event through the frozen shared-cutter path.
+
+    The cutter is the *same* closed discrete body for both sides (``run_shared_cut``), and the
+    frozen parameter record is published on the result meta, every interface patch and every
+    fragment, so a downstream reader never has to guess where the relief came from.
+    """
+    from . import morphology as morphology_mod
+
+    cutter, field, params, report = _make_morphology_cutter(mother, spec, rng, event_id=event_id)
+    result = event_mod.run_shared_cut(
+        mother, cutter, event_id=event_id, backend=BACKEND_MORPHOLOGY,
+        extra_meta={
+            morphology_mod.MORPHOLOGY_META_KEY: params.as_dict(),
+            "cutter_cells": int(report.get("cells", 0)),
+            "cutter_triangles": int(cutter.triangles),
+            "cutter_realized_error_mm": float(cutter.realized_error_mm),
+            "cutter_requested_error_mm": float(cutter.requested_error_mm),
+            "precision_amplitude_scale": float(report.get("precision_amplitude_scale", 1.0)),
+            "cell_demand_estimate": report.get("cell_demand_estimate"),
+            "height_field_summary": {
+                "wavelength_min_mm": float(field.wavelength_min_mm),
+                "realized_rms_mm": float(field.realized_rms_mm),
+                "relief_amplitude_mm": float(field.meta.get("relief_amplitude_mm", 0.0)),
+                "max_slope": float(field.max_slope),
+                "curvature_bound_per_mm": float(field.curvature_bound()),
+            },
+        })
+    record = params.as_dict()
+    for patch in result.interfaces:
+        patch.meta[morphology_mod.MORPHOLOGY_META_KEY] = record
+    for fragment in result.fragments:
+        fragment.meta[morphology_mod.MORPHOLOGY_META_KEY] = record
+    return result
+
 
 
 def _secondary_event(mother: Any, spec: FractureSpec, rng: np.random.Generator,

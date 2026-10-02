@@ -1,0 +1,31 @@
+﻿  171: def self_intersection_report(mesh: trimesh.Trimesh, *, eps_mm: float = 1e-4,
+  172:                              max_pairs: int = 6_000_000,
+  173:                              max_coplanar_checks: int = 1500,
+  174:                              chunk: int = 40000) -> dict[str, Any]:
+  175:     """Complete non-adjacent triangle-triangle intersection scan.
+  176: 
+  177:     The candidate set is every pair of non-adjacent triangles whose slabs and bounding spheres
+  178:     touch (see :func:`_candidate_pairs`); the separating-axis test then runs on all of them in
+  179:     memory-bounded blocks, followed by an exact GEOS overlap test for coplanar pairs.  The scan
+  180:     is complete for the triangles it reports, and the block sizes are derived from a fixed
+  181:     memory budget because the separating-axis test materialises ``pairs x 11 axes x 3``
+  182:     coordinates per block.
+  183:     """
+  184:     tris = np.asarray(mesh.triangles, dtype=np.float64)
+  185:     faces = np.asarray(mesh.faces, dtype=np.int64)
+  186:     n = len(tris)
+  187:     if n == 0:
+  188:         return {"ok": False, "checked_pairs": 0, "intersecting_pairs": 0,
+  189:                 "reason": "empty mesh"}
+  190:     pairs, sweep = _candidate_pairs(tris, faces, max_pairs=max_pairs)
+  191:     if len(pairs) == 0:
+  192:         return {"ok": True, "checked_pairs": 0, "intersecting_pairs": 0,
+  193:                 "coplanar_contact_pairs": 0, "coplanar_pairs_examined": 0,
+  194:                 "coplanar_overlap_pairs": 0, "coplanar_overlap_area_mm2": 0.0,
+  195:                 "complete": True, **sweep,
+  196:                 "note": "no non-adjacent triangle pair can touch"}
+  197:     # the separating-axis test materialises pairs x 11 axes x 3 coordinates per block
+  198:     block = int(np.clip(2_000_000 // 132, 2048, int(chunk)))
+  199:     hits = 0
+  200:     coplanar_count = 0
+  201:     checked_coplanar = 0

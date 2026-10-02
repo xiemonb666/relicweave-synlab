@@ -1,0 +1,31 @@
+﻿======================================================================
+synlab/fracture/event.py
+   203:             "realized_error_mm": float(cutter.realized_error_mm),
+======================================================================
+synlab/fracture/api.py
+    34: BACKEND_WARPED = "warped_partition"
+    35: BACKEND_FRACTURE_MODES = "fracture_modes"
+    43:     "commit_cutter", "BUILT_BACKENDS", "PENDING_BACKENDS",
+    47: BUILT_BACKENDS = ("plane_shared_cut", "rough_shared_cut", BACKEND_SECONDARY, BACKEND_VORONOI)
+    58: @register_fracture_backend("rough_shared_cut", "����ֲ��и�",
+    62:     return "rough_shared_cut"
+   167:     realized = float(report.get("realized_error_mm", float("inf")))
+   174:             measurements={"realized_error_mm": realized, "budget_mm": request_mm},
+   187:         requested_error_mm=request_mm, realized_error_mm=realized,
+   319:               "realized_error_mm": float(cutter.realized_error_mm),
+   321:         qa={"ok": True, "realized_error_mm": float(cutter.realized_error_mm)},
+======================================================================
+synlab/fracture/cut.py
+    13: * exceeding the cell / face budget raises ``PRECISION_BUDGET_EXCEEDED``.  The shortest
+  1027:             ErrorCode.PRECISION_BUDGET_EXCEEDED,
+  1135:                         ErrorCode.PRECISION_BUDGET_EXCEEDED,
+  1155:             ErrorCode.PRECISION_BUDGET_EXCEEDED,
+  1251:             ErrorCode.PRECISION_BUDGET_EXCEEDED,
+  1274:                 "realized_error_mm": realized,
+  1324:         "realized_error_mm": float(realized),
+======================================================================
+synlab/fracture/spec.py
+    18: BACKEND_ROUGH = "rough_shared_cut"
+    19: BACKEND_WARPED = "warped_partition"
+    21: BACKEND_MODES = "fracture_modes"
+    87:     #: warped_partition only

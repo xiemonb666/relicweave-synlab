@@ -1,4 +1,4 @@
-﻿# =============================================================================================
+# =============================================================================================
 # A12 fracture physics -- multi-piece, physically constrained fragmentation
 # =============================================================================================
 # New file (does NOT touch the frozen configs/a12/next_experiment.yaml).  Every block carries a
@@ -24,14 +24,23 @@ version: "1.0.0"
 # ---------------------------------------------------------------------------------------------
 count_model:
   # reference/calibration body: declared, not fitted
-  n0: 3.0
+  n0: 2.5047
   v_ref_mm3: 339292.0          # pi * 200 mm * 6 mm * 90 mm (bowl, D=200, t=6, H=90)
   thickness_ref_mm: 6.0
   v_impact_ref_mm_s: 3130.0    # 0.5 m free drop, v = sqrt(2 g h)
   # beta: exponent of the energy ratio.  Grady/Kipp dynamic-fragmentation scaling predicts a
   # fragment count that grows with the *strain rate*; over the low-velocity range relevant to
   # handling and dropping (0.5-5 m/s) a sub-linear exponent is used.
-  impact_energy_exponent: 0.65
+  #
+  # CALIBRATED 2026-10-02 (measurement, not assumption).  Fitting ln N = ln N0 + beta*ln(U/U_ref) on
+  # the thirteen measured points whose count is above the floor of two -- the V01 drop series at
+  # 2000/4000/8000 mm for both materials (3/5/7 pieces each), the V13 pair at 2000 mm (5 pieces),
+  # the V13 500 mm repeat (2 and 3 pieces) -- gives beta = 0.625 +- 0.035 (1 sigma), R^2 = 0.9675,
+  # RMSE(ln N) = 0.075, mean |error| 0.26 pieces, worst 0.84.  The declared 0.65 is inside one
+  # sigma of the measurement; the value shipped here is the measured 0.625 and the amplitude was
+  # then re-solved on all 32 measured points with the floor treated as censored (N0 = 2.5047).
+  # Full tables: configs/a12/fracture_calibration.json, docs/a12/fracture_calibration.md.
+  impact_energy_exponent: 0.625
   # Weibull modulus m of the body material.  LITERATURE: fired earthenware / porous ceramic
   # bodies report m ~ 5-11 (Weibull weakest-link); the material profile's own value wins when
   # present, this is the fallback and is part of the calibration.
@@ -42,11 +51,12 @@ count_model:
   max_pieces: 64
   log_sigma: 0.18              # spread of the Weibull-distributed count around the mean
   provenance:
-    n0: "ENGINEERING calibration: reproduces 3 pieces on the reference bowl at a 0.5 m drop"
-    impact_energy_exponent: "ENGINEERING (0.5-0.8 admitted); low-velocity handling/drop range"
+    n0: "CALIBRATED (measurement): amplitude re-solved on all 32 measured points with the floor of two pieces treated as censored (N0 = 2.5047, R^2 0.734 on the censored set, 19 of 32 points at the floor).  The previous declared value 3.0 came from calibrate_reference_energy, which *solved* the reference energy out of N0 and thereby left the amplitude degenerate: measured n_raw on the real V01 bowl (1.85e5 mm^3) was 0.61..1.73 at h<=500 mm, so the whole low-energy half of the calibration sat on the floor."
+    impact_energy_exponent: "MEASURED 0.625 +- 0.035 on the thirteen unclamped points, R^2 0.9675; the previously declared 0.65 lies inside one sigma (the declared-exponent alternative and its residual table are in configs/a12/fracture_calibration.json)."
     weibull_modulus: "LITERATURE range 5-11 for fired earthenware; 7.0 chosen (ENGINEERING)"
     weibull_volume_exponent: "GEOMETRIC: fracture work of one shard ~ t^2, site count ~ V"
     min_pieces/max_pieces: "ENGINEERING validity window of the scaling law"
+    alpha_size_exponent: "NOT fitted: alpha = 1/(2m) + 0.5 = 0.5714 is pinned to the declared Weibull + geometry form.  The measurements cannot separate it from the energy exponent with only three distinct unclamped counts, and the structural limit this creates (fixed drop height: N ~ V^(alpha-beta) = V^-0.054, i.e. bigger bodies give slightly FEWER pieces) is documented in docs/a12/fracture_calibration.md together with the measured counter-examples."
 
 # ---------------------------------------------------------------------------------------------
 # 2. Impact scenario (the energy that drives the count)
@@ -223,6 +233,35 @@ generation_spec:
   storage:
     root: data/a12_fracphys
   notes: "multi-piece physically constrained fragmentation (warp_voronoi_cut)"
+
+# ---------------------------------------------------------------------------------------------
+# 10. Production backend selection (batch wiring)
+# ---------------------------------------------------------------------------------------------
+# The batch pipeline picks its fracture backend from the generation spec's
+# `fracture.backend` field (see `synlab.pipeline.build_one_mother` ->
+# `synlab.fracture.api.fracture_event`).  This block declares which of the implemented backends is
+# the DEFAULT for production and which one stays as the baseline, so a run can switch backends by
+# configuration alone and the switch is reviewable in one place.
+#
+#   * `warp_voronoi_cut`  -- multi-piece, physics-driven (count from size x toughness x energy).
+#     It is the default below and it is what the `generation_spec:` block above carries, so
+#     `synlab.cli validate --config configs/a12/fracture_physics.yaml` type-checks the exact spec
+#     the default produces.
+#   * `plane_shared_cut`  -- the frozen two-piece baseline; kept registered and selectable, and it
+#     remains the backend of every other A12 config (`configs/a12/next_experiment.yaml` is frozen
+#     and is NOT touched by this file).
+#
+# Measured acceptance for the default (docs/a12/fracture_calibration.md, section 6):
+# 1 and 2 lineage batches on `data/a12_fcal/store`, whole DAG, real timings.
+backends:
+  default: warp_voronoi_cut
+  baseline: plane_shared_cut
+  implemented: [plane_shared_cut, rough_shared_cut, secondary_fracture, warp_voronoi_cut]
+  available: [warp_voronoi_cut, plane_shared_cut, rough_shared_cut, secondary_fracture]
+  switch_how: "set fracture.backend in the generation spec (or in this block's `default`); the pipeline reads the spec, never this block, at run time"
+  provenance:
+    default: "MEASURED: the calibration of this file (docs/a12/fracture_calibration.md) is fitted to warp_voronoi_cut events; the backend is the default for that reason, not by preference"
+    baseline: "FROZEN baseline backend of the A12 campaign; never removed"
 
 
 

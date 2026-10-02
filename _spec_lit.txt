@@ -1,0 +1,50 @@
+﻿   11: from typing import Any, Literal
+  103:     mode: Literal["standalone", "main_repo_adapter"] = "standalone"
+  110:     policy: Literal["open_source_first"] = "open_source_first"
+  123:     debris_policy: Literal["quarantine_and_record", "keep"] = "quarantine_and_record"
+  133:     method: Literal["latin_hypercube", "sobol", "quota_uniform"] = "latin_hypercube"
+  134:     quota_policy: Literal["registry_balanced", "uniform", "explicit"] = "registry_balanced"
+  140:     coordinate_space: Literal["mother_surface_mm"] = "mother_surface_mm"
+  143:     antialias: Literal["analytic_or_mipmap", "analytic", "mipmap"] = "analytic_or_mipmap"
+  144:     height_policy: Literal["relief", "engrave", "none"] = "none"
+  148:     backend: Literal["plane_shared_cut", "rough_shared_cut", "warped_partition", "secondary_fracture",
+  151:     min_feature_wavelength_mm: float = Field(0.24, gt=0)
+  152:     shared_surface_max_error_mm: float = Field(0.01, gt=0)
+  156:     rough_amplitude_mm: tuple[float, float] = (0.02, 0.3)
+  164:         if self.min_feature_wavelength_mm > 3.0:
+  165:             raise ValueError("min_feature_wavelength_mm outside supported band (<= 3 mm)")
+  182:     persist_depth: Literal["selected_qa_only", "all", "none"] = "selected_qa_only"
+  185:     truth_channels_role: Literal["research_label_only"] = "research_label_only"
+  186:     renderer: Literal["auto", "software_rasterizer", "blender"] = "auto"
+  212:     mutable_release: Literal[False] = False
+  224:     schema_id: Literal["synlab.v3"] = Field(default=SCHEMA_GENERATION, alias="schema")
+  231:     units: Literal["mm"] = "mm"
+  266:     first_stage: Literal["normalized_dual_encoder", "classical_descriptor"] = "normalized_dual_encoder"
+  267:     refinement: Literal["observed_local_pair_head", "none", "classical_local"] = "observed_local_pair_head"
+  273:     kind: Literal["existing_public_or_project_backbone", "random", "classical"] = "random"
+  290:     quality_source: Literal["OBS_EST", "GT_ORACLE"] = "OBS_EST"
+  291:     roi_source: Literal["observed_estimator", "MANUAL_OBS", "HEURISTIC_OBS", "ORACLE_ROI"] = "observed_estimator"
+  293:     oracle_features: Literal[False] = False
+  301:     exclude_all_R2_and_unknown: Literal[True] = True
+  313:     optimizer: Literal["AdamW", "SGD"] = "AdamW"
+  321:     precision: Literal["fp32", "bf16_if_verified"] = "fp32"
+  339:     split: Literal["train", "dev", "confirm"] = "dev"
+  347:     save_rng_sampler_and_data_hash: Literal[True] = True
+  351:     schema_id: Literal["synlab.train.v1"] = Field(default=SCHEMA_TRAIN, alias="schema")
+  355:     split: Literal["train"] = "train"
+  357:     stage: Literal["P0", "P1", "P2", "P3", "P4"] = "P0"
+  358:     migration_group: Literal["T0_SCRATCH_REAL", "T1_PUBLIC_REAL", "T2_PUBLIC_SYN_REAL",
+  369:     device: Literal["cpu", "cuda", "auto"] = "auto"
+  375:     unit: Literal["shape_lineage"] = "shape_lineage"
+  378:     multiple_testing: Literal["holm_for_registered_comparisons", "none"] = "holm_for_registered_comparisons"
+  379:     report_all_attempts: Literal[True] = True
+  384:     require_frozen_protocol: Literal[True] = True
+  388:     schema_id: Literal["synlab.diagnose.v1"] = Field(default=SCHEMA_DIAGNOSE, alias="schema")
+  392:     evaluation_split: Literal["train", "dev", "confirm"] = "dev"
+  399:     perturbation_side: Literal["QUERY_ONLY", "QUERY_AND_CANDIDATE", "CANDIDATE_ONLY"] = "QUERY_ONLY"
+  402:     include_pipeline_failures_in_primary_denominator: Literal[True] = True
+  403:     fixed_query_ids: Literal[True] = True
+  404:     seed_kind: Literal["observation_basis"] = "observation_basis"
+  438:     schema_id: Literal["synlab.v3"] = Field(default=SCHEMA_GENERATION, alias="schema")
+  440:     basis_policy: Literal["paired_across_levels", "independent"] = "paired_across_levels"
+  441:     source_role: Literal["clean", "physical", "observed"] = "clean"

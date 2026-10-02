@@ -1,0 +1,8 @@
+﻿BACKEND_MORPHOLOGY morphology_shared_cut
+GATED ('morphology_shared_cut',)
+BUILT ('plane_shared_cut', 'rough_shared_cut', 'secondary_fracture', 'warp_voronoi_cut')
+enabled default -> False
+enabled meta    -> True
+enabled env     -> True
+registry status SPECIFIED
+registry ids ['fracture_modes', 'morphology_shared_cut', 'plane_shared_cut', 'rough_shared_cut', 'secondary_fracture', 'warp_voronoi_cut', 'warped_partition']

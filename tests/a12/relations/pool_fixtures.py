@@ -158,3 +158,31 @@ def build_two_event_store(tmp_path: Path, **kwargs) -> tuple[AssetStore, list[Ev
     for spec in specs:
         commit_event(store, spec)
     return store, specs
+
+
+def make_mate_absent_event(lineage_id: str, mother_id: str, prefix: str, count: int = 2, *,
+                           split: str = "dev", seed: int = 0,
+                           r1_to: list[tuple[str, str]] | None = None,
+                           features: bool = True) -> EventSpec:
+    """An event whose pieces carry **no** confirmed R2 surface.
+
+    A corpus contains both populations, and only this one may supply ordinary negatives after
+    the mate-absent rule (``synlab.relations.mate_absent``): these pieces have no mate, so no
+    pair that uses one of them as a negative can be a true adjacency.  ``make_event`` with
+    ``r2_chain=False`` produces exactly that measured state (an event with no shared fracture
+    surface above the frozen area threshold).
+    """
+    return make_event(lineage_id, mother_id, prefix, count, split=split, r2_chain=False,
+                      r1_to=r1_to, features=features, seed=seed)
+
+
+def add_mate_absent_pieces(store: AssetStore, *, lineage_id: str = "LIN0003_V03_M03",
+                           mother_id: str = "m::LIN0003", prefix: str = "z", count: int = 4,
+                           split: str = "dev", seed: int = 5,
+                           r1_to: list[tuple[str, str]] | None = None,
+                           features: bool = True) -> EventSpec:
+    """Commit a mate-absent lineage into an existing store and return its spec."""
+    spec = make_mate_absent_event(lineage_id, mother_id, prefix, count, split=split, seed=seed,
+                                 r1_to=r1_to, features=features)
+    commit_event(store, spec)
+    return spec

@@ -6,6 +6,15 @@ the documented ``rows=`` interface.  ``synlab/training/batch.py`` currently has 
 function, ``TypeError: 'dict' object is not callable``); that file is outside this task's write
 scope, so the integration test applies the one-line wrapper locally and records the defect here
 and in ``docs/a12/relations_diagnostics_episodes.md``.
+
+Negative population (mate-absent rule)
+--------------------------------------
+Only a **mate-absent** candidate may be an ordinary negative
+(``synlab.relations.mate_absent``; ``negative_exclusion_reason`` returns
+``candidate_mate_present`` otherwise).  A corpus therefore has two populations and the fixtures
+model both: the R2 chains of ``build_two_event_store`` (every piece has a mate -> queries and
+positives) and the pieces added by :func:`add_mate_absent_pieces` (an event with no measured
+shared surface -> the negative/distractor population).
 """
 
 from __future__ import annotations
@@ -15,9 +24,11 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from pool_fixtures import build_two_event_store, commit_event, make_event
+from pool_fixtures import (add_mate_absent_pieces, build_two_event_store, commit_event,
+                           make_event, make_mate_absent_event)
 from synlab.errors import ErrorCode, SynLabError
 from synlab.relations.api import PoolConfig, build_pool, mine_hard_negatives, sample_training_batch
+from synlab.relations.mate_absent import MATE_PRESENT_EXCLUSION_REASON
 from synlab.relations.sampler import (
     HARD_GROUPS,
     assert_legal_feature_payload,
@@ -34,6 +45,16 @@ CFG = {"queries_per_microbatch": 2, "positive_limit": 2, "legal_negative_limit":
 def _pool(tmp_path: Path, **kwargs):
     store, specs = build_two_event_store(tmp_path, **kwargs)
     report = build_pool(store, None, PoolConfig(pool_id="p_sampler", size_target=100,
+                                                query_per_mother=2))
+    assert report["ok"], report.get("error")
+    return report["pool"]
+
+
+def _pool_with_absent(tmp_path: Path, *, features: bool = True, count: int = 4):
+    """Chain lineages A/B (mate-present) plus a mate-absent lineage Z (the negative pool)."""
+    store, specs = build_two_event_store(tmp_path, features=features)
+    add_mate_absent_pieces(store, count=count, features=features, r1_to=[("a00", "z00")])
+    report = build_pool(store, None, PoolConfig(pool_id="p_absent", size_target=100,
                                                 query_per_mother=2))
     assert report["ok"], report.get("error")
     return report["pool"]
@@ -85,10 +106,11 @@ def test_positives_walk_the_whole_r2_set_across_batches(tmp_path: Path):
 def test_negatives_remove_all_history_r2_tiny_unknown_and_self(tmp_path: Path):
     store = AssetStore(tmp_path)
     spec = make_event("LIN0101_V01_M01", "m::101", "a", 5, split="dev", seed=2)
-    spec.r1 = [("a00", "a04")]
+    spec.r1 = [("a00", "a04"), ("a00", "z00")]
     spec.tiny = [("a00", "a03")]
     spec.unknown = [("a00", "a02")]
     commit_event(store, spec)
+    add_mate_absent_pieces(store, count=2, r1_to=[])
     report = build_pool(store, None, PoolConfig(pool_id="p_excl", size_target=100,
                                                 query_per_mother=1))
     pool = report["pool"]
@@ -102,15 +124,20 @@ def test_negatives_remove_all_history_r2_tiny_unknown_and_self(tmp_path: Path):
     assert "a01" not in row["negatives"]                       # history R2, not just positives
     assert "a02" not in row["negatives"]                       # UNKNOWN
     assert "a03" not in row["negatives"]                       # TINY_CONTACT
-    assert "a04" in row["negatives"]                           # confirmed R1 is legal
-    assert set(row["excluded"]) >= {"a01", "a02", "a03", "a00"}
+    # a04 is a confirmed R1 of a00 but carries its own R2 mate (a03): mate-present candidates are
+    # a separate class and never enter the ordinary negative set.
+    assert "a04" not in row["negatives"]
+    assert "z00" in row["negatives"]                           # R1 to a *mate-absent* piece
+    assert set(row["excluded"]) >= {"a01", "a02", "a03", "a00", "a04"}
     assert batch["exclusions"]["known_R2"] >= 1
     assert batch["exclusions"]["gray_zone"] == 1
     assert batch["exclusions"]["TINY_CONTACT"] == 1
+    assert batch["exclusions"][MATE_PRESENT_EXCLUSION_REASON] >= 1
     reasons = {c: negative_exclusion_reason(pool, "a00", c) for c in pool.lineup}
     assert reasons["a02"] == "gray_zone" and reasons["a03"] == "TINY_CONTACT"
     assert reasons["a01"] == "known_R2" and reasons["a00"] == "same_fragment"
-    assert reasons["a04"] is None
+    assert reasons["a04"] == MATE_PRESENT_EXCLUSION_REASON
+    assert reasons["z00"] is None
 
 
 def test_r1_fallback_is_recorded_not_invented(tmp_path: Path):
@@ -120,6 +147,7 @@ def test_r1_fallback_is_recorded_not_invented(tmp_path: Path):
     spec_b = make_event("LIN0103_V02_M02", "m::103", "b", 3, split="dev", seed=4)
     commit_event(store, spec_a)
     commit_event(store, spec_b)
+    add_mate_absent_pieces(store, count=3)
     report = build_pool(store, None, PoolConfig(pool_id="p_fallback", size_target=100,
                                                 query_per_mother=2))
     pool = report["pool"]
@@ -127,14 +155,17 @@ def test_r1_fallback_is_recorded_not_invented(tmp_path: Path):
     assert batch["rows"]
     for row in batch["rows"]:
         assert row["r1_fallback"] is True
+        assert row["negatives"], row          # the mate-absent lineage supplies real R0 negatives
         assert all(pool.relation(row["query"], c) == "R0" for c in row["negatives"])
+        assert all(not pool.neighbours(c) for c in row["negatives"])
     assert batch["exposure"]["r1_fallback_events"] == len(batch["rows"])
 
 
 def test_r1_and_r0_quota_is_four_plus_four_with_shortfall_to_r0(tmp_path: Path):
-    pool = _pool(tmp_path)
+    pool = _pool_with_absent(tmp_path)
     batch = sample_training_batch(pool, {**CFG, "legal_negative_limit": 8},
                                   np.random.default_rng(11))
+    assert any(row["negatives"] for row in batch["rows"])
     for row in batch["rows"]:
         query = row["query"]
         legal = [c for c in pool.candidate_ids(query)
@@ -151,12 +182,12 @@ def test_r1_and_r0_quota_is_four_plus_four_with_shortfall_to_r0(tmp_path: Path):
 
 
 def test_r0_quota_categories_need_legal_observations(tmp_path: Path):
-    pool = _pool(tmp_path)
+    pool = _pool_with_absent(tmp_path)
     batch = sample_training_batch(pool, CFG, np.random.default_rng(7))
     categories = batch["exposure"]["r0_categories"]
     assert categories["pattern_approx"] >= 1 and categories["geometry_approx"] >= 1
     assert not batch["exposure"]["r0_categories_unavailable"]
-    bare = _pool(tmp_path / "bare", features=False)
+    bare = _pool_with_absent(tmp_path / "bare", features=False)
     batch_bare = sample_training_batch(bare, CFG, np.random.default_rng(7))
     assert batch_bare["exposure"]["r0_categories"]["pattern_approx"] == 0
     assert "pattern_approx" in batch_bare["exposure"]["r0_categories_unavailable"]
@@ -189,24 +220,36 @@ def test_forbidden_fields_never_reach_the_retrieval_features(tmp_path: Path):
 
 
 def test_mine_hard_negatives_uses_labels_only_for_exclusion(tmp_path: Path):
-    pool = _pool(tmp_path)
-    mined = mine_hard_negatives(pool, ["a00"], top_m=3)
+    pool = _pool_with_absent(tmp_path)
+    mined = mine_hard_negatives(pool, ["a00"], top_m=4)
     assert len(mined) == 1
     entry = mined[0]
     assert entry["status"] == "OK"
-    assert entry["retrieved"] == 3
+    assert entry["retrieved"] == 4
     by_candidate = {c["candidate"]: c for c in entry["candidates"]}
-    assert len(by_candidate) == 3
+    assert len(by_candidate) == 4
     for candidate, info in by_candidate.items():
         if info["relation"] == "R2":
             assert info["usable_as_negative"] is False
             assert info["exclusion_reason"] == "known_R2"
         if info["relation"] == "UNKNOWN":
             assert info["usable_as_negative"] is False
+        if pool.neighbours(candidate):
+            # a candidate with its own R2 mate is a separate class, never an ordinary negative,
+            # and it keeps its real hard group instead of "no_neighbour_in_gallery"
+            assert info["usable_as_negative"] is False
+            assert info["exclusion_reason"] == MATE_PRESENT_EXCLUSION_REASON
+            assert info["hard_group"] != "no_neighbour_in_gallery"
+    # the usable candidates are exactly the mate-absent ones (retrieval order is not asserted)
+    usable = {c for c, info in by_candidate.items() if info["usable_as_negative"]}
+    expected = {c for c in pool.candidate_ids("a00")
+                if negative_exclusion_reason(pool, "a00", c) is None}
+    assert usable <= expected
+    assert all(pool.neighbours(c) == [] for c in usable)
     assert all("score" in info for info in by_candidate.values())
     assert entry["cache"]["encoder_hash"] == ""
     # retrieval is deterministic (no random candidate selection)
-    again = mine_hard_negatives(pool, ["a00"], top_m=3)
+    again = mine_hard_negatives(pool, ["a00"], top_m=4)
     assert [c["candidate"] for c in again[0]["candidates"]] == list(by_candidate)
 
 

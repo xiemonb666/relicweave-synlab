@@ -1,0 +1,104 @@
+﻿============================== API synlab/fracture/api.py
+   34: BACKEND_SECONDARY = "secondary_fracture"
+   35: BACKEND_WARPED = "warped_partition"
+   36: BACKEND_FRACTURE_MODES = "fracture_modes"
+   40: BACKEND_VORONOI = "warp_voronoi_cut"
+   45: BACKEND_MORPHOLOGY = "morphology_shared_cut"
+   47: MORPHOLOGY_SWITCH_ENV = "SYNLAB_FRACTURE_MORPHOLOGY"
+   56: BUILT_BACKENDS = ("plane_shared_cut", "rough_shared_cut", BACKEND_SECONDARY, BACKEND_VORONOI)
+   57: PENDING_BACKENDS = (BACKEND_WARPED, BACKEND_FRACTURE_MODES)
+   60: GATED_BACKENDS = (BACKEND_MORPHOLOGY,)
+   62: _TRUTHY = {"1", "true", "yes", "on", "enabled"}
+   65: def morphology_backend_enabled(spec: Any = None) -> bool:
+   88: def morphology_options(spec: Any) -> tuple[Any, dict[str, Any]]:
+  101: def _backend_plane(spec: Any = None, **_: Any) -> str:  # pragma: no cover - registry marker
+  108: def _backend_rough(spec: Any = None, **_: Any) -> str:  # pragma: no cover - registry marker
+  116: def _backend_secondary(spec: Any = None, **_: Any) -> str:  # pragma: no cover - registry marker
+  126: def _backend_warped(spec: Any = None, **_: Any) -> str:  # pragma: no cover - registry marker
+  134: def _backend_modes(spec: Any = None, **_: Any) -> str:  # pragma: no cover - registry marker
+  139:     BACKEND_VORONOI, "��Ȩ Voronoi �������",
+  146: def _backend_voronoi(spec: Any = None, **_: Any) -> str:  # pragma: no cover - registry marker
+  151:     BACKEND_MORPHOLOGY, "���������Ͽ���̬ѧ",
+  159: def _backend_morphology(spec: Any = None, **_: Any) -> str:  # pragma: no cover - registry marker
+  164: def _default_basis(mother: Any, rng: np.random.Generator, spec: FractureSpec) -> CutBasis:
+  198: def spec_hash(spec: FractureSpec) -> str:
+  208: def make_closed_cutter(mother: Any, spec: Any, rng: np.random.Generator,
+  254: def _coerce_spec(spec: Any) -> FractureSpec:
+  273: def fracture_event(mother: Any, spec: Any, rng: np.random.Generator, *, event_id: str) -> FractureResult:
+  296: def _voronoi_event(mother: Any, spec: FractureSpec, rng: np.random.Generator, *,
+  345: def _gate_morphology(spec: FractureSpec, *, stage: str) -> None:
+  364: def _make_morphology_cutter(mother: Any, spec: FractureSpec, rng: np.random.Generator,
+  387: def _morphology_event(mother: Any, spec: FractureSpec, rng: np.random.Generator,
+  425: def _secondary_event(mother: Any, spec: FractureSpec, rng: np.random.Generator,
+  498: def audit_fracture(result: FractureResult, mother: Any) -> dict[str, Any]:
+  505: def commit_cutter(store: Any, cutter: CutterResult, *, lineage_id: str, split: str,
+  521: def commit_fracture(store: Any, result: FractureResult, *, lineage_id: str, split: str,
+  545: def _jsonable(value: Any) -> Any:
+============================== MORPH synlab/fracture/morphology.py
+   74: MORPHOLOGY_META_KEY = "fracture_morphology"
+   76: BACKEND_MORPHOLOGY = "morphology_shared_cut"
+  125: def _smootherstep(t: np.ndarray) -> np.ndarray:
+  130: def _as_float(value: Any, default: float = 0.0) -> float:
+  138: def _unit2(vector: Any) -> np.ndarray:
+  149: def _stable_int(payload: Any, modulo: int = 2 ** 32) -> int:
+  158: class MaterialFractureInputs:
+  181:     def as_dict(self) -> dict[str, Any]:
+  205: def material_fracture_inputs(profile: Mapping[str, Any], *,
+  256: class WallThickness:
+  266:     def as_dict(self) -> dict[str, Any]:
+  271: def wall_thickness(mother: Any, *, max_probes: int = 320) -> WallThickness:
+  295: class FractureMorphologyParams:
+  346:     def as_dict(self) -> dict[str, Any]:
+  381: def radius_grid(origin: np.ndarray, tris_uv: np.ndarray, *, n: int = 256) -> np.ndarray:
+  390: def _hackle_area_curvature(a_h: float, n_h: int, r_m: float, radii: np.ndarray) -> float:
+  399: def _rib_area_curvature(a_rib: float, r_m: float, radii: np.ndarray,
+  408: def derive_morphology_parameters(
+  552: def _scale_params(params: FractureMorphologyParams, scale: float, *,
+  572: class _PitSet:
+  586:     def __post_init__(self) -> None:
+  594:     def __len__(self) -> int:
+  597:     def value(self, u: np.ndarray, v: np.ndarray) -> np.ndarray:
+  616:     def curvature_bound(self) -> float:
+  620: def points_in_triangles(points: np.ndarray, tris: np.ndarray) -> np.ndarray:
+  638: def scatter_pits(tris_uv: np.ndarray, origin_uv: Sequence[float], count: int, *,
+  676: class _Raster:
+  684:     def value(self, u: np.ndarray, v: np.ndarray) -> np.ndarray:
+  700: def glaze_modulation(window: Any, strip_mm: float, ratio: float) -> _Raster | None:
+  726: class MorphologyHeightField(HeightField):
+  755:     def _roughness(self, u: np.ndarray, v: np.ndarray) -> np.ndarray:
+  763:     def _radial(self, u: np.ndarray, v: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+  768:     def hackle(self, u: np.ndarray, v: np.ndarray) -> np.ndarray:
+  783:     def ribs(self, u: np.ndarray, v: np.ndarray) -> np.ndarray:
+  795:     def dome(self, u: np.ndarray, v: np.ndarray) -> np.ndarray:
+  802:     def fibre(self, u: np.ndarray, v: np.ndarray) -> np.ndarray:
+  810:     def _relief(self, u: np.ndarray, v: np.ndarray) -> np.ndarray:
+  820:     def raw(self, u: np.ndarray, v: np.ndarray) -> np.ndarray:
+  866:     def gradient(self, u: np.ndarray, v: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+  885:     def curvature_bound(self) -> float:
+  903:     def gradient_bound(self) -> float:
+  921:     def windowed_curvature_bound(self) -> float:
+  937:     def as_dict(self) -> dict[str, Any]:
+  954:     def apply_scale(self, ratio: float, *, core_uv: tuple[np.ndarray, np.ndarray] | None = None
+  988: def estimate_cell_demand(
+ 1050: def flat_cross_section(basis: Any, mesh: Any) -> tuple[np.ndarray, float, dict[str, Any]]:
+ 1055: def initiate_origin(tris_uv: np.ndarray, wall_p05_mm: float) -> np.ndarray:
+ 1094: def build_morphology_field(
+ 1181: def prepare_morphology(
+ 1230: def build_morphology_cutter(
+============================== SF synlab/fracture/surface_features.py
+   51: def _basis_matrix(basis: Any) -> np.ndarray:
+   55: def top_surface_samples(mesh: Any, basis: Any, *, n_samples: int = 400_000,
+   79: def _triangle_area(triangles: np.ndarray) -> float:
+   87: def _sample_triangles(triangles: np.ndarray, n_samples: int, rng: np.random.Generator,
+  113: def triangle_vertices_local(mesh: Any, basis: Any, faces: Sequence[int]) -> np.ndarray:
+  128: def detrend_plane(u: np.ndarray, v: np.ndarray, w: np.ndarray,
+  148: def amplitude_statistics(u: np.ndarray, v: np.ndarray, residual: np.ndarray,
+  192: def _bin_raster(u: np.ndarray, v: np.ndarray, r: np.ndarray, step_mm: float,
+  216: def correlation_length(u: np.ndarray, v: np.ndarray, residual: np.ndarray, *,
+  276: def ridge_density(u: np.ndarray, v: np.ndarray, residual: np.ndarray,
+  333: def _stats_from_samples(samples: dict[str, Any], params: Any, *, bin_step_mm: float,
+  383: def measure_interface_surface(fragments: Iterable[Any], basis: Any, params: Any, *,
+  424: def measure_cutter_surface(mesh: Any, basis: Any, params: Any, *, window: Any = None,
+  452: def conjugate_profile_consistency(fragments: Iterable[Any], patches: Iterable[Any], basis: Any,
+  521: def _raster_agreement(pa: np.ndarray, pb: np.ndarray, *, step_mm: float) -> dict[str, Any]:
+  532:     def raster(points: np.ndarray) -> tuple[np.ndarray, np.ndarray]:

@@ -1,0 +1,193 @@
+# =============================================================================================
+# A12 fracture realism -- physically driven fracture-surface morphology
+# =============================================================================================
+# New file.  It does NOT touch configs/a12/next_experiment.yaml or
+# configs/a12/fracture_physics.yaml.  It declares the study configuration of the
+# `morphology_shared_cut` backend (synlab/fracture/morphology.py) and the numbers every
+# published measurement in docs/a12/fracture_realism.md was taken with.
+#
+# provenance classes, as in configs/a12/fracture_physics.yaml -- never mixed silently:
+#
+#   MEASURED      read at run time from the mother / material asset (no constant here)
+#   LITERATURE    a published relation or range, cited by name
+#   ENGINEERING   an assumption of this implementation, flagged as a calibration knob
+#
+# ---------------------------------------------------------------------------------------------
+# HONEST LIMIT OF THIS ARTEFACT (read before using it)
+# ---------------------------------------------------------------------------------------------
+# `synlab.cli validate --config <this file>` validates the nested `generation_spec:` block against
+# synlab.schemas.spec.GenerationSpec.  That model's `FractureConfig.backend` is a closed Literal
+# (synlab/schemas/spec.py:148) which does NOT contain `morphology_shared_cut`; the file lives
+# outside this task's write scope, so the validated block below declares the *executable*
+# backend (`rough_shared_cut`) and the morphology capability is carried by the `morphology:`
+# block plus the fracture-layer switch.  The backend is deliberately not in
+# `synlab.fracture.api.BUILT_BACKENDS`, so nothing that iterates the built set changes cost or
+# QA numbers.  This gap is recorded in docs/a12/fracture_realism.md (section "仍未解决项").
+# =============================================================================================
+
+schema: synlab.fracture_morphology.v1
+units: mm
+version: "1.0.0"
+
+# ---------------------------------------------------------------------------------------------
+# 1. Wiring / switch (default OFF)
+# ---------------------------------------------------------------------------------------------
+morphology:
+  backend: morphology_shared_cut          # synlab.fracture.morphology.BACKEND_MORPHOLOGY
+  # The backend refuses to run unless one of these opt-ins is present.  Default OFF so that no
+  # existing caller changes behaviour, cost or QA numbers by accident.
+  switch_env: SYNLAB_FRACTURE_MORPHOLOGY  # truthy: 1/true/yes/on/enabled
+  switch_meta_keys: [morphology, morphology_backend]   # spec.meta[...] opt-in
+  gated_by_default: true
+  in_built_backends: false                # api.BUILT_BACKENDS is unchanged on purpose
+  registry_status: SPECIFIED              # registered, but not advertised as a built default
+  entry_points:
+    prepare: synlab.fracture.morphology.prepare_morphology
+    build: synlab.fracture.morphology.build_morphology_cutter
+    wire: synlab.fracture.api.fracture_event
+  provenance:
+    all: "ENGINEERING: an explicit opt-in gate, chosen so that adding the module cannot move any existing number"
+
+# ---------------------------------------------------------------------------------------------
+# 2. Study population (MEASURED -- ids only, geometry and material come from the assets)
+# ---------------------------------------------------------------------------------------------
+study:
+  # two different vessel forms, so the result is not one shape's accident
+  vessels: [V18, V01]
+  materials: [M01, M04]
+  master_seed: 20261001
+  lineage_id: a12_fracture_realism
+  mother_source: "data/a12_demo/demo_manifest.json -> synlab.mothers.api.create_mother(demo params, real material)"
+  material_source: "synlab.materials.api.build_material_profile"
+  wall_source: "synlab.mothers.audit.audit_mother:checks.min_thickness"
+  provenance:
+    vessels: "MEASURED: two demo mothers with different 器型 (bowl / straight-walled form)"
+    materials: "MEASURED: M01 grog+pores (coarse earthenware), M04 low-porosity body"
+
+# ---------------------------------------------------------------------------------------------
+# 3. Physical drivers of the relief (LITERATURE relations, evaluated on MEASURED inputs)
+# ---------------------------------------------------------------------------------------------
+physics:
+  # fracture-mirror relation  sigma_f * sqrt(r_m) = A_m
+  mirror_constant_mpa_sqrt_m: 2.5
+  # Ryshkewitch-Duckworth porosity correction  sigma ~ exp(-b P)
+  ryshkevitch_b: 4.5
+  # Weibull size effect  sigma ~ t ** (-1/m)
+  weibull_m: 9.0
+  sigma_ref_mpa: 90.0
+  wall_ref_mm: 5.0
+  mist_to_mirror_ratio: 1.8
+  # self-affine fracture surface: S(k) ~ k ** -(2H+2)
+  hurst_exponent: 0.75
+  roughness_bands: 5
+  # pore-visibility weight -> area porosity.  The material catalogue records a shading weight,
+  # not a measured porosity; the mapping is an explicit calibration.
+  porosity_from_pore_amount: 0.35
+  grain_relief_fraction: 0.12
+  porosity_relief_gain: 2.0
+  hackle_amplitude_fraction: 0.55
+  rib_amplitude_fraction: 0.45
+  rib_spacing_growth_per_mm: 0.05
+  pit_depth_fraction: 0.35
+  conchoidal_radius_per_wall: 6.0
+  glaze_roughness_ratio: 0.12
+  provenance:
+    mirror_constant_mpa_sqrt_m: "LITERATURE: Mecholsky/Orr mirror relation, A_m ~ 2-3 MPa*m^0.5 for glassy/ceramic bodies"
+    ryshkevitch_b: "LITERATURE: Ryshkewitch-Duckworth, b ~ 4-6 for porous ceramic"
+    weibull_m: "LITERATURE: fired earthenware / porous ceramic m ~ 5-11; 9.0 chosen"
+    hurst_exponent: "LITERATURE: self-affine fracture surfaces, H ~ 0.7-0.8"
+    porosity_from_pore_amount: "ENGINEERING: M01 pore_amount 0.45 -> 0.158 (coarse earthenware); M04 0.03 -> 0.011"
+    grain_relief_fraction / porosity_relief_gain: "ENGINEERING: pull-out relief as a fraction of grain size"
+    "hackle_amplitude_fraction / rib_amplitude_fraction": "ENGINEERING: hackle/rib relief relative to the requested roughness RMS"
+    conchoidal_radius_per_wall: "ENGINEERING: conchoidal bow radius as a multiple of the wall thickness"
+
+# ---------------------------------------------------------------------------------------------
+# 4. Precision / resources -- the shared interpolation budget and the A06 gates
+# ---------------------------------------------------------------------------------------------
+precision:
+  shared_surface_max_error_mm: 0.01      # spec.py DEFAULT_ERROR_BUDGET_MM
+  max_cutter_cells: 400000              # spec.py DEFAULT_MAX_CUTTER_CELLS
+  max_cutter_triangles: 3000000         # spec.py DEFAULT_MAX_CUTTER_TRIANGLES
+  # the pre-refinement amplitude cap: the relief is scaled BEFORE the expensive refinement from a
+  # measured fine-raster census of the field's own curvature.  It only ever scales *down*.
+  precision_safety: 0.5
+  precision_ladder_factors: [1.0, 0.5, 0.25]
+  cell_demand_limit_fraction: 0.85
+  provenance:
+    all: "copied from synlab/fracture/spec.py and morphology.py -- this file must never widen them"
+
+# ---------------------------------------------------------------------------------------------
+# 5. Audit gates -- NOT relaxed.  Any failure is reported as FAIL with its numbers.
+# ---------------------------------------------------------------------------------------------
+tolerances:
+  interface_gap_p95_mm: 0.02            # spec.py INTERFACE_GAP_P95_MM
+  normal_reversal_p95_deg: 2.0          # spec.py NORMAL_REVERSAL_P95_DEG
+  volume_rel_tol: 1.0e-3                # spec.py VOLUME_REL_TOL
+  overlap_ratio_max: 1.0e-4             # spec.py OVERLAP_RATIO_MAX
+  ambiguity_area_ratio_max: 0.02        # spec.py AMBIGUITY_AREA_RATIO_MAX
+  # conjugate-point distance: the two fracture faces are the SAME discrete cutter surface, so the
+  # requirement is the shared-surface budget, not a looser one.
+  conjugate_gap_p95_mm: 0.02
+  self_intersection_max_triangles: 0
+  provenance:
+    all: "copied from synlab/fracture/spec.py -- this file must never widen them"
+
+# ---------------------------------------------------------------------------------------------
+# 6. Pixel resolvability (the scanning-desk mm/px ladder)
+# ---------------------------------------------------------------------------------------------
+pixel_resolvability:
+  # MEASURED: configs/a12/capture_contract.json working_distance_and_resolution.resolution_table
+  ladder:
+    - {distance_mm: 50,  mm_per_px: 0.039, contract_structure_0p2mm_px: 5.12}
+    - {distance_mm: 100, mm_per_px: 0.078, contract_structure_0p2mm_px: 2.56}
+    - {distance_mm: 150, mm_per_px: 0.117, contract_structure_0p2mm_px: 1.71}
+    - {distance_mm: 200, mm_per_px: 0.156, contract_structure_0p2mm_px: 1.28}
+    - {distance_mm: 250, mm_per_px: 0.195, contract_structure_0p2mm_px: 1.02}
+  # A feature is counted as visible when its correlation length spans at least this many pixels.
+  # 2 px is the Nyquist floor for a periodic feature; a random rough surface has no single
+  # period, so the sampling floor is stated separately from the amplitude floor.
+  min_px_per_correlation_length: 3.0
+  nyquist_px_per_wavelength: 2.0
+  # The contract's own worked example: a 0.2 mm structure.  Reported next to the measured
+  # correlation length so the reader can see which ladder rung resolves the *measured* feature.
+  contract_reference_feature_mm: 0.2
+  provenance:
+    ladder: "MEASURED from configs/a12/capture_contract.json (distance_mm / mm_per_px rows)"
+    min_px_per_correlation_length: "ENGINEERING sampling floor: 3 px across one correlation length"
+    contract_reference_feature_mm: "MEASURED: the contract's structure_0p2mm_px column"
+
+# ---------------------------------------------------------------------------------------------
+# 7. GenerationSpec exposed to `synlab.cli validate`
+# ---------------------------------------------------------------------------------------------
+# Type-checked by `python -m synlab.cli validate --config configs/a12/fracture_morphology.yaml`.
+# See "HONEST LIMIT OF THIS ARTEFACT" above for why the backend literal is not the morphology one.
+generation_spec:
+  schema: synlab.v3
+  data_scope: SYNTHETIC
+  release_profile: SANDBOX_CORE
+  experiment_purpose: DEVELOPMENT
+  master_seed: 20261001
+  units: mm
+  dataset:
+    vessel_ids: [V18, V01]
+    material_ids: [M01, M04]
+    pattern_ids: [PAT01]
+    target_mothers: 2
+  fracture:
+    backend: rough_shared_cut
+    target_piece_range: [2, 2]
+    min_feature_wavelength_mm: 0.24
+    shared_surface_max_error_mm: 0.01
+    secondary_probability: 0.0
+    rough_amplitude_mm: [0.02, 0.30]
+    seed_count_range: [2, 2]
+  resources:
+    cpu_workers: 1
+    threads_per_worker: 1
+    cpu_rss_budget_gb: 8.0
+    gpu_device: 0
+    gpu_concurrency: 1
+    gpu_budget_gb: 0.1
+  storage:
+    root: data/a12_morph/store
+  notes: "fracture-surface realism: non-planar, physically driven morphology on one shared cutter"

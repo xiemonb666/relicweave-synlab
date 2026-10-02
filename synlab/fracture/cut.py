@@ -890,8 +890,15 @@ class _Quadtree:
         sibling = self._across(i, j, level, orient, lo)
         if sibling is None:
             return False
-        _li, _lj, reached, refined = self._leaf_on_path(sibling[0], sibling[1], level)
-        return bool(reached == level and refined)
+        # ``_across`` already answers on *my own* index lattice (``side << level`` cells per
+        # axis), which is exactly the lattice ``is_refined`` is keyed on, so the neighbour's own
+        # refinement state is a direct lookup.  Routing this through ``_leaf_on_path`` instead
+        # was measured wrong: that walk reads the bits of a level-``level`` index to descend from
+        # the root, so for ``level == 0`` it never looks at the sibling at all and returns the
+        # root cell's own state.  Every edge then reported "not split" (measured: 100 % of the
+        # 209 952 neighbour queries on a 20 mm box), the coarse side never inserted the midpoint
+        # its finer neighbour already carried, and the top surface left 5020 edges used once.
+        return bool(self.is_refined(int(sibling[0]), int(sibling[1]), level))
 
     def edge_splits(self, i: int, j: int, level: int) -> tuple[bool, bool, bool, bool]:
         return (
@@ -917,11 +924,12 @@ class _Quadtree:
             sibling = self._across(i, j, level, orient, lo)
             if sibling is None:
                 continue
-            li, lj, reached, refined = self._leaf_on_path(sibling[0], sibling[1], level)
-            if reached != level or not refined:
+            # same lattice as ``edge_split``: ``_across`` is already keyed for ``is_refined``
+            si, sj = int(sibling[0]), int(sibling[1])
+            if not self.is_refined(si, sj, level):
                 continue
             for di, dj in ((0, 0), (1, 0), (0, 1), (1, 1)):
-                if self.is_refined(2 * li + di, 2 * lj + dj, level + 1):
+                if self.is_refined(2 * si + di, 2 * sj + dj, level + 1):
                     return True
         return False
 
@@ -1213,13 +1221,35 @@ def build_closed_cutter(
         pts_ij, tris = tree.cell_triangles(i, j, level, leaf_span_for(level))
         local = [top_vertex(level, int(p[0]), int(p[1])) for p in pts_ij]
         for tri in tris:
+            # ---------------------------------------------------------------- degeneracy guard
+            #
+            # Several key-space corners of one leaf can map onto the *same* global vertex:
+            # ``cell_triangles`` returns coordinates on the shared key lattice, and a leaf whose
+            # own span is coarser than one key unit has corners that coincide there (measured on
+            # the analytic 14 mm box fixture: 12125 edges with != 2 incident faces, because the
+            # faces that collapsed to a segment had already registered their edges in
+            # ``top_edge_use``).  A degenerate triangle carries no geometry, so it must not
+            # contribute an edge either: the loop below is what decides which edges are on the
+            # top silhouette, and an edge that no real face traverses is not.
             face = (int(local[tri[0]]), int(local[tri[1]]), int(local[tri[2]]))
             if len({face[0], face[1], face[2]}) < 3:
-                continue                      # degenerate: no geometric content
+                continue
+            edge_a = (face[0], face[1])
+            edge_b = (face[1], face[2])
+            edge_c = (face[2], face[0])
+            if edge_a[0] == edge_a[1] or edge_b[0] == edge_b[1] or edge_c[0] == edge_c[1]:
+                # a needle triangle: two distinct vertices plus a repeated one.  Trimesh cannot
+                # express it as a face either, so it must not be exported -- but its two real
+                # edges are genuine top-surface edges and the side quads need them.
+                for edge in (edge_a, edge_b, edge_c):
+                    if edge[0] != edge[1]:
+                        top_edge_use[edge] += 1
+                continue
             top_faces.append(face)
             top_triangles_pts.append(face)
-            for k in range(3):
-                top_edge_use[(face[k], face[(k + 1) % 3])] += 1
+            top_edge_use[edge_a] += 1
+            top_edge_use[edge_b] += 1
+            top_edge_use[edge_c] += 1
 
     bottom_faces: list[tuple[int, int, int]] = []
     side_faces: list[tuple[int, int, int]] = []

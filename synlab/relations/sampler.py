@@ -36,6 +36,7 @@ from ..schemas.runtime import (
     RELATION_TINY,
     RELATION_UNKNOWN,
 )
+from .mate_absent import MATE_PRESENT_EXCLUSION_REASON
 
 SAMPLER_VERSION = "relations.sampler.v1"
 MINER_VERSION = "relations.miner.v1"
@@ -120,6 +121,14 @@ def negative_exclusion_reason(pool: Any, query_id: str, candidate_id: str) -> st
     This is the frozen exclusion (plan 16.2 item 4): self, *all* historical R2, TINY_CONTACT,
     UNKNOWN/grey zone and unconfirmed relations are removed -- independently of which
     positives happened to be sampled in the current batch.
+
+    On top of that the **mate-absent rule** of :mod:`synlab.relations.mate_absent` applies: a
+    candidate that carries its **own** confirmed ``R2`` mate inside this gallery is not an
+    ordinary negative either, because a pair that says "these two are not the same body" would
+    then be supervised on a fragment whose true partner *is* in the pool.  Such a candidate is a
+    separate class (``candidate_mate_present``) and never enters the negative set; the pool
+    semantics behind it are the ones the plan already uses for retrieval queries, where a
+    mate-absent fragment can only act as a distractor/negative.
     """
     if candidate_id == query_id:
         return "same_fragment"
@@ -141,6 +150,12 @@ def negative_exclusion_reason(pool: Any, query_id: str, candidate_id: str) -> st
     confirmed = getattr(pool, "confirmed", None)
     if callable(confirmed) and not confirmed(query_id, candidate_id):
         return "label_invalid"
+    try:
+        own_mates = {m for m in pool.neighbours(candidate_id) if m != candidate_id}
+    except Exception:  # noqa: BLE001 - same reading rule as the query side
+        own_mates = set()
+    if own_mates:
+        return MATE_PRESENT_EXCLUSION_REASON
     return None
 
 
@@ -631,7 +646,10 @@ def _hard_group(pool: Any, query: str, candidate: str, relation: str,
         return "same_instrument_not_adjacent" if same_mother else "same_type_different_object"
     if reason == "TINY_CONTACT":
         return "heavily_damaged_true_neighbour"
-    if reason is not None:
+    # A mate-present candidate is excluded by the mate-absent *role* rule, not by a label defect,
+    # so it keeps its real hard group instead of being folded into ``no_neighbour_in_gallery``;
+    # the reason itself (``candidate_mate_present``) is reported per candidate beside it.
+    if reason is not None and reason != MATE_PRESENT_EXCLUSION_REASON:
         return "no_neighbour_in_gallery"
     # R0: separate pattern-like from geometry-like using legal observables only
     features = getattr(pool, "features", {}) or {}
