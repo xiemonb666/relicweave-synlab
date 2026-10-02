@@ -8,7 +8,7 @@ from synlab.degrade.api import apply_axis
 from synlab.degrade.registry import AXIS_REGISTRY, basis_rng
 from synlab.errors import SynLabError
 
-from conftest import ALL_AXES, FAMILY_OF
+from tests.a12.operators.operator_test_support import ALL_AXES, FAMILY_OF
 
 
 @pytest.mark.parametrize("axis_id", ALL_AXES)

@@ -16,7 +16,7 @@ from synlab.schemas.spec import (
     DegradationRecipeSpec,
 )
 
-from conftest import ALL_AXES
+from tests.a12.operators.operator_test_support import ALL_AXES
 
 
 def test_all_31_axes_are_registered() -> None:

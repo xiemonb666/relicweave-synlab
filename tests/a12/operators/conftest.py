@@ -31,14 +31,6 @@ ROLE_SCHEMA = {
     "X": (ROLE_FEATURE_BUNDLE, SCHEMA_FEATURE),
 }
 
-#: axis id -> source family.
-FAMILY_OF = {axis_id: axis_id[0] for axis_id in
-             [f"P{i:02d}" for i in range(1, 9)] + [f"I{i:02d}" for i in range(1, 11)]
-             + [f"G{i:02d}" for i in range(1, 9)] + [f"X{i:02d}" for i in range(1, 6)]}
-
-ALL_AXES = tuple(sorted(FAMILY_OF))
-
-
 @pytest.fixture(scope="session")
 def probe() -> dict:
     """The four real probe bundles (physical / image / geometry / estimate)."""

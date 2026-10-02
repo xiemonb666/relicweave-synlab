@@ -12,7 +12,7 @@ from synlab.degrade.registry import AXIS_REGISTRY
 from synlab.degrade.sources import mesh_geometry_hash
 from synlab.errors import ErrorCode, SynLabError
 
-from conftest import FAMILY_OF
+from tests.a12.operators.operator_test_support import FAMILY_OF
 
 #: axis -> a measured quantity that must be strictly positive at some non-zero level.
 REQUIRED_EFFECTS = {

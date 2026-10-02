@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import pytest
-from conftest import create_job, run_worker_once, valid_spec
+from tests.a12.api.api_test_support import create_job, run_worker_once, valid_spec
 
 from synlab.api.capabilities import probe_capability
 

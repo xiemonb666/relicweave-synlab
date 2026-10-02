@@ -10,7 +10,7 @@ import json
 import time
 
 from _sse_client import asgi_stream
-from conftest import create_job, run_worker_once
+from tests.a12.api.api_test_support import create_job, run_worker_once
 
 PREFIX = "/api/synlab"
 

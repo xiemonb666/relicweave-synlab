@@ -7,7 +7,7 @@ the server, for every role combination.
 from __future__ import annotations
 
 import pytest
-from conftest import create_job, make_client, run_worker_once, valid_spec
+from tests.a12.api.api_test_support import create_job, make_client, run_worker_once, valid_spec
 
 
 def test_researcher_sees_truth_routes_mounted(researcher, cube_asset):

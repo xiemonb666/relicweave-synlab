@@ -16,7 +16,7 @@ from synlab.degrade.api import (
 )
 from synlab.degrade.registry import AXIS_REGISTRY
 
-from conftest import ALL_AXES
+from tests.a12.operators.operator_test_support import ALL_AXES
 
 
 def test_audit_all_axes_report_contract(probe: dict, source_store, tmp_path) -> None:

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from conftest import valid_spec
+from tests.a12.api.api_test_support import valid_spec
 
 
 def test_capabilities_reports_missing_modules_verbatim(researcher):

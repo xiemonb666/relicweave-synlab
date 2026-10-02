@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 
 import pytest
-from conftest import create_job, run_worker_once, valid_spec
+from tests.a12.api.api_test_support import create_job, make_client, run_worker_once, valid_spec
 
 from synlab.api.security import assert_within, safe_join
 from synlab.errors import SynLabError
@@ -91,8 +91,6 @@ def test_input_refs_reject_paths_and_injection(researcher):
 
 
 def test_workspace_scoping_hides_other_workspaces(store_root, cube_asset):
-    from conftest import make_client
-
     other = make_client(store_root, "researcher", workspace="other-ws")
     try:
         listing = other.get("/api/synlab/assets").json()
@@ -136,7 +134,6 @@ def test_symlink_escape_is_refused(tmp_path: Path):
 
 
 def test_asset_listing_pagination_is_stable(store_root, researcher):
-    from conftest import make_client
     from synlab.api.integrity import record_integrity
     from synlab.roles import ROLE_RUN_SPEC
 
