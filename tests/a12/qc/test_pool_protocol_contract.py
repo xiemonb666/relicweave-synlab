@@ -29,6 +29,7 @@ from synlab.qc.pool_contract import (
     IMPLEMENTATIONS,
     POOL_PROTOCOL_VERSION,
     PoolContractError,
+    ProtocolContext,
     assert_pool_contract,
     build_implementations,
     canonical_context,
@@ -41,6 +42,60 @@ from synlab.qc.pool_contract import (
     run_failure_injections,
     training_pool_view,
 )
+from synlab.relations.legal_negative import MISSING
+
+#: The withdrawn-row fixture's universe: two mate pairs, one withdrawn ``R1`` chain and the legal
+#: negative supply they must not be confused with.  Small enough to reason about, complete over its
+#: universe so the two reader families can be compared on the same rows.
+WITHDRAWN_FRAGMENTS = ("a0-m", "a0-p", "b0-m", "b0-p", "n0", "n1", "x0", "d0")
+
+
+def eligibility_context() -> ProtocolContext:
+    """A context that carries rows the truth layer **withdrew**, in both flag spellings.
+
+    ``docs/a12/relation_negatives.md`` §9.1.1 recorded the real shape: an ``R1`` row between two
+    fragments of the *same* fracture event that shares no fracture surface is withdrawn with
+    ``valid=False`` / ``loss_mask=False`` / ``reason="no_direct_fracture_surface"`` -- yet three of
+    the four readers supplied it as an ordinary negative.  The canonical context has no such row,
+    so the eligibility clause needs its own fixture or it would pass vacuously:
+
+    * ``x0-a0-m`` (``R1``): ``valid=False`` **and** ``loss_mask=False`` -- the reported case;
+    * ``x0-b0-m`` (``R0``): ``valid=True``, ``loss_mask=False`` -- withdrawn by the mask alone;
+    * ``x0-d0`` (``R0``): fully eligible (``valid`` and ``loss_mask`` both true);
+    * ``x0-n0`` (``R2``): a mate pair, so the withdrawn candidates are not the only exclusion path;
+    * every unnamed pair: an explicit ``R0`` row with both flags true, which keeps the context
+      complete so "reader X offers more" cannot be mistaken for "reader X ignores the flags".
+    """
+    mates = [("a0-m", "a0-p"), ("b0-m", "b0-p"), ("x0", "n0")]
+    rows: list[dict] = []
+    for a, b in mates:
+        rows.append({"query": a, "candidate": b, "kind": "R2", "valid": True, "loss_mask": True,
+                     "area_mm2": 12.5, "eligible_as_negative": False,
+                     "reason": "shared_cut_surface", "pool_id": "eligibility", "split": "dev"})
+    withdrawn = [
+        ("x0", "a0-m", "R1", False, False, "no_direct_fracture_surface (same event, mutually "
+                                           "exclusive)"),
+        ("x0", "b0-m", "R0", True, False, "candidate_mate_present_not_ordinary"),
+    ]
+    for a, b, kind, valid, loss_mask, reason in withdrawn:
+        rows.append({"query": a, "candidate": b, "kind": kind, "valid": valid,
+                     "loss_mask": loss_mask, "area_mm2": 0.0,
+                     "eligible_as_negative": False, "reason": reason,
+                     "pool_id": "eligibility", "split": "dev"})
+    named = {tuple(sorted(pair)) for pair in mates}
+    named |= {tuple(sorted((a, b))) for a, b, *_ in withdrawn}
+    for index, a in enumerate(WITHDRAWN_FRAGMENTS):
+        for b in WITHDRAWN_FRAGMENTS[index + 1:]:
+            if tuple(sorted((a, b))) in named:
+                continue
+            rows.append({"query": a, "candidate": b, "kind": "R0", "valid": True,
+                         "loss_mask": True, "area_mm2": 0.0, "eligible_as_negative": True,
+                         "reason": "", "pool_id": "eligibility", "split": "dev"})
+    return ProtocolContext(name="eligibility", lineup=WITHDRAWN_FRAGMENTS, rows=tuple(rows),
+                           source="tests/a12/qc/test_pool_protocol_contract.eligibility_context()",
+                           notes={"role": "the withdrawn-row fixture of the eligibility clause",
+                                  "withdrawn_rows": [["x0", "a0-m"], ["x0", "b0-m"]],
+                                  "complete_over_the_universe": True})
 
 
 @pytest.fixture(scope="module")
@@ -120,12 +175,142 @@ def test_failure_injection_is_caught_for_every_clause(ctx) -> None:
     """Each single-clause breakage must be caught by its *named* assertion."""
     report = run_failure_injections(ctx)
     assert report["base"]["ok"] is True
-    assert report["total"] == 6
+    assert report["total"] == 7
     assert report["caught"] == report["total"], report["injections"]
     for item in report["injections"]:
         assert item["caught"], item
         assert item["expected_assertion"] in item["failed_assertions"], item
     assert report["ok"] is True
+
+
+def test_the_eligibility_defect_itself_is_caught() -> None:
+    """The 9.1.1 defect, injected: eligibility recomputed from the **kind** again.
+
+    ``eligibility_follows_extracted_flags`` is the clause the fix landed for, so it needs the same
+    reproducible proof the other clauses have: the injection restores both mechanisms of the
+    divergence (``confirmed()`` answering ``relation() in {R0,R1,R2}`` and ``legal_pool()``
+    offering every ``R0``/``R1`` the row set withdrew) and the clause must name itself -- with the
+    offending pair, the kind and both flags.
+    """
+    ctx = eligibility_context()
+    withdrawn = [(str(row["query"]), str(row["candidate"])) for row in ctx.rows
+                 if str(row["kind"]) in ("R0", "R1")
+                 and not (bool(row.get("valid", False)) and bool(row.get("loss_mask", False)))]
+    assert withdrawn, "the fixture must carry a withdrawn row, or the clause proves nothing"
+    good = gallery_pool(ctx)
+    assert check_pool(good, ctx, label="gallery")["ok"], "the fixed pool must satisfy the battery"
+    broken = FAILURE_INJECTIONS["eligibility_recomputed_from_the_kind"](good)
+    report = check_pool(broken, ctx, label="injected::eligibility")
+    assert "eligibility_follows_extracted_flags" in report["failed_assertions"], report["failures"]
+    query, candidate = sorted(withdrawn)[0]
+    assert any(f"({query}, {candidate})" in item for item in report["failures"]), \
+        report["failures"]
+    # the *un*injected pool refuses the same row, with a machine-readable reason
+    resolution = good.negative_eligibility(query, candidate)
+    assert resolution.eligible is False and resolution.reason
+    assert candidate not in {str(x) for x in good.legal_pool(query)}
+    with pytest.raises(Exception):
+        good.assert_legal_negative(query, candidate)
+
+
+def test_the_fixture_is_pinned_to_the_reported_divergence() -> None:
+    """The fixture reproduces the shape §9.1.1 recorded: an ``R1`` row withdrawn by ``valid``.
+
+    Without this the eligibility clause could pass vacuously (a context with no withdrawn row
+    makes it trivially true), so the fixture itself is asserted, not assumed.
+    """
+    ctx = eligibility_context()
+    rows = {(str(r["query"]), str(r["candidate"])): r for r in ctx.rows}
+    assert rows[("x0", "a0-m")]["kind"] == "R1"
+    assert rows[("x0", "a0-m")]["valid"] is False
+    assert rows[("x0", "a0-m")]["loss_mask"] is False
+    assert rows[("x0", "a0-m")]["eligible_as_negative"] is False
+    assert "no_direct_fracture_surface" in str(rows[("x0", "a0-m")]["reason"])
+    assert rows[("x0", "b0-m")]["loss_mask"] is False
+    # and it is complete over its universe, so the readers are compared on real rows
+    named = sum(1 for a in ctx.universe() for b in ctx.universe() if a < b)
+    assert len({(min(r["query"], r["candidate"]), max(r["query"], r["candidate"]))
+                for r in ctx.rows}) == named
+
+
+@pytest.mark.parametrize("label", [
+    "qc.loader_probe.ExportedRelationPool",
+    "training.smoke.TrainingPoolView",
+    "training.sampler.PoolIndex[exported]",
+    "training.sampler.PoolIndex[gallery]",
+    "relations.gallery.RelationPool",
+])
+def test_every_implementation_refuses_a_withdrawn_row(label) -> None:
+    """Four implementations x one context carrying ``valid=False`` / ``loss_mask=False`` rows."""
+    ctx = eligibility_context()
+    pool = build_implementations(ctx)[label]
+    report = check_pool(pool, ctx, label=label)
+    assert report["ok"], report["failures"]
+    for row in ctx.rows:
+        if str(row["kind"]) not in ("R0", "R1"):
+            continue
+        if bool(row.get("valid", False)) and bool(row.get("loss_mask", False)):
+            continue
+        query, candidate = str(row["query"]), str(row["candidate"])
+        assert candidate not in {str(x) for x in pool.legal_pool(query)}, (label, query, candidate)
+        assert bool(pool.confirmed(query, candidate)) is False, (label, query, candidate)
+        with pytest.raises(Exception):
+            pool.assert_legal_negative(query, candidate)
+
+
+def test_an_input_without_eligibility_evidence_is_refused_not_guessed() -> None:
+    """Conservative refusal: an input that cannot confirm the gate supplies nothing.
+
+    The defect was *"derive eligibility from the kind"*.  A carrier that exposes neither
+    ``negative_eligibility()`` nor its rows cannot confirm anything, so ``PoolIndex`` must stop
+    supplying negatives -- and say why -- instead of falling back to the kind (which is exactly
+    what ``relation() in {R0,R1,R2}`` used to do).
+    """
+    from synlab.training.sampler import PoolIndex
+
+    ctx = eligibility_context()
+
+    class KindOnlyCarrier:
+        """The defect's shape: a carrier that can only answer ``relation()``."""
+
+        pool_id = "kind-only"
+
+        def __init__(self) -> None:
+            self.lineup = [str(fid) for fid in ctx.universe()]
+            self._kinds = {(str(r["query"]), str(r["candidate"])): str(r["kind"]) for r in ctx.rows}
+
+        def relation(self, a: str, b: str) -> str:
+            return self._kinds.get((str(a), str(b)), "UNKNOWN")
+
+        def neighbours(self, fragment_id: str) -> set[str]:
+            return set()
+
+    carrier = KindOnlyCarrier()
+    index = PoolIndex(carrier)
+    offered = {fid: index.legal_pool(fid) for fid in [str(f) for f in ctx.universe()]}
+    assert all(not values for values in offered.values()), offered
+    assert index.confirmed("x0", "a0-m") is False
+    reason = index.eligibility_reason("x0", "a0-m")
+    assert reason == "carrier_exposes_no_eligibility_evidence", reason
+    with pytest.raises(Exception, match="carrier_exposes_no_eligibility_evidence"):
+        index.assert_legal_negative("x0", "a0-m")
+    # a carrier that *does* expose its rows is resolved from those rows, not from the kind
+    class RowsCarrier(KindOnlyCarrier):
+        def __init__(self) -> None:
+            super().__init__()
+            self.rows = {}
+            for row in ctx.rows:
+                flags = {"kind": str(row["kind"]), "valid": row.get("valid", MISSING),
+                         "loss_mask": row.get("loss_mask", MISSING),
+                         "eligible_as_negative": row.get("eligible_as_negative", MISSING),
+                         "reason": str(row.get("reason", "") or "")}
+                self.rows.setdefault((str(row["query"]), str(row["candidate"])), flags)
+                self.rows.setdefault((str(row["candidate"]), str(row["query"])), flags)
+
+    rows_index = PoolIndex(RowsCarrier())
+    assert rows_index.confirmed("x0", "a0-m") is False
+    assert rows_index.eligibility_reason("x0", "a0-m") in ("row_valid_false", "loss_mask_false")
+    assert rows_index.confirmed("n0", "n1") is True
 
 
 def test_the_rank_defect_itself_is_caught_on_every_carrier(ctx) -> None:
@@ -226,6 +411,10 @@ def test_a_pool_without_a_universe_is_refused(ctx) -> None:
 
         def assert_legal_negative(self, query_id, candidate_id):  # noqa: D102
             return None
+
+        def negative_eligibility(self, a, b):  # noqa: D102
+            from synlab.relations.legal_negative import NegativeEligibility
+            return NegativeEligibility(True, "eligible")
 
     report = check_pool(NoUniverse(), ctx, label="no-universe")
     assert "interface_present" in report["failed_assertions"], report["failures"]

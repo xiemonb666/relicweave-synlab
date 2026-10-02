@@ -517,7 +517,7 @@ def compare_step(package: str, store: str, snapshot: str, *, step: str,
         "store": store,
         "snapshot": snapshot,
         "runs": runs,
-        "ok": bool(runs["before"]["returncode"] == 0 and runs["after"]["returncode"] == 0),
+        "ok": False,
     }
     if "audit" in before and "audit" in after:
         census = {
@@ -580,6 +580,17 @@ def compare_step(package: str, store: str, snapshot: str, *, step: str,
         comparison["batch"] = batches
     comparison["after_census_ok"] = bool(
         after.get("audit", {}).get("eligibility_census", {}).get("ok", False))
+    # ``ok`` has to keep both halves honest: the *after* side must pass on its own merits, and the
+    # *before* side must **fail on the eligibility census** -- that failure is the defect being
+    # demonstrated, not an error.  A before-side that passes, or one that fails for another reason
+    # (a crash: ``audit``/``batch`` absent), makes the comparison meaningless and is reported.
+    before_report = before.get("audit", {}).get("eligibility_census", {}) if before else {}
+    before_shows_the_defect = bool(before_report) and not bool(before_report.get("ok", True))
+    comparison["before_shows_the_defect"] = before_shows_the_defect
+    comparison["before_errored"] = not bool(before.get("audit")) and not bool(before.get("batch"))
+    comparison["ok"] = bool(comparison["after_census_ok"] and before_shows_the_defect
+                            and not comparison["before_errored"]
+                            and runs["after"]["returncode"] == 0)
     return comparison
 
 
@@ -650,9 +661,9 @@ def _summary(payload: Mapping[str, Any], out_path: Path) -> None:
                   f"(R1 {item['r1_in_supply']}) queries_with_negative="
                   f"{item['queries_with_a_negative']} median={item['negative_median_per_query']}")
         census = payload["eligibility_census"]
-        print(f"  eligibility census: ineligible {census['ineligible_directed_pairs']} "
-              f"directed pair(s), offered by {census['offered_directed_pairs']} -> ok="
-              f"{census.get('ok')} {census.get('offered_by_counts', {})}")
+        print(f"  eligibility census: ineligible {census.get('ineligible_directed_pairs')} "
+              f"directed pair(s), offered by {census.get('offered_directed_pairs')} -> ok="
+              f"{census.get('ok')} {census.get('offered_by_counts_before') or census.get('offered_by_counts') or {}}")
         stated = census.get("stated_divergence") or {}
         if stated:
             print(f"    stated divergence ({stated['criterion']}): "

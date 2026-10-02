@@ -843,15 +843,27 @@ def classify_divergence(pools: Mapping[str, Any], ctx: ProtocolContext) -> dict[
 
 
 def eligibility_finding(pools: Mapping[str, Any], ctx: ProtocolContext) -> dict[str, Any]:
-    """The exact rows behind the eligibility divergence (the finding, stated with real rows).
+    """The exact rows behind an eligibility divergence (the finding, stated with real rows).
 
-    A pair is listed when the readers **agree on its kind** but disagree on whether it may be an
-    ordinary negative, and the row's own frozen eligibility flag says it may not.  That is the
-    ``eligible_as_negative := kind in {R0,R1} and valid and loss_mask`` gate of decision D10
-    being applied by some readers and ignored by others.
+    A pair is a **divergence** when the readers disagree on whether it may be an ordinary negative.
+    Two facts are counted separately, because only the first is a disagreement between readers:
+
+    * ``directed_pairs`` -- the readers disagree *and* the row's own frozen eligibility flag
+      (``eligible_as_negative := kind in {R0,R1} and valid and loss_mask``) says it may not be
+      supplied.  That is the 9.1.1 defect class.
+    * ``flag_mismatches`` -- the readers agree, but the *row* contradicts the frozen gate (a
+      ``kind in {R0,R1}`` row whose ``eligible_as_negative`` flag disagrees with its own
+      ``valid``/``loss_mask``).  No reader supplies it and no reader refuses it: a table defect,
+      not a reader divergence.
+
+    After the fix in ``docs/a12/relation_negatives.md`` §9.1.2 every reader refuses the frozen gate,
+    so ``directed_pairs`` is 0 **for the right reason** -- the population of withdrawn rows is still
+    counted (``withdrawn_rows_*``), so "no divergence" cannot be confused with "no such row".
     """
     labels = sorted(pools)
     directed: dict[tuple[str, str], dict[str, Any]] = {}
+    flag_mismatches: dict[tuple[str, str], dict[str, Any]] = {}
+    withdrawn: set[tuple[str, str]] = set()
     for fid in ctx.universe():
         for candidate in sorted(set(ctx.universe()) - {str(fid)}):
             measured = ctx.reference_kind(fid, candidate)
@@ -860,8 +872,18 @@ def eligibility_finding(pools: Mapping[str, Any], ctx: ProtocolContext) -> dict[
             row = next((r for r in ctx.rows
                         if {str(r.get("query")), str(r.get("candidate"))}
                         == {str(fid), str(candidate)}), {})
-            if bool(row.get("valid", False)):
+            valid = bool(row.get("valid", False))
+            loss_mask = bool(row.get("loss_mask", False))
+            declared = row.get("eligible_as_negative")
+            if declared is not None and bool(declared) != bool(valid and loss_mask):
+                flag_mismatches[(str(fid), candidate)] = {
+                    "query": str(fid), "candidate": candidate, "measured_kind": measured,
+                    "row_valid": valid, "row_loss_mask": loss_mask,
+                    "row_eligible_as_negative": declared,
+                    "row_reason": str(row.get("reason", "") or "")}
+            if valid and loss_mask:
                 continue                      # eligible under every reading: not a finding
+            withdrawn.add((str(fid), candidate))
             offered = [label for label in labels
                        if candidate in {str(x) for x in pools[label].legal_pool(fid)}]
             refused = [label for label in labels if label not in offered]
@@ -869,9 +891,8 @@ def eligibility_finding(pools: Mapping[str, Any], ctx: ProtocolContext) -> dict[
                 continue
             directed[(str(fid), candidate)] = {
                 "query": str(fid), "candidate": candidate, "measured_kind": measured,
-                "row_valid": bool(row.get("valid", False)),
-                "row_loss_mask": bool(row.get("loss_mask", False)),
-                "row_eligible_as_negative": row.get("eligible_as_negative"),
+                "row_valid": valid, "row_loss_mask": loss_mask,
+                "row_eligible_as_negative": declared,
                 "row_reason": str(row.get("reason", "") or ""),
                 "offered_by": offered, "refused_by": refused}
     offered_by: dict[str, int] = {}
@@ -879,13 +900,24 @@ def eligibility_finding(pools: Mapping[str, Any], ctx: ProtocolContext) -> dict[
         for label in item["offered_by"]:
             offered_by[label] = offered_by.get(label, 0) + 1
     unordered = {tuple(sorted(key)) for key in directed}
+    consumers_refusing = {
+        label: sum(1 for key in withdrawn
+                   if key[1] not in {str(x) for x in pools[label].legal_pool(key[0])})
+        for label in labels}
     return {
         "schema": "synlab.qc.pool_contract.eligibility_finding.v1",
         "protocol_version": POOL_PROTOCOL_VERSION,
         "context": ctx.name,
         "directed_pairs": len(directed),
         "unordered_pairs": len(unordered),
-        "kinds": sorted({item["measured_kind"] for item in directed.values()}),
+        "withdrawn_rows_directed": len(withdrawn),
+        "withdrawn_rows_unordered": len({tuple(sorted(key)) for key in withdrawn}),
+        "withdrawn_rows_queries": len({key[0] for key in withdrawn}),
+        "flag_mismatches": len(flag_mismatches),
+        "flag_mismatch_examples": [flag_mismatches[key] for key in sorted(flag_mismatches)[:6]],
+        "consumers_refusing_withdrawn_rows": consumers_refusing,
+        "kinds": sorted({item["measured_kind"] for item in directed.values()}
+                        | {row["measured_kind"] for row in flag_mismatches.values()}),
         "all_rows_valid_false": bool(directed) and all(not item["row_valid"]
                                                        for item in directed.values()),
         "all_rows_loss_mask_false": bool(directed) and all(not item["row_loss_mask"]
@@ -893,17 +925,21 @@ def eligibility_finding(pools: Mapping[str, Any], ctx: ProtocolContext) -> dict[
         "offered_by_counts": dict(sorted(offered_by.items())),
         "examples": [directed[key] for key in sorted(directed)[:6]],
         "frozen_gate": "eligible_as_negative == (kind in {R0,R1} and valid and loss_mask)",
-        "mechanism": ("training.sampler.PoolIndex.confirmed() recomputes confirmation from "
-                      "relation() alone (rel in {R0,R1,R2}) instead of asking the carrier's "
-                      "confirmed(); relations.gallery.RelationsIndex.confirmed() accepts an "
-                      "explicit edge regardless of its valid flag.  So the live pool and the "
-                      "sampler's adapter offer rows the exported reader refuses."),
-        "one_line_fix": ("RelationsIndex.confirmed(): return False when the stored edge exists "
-                         "with valid=False; PoolIndex.confirmed(): return "
-                         "self.pool.confirmed(a, b) when the carrier exposes it"),
-        "decision": ("reported, not applied: changing either method changes which candidates "
-                     "the live sampler draws, i.e. the training data -- a Lead decision, not a "
-                     "contract detail (docs/a12/relation_negatives.md)"),
+        "mechanism": ("FIXED (docs/a12/relation_negatives.md §9.1.2): eligibility now has one truth "
+                      "source (relations.legal_negative.resolve_negative_eligibility) and every "
+                      "reader consumes it.  Before the fix, "
+                      "training.sampler.PoolIndex.confirmed() recomputed confirmation from "
+                      "relation() alone (rel in {R0,R1,R2}) and "
+                      "relations.gallery.RelationsIndex.confirmed() accepted an explicit edge "
+                      "regardless of its valid flag, so the live pool and the sampler's adapter "
+                      "offered rows the exported reader refused."),
+        "one_line_fix": ("applied: every reader answers negative_eligibility(a, b) from the row's "
+                        "own valid/loss_mask flags (relations/legal_negative.py), and "
+                        "PoolIndex/RelationsIndex.confirmed() consume it instead of recomputing "
+                        "from the kind"),
+        "decision": ("applied on Lead ruling: the divergence was an eligibility defect, not a "
+                     "contract detail.  Withdrawn rows are no longer supplied by any reader; the "
+                     "measured cost is in data/a12_reports/negfix_eligibility.json"),
     }
 
 
