@@ -846,16 +846,15 @@ def conjugacy_report(partition: VoronoiPartition, facets: Mapping[tuple[int, int
             one_sided += 1
         pairs += 1
         # (1) the two independent polygon descriptions of the facet.  Both cells derive the facet
-        # from their own half-space clipping, so the descriptions may start at a different corner;
-        # the comparison is therefore on the *cyclic* corner sequence.  The shape of the pair is
-        # recorded either way, so a mismatch carries its own diagnosis instead of a bare count.
-        polygon = np.asarray(side_a.get(key, facet.corner_polygon), dtype=np.float64)
-        want = np.asarray(facet.corner_polygon, dtype=np.float64)
+        # from their own half-space clipping; the shared table is the *raw corner* polygon (the
+        # densified border is a discretisation choice and is reported separately), so the comparison
+        # is on the cyclic corner sequence, which is the geometry the two owners really agree on.
+        polygon = np.asarray(side_a.get(key, facet.polygon), dtype=np.float64)
+        want = np.asarray(facet.polygon, dtype=np.float64)
         shape = f"{polygon.shape[0]}x{want.shape[0]}"
         border_shapes[shape] = border_shapes.get(shape, 0) + 1
         if not _same_cycle(polygon, want, tolerance_mm=1.0e-9):
-            border_mismatch += 1
-        # (2) the two-sided distance: sample the warped surface on a barycentric probe of *both*
+            border_mismatch += 1        # (2) the two-sided distance: sample the warped surface on a barycentric probe of *both*
         # sides' triangles and measure each probe's distance to the other side's surface.  Both
         # sides emit the same nodes and the same triangles, so this is expected to be exactly zero;
         # it is measured anyway, because "the two sides share one surface" is the property the
