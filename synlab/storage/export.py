@@ -946,6 +946,7 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
         positions = (np.concatenate([payload["view_pos"] for payload in obs_by_fragment.values()])
                      if obs_by_fragment else np.zeros(0, dtype=np.float32))
         finite_positions = positions[np.isfinite(positions)]
+        quality_index, quality_prov = _observation_quality_index(store, observations, obs_index)
         index_path = deploy_root / "obs" / "index.json"
         index_path.write_text(json.dumps({
             "schema": "synlab.obs_index.v1",
@@ -992,6 +993,24 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
                     "varies_across_views": bool(finite_positions.size
                                                 and float(np.ptp(finite_positions)) > 0.0),
                 },
+            },
+            "quality_research": {
+                "note": ("per-fragment OBS_EST observation-quality channels (S7): the asset "
+                         "metadata of every obs_result carries them, but the packaged observation "
+                         "shards do not, so a loader had nothing to read and wrote "
+                         "``quality = zeros((1,1))`` for every fragment.  A channel the model "
+                         "consumes as an *input* belongs in the research view beside its "
+                         "provenance, not inside the deployment shards; the deployment-view "
+                         "answer-field scan therefore never sees it."),
+                "source": "obs_result.meta.quality[*] with source_kind == OBS_EST",
+                "estimator_version": quality_prov["estimator_version"],
+                "channels": quality_prov["channels"],
+                "unit": "1 (mixed: mm for spacing-type channels, recorded per channel below)",
+                "units": quality_prov["units"],
+                "fragments_with_quality": quality_prov["fragments_with_quality"],
+                "fragments_without_quality": quality_prov["fragments_without_quality"],
+                "n_fragments_reported": quality_prov["n_fragments_reported"],
+                "rows": quality_index,
             },
             "rows": obs_index,
         }, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8")
@@ -2341,9 +2360,17 @@ def _locate_samples_in_token_grid(payload: Mapping[str, np.ndarray],
             out["pixel"][index] = [int(projected["u"][index]), int(projected["v"][index])]
     out["best_residual_mm"] = best
     out["samples_on_their_own_face_in_some_view"] = int(n_identical_face)
+    out["id_map_label_max"] = int(_id_map_label_max(payload))
     if out["ok"].any():
         out["reason"] = ""
-    elif not out["views_inside_grid"] and not out["views_with_a_face_visible"]:
+    elif n_identical_face == 0:
+        # measured on the shipped release: for one side of each cut event the render's ``id_map``
+        # is not in the mesh asset's face-index space at all (its label maximum is far above the
+        # mesh's face count), so no sample of that side can ever satisfy the identity test
+        out["reason"] = ("the_render_id_map_of_this_fragment_is_not_in_the_correspondence_mesh_"
+                         "face_index_space (no sample of this side is ever labelled with its own "
+                         "corr_face_* id)")
+    elif not out["views_inside_grid"]:
         out["reason"] = ("the_face_the_sample_lies_on_is_not_rendered_in_this_fragment_"
                          "observation")
     elif not out["views_with_a_face_visible"]:
@@ -2351,6 +2378,19 @@ def _locate_samples_in_token_grid(payload: Mapping[str, np.ndarray],
     else:
         out["reason"] = ("no_delivered_view_passes_the_depth_and_mask_checks_for_this_face")
     return out
+
+
+def _id_map_label_max(payload: Mapping[str, np.ndarray]) -> int:
+    """Largest non-background label the delivered ``id_map`` of this observation carries."""
+    largest = -1
+    for view_index in range(_obs_view_count(payload)):
+        raw = payload.get(f"v{view_index:03d}.id_map")
+        if raw is None:
+            continue
+        values = np.asarray(raw)
+        if values.size:
+            largest = max(largest, int(values.max()))
+    return largest
 
 
 def _project_samples_into_view(payload: Mapping[str, np.ndarray], view_index: int,
@@ -2445,6 +2485,84 @@ def _obs_view_count(payload: Mapping[str, np.ndarray]) -> int:
         count += 1
     return count
 
+
+
+#: Prefix of the observation-quality block the loader reads (``obs/index.json``).
+OBSERVATION_QUALITY_KEY = "quality_research"
+
+
+def _observation_quality_index(store: AssetStore, observations: Iterable[Any],
+                               obs_index: Mapping[str, Any]
+                               ) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Per-fragment ``OBS_EST`` observation-quality channels, read from the asset metadata.
+
+    Defect history (S7, measured): ``synlab/qc/loader_probe.py::_observed_payload`` wrote
+    ``"quality": np.zeros((1, 1))`` / ``"quality_valid": np.zeros((1, 1), bool)`` for **every**
+    fragment, so ``FeatureBundle.quality`` -- the tensor the model's quality head actually reads
+    -- was all-zero no matter what the observation measured.  The measurements were never
+    missing: the store's ``obs_result`` metadata carries them (measured on
+    ``data/a12_trainable/store``: 18 entries under ``meta["quality"]``, 15 of them
+    ``source_kind = OBS_EST``, ``estimator_version = obs_est.v1``).  They were simply not in the
+    package.
+
+    Only ``OBS_EST`` entries are taken (an oracle or truth-derived number is *not* an input), the
+    channel order is the sorted channel name so two exports agree, and a fragment whose
+    observation carries no such channel is **absent** from the block rather than zero-filled.
+    """
+    channels: set[str] = set()
+    units: dict[str, str] = {}
+    versions: set[str] = set()
+    per_fragment: dict[str, dict[str, Any]] = {}
+    missing: list[str] = []
+    for record in observations:
+        meta = dict(record.meta or {})
+        fragment_id = str(meta.get("fragment_id") or "")
+        if not fragment_id or fragment_id not in obs_index:
+            continue
+        raw = meta.get("quality")
+        if not isinstance(raw, Mapping):
+            missing.append(fragment_id)
+            continue
+        values: dict[str, float] = {}
+        for name, entry in raw.items():
+            if not isinstance(entry, Mapping):
+                continue
+            if str(entry.get("source_kind", "")) != "OBS_EST":
+                continue
+            if entry.get("valid") is not True:
+                continue
+            value = entry.get("value")
+            try:
+                number = float(value)
+            except (TypeError, ValueError):
+                continue
+            if not np.isfinite(number):
+                continue
+            key = str(name)
+            values[key] = number
+            units.setdefault(key, str(entry.get("unit", "")))
+            if entry.get("estimator_version"):
+                versions.add(str(entry["estimator_version"]))
+        if not values:
+            missing.append(fragment_id)
+            continue
+        channels.update(values)
+        per_fragment[fragment_id] = values
+    ordered = sorted(channels)
+    rows = {fragment_id: {"asset_id": str(obs_index[fragment_id].get("asset_id") or ""),
+                          "channels": [name for name in ordered if name in values],
+                          "values": [float(values[name]) for name in ordered if name in values],
+                          "n_channels": len(values)}
+            for fragment_id, values in sorted(per_fragment.items())}
+    provenance = {
+        "estimator_version": sorted(versions),
+        "channels": ordered,
+        "units": {name: units.get(name, "") for name in ordered},
+        "fragments_with_quality": len(rows),
+        "fragments_without_quality": sorted(missing),
+        "n_fragments_reported": len(rows) + len(missing),
+    }
+    return rows, provenance
 
 
 def _write_parquet(path: Path, rows: Sequence[Mapping[str, Any]], row_group_size: int) -> None:
@@ -2959,6 +3077,26 @@ class TrainingPackage:
     def observation_index(self) -> dict[str, Any]:
         path = self.deploy / "obs" / "index.json"
         return json.loads(path.read_text(encoding="utf-8")) if path.exists() else {"rows": {}}
+
+    def observation_quality(self, fragment_id: str) -> dict[str, Any] | None:
+        """The fragment's measured ``OBS_EST`` observation-quality channels, or ``None``.
+
+        ``None`` means *the package carries no measurement for this fragment* -- never "the
+        measurement is zero".  Older packages (written before S7) have no block at all, and a
+        loader must report that as missing instead of inventing a zero vector.
+        """
+        block = self.observation_index().get(OBSERVATION_QUALITY_KEY) or {}
+        entry = (block.get("rows") or {}).get(str(fragment_id))
+        if not entry:
+            return None
+        return {"fragment_id": str(fragment_id),
+                "asset_id": str(entry.get("asset_id") or ""),
+                "channels": [str(name) for name in (entry.get("channels") or [])],
+                "values": [float(value) for value in (entry.get("values") or [])],
+                "provenance": {"estimator_version": block.get("estimator_version"),
+                               "source": block.get("source"),
+                               "units": block.get("units"),
+                               "declared_channels": block.get("channels")}}
 
     def read_observation(self, fragment_id: str) -> dict[str, np.ndarray]:
         rows = self.observation_index().get("rows", {})

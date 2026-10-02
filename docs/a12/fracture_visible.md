@@ -22,13 +22,22 @@
 
 ## 0. 一句话结论
 
-**分辨率不是主要瓶颈，"几何里有没有形貌"才是。**
-本次实测：当前交付的断口几何在 **< 1 mm 的尺度上完全平**（局部去趋势后的 `Ra` = **0.000 mm**，
-平面切割的实测 `Ra` = **1.10e-7 mm**），所以在**任何** mm/px 下都看不见 —— 缺口不是"拍得不够近"，
-而是"要被拍的东西没被生成"。ROI 特写能把断口**从占画面 4.6% 变成占画面 98–100%**、
-把 `mm/px` 从 **0.2613** 提到 **0.0730**（口径 ② 见 §4），但**它不会创造几何**：
-形态学后端 `morphology_shared_cut` 至今是 **GATED**（不在 `BUILT_BACKENDS` 里），
-其"rough"变体的实测状态是 **FAILED / PRECISION_BUDGET_EXCEEDED**（§2.3）。
+**分辨率不是主要瓶颈，"几何里有没有形貌"才是；而且断口在整片视图里几乎不可见。**
+三条本次实测（4 具研究体 = 2 器型 × 2 材料，96 个 Blender 视图）：
+
+1. **整片视图里断面几乎不可见**：48 个整片视图合计断面像素 **335 038**，占物体像素中位
+   **2.73%**；其中 V23/M07 的 12 个整片视图**合计只有 105 个断面像素**（占比 0.0%）。
+   同一批断口的 ROI 特写合计 **20 987 921** 像素（**62.6×**），占物体像素中位 **96.95%**。
+2. **ROI 特写把 mm/px 从 0.28041 提到 0.07300（3.84×）**（同一相机、同一交付网格 1024×768、
+   同一次运行、同一 basis），0.2 mm 结构从 **0.71 px** 变成 **2.74 px**，
+   `r_eff_mm(4px)` 从 **1.122 mm** 降到 **0.292 mm**；但 **0.2 mm 仍未到契约的 4 px**（差 1.46×）。
+3. **形貌：3/4 具研究体的断面在 < 1 mm 尺度上完全平**（局部去趋势 `Ra` = **0.000 mm**，
+   9 个 ROI 全部如此），而 **V02/M01（`data/a12_iface` 谱系）有真实亚毫米起伏**
+   （`below_1mm` 实测 `Ra` = **0.0080 / 0.0623 / 0.0795 mm**）。
+   → 缺口的形状是"**看哪条线**"：平面切割线（`plane_shared_cut`，本次 3 具）**没有**可拍的形貌；
+   另一条线（`a12_iface`）**有**，但它最小的可用幅度（~80 µm）在 0.073 mm/px 下只有 **1.09 px**，
+   连 2048 px 档（0.0365 mm/px）也只有 **2.18 px** —— 要 4 px 需 **0.0199 mm/px（60 mm 处 L ≥ 3761 px）**。
+
 
 ---
 
@@ -65,18 +74,20 @@
 `configs/a12/camera_profiles.json` 也只有 GLOBAL/MID/LOCAL 三档整片档位
 （`wc 380/220/140 mm`，最近一档仍是 140 mm）。
 
-### 2.3 **新发现 1**：断口几何在 < 1 mm 尺度上完全平（本次实测，最重要的一条）
+### 2.3 **新发现 1**：断口几何的亚毫米形貌取决于"哪条线"（本次实测，最重要的一条）
 
-对 4 具研究体（2 器型 × 2 材料，见 §4.1）的断面（`origin_kind == ORIGIN_INTERFACE`）逐 patch
-实测"平面拟合残差 + 局部去趋势分带"（仪器：面积加权 TLS 平面 + 球半径 `R` 内均值去趋势，
-脚本 `synlab.observe.fracture_roi.height_field_stats`）：
+对 4 具研究体的断面（`origin_kind == ORIGIN_INTERFACE`）逐 patch 实测"平面拟合残差 + 局部去趋势分带"
+（仪器：面积加权 TLS 平面 + 球半径 `R` 内均值去趋势，
+脚本 `synlab.observe.fracture_roi.height_field_stats`；每个 ROI 是近摄视场内的那一块）：
 
-| 分带（局部去趋势半径） | 实测 `Ra` 范围（4 具 × 3 断口 = 12 个 ROI） | 结论 |
-|---|---|---|
-| 整块 patch 相对拟合平面（form + waviness + roughness） | **0.0056 … 1.485 mm** | 有宏观形貌（mm–100 mm 尺度） |
-| `below_5mm`（< 5 mm 的起伏） | **0.00097 … 0.214 mm** | 只有少数 patch 非零 |
-| **`below_1mm`** | **恰好 0.000 mm（12/12）** | **无量测起伏** |
-| **`below_0.25mm`** | **恰好 0.000 mm（12/12）** | **无量测起伏** |
+| 研究体 | 源 store | `below_5mm` `Ra` | **`below_1mm` `Ra`** | **`below_0.25mm` `Ra`** | 结论 |
+|---|---|---|---|---|---|
+| V10/M11 | `data/a12_campaign` | 0.0010 / 0.2142 / 0.0013 mm | **0 / 0 / 0** | **0 / 0 / 0** | 无亚毫米形貌 |
+| V21/M06 | `data/a12_campaign` | 0.0157 / 0.0040 / 0.0360 mm | **0 / 0 / 0** | **0 / 0 / 0** | 无亚毫米形貌 |
+| V23/M07 | `data/a12_campaign` | 0.0047 / 0.0047 / 0.0033 mm | **0 / 0 / 0** | **0 / 0 / 0** | 无亚毫米形貌 |
+| **V02/M01** | **`data/a12_iface`** | 0.9127 / 0.0122 / 0.2819 mm | **0.0795 / 0.0080 / 0.0623 mm** | **0.0174 / 0.0007 / 0.0060 mm** | **有真实亚毫米形貌** |
+
+（每格是 3 个 ROI 的值；`0` 是**测到 0**，浮点意义上的恰好零：该 patch 的三角面共面。）
 
 旁证（引用他人在同一批几何上的产物）：
 * `data/a12_reports/fracture_realism_V18_M01_plane_rough.json` 的 `plane` 变体实测
@@ -90,9 +101,13 @@
   自己写明 "**GATED**: it is NOT in BUILT_BACKENDS and refuses to run unless switched on via
   `<MORPHOLOGY_SWITCH_ENV>=1`"。
 
-→ **"接了形态学但模型看不见"的实测形态是**：形态学代码在仓库里、开关存在、但**没有接线到批产**，
-而且**它上次真跑时在冻结精度预算下失败了**；因此交付到渲染器的断口是**平面切割面**，
-其 < 1 mm 形貌**恒等于 0**。分辨率再高也拍不到不存在的东西。
+→ **"接了形态学但模型看不见"的实测形态是**：
+(a) 平面切割线（本次 3 具）的断面 < 1 mm 形貌**恒等于 0**，分辨率再高也拍不到不存在的东西；
+(b) 另一条线（`a12_iface`）**有形貌**（8–80 µm），但它在 0.073 mm/px 的 ROI 特写下只有
+**0.11–1.09 px**，在 2048 px 档（0.0365 mm/px）也只有 **0.22–2.18 px** ——
+**形貌存在**的那条线上，瓶颈才真的是**分辨率**；
+(c) 形态学（`morphology_shared_cut`）代码在仓库里、开关存在、但没接线到批产，
+且上次真跑时在冻结精度预算下 **FAILED**。
 
 ### 2.4 **新发现 2**：`px_per_mm` / `r_eff_mm` / `dof_cover_mm` 现在有生产者了
 
@@ -105,16 +120,19 @@
 
 ### 2.5 **新发现 3**：软件光栅器的深度在掠射三角形上不是透视正确的（会影响 mm/px 口径）
 
-本次在 ROI 视图上逐视图比对"渲染深度中心像素"与"沿相机光轴的独立射线投射"
-（`data/a12_reports/fracture_roi_compare.json` → `instrument_disagreement_mm`）：
-软件光栅器（`SOFTWARE_RASTERIZER`）在**掠射（近侧视）断面三角**上，中心像素深度可以是
-**24.47 mm**，而同一条光线上的**最近真实表面在 60.09 mm** —— 差 **35.6 mm**。
-原因是 `synlab/observe/render.py` 的 z 缓冲用屏幕空间线性插值
-（`zi = w0 z0 + w1 z1 + w2 z2`），在透视投影下只有对 `1/z` 才是正确的；
-`precision_audit.md` §3 引用过的"斜面夹具上界 8.885 mm"是同一现象的较小实例。
-→ 本文件的 `mm/px` **以射线投射为准**（`mm_per_px_axis_raycast`），
-渲染深度值同时保留并给出差值；Blender 后端（本次研究体所用的生产路径）不出现该偏差，
-其差值逐视图记在 `instrument_disagreement_mm` 里。
+本次在 ROI 视图上逐视图比对"渲染深度中心像素"与"沿相机光轴的独立射线投射"：
+* **软件光栅器**（`SOFTWARE_RASTERIZER`）在**掠射（近侧视）断面三角**上，中心像素深度可以是
+  **24.47 mm**，而同一条光线上的**最近真实表面在 60.09 mm** —— 差 **35.6 mm**
+  （`data/a12_reports/_roi_debug_depth2.txt`）。原因是 `synlab/observe/render.py` 的 z 缓冲用屏幕
+  空间线性插值（`zi = w0 z0 + w1 z1 + w2 z2`），在透视投影下只有对 `1/z` 才是正确的；
+  `precision_audit.md` §3 引用过的"斜面夹具上界 8.885 mm"是同一现象的较小实例。
+* **Blender Cycles**（本次 4 具研究体的生产路径）**不出现该偏差**：96 个视图（48 整片 + 48 ROI）
+  的 `|渲染深度中心 − 光轴射线投射|` 中位 **0.0029 mm**、最大 **0.181 mm**、
+  **超过 1 mm 的视图数 = 0**（`fracture_roi_compare.json` → `instrument_disagreement_mm`）。
+
+→ 本文件的 `mm/px` **以射线投射为准**（`mm_per_px_axis_raycast`），渲染深度值同时保留并给出差值。
+另注：整片视图里光轴射线可能**打空**（壳体开口方向，V23/M07 的 12 个整片视图全部 `NO_HIT`），
+此时 `axis_raycast_probe.status` 如实记录，整片口径改用帧内深度中位。
 
 ---
 
@@ -214,16 +232,22 @@
 
 | 情形 | λ | A | 斜率 RMS | `dDN`（8 bit） | 可见？ |
 |---|---|---|---|---|---|
-| 实测 `below_5mm` 上界（0.214 mm） | 10 mm | 0.214 | 0.134 | **≈ 5.8** | 是 |
-| 实测 `below_1mm`（**0.000 mm**） | 2 mm | 0.000 | 0.000 | **0.0** | **否**（几何为零） |
-| 形态学上界（0.1303 mm，若接线） | 2 mm | 0.1303 | 0.409 | **≈ 17.8** | 是 |
-| 契约例子 0.2 mm | 0.4 mm | 0.2 | 3.14 | **≈ 136** | 是（但会饱和） |
+| V10 `iface7` `below_5mm`（0.2142 mm） | 5 mm | 0.2142 | 0.269 | **60.1** | 是 |
+| 形态学上界（0.1303 mm，若接线） | 2 mm | 0.1303 | 0.409 | **91.4** | 是 |
+| **V02 `iface-1` `below_1mm`（0.0795 mm）** | 1 mm | 0.0795 | 0.500 | **111.6** | **是** |
+| V02 `iface-1` `below_0.25mm`（0.0174 mm） | 0.5 mm | 0.0174 | 0.219 | **48.8** | 是 |
+| V02 `iface0` `below_1mm`（0.0080 mm） | 1 mm | 0.0080 | 0.050 | **11.2** | 是 |
+| **campaign 三具的 `below_1mm`（0.000 mm）** | 2 mm | 0.000 | 0.000 | **0.0** | **否**（几何为零） |
 
-→ 只要形貌**存在**且波长 ≳ 0.4 mm，它在图像里就**远超 1 个码值**，
-与横向是否有 4 px **无关**。所以"看不见"的实测原因**只剩一个**：`below_1mm` 的幅度是 **0**。
+（`dDN` 是该模型的**上界**：冻结光照的颜色分量 ~2.2 会把高斜率推向饱和，
+所以 >1 只说明"至少 1 个码值"，不说明线性。）
+
+→ 只要形貌**存在**且波长 ≳ 0.5 mm，它在图像里就**远超 1 个码值**，
+与横向是否有 4 px **无关**。所以"看不见"的实测原因**只剩一个**：
+平面切割线的 `below_1mm` 幅度是 **0**；而 `a12_iface` 线**有**形貌（§2.3），
+它在 RGB 里应可见（`dDN` 11–112），横向可分辨性则受 §3.3 的 4 px 反解约束。
 
 ### 3.7 形态学若接线的上界（**不是实测**，用于排期与判据）
-
 以 `fracture_realism_V18_M01_plane_rough.json` 的诊断行 `predicted amplitude scale = 0.1303`
 与生成规格的候选区间 `fracture.rough_amplitude_mm = [0.02, 0.3]`（`next_experiment.yaml`）为上界：
 
@@ -233,6 +257,22 @@
   已经满足（0.3 mm = 4.11 px）**。
 * 幅度 **0.2 mm**：需 `mm/px ≤ 0.05` —— 本次特写差 **1.46 倍**（2.74 px vs 4 px），
   把交付长边提到 **1495 px**（60 mm）或把距离压到 **41.1 mm**（1024 px）即可。
+
+### 3.8 反解的**经验验证**：2048 px 档（真渲染，不是缩放）
+
+对 V10/M11 与 V02/M01 各取 3 个 ROI 视图，用同一支镜头、同一 60 mm 物距、
+**同一 `delivered_profile` 机制**把交付长边从 1024 提到 **2048**（真渲染，`upsampled=false`）：
+
+| 档 | 交付网格 | `f_px` | `mm/px`（实测） | 0.2 mm 占几像素 | 3 视图耗时 |
+|---|---|---|---|---|---|
+| 1024 | 1024×768 | 821.89 | **0.07300** | 2.74 | — |
+| **2048** | 2048×1536 | 1 643.79 | **0.03650** | **5.48** | V10: 62.8 s / V02: 45.2 s |
+
+→ **反解被实测确认**：交付长边 ×2 ⇒ `f_px` ×2 ⇒ `mm/px` ÷2（0.07300 → 0.03650，逐位），
+0.2 mm 结构从 2.74 px 升到 **5.48 px，越过契约的 4 px pilot 起点**。
+也就是说：**"0.2 mm ≥4 px"在 5–10 cm 近摄窗口内是可以闭合的，代价是交付长边 ≥ ~1500 px**
+（本反解给出 1495 px；2048 px 实测留有余量）。这与"20 µm 级 `Ra` 需要 15 000 px"是两件事：
+前者说的是**结构宽度**，后者说的是**幅度**。
 
 ---
 
@@ -245,7 +285,7 @@
 | 1 | **V10** | **M11** | `LIN0000_V10_M11_PAT15` | `data/a12_campaign/store` `asset_745a7831…` | 5 892 | 746 | 27 468 / 143 049 mm²（19.2%） |
 | 2 | **V21** | **M06** | `LIN0001_V21_M06_PAT16` | `data/a12_campaign/store` `asset_73da9901…` | 80 814 | 4 078 | 19 625 / 159 369 mm²（12.3%） |
 | 3 | **V23** | **M07** | `LIN0002_V23_M07_PAT12` | `data/a12_campaign/store` `asset_aba45496…` | 39 037 | 4 312 | 21 207 / 101 787 mm²（20.8%） |
-| 4 | **V02** | **M01** | `LIN0000_V02_M02_PAT02` | `data/a12_iface/store` `asset_8ad98a20…` | 115 435 | 4 206 | 386 / 6 106 mm²（6.3%） |
+| 4 | **V02** | **M01** | `LIN0000_V02_M01_PAT02` | `data/a12_iface/store` `asset_8ad98a20…` | 115 435 | 4 206 | 386 / 6 106 mm²（6.3%） |
 
 → 覆盖 **4 个器型 × 4 个材料**（≥ 任务要求的 2×2）。断面由**实测**的 `face__origin_kind == 1`
 选出（`face__interface_id` 单独用会把母体表面面也算进来：V10 的 15 个 interface id 覆盖 716 面，
@@ -255,36 +295,72 @@
 
 见 `data/a12_reports/fracture_roi_compare.json`（逐视图明细在
 `fracture_roi_run.json` → `bodies[*].whole_records` / `roi_records`）。
-下表为 4 具研究体的汇总（每具 12 整片视图 + 12 ROI 特写视图 = 96 个视图，全部真渲染）：
+下表为 4 具研究体的汇总（每具 12 整片视图 + 12 ROI 特写视图 = **96 个视图，全部真渲染**）：
 
-| 量 | 整片视图（MID 档 220 mm，1024×768） | ROI 特写（LOCAL 近摄 60 mm，1024×768） | 改善 |
+| 量 | 整片视图（MID 档，1024×768） | ROI 特写（LOCAL 近摄 60 mm，1024×768） | 改善 |
 |---|---|---|---|
-| 视图数 | 12 / 具 | 12 / 具（3 断口 × 4 方向） | — |
-| **`mm/px`（射线投射，中位）** | **0.3140** | **0.0730** | **4.30×** |
-| `mm/px`（渲染深度，中位） | 0.3140 | 0.0730 | 4.30× |
-| `px/mm` | 3.18 | 13.70 | 4.30× |
-| **4 px 可分辨尺寸 `r_eff_mm`** | **1.256 mm** | **0.292 mm** | 4.30× |
-| 8 px 可分辨尺寸 | 2.512 mm | 0.584 mm | 4.30× |
-| **0.2 mm 结构占几像素** | **0.64 px** | **2.74 px** | 4.30× |
-| 断口**像素数**（12 视图合计，`surface_tag=2`） | 见 JSON `rim_px_total` | 见 JSON | — |
-| **断口占物体像素（中位）** | 0.7–4.6% | **75–100%** | 20–100× |
-| 工作距离（aim 处实测） | 220.0 mm（标称） | **60.0 mm** | — |
-| 景深覆盖 `dof_cover_mm` | 121.5 mm | **6.17 mm** | 0.051× |
-| 每断口有效方向数 | — | **4 / 4**（每方向 `rim_px > 0`，见表下注） | — |
+| 视图数（4 具合计） | 48 | 48（4 具 × 3 断口 × 4 方向） | — |
+| **`mm/px`（光轴射线投射，中位）** | **0.28041** | **0.07300** | **3.84×** |
+| `mm/px`（帧内渲染深度中位） | 0.26525 | 0.07220 | 3.67× |
+| `px/mm` | 3.57 | 13.70 | 3.84× |
+| **4 px 可分辨尺寸 `r_eff_mm`** | **1.122 mm** | **0.292 mm** | 3.84× |
+| 8 px 可分辨尺寸 | 2.243 mm | 0.584 mm | 3.84× |
+| **0.2 mm 结构占几像素** | **0.713 px** | **2.740 px** | 3.84× |
+| **断口像素数（48 视图合计，`surface_tag=2`）** | **335 038** | **20 987 921** | **62.6×** |
+| **断口占物体像素（中位）** | **2.73%** | **96.95%** | 35.5× |
+| 工作距离（aim 处实测） | 220 mm（标称；帧内深度中位 180–200 mm） | **60.00 mm** | — |
+| 景深覆盖 `dof_cover_mm` | 121.50 mm（`delivered_profile` 元数据） | **6.1728 mm** | 0.051× |
+| 景深内视图数 | — | **48 / 48** | — |
+| 每断口有效方向数 | — | **4 / 4**（每方向 `rim_px > 0`，§4.4） | — |
+| 渲染深度 vs 射线投射（中位 / 最大） | 见 `instrument_disagreement_mm` | 0.0029 / 0.181 mm（**0 个视图 > 1 mm**） | — |
+
+**逐具（同一口径，`fracture_roi_compare.json` → `per_body`）**：
+
+| 器型/材料 | 源 store | 整片 `mm/px` | ROI `mm/px` | 整片断面像素 | ROI 断面像素 | 整片 rim/物体 | ROI rim/物体 | 墙钟 s |
+|---|---|---|---|---|---|---|---|---|
+| V10/M11 | `data/a12_campaign` | 0.25783 | 0.07300 | 286 052 | 7 241 983 | 4.59% | 100% | 289.7 |
+| V21/M06 | `data/a12_campaign` | 0.28041 | 0.07300 | 36 984 | 4 681 735 | 0.58% | 93.7% | 277.3 |
+| V23/M07 | `data/a12_campaign` | 打空（见 §2.5） | 0.07300 | **105** | 8 748 391 | **0.00%** | 99.7% | 261.5 |
+| V02/M01 | `data/a12_iface` | 0.32052 | 0.07300 | 11 897 | 315 812 | 4.04% | 14.7% | 310.5 |
+
+> **两条必须一起读的事实**：
+> 1. **V23/M07 的 12 个整片视图合计只有 105 个断面像素** ——
+>    对这条谱系，"断口在训练图像里"这句话在整片视图下**几乎不成立**；
+>    ROI 特写把它变成 8 748 391 px。这是本文件对"模型看不见"最直接的证据。
+> 2. **V02/M01 的 ROI 视图 rim/物体只有 14.7%** —— 因为该资产的断面只有 **385.79 mm²**
+>    （占其表面积 6.3%，见 §4.1），近摄视场远大于断口本身；
+>    它的 ROI 像素数少不是"没拍到"，而是**断口本来就小**。ROI 视图的 `roi_area_mm2`
+>    逐断口记录（V02: 71–108 mm²），可与 `rim_fraction` 对照阅读。
 
 > 上表的 `mm/px` 用**同一支相机同一交付网格**计算，差异**只**来自取景与距离，
-> 因此可以直接读作"ROI 特写把采样密度改善 4.30 倍"。
-> 与 `precision_audit.md` §1.2 的 campaign 中位（0.27193）相比，本次整片基线略粗，
-> 原因是工作距离取标称 220 mm 而不是 campaign 逐视图的 190.52 mm（§2.1）。
+> 因此可以直接读作"ROI 特写把采样密度改善 3.84 倍"。
+> 与 `precision_audit.md` §1.2 的 campaign 中位（0.27193）相比，本次整片基线
+> （0.25783–0.32052，取决于器型尺寸与工作距离）在同一量级、同一定义下可比。
 
-### 4.3 `Ra` 对应的像素幅度（任务 3 的第三列）
+### 4.3 `Ra` 对应的像素幅度（任务 3 的第三列，逐 ROI 实测）
 
-| 分带 | 实测 `Ra`（中位） | 整片 0.3140 mm/px | ROI 0.0730 mm/px | 说明 |
-|---|---|---|---|---|
-| 整块 patch（相对拟合平面） | 见 JSON `measured_amplitudes_mm` | 0.02–4.7 px | 0.08–20 px | 含宏观 form |
-| `below_5mm` | 0.0010–0.214 mm | 0.003–0.68 px | 0.01–2.9 px | 少数 patch 非零 |
-| **`below_1mm`** | **0.000 mm** | **0 px** | **0 px** | **几何为零** |
-| **`below_0.25mm`** | **0.000 mm** | **0 px** | **0 px** | **几何为零** |
+`data/a12_reports/_roi_tables.txt` → `== amplitudes in px`。整片口径 0.28041 mm/px、
+ROI 口径 0.07300 mm/px：
+
+| 研究体 | ROI | 整块 patch（相对拟合平面） | `below_5mm` | **`below_1mm`** | **`below_0.25mm`** |
+|---|---|---|---|---|---|
+| V10 | `iface6_c000` | 0.1833 mm → 0.65 / **2.51** px | 0.00097 → 0.003 / 0.013 px | **0 → 0 / 0 px** | **0 → 0 / 0 px** |
+| V10 | `iface7_c000` | 1.4848 mm → 5.30 / **20.34** px | 0.2142 → 0.76 / 2.93 px | **0 → 0 / 0 px** | **0 → 0 / 0 px** |
+| V10 | `iface1_c000` | 0.3560 mm → 1.27 / **4.88** px | 0.00131 → 0.005 / 0.018 px | **0 → 0 / 0 px** | **0 → 0 / 0 px** |
+| V21 | `iface2_c001` | 0.0354 mm → 0.13 / 0.49 px | 0.01573 → 0.06 / 0.22 px | **0 → 0 / 0 px** | **0 → 0 / 0 px** |
+| V21 | `iface1_c001` | 0.0355 mm → 0.13 / 0.49 px | 0.00399 → 0.01 / 0.05 px | **0 → 0 / 0 px** | **0 → 0 / 0 px** |
+| V21 | `iface0_c001` | 0.0930 mm → 0.33 / 1.27 px | 0.03602 → 0.13 / 0.49 px | **0 → 0 / 0 px** | **0 → 0 / 0 px** |
+| V23 | `iface2_c000` | 0.1076 mm → 0.38 / 1.47 px | 0.00471 → 0.02 / 0.07 px | **0 → 0 / 0 px** | **0 → 0 / 0 px** |
+| V23 | `iface1_c000` | 0.0391 mm → 0.14 / 0.54 px | 0.00474 → 0.02 / 0.07 px | **0 → 0 / 0 px** | **0 → 0 / 0 px** |
+| V23 | `iface0_c000` | 0.0397 mm → 0.14 / 0.54 px | 0.00326 → 0.01 / 0.05 px | **0 → 0 / 0 px** | **0 → 0 / 0 px** |
+| **V02** | `iface-1_c000` | 4.6106 mm → 16.44 / 63.16 px | 0.9127 → 3.26 / 12.50 px | **0.0795 → 0.28 / 1.09 px** | **0.0174 → 0.06 / 0.24 px** |
+| **V02** | `iface0_c000` | 0.1469 mm → 0.52 / 2.01 px | 0.01224 → 0.04 / 0.17 px | **0.0080 → 0.03 / 0.11 px** | **0.0007 → 0.002 / 0.01 px** |
+| **V02** | `iface1_c000` | 4.3576 mm → 15.54 / 59.69 px | 0.2819 → 1.01 / 3.86 px | **0.0623 → 0.22 / 0.85 px** | **0.0060 → 0.02 / 0.08 px** |
+
+（格式：`幅度 → 整片 px / ROI px`。）
+→ **只有 V02/M01 的 `below_1mm` 非零**，且即使 ROI 特写也只有 **0.11–1.09 px**：
+这是"形貌存在"那条线上真正的分辨率缺口（§3.3 反解：要 4 px 需 0.0199 mm/px，
+即 60 mm 处交付长边 ≥ 3761 px，或 1024 px 下工作距离 ≤16.3 mm）。
 
 ### 4.4 逐断口有效性
 
@@ -303,7 +379,7 @@ OCCLUSION_RAYCAST_BEST_OF_AZIMUTHS`，候选 8 个方位逐个记录）。
 | 文件 | 改动 | 为什么不能不动 |
 |---|---|---|
 | `synlab/observe/routes.py` | 新增 `render_frame_bundles(target, frames, spec, rng, …)`：把 `render_views` 的循环体抽成"给定帧列表 → 渲染 + 成像链"的单一实现；`render_views` 现在只负责 `make_view_frames` 然后调用它。新增 `observation_views(bundles, spec)` = 原 `_obs_views` 的公开入口 | ROI 视图必须走**同一条** scene/light/render/imaging 路径，否则"同一 basis"只是口号；复制一份循环会让两条路径将来漂移 |
-| `synlab/observe/fracture_roi.py`（**新文件**，约 1 300 行） | 本文件实现全部新能力 | — |
+| `synlab/observe/fracture_roi.py`（**新文件**，1 581 行） | 本文件实现全部新能力 | — |
 
 行为不变性：`render_views` 的帧列表、`spec.derivation`、`_rescaled_frame`、成像链参数、
 `ViewBundle` 字段都未改，`tests/a12/observe` 全部原有测试仍通过（§8）。
@@ -351,6 +427,13 @@ OCCLUSION_RAYCAST_BEST_OF_AZIMUTHS`，候选 8 个方位逐个记录）。
 * **新增视图而不是替换**：`append_roi_views` 返回一个新 `ObservationResult`，
   `views = 整片视图（原样，顺序不变） + ROI 视图`，并写
   `views_added_not_replaced = true`、`view_family_counts`。
+* **通道落在两处**（因为 store 只回写视图自己的 `meta`，不回写 `frame.meta`）：
+  ① `view.meta["resolution"]`（每视图的实测 `mm_per_px_*` / `px_per_mm_*` / `r_eff_mm_4px|8px` /
+  `dof_cover_mm` / `focus_error_mm` / `depth_centre_within_dof` / 交付网格 / `f_px_delivered` /
+  深度-射线差）与 `view.meta["fracture_roi_view"]`（`fracture_roi_id` / `interface_id` /
+  方向角 / 方位来源 / `capture_feasible` / 遮挡实测 / `rim_px` / `object_px`）；
+  ② 观测级 `meta.fracture_roi.resolution_ledger.per_view`（同一批数字的汇总，
+  外加整片族的对应记录）。→ **读一个视图就能知道它的真实 mm/px，不必回到渲染现场。**
 
 ### 5.5 开关与配置
 
@@ -366,23 +449,43 @@ OCCLUSION_RAYCAST_BEST_OF_AZIMUTHS`，候选 8 个方位逐个记录）。
 
 ---
 
-## 6. 耗时与显存（Blender CUDA）
+## 6. 耗时与显存（Blender CUDA，实测）
 
-见 `data/a12_reports/fracture_roi_timing.json`（逐具分解 + `nvidia-smi` 采样的显存峰值）。
+见 `data/a12_reports/fracture_roi_timing.json`（逐具分解 + `nvidia-smi` 采样的显存）。
 后端 = **Blender Cycles**（`third_party/blender-5.2.2-windows-x64/blender.exe`，5.2.2 LTS，
 `device=GPU`、`compute_device_type=AUTO`、`gpu_require=true`，`samples=16`），
 每个视图一次 worker 调用（真实渲染，无复用）。
 
-| 阶段 | 4 具合计 | 说明 |
-|---|---|---|
-| 整片 12 视图 | 见 JSON `totals_seconds.whole_fragment_seconds` | MID 档 220 mm，1024×768 |
-| ROI 特写 12 视图 | 见 JSON `totals_seconds.fracture_roi_seconds` | LOCAL 60 mm，1024×768 |
-| 高分辨率档（2048 px，1 具 3 视图） | 见 JSON `totals_seconds.extra_rung_seconds` | 反解的经验验证 |
-| **显存峰值（整卡 `memory.used`）** | 见 JSON `gpu_peak_mib_max` | 采样点个数与最小值也记录；**是本卡占用不是本作业占用** |
+| 阶段 | 视图数 | 合计秒 | 每视图秒 |
+|---|---|---|---|
+| 整片 12 视图 × 4 具 | 48 | **426.08** | 8.88 |
+| ROI 特写 12 视图 × 4 具 | 48 | **347.17** | 7.23 |
+| 高分辨率档（2048 px，1 具 3 视图 + V02 复算 3 视图） | 6 | **108.03** | 18.0 |
+| **合计** | **102** | **881.28**（14 min 41 s） | 8.64 |
+| 墙钟/具（含 ROI 计划、测量、落盘） | — | 261.5–310.5 | — |
 
-> **口径**：显存用 `nvidia-smi --query-gpu=memory.used` 在渲染期间采样（0.25 s 间隔），
-> 记录 min/max/mean/peak 与采样数；不是"申报值"。`data/a12_reports/fracture_roi_timing.json`
-> 的 `gpu_memory_total_mib = 8151` 是本机 RTX 5060 Laptop 的容量。
+**显存**（`nvidia-smi --query-gpu=memory.used`，0.25 s 采样，采样数 828–约 2 000/具）：
+
+| 具 | min MiB | mean MiB | **peak MiB** |
+|---|---|---|---|
+| V10/M11 | 74 | 270 | **1 126** |
+| V21/M06 | 63 | 214 | **910** |
+| V23/M07 | 61 | 232 | **904** |
+| V02/M01（115 435 面） | 66 | 1 198 | **8 012** |
+
+> **口径与诚实边界**：`memory.used` 是**整卡占用**，不是本作业的分配；
+> 采样窗口覆盖同一台机器上**并行运行的其它作业**（本次运行期间有其它 agent 在跑
+> torch/Blender）。所以 V02/M01 的 8 012 MiB 峰值（本卡 8 151 MiB）
+> **不能**读作"ROI 渲染需要 8 GB"：同一作业在其它三具研究体上的峰值是 **904–1 126 MiB**，
+> 而 V02 的网格面数是其它具的 1.4–19.6 倍。要一个干净的数字需要独占 GPU 复跑（未做）。
+> `fracture_roi_timing.json` 保留 min/mean/peak 与采样数，不把峰值写成"需求"。
+
+**并发故障（如实记录）**：4 具连续跑时，第 4 具的第一次尝试在**第 71 次 Blender 调用**上
+失败：`RuntimeError: Error: Failed to retain CUDA context (Unknown error)`（Blender worker
+的 CUDA 上下文错误，不是本项目断言）。用 `--only 3` 在**新进程**里复跑该具即成功（exit 0），
+结果合并进同一份报告（`fracture_roi_run.json` → `resumed_from`）。
+→ 这是"每进程 Blender 调用数"上的稳定性问题，不是渲染结果问题；`_run_fracture_roi.py`
+为此加了 `--only <index>` 的断点续跑开关。
 
 ---
 
@@ -450,16 +553,18 @@ OCCLUSION_RAYCAST_BEST_OF_AZIMUTHS`，候选 8 个方位逐个记录）。
 | # | 命令 | 产出 | 退出码 |
 |---|---|---|---|
 | 1 | `python -m synlab.cli validate --config configs/a12/imaging_fracture_roi.yaml` | `OK` + `spec_hash sha256:643eecbb…` | **0** |
-| 2 | `python tests/a12/observe/_run_fracture_roi.py --bodies 4 --samples 16 --extra-rung 2048` | `data/a12_reports/fracture_roi_{run,compare,resolvability,timing}.json` + `data/a12_roi/store`（4 个 `obs_result`） | **0** |
-| 3 | `python -m pytest tests/a12/observe -q` | 见 §9 | **见 §9** |
-| 4 | `python data/a12_reports/_roi_patch_probe.py`（只读探针） | `_roi_patch_probe.json/.txt`（断面 patch 与实测高度场统计） | 0 |
-| 5 | `python data/a12_reports/_roi_fracture_stats.py`（只读探针） | `_roi_fracture_stats.json/.txt`（按 `face__interface_id` 的对照口径，说明为什么必须叠加 `origin_kind`） | 0 |
+| 2 | `python tests/a12/observe/_run_fracture_roi.py --bodies 4 --samples 16 --extra-rung 2048` | `data/a12_reports/fracture_roi_{run,compare,resolvability,timing}.json` + `data/a12_roi/store` | 1（第 4 具 CUDA 上下文故障，见 §6） |
+| 2b | `python tests/a12/observe/_run_fracture_roi.py --only 3 --samples 16` | 断点续跑第 4 具并合并进同一报告（`resumed_from`） | **0** |
+| 3 | `python -m pytest tests/a12/observe/test_fracture_roi.py -q` | 24 passed | **0** |
+| 4 | `python -m pytest tests/a12/observe -q --tb=no` | 327 项，1 failed（既有）/ 1 skipped / 325 passed | 1（基线同样为 1） |
+| 5 | `python data/a12_reports/_roi_tables.py`（只读汇总） | 打印 §4.2/§4.3/§6 的表格数字 | 0 |
+| 6 | `python data/a12_reports/_roi_patch_probe.py` / `_roi_fracture_stats.py`（只读探针） | `_roi_patch_probe.json/.txt`、`_roi_fracture_stats.json/.txt` | 0 |
 
 ---
 
 ## 9. 测试
 
-`tests/a12/observe/test_fracture_roi.py`（**新文件**，22 个用例）断言：
+`tests/a12/observe/test_fracture_roi.py`（**新文件**，24 个用例）断言：
 
 * **ROI 视图数 3–6**：每断口生成 `directions` 个视图，`directions ∈ [3,6]` 之外一律 `SCHEMA_INVALID`
   （2 与 7 两个反例）；
@@ -480,21 +585,26 @@ OCCLUSION_RAYCAST_BEST_OF_AZIMUTHS`，候选 8 个方位逐个记录）。
 
 结果（本次实测）：
 ```
-python -m pytest tests/a12/observe/test_fracture_roi.py -q   →  22 passed   exit 0
-python -m pytest tests/a12/observe -q                        →  见 §9.1     exit 见 §9.1
+python -m pytest tests/a12/observe/test_fracture_roi.py -q   →  24 passed   exit 0
+python -m pytest tests/a12/observe -q  --tb=no -p no:warnings
+     →  327 项（1 skipped / 1 failed / 325 passed）   exit 1
 ```
 
 ### 9.1 全目录回归（含既有测试）
 
 | 运行 | 结果 | 退出码 |
 |---|---|---|
-| 改动**前**（基线） | 2 个既有失败（`test_mvs_subset.py::test_source_dependency_audit_is_a_real_experiment`、`test_synthetic_extras.py::test_loader_list_and_modality_are_machine_readable`） | 1 |
-| 改动**后** | 见 `data/a12_reports/_roi_pytest_observe.txt` 的 `exit=` 行 | 见同文件 |
+| 改动**前**（基线，`_roi_baseline_pytest.txt`） | 2 个既有失败：`test_mvs_subset.py::test_source_dependency_audit_is_a_real_experiment`、`test_synthetic_extras.py::test_loader_list_and_modality_are_machine_readable` | 1 |
+| 改动**后**（第一次，`_roi_pytest_observe.txt`） | 同样这 2 个失败；`test_fracture_roi.py` 的 24 项全通过 | 1 |
+| 改动**后**（复跑，`_roi_pytest_observe_final.txt`） | 327 项：**1 failed**（只剩 `test_synthetic_extras` 那条）、1 skipped、325 passed | 1 |
 
-> 两个既有失败与本次改动无关（`test_renderer_dispatch` / `test_pixel_contract` /
-> `test_blender_backend` / `test_fracture_surface_signal` / `test_coc_units` /
-> `test_carve_holes_bounds` / `test_realism_config_and_bridge` / `test_fracture_roi` 全通过），
-> 但**不掩盖**：基线本来就是 2 failed，本次没有把它们变绿。
+> 三条必须一起读：
+> 1. 两个失败**都与本次改动无关**，且基线就有；`test_renderer_dispatch` / `test_pixel_contract` /
+>    `test_blender_backend` / `test_fracture_surface_signal` / `test_coc_units` /
+>    `test_carve_holes_bounds` / `test_realism_config_and_bridge` / `test_fracture_roi` 全部通过。
+> 2. `test_mvs_subset::test_source_dependency_audit_is_a_real_experiment` 在两次复跑里
+>    **一次失败一次通过** → 它是**不稳定**的（不是本次改动造成，也不是本次修好的）。
+> 3. `tests/a12/observe` 的基线本来就是 **2 failed**；本次**没有**把它们变绿，也不声称变绿。
 
 ---
 

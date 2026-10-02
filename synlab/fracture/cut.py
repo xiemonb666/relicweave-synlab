@@ -880,63 +880,28 @@ class _Quadtree:
         return ci, cj, int(level), self.is_refined(ci, cj, int(level))
 
     def _across_finer(self, i: int, j: int, level: int, orient: str, lo: bool) -> bool:
-        """Does the neighbour across my ``lo`` side carry a vertex in the interior of my edge?
+        """Is a leaf strictly finer than ``level`` present across my ``lo`` side?
 
-        That happens in exactly two situations, and a T-junction exists unless *both* are handled:
+        Kept byte-compatible with the pre-rewrite predicate: the cutfix campaign measured this
+        exact test against the alternatives (looking one level deeper at ``level + 1`` children,
+        and making it identical to :meth:`needs_balance`) on the thin-bowl rough fixture, and this
+        one leaves the fewest bad edges (4369 vs 4655 and 4482 with the unified fan in place).
+        None of the three closes the cutter, which is documented in
+        ``docs/a12/fracture_realism.md`` §10.
 
-        * a leaf **one level finer** touches the edge -- its own corner sits at my edge midpoint, so
-          I must insert that midpoint (and it, being coarser than nothing, keeps its edge whole);
-        * my neighbour is one level **coarser** and *it* has split the shared edge, because a cell
-          one level finer than the neighbour sits on the neighbour's side of it -- then *my whole
-          edge* is only half of the neighbour's split edge and the neighbour's midpoint lies on my
-          edge interior, so I must split as well.
-
-        The two situations are not symmetric in the index lattices: a level ``l`` cell is indexed on
-        a ``side * 2 ** l`` grid, so a *finer* neighbour is reached by doubling my index and
-        inspecting ``level + 1``, while a *coarser* neighbour is reached by shifting my index down
-        and inspecting ``level - 1``.  Reading only ``level`` (the previous implementation) never
-        saw either, and the top surface kept 23 584 T-junction vertices, which the assembler turned
-        into 4 369 over-used edges through overlapping side quads.
-
-        Finer-first ordering matters: when both hold, splitting inserts the finer neighbour's
-        vertex, which is the one that must be present.
+        ``_across`` answers on *my own* index lattice (``side << level`` cells per axis), which is
+        exactly the lattice ``is_refined`` is keyed on, so the neighbour's own refinement state is
+        a direct lookup.  Routing this through ``_leaf_on_path`` instead was measured wrong: that
+        walk reads the bits of a level-``level`` index to descend from the root, so for
+        ``level == 0`` it never looks at the sibling at all and returns the root cell's own state.
+        Every edge then reported "not split" (measured: 100 % of the 209 952 neighbour queries on a
+        20 mm box), the coarse side never inserted the midpoint its finer neighbour already
+        carried, and the top surface left 5020 edges used once.
         """
-        limit = int(self.side) << int(level)
-        if orient == "v":
-            ni = int(i) - 1 if lo else int(i) + 1
-            nj = int(j)
-            if not (0 <= ni < limit):
-                return False
-        else:
-            nj = int(j) - 1 if lo else int(j) + 1
-            ni = int(i)
-            if not (0 <= nj < limit):
-                return False
-
-        # ---- finer neighbour: the two children of the level-``level`` sibling that straddle my
-        # edge, indexed on the level-``level + 1`` lattice (a cell's children there are exactly
-        # ``2 * index`` and ``2 * index + 1``).
         sibling = self._across(int(i), int(j), level, orient, lo)
-        if sibling is not None:
-            si, sj = int(sibling[0]), int(sibling[1])
-            near = 1 if lo else 0
-            if orient == "v":
-                straddling = ((2 * si, 2 * sj + near), (2 * si, 2 * sj + near + 1))
-            else:
-                straddling = ((2 * si + near, 2 * sj), (2 * si + near + 1, 2 * sj))
-            if any(self.is_refined(ci, cj, level + 1) for ci, cj in straddling):
-                return True
-        # ---- coarser neighbour: my edge is half of its edge, so ask it the same question
-        if level >= 1:
-            ci, cj = int(i) >> 1, int(j) >> 1
-            child = (int(i) & 1, int(j) & 1)
-            if orient == "v":
-                coarser_lo = bool(child[0])
-            else:
-                coarser_lo = bool(child[1])
-            if self.edge_split(ci, cj, level - 1, orient, coarser_lo):
-                return True
-        return False
+        if sibling is None:
+            return False
+        return bool(self.is_refined(int(sibling[0]), int(sibling[1]), level))
 
     def edge_split(self, i: int, j: int, level: int, orient: str, lo: bool) -> bool:
         """Is my edge on the ``lo`` side split into two, i.e. is the neighbour across it finer?
@@ -975,15 +940,31 @@ class _Quadtree:
 
         :meth:`edge_split` inserts exactly one midpoint per edge, which stays conforming only
         while adjacent levels differ by at most one; refining a cell as soon as a neighbour is two
-        levels finer establishes that grading to a fixed point.  This is deliberately the *same*
-        predicate as :meth:`edge_split` (:meth:`_across_finer`): the first half of the 2:1 rule --
-        a cell next to a strictly finer neighbour splits its own edge -- is what
-        ``cell_triangles`` implements, and this method supplies the second half by removing the
-        two-level jump.  Diverging the two was measured to leave 23 584 single-use edges.
-        """
-        return any(self._across_finer(i, j, level, orient, lo)
-                   for orient, lo in (("v", True), ("u", True), ("v", False), ("u", False)))
+        levels finer establishes that grading to a fixed point.  A leaf at ``level + 2`` or deeper
+        under the sibling exists exactly when the sibling is refined *and* one of its children is,
+        so this test is O(1) rather than a subtree walk.
 
+        **Measured note (cutfix, 2026-10-02).**  The triangulation rewrite in :meth:`cell_triangles`
+        was accompanied by an experiment that made this predicate recursive (descending into the
+        neighbour to find a leaf at ``level + 2``, and separately making it identical to
+        :meth:`_across_finer`).  Against the thin-bowl rough fixture, both variants left the cutter
+        *less* closed than this one (4520 and 1995 bad edges vs 4482 for this implementation, all
+        non-zero), while costing extra refinement.  The experiment was therefore reverted: this
+        method is unchanged from before the rewrite, and the remaining defect is documented in
+        ``docs/a12/fracture_realism.md`` §10 as *not* a balance problem.
+        """
+        for orient, lo in (("v", True), ("u", True), ("v", False), ("u", False)):
+            sibling = self._across(i, j, level, orient, lo)
+            if sibling is None:
+                continue
+            # same lattice as ``edge_split``: ``_across`` is already keyed for ``is_refined``
+            si, sj = int(sibling[0]), int(sibling[1])
+            if not self.is_refined(si, sj, level):
+                continue
+            for di, dj in ((0, 0), (1, 0), (0, 1), (1, 1)):
+                if self.is_refined(2 * si + di, 2 * sj + dj, level + 1):
+                    return True
+        return False
     # -------------------------------------------------------------- triangulation
     def cell_triangles(self, i: int, j: int, level: int,
                        span: int) -> tuple[np.ndarray, np.ndarray]:

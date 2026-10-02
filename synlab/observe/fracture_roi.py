@@ -1528,6 +1528,9 @@ def view_resolution_record(bundle: Any, *, rim_tag: int = 2,
         "visibility_fraction": (bundle.frame.meta or {}).get("roi_visibility_fraction"),
         "direction_offset_deg": (bundle.frame.meta or {}).get("direction_offset_deg"),
         "direction_in_plane_deg": (bundle.frame.meta or {}).get("direction_in_plane_deg"),
+        "direction_azimuth_source": (bundle.frame.meta or {}).get("direction_azimuth_source"),
+        "interface_id": (bundle.frame.meta or {}).get("interface_id"),
+        "capture_feasible": (bundle.frame.meta or {}).get("capture_feasible"),
         "direction_visibility_fraction": (bundle.frame.meta or {}).get(
             "direction_visibility_fraction"),
         "direction_aim_visible": (bundle.frame.meta or {}).get("direction_aim_visible"),
@@ -1570,9 +1573,30 @@ def append_roi_views(*, observation: ObservationResult, roi_bundles: Sequence[An
     from .routes import observation_views
 
     extra = observation_views(list(roi_bundles), spec) if roi_bundles else []
+    records_by_id = {str(r.get("view_id")): dict(r) for r in roi_records}
     for view in extra:
         view.meta["view_family"] = VIEW_FAMILY_ROI
         view.meta["roi_source"] = "MEASURED_INTERFACE_PATCH"
+        record = records_by_id.get(str(view.view_id))
+        if record is not None:
+            # the measured resolution/feasibility channels travel *with the view* as well as in
+            # the observation-level ledger: the store persists a view's own ``meta`` (it does not
+            # round-trip ``frame.meta``), so a consumer reading one view still sees its scale
+            view.meta["resolution"] = {
+                key: record.get(key) for key in
+                ("mm_per_px_measured", "mm_per_px_at_centre", "mm_per_px_axis_raycast",
+                 "px_per_mm_measured", "px_per_mm_at_centre", "r_eff_mm_4px", "r_eff_mm_8px",
+                 "structure_0p2mm_px_at_centre", "dof_cover_mm", "focus_error_mm",
+                 "depth_centre_within_dof", "delivered_size_px", "f_px_delivered",
+                 "depth_axis_raycast_mm", "depth_render_minus_raycast_mm")
+            }
+            view.meta["fracture_roi_view"] = {
+                key: record.get(key) for key in
+                ("fracture_roi_id", "interface_id", "direction_offset_deg",
+                 "direction_in_plane_deg", "direction_azimuth_source", "capture_feasible",
+                 "direction_visibility_fraction", "direction_aim_visible", "rim_px",
+                 "object_px", "rim_fraction_of_object")
+            }
     views = list(observation.views) + list(extra)
     meta = copy.deepcopy(observation.meta)
     whole = [dict(r) for r in whole_records]

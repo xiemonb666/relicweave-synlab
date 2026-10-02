@@ -129,6 +129,8 @@ class PackageLabelSource:
             entry["weight_sum"] += float(row.get("weight") or 0.0)
             token_a = row.get("token_a")
             token_b = row.get("token_b")
+            if "token_valid" in row or "token_a" in row:
+                entry["locator_column_seen"] = True
             if bool(row.get("token_valid", False)) and token_a is not None and token_b is not None:
                 try:
                     token_a = int(token_a)
@@ -164,7 +166,14 @@ class PackageLabelSource:
                 entry["token_weight"] = [edges[edge] for edge in edges]
                 entry["token_pairs"] = len(edges)
             else:
+                entry["token_a"] = []
+                entry["token_b"] = []
+                entry["token_weight"] = []
                 entry["token_pairs"] = 0
+            # the label table *declares* a token locator (the export always writes the column);
+            # a table without it at all is a different, older defect and is reported as such
+            entry["has_token_locator_column"] = bool(entry.get("locator_column_seen", False))
+            entry.pop("locator_column_seen", None)
         return cls(quality=quality_out, correspondence=corr, quality_channel=channel,
                    package_dir=package_dir,
                    quality_provenance=dict(prov.get(QUALITY_LAYER) or {}),
@@ -248,6 +257,8 @@ class PackageLabelSource:
                          if token_counts.get(pair[0], 0) > 0 and token_counts.get(pair[1], 0) > 0]
         token_entries = {pair: entry for pair, entry in self.correspondence.items()
                          if int(entry.get("token_mapped_samples", 0)) > 0}
+        any_locator = any(bool(entry.get("has_token_locator_column"))
+                          for entry in self.correspondence.values())
         mappable = [pair for pair in both_observed if pair in token_entries]
         mapping: dict[tuple[str, str], Any] = {}
         for pair in mappable:
@@ -299,14 +310,14 @@ class PackageLabelSource:
                 "renders exactly one side per cut event)")
         if not both_observed and not one_side and labelled:
             report["blocked_by"].append("no_labelled_pair_inside_the_batch")
-        if both_observed and not token_entries:
+        if both_observed and not any_locator:
             report["blocked_by"].append(
                 "surface_sample_to_token_mapping_is_not_in_the_label_table")
             report["unlock_condition"].append(
                 "re-export the correspondence label table with the token locator "
                 "(tools/a12_corr_token_map.py, or a full export): project the corr_* samples "
                 "with the observation K/T_WC/id_map the deployment view must not carry")
-        if token_entries and not mappable and labelled:
+        if any_locator and not mappable and labelled:
             report["blocked_by"].append(
                 "the_labelled_pairs_of_this_batch_carry_no_token_mapped_sample")
             report["unlock_condition"].append(

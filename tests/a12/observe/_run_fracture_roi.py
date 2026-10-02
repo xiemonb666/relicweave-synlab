@@ -48,7 +48,7 @@ STUDY = [
     {"store": "data/a12_campaign/store", "asset_id": "asset_aba4549620450f1f6adf",
      "vessel": "V23", "material": "M07", "lineage": "LIN0002_V23_M07_PAT12"},
     {"store": "data/a12_iface/store", "asset_id": "asset_8ad98a2081675cc92587",
-     "vessel": "V02", "material": "M01", "lineage": "LIN0000_V02_M02_PAT02"},
+     "vessel": "V02", "material": "M01", "lineage": "LIN0000_V02_M01_PAT02"},
 ]
 
 WHOLE_VIEW_COUNT = 12

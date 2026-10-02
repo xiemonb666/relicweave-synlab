@@ -236,8 +236,14 @@ def test_the_delivered_profile_keeps_fx_equal_to_fy() -> None:
     assert delivered.image_size == (1024, 768)
     assert delivered.K[0, 0] == pytest.approx(delivered.K[1, 1])
     assert delivered.K[0, 0] == pytest.approx(float(base.K[0, 0]) * 1024.0 / 4000.0)
-    # the pixel scale is unchanged by the grid change (same optics, same working distance)
-    assert delivered.mm_per_pixel == pytest.approx(base.mm_per_pixel)
+    # the delivered 1024 px image samples 4x coarser than the 4000 px native grid: the grid change
+    # must move mm_per_pixel by exactly the same factor, and the pixel scale must stay consistent
+    # with z / f_px (that is the quantity the contract requires to be reported, measured)
+    scale = 1024.0 / 4000.0
+    assert delivered.mm_per_pixel == pytest.approx(base.mm_per_pixel / scale)
+    assert delivered.mm_per_pixel == pytest.approx(
+        delivered.working_distance_mm / float(delivered.K[0, 0]))
+    assert delivered.meta["f_px_native_equivalent"] == pytest.approx(float(base.K[0, 0]))
     assert delivered.meta["pixel_affine_is_identity"] is True
     assert delivered.meta["dof_cover_mm"] > 0
 

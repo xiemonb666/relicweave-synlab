@@ -240,6 +240,12 @@ def _observed_payload(package: TrainingPackage, fragment_id: str, *,
     else:
         rgb_f = rgb.astype(np.float32)
     n_tokens = int(np.asarray(tokens["tokens"]).shape[0])
+    # S7: the fragment's measured OBS_EST observation-quality channels, when the package carries
+    # them.  They used to be hard-coded to ``zeros((1, 1))`` here, so ``FeatureBundle.quality``
+    # (the tensor the model's quality head reads) was all-zero for every package.  A fragment with
+    # no measurement keeps a *masked* row -- validity False -- so "not measured" and "measured 0"
+    # stay distinguishable.
+    quality_row, quality_valid_row, quality_provenance = _quality_row(package, fragment_id)
     payload = {
         "schema": FEATURE_SCHEMA,
         "global_rgb": np.transpose(rgb_f, (0, 3, 1, 2)),          # [V,3,H,W]
@@ -255,8 +261,9 @@ def _observed_payload(package: TrainingPackage, fragment_id: str, *,
         "token_modality": np.zeros(n_tokens, dtype=np.int32),
         "token_source": np.zeros(n_tokens, dtype=np.int32),
         "tokens_total": np.int32(n_tokens),
-        "quality": np.zeros((1, 1), dtype=np.float32),
-        "quality_valid": np.zeros((1, 1), dtype=bool),
+        "quality": quality_row,
+        "quality_valid": quality_valid_row,
+        "quality_provenance": quality_provenance,
         "presence": np.zeros((1,), dtype=np.float32),
         "presence_valid": np.zeros((1,), dtype=bool),
         "scale_valid": bool(np.asarray(geometry["scale_valid"], dtype=bool).any()),
@@ -270,6 +277,38 @@ def _observed_payload(package: TrainingPackage, fragment_id: str, *,
                           stage="qc.loader_probe.load_features",
                           evidence_refs=leaked)
     return payload
+
+
+#: Feature-schema version that ships the observation-quality block in the obs index (S7).
+OBSERVATION_QUALITY_FEATURE = "observation_quality_channels"
+
+
+def _quality_row(package: TrainingPackage, fragment_id: str
+                 ) -> tuple[np.ndarray, np.ndarray, dict[str, Any]]:
+    """``([1,C] values, [1,C] valid, provenance)`` from the package's measured quality channels.
+
+    No measurement for this fragment (or no block in the package at all) returns a single masked
+    slot: ``valid=False`` with the reason recorded, so a consumer can tell "unmeasured" from
+    "measured zero" (plan 30.12).
+    """
+    measured = package.observation_quality(fragment_id)
+    if measured is None or not measured["values"]:
+        reason = ("the package carries no observation-quality block "
+                  "(written before the S7 fix)" if not hasattr(package, "observation_quality")
+                  else "this fragment's observation carries no OBS_EST quality channel")
+        return (np.zeros((1, 1), dtype=np.float32), np.zeros((1, 1), dtype=bool),
+                {"available": False, "reason": reason, "channels": []})
+    values = np.asarray(measured["values"], dtype=np.float32).reshape(1, -1)
+    valid = np.ones(values.shape, dtype=bool)
+    return values, valid, {
+        "available": True,
+        "channels": list(measured["channels"]),
+        "n_channels": int(values.shape[1]),
+        "asset_id": measured["asset_id"],
+        "estimator_version": (measured.get("provenance") or {}).get("estimator_version"),
+        "source": (measured.get("provenance") or {}).get("source"),
+        "missing_is_not_a_zero_label": True,
+    }
 
 
 def probe_training_package(package_dir: str | Path, *, max_fragments: int = 16,

@@ -44,28 +44,15 @@ ROOT_LEVEL = 2               # side = 4 -> a 2x2 neighbourhood exists around TAR
 def _tree_with_flags(flags: tuple[bool, bool, bool, bool]) -> _Quadtree:
     """Quadtree whose ``TARGET`` cell reports exactly ``flags`` = (v0, u0, v1, u1) as split.
 
-    ``edge_split`` splits an edge when a leaf *strictly finer* than ``TARGET`` straddles it, i.e.
-    when one of the two grandchildren of the level-``LEVEL`` neighbour that sit on the shared edge
-    has been refined.  The probe marks exactly those grandchildren (and the intermediate parent,
-    which a real tree always has marked once a grandchild exists), so every flag pattern is
-    reachable and the flags the tree reports are the ones requested.
+    The split flags are not injected: the neighbour cell on each side is marked split the way the
+    real refinement loop marks it, and then :meth:`_Quadtree.edge_splits` is asked for the answer.
     """
     tree = _Quadtree(0.0, 4.0, 0.0, 4.0, ROOT_LEVEL)
     i, j = TARGET
-    #: (flag index, level-``LEVEL+1`` cell of the neighbour that straddles TARGET's edge).
-    #: The four index pairs below were verified by brute force against :meth:`_Quadtree.edge_split`
-    #: itself (every level-1 cell was marked in turn and the edges whose predicate flipped were
-    #: recorded); the fixture must mark *exactly* those cells, not the ones that look adjacent.
-    wants = (
-        (2 * i - 1, 2 * j),                # left edge: neighbour (i-1, j), high-u half
-        (2 * i, 2 * j - 1),                # bottom edge: neighbour (i, j-1), high-v half
-        (2 * i + 2, 2 * j),                # right edge: neighbour (i+1, j), low-u half
-        (2 * i, 2 * j + 2),                # top edge: neighbour (i, j+1), low-v half
-    )
-    for index, (ci, cj) in enumerate(wants):
+    neighbours = ((i - 1, j), (i, j - 1), (i + 1, j), (i, j + 1))
+    for index, (ni, nj) in enumerate(neighbours):
         if flags[index]:
-            tree.refined.add((ci // 2, cj // 2, LEVEL + 1))
-            tree.refined.add((ci, cj, LEVEL + 2))
+            tree.refined.add((ni, nj, LEVEL))
     return tree
 
 def _signed_area(tri: np.ndarray) -> float:
