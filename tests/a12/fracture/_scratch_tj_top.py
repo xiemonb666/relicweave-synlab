@@ -102,46 +102,25 @@ def main() -> int:
     both = [(e, n) for e, n in directed.items() if n > 1]
     print("directed edges used more than once:", len(both), both[:4])
 
-    # ---- locate the cells that own the two ends of one single-use edge and read their splits
-    def leaf_of_point(u: float, v: float) -> tuple[int, int, int]:
-        for (li, lj, ll) in block:
-            lspan = KEY_LEVEL - int(ll)
-            lstep = 1 << lspan
-            lu, lv = int(li) << lspan, int(lj) << lspan
-            uu = tree.u0 + lu * (tree.hx / (tree.side << lspan))
-            vv = tree.v0 + lv * (tree.hy / (tree.side << lspan))
-            size_u = tree.hx / (1 << int(ll))
-            size_v = tree.hy / (1 << int(ll))
-            if uu - 1e-9 <= u <= uu + size_u + 1e-9 and vv - 1e-9 <= v <= vv + size_v + 1e-9:
-                return int(li), int(lj), int(ll)
-        return (-1, -1, -1)
+    # ---- where do the single-use top edges live?  (frame vs material band)
+    def bbox(edges):
+        pts = np.array([[coords[a], coords[b]] for (a, b), _n in edges]).reshape(-1, 3)
+        return (np.round(pts.min(axis=0), 4).tolist(), np.round(pts.max(axis=0), 4).tolist())
 
-    seen: set[tuple[int, int]] = set()
-    shown = 0
-    for (a, b), n in sorted(odd, key=lambda kv: kv[1]):
-        if shown >= 3:
-            break
-        cell_a = leaf_of_point(float(coords[a][0]), float(coords[a][1]))
-        cell_b = leaf_of_point(float(coords[b][0]), float(coords[b][1]))
-        if cell_a == cell_b or cell_a in seen:
-            continue
-        seen.add(cell_a)
-        shown += 1
-        print(f"  single-use edge {a}-{b} (n={n})")
-        print(f"    A={cell_a} splits={tree.edge_splits(*cell_a)} "
-              f"refined={tree.is_refined(*cell_a)}")
-        print(f"    B={cell_b} splits={tree.edge_splits(*cell_b)} "
-              f"refined={tree.is_refined(*cell_b)}")
-        ia = {tuple(int(x) for x in row): pos for pos, row in enumerate(block)}.get(cell_a)
-        ib = {tuple(int(x) for x in row): pos for pos, row in enumerate(block)}.get(cell_b)
-        print(f"    A extras={None if ia is None else tuple(int(x) for x in extras[ia])} "
-              f"B extras={None if ib is None else tuple(int(x) for x in extras[ib])}")
-        for name, cell, pos in (("A", cell_a, ia), ("B", cell_b, ib)):
-            if pos is None:
-                continue
-            lspan = KEY_LEVEL - cell[2]
-            ring = tree.cell_triangles(cell[0], cell[1], cell[2], lspan, extras[pos])[0]
-            print(f"    {name} ring: {[tuple(int(x) for x in p) for p in ring]}")
+    one = [(e, n) for e, n in odd if n == 1]
+    print("single-use edges:", len(one), "bbox", bbox(one))
+    material = [e for e in one
+                if max(abs(coords[e[0][0]][0]), abs(coords[e[0][1]][0])) < 13.0
+                and max(abs(coords[e[0][0]][1]), abs(coords[e[0][1]][1])) < 13.0]
+    print("single-use edges inside the material bbox (|u|,|v| < 13):", len(material))
+    if material:
+        print("  bbox", bbox(material))
+        interesting = material[:4]
+    else:
+        interesting = one[:2]
+    for (a, b), n in interesting:
+        print(f"  single-use edge {a}-{b} (n={n}) z={coords[a][2]:.6f} "
+              f"A={np.round(coords[a], 6).tolist()} B={np.round(coords[b], 6).tolist()}")
     return 0
 
 

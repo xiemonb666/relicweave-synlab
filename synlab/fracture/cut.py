@@ -1018,13 +1018,18 @@ class _Quadtree:
             # ---------------------------------------------------------------- unified fan
             #
             # One algorithm for all of ``n_split in 1..4``: walk the cell boundary
-            # ``c00 -> c10 -> c11 -> c01 -> c00`` in counter-clockwise order and insert the
-            # midpoint of every *split* edge between the two halves of that edge, then fan the
-            # resulting ring from the cell centre.  Both halves of a split edge are kept, so the
-            # ring is an exact traversal of the cell boundary for every split pattern; the
-            # previous branch table instead *deleted* both halves of some edges (25 % hole -> the
-            # "edge used once" half of the defect) and emitted other triangles twice (the "edge
-            # used 3-7 times" half).
+            # ``c00 -> c10 -> c11 -> c01 -> c00`` in counter-clockwise order, and along each
+            # edge emit its *start* corner followed by every point strictly inside the edge —
+            # the midpoint when the edge is split, plus the finer dyadic points when the facing
+            # leaves require them (``edge_extra``).  The edge's end corner is emitted as the start
+            # corner of the next edge, so the ring is an exact traversal of the cell boundary for
+            # every split pattern.  Both halves of a split edge are therefore kept, and every
+            # boundary edge is traversed in the cell's own counter-clockwise direction, which is
+            # what makes two neighbouring cells traverse their shared edge in *opposite*
+            # directions (the previous revision appended the start corner before the midpoint,
+            # so a split edge came out as ``corner -> corner -> midpoint``: the fan covered the
+            # cell but walked the boundary backwards, and the mismatch showed up as an edge used
+            # twice in the same direction and hence as a spurious side quad).
             #
             # The walk order is what makes the emitted triangles of a *fully* split cell
             # identical to the previous ``n_split == 4`` fan; for the broken combinations it is
@@ -1040,30 +1045,34 @@ class _Quadtree:
             centre = (c00[0] + half, c00[1] + half)
             pts = [c00, c10, c11, c01, m_u0, m_v1, m_u1, m_v0, centre]
             ring: list[int] = []
-            for edge, (start_corner, _end_corner, midpoint) in enumerate(walk):
+            for edge, (start_corner, end_corner, midpoint) in enumerate(walk):
                 ring.append(start_corner)
-                if s[edge]:
-                    # One ordered walk from the edge's own start corner: ``q = 0`` is the
-                    # midpoint (a single step of ``half``), and an edge that needs finer steps
-                    # is walked in ``2 ** extra`` sub-steps of ``half >> extra`` instead.  The
-                    # counter-clockwise traversal is preserved because every step moves forward
-                    # along the same edge, and the sub-step points are the key-lattice integers
-                    # the finer side computes, so the two sides pair up by construction.
-                    sub = 0 if int(extra[edge]) == 0 else int(extra[edge]) + 1
-                    steps = 1 << sub
-                    unit = half >> sub
-                    corner = pts[start_corner]
-                    origin = (int(corner[0]), int(corner[1]))
-                    for q in range(1, steps + 1):
-                        along = q * unit
-                        point = (origin[0] + along, origin[1]) if edge % 2 == 0 \
-                            else (origin[0], origin[1] + along)
-                        if point == midpoint:
-                            ring.append(midpoint)
-                            continue
-                        p = len(pts)
-                        pts.append(point)
-                        ring.append(p)
+                if not s[edge]:
+                    continue
+                #: one ordered walk from the edge's own start corner: with ``extra == 0`` a single
+                #: step of ``half`` reaches the midpoint, and an edge that needs finer steps is
+                #: walked in ``2 ** extra`` sub-steps of ``half >> extra`` instead.  Every point is
+                #: a key-lattice integer the facing side computes as well, so the two sides pair
+                #: up by construction; ``cell_triangles`` never reorders them.
+                sub = int(extra[edge])
+                steps = 1 << sub
+                unit = half >> sub
+                corner = pts[start_corner]
+                origin = (int(corner[0]), int(corner[1]))
+                midpoint_point = pts[midpoint]      # ``walk`` carries the *index*, not the point
+                for q in range(1, steps + 1):
+                    along = q * unit
+                    point = (origin[0] + along, origin[1]) if edge % 2 == 0 \
+                        else (origin[0], origin[1] + along)
+                    if point == midpoint_point:
+                        #: the midpoint is already in ``pts`` and must be *reused*, otherwise the
+                        #: same key point is emitted twice and the assembler creates two global
+                        #: vertices for it (measured: a ring with 12 points where 9 suffice)
+                        ring.append(midpoint)
+                        continue
+                    p = len(pts)
+                    pts.append(point)
+                    ring.append(p)
             #: the ring is counter-clockwise in (u, v), so ``(this, next, centre)`` is
             #: counter-clockwise too (the previous branch table mixed both orientations, which is
             #: part of why its signed areas cancelled instead of adding up).
@@ -1418,14 +1427,21 @@ def build_closed_cutter(
     #: multi-edge bookkeeping for the audit: a boundary edge must be traversed by exactly one top
     #: face in one direction and by no top face in the other, otherwise the wall it produces is
     #: emitted twice and the quad's own edges end up used 4 times
+    silhouette_degree: Counter[int] = Counter()
     for (a, b), uses in top_edge_use.items():
         if uses != 1 or (b, a) in top_edge_use:
             continue                          # interior edge (or inconsistent use): no side
+        silhouette_degree[a] += 1
+        silhouette_degree[b] += 1
         ba, bb = bottom_vertex(a), bottom_vertex(b)
         # top face traverses a -> b, so the bottom face traverses ba -> bb; the side quad is
         # then b -> a -> ba -> bb, which shares every edge with opposite direction
         side_faces.append((b, a, ba))
         side_faces.append((b, ba, bb))
+    #: on a conformal boundary every silhouette vertex has degree 2.  Reporting the histogram
+    #: makes a wall emitted twice attributable instead of surfacing only as duplicated edges.
+    silhouette_degree_histogram = {str(k): int(v) for k, v in
+                                   sorted(Counter(silhouette_degree.values()).items())}
     verts = np.asarray(vertices, dtype=np.float64)
     faces = np.asarray(top_faces + bottom_faces + side_faces, dtype=np.int64)
     #: top vertices are created first and are never removed, so their block is ``[0, N)``
@@ -1570,6 +1586,7 @@ def build_closed_cutter(
                                                  Counter(counter.values()).items()},
                           "bad_edge_kind": dict(kinds),
                           "bad_edge_details": details,
+                          "silhouette_degree_histogram": silhouette_degree_histogram,
                           "top_vertices": int(top_vertex_count),
                           "hanging_corner_points": int(missing_total),
                           "edges_missing_a_hanging_point": int(edges_with_missing),

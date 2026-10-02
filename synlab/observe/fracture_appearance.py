@@ -1,4 +1,4 @@
-﻿"""Fracture appearance layer: deliver the sub-millimetre relief through the *normal* channel.
+"""Fracture appearance layer: deliver the sub-millimetre relief through the *normal* channel.
 
 Why this file exists
 --------------------
@@ -145,6 +145,23 @@ def lambert_ambient_linear(*, normals_world: np.ndarray, T_WC: np.ndarray, albed
     n = np.asarray(normals_world, dtype=np.float64)
     scene_normals = n @ np.asarray(T_WC, dtype=np.float64)[:3, :3]
     lambert = np.clip(-(scene_normals @ np.asarray(light.direction, dtype=np.float64)), 0.0, 1.0)
+    a = np.asarray(albedo, dtype=np.float64)
+    return a * (np.asarray(light.ambient, dtype=np.float64)[None, :]
+                + np.asarray(light.color, dtype=np.float64)[None, :] * lambert[..., None])
+
+
+def shade_world_normals(*, normals_world: np.ndarray, albedo: np.ndarray,
+                        light: LightSpec) -> np.ndarray:
+    """The frozen shading with a genuine **world** normal: ``albedo*(ambient + color*clip(-(n.l)))``.
+
+    ``render._rasterise_buffers`` names its cross-product "world_normals" but the vertices it uses
+    are camera-space, and it then applies ``T_WC[:3, :3]``; for a rigid transform that composes to
+    ``scene_normals = R^T n_cam = n_world``.  The frozen light is therefore expressed in the
+    **world** frame, and this function is the same model written in the frame the relief
+    perturbation lives in.  The two forms agree to floating-point round-off.
+    """
+    n = np.asarray(normals_world, dtype=np.float64)
+    lambert = np.clip(-(n @ np.asarray(light.direction, dtype=np.float64)), 0.0, 1.0)
     a = np.asarray(albedo, dtype=np.float64)
     return a * (np.asarray(light.ambient, dtype=np.float64)[None, :]
                 + np.asarray(light.color, dtype=np.float64)[None, :] * lambert[..., None])
@@ -448,8 +465,7 @@ class ReliefField:
         with the rendered difference: it uses the real gradient field (whose RMS is dominated by the
         small-area pit and hackle features), not a nominal ``2 pi A / lambda``.
         """
-        l_eff = np.asarray(T_WC, dtype=np.float64)[:3, :3] @ np.asarray(light.direction,
-                                                                       dtype=np.float64)
+        l_eff = np.asarray(light.direction, dtype=np.float64).reshape(3)
         a_u = float(np.dot(self.u_axis, l_eff))
         a_v = float(np.dot(self.v_axis, l_eff))
         gu, gv = self._grid_gradients()
@@ -1103,7 +1119,13 @@ def _rasterise_appearance(scene: Scene, frame: ViewFrame, width: int, height: in
     if order.size == 0:
         return {"depth": depth, "id": id_buf, "tag": tag_buf, "rgb": rgba}
 
-    world_normals = face_n / np.maximum(np.linalg.norm(face_n, axis=1, keepdims=True), 1e-30)
+    # `face_n` is a CAMERA-space normal (the vertices above are camera-space; the frozen
+    # rasteriser calls the cross product "world_normals" only by history).  The frozen shading
+    # composes to ``-(n_world . l)`` with a world-frame light, and the relief tangents live in the
+    # world frame, so the perturbation is applied to the **world** normal and converted back.
+    R_WC = np.asarray(T_CW, dtype=np.float64)[:3, :3]
+    cam_normals = face_n / np.maximum(np.linalg.norm(face_n, axis=1, keepdims=True), 1e-30)
+    world_normals = cam_normals @ R_WC
     vertex_n = corner_n = None
     if appearance.normal_mode != "FLAT":
         vertex_n = vertex_normals(world, faces, weighting="AREA")
@@ -1153,8 +1175,8 @@ def _rasterise_appearance(scene: Scene, frame: ViewFrame, width: int, height: in
         tag_buf[ymin:ymax + 1, xmin:xmax + 1][better] = scene.surface_tag[f]
 
         if appearance.normal_mode == "FLAT" and not relief_on:
-            shaded = lambert_ambient_linear(normals_world=world_normals[f][None, :], T_WC=T_CW,
-                                            albedo=albedo_px[f][None, :], light=light)[0]
+            shaded = shade_world_normals(normals_world=world_normals[f][None, :],
+                                         albedo=albedo_px[f][None, :], light=light)[0]
             rgba[ymin:ymax + 1, xmin:xmax + 1][better] = shaded.astype(np.float32)
             continue
 
@@ -1187,8 +1209,8 @@ def _rasterise_appearance(scene: Scene, frame: ViewFrame, width: int, height: in
             tv = tv / np.maximum(np.linalg.norm(tv, axis=1, keepdims=True), 1e-30)
             n_px = n_px - gu[:, None] * tu - gv[:, None] * tv
             n_px = n_px / np.maximum(np.linalg.norm(n_px, axis=1, keepdims=True), 1e-30)
-        shaded = lambert_ambient_linear(
-            normals_world=n_px, T_WC=T_CW,
+        shaded = shade_world_normals(
+            normals_world=n_px,
             albedo=np.repeat(albedo_px[f][None, :], pts.shape[0], axis=0), light=light)
         rgba[ymin:ymax + 1, xmin:xmax + 1][rows, cols] = shaded.astype(np.float32)
     return {"depth": depth, "id": id_buf, "tag": tag_buf, "rgb": rgba}

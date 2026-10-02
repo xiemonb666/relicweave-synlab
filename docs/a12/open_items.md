@@ -20,13 +20,41 @@
 | **A（三角化）** | `cut.py::_Quadtree.cell_triangles` 统一：**16 组合面积全 1.000000**、零/负面积三角 0、栅格化并集面积全 1.000、每胞 `hist ⊆ {1,2}`；**平面逐位回归通过**（`sha256:ddf8191e…`）；坏边 **8 993 → 4 369（−51%）**，**"用 1 次"边彻底消失** |
 | **C2（断口 ROI 特写）** | `synlab/observe/fracture_roi.py`（1581 行）：每断口 **3–6 方向**、遮挡射线实测算力规划、标 `CLOSEUP_DECLARED_NOT_CALIBRATED`；`imaging_fracture_roi.yaml` 默认关闭、`validate` exit 0；**补上全仓 0 生产者的 `px_per_mm`/`r_eff_mm`/`dof_cover_mm`**；实测 **mm/px 0.28041 → 0.07300（3.84×）**、**断面像素 335 038 → 20 987 921（62.6×）**、断面/物体 2.73% → **96.95%**；96 Blender 视图 609.45 s、峰值显存 1260 MiB；新测试 **24 passed exit 0** |
 
-### 🔧 在修
+### ✅ 第二轮完成（小修批次 **11/11 全部收口**）
+
+| 原项 | 结果（真实数字） |
+|---|---|
+| **S3 导出方向性** | 根因：merged 以规范无序键为 key 只发一个角色 → 改为按角色各出一行（`direction`/`pair_key`，两行标签相同=对称）；**行数 1794 → 3588**、**`effective_queries` 20 → 44（2.2×）** |
+| **S5 `mask_semantics`** | **更正 Lead 前提**：463 资产中 **115 个已带 `coc_units_v2`**；真缺口是 **`visible_labels` 0/9** → 已加 `_stamp_data_semantics`（分母 327→336） |
+| **S8 contradiction** | **更正 Lead 两处前提**：当前包 748 **全部可编码**；类别只有 **2 类 + 1 掩码**。真阻塞：**`synlab/**` 无任何代码写 `row["contradiction"]`**（`contradiction_source` 是死参数）→ CONTRADICTING **结构性不可达**；交付解锁条件 + 哨兵测试，**未伪造标签** |
+| **S9 整包冒烟 OOM** | 精确复现 `19629342720 bytes = 19.63 GiB`；新增 `tools/a12_chunked_smoke.py`（同一 Trainer/loss + 梯度累加，归一化逐字一致）→ **3/3 步、峰值 4.69 GiB、18.3 s（内存 1/4.2）**；chunk 下限 8 片 |
+| **S2 难负例隔离** | 四条约束全落地（`conformance` 四键 true）；**实测不能并进 `relations.parquet`**（D10 检查器：表外违反 3 → 并入后 **883**）→ 独立记录集交付；**开/关对照 3 步零增益、梯度 +40%、捷径探针 `discriminative_power=0.0`** → **Lead 裁决：默认关闭** |
+| **S11 P03 漂移** | **零损伤对照的漂移与全流程逐位相同**（`0.35424330830574036`）⇒ 与损伤场无关；根因是**声明（窄带轴）与实际路由（全局体素 level-set）矛盾** → 按声明路由到已有窄带算子：**drift 0.35424 → 0.000348 mm（1018×）**、lost_volume 319.31 → **32.88**、**watertight False/43 边 → True/0 边**、audit `[]`；反证"就地 Newton 投影"不是修法（边界边 43→90） |
+
+### 🔧 在修（当前重点是断裂）
 
 | 项 | 负责 | 状态 |
 |---|---|---|
-| **装配器 T 型接头消解**（混合层级共形化，目标 `edge_use_histogram=={"2"}` + 坏边 0 + 平面逐位回归） | `6ee59756` | 进行中；硬门：破坏平面逐位回归即回退 |
-| **物理层三情形实测 + 断口渲染出图**（plane / M03 / M07） | `8f8eeae1` | 进行中 |
-| **S2/S3/S5/S8/S9/S11**（难负例隔离 / 导出方向性 / `mask_semantics` 落库 / contradiction / 冒烟分块 / P03 漂移） | `a15d8a2c` | 排队中 |
+| **装配器 T 型接头消解**（`hist=={"2"}` + 坏边 0 + 平面逐位回归） | `f5dc45a0` | 进行中（`data/a12_reports/tjunction/` 已有痕迹） |
+| **断裂外观链**：法向→明暗通路（Lambert dDN 11–112）、面片抑制、材料驱动、釉层台阶、A/B 出图 | `211126ea` | 进行中 |
+
+### ⛔ 新发现的阻塞（第二轮新增，N9–N13）
+
+| # | 项 | 证据 | 解锁/处理 |
+|---|---|---|---|
+| N9 | **`roi_external_drift` 不进 `failure_codes`** | 全局 P03 漂移 **0.354 mm 仍报 PASS**；audit 把该指标写进 checks 却不进失败码 | **Lead 裁决：收紧并纳入 failure_codes**（版本化 QA 变更 + 重跑）；旧包按"修复前一代"标注（与 `_archive_pre_fix` 同口径），**不放宽判据** |
+| N10 | **S2 类别未进包，且 240 行无监督角色** | 并入即违反 D10（+880 违规）；240 行"query 无邻片"在当前类别体系下无角色 | Lead 已同意新增**辅助表 `research/hard_negatives.parquet`**（独立于 D10 主表 + 更新列语义表）；240 行待新的监督定义 |
+| N11 | **P02/P04 共用窄带适配路径但未逐轴复测** | S11 只实测 P03 | 逐轴复测（同一根因） |
+| N12 | **历史导出的 P03 几何未追溯修复** | `data/a12_exports/**` 为旧路径产出 | 重导出（或按"修复前一代"标注并归档） |
+| N13 | **漂移指标只有"采样点最大值"；`choose_spacing` 的 node budget 覆盖请求值** | 无 p95/p99 版本；请求 0.95 mm 实得 1.14 mm | 补分位版本；节点预算改为显式可声明 |
+
+### ⚠️ 既有顺序相关测试失败（与本轮改动无关）
+
+`tests/a12/qc/test_data_quality.py::test_store_sqlite_is_opened_read_only`：单独跑 **0**、整文件 **1**、把该文件第一个测试与它配对可复现 → 机制线索为 `AssetStore._init_db` 未关连接 + WAL 持久化 ⇒ **GC 时机相关**（标为假设）；该文件只 import `qc.data_quality`/`storage.store`/`roles`，均不在改动集内。
+
+### 🖼 断裂视觉现状（Lead 已亲自看图判读）
+
+`data/a12_reports/physical_layer/samples/` 存有 ROI 近摄样本（1024 与 2048 档 + 深度图 + ID 图）。判读结论：**深度图均匀无浮雕**（断口几何是平面，与 `Ra=1.103e-07 mm` 一致）；RGB 里的**放射纹是三角拓扑扇形着色伪影**（非物理 hackle）；满屏均匀面片；轮廓为四叉树台阶 → **"看得见、看得清，但不像真实断裂"**。样本源为 `data/a12/reports/blender/_work/fracture_roi_*`。
 
 ### ⛔ 新发现的阻塞（本轮新增条目）
 

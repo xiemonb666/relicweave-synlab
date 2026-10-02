@@ -938,7 +938,7 @@ Lead 裁决允许 `CANDIDATE_MATE_PRESENT_NOT_ORDINARY` 作为独立类别 `HARD
 | 组合 loss（3 步） | 7.317972 / 7.170210 / 7.061428 | 7.317583 / 7.169848 / 7.061081 | 10.081157 / 9.878906 / 9.730040 |
 | grad norm | 329.33 / 322.71 / 317.82 | 329.32 / 322.70 / 317.81 | **459.55 / 450.33 / 443.53** |
 | aux 项 | 未构造 | 未构造 | 9.211914 / 9.028023 / 8.892738（权重 0.3） |
-| aux `n_valid`/`n_allowed`/`n_valid_labels` | — | — | 1 / 1 / 8（8 个 query 因非 mate-present 跳过） |
+| aux `n_valid`/`n_allowed`/`n_valid_labels` | — | — | 1 / 1 / 8（另 8 个 query 被跳过：query 侧非 mate-present，或没有 allowed 的正例/硬负例） |
 
 **约束 2 的数字证明**（`denominator_invariance`）：`off` 与 `control` 的
 `positives / negatives / excluded / effective_queries / queries_with_positive / queries_with_legal_negative`
@@ -1157,17 +1157,46 @@ watertight/winding 一致且不产生退化面）。实测：
 
 ## 本轮回归（S2 + S11）
 
+回归集共 **365** 项（`pytest tests\a12\{relations,training,physical,qc,storage} --collect-only -q`）。
+
 | 命令 | 退出码 | 结果 |
 |---|---|---|
-| `.venv\Scripts\python.exe -m pytest tests\a12\relations tests\a12\training tests\a12\physical tests\a12\qc tests\a12\storage -q` | **0**（2026-10-02 两次） | 全绿 |
-| 同上（另一次运行，同代码） | 1 | 唯一失败 `tests/a12/qc/test_data_quality.py::test_store_sqlite_is_opened_read_only`（见下） |
+| `.venv\Scripts\python.exe -m pytest tests\a12\relations tests\a12\training tests\a12\physical tests\a12\qc tests\a12\storage -q` | **0**（本会话两次，`_s2s11_pytest_required_exit.txt` / `_req4` 之前的运行） | 全绿 |
+| 同上（本轮最终代码，`_s2s11_final.txt`） | **1** | 唯一失败 `tests/a12/qc/test_data_quality.py::test_store_sqlite_is_opened_read_only`（见下） |
 | `.venv\Scripts\python.exe -m pytest tests\a12\operators -q` | **0** | 全绿（含 `test_narrowband.py`，证明 S11 的路由没有破坏算子契约） |
 | `.venv\Scripts\python.exe -m pytest tests\a12\operators tests\a12\fracture -q` | 1 | 20+ 个 `tests/a12/fracture/**` setup error：`CUTTER_NOT_CLOSED (fracture.cut.verify) cutter is not watertight: 6442 edges` —— 来自**并行队友正在改的** `synlab/fracture/cut.py`（工作区未提交修改），与本项无关 |
 
 **关于 `test_store_sqlite_is_opened_read_only`**：单独运行退出码 **0**（通过），
-`pytest tests/a12/qc -q` 整目录运行退出码 **1**，`tests/a12/qc --ignore=test_data_quality.py` 退出码 **0**；
-在同一文件里让它失败的是它**前面任意一个测试**（逐个配对都复现），即顺序相关。
-该测试文件只 import `synlab.qc.data_quality` / `synlab.storage.store` / `synlab.roles`，
-这三个模块**均不在 S2/S11 的改动集内**（本轮改的是 `synlab/{relations,training}/**`、
-`synlab/physical/{sdf,operators}.py`、`tests/a12/{relations,training}/**`、`tools/**`、本文件）。
-因此如实记录为**既有的、顺序相关的失败**，本轮**未改**它（改 `tests/a12/qc/**` 也不在写入范围内）。
+`pytest tests/a12/qc -q` 整目录运行退出码 **1**，`tests/a12/qc --ignore=test_data_quality.py` 退出码 **0**。
+触发条件不是某一个特定测试：把该文件的**第一个**测试与它配对（`-k "test_fully_marked_minimal_store_is_trainable or test_store_sqlite_is_opened_read_only"`）
+同样复现，即**它前面只要有任意一个测试**就会失败（顺序相关）。
+
+机制线索（**假设，未改代码验证**）：`synlab/storage/store.py::AssetStore._init_db()` 用
+`with self.connect() as conn:` —— 这在 sqlite3 里只做提交、**不关闭连接**，而 `connect()` 每次都会
+`PRAGMA journal_mode=WAL`；`journal_mode` 是**写在库文件头里的持久属性**，所以 `green_store` 建出的库
+一定是 WAL 库，`-wal`/`-shm` 何时消失取决于那个未被显式关闭的连接何时被 GC 回收，
+而 GC 时机又取决于此前跑了多少测试。该测试断言的正是"文件集不变"，于是变成顺序相关。
+
+责任范围：该测试文件只 import `synlab.qc.data_quality` / `synlab.storage.store` / `synlab.roles`，
+三个模块**均不在 S2/S11 的改动集内**（本轮改的是 `synlab/{relations,training}/**`、
+`synlab/physical/{sdf,operators}.py`、`tests/a12/{relations,training}/**`、`tools/**`、本文件），
+`tests/a12/qc/**` 也不在写入范围内。因此如实记录为**既有的、顺序相关的失败**，本轮**未改**它。
+
+---
+
+## 本轮证据索引（S2 + S11）
+
+| 文件 | 内容 |
+|---|---|
+| `tools/a12_s2_hard_negatives.py` | S2 驱动：`--step class`（类别 + 四条 conformance + D10 并入反证）、`--step ab`（off/control/on 三臂 3 步对照） |
+| `data/a12_reports/s2_hard_negatives_class.json` / `..._records.json` | 1721 行的类别统计、880 条类别记录、240 条拒绝、D10 前后对比 |
+| `data/a12_reports/s2_hard_negatives_ab.json` | 三臂逐步 loss / grad / rank 分母 / aux 诊断 / 捷径探针 / 子集尺度指标 |
+| `tools/a12_s11_p03_drift.py` | S11 驱动：`--step context / extraction / full / narrowband / sweep / fix`，`--backend declared\|global_sdf\|narrowband` |
+| `data/a12_reports/s11_p03_context.json` | 网格、spacing 依据（含 node budget 放大）、ROI、`surface_zero_level_*` |
+| `data/a12_reports/s11_p03_drift.json` | 全局路径的 context + 零损伤提取 + 全流程（改动前产出，作为"修前"证据） |
+| `data/a12_reports/s11_p03_sweep.json` | spacing / depth 扫描（含"请求被 node budget 覆盖"的实测） |
+| `data/a12_reports/s11_p03_projection_fix.json` | 就地 Newton 投影的前后对照（含 watertight 退化） |
+| `data/a12_reports/s11_p03_narrowband_routed.json` | 默认路由后的窄带结果（漂移 0.000348 mm） |
+| `tests/a12/relations/test_s2_hard_negative_class.py` | 类别语义 + 四条约束 + D10（真 parquet + 真检查器）+ 活池 API（14 passed） |
+| `tests/a12/training/test_s2_hard_negative_consumption.py` | 分母不变性、slot 布局、三处拒绝、loss 算术、捷径探针非空性（13 passed） |
+| `data/a12_reports/_s2s11_*.txt`、`_req*.txt`、`_dq*.txt`、`_wal.txt` | 本轮 pytest / 驱动的原始输出与退出码 |
