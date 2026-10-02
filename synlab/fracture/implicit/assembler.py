@@ -138,19 +138,22 @@ def _classify(side: Any, *, basis: Any, h_fn: Any, mother_mesh: Any,
 
 
 def _face_keys(mesh: Any) -> dict[tuple, int]:
-    """Coincident-triangle keys (rounded sorted vertices) -> face row."""
+    """Coincident-triangle keys (rounded, lexicographically sorted vertices) -> face row."""
     faces = np.asarray(mesh.faces, dtype=np.int64)
-    verts = np.round(np.asarray(mesh.vertices, dtype=np.float64), FACE_KEY_DECIMALS)
+    verts = np.asarray(mesh.vertices, dtype=np.float64)
     keys: dict[tuple, int] = {}
     for row, face in enumerate(faces):
-        triple = np.sort(verts[face], axis=0)
-        keys[(tuple(triple[0]), tuple(triple[1]), tuple(triple[2]))] = int(row)
+        keys[_face_key(verts, face)] = int(row)
     return keys
 
 
 def _face_key(verts: np.ndarray, face: np.ndarray) -> tuple:
-    triple = np.sort(verts[np.asarray(face, dtype=np.int64)], axis=0)
-    return (tuple(triple[0]), tuple(triple[1]), tuple(triple[2]))
+    """Key a triangle by its complete rounded vertex tuples, independent of face winding."""
+    triangle = np.round(
+        np.asarray(verts, dtype=np.float64)[np.asarray(face, dtype=np.int64)],
+        FACE_KEY_DECIMALS,
+    )
+    return tuple(sorted(tuple(float(component) for component in vertex) for vertex in triangle))
 
 
 def _canonical(triangles: np.ndarray) -> np.ndarray:
@@ -164,8 +167,9 @@ def _canonical(triangles: np.ndarray) -> np.ndarray:
     tri = np.asarray(triangles, dtype=np.float64).reshape(-1, 3, 3)
     if tri.shape[0] == 0:
         return tri
-    key = tri[:, :, 0] * 1.0e6 + tri[:, :, 1] * 1.0e3 + tri[:, :, 2]
-    order = np.argsort(key, axis=1, kind="stable")
+    # Sort by the complete coordinate tuple. A weighted scalar can tie for distinct points,
+    # leaving stable argsort dependent on the boolean's arbitrary vertex order.
+    order = np.lexsort((tri[:, :, 2], tri[:, :, 1], tri[:, :, 0]), axis=1)
     return np.take_along_axis(tri, order[:, :, None], axis=1)
 
 
