@@ -227,7 +227,15 @@ def run_negative_control(store: AssetStore, run_id: str | None = None) -> dict[s
                         f"{field_violations[:5]}")
 
     # 4 / 5: balancing and generator inventory ---------------------------------
-    provenance = list(_iter_assets(store, role=ROLE_PROVENANCE))
+    available_provenance = list(_iter_assets(store, role=ROLE_PROVENANCE))
+    provenance = (available_provenance if run_id is None else
+                  [a for a in available_provenance if (a.meta or {}).get("run_id") == run_id])
+    checks["provenance_scope"] = {
+        "requested_run_id": run_id,
+        "available_in_store": len(available_provenance),
+        "selected_and_counted": len(provenance),
+        "selection": "all provenance assets" if run_id is None else "exact run_id match",
+    }
     patterns: dict[str, set[str]] = {}
     vessels: dict[str, set[str]] = {}
     splits: dict[str, int] = {}
@@ -247,6 +255,7 @@ def run_negative_control(store: AssetStore, run_id: str | None = None) -> dict[s
         "features": len(features),
         "feature_assets_available": available_features,
         "provenance": len(provenance),
+        "provenance_assets_available": len(available_provenance),
         "patterns_seen": sorted(patterns),
     }
 
@@ -257,6 +266,9 @@ def run_negative_control(store: AssetStore, run_id: str | None = None) -> dict[s
         checks["same_mother_gallery"] = {
             "available": True,
             "distractor_isolated": pool.get("distractor_isolated"),
+            "run_attribution": "UNAVAILABLE" if run_id is not None else "NOT_REQUESTED",
+            "scope": ("store report; not attributable to requested run" if run_id is not None
+                      else "store report; run scope not requested"),
             "note": "same-mother-only gallery performance is reported when the pool is evaluated",
         }
     else:

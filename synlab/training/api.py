@@ -262,7 +262,9 @@ def evaluate(checkpoint_ref: Any, pool_ref: Any = None, *, top_k: Sequence[int] 
         raise SynLabError(ErrorCode.INPUT_UNAVAILABLE,
                           "pool has no feature payloads to evaluate",
                           stage="training.api.evaluate")
-    ids = [fid for fid in getattr(pool, "lineup", list(payloads)) if fid in payloads]
+    lineup = list(getattr(pool, "lineup", list(payloads)))
+    ids = [fid for fid in lineup if fid in payloads]
+    missing_feature_ids = sorted({str(fid) for fid in lineup if fid not in payloads})
     bundle = FeatureBundle.from_dict({fid: payloads[fid] for fid in ids}).check_shapes()
     model.encoder.eval()
     z, z_valid = model.encoder.encode_batch(bundle.to_torch())
@@ -281,16 +283,50 @@ def evaluate(checkpoint_ref: Any, pool_ref: Any = None, *, top_k: Sequence[int] 
     risk_present: list[int] = []
 
     for qid in query_ids:
-        neighbours = [n for n in (pool.neighbours(qid) if hasattr(pool, "neighbours") else [])
-                      if n in emb and n != qid]
+        # The pool owns the historical R2 denominator. Feature payload availability is a
+        # separate candidate-input outcome and must not silently shrink that positive set.
+        neighbours = sorted({str(n) for n in (
+            pool.neighbours(qid) if hasattr(pool, "neighbours") else []) if str(n) != str(qid)})
+        neighbour_availability = {
+            n: ("FEATURE_MISSING" if n not in payloads else
+                "NOT_IN_EVALUATED_LINEUP" if n not in emb else
+                "ENCODER_INPUT_UNAVAILABLE" if not encodable.get(n, False) else
+                "ENCODABLE")
+            for n in neighbours
+        }
+        available_neighbours = [n for n in neighbours
+                                if neighbour_availability[n] == "ENCODABLE"]
+        missing_feature_neighbours = [n for n in neighbours
+                                      if neighbour_availability[n] == "FEATURE_MISSING"]
+        invalid_neighbours = [n for n in neighbours
+                              if neighbour_availability[n] == "ENCODER_INPUT_UNAVAILABLE"]
         if not encodable.get(qid, False):
-            rows.append({"query_id": qid, "status": "INPUT_UNAVAILABLE",
-                         "historical_neighbours": sorted(neighbours),
-                         "hit": None, "cov": None, "effective_hit": 0.0, "effective_cov": 0.0,
-                         "failure_code": ErrorCode.INPUT_UNAVAILABLE.value})
+            row = {
+                "query_id": qid,
+                "status": "INPUT_UNAVAILABLE",
+                "historical_neighbours": neighbours,
+                "n_historical_neighbours": len(neighbours),
+                "historical_neighbour_availability": neighbour_availability,
+                "encodable_historical_neighbours": available_neighbours,
+                "missing_feature_historical_neighbours": missing_feature_neighbours,
+                "unencodable_historical_neighbours": invalid_neighbours,
+                "hit": None,
+                "cov": None,
+                "pool_cov": None,
+                "any_at_m": None,
+                "conditional_cov": None,
+                "effective_hit": 0.0,
+                "effective_cov": 0.0,
+                "failure_code": ErrorCode.INPUT_UNAVAILABLE.value,
+            }
             for k in top_k:
+                row[f"hit@{int(k)}"] = None
+                row[f"cov@{int(k)}"] = None
+                row[f"effective_hit@{int(k)}"] = 0.0
+                row[f"effective_cov@{int(k)}"] = 0.0
                 per_k[int(k)]["eff_hit"].append(0.0)
                 per_k[int(k)]["eff_cov"].append(0.0)
+            rows.append(row)
             continue
         cand_ids = [c for c in ids if c != qid and encodable.get(c, False)]
         scores = np.array([float(emb[qid] @ emb[c]) for c in cand_ids], dtype=np.float64)
@@ -304,8 +340,12 @@ def evaluate(checkpoint_ref: Any, pool_ref: Any = None, *, top_k: Sequence[int] 
         row = {
             "query_id": qid,
             "status": "OK",
-            "historical_neighbours": sorted(neighbours),
+            "historical_neighbours": neighbours,
             "n_historical_neighbours": len(neighbours),
+            "historical_neighbour_availability": neighbour_availability,
+            "encodable_historical_neighbours": available_neighbours,
+            "missing_feature_historical_neighbours": missing_feature_neighbours,
+            "unencodable_historical_neighbours": invalid_neighbours,
             "first_stage": first_stage,
             "candidate_input_failures": sorted(set(input_failures)),
             "pool_cov": pool_cov_at_m(first_stage, neighbours),
@@ -355,6 +395,8 @@ def evaluate(checkpoint_ref: Any, pool_ref: Any = None, *, top_k: Sequence[int] 
         "encodable": sum(1 for v in encodable.values() if v),
         "candidate_input_failure_count": len(input_failures),
         "candidate_input_failures": input_failures,
+        "candidate_missing_feature_count": len(missing_feature_ids),
+        "candidate_missing_features": missing_feature_ids,
         "pool_cov_at_m": _agg(pool_covs),
         "any_at_m": _agg(anys),
         "conditional_cov": _agg(conditionals),

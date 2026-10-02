@@ -10,6 +10,7 @@ from __future__ import annotations
 from typing import Any
 from urllib.parse import quote
 
+import numpy as np
 from fastapi import APIRouter, Query
 from fastapi.responses import Response
 
@@ -21,7 +22,10 @@ from ...roles import (
     ROLE_MOTHER_MESH,
     ROLE_OBS_RESULT,
     ROLE_OBS_VIEW,
+    ROLE_OBS_FUSED,
+    ROLE_FEATURE_BUNDLE,
     ROLE_PHYSICAL_TRUTH,
+    SCHEMA_FEATURE,
     ROLE_VISIBLE_LABELS,
 )
 from ..deps import SessionDep
@@ -35,8 +39,12 @@ from ..problems import (
 )
 from ..security import (
     DEPLOYMENT_SAFE_ROLES,
+    MIXED_RESEARCH_ROLES,
+    OPERATOR_DEFAULT_ROLES,
+    ROLE_DEPLOYMENT,
+    ROLE_RESEARCHER,
     RESEARCH_ONLY_ROLES,
-    require_truth_access,
+    require_generic_asset_access,
     require_workspace_match,
     resolve_asset_ref,
 )
@@ -57,15 +65,111 @@ SERVABLE_FILE_ROLES: frozenset[str] = frozenset({
 
 #: deterministic payload-key priority for the default download
 FILE_KEY_PRIORITY: tuple[str, ...] = (
-    "glb.bin", "mesh.bin", "preview.bin", "data.bin", "arrays", "meta",
+    "glb", "glb.bin", "mesh.bin", "preview.bin", "data.bin", "arrays", "meta",
 )
 
 MEDIA_TYPES: dict[str, str] = {
+    "glb": "model/gltf-binary",
     "glb.bin": "model/gltf-binary",
     "mesh.bin": "application/octet-stream",
     "meta": "application/json",
     "arrays": "application/octet-stream",
 }
+
+# Current flattened output of ``observe.features.adapt_observed_features`` plus the two
+# observation-only display tensors deliberately added by ``pipeline._commit_features``.
+# Unknown arrays fail closed until the feature contract is reviewed and updated here.
+_DEPLOYMENT_FEATURE_ARRAY_KEYS: frozenset[str] = frozenset({
+    "point_cloud__xyz", "point_cloud__valid",
+    "normal_field__normals", "normal_field__valid",
+    "curvature_field__curvature_per_mm", "curvature_field__valid",
+    "density_field__density_per_mm2", "density_field__valid",
+    "roi_weight", "token_index", "quality__values", "quality__valid", "quality__names",
+    "view_tokens", "global_rgb", "pixel_valid", "global_valid",
+})
+
+_NON_RESEARCH_BLOCKED_ROLES = frozenset(RESEARCH_ONLY_ROLES | MIXED_RESEARCH_ROLES)
+
+
+def _feature_bundle_arrays(store: Any, record: Any, *, ref: Any | None = None) -> list[str]:
+    """Validate the stored feature-array manifest before exposing a deployment feature asset."""
+    if record.schema != SCHEMA_FEATURE:
+        raise ApiProblem(403, "ROLE_FORBIDDEN",
+                         "feature_bundle schema is not the verified a12.obs.v1 contract",
+                         stage="assets.feature_bundle",
+                         details={"asset_role": record.role, "schema": record.schema})
+    if ref is None:
+        try:
+            ref = resolve_file(store, record.asset_id, "arrays", verify=True)
+        except (SynLabError, ApiProblem) as exc:
+            raise ApiProblem(403, "ROLE_FORBIDDEN",
+                             "feature_bundle arrays are unavailable or unverifiable",
+                             stage="assets.feature_bundle") from exc
+    try:
+        with np.load(ref.path, allow_pickle=False) as archive:
+            names = sorted(str(name) for name in archive.files)
+    except Exception as exc:  # malformed or unsupported archive: fail closed
+        raise ApiProblem(403, "ROLE_FORBIDDEN",
+                         "feature_bundle arrays do not match the verified feature contract",
+                         stage="assets.feature_bundle") from exc
+
+    meta = record.meta or {}
+    declared = meta.get("feature_fields")
+    if not isinstance(declared, (list, tuple)) or any(not isinstance(name, str) for name in declared):
+        raise ApiProblem(403, "ROLE_FORBIDDEN",
+                         "feature_bundle has no valid feature_fields declaration",
+                         stage="assets.feature_bundle")
+    declared_names = sorted(set(declared))
+    unexpected = sorted(set(names) - _DEPLOYMENT_FEATURE_ARRAY_KEYS)
+    undeclared = sorted(set(names) - set(declared_names))
+    if unexpected or undeclared:
+        raise ApiProblem(403, "ROLE_FORBIDDEN",
+                         "feature_bundle contains arrays outside its declared deployment contract",
+                         stage="assets.feature_bundle",
+                         details={"unexpected_arrays": unexpected[:12],
+                                  "undeclared_arrays": undeclared[:12]})
+
+    try:
+        from ...observe.features import assert_no_leakage
+
+        assert_no_leakage({
+            "feature_arrays": {name: None for name in names},
+            "declared_feature_fields": {name: None for name in declared_names},
+        }, path=f"feature_bundle[{record.asset_id}]")
+    except SynLabError as exc:
+        raise ApiProblem(403, "ROLE_FORBIDDEN",
+                         "feature_bundle field names fail the recursive research-leakage check",
+                         stage="assets.feature_bundle",
+                         details={"leakage_code": exc.code.value}) from exc
+    return names
+
+
+def _deployment_feature_view(record: Any, array_names: list[str]) -> dict[str, Any]:
+    """Project feature metadata to the deployment-visible contract and availability only."""
+    return {
+        "asset_id": record.asset_id,
+        "role": record.role,
+        "schema": record.schema,
+        "unit": record.unit,
+        "frame": record.frame,
+        "qa_status": record.qa_status,
+        "revision": record.revision,
+        "interpretation_hash": record.interpretation_hash,
+        "interpretation_hash_scope": "canonical stored record before deployment metadata projection",
+        "metadata_view": {
+            "kind": "deployment_projection",
+            "available": True,
+            "contract": SCHEMA_FEATURE,
+            "array_count": len(array_names),
+            "array_keys": array_names,
+        },
+        "files": {"arrays": {"available": True}},
+        "file_urls": {
+            "arrays": f"/api/synlab/assets/{record.asset_id}/files/{quote(record.role)}?key=arrays",
+        },
+        "integrity": {"ok": True, "problems": [], "verified_files": ["arrays"]},
+        "ancestry_hidden": True,
+    }
 
 
 @router.get("/assets", summary="分页资产列表（kind/split/lineage/QA），不暴露服务器任意路径")

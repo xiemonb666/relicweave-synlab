@@ -54,10 +54,23 @@ RESEARCH_ONLY_ROLES: frozenset[str] = frozenset({
     "ancestry_graph",
 })
 
-#: asset roles that are legal deployment inputs (feature-visible, no answers inside)
+# These coarse observation assets can contain both deployment-visible channels and research
+# answers.  A role label alone is not enough to make their complete stored payload safe.
+MIXED_RESEARCH_ROLES: frozenset[str] = frozenset({
+    "obs_result",
+    "obs_view",
+    "obs_fused_geometry",
+})
+
+#: Roles exposed by the generic deployment asset API after payload and metadata checks.
 DEPLOYMENT_SAFE_ROLES: frozenset[str] = frozenset({
-    "obs_view", "obs_result", "obs_fused_geometry", "feature_bundle",
-    "display_lod_glb", "fragment_mesh", "mother_mesh",
+    "feature_bundle", "display_lod_glb",
+})
+
+# The operator's default list retains the previously available operational mesh/display
+# artifacts, while excluding coarse observation roles that mix input and answer channels.
+OPERATOR_DEFAULT_ROLES: frozenset[str] = frozenset({
+    "feature_bundle", "display_lod_glb", "fragment_mesh", "mother_mesh",
 })
 
 ORACLE_ADAPTERS: frozenset[str] = frozenset({"oracle_truth", "truth_pack", "gt_oracle"})
@@ -186,6 +199,28 @@ def require_truth_access(policy: RolePolicy, asset_role: str | None, *, stage: s
             403, API_CODE_ROLE_FORBIDDEN,
             f"asset role {asset_role!r} carries research answers and is not readable by "
             f"role {policy.role!r}; use the research entry point with a researcher session",
+            stage=stage,
+            details={"asset_role": asset_role, "role": policy.role},
+        )
+
+
+def require_generic_asset_access(policy: RolePolicy, asset_role: str | None, *, stage: str) -> None:
+    """Apply the generic-asset boundary for mixed, research-only and deployment roles."""
+    if asset_role is None:
+        return
+    if not policy.can_read_truth and asset_role in MIXED_RESEARCH_ROLES:
+        raise ApiProblem(
+            403, API_CODE_ROLE_FORBIDDEN,
+            f"asset role {asset_role!r} mixes deployment inputs with research channels and is not "
+            f"readable by role {policy.role!r}",
+            stage=stage,
+            details={"asset_role": asset_role, "role": policy.role},
+        )
+    require_truth_access(policy, asset_role, stage=stage)
+    if policy.role == ROLE_DEPLOYMENT and asset_role not in DEPLOYMENT_SAFE_ROLES:
+        raise ApiProblem(
+            403, API_CODE_ROLE_FORBIDDEN,
+            f"asset role {asset_role!r} is not on the verified deployment asset allowlist",
             stage=stage,
             details={"asset_role": asset_role, "role": policy.role},
         )

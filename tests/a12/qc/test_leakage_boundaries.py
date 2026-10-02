@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from types import SimpleNamespace
 from typing import Any
 
@@ -138,6 +139,40 @@ def test_unresolved_ancestry_is_not_reported_as_isolated(tmp_path):
     assert report["status"] == "FAIL"
     assert report["checks"]["truth_isolation"] is False
     assert report["checks"]["unresolved_ancestry_count"] == 1
+
+
+def test_run_scoped_provenance_inventory_excludes_other_runs(tmp_path):
+    store = AssetStore(tmp_path / "store")
+    _feature(store, run_id="run-a")
+    for run_id, pattern_id, vessel_id, split in (
+            ("run-a", "pattern-a", "vessel-a", "train"),
+            ("run-b", "pattern-b", "vessel-b", "test")):
+        store.commit_asset(
+            role=ROLE_PROVENANCE,
+            schema="test.provenance.v1",
+            unit="1",
+            frame="none",
+            payload={},
+            meta={"run_id": run_id, "pattern_id": pattern_id, "vessel_id": vessel_id},
+            qa_status=QA_PASS,
+            split=split,
+        )
+    report_path = store.root / "reports" / "pool_audit.json"
+    report_path.write_text(json.dumps({"distractor_isolated": True}), encoding="utf-8")
+
+    report = leakage.run_negative_control(store, run_id="run-a")
+
+    assert report["checks"]["provenance_scope"] == {
+        "requested_run_id": "run-a",
+        "available_in_store": 2,
+        "selected_and_counted": 1,
+        "selection": "exact run_id match",
+    }
+    assert report["checks"]["generator_inventory"]["provenance"] == 1
+    assert report["checks"]["generator_inventory"]["provenance_assets_available"] == 2
+    assert report["checks"]["pattern_template_reuse"] == {"pattern-a": ["train"]}
+    assert report["checks"]["vessel_split_spread"] == {"vessel-a": ["train"]}
+    assert report["checks"]["same_mother_gallery"]["run_attribution"] == "UNAVAILABLE"
 
 
 def test_feature_asset_iteration_is_not_truncated_at_ten_thousand():
