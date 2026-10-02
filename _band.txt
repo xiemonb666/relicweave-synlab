@@ -1,4 +1,0 @@
-﻿   74: BAND_HALO_MM = 0.6
-  304:     ``0`` over ``BAND_HALO_MM`` outside it, so the shared surface is *exactly* the plane far
-  615:     halo = float(halo_mm if halo_mm is not None else max(BAND_HALO_MM, 8.0 * amp))
-  696: def attach_material_band(height: HeightField, mesh: Any, *,

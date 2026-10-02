@@ -1,8 +1,0 @@
-﻿   19: from .config import (compile_spec, load_diagnose_spec, load_document, load_generation_spec,
-   93: def validate(config: str = typer.Option(..., "--config"), json_mode: bool = typer.Option(False, "--json")) -> None:
-   99:         # ``generation_spec:`` block (``configs/a12/fracture_physics.yaml``), because that file has
-  102:         if "generation_spec" not in document:
-  103:             spec = load_generation_spec(config)
-  106:             spec = GenerationSpec.model_validate(document.get("generation_spec") or {})
-  124:         spec = load_generation_spec(config)
-  165:         spec = load_generation_spec(config)
