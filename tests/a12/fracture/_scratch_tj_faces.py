@@ -110,15 +110,53 @@ def main() -> int:
             span = KEY_LEVEL - cell[2]
             pts = tree.cell_triangles(cell[0], cell[1], cell[2], span, extras[row])[0]
             hx, hy = tree.cell_size(int(cell[2]))
+            sequence = [int(v) for v in local]
             print(f"  ring of {cell} extras={tuple(int(x) for x in extras[row])} "
                   f"splits={tree.edge_splits(*cell)} size=({hx:.6f},{hy:.6f}) "
                   f"u0={tree.u0 + cell[0] * hx:.6f} v0={tree.v0 + cell[1] * hy:.6f}")
-            for node, point in zip(local, pts):
-                mark = "  <== target" if node == target else ""
-                print(f"     v{node} key=({int(point[0])},{int(point[1])}) "
-                      f"uv={np.round(vertices[node], 6).tolist()}{mark}")
+            print(f"     sequence={sequence}")
+            print(f"     keys={[(int(p[0]), int(p[1])) for p in pts]}")
+            print(f"     repeated in ring: "
+                  f"{[v for v in set(sequence) if sequence.count(v) > 1]}")
     print("odd edges at the target:",
           [(e, n) for e, n in odd.items() if target in e])
+
+    # which cells produced each duplicated directed edge, and through which key points?
+    index_of = {tuple(int(x) for x in row): pos for pos, row in enumerate(block)}
+    from collections import defaultdict
+    ring_sources: dict[tuple[int, int], list[tuple[tuple[int, int, int], tuple[int, int]]]] = \
+        defaultdict(list)
+    for (cell, row, local) in rings:
+        span = KEY_LEVEL - cell[2]
+        pts = tree.cell_triangles(cell[0], cell[1], cell[2], span, extras[row])[0]
+        seq = list(local)
+        for k in range(len(seq)):
+            e = (seq[k], seq[(k + 1) % len(seq)])
+            ring_sources[e].append((cell, (int(pts[k][0]), int(pts[k][1]))))
+    # which *triangles* use the duplicated directed edge?
+    tri_hits: list[tuple[tuple[int, int, int], tuple[int, int, int]]] = []
+    for row, (i, j, level) in enumerate(block):
+        span = KEY_LEVEL - int(level)
+        _pts, tris = tree.cell_triangles(int(i), int(j), int(level), span, extras[row])
+        local = rings[row][2]
+        for tri in tris:
+            face = (local[tri[0]], local[tri[1]], local[tri[2]])
+            if len(set(face)) < 3:
+                continue
+            for k in range(3):
+                if (face[k], face[(k + 1) % 3]) in dup_directed[:4]:
+                    tri_hits.append(((int(i), int(j), int(level)), face))
+    print("triangles carrying a duplicated directed edge:", len(tri_hits), tri_hits[:8])
+    for (a, b), n in dup_directed[:4]:
+        print(f"  directed ({a},{b}) used {n}x, produced by "
+              f"{len(ring_sources[(a, b)])} ring(s):")
+        for cell, key in ring_sources[(a, b)]:
+            pos = index_of.get(cell)
+            hx, hy = tree.cell_size(cell[2])
+            print(f"     cell={cell} span={KEY_LEVEL - cell[2]} start_key={key} "
+                  f"splits={tree.edge_splits(*cell)} "
+                  f"extras={None if pos is None else tuple(int(x) for x in extras[pos])} "
+                  f"cell_u0={tree.u0 + cell[0] * hx:.9f} cell_v0={tree.v0 + cell[1] * hy:.9f}")
     return 0
 
 

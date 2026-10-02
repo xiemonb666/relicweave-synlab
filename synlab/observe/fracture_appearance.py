@@ -1051,6 +1051,9 @@ def render_appearance_view(scene: Scene, frame: ViewFrame, *, light: LightSpec,
         "n_faces_drawn": int(np.count_nonzero(np.isfinite(buffers["depth"]))),
         "appearance": {
             "schema": APPEARANCE_SCHEMA, "spec": appearance.as_dict(),
+            "lambert": _lambert_report(
+                None if buffers.get("lambert") is None
+                else np.asarray(buffers["lambert"])[::factor, ::factor], tag_map),
             "normal_channel": "PER_PIXEL_SHADING_NORMAL", "geometry_modified": False,
             "relief_field": None if relief_field is None else relief_field.as_dict(),
             "geometry_hash": geometry_hash(posed.vertices, posed.faces),
@@ -1065,6 +1068,35 @@ def render_appearance_view(scene: Scene, frame: ViewFrame, *, light: LightSpec,
                         visibility=visibility.astype(np.uint8),
                         uncertain_mask=uncertain.astype(bool), backend=BACKEND_APPEARANCE,
                         meta=meta)
+
+
+def _lambert_report(lambert: Any, tag_map: np.ndarray) -> dict[str, Any]:
+    """Statistics of the frozen Lambert term on the fracture (rim) pixels of one render.
+
+    ``unlit_fraction`` is the share of fracture pixels whose Lambert term is clipped at 0: there the
+    shading is ``albedo * ambient`` and **no** normal perturbation can change the image at all.
+    ``fully_lit_fraction`` is the same for the clip at 1.  This is the measurement that decides
+    whether a view can show relief under the frozen single-light model, and ``mean_raw_dot`` is the
+    signed quantity ``-(n_world . light.direction)`` *before* the clip: it is negative when the
+    fracture faces away from the light and the whole view is ambient-only.
+    """
+    if lambert is None:
+        return {"status": "NOT_RECORDED"}
+    lam = np.asarray(lambert, dtype=np.float64)
+    rim = np.asarray(tag_map) == 2
+    valid = rim & np.isfinite(lam)
+    if not valid.any():
+        return {"status": "NO_RIM_PIXELS", "n_px": 0}
+    v = lam[valid]
+    return {
+        "status": "OK", "n_px": int(v.size), "mean_raw_dot": float(v.mean()),
+        "unlit_fraction": float(np.mean(v <= 0.0)),
+        "fully_lit_fraction": float(np.mean(v >= 1.0)),
+        "lit_fraction": float(np.mean((v > 0.02) & (v < 0.98))),
+        "p05_raw_dot": float(np.percentile(v, 5)), "p95_raw_dot": float(np.percentile(v, 95)),
+        "definition": ("raw = -(n_world . light.direction); the frozen shading clips it to [0, 1]. "
+                       "unlit_fraction = share of fracture pixels with no normal response at all"),
+    }
 
 
 def _scaled_frame(frame: ViewFrame, factor: int) -> ViewFrame:
@@ -1103,9 +1135,15 @@ def _rasterise_appearance(scene: Scene, frame: ViewFrame, width: int, height: in
     id_buf = np.full((height, width), -1, dtype=np.int32)
     tag_buf = np.full((height, width), -1, dtype=np.int16)
     rgba = np.zeros((height, width, 3), dtype=np.float32)
+    #: The frozen Lambert term of the pixel that won the z-buffer.  It is recorded because the
+    #: normal channel can only deliver contrast where this term is strictly between 0 and 1: the
+    #: frozen model clips it, so an unlit (or fully lit) surface has *no* normal response at all.
+    lambert_buf = np.full((height, width), np.nan, dtype=np.float64)
+    l_unit = np.asarray(light.direction, dtype=np.float64)
     faces = scene.faces
     if faces.shape[0] == 0:
-        return {"depth": depth, "id": id_buf, "tag": tag_buf, "rgb": rgba}
+        return {"depth": depth, "id": id_buf, "tag": tag_buf, "rgb": rgba,
+                "lambert": lambert_buf}
     p0, p1, p2 = uv[faces[:, 0]], uv[faces[:, 1]], uv[faces[:, 2]]
     z0, z1, z2 = z[faces[:, 0]], z[faces[:, 1]], z[faces[:, 2]]
     area = (p1[:, 0] - p0[:, 0]) * (p2[:, 1] - p0[:, 1]) \
@@ -1117,7 +1155,8 @@ def _rasterise_appearance(scene: Scene, frame: ViewFrame, width: int, height: in
                & (face_n[:, 2] < 0.0) & np.isfinite(area) & (np.abs(area) > 1e-12))
     order = np.nonzero(visible)[0]
     if order.size == 0:
-        return {"depth": depth, "id": id_buf, "tag": tag_buf, "rgb": rgba}
+        return {"depth": depth, "id": id_buf, "tag": tag_buf, "rgb": rgba,
+                "lambert": lambert_buf}
 
     # `face_n` is a CAMERA-space normal (the vertices above are camera-space; the frozen
     # rasteriser calls the cross product "world_normals" only by history).  The frozen shading
@@ -1178,6 +1217,8 @@ def _rasterise_appearance(scene: Scene, frame: ViewFrame, width: int, height: in
             shaded = shade_world_normals(normals_world=world_normals[f][None, :],
                                          albedo=albedo_px[f][None, :], light=light)[0]
             rgba[ymin:ymax + 1, xmin:xmax + 1][better] = shaded.astype(np.float32)
+            lambert_buf[ymin:ymax + 1, xmin:xmax + 1][better] = float(
+                -(world_normals[f] @ l_unit))
             continue
 
         rows, cols = np.nonzero(better)
@@ -1213,7 +1254,8 @@ def _rasterise_appearance(scene: Scene, frame: ViewFrame, width: int, height: in
             normals_world=n_px,
             albedo=np.repeat(albedo_px[f][None, :], pts.shape[0], axis=0), light=light)
         rgba[ymin:ymax + 1, xmin:xmax + 1][rows, cols] = shaded.astype(np.float32)
-    return {"depth": depth, "id": id_buf, "tag": tag_buf, "rgb": rgba}
+        lambert_buf[ymin:ymax + 1, xmin:xmax + 1][rows, cols] = -(n_px @ l_unit)
+    return {"depth": depth, "id": id_buf, "tag": tag_buf, "rgb": rgba, "lambert": lambert_buf}
 
 
 # ======================================================================================

@@ -1,0 +1,361 @@
+"""Assertions for the fracture appearance layer (normal channel, facets, materials, glaze)."""
+from __future__ import annotations
+
+import sys
+from dataclasses import replace
+from pathlib import Path
+
+import numpy as np
+import pytest
+
+ROOT = Path(__file__).resolve().parents[3]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+OBSERVE_TESTS = Path(__file__).resolve().parent
+if str(OBSERVE_TESTS) not in sys.path:
+    sys.path.insert(0, str(OBSERVE_TESTS))
+
+from synlab.materials import build_material_profile, default_material_params  # noqa: E402
+from synlab.observe import fracture_appearance as fa  # noqa: E402
+from synlab.observe.render import (  # noqa: E402
+    BACKEND_SOFTWARE,
+    MaterialSpec,
+    RenderSpec,
+    build_scene,
+    render_view,
+)
+from synlab.schemas.runtime import ViewFrame  # noqa: E402
+from synlab.seeds import make_rng  # noqa: E402
+
+
+# ------------------------------------------------------------------------------ fixtures
+def _plate() -> tuple[fa.Scene, ViewFrame, fa.LightSpec]:
+    import trimesh
+
+    mesh = trimesh.creation.box(extents=(60.0, 60.0, 10.0))
+    faces = np.asarray(mesh.faces)
+    scene = fa.Scene(
+        name="plate", vertices=np.asarray(mesh.vertices), faces=faces,
+        surface_tag=np.full(faces.shape[0], 2, dtype=np.int16),
+        material=MaterialSpec(np.tile(np.array([0.6, 0.55, 0.5], dtype=np.float32),
+                                      (faces.shape[0], 1)),
+                              np.full(faces.shape[0], 0.5, dtype=np.float32)))
+    K = np.array([[800.0, 0.0, 256.0], [0.0, 800.0, 192.0], [0.0, 0.0, 1.0]])
+    T = np.eye(4)
+    T[:3, 3] = np.array([0.0, 0.0, -200.0])
+    frame = ViewFrame(view_id="v", K=K, T_WC=T, image_size=(512, 384), profile_id="test",
+                      tier="LOCAL", u_position_mm=200.0, working_distance_mm=200.0,
+                      focus_setting=0.0, source_kind="SENSOR_SIM", camera_model="PINHOLE",
+                      dist=np.zeros(0),
+                      meta={"focal_length_mm": 6.1, "f_number": 4.0})
+    return scene, frame, fa.frozen_light()
+
+
+class _ConstantGradient:
+    """A stub relief field with a constant gradient, used to calibrate the normal channel."""
+
+    def __init__(self, gu: float, gv: float, u_axis: np.ndarray, v_axis: np.ndarray) -> None:
+        self.gu, self.gv = float(gu), float(gv)
+        self.u_axis, self.v_axis = u_axis, v_axis
+        self.amplitude_scale = 1.0
+        self.realized_ra_mm = 0.0
+
+    def as_dict(self) -> dict:
+        return {"kind": "CONSTANT_GRADIENT_STUB", "gu": self.gu, "gv": self.gv}
+
+    def sample(self, points_world, *, scale=None):
+        n = np.asarray(points_world, dtype=np.float64).reshape(-1, 3).shape[0]
+        s = float(self.amplitude_scale if scale is None else scale)
+        return np.zeros(n), np.full(n, self.gu * s), np.full(n, self.gv * s)
+
+
+# ------------------------------------------------------------------------------ frozen model
+def test_shade_world_normals_matches_the_frozen_expression():
+    """``clip(-(R^T n_cam . l)) == clip(-(n_world . l))``: the two forms are one model."""
+    rng = np.random.default_rng(7)
+    R = np.linalg.qr(rng.normal(size=(3, 3)))[0]
+    if np.linalg.det(R) < 0:
+        R[:, 0] *= -1.0
+    n_cam = rng.normal(size=(32, 3))
+    n_cam /= np.linalg.norm(n_cam, axis=1, keepdims=True)
+    n_world = n_cam @ R
+    light = fa.frozen_light()
+    T_WC = np.eye(4)
+    T_WC[:3, :3] = R
+    a = fa.lambert_ambient_linear(normals_world=n_cam, T_WC=T_WC,
+                                 albedo=np.full((32, 3), 0.5), light=light)
+    b = fa.shade_world_normals(normals_world=n_world, albedo=np.full((32, 3), 0.5), light=light)
+    assert np.allclose(a, b, atol=1e-12)
+
+
+def test_flat_frozen_render_reproduces_the_software_rasteriser_bit_exactly():
+    """The per-pixel renderer must reduce to the frozen backend when nothing is switched on."""
+    scene, frame, light = _plate()
+    spec = RenderSpec(supersample=1, max_pixels=4_000_000)
+    frozen = render_view(scene, frame, light=light, spec=spec, backend=BACKEND_SOFTWARE)
+    mine = fa.render_appearance_view(scene, frame, light=light, spec=spec,
+                                     appearance=fa.AppearanceSpec(normal_mode="FLAT",
+                                                                  relief=False,
+                                                                  interpolation="FROZEN"))
+    assert np.array_equal(frozen.rgb_linear, mine.rgb_linear)
+    assert np.array_equal(frozen.id_map, mine.id_map)
+    assert np.array_equal(frozen.surface_tag, mine.surface_tag)
+    assert np.array_equal(np.nan_to_num(frozen.depth_z, nan=-1.0),
+                          np.nan_to_num(mine.depth_z, nan=-1.0))
+
+
+def test_relief_off_and_relief_on_differ_only_by_the_normal():
+    """With a constant gradient the image change equals the analytic shading change."""
+    scene, frame, light = _plate()
+    # the plate's camera-facing surface has normal -z, so the light must travel toward +z for the
+    # surface to be lit at all; the frozen light direction is mirrored to keep it oblique
+    light = fa.LightSpec(direction=np.array([0.35, 0.62, 0.70]),
+                         color=light.color, ambient=light.ambient)
+    spec = RenderSpec(supersample=1, max_pixels=4_000_000)
+    normal = np.array([0.0, 0.0, -1.0])
+    u_axis, v_axis = fa.tangent_basis(normal)
+    off = fa.render_appearance_view(scene, frame, light=light, spec=spec,
+                                    appearance=fa.AppearanceSpec(normal_mode="FLAT", relief=False,
+                                                                 interpolation="PERSPECTIVE_CORRECT"))
+    for gu, gv in ((0.05, 0.0), (0.0, 0.05), (0.05, -0.05)):
+        on = fa.render_appearance_view(
+            scene, frame, light=light, spec=spec,
+            appearance=fa.AppearanceSpec(normal_mode="FLAT", relief=True,
+                                         interpolation="PERSPECTIVE_CORRECT"),
+            relief_field=_ConstantGradient(gu, gv, u_axis, v_axis))
+        # exact (not first-order) analytic change: n -> normalize(n - gu*tu - gv*tv)
+        n = np.array([0.0, 0.0, -1.0])
+        n_new = n - gu * u_axis - gv * v_axis
+        n_new = n_new / np.linalg.norm(n_new)
+        d_lambert = -float((n_new - n) @ light.direction)
+        expected = np.asarray(scene.material.albedo, dtype=np.float64)[0] \
+            * np.asarray(light.color, dtype=np.float64) * d_lambert
+        delta = np.asarray(on.rgb_linear, dtype=np.float64) \
+            - np.asarray(off.rgb_linear, dtype=np.float64)
+        hit = np.isfinite(off.depth_z)
+        assert hit.any()
+        assert np.allclose(delta[hit], expected[None, :], atol=2e-6)
+
+
+def test_zero_gradient_is_bit_identical_to_relief_off():
+    """A relief layer with no gradient must not change one byte (no hidden path difference)."""
+    scene, frame, light = _plate()
+    spec = RenderSpec(supersample=1, max_pixels=4_000_000)
+    u_axis, v_axis = fa.tangent_basis(np.array([0.0, 0.0, -1.0]))
+    off = fa.render_appearance_view(scene, frame, light=light, spec=spec,
+                                    appearance=fa.AppearanceSpec(normal_mode="FLAT", relief=False,
+                                                                 interpolation="PERSPECTIVE_CORRECT"))
+    zero = fa.render_appearance_view(scene, frame, light=light, spec=spec,
+                                     appearance=fa.AppearanceSpec(normal_mode="FLAT", relief=True,
+                                                                  interpolation="PERSPECTIVE_CORRECT"),
+                                     relief_field=_ConstantGradient(0.0, 0.0, u_axis, v_axis))
+    assert np.array_equal(off.rgb_linear, zero.rgb_linear)
+
+
+def test_lambert_report_detects_an_unlit_surface():
+    """The frozen clip is recorded, so 'this view cannot show relief' is measurable."""
+    scene, frame, light = _plate()
+    color, ambient = light.color, light.ambient
+    spec = RenderSpec(supersample=1, max_pixels=4_000_000)
+    # the plate's camera-facing surface has normal -z; a light travelling along +z lights it
+    lit = fa.render_appearance_view(
+        scene, frame, light=fa.LightSpec(direction=np.array([0.0, 0.0, 1.0]), color=color,
+                                         ambient=ambient),
+        spec=spec, appearance=fa.AppearanceSpec(normal_mode="FLAT"))
+    lit_report = lit.meta["appearance"]["lambert"]
+    assert lit_report["status"] == "OK"
+    assert lit_report["unlit_fraction"] == pytest.approx(0.0, abs=1e-12)
+    assert lit_report["fully_lit_fraction"] == pytest.approx(1.0, abs=1e-12)
+    # the same view with the light travelling along -z is fully unlit: no normal response at all
+    unlit = fa.render_appearance_view(
+        scene, frame, light=fa.LightSpec(direction=np.array([0.0, 0.0, -1.0]), color=color,
+                                         ambient=ambient),
+        spec=spec, appearance=fa.AppearanceSpec(normal_mode="FLAT"))
+    assert unlit.meta["appearance"]["lambert"]["unlit_fraction"] == pytest.approx(1.0, abs=1e-12)
+
+
+# ------------------------------------------------------------------------------ normals
+def test_smooth_normals_do_not_change_the_geometry_hash():
+    """Path 1 of facet suppression is a shading change only: the geometry hash must not move."""
+    import trimesh
+
+    mesh = trimesh.creation.icosphere(subdivisions=2, radius=20.0)
+    verts, faces = np.asarray(mesh.vertices), np.asarray(mesh.faces)
+    before = fa.geometry_hash(verts, faces)
+    vn = fa.vertex_normals(verts, faces)
+    cn = fa.corner_normals(verts, faces, crease_angle_deg=35.0)
+    after = fa.geometry_hash(verts, faces)
+    assert before == after
+    assert vn.shape == verts.shape and cn.shape == (faces.shape[0], 3, 3)
+    assert np.allclose(np.linalg.norm(vn, axis=1), 1.0)
+    assert np.allclose(np.linalg.norm(cn.reshape(-1, 3), axis=1), 1.0)
+
+
+def test_smooth_vertex_normals_of_a_sphere_point_along_the_radius():
+    import trimesh
+
+    mesh = trimesh.creation.icosphere(subdivisions=3, radius=20.0)
+    verts, faces = np.asarray(mesh.vertices), np.asarray(mesh.faces)
+    vn = fa.vertex_normals(verts, faces)
+    radial = verts / np.linalg.norm(verts, axis=1, keepdims=True)
+    assert np.allclose(vn, radial, atol=0.02)
+
+
+def test_crease_angle_keeps_a_cube_edge_sharp():
+    import trimesh
+
+    mesh = trimesh.creation.box(extents=(10.0, 10.0, 10.0))
+    verts, faces = np.asarray(mesh.vertices), np.asarray(mesh.faces)
+    sharp = fa.corner_normals(verts, faces, crease_angle_deg=20.0)
+    smooth = fa.corner_normals(verts, faces, crease_angle_deg=180.0)
+    flat = fa.face_normals(verts, faces)
+    # at 20 deg every cube corner keeps its own face normal; at 180 deg they are averaged
+    assert np.allclose(sharp.reshape(-1, 3), np.repeat(flat, 3, axis=0), atol=1e-9)
+    assert not np.allclose(smooth.reshape(-1, 3), np.repeat(flat, 3, axis=0), atol=1e-9)
+
+
+# ------------------------------------------------------------------------------ material mapping
+@pytest.mark.parametrize("material_id", ["M01", "M04", "M07", "M11"])
+def test_appearance_parameters_come_from_the_material_record(material_id):
+    profile = build_material_profile(material_id, default_material_params(material_id),
+                                     make_rng(20261001, "test", material_id))
+    params = fa.appearance_parameters_from_profile(profile, material_id=material_id)
+    stats = profile["stats"]
+    assert params.grain_scale_mm == pytest.approx(float(stats["grain_scale_mm"]))
+    assert params.correlation_length_mm == pytest.approx(float(stats["correlation_length_mm"]))
+    assert params.albedo == tuple(float(x) for x in profile["appearance"]["albedo"])
+    # sigma_r0 is the audited relation, recomputed here by hand
+    expected = 0.12 * params.grain_scale_mm * (1.0 + 2.0 * params.porosity)
+    assert params.sigma_r0_mm == pytest.approx(expected, rel=1e-9)
+    assert params.lambda_min_mm > 0.0 and params.lambda_max_mm >= params.lambda_min_mm
+    assert len(params.band_amplitudes_mm) == 5
+    # the band amplitudes reproduce sigma_r0 as an RMS (sum a_i^2 / 2)
+    rms = float(np.sqrt(np.sum(0.5 * np.asarray(params.band_amplitudes_mm) ** 2)))
+    assert rms == pytest.approx(params.sigma_r0_mm, rel=1e-6)
+
+
+def test_material_differences_are_non_zero_and_ordered():
+    """The three required materials must differ in amplitude, scale and transmission."""
+    rows = {}
+    for mid in ("M01", "M04", "M07"):
+        profile = build_material_profile(mid, default_material_params(mid),
+                                         make_rng(20261001, "test", mid))
+        rows[mid] = fa.appearance_parameters_from_profile(profile, material_id=mid)
+    assert rows["M01"].sigma_r0_mm > rows["M04"].sigma_r0_mm > rows["M07"].sigma_r0_mm
+    assert rows["M07"].transmission > 0.5 and rows["M01"].transmission == 0.0
+    assert rows["M04"].grain_scale_mm < rows["M01"].grain_scale_mm
+
+
+def test_field_is_band_limited_not_white_noise():
+    """The realised relief must be correlated (red spectrum), which per-pixel noise is not."""
+    from _run_fracture_appearance import (MASTER_SEED, SPECIMEN, material_profile, patch_faces,
+                                          pick_roi, lit_score)
+    from _run_fracture_roi import load_target
+    from synlab.cameras.profiles import camera_profiles
+    from synlab.observe import fracture_roi as fr
+
+    target, body = load_target(SPECIMEN)
+    mesh = target.mesh
+    config = fr.load_fracture_roi_config()
+    base = {p.tier: p for p in camera_profiles()}["LOCAL"]
+    closeup = fr.closeup_profile(config, base=base, delivered_long_edge_px=1024)
+    footprint = fr.mm_per_px(working_distance_mm=60.0, f_px=float(closeup.K[0, 0])) * 512.0
+    rois = fr.fracture_rois(target, config, footprint_radius_mm=footprint)
+    roi = max(rois, key=lambda r: lit_score(r, fa.frozen_light()))
+    faces = patch_faces(mesh, roi.interface_id)
+    field = fa.build_relief_field(
+        profile=material_profile(body["material_id"]), roi=roi,
+        patch_vertices=mesh.vertices, patch_triangles=np.asarray(mesh.faces)[faces], mesh=mesh,
+        rng=make_rng(MASTER_SEED, "appearance_field", body["material_id"]), amplitude_mm=0.08,
+        glaze_strip=False)
+    report = fa.field_spectrum_report(field, extent_mm=2.0 * field.footprint_radius_mm, n=256)
+    assert report["status"] == "OK"
+    # red spectrum: a white-noise field would give a flat PSD (slope ~ 0)
+    assert report["psd_slope_loglog"] < -0.5
+    # the field's own correlation length is the material's, not one sample
+    assert report["expected_correlation_length_mm"] > 0.05
+    assert field.realized_ra_mm == pytest.approx(0.08, rel=1e-6)
+    assert field.slope_rms_at_unit > 0.0
+
+
+# ------------------------------------------------------------------------------ inverse solves
+def test_required_mesh_density_is_a_real_inverse_solve():
+    """lambda_min = 0.65 mm (M01) must give a number, and the algebra must close."""
+    out = fa.required_mesh_density(lambda_min_mm=0.65, area_mm2=100.0, current_edge_mm=9.0,
+                                   ratio=8.0)
+    assert out["required_edge_mm"] == pytest.approx(0.65 / 8.0)
+    assert out["required_triangles"] == pytest.approx(
+        4.0 * 100.0 / (np.sqrt(3.0) * (0.65 / 8.0) ** 2))
+    assert out["current_triangles_equivalent"] == pytest.approx(
+        4.0 * 100.0 / (np.sqrt(3.0) * 9.0 ** 2))
+    assert out["density_factor"] == pytest.approx(
+        out["required_triangles"] / out["current_triangles_equivalent"])
+    assert out["required_cells_equivalent"] == pytest.approx(out["required_triangles"] / 2.0)
+    px = fa.facet_pixel_budget(edge_mm=out["required_edge_mm"], mm_per_px=0.073)
+    assert px["edge_px"] == pytest.approx(out["required_edge_mm"] / 0.073)
+    assert px["visible"] is False
+
+
+def test_measured_edge_length_of_a_known_mesh():
+    import trimesh
+
+    mesh = trimesh.creation.box(extents=(2.0, 2.0, 2.0))
+    out = fa.measured_edge_length_mm(np.asarray(mesh.vertices), np.asarray(mesh.faces))
+    assert out["status"] == "OK"
+    assert out["edge_median_mm"] == pytest.approx(2.0, rel=1e-9)
+
+
+def test_facet_metrics_see_a_step_and_ignore_a_flat_field():
+    ids = np.zeros((16, 16), dtype=np.int64)
+    ids[:, 8:] = 1
+    flat = np.full((16, 16), 40.0)
+    mask = np.ones((16, 16), dtype=bool)
+    out = fa.facet_metrics(flat, ids, mask)
+    assert out["facet_edge_dn_step"] == pytest.approx(0.0, abs=1e-12)
+    stepped = flat.copy()
+    stepped[:, 8:] = 60.0
+    out2 = fa.facet_metrics(stepped, ids, mask)
+    assert out2["facet_edge_dn_step"] == pytest.approx(20.0, abs=1e-9)
+    assert out2["facet_contrast_ratio"] > 1e6
+
+
+def test_dn_statistics_and_difference_definition():
+    dn = np.zeros((8, 8))
+    dn[4:, :] = 10.0
+    mask = np.ones((8, 8), dtype=bool)
+    stats = fa.dn_statistics(dn, mask)
+    assert stats["dn_max_minus_min"] == pytest.approx(10.0)
+    diff = fa.difference_dn_statistics(dn, np.zeros((8, 8)), mask)
+    assert diff["dDN_rms"] == pytest.approx(np.sqrt(0.5 * 100.0))
+    assert diff["fraction_above_1_dn"] == pytest.approx(0.5)
+
+
+# ------------------------------------------------------------------------------ config
+def test_shipped_configuration_is_off_by_default_and_valid():
+    config = fa.load_fracture_appearance_config()
+    assert config.enabled is False
+    fa.validate_config(config)
+    assert config.normal_mode in fa.NORMAL_MODES
+    assert len(config.materials) >= 3
+    assert 50.0 <= config.working_distance_mm <= 100.0
+
+
+def test_config_rejects_out_of_contract_values():
+    base = fa.FractureAppearanceConfig()
+    with pytest.raises(Exception):
+        fa.validate_config(replace(base, normal_mode="PHONG"))
+    with pytest.raises(Exception):
+        fa.validate_config(replace(base, materials=("M01", "M04")))
+    with pytest.raises(Exception):
+        fa.validate_config(replace(base, working_distance_mm=10.0))
+    with pytest.raises(Exception):
+        fa.validate_config(replace(base, supersample=9))
+    with pytest.raises(Exception):
+        fa.validate_config(replace(base, amplitudes_mm=(0.0,)))
+
+
+def test_appearance_spec_rejects_unknown_modes():
+    with pytest.raises(Exception):
+        fa.AppearanceSpec(normal_mode="PHONG")
+    with pytest.raises(Exception):
+        fa.AppearanceSpec(interpolation="BILINEAR")
