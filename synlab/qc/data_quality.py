@@ -137,9 +137,18 @@ LEGACY_GENERATION: dict[str, str | None] = {
 }
 
 #: Roles whose commit entry writes ``data_semantics`` (which carries ``mask_semantics``):
-#: ``docs/a12/data_semantics_versions.md`` §3, first six rows.
+#: ``docs/a12/data_semantics_versions.md`` §3, first six rows, **plus** ``visible_labels`` (S5).
+#: The visible layer is derived from the delivered mask channels (``uncertain_mask`` /
+#: ``deployment_mask`` / ``id_map``), so which ``coc_units`` generation produced them decides what
+#: its counts mean.  It used to be committed with no marker at all -- measured on
+#: ``data/a12_trainable/store``: ``visible_labels`` n=9 with ``mask_semantics`` on 0 of them, while
+#: the other five roles carried it -- so the marker is now stamped at the commit boundary
+#: (``synlab/pipeline.py::_stamp_data_semantics``).  Adding the role here makes the
+#: ``semantics.mask_semantics`` gate *check* it, which is the point: the marker is enforced, not
+#: merely written.
 DATA_SEMANTICS_ROLES: frozenset[str] = frozenset({
     "mother_mesh", "fragment_mesh", "feature_bundle", "label_bundle", "provenance", "obs_result",
+    "visible_labels",
 })
 #: ``damage_semantics`` additionally lands on the physical roles as a top-level key.
 DAMAGE_MARKER_ROLES: frozenset[str] = DATA_SEMANTICS_ROLES | {"physical_result",
@@ -155,9 +164,11 @@ MARKER_ROLES: frozenset[str] = DAMAGE_MARKER_ROLES
 
 #: Roles that structurally cannot carry the marker today -- their commit entry is outside the
 #: semantics write scope, so they must be judged by the run/role that does carry it
-#: (``docs/a12/data_semantics_versions.md`` §3, last paragraph).
+#: (``docs/a12/data_semantics_versions.md`` §3, last paragraph).  ``visible_labels`` was on this
+#: list until S5; it is now stamped by ``pipeline.py::_stamp_data_semantics`` and checked by the
+#: ``semantics.mask_semantics`` gate, so it is no longer marker-free.
 MARKER_FREE_ROLES: frozenset[str] = frozenset({
-    "clean_truth", "physical_truth", "visible_labels", "pattern_recipe", "pattern_channels",
+    "clean_truth", "physical_truth", "pattern_recipe", "pattern_channels",
     "material_profile", "obs_view", "obs_fused_geometry", "degrade_measurement",
     "relation_pool", "query_roster", "qa_report", "display_lod_glb",
 })

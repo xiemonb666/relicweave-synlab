@@ -1788,6 +1788,13 @@ def build_one_mother(plan: GenerationPlan, lineage: LineagePlan, store: AssetSto
             endpoint_observations.append({"fragment_id": fragment_id, "observation": endpoint,
                                           "observation_asset": endpoint_ref.asset_id})
         visible = update_visibility_truth(physical_truth, observation)
+        # S5: stamp the semantic version on the *visible* layer too.  This layer is derived from
+        # the delivered mask channels (uncertain_mask / deployment_mask / id_map), so which
+        # `coc_units` generation produced them decides what its counts mean -- but it used to be
+        # committed with no marker at all (measured on data/a12_trainable/store: visible_labels
+        # n=9, with mask_semantics=0; the other five data_semantics roles carried it).  The stamp
+        # is applied here, at the commit boundary, so every producer of this layer gets it.
+        _stamp_data_semantics(visible)
         visible_ref = commit_truth(store, stamp_context(visible, lineage_context),
                                    role="visible_labels",
                                    lineage_id=lineage.lineage_id, split=lineage.split,
@@ -2518,6 +2525,26 @@ The observation stage renders the damaged/physical variant as well, so every R2 
 be encoded on both sides. Assets produced before this change carry no tag, which is how the
 two eras stay separable (never by timestamp or run id).
 """
+
+
+def _stamp_data_semantics(obj, semantics=None):
+    """Stamp a truth/label object's ``meta`` with the render/damage semantic versions (S5).
+
+    ``data_semantics()`` already travels with the run record and the observation metadata of
+    everything :func:`run_pipeline` writes; the *derived truth* layers were the exception.  A
+    ``visible_labels`` layer is computed **from** the delivered mask channels, so a reader cannot
+    tell which ``mask_semantics`` generation its counts came from unless the asset says so -- and
+    the two generations disagree by a measured factor of ``D * N`` (74.105 on the L0 views).
+
+    Tolerant by design, like :func:`_stamp_obs_semantics`: a non-mapping argument passes through
+    untouched, and an object that already declares its versions keeps them.
+    """
+    target = obj if isinstance(obj, dict) else getattr(obj, "meta", None)
+    if isinstance(target, dict):
+        declared = dict(semantics or data_semantics())
+        for key, value in declared.items():
+            target.setdefault(key, value)
+    return obj
 
 
 def _stamp_obs_semantics(meta, semantics=None, **facts):

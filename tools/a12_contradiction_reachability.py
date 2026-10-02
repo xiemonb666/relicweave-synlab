@@ -105,15 +105,14 @@ def measure_package(package: str | Path, *, token_budget: int = 256) -> dict[str
     payloads = load_features(training, fragment_ids, token_budget=token_budget)
     bundle = FeatureBundle.from_dict(payloads, token_budget=token_budget).check_shapes()
 
-    from synlab.qc.loader_probe import ExportedRelationPool, _pool_id
-    from synlab.training.model import DualTowerModel
+    # reuse the loader's own pool and z_valid, so the measurement is the shipped arithmetic
+    from tools.load_package import build_pool, encoder_valid
 
-    relation_rows = [dict(row) for row in relations]
-    pool = ExportedRelationPool(relation_rows, pool_id=_pool_id(relation_rows))
+    pool = build_pool(PackageView(root))
+    pool.features = payloads
     batch = build_training_batch(bundle, pool=pool, rows=rows, labels={},
                                  meta={"probe": "contradiction_reachability"})
-    model = DualTowerModel(feature_dim=bundle.local_tokens.shape[2]) if False else None
-    z_valid = _encoder_valid(bundle)
+    z_valid = np.asarray(encoder_valid(bundle), dtype=bool)
 
     pair = np.asarray(batch.pair_index, dtype=np.int64)
     pair_valid = np.asarray(batch.pair_valid, dtype=bool)
@@ -129,7 +128,7 @@ def measure_package(package: str | Path, *, token_budget: int = 256) -> dict[str
                  for code, count in zip(*np.unique(labels[valid & allowed], return_counts=True))} \
         if (valid & allowed).any() else {}
     kinds = {}
-    for row in relation_rows:
+    for row in relations:
         if str(row.get("query", "")) in set(fragment_ids) \
                 and str(row.get("candidate", "")) in set(fragment_ids):
             kind = str(row.get("kind", "UNKNOWN"))
@@ -182,11 +181,20 @@ def _rows_from_relations(relations: Sequence[Any],
     return _batch_rows([dict(row) for row in relations], sorted(known), None)
 
 
-def _encoder_valid(bundle: Any) -> np.ndarray:
-    """``z_valid`` by the same definition the encoder uses (never a re-implementation)."""
-    from synlab.training.model import encoder_valid
+class PackageView:
+    """The tiny adapter ``tools.load_package.build_pool`` expects (it takes a ``Package``)."""
 
-    return np.asarray(encoder_valid(bundle), dtype=bool)
+    def __init__(self, root: Path) -> None:
+        from synlab.storage.export import TrainingPackage
+
+        self.root = Path(root)
+        self.inner = TrainingPackage(self.root)
+
+    @property
+    def relations(self):
+        import pandas as pd
+
+        return pd.DataFrame([dict(row) for row in self.inner.relations()])
 
 
 def main(argv: Sequence[str] | None = None) -> int:

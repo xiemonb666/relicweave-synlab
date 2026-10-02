@@ -260,13 +260,13 @@
 
 ### 3.8 反解的**经验验证**：2048 px 档（真渲染，不是缩放）
 
-对 V10/M11 与 V02/M01 各取 3 个 ROI 视图，用同一支镜头、同一 60 mm 物距、
+对 V10/M11 的 3 个 ROI 视图，用同一支镜头、同一 60 mm 物距、
 **同一 `delivered_profile` 机制**把交付长边从 1024 提到 **2048**（真渲染，`upsampled=false`）：
 
 | 档 | 交付网格 | `f_px` | `mm/px`（实测） | 0.2 mm 占几像素 | 3 视图耗时 |
 |---|---|---|---|---|---|
 | 1024 | 1024×768 | 821.89 | **0.07300** | 2.74 | — |
-| **2048** | 2048×1536 | 1 643.79 | **0.03650** | **5.48** | V10: 62.8 s / V02: 45.2 s |
+| **2048** | 2048×1536 | 1 643.79 | **0.03650** | **5.48** | V10 的 3 个 ROI 视图：44.4 s |
 
 → **反解被实测确认**：交付长边 ×2 ⇒ `f_px` ×2 ⇒ `mm/px` ÷2（0.07300 → 0.03650，逐位），
 0.2 mm 结构从 2.74 px 升到 **5.48 px，越过契约的 4 px pilot 起点**。
@@ -458,34 +458,35 @@ OCCLUSION_RAYCAST_BEST_OF_AZIMUTHS`，候选 8 个方位逐个记录）。
 
 | 阶段 | 视图数 | 合计秒 | 每视图秒 |
 |---|---|---|---|
-| 整片 12 视图 × 4 具 | 48 | **426.08** | 8.88 |
-| ROI 特写 12 视图 × 4 具 | 48 | **347.17** | 7.23 |
-| 高分辨率档（2048 px，1 具 3 视图 + V02 复算 3 视图） | 6 | **108.03** | 18.0 |
-| **合计** | **102** | **881.28**（14 min 41 s） | 8.64 |
-| 墙钟/具（含 ROI 计划、测量、落盘） | — | 261.5–310.5 | — |
+| 整片 12 视图 × 4 具 | 48 | **283.99** | 5.92 |
+| ROI 特写 12 视图 × 4 具 | 48 | **281.08** | 5.86 |
+| 高分辨率档（2048 px，V10 的 3 个 ROI 视图） | 3 | **44.37** | 14.79 |
+| **合计** | **99** | **609.45**（10 min 9 s） | 6.16 |
+| 墙钟/具（含 ROI 测量与规划、融合、落盘） | — | 191.5–224.7 | — |
 
-**显存**（`nvidia-smi --query-gpu=memory.used`，0.25 s 采样，采样数 828–约 2 000/具）：
+**显存**（`nvidia-smi --query-gpu=memory.used`，0.25 s 采样，602–687 采样/具）：
 
 | 具 | min MiB | mean MiB | **peak MiB** |
 |---|---|---|---|
-| V10/M11 | 74 | 270 | **1 126** |
-| V21/M06 | 63 | 214 | **910** |
-| V23/M07 | 61 | 232 | **904** |
-| V02/M01（115 435 面） | 66 | 1 198 | **8 012** |
+| V10/M11 | 208 | 404 | **1 260** |
+| V21/M06 | 209 | 332 | **1 044** |
+| V23/M07 | 209 | 332 | **1 040** |
+| V02/M01（115 435 面） | 209 | 307 | **1 048** |
+| **全研究峰值** | — | — | **1 260**（本卡 8 151 MiB 的 **15.5%**） |
 
-> **口径与诚实边界**：`memory.used` 是**整卡占用**，不是本作业的分配；
-> 采样窗口覆盖同一台机器上**并行运行的其它作业**（本次运行期间有其它 agent 在跑
-> torch/Blender）。所以 V02/M01 的 8 012 MiB 峰值（本卡 8 151 MiB）
-> **不能**读作"ROI 渲染需要 8 GB"：同一作业在其它三具研究体上的峰值是 **904–1 126 MiB**，
-> 而 V02 的网格面数是其它具的 1.4–19.6 倍。要一个干净的数字需要独占 GPU 复跑（未做）。
-> `fracture_roi_timing.json` 保留 min/mean/peak 与采样数，不把峰值写成"需求"。
+> **口径**：`memory.used` 是**整卡占用**，不是本作业的分配。这一批是对**独占机器**的复跑
+> （另一次并发窗口下同一作业的峰值读到 **8 012 MiB**，见 `_roi_full_run.txt` 那一次的报告）——
+> 所以**只用 1 260 MiB 这一个数字主张"ROI 渲染的显存需求"**，并把并发窗口下的读数作为
+> 反例一起留在 `fracture_roi_timing.json` 的历史文件里。**要一个干净的"本作业分配"需要
+> Blender 侧显存上报**（未做）。
 
-**并发故障（如实记录）**：4 具连续跑时，第 4 具的第一次尝试在**第 71 次 Blender 调用**上
-失败：`RuntimeError: Error: Failed to retain CUDA context (Unknown error)`（Blender worker
-的 CUDA 上下文错误，不是本项目断言）。用 `--only 3` 在**新进程**里复跑该具即成功（exit 0），
+**并发故障（如实记录）**：第一次 4 具连续跑时，第 4 具在**第 71 次 Blender 调用**上失败：
+`RuntimeError: Error: Failed to retain CUDA context (Unknown error)`（Blender worker 的 CUDA
+上下文错误，不是本项目断言）。用 `--only <index>` 在**新进程**里复跑该具即成功（exit 0），
 结果合并进同一份报告（`fracture_roi_run.json` → `resumed_from`）。
-→ 这是"每进程 Blender 调用数"上的稳定性问题，不是渲染结果问题；`_run_fracture_roi.py`
-为此加了 `--only <index>` 的断点续跑开关。
+最终那次 4 具一次跑完（**exit 0**，无故障），逐视图数字与故障那次的**逐位相同**
+（`mm/px` 0.26135→0.07148 等），说明渲染是确定性的、CUDA 故障只影响进程寿命。
+→ `_run_fracture_roi.py` 为此保留 `--only <index>` 断点续跑开关。
 
 ---
 
@@ -553,8 +554,8 @@ OCCLUSION_RAYCAST_BEST_OF_AZIMUTHS`，候选 8 个方位逐个记录）。
 | # | 命令 | 产出 | 退出码 |
 |---|---|---|---|
 | 1 | `python -m synlab.cli validate --config configs/a12/imaging_fracture_roi.yaml` | `OK` + `spec_hash sha256:643eecbb…` | **0** |
-| 2 | `python tests/a12/observe/_run_fracture_roi.py --bodies 4 --samples 16 --extra-rung 2048` | `data/a12_reports/fracture_roi_{run,compare,resolvability,timing}.json` + `data/a12_roi/store` | 1（第 4 具 CUDA 上下文故障，见 §6） |
-| 2b | `python tests/a12/observe/_run_fracture_roi.py --only 3 --samples 16` | 断点续跑第 4 具并合并进同一报告（`resumed_from`） | **0** |
+| 2 | `python tests/a12/observe/_run_fracture_roi.py --bodies 4 --samples 16 --extra-rung 2048` | `data/a12_reports/fracture_roi_{run,compare,resolvability,timing}.json` + `data/a12_roi/store`（4 个 `obs_result`，各 24 视图） | **0**（第一次尝试在第 4 具遇 CUDA 上下文故障 → 1；带 `--only` 续跑见 §6） |
+| 2b | `python tests/a12/observe/_run_fracture_roi.py --only 3 --samples 16` | 断点续跑某一具并合并进同一报告（`resumed_from`） | **0** |
 | 3 | `python -m pytest tests/a12/observe/test_fracture_roi.py -q` | 24 passed | **0** |
 | 4 | `python -m pytest tests/a12/observe -q --tb=no` | 327 项，1 failed（既有）/ 1 skipped / 325 passed | 1（基线同样为 1） |
 | 5 | `python data/a12_reports/_roi_tables.py`（只读汇总） | 打印 §4.2/§4.3/§6 的表格数字 | 0 |

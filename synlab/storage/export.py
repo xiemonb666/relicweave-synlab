@@ -1216,32 +1216,59 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
                            | {str(fid) for fid in _release_fragment_ids(store, release_assets)})
     index_of = {fid: i for i, fid in enumerate(all_fragments)}
     relation_rows: list[dict[str, Any]] = []
+    # S3 fix.  ``merged`` is keyed by the *canonical* (sorted) pair, so emitting
+    # ``row["a"] -> row["b"]`` verbatim published exactly one direction of every unordered pair.
+    # Measured on the shipped release: 1721 rows with **0** reverse rows, and both the source
+    # truth rows and the pool index are strictly one-directional (0 pairs appear in two
+    # directions at the source), so nothing downstream could recover the other direction.
+    # ``query``/``candidate`` are *roles*: a pair is symmetric as a physical relation (an R2 mate
+    # cut is shared from both ends, an R1/R0 pair is unrelated from both ends), so a table that
+    # only ever records one role assignment loses half the supervision -- the mate of a fragment
+    # is never that fragment's mate in return, and the negative it should learn from is never
+    # asked for.  Both roles are therefore emitted from the canonical row.
     for row in relations:
-        query = str(row.get("a", ""))
-        candidate = str(row.get("b", ""))
-        if query not in index_of or candidate not in index_of:
-            continue
+        canonical = (str(row.get("a", "")), str(row.get("b", "")))
         kind = str(row.get("kind", "UNKNOWN"))
-        relation_rows.append({
-            "query": query, "candidate": candidate, "kind": kind,
-            "area_mm2": float(row.get("area_mm2", 0.0) or 0.0),
-            "valid": bool(row.get("valid", False)),
-            "loss_mask": bool(row.get("loss_mask", False)),
-            "pool_id": str((manifest.get("extra") or {}).get("pool_id", "") or ""),
-            "split": _split_of(feature_meta, obs_by_fragment, query),
-            "lineage_cluster": _lineage_of(feature_meta, obs_by_fragment, query),
-            "eligible_as_negative": bool(kind in NEGATIVE_KINDS
-                                         and row.get("valid", False)
-                                         and row.get("loss_mask", False)),
-            "has_observation": query in obs_by_fragment and candidate in obs_by_fragment,
-            "reason": str(row.get("reason", "") or ""),
-        })
+        valid = bool(row.get("valid", False))
+        loss_mask = bool(row.get("loss_mask", False))
+        area = float(row.get("area_mm2", 0.0) or 0.0)
+        reason = str(row.get("reason", "") or "")
+        for direction, (query, candidate) in (("canonical", canonical),
+                                              ("reverse", (canonical[1], canonical[0]))):
+            if query not in index_of or candidate not in index_of:
+                continue
+            relation_rows.append({
+                "query": query, "candidate": candidate, "kind": kind,
+                "area_mm2": area,
+                "valid": valid,
+                "loss_mask": loss_mask,
+                "pool_id": str((manifest.get("extra") or {}).get("pool_id", "") or ""),
+                "split": _split_of(feature_meta, obs_by_fragment, query),
+                "lineage_cluster": _lineage_of(feature_meta, obs_by_fragment, query),
+                "eligible_as_negative": bool(kind in NEGATIVE_KINDS
+                                             and valid and loss_mask),
+                "has_observation": query in obs_by_fragment and candidate in obs_by_fragment,
+                # which role assignment of the unordered pair this row is; the label itself is
+                # symmetric, so a reader can fold the two rows without re-deriving the pair
+                "direction": direction,
+                "pair_key": f"{canonical[0]}|{canonical[1]}",
+                "reason": reason,
+            })
     relation_rows.sort(key=lambda r: (r["query"], r["candidate"]))
 
     counts["relations"] = len(relation_rows)
     counts["relation_kinds"] = _kind_counts(relation_rows)
     counts["r2_relations"] = int(sum(1 for r in relation_rows if r["kind"] == "R2"))
     counts["superseded_relations"] = len(superseded)
+    # S3 evidence: the unordered pair count the rows were expanded from, and how many rows are
+    # the reverse role assignment -- so a reader can see the table is direction-complete instead
+    # of inferring it from a doubling of the row count.
+    counts["unordered_relation_pairs"] = int(len(relations))
+    counts["relation_rows_reverse_role"] = int(sum(1 for r in relation_rows
+                                                   if r["direction"] == "reverse"))
+    counts["relation_pairs_direction_complete"] = bool(
+        len({str(r["pair_key"]) for r in relation_rows}) == len(relations)
+        and counts["relation_rows_reverse_role"] == len(relations))
     counts["queries"] = len(all_fragments)
     counts["fragments_with_observation"] = len(observed_fragments)
     counts["fragments_without_observation"] = len(all_fragments) - len(observed_fragments)

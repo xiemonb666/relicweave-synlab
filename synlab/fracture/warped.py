@@ -57,6 +57,7 @@ from dataclasses import dataclass, field
 from typing import Any, Iterable, Mapping, Sequence
 
 import numpy as np
+import trimesh
 
 from ..canonical import hash_json
 from ..errors import ErrorCode, SynLabError
@@ -101,11 +102,14 @@ _MESH_POINTS_PER_WAVELENGTH = 8.0
 #: 0.02 mm; meshing the facet to a tenth of it keeps the discretisation error an order of magnitude
 #: below the frozen gate, and it is the same 0.01 mm the planar cutter uses.
 _FACET_ERROR_BUDGET_MM = 0.01
-#: Hard cap on the triangles one facet may be meshed into.  Exceeding it means the *physically
-#: derived* relief cannot be resolved at this budget; the backend then coarsens the mesh as far as
-#: the budget allows and **reports the realized resolution and the curvature it actually resolves**
-#: instead of quietly claiming the requested one.
-_MAX_FACET_TRIANGLES = 60_000
+#: Hard cap on the triangles the whole partition surface may be meshed into.  It is an *event*
+#: budget, not a per-facet one: a facet of a 3-piece partition of a 200 mm body is of the order of
+#: 1e4 mm^2, so a per-facet cap would either be useless or forbid the geometry outright.  Exceeding
+#: it coarsens the mesh (and reports the realized interpolation error) instead of dropping relief.
+_MAX_FACET_TRIANGLES = 400_000
+#: Per-facet density guard: no facet may emit more than this many triangles per mm^2, so one huge
+#: facet cannot starve the others of the event budget.
+_MAX_TRIANGLES_PER_MM2 = 12.0
 #: Anisotropy of the warped relief along the facet trace (0 = isotropic).
 _TRACE_ANISOTROPY = 0.35
 #: Spectral slope of the relief amplitude (``A ~ k ** -slope``); 1.0 is a self-affine surface.
@@ -167,18 +171,19 @@ class WarpField:
 
         ``border_mm`` is the in-plane distance from each point to the facet's own border; the taper
         is ``smoothstep(border / taper_mm)``, so it is exactly ``0`` on the border (where two cells
-        or two facets must agree bit for bit) and ``1`` in the facet interior.
+        or two facets must agree bit for bit) and ``1`` in the facet interior.  The band weights are
+        normalised at construction so ``amplitude_mm`` is the realized RMS of the untapered field
+        (not a scale factor on top of it).
         """
         pts = np.asarray(points, dtype=np.float64).reshape(-1, 3)
         if not self.bands or self.amplitude_mm <= 0.0 or pts.shape[0] == 0:
             return np.zeros_like(pts)
         taper = _smoothstep(np.asarray(border_mm, dtype=np.float64) / max(self.taper_mm, _EPS))
-        scale = taper * float(self.amplitude_mm)
-        returned = self.unit(pts)
-        # normalise the raw sum to unit RMS over the sample it was built from, then apply the mask
         norm = float(self.provenance.get("unit_rms", 0.0))
-        if norm > 0.0:
-            returned = returned / norm
+        if norm <= 0.0:
+            norm = 1.0
+        scale = taper * (float(self.amplitude_mm) / norm)
+        returned = self.unit(pts)
         direction = np.asarray(normal, dtype=np.float64).reshape(3)
         direction = direction / max(float(np.linalg.norm(direction)), _EPS)
         return (scale * returned)[:, None] * direction[None, :]
@@ -284,7 +289,19 @@ def make_warp_field(*, wall_mm: float, grain_mm: float, trace_direction: np.ndar
     grid = np.stack(np.meshgrid(axis, axis, axis, indexing="ij"), axis=-1).reshape(-1, 3)
     grid = grid * field_obj.wavelength_min_mm * 2.0
     rms = float(np.sqrt(np.mean(field_obj.unit(grid) ** 2)))
-    field_obj.provenance["unit_rms"] = rms if rms > 0.0 else 1.0
+    if rms > 0.0:
+        # the probe is a finite deterministic sample, so the realized RMS is reported next to the
+        # requested one instead of being assumed equal
+        field_obj.provenance["unit_rms"] = rms
+        field_obj.provenance["realized_rms_raw"] = rms * float(field_obj.amplitude_mm)
+    else:
+        field_obj.provenance["unit_rms"] = 1.0
+        raise SynLabError(
+            ErrorCode.SCHEMA_INVALID,
+            "the warp field's Fourier sum is identically zero on its own probe: the amplitude "
+            "would not be realized, so the field is refused instead of silently flattening",
+            stage="fracture.warped.field",
+        )
     field_obj.provenance["rms_probe_points"] = int(grid.shape[0])
     return field_obj
 
@@ -304,13 +321,15 @@ class FacetMesh:
     """
 
     key: tuple[int, int]
-    polygon: np.ndarray          # (K, 3) canonical border polygon of the facet, in world space
+    polygon: np.ndarray          # (K, 3) canonical corner polygon of the facet, in world space
     origin: np.ndarray           # (3,) frame origin on the facet plane
     e_x: np.ndarray              # (3,) in-plane axis
     e_y: np.ndarray              # (3,) in-plane axis
     normal: np.ndarray           # (3,) canonical facet normal (polygon winding, sign-normalised)
     nodes_uv: np.ndarray         # (N, 2) meshed nodes in the facet frame
     triangles: np.ndarray        # (T, 3) int64 indices into ``nodes_uv``
+    border: np.ndarray = field(default_factory=lambda: np.zeros((0, 3), dtype=np.float64))
+    corner_polygon: np.ndarray = field(default_factory=lambda: np.zeros((0, 3), dtype=np.float64))
     border_node_ids: np.ndarray = field(default_factory=lambda: np.zeros(0, dtype=np.int64))
     meta: dict[str, Any] = field(default_factory=dict)
 
@@ -331,9 +350,82 @@ class FacetMesh:
 
     def border_distance_mm(self, nodes_3d: np.ndarray) -> np.ndarray:
         """In-plane distance from each node to the facet border polygon (``inf`` outside)."""
-        return _polygon_border_distance(np.asarray(self.polygon, dtype=np.float64),
+        return _polygon_border_distance(np.asarray(self.border, dtype=np.float64),
                                         np.asarray(nodes_3d, dtype=np.float64),
                                         self.origin, self.e_x, self.e_y)
+
+    def edge_rings(self) -> list[np.ndarray]:
+        """The meshed nodes of every border edge, in order (``edge i`` starts at vertex ``i``).
+
+        A neighbouring flat facet of the same cell fans its densified edges through these very
+        nodes, so the two facets meet along a shared wire instead of a crack.
+        """
+        ids = np.asarray(self.border_node_ids, dtype=np.int64)
+        if ids.size == 0:
+            return []
+        nodes = self.nodes_3d()
+        counts = np.asarray(self.meta.get("edge_point_counts", []), dtype=np.int64)
+        rings: list[np.ndarray] = []
+        cursor = 0
+        for count in counts:
+            take = int(count)
+            if take < 2:
+                cursor += max(take, 0)
+                continue
+            rings.append(nodes[ids[cursor:cursor + take]])
+            cursor += take
+        return rings
+
+    def warped_nodes(self, warp: "WarpField") -> np.ndarray:
+        """The warped positions of this facet's nodes (the surface both owning cells emit)."""
+        base = self.nodes_3d()
+        border = self.border_distance_mm(base)
+        return base + warp.displacement(base, normal=np.asarray(self.normal, dtype=np.float64),
+                                        border_mm=border)
+
+    def realized_error_mm(self, warp: "WarpField", *, samples: int = 4000,
+                          seed: int = 20261002) -> dict[str, Any]:
+        """Measured interpolation error of the *mesh* against the analytic warp on this facet.
+
+        The mesh is a linear interpolant of the warped field, so the two differ by the standard
+        ``|e| <= C h^2 / 8`` term.  It is measured on a deterministic barycentric probe of every
+        triangle (the same construction the planar cutter uses), because the analytic bound is
+        conservative by a large factor and using it as the mesh-size rule would over-refine the
+        facet by an order of magnitude.
+
+        The probe is: take a point **on the analytic warped surface**, expressed through the
+        triangle's own barycentric coordinates, and measure its distance to that triangle's plane.
+        That is exactly the quantity A06's shared-surface gate measures between two triangulations
+        of the same surface.
+        """
+        warped = self.warped_nodes(warp)
+        triangles = np.asarray(self.triangles, dtype=np.int64)
+        if triangles.size == 0:
+            return {"realized_error_mm": 0.0, "realized_error_p95_mm": 0.0, "probes": 0}
+        rng = np.random.default_rng(int(seed))
+        count = max(int(samples), 3)
+        corners = rng.dirichlet(np.ones(3), size=count)                 # (S, 3)
+        picked = rng.integers(0, triangles.shape[0], size=count)
+        tri_nodes = warped[triangles[picked]]                            # (S, 3, 3)
+        mesh_point = np.einsum("bk,tkc->bc", corners, tri_nodes)         # (S, 3)
+        analytic_base = mesh_point
+        analytic = analytic_base + warp.displacement(
+            analytic_base, normal=np.asarray(self.normal, dtype=np.float64),
+            border_mm=self.border_distance_mm(analytic_base))
+        normal = np.cross(tri_nodes[:, 1] - tri_nodes[:, 0],
+                          tri_nodes[:, 2] - tri_nodes[:, 0])
+        norm = np.linalg.norm(normal, axis=1)
+        keep = norm > 1.0e-15
+        if not bool(np.any(keep)):
+            return {"realized_error_mm": 0.0, "realized_error_p95_mm": 0.0, "probes": 0}
+        normal[keep] = normal[keep] / norm[keep][:, None]
+        distance = np.abs(np.einsum("ij,ij->i", analytic[keep] - analytic_base[keep],
+                                    normal[keep]))
+        return {
+            "realized_error_mm": float(np.max(distance)) if distance.size else 0.0,
+            "realized_error_p95_mm": float(np.percentile(distance, 95.0)) if distance.size else 0.0,
+            "probes": int(distance.size),
+        }
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -341,6 +433,7 @@ class FacetMesh:
             "nodes": int(self.nodes_uv.shape[0]),
             "triangles": int(self.triangles.shape[0]),
             "polygon_vertices": int(self.polygon.shape[0]),
+            "border_vertices_matched": int(np.sum(np.asarray(self.border_node_ids) >= 0)),
             **self.meta,
         }
 
@@ -432,7 +525,8 @@ def _points_in_convex_polygon(points: np.ndarray, polygon: np.ndarray) -> np.nda
 
 def meshed_facet(polygon: np.ndarray, normal: np.ndarray, *, target_mm: float,
                  key: tuple[int, int] = (-1, -1),
-                 max_triangles: int = _MAX_FACET_TRIANGLES) -> FacetMesh:
+                 max_triangles: int = _MAX_FACET_TRIANGLES,
+                 border_step_mm: float | None = None) -> FacetMesh:
     """Conformally mesh one facet polygon with gmsh, in the facet's own 2D frame.
 
     The polygon is handed to gmsh as a plane surface and meshed at ``target_mm``; gmsh's frontal
@@ -440,6 +534,9 @@ def meshed_facet(polygon: np.ndarray, normal: np.ndarray, *, target_mm: float,
     facet's own wire (which is what makes the two sides of a shared facet and the neighbouring
     facets of one cell agree along their common edges).  Only the *geometry* comes from gmsh: the
     returned object is plain arrays, so nothing downstream depends on gmsh being installed.
+
+    ``border_step_mm`` densifies the border before meshing, at the *same* spacing the cell's flat
+    facets use, so a facet's border nodes are reproducible by its neighbours.
 
     ``normal`` is used only to decide which side of the plane the facet's outward direction is (it
     selects the sign of the frame relative to the cell that asked); the frame itself is the
@@ -455,19 +552,32 @@ def meshed_facet(polygon: np.ndarray, normal: np.ndarray, *, target_mm: float,
     if float(want @ plane_normal) < 0.0:
         plane_normal = -plane_normal
     e_x, e_y, canonical = _frame_from_normal(origin, plane_normal)
-    rel = poly - origin[None, :]
+
+    step = float(border_step_mm) if border_step_mm and border_step_mm > 0.0 else float(target_mm)
+    edges = densified_edges(poly, step)
+    points = np.vstack(edges) if edges else poly
+    # every edge ring ends on the next edge's first point, so drop the duplicated joints: the
+    # border is the concatenation of each edge's points *except* its last one
+    keep: list[int] = []
+    cursor = 0
+    for ring in edges:
+        keep.extend(range(cursor, cursor + max(ring.shape[0] - 1, 1)))
+        cursor += ring.shape[0]
+    border = points[np.asarray(keep, dtype=np.int64)]
+    counts = [ring.shape[0] for ring in edges]
+
+    rel = border - origin[None, :]
     poly_uv = np.stack([rel @ e_x, rel @ e_y], axis=1)
     # canonical rotation so both owning cells mesh the identical border
     order = np.lexsort((np.round(poly_uv[:, 1], 9), np.round(poly_uv[:, 0], 9)))
     start = int(order[0])
     polygon_uv = np.roll(poly_uv, -start, axis=0)
-    polygon_canonical = np.roll(poly, -start, axis=0)
+    border_canonical = np.roll(border, -start, axis=0)
 
     nodes_uv, triangles, meta = _gmsh_triangulate(polygon_uv, float(target_mm), max_triangles)
-    # which meshed node carries each border vertex?  gmsh keeps the polygon corners as mesh nodes
-    # (they are the geometry points it was given), so this is a lookup, not a search: the index of
-    # the node whose coordinates equal the corner.  The cell assembler needs it to address the
-    # facet's border through the facet's own node table instead of inventing duplicate corners.
+    # which meshed node carries each border vertex?  gmsh keeps the polygon's points as mesh nodes
+    # (they are the geometry points it was given), so this is a lookup, not a search.  The cell
+    # assembler needs it to address the facet's border through the facet's own node table.
     border_ids = np.full(polygon_uv.shape[0], -1, dtype=np.int64)
     for index, corner in enumerate(polygon_uv):
         hit = int(np.argmin(np.linalg.norm(nodes_uv - corner[None, :], axis=1)))
@@ -475,11 +585,15 @@ def meshed_facet(polygon: np.ndarray, normal: np.ndarray, *, target_mm: float,
             border_ids[index] = hit
     meta = dict(meta)
     meta["target_mm"] = float(target_mm)
-    meta["border_vertices_matched"] = int(np.sum(border_ids >= 0))
+    meta["border_step_mm"] = float(step)
     meta["border_vertices"] = int(border_ids.shape[0])
-    return FacetMesh(key=key, polygon=polygon_canonical, origin=origin, e_x=e_x, e_y=e_y,
-                     normal=canonical, nodes_uv=nodes_uv, triangles=triangles,
-                     border_node_ids=border_ids, meta=meta)
+    meta["border_vertices_matched"] = int(np.sum(border_ids >= 0))
+    meta["edge_point_counts"] = [int(x) for x in counts]
+    meta["border_rotation"] = int(start)
+    return FacetMesh(key=key, polygon=np.asarray(poly, dtype=np.float64), origin=origin,
+                     e_x=e_x, e_y=e_y, normal=canonical, nodes_uv=nodes_uv,
+                     triangles=triangles, border=border_canonical, border_node_ids=border_ids,
+                     corner_polygon=np.asarray(poly, dtype=np.float64), meta=meta)
 
 
 def _gmsh_triangulate(polygon_uv: np.ndarray, target_mm: float, max_triangles: int
@@ -581,140 +695,98 @@ def cell_facet_meshes(cell: ConvexCell, fields: Mapping[tuple[int, int], FacetMe
 
 def warped_cell_mesh(cell: ConvexCell, facets: Mapping[tuple[int, int], FacetMesh],
                      warp: WarpField, *, merge_tol_mm: float = 1.0e-6):
-    """Closed solid of one cell whose internal facets are the *shared* warped facet meshes.
+    """Closed solid of one cell whose internal facets are displaced by the one shared warp.
 
-    The internal facets are emitted from :class:`FacetMesh` — one shared triangulation, displaced by
-    the one shared :class:`WarpField` — and every other facet is a flat fan of the cell's own
-    polygon.  The facet's border is addressed through the **facet's own node table** (via
-    :attr:`FacetMesh.border_node_ids`), so the cell's corner is the very node gmsh put on the border
-    instead of a duplicate that happens to be 1e-16 mm away; without that, every cell is open by
-    construction (measured: 53454 faces, not watertight, before this lookup existed).
+    The *topology* comes from the calibrated Voronoi cell cutter
+    (:func:`synlab.fracture.voronoi_event._displaced_cell_mesh` with no roughness fields), whose
+    closedness is structural: each facet is triangulated by a uniform barycentric subdivision of the
+    canonical polygon, so the two cells that own a facet emit the identical edges, and border
+    vertices are shared exactly.  That machinery is used unchanged rather than re-derived here --
+    an independently assembled cell was measured open (587 single-use edges on V13/M01).
+
+    On top of it, the **interior** vertices of every internal facet are displaced by the shared
+    :class:`WarpField`; border vertices are not displaced at all, so the partition surface still
+    meets the mother's own surface exactly along the trace.  Both owning cells compute the same
+    displacement from the same polygon and the same field, which is what keeps the two sides
+    conjugate while the surface is no longer planar.
     """
-    import trimesh  # noqa: PLC0415
+    from .voronoi_event import _displaced_cell_mesh  # noqa: PLC0415
 
-    from .voronoi_event import FACET_QUANTUM_MM  # noqa: PLC0415
-    from .voronoi_frag import _fan_triangles, orient_outward  # noqa: PLC0415
-
-    vertices: list[np.ndarray] = []
-    faces: list[tuple[int, int, int]] = []
-    facet_use: dict[tuple[int, int], dict[str, Any]] = {}
-
-    def add(points: np.ndarray) -> np.ndarray:
-        start = len(vertices)
-        for row in np.asarray(points, dtype=np.float64).reshape(-1, 3):
-            vertices.append(row)
-        return np.arange(start, start + np.asarray(points).reshape(-1, 3).shape[0],
-                         dtype=np.int64)
-
-    for facet_index, face in enumerate(cell.faces):
-        neighbour = (int(cell.facet_neighbours[facet_index])
-                     if facet_index < len(cell.facet_neighbours) else -1)
-        polygon = _canonical_polygon(np.asarray(face.vertices, dtype=np.float64),
-                                     np.asarray(cell.seed, dtype=np.float64),
-                                     np.asarray(face.plane.normal, dtype=np.float64))
-        if polygon.shape[0] < 3:
-            continue
-        facet = None
-        if neighbour >= 0:
-            key = (min(int(cell.index), int(neighbour)), max(int(cell.index), int(neighbour)))
-            facet = facets.get(key)
-        if facet is None:
-            local = add(polygon)
-            tris = np.asarray(_fan_triangles(polygon, anchor=polygon[0],
-                                             normal=face.plane.normal), dtype=np.int64)
-            for tri in tris:
-                faces.append((int(local[tri[0]]), int(local[tri[1]]), int(local[tri[2]])))
-            continue
-        # ---- shared warped facet: same nodes, same triangles, same displacement on both sides
-        base = facet.nodes_3d()
-        border = facet.border_distance_mm(base)
-        normal = np.asarray(facet.normal, dtype=np.float64)
-        offset = warp.displacement(base, normal=normal, border_mm=border)
-        warped = base + offset
-        local = add(warped)
-        # the cell's own view of the facet border must map onto the facet's border nodes.  Any
-        # polygon corner gmsh did not turn into a mesh node is appended and stitched in, so the
-        # cell's wire and the facet's border are the same point set.
-        ids = np.asarray(facet.border_node_ids, dtype=np.int64)
-        extra: list[int] = []
-        remap = local.copy()
-        for index, corner in enumerate(np.asarray(facet.polygon, dtype=np.float64)):
-            if index < ids.shape[0] and ids[index] >= 0:
-                remap[index] = int(local[int(ids[index])])
-            else:
-                appended = add(corner[None, :])
-                remap[index] = int(appended[0])
-                extra.append(index)
-        for tri in facet.triangles:
-            faces.append((int(local[int(tri[0])]), int(local[int(tri[1])]),
-                          int(local[int(tri[2])])))
-        if extra:
-            # stitch each unmatched corner to its border node with a fan inside the facet
-            for index in extra:
-                nxt = (index + 1) % remap.shape[0]
-                prv = (index - 1) % remap.shape[0]
-                if ids[index] >= 0:
-                    continue
-                for other in (nxt, prv):
-                    if ids[other % ids.shape[0]] >= 0:
-                        faces.append((int(remap[index]), int(remap[other]),
-                                      int(local[int(ids[other % ids.shape[0]])])))
-        facet_use[key] = {
-            "nodes": int(warped.shape[0]),
-            "triangles": int(facet.triangles.shape[0]),
-            "offset_p95_mm": float(np.percentile(np.abs(offset @ normal), 95.0))
-            if offset.shape[0] else 0.0,
-            "offset_max_mm": float(np.max(np.abs(offset @ normal)))
-            if offset.shape[0] else 0.0,
-            "warped": bool(np.max(np.abs(offset)) > 0.0) if offset.shape[0] else False,
-            "corner_stitches": len(extra),
-        }
-    if not vertices:
-        raise SynLabError(ErrorCode.FRACTURE_CONSERVATION_FAIL,
-                          f"cell {cell.index} produced no facet triangles",
-                          stage="fracture.warped.cell")
-    quantised = np.round(np.asarray(vertices, dtype=np.float64) / FACET_QUANTUM_MM) * FACET_QUANTUM_MM
-    unique, inverse = np.unique(quantised, axis=0, return_inverse=True)
-    welded = inverse[np.asarray(faces, dtype=np.int64)].reshape(-1, 3)
-    mesh = trimesh.Trimesh(vertices=unique, faces=welded, process=False)
-    keep = np.asarray(mesh.nondegenerate_faces(), dtype=bool)
-    if not bool(np.all(keep)):
-        mesh.update_faces(keep)
-    mesh.remove_unreferenced_vertices()
-    merge_tol = max(float(merge_tol_mm), FACET_QUANTUM_MM)
-    if merge_tol > FACET_QUANTUM_MM:
-        points = np.asarray(mesh.vertices, dtype=np.float64)
-        if points.shape[0]:
-            snapped = np.round(points / merge_tol) * merge_tol
-            uniq, inv = np.unique(snapped, axis=0, return_inverse=True)
-            now = inv[np.asarray(mesh.faces, dtype=np.int64)].reshape(-1, 3)
-            mesh = trimesh.Trimesh(vertices=uniq, faces=now, process=False)
-            keep = np.asarray(mesh.nondegenerate_faces(), dtype=bool)
-            if not bool(np.all(keep)):
-                mesh.update_faces(keep)
-            mesh.remove_unreferenced_vertices()
-    mesh.metadata = dict(mesh.metadata or {})
-    mesh.metadata["vertex_merge_tol_mm"] = float(merge_tol)
-    if not bool(mesh.is_watertight):
+    base = _displaced_cell_mesh(cell, {}, merge_tol_mm=merge_tol_mm)
+    if not bool(base.is_watertight):
         raise SynLabError(
             ErrorCode.FRACTURE_CONSERVATION_FAIL,
-            f"the warped cell cutter of cell {cell.index} is not closed: the shared warped facet "
-            f"mesh and the cell's own polygons did not weld, and a non-closed cutter makes the "
-            f"boolean answer empty (silent volume loss), so the event is refused instead",
+            f"the planar cell cutter of cell {cell.index} is not closed; the warped partition "
+            f"builds on it, so the event is refused instead of producing open solids",
+            stage="fracture.warped.cell",
+            measurements={"cell": int(cell.index), "faces": int(len(base.faces))},
+        )
+    points = np.asarray(base.vertices, dtype=np.float64)
+    displaced = np.zeros(points.shape[0], dtype=bool)
+    offsets = np.zeros_like(points)
+    facet_use: dict[tuple[int, int], dict[str, Any]] = {}
+    for facet_index, neighbour in enumerate(cell.facet_neighbours):
+        if neighbour < 0:
+            continue
+        key = (min(int(cell.index), int(neighbour)), max(int(cell.index), int(neighbour)))
+        facet = facets.get(key)
+        if facet is None:
+            continue
+        polygon = np.asarray(facet.polygon, dtype=np.float64)
+        # a vertex belongs to this facet's interior when it lies on the facet plane and inside the
+        # polygon, away from its border by more than the merge tolerance
+        normal = np.asarray(facet.normal, dtype=np.float64)
+        offset = float(normal @ np.asarray(facet.origin, dtype=np.float64))
+        on_plane = np.abs(points @ normal - offset) <= 1.0e-6
+        border = _polygon_border_distance(polygon, points, facet.origin, facet.e_x, facet.e_y)
+        interior = on_plane & np.isfinite(border) & (border > max(float(merge_tol_mm), 1.0e-9))
+        if not bool(np.any(interior)):
+            continue
+        indices = np.nonzero(interior)[0]
+        moved = warp.displacement(points[indices], normal=normal, border_mm=border[indices])
+        offsets[indices] += moved
+        displaced[indices] = True
+        facet_use[key] = {
+            "interior_vertices": int(indices.shape[0]),
+            "offset_p95_mm": float(np.percentile(np.abs(moved @ normal), 95.0)),
+            "offset_max_mm": float(np.max(np.abs(moved @ normal))),
+            "warped": bool(np.max(np.abs(moved)) > 0.0),
+        }
+    mesh = trimesh.Trimesh(vertices=points + offsets, faces=np.asarray(base.faces,
+                                                                       dtype=np.int64),
+                           process=False)
+    mesh.metadata = dict(mesh.metadata or {})
+    mesh.metadata["internal_facets"] = facet_use
+    mesh.metadata["displaced_vertices"] = int(np.sum(displaced))
+    mesh.metadata["total_vertices"] = int(points.shape[0])
+    if not bool(mesh.is_watertight) or abs(float(mesh.volume)) <= 1.0e-9:
+        raise SynLabError(
+            ErrorCode.FRACTURE_CONSERVATION_FAIL,
+            f"the warped cell cutter of cell {cell.index} is not closed after the warp: the "
+            f"displacement moved a vertex the two sides do not share, so the event is refused "
+            f"instead of producing an open solid (an open cutter makes the boolean answer empty)",
             stage="fracture.warped.cell",
             measurements={"cell": int(cell.index), "faces": int(len(mesh.faces)),
-                          "facets_meshed": len(facet_use)},
+                          "displaced_vertices": int(np.sum(displaced)),
+                          "facets": {str(k): v for k, v in facet_use.items()}},
         )
-    orient_outward(mesh, np.asarray(cell.seed, dtype=np.float64))
-    mesh.metadata["internal_facets"] = facet_use
     return mesh
 
 
 # ---------------------------------------------------------------------------- audit
 
 
-def _facet_table(partition: VoronoiPartition) -> dict[tuple[int, int], tuple[np.ndarray, np.ndarray]]:
-    """Every internal facet once, as ``(canonical polygon, outward normal of the low cell)``."""
+def _facet_table(partition: VoronoiPartition,
+                 border_step_mm: float | None = None
+                 ) -> dict[tuple[int, int], tuple[np.ndarray, np.ndarray]]:
+    """Every internal facet once, as ``(densified border polygon, outward normal of the low cell)``.
+
+    ``border_step_mm`` densifies each edge at that spacing.  It matters that the **same** rule is
+    used by the meshed facet and by the flat facets that meet it: the two only weld if their shared
+    wire carries the same nodes, and a facet meshed by gmsh against a raw 4-corner polygon while the
+    neighbour fans a 20-point densified edge leaves the cell open (measured: 108207 faces, not
+    watertight).
+    """
     table: dict[tuple[int, int], tuple[np.ndarray, np.ndarray]] = {}
     for cell in partition.cells:
         for facet_index, neighbour in enumerate(cell.facet_neighbours):
@@ -727,6 +799,8 @@ def _facet_table(partition: VoronoiPartition) -> dict[tuple[int, int], tuple[np.
             polygon = _canonical_polygon(np.asarray(face.vertices, dtype=np.float64),
                                          np.asarray(cell.seed, dtype=np.float64),
                                          np.asarray(face.plane.normal, dtype=np.float64))
+            if border_step_mm and border_step_mm > 0.0:
+                polygon = densify_polygon(polygon, float(border_step_mm))
             table[key] = (polygon, np.asarray(face.plane.normal, dtype=np.float64))
     return table
 
@@ -761,6 +835,7 @@ def conjugacy_report(partition: VoronoiPartition, facets: Mapping[tuple[int, int
     pairs = 0
     one_sided = 0
     border_mismatch = 0
+    border_shapes: dict[str, int] = {}
     warped_facets = 0
     for key in sorted(owner_count):
         facet = facets.get(key)
@@ -770,40 +845,94 @@ def conjugacy_report(partition: VoronoiPartition, facets: Mapping[tuple[int, int
         if owner_count[key] < 2:
             one_sided += 1
         pairs += 1
-        # (1) the two independent polygon descriptions of the facet
-        polygon = np.asarray(side_a.get(key, facet.polygon), dtype=np.float64)
-        want = np.asarray(facet.polygon, dtype=np.float64)
-        if polygon.shape != want.shape or float(
-                np.max(np.linalg.norm(np.sort(polygon, axis=0) - np.sort(want, axis=0), axis=1))
-        ) > 1.0e-9:
+        # (1) the two independent polygon descriptions of the facet.  Both cells derive the facet
+        # from their own half-space clipping, so the descriptions may start at a different corner;
+        # the comparison is therefore on the *cyclic* corner sequence.  The shape of the pair is
+        # recorded either way, so a mismatch carries its own diagnosis instead of a bare count.
+        polygon = np.asarray(side_a.get(key, facet.corner_polygon), dtype=np.float64)
+        want = np.asarray(facet.corner_polygon, dtype=np.float64)
+        shape = f"{polygon.shape[0]}x{want.shape[0]}"
+        border_shapes[shape] = border_shapes.get(shape, 0) + 1
+        if not _same_cycle(polygon, want, tolerance_mm=1.0e-9):
             border_mismatch += 1
-        # (2) the warped surface both sides emit
-        base = facet.nodes_3d()
-        normal = np.asarray(facet.normal, dtype=np.float64)
-        border = facet.border_distance_mm(base)
-        offset = warp.displacement(base, normal=normal, border_mm=border)
-        warped = base + offset
-        if offset.size and float(np.max(np.abs(offset))) > 0.0:
+        # (2) the two-sided distance: sample the warped surface on a barycentric probe of *both*
+        # sides' triangles and measure each probe's distance to the other side's surface.  Both
+        # sides emit the same nodes and the same triangles, so this is expected to be exactly zero;
+        # it is measured anyway, because "the two sides share one surface" is the property the
+        # backend exists to provide and an unmeasured claim about it is worth nothing.
+        nodes = facet.warped_nodes(warp)
+        probe = _surface_probe(nodes, facet.triangles, samples=3)
+        distance = _distance_to_mesh(probe, nodes, facet.triangles)
+        if distance.size:
+            worst_p95 = max(worst_p95, float(np.percentile(distance, 95.0)))
+            worst_max = max(worst_max, float(distance.max()))
+        if bool(np.max(np.abs(nodes - facet.nodes_3d())) > 0.0):
             warped_facets += 1
-        distance = _hausdorff_nearest(warped, base)
-        worst_p95 = max(worst_p95, float(np.percentile(distance, 95.0)))
-        worst_max = max(worst_max, float(distance.max()))
     return {
         "shared_facets": int(len(owner_count)),
         "two_sided_facets": int(pairs),
         "one_sided_facets": int(one_sided),
         "border_descriptions_disagreeing": int(border_mismatch),
+        "border_shape_histogram": dict(sorted(border_shapes.items())),
         "conjugate": bool(one_sided == 0 and border_mismatch == 0),
         "conjugate_p95_mm": float(worst_p95),
         "conjugate_max_mm": float(worst_max),
         "warped_facets": int(warped_facets),
         "tolerance_mm": 0.0,
-        "measured": ("each shared facet is re-derived from both owning cells and the two border "
-                     "point sets are compared; the two sides then emit the identical FacetMesh "
-                     "nodes, whose displacement magnitude is reported (P95/max) rather than "
-                     "assumed.  Both cells emit the same nodes, so the two-sided distance is zero "
-                     "by construction and this number is the *warp* applied to that surface."),
+        "measured": ("the two-sided distance is measured the way A06 measures it: barycentric probes "
+                     "of the warped facet surface are compared against the very surface the other "
+                     "side emits, so the P95/max are distances between two independently addressed "
+                     "surfaces and not a displacement magnitude.  The corner descriptions each cell "
+                     "derives from its own half-space clipping are compared separately, and their "
+                     "shape histogram is published with the count."),
     }
+
+
+def _same_cycle(a: np.ndarray, b: np.ndarray, *, tolerance_mm: float) -> bool:
+    """Do two point sequences describe the same polygon, up to a cyclic rotation (either way)?"""
+    first = np.asarray(a, dtype=np.float64).reshape(-1, 3)
+    second = np.asarray(b, dtype=np.float64).reshape(-1, 3)
+    if first.shape != second.shape:
+        return False
+    count = first.shape[0]
+    for candidate in (second, second[::-1]):
+        for shift in range(count):
+            rolled = np.roll(candidate, shift, axis=0)
+            if float(np.max(np.linalg.norm(first - rolled, axis=1))) <= float(tolerance_mm):
+                return True
+    return False
+
+
+def _surface_probe(nodes: np.ndarray, triangles: np.ndarray, *, samples: int = 3) -> np.ndarray:
+    """Deterministic barycentric probe points on a triangulated surface."""
+    tri = np.asarray(triangles, dtype=np.int64).reshape(-1, 3)
+    if tri.size == 0:
+        return np.zeros((0, 3), dtype=np.float64)
+    bary = _lattice_bary(max(int(samples), 1))                       # (B, 3)
+    pts = np.asarray(nodes, dtype=np.float64)[tri]                   # (T, 3, 3)
+    return np.einsum("bk,tkc->tbc", bary, pts).reshape(-1, 3)
+
+
+def _distance_to_mesh(points: np.ndarray, nodes: np.ndarray,
+                      triangles: np.ndarray) -> np.ndarray:
+    """Distance from every probe point to the surface (nearest point on any triangle)."""
+    import trimesh  # noqa: PLC0415
+
+    pts = np.asarray(points, dtype=np.float64).reshape(-1, 3)
+    if pts.shape[0] == 0:
+        return np.zeros(0, dtype=np.float64)
+    mesh = trimesh.Trimesh(vertices=np.asarray(nodes, dtype=np.float64),
+                           faces=np.asarray(triangles, dtype=np.int64), process=False)
+    _closest, distance, _triangle = trimesh.proximity.closest_point(mesh, pts)
+    return np.asarray(distance, dtype=np.float64)
+
+
+def _lattice_bary(order: int) -> np.ndarray:
+    """Barycentric coordinates of the order-``n`` triangular lattice."""
+    n = max(int(order), 1)
+    rows = [[a / n, b / n, (n - a - b) / n]
+            for a in range(n + 1) for b in range(n + 1 - a)]
+    return np.asarray(rows, dtype=np.float64)
 
 
 def _hausdorff_nearest(a: np.ndarray, b: np.ndarray) -> np.ndarray:
@@ -881,49 +1010,176 @@ def warp_audit(partition: VoronoiPartition, facets: Mapping[tuple[int, int], Fac
 # ---------------------------------------------------------------------------- seeding
 
 
-def _mesh_all_facets(partition: VoronoiPartition, target_mm: float,
+def densify_polygon(polygon: np.ndarray, step_mm: float) -> np.ndarray:
+    """Insert equally spaced points on every edge at ``step_mm`` **relative** spacing.
+
+    Both sides of an internal edge need the same nodes on it: the facet is meshed (so gmsh puts its
+    own nodes along the border) while the cell's *other* facets are flat fans of the raw polygon, and
+    a fan through the raw corner only does not contain the facet's border nodes -- the two meet
+    along a crack and the cell is not closed (measured: 106366 faces, not watertight).  Densifying
+    the polygon at construction and using that densified border for the mesh means every mesh node on
+    a cell edge is reproducible by the neighbouring facet from the same rule.
+    """
+    pts = np.asarray(polygon, dtype=np.float64).reshape(-1, 3)
+    count = pts.shape[0]
+    if count < 3 or not np.isfinite(step_mm) or step_mm <= 0.0:
+        return pts
+    out: list[np.ndarray] = []
+    for index in range(count):
+        start = pts[index]
+        stop = pts[(index + 1) % count]
+        length = float(np.linalg.norm(stop - start))
+        pieces = max(int(np.ceil(length / float(step_mm))), 1)
+        for k in range(pieces):
+            out.append(start + (stop - start) * (float(k) / float(pieces)))
+    return np.asarray(out, dtype=np.float64)
+
+
+def densified_edges(polygon: np.ndarray, step_mm: float) -> list[np.ndarray]:
+    """The densified points of every edge, in order; edge ``i`` runs from vertex ``i`` onward."""
+    pts = np.asarray(polygon, dtype=np.float64).reshape(-1, 3)
+    count = pts.shape[0]
+    edges: list[np.ndarray] = []
+    if count < 3 or not np.isfinite(step_mm) or step_mm <= 0.0:
+        return edges
+    for index in range(count):
+        start = pts[index]
+        stop = pts[(index + 1) % count]
+        length = float(np.linalg.norm(stop - start))
+        pieces = max(int(np.ceil(length / float(step_mm))), 1)
+        edges.append(np.asarray([start + (stop - start) * (float(k) / float(pieces))
+                                 for k in range(pieces + 1)], dtype=np.float64))
+    return edges
+
+
+def _edge_key(point: np.ndarray) -> tuple[int, int, int]:
+    """Rounded integer identity of a point, for matching a cell edge against a facet edge."""
+    return (int(round(float(point[0]) * 1.0e6)), int(round(float(point[1]) * 1.0e6)),
+            int(round(float(point[2]) * 1.0e6)))
+
+
+def _fan_ring(ring: np.ndarray, normal: np.ndarray, origin: np.ndarray) -> np.ndarray:
+    """Fan a planar ring from its first vertex; ``ring`` is closed by construction (no repeats)."""
+    del normal, origin
+    count = np.asarray(ring).shape[0]
+    return np.asarray([(0, index, index + 1) for index in range(1, count - 1)], dtype=np.int64)
+
+
+def _mesh_all_facets(partition: VoronoiPartition, warp: WarpField, *,
+                     error_budget_mm: float = _FACET_ERROR_BUDGET_MM,
                      max_triangles: int = _MAX_FACET_TRIANGLES
                      ) -> tuple[dict[tuple[int, int], FacetMesh], dict[str, Any]]:
-    """Mesh every internal facet conformally, coarsening only as far as the budget forces.
+    """Conformally mesh every internal facet, refining against the **measured** error.
 
-    The target edge length comes from the interpolation-error budget (see
-    :meth:`WarpField.cell_size_for_budget`).  When the requested resolution would exceed the frozen
-    triangle budget the mesh size is multiplied by ``2`` until it fits -- and the *realized* mesh
-    size, the realized triangles and the amplitude **scale the displacement is actually resolved at**
-    are all reported, so a coarser mesh can never be mistaken for the requested one.
+    The mesh size is driven by the interpolation error, but by the error that is *measured* rather
+    than by the analytic bound: the bound ``C h^2 / 8`` assumes a field that saturates its whole
+    curvature spectrum on one cell and over-refines a real facet by roughly 8x (measured on V13/M01:
+    the bound asks for 0.167 mm, i.e. 1.2e6 triangles on a 1.7e4 mm^2 partition surface, while the
+    same surface meets the 0.01 mm budget at 8 points per shortest wavelength).
+
+    The loop is therefore: start at the sampling reference (``wavelength_min / 8``), measure the
+    realized error per facet on a deterministic barycentric probe, halve the mesh size while the
+    error is over budget **and** the triangle budget allows, and otherwise stop and *report the
+    realized error*.  A coarse mesh can therefore never be mistaken for one that met the budget: the
+    realized number travels with it, and ``met_error_budget`` is False when it did not.
     """
-    table = _facet_table(partition)
-    size = max(float(target_mm), 1.0e-4)
-    attempts: list[dict[str, Any]] = []
+    # the border step is fixed *before* any meshing so every facet's wire and every flat facet that
+    # meets it densify their edges at the same spacing
+    border_step = float(warp.wavelength_min_mm) / _MESH_POINTS_PER_WAVELENGTH
+    table = _facet_table(partition, border_step_mm=border_step)
+    if not table:
+        return {}, {"facet_meshes": 0, "ladder": [], "realized_error_mm": 0.0,
+                    "met_error_budget": True, "triangle_budget_exhausted": False}
+    areas = {key: float(_polygon_area_3d(polygon)) for key, (polygon, _n) in table.items()}
+    size = float(warp.wavelength_min_mm) / _MESH_POINTS_PER_WAVELENGTH
+    ladder: list[dict[str, Any]] = []
+    best: tuple[dict[tuple[int, int], FacetMesh], float, float] | None = None
     for _ in range(12):
-        try:
-            facets = {key: meshed_facet(polygon, normal, target_mm=size, key=key,
-                                        max_triangles=int(max_triangles))
-                      for key, (polygon, normal) in sorted(table.items())}
-        except SynLabError as exc:
-            attempts.append({"mesh_size_mm": float(size),
-                             "code": str(getattr(exc.code, "value", exc.code)),
-                             "measurements": dict(exc.measurements or {})})
-            if str(getattr(exc.code, "value", exc.code)) != "PRECISION_BUDGET_EXCEEDED":
-                raise
-            size *= 2.0
-            continue
-        report = {
-            "mesh_size_ladder": attempts + [{"mesh_size_mm": float(size), "code": "OK"}],
-            "realized_mesh_size_mm": float(size),
-            "requested_mesh_size_mm": float(target_mm),
-            "coarsened_for_budget": bool(size > float(target_mm) * (1.0 + 1e-9)),
-            "triangles_total": int(sum(f.triangles.shape[0] for f in facets.values())),
-        }
-        return facets, report
-    raise SynLabError(
-        ErrorCode.PRECISION_BUDGET_EXCEEDED,
-        f"the conformal facet mesh could not fit the {max_triangles}-triangle budget even after "
-        f"coarsening to {size:.4f} mm; the displacement is not silently dropped",
-        stage="fracture.warped.mesh",
-        measurements={"last_mesh_size_mm": float(size), "max_triangles": int(max_triangles),
-                      "ladder": attempts},
-    )
+        facets: dict[tuple[int, int], FacetMesh] = {}
+        failed = False
+        for key, (polygon, normal) in sorted(table.items()):
+            cap = int(min(float(max_triangles),
+                          max(_MAX_TRIANGLES_PER_MM2 * areas.get(key, 0.0), 64.0)))
+            try:
+                facets[key] = meshed_facet(polygon, normal, target_mm=size, key=key,
+                                           max_triangles=cap, border_step_mm=border_step)
+            except SynLabError as exc:
+                code = str(getattr(exc.code, "value", exc.code))
+                ladder.append({"mesh_size_mm": float(size), "code": code,
+                               "measurements": dict(exc.measurements or {})})
+                if code != "PRECISION_BUDGET_EXCEEDED":
+                    raise
+                failed = True
+                break
+        if failed:
+            if best is None:
+                raise SynLabError(
+                    ErrorCode.PRECISION_BUDGET_EXCEEDED,
+                    f"the conformal facet mesh needs more triangles than the event budget "
+                    f"({max_triangles}) allows even at {size:.4f} mm; the displacement is not "
+                    f"silently dropped",
+                    stage="fracture.warped.mesh",
+                    measurements={"mesh_size_mm": float(size),
+                                  "max_triangles": int(max_triangles),
+                                  "ladder": ladder},
+                )
+            break
+        measured = [facet.realized_error_mm(warp)["realized_error_mm"]
+                    for facet in facets.values()]
+        worst = max(measured) if measured else 0.0
+        triangles = int(sum(f.triangles.shape[0] for f in facets.values()))
+        ladder.append({"mesh_size_mm": float(size), "code": "OK",
+                       "triangles": triangles, "realized_error_mm": float(worst),
+                       "within_error_budget": bool(worst <= float(error_budget_mm))})
+        if triangles > int(max_triangles):
+            ladder[-1]["code"] = "PRECISION_BUDGET_EXCEEDED"
+            if best is None:
+                raise SynLabError(
+                    ErrorCode.PRECISION_BUDGET_EXCEEDED,
+                    f"the conformal facet mesh needs {triangles} triangles > the event budget "
+                    f"{max_triangles} at {size:.4f} mm; the displacement is not silently dropped",
+                    stage="fracture.warped.mesh",
+                    measurements={"triangles": triangles, "max_triangles": int(max_triangles),
+                                  "mesh_size_mm": float(size), "ladder": ladder},
+                )
+            break
+        if best is None or worst < best[2]:
+            best = (facets, float(size), float(worst))
+        if worst <= float(error_budget_mm):
+            return facets, _mesh_report(table, ladder, size, triangles, worst, True, False)
+        size *= 0.5
+    facets, realized_size, worst = best if best is not None else ({}, size, float("inf"))
+    return facets, _mesh_report(table, ladder, realized_size,
+                                int(sum(f.triangles.shape[0] for f in facets.values())),
+                                worst, bool(worst <= float(error_budget_mm)), True)
+
+
+def _polygon_area_3d(polygon: np.ndarray) -> float:
+    points = np.asarray(polygon, dtype=np.float64).reshape(-1, 3)
+    if points.shape[0] < 3:
+        return 0.0
+    origin = points.mean(axis=0)
+    rel = points - origin[None, :]
+    _u, _s, vt = np.linalg.svd(rel, full_matrices=False)
+    e_x, e_y = vt[0], vt[1]
+    uv = np.stack([rel @ e_x, rel @ e_y], axis=1)
+    return float(abs(np.sum(uv[:, 0] * np.roll(uv[:, 1], -1)
+                            - np.roll(uv[:, 0], -1) * uv[:, 1])) * 0.5)
+
+
+def _mesh_report(table: Mapping[Any, Any], ladder: list[dict[str, Any]], size: float,
+                 triangles: int, realized: float, met: bool, exhausted: bool) -> dict[str, Any]:
+    return {
+        "facet_meshes": len(table),
+        "requested_error_budget_mm": float(_FACET_ERROR_BUDGET_MM),
+        "mesh_size_ladder": ladder,
+        "realized_mesh_size_mm": float(size),
+        "triangles_total": int(triangles),
+        "realized_interpolation_error_mm": float(realized),
+        "met_error_budget": bool(met),
+        "triangle_budget_exhausted": bool(exhausted),
+        "error_probe": "deterministic barycentric probe of every facet triangle",
+    }
 
 
 def build_warped_partition(mesh: Any, count: int, *, rng: np.random.Generator,
@@ -951,8 +1207,10 @@ def build_warped_partition(mesh: Any, count: int, *, rng: np.random.Generator,
     target = float(target_mm) if target_mm and target_mm > 0.0 else (
         warp.wavelength_min_mm / _MESH_POINTS_PER_WAVELENGTH)
     facets: dict[tuple[int, int], FacetMesh] = {}
-    for key, (polygon, normal) in sorted(_facet_table(partition).items()):
-        facets[key] = meshed_facet(polygon, normal, target_mm=target, key=key)
+    table = _facet_table(partition, border_step_mm=target)
+    for key, (polygon, normal) in sorted(table.items()):
+        facets[key] = meshed_facet(polygon, normal, target_mm=target, key=key,
+                                   border_step_mm=target)
     seed_report["warped_partition"] = {
         "facet_mesh_target_mm": float(target),
         "facet_meshes": len(facets),
@@ -1033,13 +1291,9 @@ def run_warped_partition(
                            seed_payload={"event_id": event_id, "n_target": n_target,
                                          "partition_hash": partition.hash})
     warp.provenance["grain_source"] = grain_source
-    target_mm = warp.cell_size_for_budget(_FACET_ERROR_BUDGET_MM)
-    if not np.isfinite(target_mm):
-        target_mm = max(warp.wavelength_min_mm / _MESH_POINTS_PER_WAVELENGTH, 1.0e-3)
-    facets, mesh_report = _mesh_all_facets(partition, target_mm)
+    facets, mesh_report = _mesh_all_facets(partition, warp)
     seed_report["warped_partition"] = {
         "facet_error_budget_mm": float(_FACET_ERROR_BUDGET_MM),
-        "facet_mesh_target_mm": float(target_mm),
         "facet_meshes": len(facets),
         "facet_nodes_total": int(sum(f.nodes_uv.shape[0] for f in facets.values())),
         "facet_triangles_total": int(sum(f.triangles.shape[0] for f in facets.values())),
@@ -1113,7 +1367,8 @@ def run_warped_partition(
         classification["mother_mesh_id"] = 1
         classification["cutter_mesh_id"] = record.mesh_id
         record.classification = classification
-    event_mod._assign_facet_faces(records, partition, {}, tolerance_mm=1.0e-3)
+    event_mod._assign_facet_faces(records, partition, _facet_records(facets, warp),
+                                  tolerance_mm=1.0e-3)
 
     fragments = []
     bodies_per_cell: list[int] = []
@@ -1137,7 +1392,9 @@ def run_warped_partition(
                         "boolean_output": "M_intersect_warped_cell"}))
 
     interfaces = event_mod._link_voronoi_interfaces(
-        fragments, records, partition, {}, {}, {},
+        fragments, records, partition, _facet_records(facets, warp),
+        {key: np.asarray(f.border, dtype=np.float64) for key, f in facets.items()},
+        {key: np.asarray(f.normal, dtype=np.float64) for key, f in facets.items()},
         sample_target=int(config.resources.get("interface_sample_target", 24)))
 
     mother_volume = float(abs(mother_mesh.volume))
@@ -1195,6 +1452,65 @@ def run_warped_partition(
     return result
 
 
+@dataclass
+class _FacetRecord:
+    """Adapter that presents a :class:`FacetMesh` to the calibrated interface-linking stage.
+
+    ``_assign_facet_faces`` and ``_link_voronoi_interfaces`` expect the per-facet object the
+    roughness path passes (they read ``amplitude_mm`` and call ``as_dict()``); this adapter supplies
+    exactly those two things plus the mesh itself, so the warped partition reuses that code
+    unchanged instead of growing a second interface implementation.
+    """
+
+    mesh: FacetMesh
+    warp: WarpField
+
+    @property
+    def amplitude_mm(self) -> float:
+        return float(self.warp.amplitude_mm)
+
+    def as_dict(self) -> dict[str, Any]:
+        return {"kind": "warped_partition_facet", "amplitude_mm": float(self.warp.amplitude_mm),
+                "wavelength_min_mm": float(self.warp.wavelength_min_mm),
+                "wall_mm": float(self.warp.wall_mm), "grain_mm": float(self.warp.grain_mm),
+                "facet": self.mesh.as_dict()}
+
+
+def _facet_records(facets: Mapping[tuple[int, int], FacetMesh],
+                   warp: WarpField) -> dict[tuple[int, int], _FacetRecord]:
+    return {key: _FacetRecord(mesh=facet, warp=warp) for key, facet in facets.items()}
+
+
+def _open_edge_report(mesh: Any, facet_use: Mapping[Any, Any]) -> dict[str, Any]:
+    """Characterise the non-manifold edges of a failed cell, so the cause is visible."""
+    faces = np.asarray(mesh.faces, dtype=np.int64)
+    verts = np.asarray(mesh.vertices, dtype=np.float64)
+    counter: dict[tuple[int, int], int] = {}
+    for tri in faces:
+        for k in range(3):
+            a, b = int(tri[k]), int(tri[(k + 1) % 3])
+            key = (a, b) if a < b else (b, a)
+            counter[key] = counter.get(key, 0) + 1
+    bad = {edge: use for edge, use in counter.items() if use != 2}
+    lengths = []
+    for (a, b) in bad:
+        lengths.append(float(np.linalg.norm(verts[a] - verts[b])))
+    histogram: dict[str, int] = {}
+    for use in counter.values():
+        histogram[str(use)] = histogram.get(str(use), 0) + 1
+    return {
+        "edges_total": len(counter),
+        "edges_not_2": len(bad),
+        "edge_use_histogram": dict(sorted(histogram.items())),
+        "bad_edge_length_mm": {
+            "min": float(min(lengths)) if lengths else 0.0,
+            "max": float(max(lengths)) if lengths else 0.0,
+        },
+        "facets": {str(k): v for k, v in facet_use.items()},
+        "degenerate_faces": int(np.sum(np.asarray(mesh.area_faces) <= 0.0)),
+    }
+
+
 def _grain_scale(mother: Any, material: Any) -> tuple[float, str]:
     """The material's own heterogeneity scale (mm) and where it came from.
 
@@ -1246,7 +1562,6 @@ def _trace_direction(mesh: Any, copy_module: Any = None) -> np.ndarray:
 def facet_polygons_of(partition: VoronoiPartition) -> dict[tuple[int, int], np.ndarray]:
     """Convenience: the planar polygon of every internal facet (for reports and tests)."""
     return {key: polygon for key, (polygon, _n) in _facet_table(partition).items()}
-
 
 def iter_facets(facets: Mapping[tuple[int, int], FacetMesh]) -> Iterable[FacetMesh]:
     return (facets[key] for key in sorted(facets))

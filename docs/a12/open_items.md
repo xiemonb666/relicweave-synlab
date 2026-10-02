@@ -7,6 +7,42 @@
 
 ---
 
+## 进度更新（2026-10-02 傍晚快照）
+
+### ✅ 本轮已完成（6 项，均有真实数字与退出码）
+
+| 原项 | 结果 |
+|---|---|
+| **S4** `bag_id` 表列声明 | 真实包重扫 answer hits **1 → 0**；反例测试证明**只豁免 `bag_id` 一个名字**，其余 13 个 forbidden 名仍命中；`pytest tests/a12/storage/test_s1_s4_smallfixes.py` **exit 0（18 passed）** |
+| **S6** 补数据卡 | `negfix` `--write-card`/`--check` **exit 0**；`full` 新增 `--write-card`（写 `DATASET_CARD.md`，不覆盖 `README.md`）+ 把**读者产物登记为 declared**（否则写卡会把 `--check` 从 0 变 3）；`full --check` **exit 0** |
+| **S7** quality 样本量 | **根因不是标签缺失**：`loader_probe._observed_payload` 把质量写死 `zeros((1,1))`，而 OBS_EST **14 通道一直在 obs metadata 里** → `FeatureBundle.quality` 由 `(3,1,1)/valid=0` → **(3,1,14)/valid=42** |
+| **S10** `u_position` 口径 | profile `max_travel_mm` **120 → 150**（契约 t052 nominal）；并纠正误解：`view_pos := T_WC[0,3]` 是**相机中心 X**，非行程（同 fragment/同工作距离下 x 摆 145.82 mm、y 168.38 mm、z 仅 14.86 mm） |
+| **A（三角化）** | `cut.py::_Quadtree.cell_triangles` 统一：**16 组合面积全 1.000000**、零/负面积三角 0、栅格化并集面积全 1.000、每胞 `hist ⊆ {1,2}`；**平面逐位回归通过**（`sha256:ddf8191e…`）；坏边 **8 993 → 4 369（−51%）**，**"用 1 次"边彻底消失** |
+| **C2（断口 ROI 特写）** | `synlab/observe/fracture_roi.py`（1581 行）：每断口 **3–6 方向**、遮挡射线实测算力规划、标 `CLOSEUP_DECLARED_NOT_CALIBRATED`；`imaging_fracture_roi.yaml` 默认关闭、`validate` exit 0；**补上全仓 0 生产者的 `px_per_mm`/`r_eff_mm`/`dof_cover_mm`**；实测 **mm/px 0.28041 → 0.07300（3.84×）**、**断面像素 335 038 → 20 987 921（62.6×）**、断面/物体 2.73% → **96.95%**；96 Blender 视图 609.45 s、峰值显存 1260 MiB；新测试 **24 passed exit 0** |
+
+### 🔧 在修
+
+| 项 | 负责 | 状态 |
+|---|---|---|
+| **装配器 T 型接头消解**（混合层级共形化，目标 `edge_use_histogram=={"2"}` + 坏边 0 + 平面逐位回归） | `6ee59756` | 进行中；硬门：破坏平面逐位回归即回退 |
+| **物理层三情形实测 + 断口渲染出图**（plane / M03 / M07） | `8f8eeae1` | 进行中 |
+| **S2/S3/S5/S8/S9/S11**（难负例隔离 / 导出方向性 / `mask_semantics` 落库 / contradiction / 冒烟分块 / P03 漂移） | `a15d8a2c` | 排队中 |
+
+### ⛔ 新发现的阻塞（本轮新增条目）
+
+| # | 项 | 证据 | 解锁条件 |
+|---|---|---|---|
+| N1 | **`id_map` face_id 空间与 `corr_face_*` 面索引不一致** | `LIN0009` 的 `-m` 侧 `id_map` 有 **21 373 个标签**，超出该 mesh 的 **3 660** 个面；导致 correspondence **0/9 对两侧可定位**（对得上的一侧很干净：334/505 样本、深度残差 0.40–0.49 mm） | 改 `synlab/observe/**`（现被两条线占用，排在 `6ee59756` 之后）；已排除"一侧无观测"（18 谱系两侧都有观测） |
+| N2 | **软件光栅器深度非透视正确** | 掠射断面三角中心像素 **24.47 mm** vs 光轴射线投射 **60.09 mm**（差 **35.6 mm**）；Blender 差中位 0.0029 mm、>1 mm 的 0 个 | 修 z 缓冲/透视插值；当前以独立射线投射为准并同时记录两者 |
+| N3 | **`<1 mm` 断口形貌在平面切割线上是几何零** | campaign 3/4 具 9 个 ROI 实测 **Ra 恰好 0.000**（三角面共面）；仅 V02/M01（`a12_iface`）有真实亚毫米形貌（`below_1mm` Ra **0.0795 mm**） | 形态学接线 + 水密（`6ee59756`） |
+| N4 | **混合层级 T 型接头** | 顶层三角化自身 **14 154 条单用边**，全部落在单一层级；`_across_finer` 只问同层级 | 装配器级消解（`6ee59756`）；三个 split 谓词变体已实测更差并回退 |
+| N5 | **交付长边规格**（1024 px 下 0.2 mm 仅 2.74 px） | 反解需 **≥1495 px**；2048 档实测 **5.48 px** 已过门 | **Lead 已裁决**：新增 **≥1536 px** 契约档，保留 1024 px 为廉价档，并写显式门 `z_max=0.2/4×f_px` |
+| N6 | **粗糙度只能靠"法向→明暗"进入 RGB** | Ra=0.02 mm 要 ≥4 px 需 `mm/px ≤0.005` → 1024 px 下 z ≤4.11 mm 或 L ≥14951 px（任何真实镜头都不成立）；Lambert 实测 dDN **11–112** 码值 | 不再堆分辨率，改为**接线形态学**（N3） |
+| N7 | **5–10 cm 近摄无真实内参标定**；近摄物距**超声明 U 行程** | 仅渲染几何精确；每视图标 `CLOSEUP_DECLARED_NOT_CALIBRATED` | 需新相机档位 + 实拍标定（B 类） |
+| N8 | **ROI 视图族尚未进导出包** | `data/a12_roi/store` 已有 4 obs_result × 24 视图（12 整片 + 12 ROI） | 改 `storage/export.py` 纳入（避开并发写者后执行）；消融组 `ABL_ROI_VIEWS` |
+
+---
+
 ## 第一部分：正在修（14 项）
 
 | 组 | 项 | 负责 | 硬指标（验收） |
