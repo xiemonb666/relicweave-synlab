@@ -404,11 +404,12 @@ before/after 实测**、**R4 不劣化基线**、**R5 不放宽判据**。
 **单一契约 + 单一断言集**：一份行集进去，四份实现都从它实例化，跑**同一套断言**。
 
 * 契约模块：`synlab/qc/pool_contract.py`（`POOL_PROTOCOL_VERSION = relations.pool_protocol.v1`），
-  **13 条断言**（`ASSERTIONS`）：`interface_present`、`relation_value_domain`、`relation_symmetry`、
+  **14 条断言**（`ASSERTIONS`）：`interface_present`、`relation_value_domain`、`relation_symmetry`、
   `mates_match_measured_r2`、`neighbours_are_mates`、`legal_set_only_confirmed_negatives`、
   `legal_set_excludes_self`、`legal_set_excludes_mates`、`legal_pool_equals_legal_negatives`、
   `history_exclusions_superset_of_mates`、`history_exclusions_disjoint_from_legal`、
-  `assert_legal_negative_accepts_the_legal_set`、`assert_legal_negative_refuses_illegal`。
+  `assert_legal_negative_accepts_the_legal_set`、`assert_legal_negative_refuses_illegal`、
+  `eligibility_follows_extracted_flags`（第 14 条，本轮新增；见 §9.1.2）。
 * 期望值来自**行集本身**（`reference_mates` / `reference_rows`），不来自任何被检实现——共享的误读
   不会让套件变绿。
 * 被测对象（5 个实例覆盖 4 份实现）：`qc.loader_probe.ExportedRelationPool`、
@@ -417,7 +418,7 @@ before/after 实测**、**R4 不劣化基线**、**R5 不放宽判据**。
 * 为让契约成立而**只增**的接口（不改既有语义）：`RelationPool.mates/legal_pool/legal_negatives/
   history_exclusions/assert_legal_negative`、`PoolIndex.mates/legal_negatives/candidate_ids`、
   `ExportedRelationPool.lineup`（`PoolIndex.lineage` 读的就是它；此前该 reader 作 `PoolIndex` 载体时
-  候选集为空）。
+  候选集为空）；本轮**只增** `negative_eligibility(a, b)`（四实现 + `RelationsIndex`，见 §9.1.2）。
 
 **驱动与退出码**（`tools/a12_pool_contract.py`）：
 
@@ -430,20 +431,21 @@ before/after 实测**、**R4 不劣化基线**、**R5 不放宽判据**。
 
 | | canonical（构造夹具，15 片 / 105 行） | real（`negfix` 包，71 片 / 1721 行 + 真 store 索引） |
 |---|---|---|
-| `ExportedRelationPool` | 13/13 | 13/13 |
-| `TrainingPoolView` | 13/13 | 13/13 |
-| `PoolIndex[exported]` | 13/13 | 13/13 |
-| `PoolIndex[gallery]` | 13/13 | 13/13 |
-| `RelationPool`（真 sparse index + 真 `FragmentRecord`） | 13/13 | 13/13 |
-| 跨实现一致（`mates`/`neighbours`/`legal_pool`/measured kind） | 0 分歧 | 0 冲突（见下） |
-| 失败注入 | **6/6 被抓住** | **6/6 被抓住** |
+| `ExportedRelationPool` | 14/14 | 14/14 |
+| `TrainingPoolView` | 14/14 | 14/14 |
+| `PoolIndex[exported]` | 14/14 | 14/14 |
+| `PoolIndex[gallery]` | 14/14 | 14/14 |
+| `RelationPool`（真 sparse index + 真 `FragmentRecord`） | 14/14 | 14/14 |
+| 跨实现一致（`mates`/`neighbours`/`legal_pool`/measured kind） | 0 分歧 | 0 冲突（保守缺口 861 → **835**） |
+| 失败注入 | **7/7 被抓住** | **7/7 被抓住** |
 
 **失败注入（可复现的"套件能失败"证明）**：`FAILURE_INJECTIONS` 每个包装器只破坏一条子句，且必须被
 **指名**断言抓住——`neighbours_return_the_negative_set`（缺陷 (B) 原文）→ `neighbours_are_mates`；
 `history_exclusions_drop_the_mates` → `history_exclusions_superset_of_mates`；
 `legal_set_offers_a_mate` → `legal_set_excludes_mates`；`legal_set_offers_unknown` →
 `legal_set_only_confirmed_negatives`；`relation_is_asymmetric` → `relation_symmetry`；
-`guard_accepts_a_mate` → `assert_legal_negative_refuses_illegal`。
+`guard_accepts_a_mate` → `assert_legal_negative_refuses_illegal`；
+`eligibility_recomputed_from_the_kind`（第 7 条，本轮新增）→ `eligibility_follows_extracted_flags`。
 `tests/a12/training/test_pool_protocol_consumption.py` 还把缺陷 (B) 注入到**真实 batch 构建**上：守卫
 抛 `LEAKAGE_DETECTED ... historical R2 <candidate> used as an ordinary negative`——即当年 `rank` 停摆的
 那条消息。
@@ -468,6 +470,138 @@ before/after 实测**、**R4 不劣化基线**、**R5 不放宽判据**。
 一行修法已记录在 `pool_contract.eligibility_finding()["one_line_fix"]`，并由
 `tests/a12/relations/test_pool_protocol_real_package.py::test_the_eligibility_divergence_is_pinned`
 把当前读数钉死——修好那天测试会失败并要求更新这份记录。
+
+> **后续（本轮）：Lead 已裁决为"语义修复"，该分歧已修**——见 §9.1.2；上面那个钉死测试已改写为
+> "修好了也必须继续钉死"的形式（`test_the_eligibility_divergence_is_reconciled_and_pinned`）。
+
+### 9.1.2 资格分歧修复（真值层单真源，按 R1–R5 执行）
+**裁决**：这不是"数据资格取舍"，是**语义修复**——三份实现按 `kind` 重算负例资格、无视真值层已经写下
+的 `valid`/`loss_mask`，属**缺陷**；禁止按 kind 重算。
+
+### 改法（R2：让"资格"只有一个真源）
+
+新增 `synlab/relations/legal_negative.py`，把冻结判据收成**唯一**一处：
+
+```python
+eligible_as_negative := kind in {R0, R1} and valid and loss_mask
+# resolve_negative_eligibility(kind, valid, loss_mask, *, eligible_as_negative, reason, source)
+#   -> NegativeEligibility(eligible, reason, detail, kind, valid, loss_mask, source)
+```
+
+四份实现（含 `PoolIndex` 的两个载体实例）**只供给输入、不重算规则**，并各自新增协议方法
+`negative_eligibility(a, b)`（`relations.pool_protocol.v1` 的接口子句已收录它）：
+
+| 实现 | 资格的输入来自 |
+|---|---|
+| `qc.loader_probe.ExportedRelationPool`（`TrainingPoolView` 继承） | 导出行的 `valid`/`loss_mask`/`eligible_as_negative`（`self._flags`，双向索引） |
+| `relations.gallery.RelationsIndex` / `RelationPool` | 显式边的 `RelationEdge.valid/loss_mask`；**显式 `R0` 行**的 flags（新增 `_r0` 存储，不进 `_edges`，稀疏数组载荷仍无 R0）；真值层从未命名的对才是**隐式 R0**（互斥事件构造，`reason=implicit_r0_by_construction`） |
+| `training.sampler.PoolIndex` | **消费**载体的 `negative_eligibility()`；载体只暴露分类行时读它的行 flags（`flags_from_row`）；两者都没有则**拒绝供给**并写明 `carrier_exposes_no_eligibility_evidence` |
+
+**`confirmed()` 的语义被收紧**（这是修复的核心，如实记录）：它此前在 `PoolIndex` 是
+`relation() in {R0,R1,R2}`、在 `RelationsIndex` 是"不是 UNKNOWN/ABSENT/SELF"，两处都**按 kind 判**。
+现在三处一律 = `negative_eligibility(a,b).eligible`，即**冻结判据**（`kind ∈ {R0,R1} ∧ valid ∧
+loss_mask`）。契约模块 `qc/pool_contract.py` 的 `confirmed()` 说明同步改写（原文写的"measured
+adjacency"是旧读法）。
+**守卫不放宽（R5）**：`assert_legal_negative` 的四条拒绝一条不少，只在"未确认"那一支的报错里补上
+`reason`/`detail`（`unconfirmed candidate <c> (<kind>) used as a negative of <q>: <reason>: ...`），
+并且判据从"更松的 kind 读法"换成"更严的冻结判据"——**这是收紧**。
+
+**缺字段一律保守拒绝**（R5）：行里没有 `valid`/`loss_mask` 时 `resolve_negative_eligibility` 返回
+`reason=row_carries_no_valid_loss_mask_flags` 并拒绝；只有**整行都没有 flag 词汇表**的"kind-only 行"
+（合成/前契约夹具、`_fixtures` 的 `{"query","candidate","kind"}` 三键行）才按 kind 解析，且**打上**
+`reason=kind_only_row_without_flag_vocabulary` 标签，报告里一眼可辨。行自带的
+`eligible_as_negative` 与 `(kind,valid,loss_mask)` 复算结果**矛盾**时同样拒绝
+（`reason=eligible_as_negative_conflicts_with_the_gate`）——两张表都不可信，就不供给。
+`PoolIndex` 对"只能答 `relation()`"的载体（缺陷原文的形状）**返回空集并给出原因**，不再退化成
+kind 复算。
+
+**召回守卫（不劣化既有通过项，R4）**：`confirmed()` 变严后，`PoolIndex.assert_legal_negative` 对
+**只有 `{query,candidate,kind}` 行、没有 `rows` 也没有 `negative_eligibility()`** 的自定义载体
+会拒绝 `R0/R1`（这是要求的保守拒绝，不是劣化）；仓库里的四个实现都供给 flags，实测无不一致
+（§9.1.2 数字）。
+
+### 新增断言（只增一条）与失败注入
+
+* `ASSERTIONS` 第 14 条：**`eligibility_follows_extracted_flags`**——对行集里每一条"真值层撤回过"的
+  有向对（`kind ∈ {R0,R1}` 且 `valid=False` **或** `loss_mask=False`，或自身
+  `eligible_as_negative=False`），**任何实现**都不得：①`legal_pool`/`legal_negatives` 提供它；
+  ②`confirmed()` 对它返回 `True`；③`negative_eligibility()` 报 `eligible=True`（或拒绝却不给
+  `reason`）；④`assert_legal_negative` 接受它。期望值来自**行集本身**（`_ineligible_directions`），
+  不来自任何被检实现。
+* 夹具：`canonical` 语料里没有"`valid=False` 的负例种类行"，所以新断言自带
+  `tests/a12/qc/test_pool_protocol_contract.py::eligibility_context()`（8 片 / 28 行，含
+  `x0-a0-m` = `R1 valid=False loss_mask=False` 的**实测分歧原形**、`x0-b0-m` = `R0 loss_mask=False`、
+  `x0-d0` = 完全合格负例），否则新断言会**空过**（这点由
+  `test_the_fixture_is_pinned_to_the_reported_divergence` 自己钉住）。
+* 失败注入第 7 条：**`eligibility_recomputed_from_the_kind`**——把两处机制**原样复原**
+  （`confirmed()` 答 `relation() in {R0,R1,R2}`、`legal_pool()` 把每个 `R0/R1` 都塞回去），必须被
+  `eligibility_follows_extracted_flags` **指名**抓住。实测：`caught 7/7`（canonical 与 real 两套
+  上下文各一次），且抓到的失败信息里带具体有向对 `(x0, a0-m)`、kind 与两个 flag。
+* 被检对象：**四实现 × 两上下文**（canonical + real `negfix` 包）全部 14/14 —— 5 个实例 × 14 断言。
+
+### before/after 真实代价（同一最小可训子集；before 由**冻结的修订版**跑出）
+
+before 侧**不是**手写复现：`tools/a12_negfix_eligibility.py --step compare` 用
+`SYNLAB_BEFORE_SNAPSHOT` 把 `tmp/before/{loader_probe,sampler,gallery}.py`（`git show HEAD:` 逐字节
+等于改动前工作区文件）以真实包上下文装载，两侧跑同一份驱动、同一份输入。观测侧固定为同一份合成
+`a12.obs.v1`（真包的 obs 分片 2.5 GB，成本测量不需要它；两侧完全相同，因此差值只来自资格语义）。
+
+**负例供给（真 `negfix` 包：71 片 / 1721 行 / 4970 个有向候选）**
+
+| 实现 | 负例总数 | 其中 `R1` | 有负例的 query | 每 query 负例中位数 |
+|---|---|---|---|---|
+| `ExportedRelationPool`（含 `TrainingPoolView`） | 3120 → **880** | 0 → 0 | 59 → **51** | 52 → **9** |
+| `PoolIndex[exported]`（**实时采样路径**） | 3168 → **880** | 48 → **0** | 63 → **51** | 53 → **9** |
+| `PoolIndex[gallery]` | 4696 → **2408** | 48 → **0** | 71 → 71 | 67 → **23** |
+| `RelationPool`（真 store 索引） | 4696 → **2408** | 48 → **0** | 71 → 71 | 67 → **23** |
+
+**真实 batch（`build_training_batch` + `Trainer.compute_losses`，同一 bundle/同一行集）**
+
+| 指标 | before | after |
+|---|---|---|
+| 负例总数 `legal_negatives` | **3168** | **880** |
+| `effective_queries`（rank 可用 query = 有正例且有合法负例） | **48** | **36** |
+| 每 query 负例中位数 | **53.0** | **9.0** |
+| `rank` `n_valid` / `n_allowed` | **48 / 48** | **36 / 36** |
+| `rank` `n_valid_labels`（标签侧正+负） | 3224 | 936 |
+| `rank` skipped | `False` | `False` |
+| `negative_audit` | ok | ok |
+
+**资格普查（同一驱动，`data/a12_reports/negfix_eligibility.json`）**
+
+| | before | after |
+|---|---|---|
+| §9.1.1 口径（`kind==R1 ∧ valid=False`）有向对 | **48**（24 无序 / 26 query） | 48（同一批行） |
+| 被任一读者**当负例提供**的该口径有向对 | **48** | **0** |
+| 判据口径被撤回的有向对（任一 flag 或显式 `eligible_as_negative=False`） | 2288 | 2288 |
+| 被任一读者提供的判据口径有向对 | **2288** | **0** |
+| 与冻结判据矛盾的 `eligible_as_negative` 行 | **0** | **0** |
+
+**如实报告：负例显著变少，且 `R1` 负例供给归零。** 这不是口径回退，是判据生效：440 条合格
+`R0`（`valid ∧ loss_mask`）+ 0 条 `R1`。`R1` 归零的原因是**记分本上就没有合格的 `R1` 行**——
+`negfix` 包的 24 条 `R1` 全是 `no_direct_fracture_surface` 撤回行。
+
+### 仍未解决的（不给旧口径留后门）
+
+1. **`R1` 负例供给 = 0（本包）**：`kind=R1 ∧ valid ∧ loss_mask` 的行一条都没有。解锁条件：产出
+   **有直接断口表面的同事件对**（`R1` 且 `loss_mask=True`）——即 `no_direct_fracture_surface` 之外
+   的真实 R1 标注落进 `relations.parquet`；或按 N10 的**独立辅助项**路线给这类对单列监督（不改主表
+   判据）。
+2. **1120 条 `R0`（`valid=True, loss_mask=False`）** 也被本次收紧排除（判据含 `loss_mask`）。它们正是
+   N10 记录的 `CANDIDATE_MATE_PRESENT_NOT_ORDINARY` 类；解锁条件同 N10：走辅助表 + 辅助项，不并主表。
+3. **`negfix`/`trainable` 两包的 `relations.parquet` 该重导出**：`trainable` 包已把这类行的
+   `loss_mask` 归零（440/1560 合格），`negfix` 包仍是"`loss_mask=False` 但 `valid=True`"的旧口径。
+   `data/**`（除 reports）不在本轮写入范围，故未动它，只如实标注口径差。
+   **交叉核对（同修法、另一包）**：`data/a12_exports/trainable/next_experiment/training_package`
+   （71 片 / 1721 行）在修复后的供给为 `ExportedRelationPool`/`TrainingPoolView`/`PoolIndex[exported]`
+   **3120**（全为合格 `R0`）、画廊族 **4648**，且 `eligibility_finding.directed_pairs = 0`
+   （`gate_refused` 仅剩那 48 个有向撤回对）——即修复**没有**把合格 `R0` 一起清掉，两包的差异全部
+   来自两表自身的 flags。
+4. **`relations.sampler`（library 路线）仍走自己的 `negative_exclusion_reason`**：本轮只把"池"这一层
+   钉到单一真源，路由二未接线（与 §9.4 第 2 条同）。
+5. **隐式 `R0` 不属本判据**：画廊"真值层从未命名的对"按构造合格（`reason=implicit_r0_by_construction`），
+   与导出读者的 `UNKNOWN` 之间的 835 条**保守缺口**仍在（before 861）——两读法的既有设计差异，不属资格
+   分歧，本轮未改。
 
 ## 9.2 N9 · `roi_external_drift` 纳入失败码（版本化 QA 变更）
 
@@ -600,12 +734,15 @@ rows  = attach_hard_negatives(rows, table, enabled=True, limit=4)  # 开：只�
 
 **仍未解决**：
 
-1. **资格分歧（9.1.1）未修**：24 条 `valid=False` 的 `R1` 行仍被 `RelationPool` / `PoolIndex` 当作
-   普通负例（实时采样路径）。修法是两处一行的语义改动，会改变训练数据，需裁决。
+1. **资格分歧（9.1.1）已修（9.1.2）**：改法 = 单一真源 `relations.legal_negative`，四实现**消费**而
+   不重算；新增第 14 条断言 + 第 7 条失败注入（7/7 被抓住）；代价见 9.1.2（`negfix` 包：负例
+   3168 → 880、`effective_queries` 48 → 36、rank `n_valid/n_allowed` 48/48 → 36/36、`R1` 负例供给
+   归零）。**未回退口径**；`R1` 归零的解锁条件写在 9.1.2 末。
 2. **契约未覆盖 `relations/**` 的其它 reader**：`relations.negatives`（library 路线）与
    `relations.sampler` 走的是自己的排除函数（`negative_exclusion_reason`），本轮只对"池"这一层钉死。
 3. **QA 版本戳未进落库资产**：策略层在读取侧生效；提交边界（`physical/api.py`）未接线。
-4. **旧代未重导出**：翻转清单里的 246 条记录仍带 v1 判据（标签登记表已给出）。
+4. **旧代未重导出**：翻转清单里的 246 条记录仍带 v1 判据（标签登记表已给出）；另 `negfix` 包的
+   `relations.parquet` 仍是旧口径（`trainable` 包已是新口径），见 9.1.2 末第 3 条。
 5. **辅助表未进包**：`--step install` 可写，但 manifest/数据卡声明缺写者（会打红 `--check`）。
 6. **240 条 query 侧无邻片的类别行**仍无监督角色（N10 原有结论，未变）。
 
@@ -613,30 +750,33 @@ rows  = attach_hard_negatives(rows, table, enabled=True, limit=4)  # 开：只�
 
 | 命令 | 退出码 | 结果 |
 |---|---|---|
-| `.venv\Scripts\python.exe -m pytest tests\a12\qc tests\a12\relations tests\a12\training -q` | **0** | 314 项 / 0 失败 / 0 错误 / 19 跳过（`data/a12_reports/_n9n10_pytest_qct.txt`、`_n9n10_junit.xml`） |
+| `.venv\Scripts\python.exe -m pytest tests\a12\qc tests\a12\relations tests\a12\training -q` | **0** | **323 项 / 0 失败 / 0 错误 / 19 跳过**（59.9 s；`data/a12_reports/_negfix_pytest_qct.txt`、`_negfix_junit.xml`）——资格修复后重跑 |
 | 同上（`tests\a12\qc` 单独） | **0** | 全绿：`test_store_sqlite_is_opened_read_only` 的既有顺序相关失败**本轮未复现**（未改该测试） |
-| `.venv\Scripts\python.exe tools\a12_pool_contract.py --step canonical` | 0 | 5 实例 13/13、0 分歧、注入 6/6 |
-| `.venv\Scripts\python.exe tools\a12_pool_contract.py --step real` | 0 | 同上 + 保守缺口 861 / 资格分歧 24 对（48 有向、26 个 query） |
+| `.venv\Scripts\python.exe -m pytest tests\a12\storage tests\a12\operators tests\a12\diagnostics tests\a12\episodes -q` | **0** | 旁证全绿（`data/a12_reports/_negfix_pytest_side.txt`） |
+| `.venv\Scripts\python.exe tools\a12_pool_contract.py --step all` | **0** | 5 实例 × **14/14** × canonical/real、0 冲突、注入 **7/7**、资格分歧 **0**（保守缺口 861 → 835） |
+| `.venv\Scripts\python.exe tools\a12_negfix_eligibility.py --step compare` | **0** | before（冻结修订版）48 有向对**全部**被三个读者提供 → after **0**；代价表见 9.1.2（`data/a12_reports/negfix_eligibility.json`） |
 | `.venv\Scripts\python.exe tools\a12_n9_qa_tighten.py --step all` | 0 | v2 翻转全局 SDF，窄带保持 PASS，扫描 396 条记录 |
 | `.venv\Scripts\python.exe tools\a12_n10_hard_negatives_table.py --step all` | 0 | 880 行、+880 违规反证、off/on 分母逐位相同 |
 
-## 9.6 本轮证据索引（N9 + N10 + 协议契约）
+## 9.6 本轮证据索引（N9 + N10 + 协议契约 + 资格修复）
 
 | 文件 | 内容 |
 |---|---|
-| `synlab/qc/pool_contract.py` | 协议契约单一真源：13 条断言、参考推导、四实现构造、失败注入 |
+| `synlab/qc/pool_contract.py` | 协议契约单一真源：**14 条断言**（含 `eligibility_follows_extracted_flags`）、参考推导、四实现构造、**7 条失败注入** |
+| `synlab/relations/legal_negative.py` | **资格唯一真源**：`resolve_negative_eligibility` 与 `NegativeEligibility`（reason/detail/source），缺字段保守拒绝 |
 | `synlab/qc/qa_policy.py` | `a12.qa.v2` 版本化 QA 策略（只增失败码） |
 | `synlab/relations/hard_negatives_table.py` | 辅助表 schema/列语义/读写/一键开关 |
 | `tools/a12_pool_contract.py` | 契约驱动：`--step canonical\|real\|all` |
-| `tools/a12_n9_qa_tighten.py` | N9 驱动：`--step version\|reproduce\|scan\|all` |
-| `tools/a12_n10_hard_negatives_table.py` | N10 驱动：`--step build\|verify\|install\|all` |
-| `data/a12_reports/pool_contract_canonical.json` / `pool_contract_real.json` | 两套上下文的 13 断言 × 5 实例、注入、一致/分歧 |
+| `tools/a12_negfix_eligibility.py` | 资格修复驱动：`--step audit\|batch\|compare\|all`（before 侧用冻结修订版） |
+| `data/a12_reports/negfix_eligibility.json` | **before/after 合并报告**（供给、batch、rank、普查、`before_shows_the_defect`） |
+| `data/a12_reports/negfix_eligibility/negfix_eligibility_{before,after}.json` | 两侧原始报告（同驱动、同输入） |
+| `data/a12_reports/pool_contract_canonical.json` / `pool_contract_real.json` | 两套上下文的 14 断言 × 5 实例、注入 7/7、一致/分歧（资格分歧 0） |
 | `data/a12_reports/n9_qa_v2.json` / `n9_qa_v2_reproduce.json` / `n9_qa_v2_flips.json` | 版本记录、before/after、翻转清单 + 旧代标签登记 |
 | `data/a12_reports/n9_rerun_global_sdf.json` | 全局 SDF 的**真实重跑**（漂移逐位相同） |
 | `data/a12_reports/n10/hard_negatives.parquet` + `hard_negatives.card.json` | 880 行辅助表 + 列语义卡 |
 | `data/a12_reports/n10_hard_negatives_build.json` / `_verify.json` | 构建、列/约束校验、D10 反证、一键消融、未声明文件规则实测 |
-| `tests/a12/qc/test_pool_protocol_contract.py` | 契约套件 + 注入 + 接口子句 |
-| `tests/a12/relations/test_pool_protocol_real_package.py` | 真包真 store 的 13 断言 + 资格分歧钉死 |
+| `tests/a12/qc/test_pool_protocol_contract.py` | 契约套件 + 注入 + 接口子句 + **撤回行夹具**（`eligibility_context()`） |
+| `tests/a12/relations/test_pool_protocol_real_package.py` | 真包真 store 的 14 断言 + 资格分歧**修复后钉死**（含"测量仍能看见分歧"的反证） |
 | `tests/a12/training/test_pool_protocol_consumption.py` | 消费者子句：缺陷 (B) 让真实 batch 抛 `LEAKAGE_DETECTED` |
 | `tests/a12/qc/test_n9_qa_policy.py` | 策略算术与"只增码/不升级"不变量 |
 | `tests/a12/relations/test_n10_hard_negatives_table.py`、`tests/a12/training/test_n10_hard_negatives_consumption.py` | 辅助表契约与分母不变性 |

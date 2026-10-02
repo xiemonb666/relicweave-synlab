@@ -111,6 +111,10 @@ def build_implicit_cutter(
             stage="fracture.implicit.build",
         )
     budget = float(error_budget_mm)
+    #: every (re)build of the field uses its own deterministic stream derived from ONE draw of the
+    #: caller's rng: a refinement loop that redraws the random phases compares different surfaces
+    #: and can never converge (measured: 0.0103 / 0.0198 / 0.0640 mm error on the same geometry).
+    base_seed = int(rng.integers(0, 2 ** 31 - 1))
     if float(max_triangles) < 2 * triangle_budget:
         raise SynLabError(
             ErrorCode.SCHEMA_INVALID,
@@ -159,12 +163,12 @@ def build_implicit_cutter(
         delta_sampling = delta_budget
     envelope_width = float(opts.get("envelope_width_mm", 0.0) or 0.0)
     if envelope_width <= 0.0:
-        envelope_width = max(10.0 * delta_sampling, 1.4)
+        envelope_width = max(8.0 * delta_sampling, 1.0)
 
     # ------------------------------------------------------------------ field
     stage = time.time()
     field, field_info = build_implicit_field(
-        basis, mesh, base_params, rng=rng,
+        basis, mesh, base_params, rng=np.random.default_rng(base_seed + 1),
         cross_section=(tris_uv, core_area, prepared["cross_info"]),
         delta_mm=delta_sampling, samples_per_wavelength=samples_per_wavelength,
         slope_target_p95_deg=slope_target, envelope_width_mm=envelope_width,
@@ -207,8 +211,10 @@ def build_implicit_cutter(
             stage = time.time()
             sheet = build_tensor_sheet(
                 basis, h_fn, delta_mm=delta,
-                fine_u=(fine_u[0] - 4.0 * delta, fine_u[1] + 4.0 * delta),
-                fine_v=(fine_v[0] - 4.0 * delta, fine_v[1] + 4.0 * delta),
+                fine_u=(fine_u[0] - (envelope_width + 4.0 * delta),
+                        fine_u[1] + (envelope_width + 4.0 * delta)),
+                fine_v=(fine_v[0] - (envelope_width + 4.0 * delta),
+                        fine_v[1] + (envelope_width + 4.0 * delta)),
                 coarse_max_mm=coarse_max)
             timings["sheet_seconds"] = timings.get("sheet_seconds", 0.0) + (time.time() - stage)
             stage = time.time()
@@ -227,10 +233,10 @@ def build_implicit_cutter(
         if outer >= outer_attempts:
             break
         # the triangle budget blocks the refinement: widen the mask and rebuild the field
-        envelope_width = float(min(4.0 * envelope_width, envelope_width * 1.4))
+        envelope_width = float(min(4.0 * envelope_width, envelope_width * 1.5))
         stage = time.time()
         field, field_info = build_implicit_field(
-            basis, mesh, base_params, rng=rng,
+            basis, mesh, base_params, rng=np.random.default_rng(base_seed + 1 + outer),
             cross_section=(tris_uv, core_area, prepared["cross_info"]),
             delta_mm=delta_sampling, samples_per_wavelength=samples_per_wavelength,
             slope_target_p95_deg=slope_target, envelope_width_mm=envelope_width,

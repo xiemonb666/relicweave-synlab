@@ -863,6 +863,7 @@ def eligibility_finding(pools: Mapping[str, Any], ctx: ProtocolContext) -> dict[
     labels = sorted(pools)
     directed: dict[tuple[str, str], dict[str, Any]] = {}
     flag_mismatches: dict[tuple[str, str], dict[str, Any]] = {}
+    gate_refused: set[tuple[str, str]] = set()
     withdrawn: set[tuple[str, str]] = set()
     for fid in ctx.universe():
         for candidate in sorted(set(ctx.universe()) - {str(fid)}):
@@ -883,7 +884,9 @@ def eligibility_finding(pools: Mapping[str, Any], ctx: ProtocolContext) -> dict[
                     "row_reason": str(row.get("reason", "") or "")}
             if valid and loss_mask:
                 continue                      # eligible under every reading: not a finding
-            withdrawn.add((str(fid), candidate))
+            gate_refused.add((str(fid), candidate))
+            if not valid:
+                withdrawn.add((str(fid), candidate))
             offered = [label for label in labels
                        if candidate in {str(x) for x in pools[label].legal_pool(fid)}]
             refused = [label for label in labels if label not in offered]
@@ -900,22 +903,27 @@ def eligibility_finding(pools: Mapping[str, Any], ctx: ProtocolContext) -> dict[
         for label in item["offered_by"]:
             offered_by[label] = offered_by.get(label, 0) + 1
     unordered = {tuple(sorted(key)) for key in directed}
-    consumers_refusing = {
-        label: sum(1 for key in withdrawn
-                   if key[1] not in {str(x) for x in pools[label].legal_pool(key[0])})
-        for label in labels}
     return {
         "schema": "synlab.qc.pool_contract.eligibility_finding.v1",
         "protocol_version": POOL_PROTOCOL_VERSION,
         "context": ctx.name,
         "directed_pairs": len(directed),
         "unordered_pairs": len(unordered),
+        "gate_refused_rows_directed": len(gate_refused),
+        "gate_refused_rows_unordered": len({tuple(sorted(key)) for key in gate_refused}),
         "withdrawn_rows_directed": len(withdrawn),
         "withdrawn_rows_unordered": len({tuple(sorted(key)) for key in withdrawn}),
         "withdrawn_rows_queries": len({key[0] for key in withdrawn}),
         "flag_mismatches": len(flag_mismatches),
         "flag_mismatch_examples": [flag_mismatches[key] for key in sorted(flag_mismatches)[:6]],
-        "consumers_refusing_withdrawn_rows": consumers_refusing,
+        "consumers_refusing_gate_refused_rows": {
+            label: sum(1 for key in gate_refused
+                       if key[1] not in {str(x) for x in pools[label].legal_pool(key[0])})
+            for label in labels},
+        "consumers_refusing_withdrawn_rows": {
+            label: sum(1 for key in withdrawn
+                       if key[1] not in {str(x) for x in pools[label].legal_pool(key[0])})
+            for label in labels},
         "kinds": sorted({item["measured_kind"] for item in directed.values()}
                         | {row["measured_kind"] for row in flag_mismatches.values()}),
         "all_rows_valid_false": bool(directed) and all(not item["row_valid"]

@@ -1281,3 +1281,55 @@ S2 的 1120 条 mate-present 类中 **880 条** query 侧有邻片 → 独立辅
 **记账（不在本轮写入范围，需 Lead 收口）**：`docs/a12/open_items.md` 的 N9/N10 行状态、
 `docs/a12/engineering_policy.md` §3 第 5 行（关系池协议）批次，本轮**未改**（两个文件都不在写入范围内），
 其实测结论在本节与 `relation_negatives.md` §9。
+
+---
+
+## 负例资格分歧修复（§9.1.1 → §9.1.2；Lead 裁决：语义修复）
+
+**Status: 完成（单真源 + 第 14 条断言 + 第 7 条注入 7/7；四实现 × 两上下文全绿）**
+
+**问题**：三份池实现按 `kind` 重算负例资格，忽略真值层已写下的 `valid`/`loss_mask`——24 条 `R1`
+撤回行（48 有向对 / 26 query，`reason=no_direct_fracture_surface`）仍被 `RelationPool`、
+`PoolIndex[exported]`、`PoolIndex[gallery]` 当普通负例供给，而 `ExportedRelationPool`/
+`TrainingPoolView` 拒绝。机制：`PoolIndex.confirmed()` 答 `relation() in {R0,R1,R2}`；
+`RelationsIndex.confirmed()` 不看 `valid`。
+
+**改法（R2 构造性优先）**：新增 `synlab/relations/legal_negative.py` 作为资格**唯一真源**
+（`resolve_negative_eligibility`，判据 `kind ∈ {R0,R1} ∧ valid ∧ loss_mask`，带 `reason`/`detail`）。
+四实现（含 `PoolIndex` 两载体实例）**只供给输入、不重算规则**，各增协议方法
+`negative_eligibility(a, b)`；`confirmed()` 三处一律改为消费它；`PoolIndex` 对"只能答 `relation()`"
+的载体**拒绝供给**并写明原因（缺字段保守拒绝，R5）。守卫四条拒绝一条不少（R5：这是**收紧**）。
+
+**新增断言与注入**：`eligibility_follows_extracted_flags`（第 14 条，期望值来自行集本身；自带撤回行
+夹具 `eligibility_context()`，否则会空过）+ 注入 `eligibility_recomputed_from_the_kind`（把两处旧机制
+原样复原）→ **canonical 与 real 两套上下文各 7/7 被指名抓住**；四实现 × 两上下文 **14/14**。
+
+**before/after 真实代价**（`negfix` 包 71 片 / 1721 行；before 侧用 `git show HEAD:` 的**冻结修订版**
+装载，非手写复现）：
+
+| 指标（实时采样路径 `PoolIndex[exported]`） | before | after |
+|---|---|---|
+| 负例总数（供给 / batch `legal_negatives`） | 3168 / 3168 | **880 / 880** |
+| 其中 `R1` | 48 | **0** |
+| `effective_queries` | 48 | **36** |
+| 每 query 负例中位数 | 53.0 | **9.0** |
+| `rank` `n_valid` / `n_allowed` | 48 / 48 | **36 / 36** |
+| 被当负例供给的撤回行（§9.1.1 口径 48 有向对） | 48 | **0** |
+
+画廊侧供给 4696 → 2408（每 query 中位数 67 → 23，71 个 query 仍有负例）。**如实报告**：`R1` 负例供给
+归零（本包没有 `kind=R1 ∧ valid ∧ loss_mask` 的行），另有 1120 条 `R0`（`loss_mask=False`，
+即 N10 的 `CANDIDATE_MATE_PRESENT_NOT_ORDINARY` 类）一并被收紧排除；**未回退口径**。解锁条件写在
+`relation_negatives.md` §9.1.2 末（需要真实 R1 直接断口表面标注，或按 N10 走辅助项）。
+
+**本轮回归**：
+
+| 命令 | 退出码 | 结果 |
+|---|---|---|
+| `pytest tests\a12\qc tests\a12\relations tests\a12\training -q` | **0** | **323 项 / 0 失败 / 0 错误 / 19 跳过**（59.9 s；`data/a12_reports/_negfix_pytest_qct.txt` + `_negfix_junit.xml`） |
+| `pytest tests\a12\storage tests\a12\operators tests\a12\diagnostics tests\a12\episodes -q` | **0** | 旁证全绿（`data/a12_reports/_negfix_pytest_side.txt`） |
+| `tools/a12_pool_contract.py --step all` | **0** | 5 实例 × 14/14 × 两上下文、注入 7/7、资格分歧 0（保守缺口 861 → 835） |
+| `tools/a12_negfix_eligibility.py --step compare` | **0** | before 48 有向对全被三读者提供 → after 0；`data/a12_reports/negfix_eligibility.json` |
+
+**仍未解决**：`R1` 负例供给为 0（需新标注或 N10 辅助项路线）；`relations.sampler`/`relations.negatives`
+（library 路线）未接入单真源；`negfix` 包 `relations.parquet` 仍是旧口径（`trainable` 包已是新口径，
+`data/**` 不在写入范围）；隐式 `R0` 与导出 `UNKNOWN` 的 835 条保守缺口属既有设计差异，未改。

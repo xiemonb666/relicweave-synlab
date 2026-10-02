@@ -1219,24 +1219,30 @@ def stage_snr_gain(*, config, target, body, mesh, roi, rng, light=None) -> dict:
         rng=make_rng(MASTER_SEED, "appearance_field", body["material_id"]),
         amplitude_mm=amp, glaze_strip=bool(config.glaze_strip))
     common = {"diffuse_weight": 1.0}
-    if config.albedo_texture:
-        common["albedo_texture"] = fa.make_albedo_texture(
-            mm_per_px=mm_per_px_of(frame), material_albedo=profile["appearance"]["albedo"],
-            correlation_length_mm=float(profile["stats"]["correlation_length_mm"]),
-            contrast=float(config.albedo_texture_contrast))
+    # The relief signal must be measured against a SMOOTH surface: a textured albedo would put its
+    # own DN variance into the "signal" and the SNR would stop describing the relief channel.  The
+    # constant albedo is the delivered scene's own palette mean (render.procedural_albedo), so the
+    # image brightness is the same as the palette case and the number is comparable with the sweep.
+    from synlab.observe.render import procedural_albedo
+
+    n_faces = int(np.asarray(mesh.faces).shape[0])
+    palette_mean = (np.asarray(procedural_albedo(n_faces), dtype=np.float64).mean(axis=0)
+                    if n_faces > 0 else np.full(3, 0.5))
+    smooth_albedo = np.tile(palette_mean, (n_faces, 1))
     off = render_and_image(target=target, frame=frame,
                            appearance=fa.AppearanceSpec(normal_mode="FLAT", relief=False,
                                                         interpolation="PERSPECTIVE_CORRECT",
                                                         label="snr off", **common),
-                           relief=None, obs_spec=spec_obs, imaging_seed=11, supersample=ss)
+                           relief=None, obs_spec=spec_obs, imaging_seed=11, supersample=ss,
+                           albedo=smooth_albedo, delivered_exposure_ev=0.0)
     on = render_and_image(target=target, frame=frame,
                           appearance=fa.AppearanceSpec(normal_mode="FLAT", relief=True,
                                                        interpolation="PERSPECTIVE_CORRECT",
                                                        label="snr on", **common),
-                          relief=field, obs_spec=spec_obs, imaging_seed=11, supersample=ss)
+                          relief=field, obs_spec=spec_obs, imaging_seed=11, supersample=ss,
+                          albedo=smooth_albedo, delivered_exposure_ev=0.0)
     mask = on["mask"]
-    signal = np.abs(np.asarray(on["dn_delivered"], dtype=np.float64)
-                    - np.asarray(off["dn_delivered"], dtype=np.float64))
+    # the relief signal of the SAME render pair at each gain, through the delivered chain
     rows: list[dict] = []
     for ev in (0.0, 2.0, 4.0, 5.0, 6.0, 7.0, 8.0, 10.0):
         # noise: the SAME relief_off render at two imaging seeds through the delivered profile
@@ -1245,24 +1251,38 @@ def stage_snr_gain(*, config, target, body, mesh, roi, rng, light=None) -> dict:
                                                             interpolation="PERSPECTIVE_CORRECT",
                                                             label="snr noise a", **common),
                                relief=None, obs_spec=spec_obs, imaging_seed=11, supersample=ss,
-                               delivered_exposure_ev=ev)
+                               albedo=smooth_albedo, delivered_exposure_ev=ev)
         n_b = render_and_image(target=target, frame=frame,
                                appearance=fa.AppearanceSpec(normal_mode="FLAT", relief=False,
                                                             interpolation="PERSPECTIVE_CORRECT",
                                                             label="snr noise b", **common),
                                relief=None, obs_spec=spec_obs, imaging_seed=97, supersample=ss,
-                               delivered_exposure_ev=ev)
+                               albedo=smooth_albedo, delivered_exposure_ev=ev)
+        s_a = render_and_image(target=target, frame=frame,
+                               appearance=fa.AppearanceSpec(normal_mode="FLAT", relief=True,
+                                                            interpolation="PERSPECTIVE_CORRECT",
+                                                            label="snr sig a", **common),
+                               relief=field, obs_spec=spec_obs, imaging_seed=11, supersample=ss,
+                               albedo=smooth_albedo, delivered_exposure_ev=ev)
+        s_b = render_and_image(target=target, frame=frame,
+                               appearance=fa.AppearanceSpec(normal_mode="FLAT", relief=True,
+                                                            interpolation="PERSPECTIVE_CORRECT",
+                                                            label="snr sig b", **common),
+                               relief=field, obs_spec=spec_obs, imaging_seed=97, supersample=ss,
+                               albedo=smooth_albedo, delivered_exposure_ev=ev)
+        signal = np.abs(np.asarray(s_a["dn_delivered"], dtype=np.float64)
+                        - np.asarray(n_a["dn_delivered"], dtype=np.float64))
         noise = np.abs(np.asarray(n_a["dn_delivered"], dtype=np.float64)
                        - np.asarray(n_b["dn_delivered"], dtype=np.float64))
         stat = snr_of(signal_dn=signal, noise_dn=noise, mask=mask)
         info = n_a["imaging_delivered"]
+        dn_masked = np.asarray(n_a["dn_delivered"], dtype=np.float64)[mask]
         rows.append({"exposure_ev": float(ev), "photon_gain": float(2.0 ** ev),
                      **stat,
                      "noise_fraction_of_range": stat["noise_rms_dn"] / 255.0,
-                     "binary_fraction_of_output": float(
-                         np.mean((np.asarray(n_a["dn_delivered"], dtype=np.float64)[mask] <= 0.5)
-                                 | (np.asarray(n_a["dn_delivered"], dtype=np.float64)[mask]
-                                    >= 254.5))),
+                     "binary_fraction_of_output": float(np.mean((dn_masked <= 0.5)
+                                                                 | (dn_masked >= 254.5))),
+                     "dn_mean_delivered": float(dn_masked.mean()),
                      "dn_delivered": fa.dn_statistics(n_a["dn_delivered"], mask),
                      "saturated_fraction": next(
                          (s.get("saturated_fraction") for s in info.stages
@@ -1282,10 +1302,14 @@ def stage_snr_gain(*, config, target, body, mesh, roi, rng, light=None) -> dict:
         "mm_per_px_measured": mm_per_px_of(frame), "supersample": ss,
         "mask_px": int(np.count_nonzero(mask)),
         "signal_source": ("rms |DN(relief_on) - DN(relief_off)| of the SAME render pair at one "
-                          "seed, delivered through the chain at each gain"),
+                          "seed, delivered through the chain at each gain; the surface is shaded "
+                          "with one constant albedo (the delivered scene's own palette MEAN) so "
+                          "the number measures the RELIEF signal and not the albedo texture"),
         "noise_source": ("rms |DN(relief_off, seed 11) - DN(relief_off, seed 97)| of the SAME "
                          "render through the chain at each gain; the only difference is the sensor "
                          "noise draw"),
+        "constant_albedo_used": [float(x) for x in palette_mean],
+        "constant_albedo_source": "mean of render.procedural_albedo over the scene's faces",
         "rows": rows,
         "first_gain_reaching_snr_10": (ok[0]["photon_gain"] if ok else None),
         "first_ev_reaching_snr_10": (ok[0]["exposure_ev"] if ok else None),
@@ -1417,7 +1441,10 @@ def stage_facets_texture(*, config, target, body, mesh, roi, rng, light=None) ->
                                                            albedo_texture=t2),
                               relief=None, obs_spec=spec2, imaging_seed=11, supersample=ss2)
         # measure the delivered albedo's own spectrum from the rendered image, inside the mask
-        mask2 = r2["mask"]
+        # (`np.meshgrid(..., indexing="ij")` makes the FFT axes (height, width), so the mask is
+        # transposed to match the image rather than the image to match the mask)
+        mask2 = np.asarray(r2["mask"], dtype=bool)
+        idm2 = np.asarray(r2["render"].id_map)
         img = np.asarray(r2["dn_float"], dtype=np.float64)
         prof = np.where(mask2, img - float(np.mean(img[mask2])), 0.0)
         win = np.hanning(prof.shape[0])[:, None] * np.hanning(prof.shape[1])[None, :]

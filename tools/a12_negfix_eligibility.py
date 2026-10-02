@@ -18,7 +18,11 @@ Steps
 ``--step audit``
     Per implementation: candidate universe, per-query legal-negative counts and the **eligibility
     census** -- which readers offer a directed pair whose row says it is not eligible.  The census
-    is the fix's own pass/fail: after the fix every ``offered_by`` list must be empty.
+    reports two buckets, because the finding has a narrow and a broad reading: ``stated_divergence``
+    is the population §9.1.1 recorded (``kind == R1 and valid is False``: 24 unordered rows / 48
+    directed pairs / 26 queries) and the broader bucket is every row the frozen gate refuses
+    (``valid`` **or** ``loss_mask`` false, or a contradicting ``eligible_as_negative``).  After the
+    fix every ``offered_by`` list must be empty in both buckets; before it, the driver exits 1.
 ``--step batch``
     A real :class:`~synlab.training.batch.TrainingBatch` over the real exported relation rows
     (``build_training_batch`` + ``Trainer.compute_losses``) and the supervision numbers it carries:
@@ -30,7 +34,13 @@ Steps
     instead, which is only affordable for a handful of fragments.
 ``--step compare``
     ``before`` (frozen revisions) vs ``after`` (this checkout) over the same inputs, written to one
-    report with the deltas and the honest trainability verdict.
+    report with the deltas and the honest trainability verdict.  The before side is produced by a
+    child process with ``SYNLAB_BEFORE_SNAPSHOT=<dir>``, which loads the frozen pre-fix
+    ``loader_probe.py`` / ``sampler.py`` / ``gallery.py`` (as written by
+    ``git show HEAD:synlab/... > <dir>/<file>.py``) under their real package context -- so the
+    before numbers come from the old code, not from a re-implementation of it.  ``ok`` requires the
+    *after* side to pass **and** the before side to fail **on the eligibility census**: a before
+    side that passes proves nothing, and a before side that crashes is reported, not blessed.
 
 Usage::
 
@@ -41,6 +51,7 @@ Usage::
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import os
 import statistics
@@ -95,8 +106,6 @@ _FROZEN = {
 
 def preload_snapshot() -> list[str]:
     """Load the pre-fix revisions of the three modules, if a snapshot is configured."""
-    import importlib.util
-
     value = os.environ.get("SYNLAB_BEFORE_SNAPSHOT", "")
     if not value:
         return []

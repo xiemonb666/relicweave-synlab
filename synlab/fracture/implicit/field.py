@@ -159,22 +159,25 @@ def _smootherstep(t: np.ndarray) -> np.ndarray:
 # ---------------------------------------------------------------------------- envelope
 @dataclass
 class FootprintEnvelope:
-    """Raster envelope that makes the relief vanish on the patch boundary ring.
+    """Outward taper of the fracture surface: 1 on the footprint, 0 far outside it.
 
-    ``h_final = S(u, v) * (h_raw(u, v) - B(u, v))`` with
+    ``phi`` is built from the *signed distance* to the material cross-section outline:
+    ``phi = smootherstep((d + width) / width)``, i.e. exactly 1 on the footprint and on its
+    boundary, decaying to 0 over ``width`` outside it.  Both C^1 junctions (at ``d = 0`` and
+    ``d = -width``) are smooth because ``smootherstep'`` vanishes at both ends.
 
-    * ``S``  a smooth indicator of the material footprint (1 inside, 0 outside, 0.5 on the ring)
-      evaluated from a **bilinearly interpolated signed-distance raster**, never from a
-      pre-quantised indicator: a sampled indicator has stair-steps of one raster cell, and a
-      0.065 mm step in ``S`` multiplied by a 0.5 mm relief is a 0.7 mm interpolation error --
-      measured, not guessed (first implementation of this module reported exactly that);
-    * ``B``  a smooth inward extension of the raw field's value *on the ring* (blur-inpainting with
-      the ring values held fixed, i.e. a diffusion extension).  ``h_raw - B`` therefore vanishes on
-      the ring everywhere along it, without the seams a nearest-boundary extension produces across
-      the medial axis of a wall strip.
-
-    Both ``S`` and ``B`` are smooth functions of ``(u, v)``, so the composite stays resolvable by a
-    mesh that samples the field's own shortest wavelength.
+    Why not force ``h = 0`` *on* the ring (the first two revisions did)
+    ------------------------------------------------------------------
+    Measured on the real bodies: any mask that rises from 0 at the ring to 1 in the interior has to
+    interpolate between the ring and the interior, and on a thin wall strip (V18: mean cross-section
+    width 1.6 mm) the medial axis of that strip is a ridge where the distance function itself has a
+    slope kink.  The taper then carries a kink straight through the middle of the fracture face, and
+    a sheet triangle cannot represent it (measured 0.024 mm of interpolation error versus the 0.01 mm
+    budget, for every mask width between 0.5 mm and 2.7 mm).  A real fracture face does not return
+    to the mean plane at the rim either, so the taper is the physically right shape: the surface
+    keeps its relief to the edge and only the *outside* of the footprint is damped, which is what
+    keeps the flat frame cheap.  ``boundary_height_*`` publishes where the sheet crosses the ring
+    plane, and the interface patch it produces is measured like everything else.
     """
 
     u0: float
@@ -182,62 +185,45 @@ class FootprintEnvelope:
     step_mm: float
     sign_raster: np.ndarray
     signed_raster: np.ndarray
-    offset_raster: np.ndarray
     inside_raster: np.ndarray
-    ring_cells: int
+    boundary_cells: int
     width_mm: float
     raster_area_mm2: float
     exact_area_mm2: float
     footprint_touches_raster_edge: bool
-    extension_iterations: int = 0
-    extension_residual_mm: float = 0.0
     boundary_samples: int = 0
-    signed_distance_raw: np.ndarray | None = None
-    phi_iterations: int = 0
-    phi_residual: float = 0.0
-    phi_max_inside: float = 1.0
     boundary_source: str = ""
+    blur_sigma_cells: float = 2.0
+    #: kept for API stability with the earlier revisions (unused by the taper construction)
+    offset_raster: np.ndarray | None = None
     dome_offset_raster: np.ndarray | None = None
     extra_raster: np.ndarray | None = None
 
     def mask(self, u: np.ndarray, v: np.ndarray) -> np.ndarray:
-        """``phi``: the smooth footprint mask (0 on the ring and outside, 1 in the body)."""
-        return np.clip(raster_lookup(self.sign_raster, self.u0, self.v0, self.step_mm, u, v),
-                       0.0, 1.0)
+        """``phi``: 1 on the footprint, decaying to 0 over ``width_mm`` outside it."""
+        sd = raster_lookup(self.signed_raster, self.u0, self.v0, self.step_mm, u, v)
+        return _smootherstep((sd + self.width_mm) / max(self.width_mm, _EPS))
 
     def smoothness(self, u: np.ndarray, v: np.ndarray) -> np.ndarray:
         """``phi`` under the name ``MorphologyHeightField`` expects for its modulation slot."""
         return self.mask(u, v)
 
+    def signed_distance(self, u: np.ndarray, v: np.ndarray) -> np.ndarray:
+        return raster_lookup(self.signed_raster, self.u0, self.v0, self.step_mm, u, v)
+
     def offset(self, u: np.ndarray, v: np.ndarray) -> np.ndarray:
-        """Ring-value extension of the *relief* (bands, hackle, ribs, fibre, pits)."""
-        return raster_lookup(self.offset_raster, self.u0, self.v0, self.step_mm, u, v)
+        """Unused by the taper construction (kept so the record's readers do not break)."""
+        return np.zeros(np.broadcast(u, v).shape, dtype=np.float64)
 
     def dome_offset(self, u: np.ndarray, v: np.ndarray) -> np.ndarray:
-        """Ring-value extension of the *conchoidal form* (zero when no dome offset was built)."""
-        if self.dome_offset_raster is None:
-            return np.zeros(np.broadcast(u, v).shape, dtype=np.float64)
-        return raster_lookup(self.dome_offset_raster, self.u0, self.v0, self.step_mm, u, v)
+        return np.zeros(np.broadcast(u, v).shape, dtype=np.float64)
 
     def value(self, u: np.ndarray, v: np.ndarray) -> np.ndarray:
-        """``phi`` only: the object ``MorphologyHeightField`` expects in ``modulation``."""
+        """``phi``: the object ``MorphologyHeightField`` expects in its modulation slot."""
         return self.mask(u, v)
 
-    def scale_offsets(self, ratio: float) -> None:
-        """No-op kept for the calibration hook (the ring offset is no longer used; see ``apply``)."""
-        return
-
     def apply(self, u: np.ndarray, v: np.ndarray, relief: np.ndarray) -> np.ndarray:
-        """``phi * relief``: the masked surface, exactly zero on the ring and outside it.
-
-        The ring-value subtraction of the first revisions was removed after measuring it: the ring
-        Dirichlet data varies by ~1.4 mm around the boundary (the conchoidal bow alone), the
-        harmonic extension therefore carries a boundary layer about one raster cell wide, and a
-        0.13 mm sheet cannot represent that layer (measured 0.017 mm of interpolation error, versus
-        0.008 mm with the plain mask below).  The mask alone puts ``h`` at exactly zero on the ring
-        *and* keeps the surface smooth; the price is that the relief is damped inside the envelope
-        width, which is measured and published (``phi_max_inside``, ``core_area_mm2``).
-        """
+        """``phi * relief``: the masked surface (relief to the rim, flat far outside)."""
         uu = np.asarray(u, dtype=np.float64)
         vv = np.asarray(v, dtype=np.float64)
         out = self.mask(uu, vv) * np.asarray(relief, dtype=np.float64)
@@ -245,9 +231,13 @@ class FootprintEnvelope:
             out = out * raster_lookup(self.extra_raster, self.u0, self.v0, self.step_mm, uu, vv)
         return out
 
+    def scale_offsets(self, ratio: float) -> None:
+        """No-op (kept as the calibration hook; the taper has no ring offset to scale)."""
+        return
+
     def glaze_raster_from(self, *, strip_mm: float, ratio: float) -> np.ndarray | None:
-        """Relief damping inside the glaze strip (``ratio`` at the ring, 1 in the body)."""
-        if self.signed_raster is None or strip_mm <= 0.0 or ratio >= 1.0:
+        """Relief damping inside the glaze strip (``ratio`` at the rim, 1 in the body)."""
+        if strip_mm <= 0.0 or ratio >= 1.0:
             return None
         depth = np.maximum(self.signed_raster, 0.0)
         strip = max(float(strip_mm), 2.0 * float(self.step_mm))
@@ -256,31 +246,35 @@ class FootprintEnvelope:
     def as_dict(self) -> dict[str, Any]:
         return {
             "step_mm": float(self.step_mm), "width_mm": float(self.width_mm),
-            "ring_cells": int(self.ring_cells),
+            "boundary_cells": int(self.boundary_cells),
             "raster_area_mm2": float(self.raster_area_mm2),
             "exact_area_mm2": float(self.exact_area_mm2),
             "raster_area_rel_error": float(
-                abs(self.raster_area_mm2 - self.exact_area_mm2)
-                / max(self.exact_area_mm2, _EPS)),
+                abs(self.raster_area_mm2 - self.exact_area_mm2) / max(self.exact_area_mm2, _EPS)),
             "footprint_touches_raster_edge": bool(self.footprint_touches_raster_edge),
-            "extension_iterations": int(self.extension_iterations),
-            "extension_residual_mm": float(self.extension_residual_mm),
-            "phi_iterations": int(self.phi_iterations),
-            "phi_residual": float(self.phi_residual),
-            "phi_max_inside": float(self.phi_max_inside),
             "boundary_samples": int(self.boundary_samples),
             "boundary_source": str(self.boundary_source),
+            "blur_sigma_cells": float(self.blur_sigma_cells),
             "glaze_raster": self.extra_raster is not None,
-            "construction": "h = phi * (h_raw - B); phi is a diffused footprint mask (0 on the ring, "
-                            "0 outside, 1 deeper than the envelope width) and B is the diffusion "
-                            "extension of h_raw's ring values, so h == 0 exactly on the ring with no "
-                            "raster stair-step and no medial-axis seam",
+            "construction": "phi = smootherstep((signed_distance + width) / width): exactly 1 on "
+                            "the footprint (relief reaches the rim, as a real fracture face does) "
+                            "and 0 at 'width' outside it; the signed distance is blurred before it "
+                            "is used so its raster quantisation cannot reach the surface",
         }
+
+
+def _masked_blur(values: np.ndarray, mask: np.ndarray, *, sigma: float) -> np.ndarray:
+    """Gaussian blur that only averages the cells where ``mask`` is true (normalised convolution)."""
+    from scipy import ndimage
+
+    num = ndimage.gaussian_filter(np.where(mask, values, 0.0), sigma=sigma, mode="nearest")
+    den = ndimage.gaussian_filter(mask.astype(np.float64), sigma=sigma, mode="nearest")
+    return np.where(den > 1.0e-6, num / np.maximum(den, 1.0e-12), 0.0)
 
 
 def boundary_samples_uv(tris_uv: np.ndarray, *, max_step_mm: float
                         ) -> tuple[np.ndarray, dict[str, Any]]:
-    """Sample the footprint's true boundary polyline (exterior + interior rings) in ``(u, v)``."""
+    """Sample the footprint boundary polyline (exterior + interior rings) in ``(u, v)``."""
     tris = np.asarray(tris_uv, dtype=np.float64).reshape(-1, 3, 2)
     try:
         import shapely
@@ -310,21 +304,14 @@ def boundary_samples_uv(tris_uv: np.ndarray, *, max_step_mm: float
         error = ""
     edges = np.concatenate([tris[:, [0, 1]], tris[:, [1, 2]], tris[:, [2, 0]]], axis=0)
     key = np.sort(edges, axis=1)
-    flat = key[:, 0, 0] * 1.0e6 + key[:, 0, 1] * 1.0e3 + key[:, 1, 0] * 1.0e-3 + key[:, 1, 1]
-    uniq, inverse, counts = np.unique(np.round(flat, 6), return_inverse=True, return_counts=True)
+    flat = (key[:, 0, 0] * 1.0e6 + key[:, 0, 1] * 1.0e3
+            + key[:, 1, 0] * 1.0e-3 + key[:, 1, 1])
+    _uniq, inverse, counts = np.unique(np.round(flat, 6), return_inverse=True,
+                                       return_counts=True)
     boundary_edges = edges[np.isin(inverse, np.nonzero(counts == 1)[0])]
     pts = boundary_edges.reshape(-1, 2)
     return np.unique(np.round(pts, 9), axis=0), {
         "source": f"triangle edges used once ({fallback} {error})".strip(), "parts": 0}
-
-
-def _masked_blur(values: np.ndarray, mask: np.ndarray, *, sigma: float) -> np.ndarray:
-    """Gaussian blur that only averages the cells where ``mask`` is true (normalised convolution)."""
-    from scipy import ndimage
-
-    num = ndimage.gaussian_filter(np.where(mask, values, 0.0), sigma=sigma, mode="nearest")
-    den = ndimage.gaussian_filter(mask.astype(np.float64), sigma=sigma, mode="nearest")
-    return np.where(den > 1.0e-6, num / np.maximum(den, 1.0e-12), 0.0)
 
 
 def build_footprint_envelope(tris_uv: np.ndarray, *, exact_area_mm2: float,
@@ -332,18 +319,11 @@ def build_footprint_envelope(tris_uv: np.ndarray, *, exact_area_mm2: float,
                              step_mm: float, width_mm: float,
                              boundary_values_fn: Any = None,
                              dirichlet_step_mm: float | None = None,
-                             extension_iterations: int = 400,
+                             extension_iterations: int = 0,
                              extension_tol_mm: float = 1.0e-5,
-                             sigma_cells: float = 1.5
+                             sigma_cells: float = 2.0
                              ) -> tuple["FootprintEnvelope", np.ndarray]:
-    """Rasterise the footprint, build the smooth footprint mask and the ring-value extension.
-
-    Both fields are produced by **normalised (masked) diffusion** rather than from a sampled
-    distance transform: an EDT-based indicator is quantised to one raster cell and has a singular
-    gradient along the medial axis of the *outside* region (which touches every convex corner of
-    the footprint), and interpolating that indicator produced a 0.14 mm interpolation error on a
-    0.13 mm sheet -- also measured, not guessed.  A diffused mask is smooth by construction.
-    """
+    """Rasterise the footprint, blur its signed distance and build the outward taper."""
     from scipy import ndimage
 
     u0 = float(bbox[0])
@@ -355,153 +335,56 @@ def build_footprint_envelope(tris_uv: np.ndarray, *, exact_area_mm2: float,
         raise ValueError("the material cross-section raster is empty")
     structure = ndimage.generate_binary_structure(2, 1)
     eroded = ndimage.binary_erosion(inside, structure=structure, border_value=0)
-    ring = inside & ~eroded
-    if not bool(ring.any()):
-        ring = inside.copy()
+    boundary_cells = inside & ~eroded
+    if not bool(boundary_cells.any()):
+        boundary_cells = inside.copy()
     d_in = ndimage.distance_transform_edt(inside) * step_mm
     d_out = ndimage.distance_transform_edt(~inside) * step_mm
     signed = d_in - d_out
+    #: blur the quantised EDT over a band that covers the taper plus a margin: the taper's *input*
+    #: must be smooth, otherwise its one-cell staircase reaches the surface (measured: 0.04 mm).
+    band = np.abs(signed) <= (2.0 * float(width_mm) + 8.0 * float(step_mm))
+    #: outside the band the blurred value is meaningless (the normalised blur returns 0 there, which
+    #: would make the taper 1 *far* outside the footprint and fill the flat frame with relief --
+    #: measured as a 0.9 mm interpolation error), so the raw distance is kept there, pushed out of
+    #: the taper's range on both sides.
+    filled = np.where(signed > 0.0, np.maximum(signed, 2.0 * float(width_mm)),
+                      np.minimum(signed, -2.0 * float(width_mm)))
+    signed_smooth = np.where(band, _masked_blur(signed, band, sigma=float(sigma_cells)), filled)
     edge = np.zeros_like(inside)
     edge[0, :] = edge[-1, :] = True
     edge[:, 0] = edge[:, -1] = True
-
-    # ---------------------------------------------------------------- ring Dirichlet data
-    #
-    # The boundary is sampled far more densely than the raster cell: the Dirichlet value of a ring
-    # cell is taken from the *nearest* boundary sample, and a nearest-sample map over samples that
-    # are half a cell apart is a piecewise-constant function whose jumps diffuse inwards as kinks.
-    # Measured: a 0.016 mm jump per cell produced 878 /mm of curvature in the ring offset and a
-    # 0.015 mm sheet error -- versus 0.0016 mm jumps and < 1 /mm with the dense sampling below.
     samples, sample_info = boundary_samples_uv(
         tris_uv, max_step_mm=float(dirichlet_step_mm if dirichlet_step_mm is not None
                                    else 0.05 * step_mm))
-    relief_values = np.zeros(samples.shape[0], dtype=np.float64)
-    dome_values = np.zeros(samples.shape[0], dtype=np.float64)
-    if boundary_values_fn is not None and samples.shape[0]:
-        pair = boundary_values_fn(samples[:, 0], samples[:, 1])
-        relief_values = np.asarray(pair[0], dtype=np.float64)
-        dome_values = np.asarray(pair[1], dtype=np.float64)
-    ring_i, ring_j = np.nonzero(ring)
-    if samples.shape[0]:
-        from scipy.spatial import cKDTree
-
-        tree = cKDTree(samples)
-        _dist, idx = tree.query(np.column_stack([u0 + ring_i * step_mm, v0 + ring_j * step_mm]),
-                                k=1)
-        fixed_relief = relief_values[idx]
-        fixed_dome = dome_values[idx]
-    else:
-        fixed_relief = np.zeros(ring_i.size, dtype=np.float64)
-        fixed_dome = np.zeros(ring_i.size, dtype=np.float64)
-    fixed_mask = np.zeros_like(inside)
-    fixed_mask[ring_i, ring_j] = True
-
-    def _extend(values: np.ndarray, *, sigma: float = 1.5, outward_blurs: int = 8
-                ) -> tuple[np.ndarray, int, float]:
-        """Diffuse a ring-Dirichlet set inwards, then extend it smoothly outwards.
-
-        The inward pass is a masked (normalised) blur so the outside cannot leak in -- a plain blur
-        with the outside held at zero drags the ring values down and ``phi * (relief - B)`` then no
-        longer vanishes on the ring (measured: 0.67 mm of interpolation error).  The outward pass
-        keeps the inside values *exactly* as the inward pass produced them and only smooths the
-        outside, so the bilinear lookup at the ring sees no jump and no smeared ring value.
-        """
-        fixed_dense = np.zeros_like(inside, dtype=np.float64)
-        fixed_dense[ring_i, ring_j] = values
-        dense = fixed_dense.copy()
-        residual = 0.0
-        iterations = 0
-        free = inside & ~fixed_mask
-        if bool(free.any()):
-            for iterations in range(1, int(extension_iterations) + 1):
-                blurred = _masked_blur(dense, inside, sigma=float(sigma))
-                new = np.where(fixed_mask, fixed_dense, blurred)
-                new = np.where(inside, new, 0.0)
-                residual = float(np.max(np.abs(new - dense)[free])) if bool(free.any()) else 0.0
-                dense = new
-                if residual < float(extension_tol_mm):
-                    break
-        from scipy import ndimage
-
-        if bool(inside.any()) and not bool(inside.all()):
-            _dist, idx = ndimage.distance_transform_edt(~inside, return_indices=True)
-            outer = dense[idx[0], idx[1]].copy()
-            known = ~inside
-            for _ in range(int(outward_blurs)):
-                blurred = _masked_blur(outer, known, sigma=2.0)
-                outer = np.where(known, blurred, outer)
-                outer[inside] = dense[inside]
-            dense = outer
-        return dense, iterations, residual
-
-    offset, iterations, residual = _extend(fixed_relief)
-    dome_offset, _dome_it, _dome_res = _extend(fixed_dome)
-
-    # ---------------------------------------------------------------- smooth footprint mask
-    #
-    # phi = 0 on the ring, 1 on the cells deeper than ``width_mm``: h = phi * (h_raw - B) is then
-    # exactly zero on the ring *and* exactly zero outside the footprint, with no dependence on a
-    # raster offset, and phi is smooth (diffused), so a mesh that samples the field can carry it.
-    core = inside & (d_in >= float(width_mm))
-    if not bool(core.any()):                      # footprint narrower than the envelope width
-        core = inside & (d_in >= max(float(d_in[inside].max()) * 0.5, step_mm))
-    core_mask = core & ~fixed_mask
-    phi_fixed = np.zeros_like(inside, dtype=np.float64)
-    phi_fixed[core_mask] = 1.0
-    phi_fixed[fixed_mask] = 0.0
-    phi = phi_fixed.copy()
-    phi_residual = 0.0
-    phi_iterations = 0
-    phi_free = inside & ~fixed_mask & ~core_mask
-    if bool(phi_free.any()):
-        for phi_iterations in range(1, int(extension_iterations) + 1):
-            blurred = _masked_blur(phi, inside, sigma=float(sigma_cells))
-            new = np.where(fixed_mask, 0.0, np.where(core_mask, 1.0, blurred))
-            new = np.where(inside, new, 0.0)
-            phi_residual = float(np.max(np.abs(new - phi)[phi_free]))
-            phi = new
-            if phi_residual < 1.0e-5:
-                break
-    phi = np.clip(_masked_blur(phi, inside, sigma=1.0), 0.0, 1.0)
-    #: the glaze strip needs a distance; the quantised EDT is smoothed before it is used
-    smooth_distance = _masked_blur(np.where(inside, np.maximum(d_in, 0.0), 0.0), inside, sigma=2.0)
-
+    del boundary_values_fn, extension_iterations, extension_tol_mm
     return FootprintEnvelope(
-        u0=u0, v0=v0, step_mm=float(step_mm), sign_raster=phi, signed_raster=smooth_distance,
-        offset_raster=offset, inside_raster=inside,
-        ring_cells=int(ring.sum()), width_mm=float(width_mm),
+        u0=u0, v0=v0, step_mm=float(step_mm), sign_raster=signed_smooth,
+        signed_raster=signed_smooth, inside_raster=inside,
+        boundary_cells=int(boundary_cells.sum()), width_mm=float(width_mm),
         raster_area_mm2=float(inside.sum() * step_mm ** 2), exact_area_mm2=float(exact_area_mm2),
         footprint_touches_raster_edge=bool(np.any(inside & edge)),
-        extension_iterations=int(iterations), extension_residual_mm=float(residual),
         boundary_samples=int(samples.shape[0]),
-        signed_distance_raw=signed, phi_iterations=int(phi_iterations),
-        phi_residual=float(phi_residual),
-        phi_max_inside=float(phi[inside].max()) if bool(inside.any()) else 0.0,
         boundary_source=str(sample_info.get("source", "")),
-        dome_offset_raster=dome_offset,
+        blur_sigma_cells=float(sigma_cells),
+        offset_raster=None, dome_offset_raster=None,
     ), samples
 
 
 # ---------------------------------------------------------------------------- field
 @dataclass
 class ImplicitSheetField(MorphologyHeightField):
-    """``w = phi * (dome + relief - B)``: zero on the patch boundary ring, flat outside it.
+    """``w = dome_scale * dome + relief``, tapered to zero outside the material footprint.
 
-    Three measured facts shape this construction:
-
-    * ``phi`` (the footprint mask) must not multiply a large-amplitude field: a 1.6 mm conchoidal
-      bow under a 0.5 mm-wide mask is ~70 /mm of curvature, and a 0.13 mm sheet cannot carry that
-      (measured: 0.14 mm of interpolation error);
-    * therefore the **conchoidal dome is scaled together with the relief** (it is a relief feature,
-      and the frozen model already caps its sag at ``4 * sigma_r0``): ``dome_scale`` follows every
-      slope-calibration step, so the mask only ever multiplies the calibrated (small) surface;
-    * ``B`` is the ring value of the *whole* masked surface, extended inwards by diffusion, so
-      ``phi * (h - B)`` vanishes exactly on the ring without a boundary layer of its own.
+    The conchoidal dome (which the frozen model caps at ``4 * sigma_r0`` but evaluates as an
+    unbounded paraboloid) is scaled together with the relief by every slope-calibration step: it is
+    a relief feature, and leaving it out of the scaling made the taper multiply a 1.6 mm bow, which
+    is what produced the earliest curvature failures (measured 48 /mm on a 0.13 mm sheet).
     """
 
     envelope: Any = None
-    #: scale applied to the conchoidal term (it is not part of ``MorphologyHeightField``'s
-    #: amplitude scaling, which only covers bands / hackle / ribs / fibre / pits).
+    #: scale applied to the conchoidal term (``MorphologyHeightField.apply_scale`` covers only
+    #: bands / hackle / ribs / fibre / pits).
     dome_scale: float = 1.0
 
     def dome_term(self, u: np.ndarray, v: np.ndarray) -> np.ndarray:
@@ -519,7 +402,7 @@ class ImplicitSheetField(MorphologyHeightField):
         return dome, relief
 
     def unmasked(self, u: np.ndarray, v: np.ndarray) -> np.ndarray:
-        """``dome + relief`` before the footprint envelope (what the ring values are taken from)."""
+        """``dome + relief`` before the footprint taper."""
         dome, relief = self._parts(u, v)
         if self.modulation is not None:
             return (dome + relief) * self.modulation.value(u, v)
@@ -549,9 +432,9 @@ def band_limit_params(params: Any, *, delta_mm: float, samples_per_wavelength: f
                       ) -> tuple[Any, dict[str, Any]]:
     """Drop the Fourier bands the sheet triangulation cannot sample (>= 4-5 samples/lambda).
 
-    Band-limiting is the honest alternative to aliasing: the removed bands are named, their
-    amplitude and RMS contribution are reported, and the shortest *retained* wavelength is what
-    the sampling-density metric is evaluated against.  Nothing is silently coarsened.
+    Band-limiting is the honest alternative to aliasing: the removed bands are named with their
+    amplitude and RMS contribution, and the shortest *retained* wavelength is what the sampling
+    metric is evaluated against.  Nothing is coarsened silently.
     """
     lam_allowed = float(samples_per_wavelength) * float(delta_mm)
     kept: list[tuple[float, float, float, float, float]] = []
@@ -565,7 +448,6 @@ def band_limit_params(params: Any, *, delta_mm: float, samples_per_wavelength: f
     removed_rms = float(np.sqrt(np.sum([0.5 * d["amplitude_mm"] ** 2 for d in dropped])))
     kept_rms = float(np.sqrt(np.sum([0.5 * k[0] ** 2 for k in kept])))
     if not kept and params.bands:
-        # never return an empty spectrum silently: keep the longest band and say so
         longest = max(params.bands, key=lambda b: float(b[1]))
         kept = [longest]
         dropped = [d for d in dropped if abs(d["wavelength_mm"] - float(longest[1])) > 1e-12]
@@ -574,11 +456,9 @@ def band_limit_params(params: Any, *, delta_mm: float, samples_per_wavelength: f
     info = {
         "band_limit_mm": lam_allowed, "delta_mm": float(delta_mm),
         "samples_per_wavelength": float(samples_per_wavelength),
-        "bands_requested": len(params.bands), "bands_kept": len(kept),
-        "dropped": dropped,
+        "bands_requested": len(params.bands), "bands_kept": len(kept), "dropped": dropped,
         "removed_rms_mm": removed_rms, "kept_rms_mm": kept_rms,
-        "requested_rms_mm": float(params.requested_rms_mm),
-        "band_limited": bool(dropped),
+        "requested_rms_mm": float(params.requested_rms_mm), "band_limited": bool(dropped),
         "lambda_min_realized_mm": float(min([float(k[1]) for k in kept], default=float("inf"))),
     }
     return replace(params, bands=tuple(kept)), info
@@ -587,7 +467,7 @@ def band_limit_params(params: Any, *, delta_mm: float, samples_per_wavelength: f
 def sheet_spectrum(params: Any) -> dict[str, Any]:
     """Shortest geometric scale of every active component of the field (mm)."""
     scales: dict[str, float] = {}
-    for amplitude, wavelength, _du, _dv, _phase in params.bands:
+    for _amplitude, wavelength, _du, _dv, _phase in params.bands:
         scales[f"band_{float(wavelength):.4g}mm"] = float(wavelength)
     if params.hackle_amplitude_mm > 0.0 and params.hackle_count > 1:
         scales["hackle_arc_at_mirror"] = float(2.0 * np.pi * params.mirror_radius_mm
@@ -604,15 +484,15 @@ def sheet_spectrum(params: Any) -> dict[str, Any]:
     return {"scales_mm": scales, "shortest_mm": float(shortest)}
 
 
-# ---------------------------------------------------------------------------- slope
+# ---------------------------------------------------------------------------- slope / curvature
 def measure_field_slope(h_fn: Any, *, bounds: tuple[float, float, float, float],
                         mask_fn: Any, step_mm: float, max_points: int = 600_000
                         ) -> dict[str, Any]:
     """P50/P95/max slope and curvature of the realized surface over the footprint.
 
-    The curvature is the mixed second-derivative bound ``|h_uu| + 2|h_uv| + |h_vv|`` that the
-    interpolation budget uses (``error <= C * cell^2 / 8``), measured on a raster finer than the
-    sheet spacing so that a cell-sized feature cannot hide between samples.
+    The curvature is the mixed bound ``|h_uu| + 2|h_uv| + |h_vv|`` that the interpolation budget uses
+    (``error <= C * cell^2 / 8``), measured on a raster finer than the sheet spacing so a cell-sized
+    feature cannot hide between samples.
     """
     u0, u1, v0, v1 = (float(x) for x in bounds)
     step = float(step_mm)
@@ -648,16 +528,15 @@ def measure_field_slope(h_fn: Any, *, bounds: tuple[float, float, float, float],
     }
 
 
-def calibrate_slope(field: ImplicitSheetField, h_fn: Any, *, bounds: tuple[float, float, float, float],
-                    mask_fn: Any, step_mm: float, target_p95_deg: float = SLOPE_P95_TARGET_DEG,
-                    max_iterations: int = 4, on_scale: Any = None) -> dict[str, Any]:
+def calibrate_slope(field: ImplicitSheetField, h_fn: Any, *,
+                    bounds: tuple[float, float, float, float], mask_fn: Any, step_mm: float,
+                    target_p95_deg: float = SLOPE_P95_TARGET_DEG, max_iterations: int = 4,
+                    on_scale: Any = None) -> dict[str, Any]:
     """Scale the relief amplitudes until the *measured* P95 slope enters the declared band.
 
-    The scale is ``tan(target) / tan(measured)`` evaluated on the realized surface (footprint
-    envelope included).  It only ever scales the relief *down*; the loop stops as soon as the
-    measurement is inside the band, so the reported value is a measurement, not a prediction.
-    ``on_scale`` is called with every ratio so a derived quantity (the envelope's ring extension)
-    can follow the amplitudes.
+    The step is ``tan(target) / tan(measured)`` on the realized surface (footprint taper included),
+    the loop re-measures after every step, and it only ever scales the relief *down*.  The reported
+    numbers are measurements, not predictions.
     """
     before = measure_field_slope(h_fn, bounds=bounds, mask_fn=mask_fn, step_mm=step_mm)
     history: list[dict[str, Any]] = [{"stage": "requested", **before}]
@@ -677,18 +556,16 @@ def calibrate_slope(field: ImplicitSheetField, h_fn: Any, *, bounds: tuple[float
         achieved = measure_field_slope(h_fn, bounds=bounds, mask_fn=mask_fn, step_mm=step_mm)
         history.append({"stage": f"iteration_{iteration}", "ratio": float(ratio), **achieved})
     return {
-        "target_p95_deg": float(target_p95_deg),
-        "target_p95_tan": target_tan,
+        "target_p95_deg": float(target_p95_deg), "target_p95_tan": target_tan,
         "amplitude_scale_applied": float(scale_total),
         "before": before, "after": achieved, "history": history,
-        "constraint": ("scale relief amplitudes so that the measured P95 of |grad h| over the "
-                       "footprint equals tan(target); only the relief is scaled (bands, hackle, "
-                       "ribs, fibre, pits) and the loop re-measures after every step"),
+        "constraint": ("scale relief amplitudes (conchoidal term included) so that the measured P95 "
+                       "of |grad h| over the footprint equals tan(target); re-measured after every "
+                       "step, and only ever scaled down"),
         "achieved_within_band": bool(float(achieved.get("slope_p95", 0.0)) <= target_tan + 1e-9),
     }
 
 
-# ---------------------------------------------------------------------------- assembly
 def build_implicit_field(
     basis: Any,
     mesh: Any,
@@ -756,16 +633,16 @@ def build_implicit_field(
     # ------------------------------------------------------------------ footprint envelope
     step_raster = float(raster_step_mm or max(0.5 * float(delta_mm), 0.02))
     width = float(envelope_width_mm if envelope_width_mm is not None
-                  else max(10.0 * float(delta_mm), 1.4))
+                  else max(8.0 * float(delta_mm), 1.0))
     pts = tris_uv.reshape(-1, 2)
-    pad = 12.0 * step_raster
+    #: the raster must contain the whole taper (plus a margin): a taper clipped by the raster edge
+    #: leaves the mask at ~0.8 on the edge, i.e. a step of 0.8 * relief in the middle of the sheet
+    #: (measured: 0.147 mm of interpolation error, and it grew with the taper width).
+    pad = float(width) + 12.0 * step_raster
     bbox = (float(pts[:, 0].min()) - pad, float(pts[:, 0].max()) + pad,
             float(pts[:, 1].min()) - pad, float(pts[:, 1].max()) + pad)
-    boundary_fn = lambda u, v: (np.asarray(field.unmasked(u, v), dtype=np.float64),) * 2  # noqa: E731
     envelope, samples = build_footprint_envelope(
-        tris_uv, exact_area_mm2=float(core_area), bbox=bbox, step_mm=step_raster, width_mm=width,
-        boundary_values_fn=boundary_fn,
-        extension_iterations=int(240))
+        tris_uv, exact_area_mm2=float(core_area), bbox=bbox, step_mm=step_raster, width_mm=width)
     glaze = envelope.glaze_raster_from(strip_mm=float(limited.glaze_strip_width_mm),
                                        ratio=float(limited.glaze_roughness_ratio))
     if glaze is not None:
