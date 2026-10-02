@@ -32,6 +32,7 @@ own ledger's ``release_freeze`` entry.
 from __future__ import annotations
 
 import argparse
+import collections
 import json
 import sys
 import time
@@ -82,27 +83,67 @@ def _qa_count(assets: Sequence[Any]) -> int:
     return len([a for a in assets if a.qa_status == QA_PASS])
 
 
+def _closed_qa_pass_scope(assets: Sequence[Any]) -> tuple[list[Any], list[dict[str, Any]]]:
+    """The largest reference-closed subset of QA_PASS assets.
+
+    ``ReleaseManager.verify_closure`` walks ``ancestry`` transitively and rejects *any* asset it
+    reaches that is missing or not ``QA_PASS``.  A generation run leaves ancestors in both states:
+    ``physical_component`` is committed with the damage audit's verdict (``QA_PENDING``/``QA_FAIL``
+    when ``audit_physical`` did not pass), and ``physical.api.commit_physical`` records the clean
+    truth's *semantic* reference instead of its asset id, which is unresolvable by construction.
+    Freezing the raw QA_PASS set therefore cannot verify.  This function computes the largest
+    closed subset instead, and reports exactly which assets were left out and which ancestor
+    blocked each of them, so the release claims only what it can verify.
+    """
+    by_id = {a.asset_id: a for a in assets}
+    keep = {a.asset_id: a for a in assets if a.qa_status == QA_PASS}
+    blocked: dict[str, list[str]] = {}
+    changed = True
+    while changed:
+        changed = False
+        for asset_id in list(keep):
+            missing = [anc for anc in (keep[asset_id].ancestry or []) if anc not in keep]
+            # ancestors that are not part of the batch at all are also fatal for the closure
+            if missing:
+                blocked[asset_id] = missing
+                keep.pop(asset_id)
+                changed = True
+    excluded = [{"asset_id": a.asset_id, "role": a.role, "qa_status": a.qa_status,
+                 "lineage_id": a.lineage_id, "blocking_ancestors": blocked.get(a.asset_id, [])}
+                for a in assets if a.asset_id not in keep]
+    return sorted(keep.values(), key=lambda a: a.asset_id), excluded
+
+
 def step_freeze(store: AssetStore, *, ledger_path: Path, out_dir: Path,
-                evidence_root: str | None) -> dict[str, Any]:
+                evidence_root: str | None, profile: str = PROFILE) -> dict[str, Any]:
     run_ids = _batch_run_ids(ledger_path)
     all_assets = store.list_assets(limit=500000)
     # The batch's assets are exactly those whose meta.run_id is one of this batch's run ids.
     run_set = set(run_ids)
     batch_assets = [a for a in all_assets if (a.meta or {}).get("run_id") in run_set]
-    keep = [a for a in batch_assets if a.qa_status == QA_PASS]
-    excluded = [{"asset_id": a.asset_id, "role": a.role, "qa_status": a.qa_status,
-                 "lineage_id": a.lineage_id}
-                for a in batch_assets if a.qa_status != QA_PASS]
-    if not keep:
-        return {"status": "FAILED", "error": {"code": "STOP_QA",
-                                              "message": "the batch has no QA_PASS asset"}}
     # A lineage whose label_bundle is not QA_PASS never entered the accepted set; its other
     # assets are real but the release must not present them as a complete lineage.
-    accepted_lineages = sorted({a.lineage_id for a in keep
-                                if a.role == ROLE_LABEL_BUNDLE and a.lineage_id})
-    release_assets = [a for a in keep if a.lineage_id in set(accepted_lineages)]
+    accepted_lineages = sorted({a.lineage_id for a in batch_assets
+                                if a.role == ROLE_LABEL_BUNDLE and a.qa_status == QA_PASS
+                                and a.lineage_id})
+    # Ancestors outside the batch (e.g. a clean truth committed by an earlier run of the same
+    # lineage) must be present too, otherwise the reference closure cannot verify.
+    scope_ids = set()
+    queue = [a.asset_id for a in batch_assets if a.lineage_id in set(accepted_lineages)]
+    by_id = {a.asset_id: a for a in all_assets}
+    while queue:
+        aid = queue.pop()
+        if aid in scope_ids or aid not in by_id:
+            continue
+        scope_ids.add(aid)
+        queue.extend(by_id[aid].ancestry or [])
+    scope = [by_id[aid] for aid in sorted(scope_ids)]
+    release_assets, closure_excluded = _closed_qa_pass_scope(scope)
+    if not release_assets:
+        return {"status": "FAILED", "error": {"code": "STOP_QA",
+                                              "message": "no reference-closed QA_PASS asset"}}
     evidence_dirs = [evidence_root] if evidence_root and Path(evidence_root).exists() else []
-    gates, _gate_assets, profile = gates_mod.evaluate_gates(
+    gates, _gate_assets, run_profile = gates_mod.evaluate_gates(
         store, run_ids[0], evidence_dirs=evidence_dirs)
     evidence = gates_mod.gate_evidence(store, run_ids[0], evidence_dirs=evidence_dirs)
 
@@ -130,7 +171,7 @@ def step_freeze(store: AssetStore, *, ledger_path: Path, out_dir: Path,
     closure = manager.verify_closure([a.asset_id for a in release_assets])
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "gates_evaluated.json").write_text(
-        json.dumps({"profile": profile, "gates": gates, "evidence": evidence},
+        json.dumps({"profile": run_profile, "gates": gates, "evidence": evidence},
                    ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8")
     if not closure["ok"]:
         return {"status": "FAILED", "frozen": False, "closure": closure,
@@ -159,8 +200,8 @@ def step_freeze(store: AssetStore, *, ledger_path: Path, out_dir: Path,
         "batch_runs": run_ids,
         "store_derived_gates": gates,
         "evidence_reports": evidence,
-        "excluded_assets": excluded[:200],
-        "excluded_asset_count": len(excluded),
+        "excluded_assets": closure_excluded[:400],
+        "excluded_asset_count": len(closure_excluded),
         "scope_declaration": (
             "PILOT-profile release of the A12 next-experiment batch. The frozen scope is every "
             "QA_PASS asset of the batch's generation runs whose lineage reached an accepted "
@@ -172,15 +213,15 @@ def step_freeze(store: AssetStore, *, ledger_path: Path, out_dir: Path,
                                       "over the frozen scope"},
     }
     try:
-        record = manager.freeze(release_id=release_id, profile=PROFILE, scope="SYNTHETIC",
+        record = manager.freeze(release_id=release_id, profile=profile, scope="SYNTHETIC",
                                asset_ids=[a.asset_id for a in release_assets], gates=gates,
                                coverage=coverage, extra=extra)
     except SynLabError as exc:
         code = getattr(getattr(exc, "code", None), "value", str(getattr(exc, "code", "")))
         blocked = {
             "schema": "synlab.release_freeze_blocked.v1", "frozen": False,
-            "release_id_attempted": release_id, "profile": PROFILE,
-            "required_gates": PROFILE_GATES[PROFILE],
+            "release_id_attempted": release_id, "profile": profile,
+            "required_gates": PROFILE_GATES[profile],
             "gates": gates, "coverage": coverage,
             "error": {"code": code, "stage": exc.stage, "message": exc.message,
                       "measurements": getattr(exc, "measurements", None)},
@@ -189,8 +230,11 @@ def step_freeze(store: AssetStore, *, ledger_path: Path, out_dir: Path,
         (out_dir / "release_freeze_blocked.json").write_text(
             json.dumps(blocked, ensure_ascii=False, indent=2, sort_keys=True, default=str),
             encoding="utf-8")
-        return {"status": "FAILED", "frozen": False, "release_id_attempted": release_id,
-                "profile": PROFILE, "gates": gates, "coverage": coverage,
+        return {"status": "FAILED", "frozen": False, "release_id": release_id,
+                "release_id_attempted": release_id,
+                "profile": profile, "gates": gates, "coverage": coverage,
+                "unverified_scope_ids": sorted(a.asset_id for a in scope),
+                "unverified_scope_roles": dict(collections.Counter(a.role for a in scope)),
                 "error": blocked["error"],
                 "artifacts": [str(out_dir / "release_freeze_blocked.json")]}
     manifest = manager.load(release_id)
@@ -201,14 +245,90 @@ def step_freeze(store: AssetStore, *, ledger_path: Path, out_dir: Path,
         "assets_by_role": roles, "coverage": coverage, "gates": gates,
         "scope_completed": record.scope_completed, "scope_pending": record.scope_pending,
         "closure": manifest.get("closure"), "evidence_reports": evidence,
-        "excluded_asset_count": len(excluded),
+        "excluded_asset_count": len(closure_excluded),
         "artifacts": [record.manifest_path, str(out_dir / "gates_evaluated.json")],
     }
 
 
-def step_export(store: AssetStore, *, release_id: str, out_dir: Path) -> dict[str, Any]:
+def _unverified_manifest(store: AssetStore, release_id: str,
+                         asset_ids: Sequence[str]) -> dict[str, Any]:
+    """A manifest-shaped view of the batch scope, for export when the freeze is refused.
+
+    ``export_training_package`` takes ``release_id | manifest-mapping``; this builds the mapping
+    from the store so the export/loader machinery can still be exercised end to end.  It is
+    deliberately **not** written to ``<store>/releases/<id>/manifest.json``: it is not a frozen
+    release and must never be mistaken for one.  ``profile`` carries the ``_UNFROZEN`` marker and
+    the gate verdicts are attached, so anything downstream that reads the package manifest sees
+    exactly which profile was refused and why.
+    """
+    from synlab.canonical import hash_json
+
+    assets = []
+    for asset_id in asset_ids:
+        record = store.get_asset(asset_id)
+        assets.append({"asset_id": record.asset_id, "role": record.role, "schema": record.schema,
+                       "unit": record.unit, "frame": record.frame, "blob_hash": record.blob_hash,
+                       "qa_status": record.qa_status, "lineage_id": record.lineage_id,
+                       "split": record.split,
+                       "interpretation_hash": record.interpretation_hash,
+                       "files": record.files})
+    payload = {
+        "schema": "synlab.release.v1",
+        "release_id": release_id,
+        "profile": f"{PROFILE}_UNFROZEN",
+        "scope": "SYNTHETIC",
+        "gates": {"note": "freeze refused; this manifest is not a release"},
+        "assets": assets,
+    }
+    payload["manifest_hash"] = hash_json(payload)
+    return payload
+
+
+def step_export(store: AssetStore, *, release_id: str, out_dir: Path,
+                unverified_ids: Sequence[str] | None = None) -> dict[str, Any]:
     """The body of ``tools/closed_loop.py --step export_training_package``."""
     from synlab.storage.export import export_release, export_training_package
+
+    if unverified_ids:
+        # ``export_training_package`` re-loads the release from ``<store>/releases/<id>`` even when
+        # it is handed a mapping, so the *only* way to exercise the real export code on a scope
+        # whose freeze was refused is to make that one lookup resolve to the in-memory manifest
+        # for the duration of the call.  Nothing is written to <store>/releases; the package
+        # manifest still records the refused profile.
+        from synlab.storage import release as release_mod
+        from synlab.storage.export import export_training_package
+
+        manifest = _unverified_manifest(store, release_id, unverified_ids)
+        package_dir = out_dir / "training_package"
+        original_load = release_mod.ReleaseManager.load
+
+        def _load(self, requested_id, _manifest=manifest):  # noqa: ANN001
+            if str(requested_id) == release_id:
+                return _manifest
+            return original_load(self, requested_id)
+
+        release_mod.ReleaseManager.load = _load
+        try:
+            package = export_training_package(store, release_id, package_dir,
+                                              formats=EXPORT_FORMATS)
+        finally:
+            release_mod.ReleaseManager.load = original_load
+        counts = package.get("counts") or {}
+        return {
+            "status": "OK", "release_id": release_id, "frozen": False,
+            "release_manifest": "in-memory, NOT written to <store>/releases (freeze was refused)",
+            "profile_sought": PROFILE,
+            "package_dir": str(package_dir),
+            "package_manifest": str(package_dir / "export_manifest.json"),
+            "manifest_hash": package.get("manifest_hash"), "counts": counts,
+            "relations": counts.get("relations"), "relation_kinds": counts.get("relation_kinds"),
+            "bytes_total": package.get("bytes_total"), "files_total": package.get("counts_total"),
+            "views": package.get("views"), "separation": package.get("separation"),
+            "reference_closure": package.get("reference_closure"),
+            "token_cache": package.get("token_cache"), "labels": package.get("labels"),
+            "unverified_scope_assets": len(unverified_ids),
+            "artifacts": [str(package_dir / "export_manifest.json")],
+        }
 
     legacy_dir = out_dir / "release_index"
     legacy = export_release(store, release_id, fmt="parquet", out_dir=str(legacy_dir))
@@ -216,7 +336,7 @@ def step_export(store: AssetStore, *, release_id: str, out_dir: Path) -> dict[st
     package = export_training_package(store, release_id, package_dir, formats=EXPORT_FORMATS)
     counts = package.get("counts") or {}
     return {
-        "status": "OK", "release_id": release_id, "package_dir": str(package_dir),
+        "status": "OK", "release_id": release_id, "frozen": True, "package_dir": str(package_dir),
         "package_manifest": str(package_dir / "export_manifest.json"),
         "manifest_hash": package.get("manifest_hash"), "counts": counts,
         "relations": counts.get("relations"), "relation_kinds": counts.get("relation_kinds"),
@@ -256,9 +376,17 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--out", default=DEFAULT_OUT)
     parser.add_argument("--ledger", default=DEFAULT_LEDGER)
     parser.add_argument("--evidence", default="data/a12")
+    parser.add_argument("--profile", default=PROFILE,
+                        help="release profile to freeze under; a required gate that is "
+                             "not PASS blocks that profile, and no gate is ever relaxed")
     parser.add_argument("--release", default=None,
                         help="release id for the export step (default: the last frozen one)")
+    parser.add_argument("--allow-unverified", action="store_true",
+                        help="if the freeze is refused, still export the batch scope through "
+                             "a manifest that is explicitly marked UNFROZEN (never written to "
+                             "<store>/releases) so the export/loader machinery can be exercised")
     args = parser.parse_args(argv)
+    profile = str(args.profile).upper()
 
     store = AssetStore(Path(args.store))
     out_dir = Path(args.out)
@@ -273,7 +401,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         started = time.time()
         if name == "freeze":
             result = step_freeze(store, ledger_path=Path(args.ledger), out_dir=out_dir,
-                                 evidence_root=args.evidence)
+                                 evidence_root=args.evidence, profile=profile)
         elif name == "export_training_package":
             release_id = args.release or state.get("release_id")
             if not release_id:
@@ -281,7 +409,12 @@ def main(argv: Sequence[str] | None = None) -> int:
                           "error": {"code": "INPUT_UNAVAILABLE",
                                     "message": "no frozen release: run the freeze step first"}}
             else:
-                result = step_export(store, release_id=release_id, out_dir=out_dir)
+                unverified = None
+                if args.allow_unverified and not state.get("freeze", {}).get("frozen"):
+                    frozen_state = state.get("freeze") or {}
+                    unverified = frozen_state.get("unverified_scope_ids")
+                result = step_export(store, release_id=release_id, out_dir=out_dir,
+                                     unverified_ids=unverified)
         elif name == "loader_probe":
             result = step_loader_probe(package_dir=out_dir / "training_package",
                                        report_path=Path("data/a12/reports/loader_probe.json"))
@@ -296,7 +429,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"[{name}] {result['status']} in {result['seconds']}s", flush=True)
         if result["status"] != "OK":
             failed = True
-            break
+            if not args.allow_unverified:
+                break
+            print(f"[{name}] {result['status']} but continuing: --allow-unverified was given, so "
+                  f"the remaining steps still run and their real outcome is recorded", flush=True)
     print(json.dumps({k: {kk: vv for kk, vv in v.items()
                           if kk not in ("counts", "views", "batch", "gates", "coverage")}
                       for k, v in state.items() if isinstance(v, dict)},

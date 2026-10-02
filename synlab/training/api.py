@@ -409,7 +409,15 @@ def resume(run_ref: Any, store: Any | None = None, **kwargs) -> dict[str, Any]:
 
 
 class _SpecView:
-    """Attribute view over a plain spec dict so :class:`Trainer` can read it."""
+    """Attribute view over a plain spec dict so :class:`Trainer` can read it.
+
+    A field that is absent from the spec raises :class:`AttributeError` so that
+    ``getattr(spec, "name", default)`` really returns ``default``.  Returning ``None`` instead
+    (the previous behaviour) turned every optional field into ``float(None)`` / ``int(None)``
+    for specs that simply omit it -- e.g. the plan 22.2 ``curriculum`` block carries only
+    ``enabled``/``comparison_ref``, so resuming a run trained from such a spec crashed while
+    constructing the :class:`Trainer`.
+    """
 
     def __init__(self, data: Mapping[str, Any]):
         object.__setattr__(self, "_data", dict(data))
@@ -419,7 +427,15 @@ class _SpecView:
         if item in data:
             value = data[item]
             return _SpecView(value) if isinstance(value, Mapping) else value
-        return None
+        raise AttributeError(
+            f"spec has no field {item!r}; an absent field must read as absent so that "
+            "getattr(spec, name, default) applies the documented default")
+
+    def __contains__(self, item: str) -> bool:
+        return item in object.__getattribute__(self, "_data")
+
+    def get(self, item: str, default: Any = None) -> Any:
+        return self.__getattr__(item) if item in self else default
 
     def model_dump(self, mode: str = "json") -> dict[str, Any]:
         return dict(object.__getattribute__(self, "_data"))

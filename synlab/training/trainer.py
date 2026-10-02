@@ -29,7 +29,7 @@ from typing import Any, Callable, Mapping, Sequence
 
 import numpy as np
 
-from ..canonical import hash_json
+from ..canonical import array_hash, hash_json
 from ..errors import ErrorCode, SynLabError
 from ..seeds import make_rng
 from .adapter import FeatureBundle
@@ -61,6 +61,33 @@ def _torch():
     import torch
 
     return torch
+
+
+def _hashable_state(value: Any) -> Any:
+    """JSON-safe, content-addressed projection of one checkpoint field.
+
+    ``canonical.hash_json`` refuses objects it cannot serialise, and a checkpoint's ``model`` /
+    ``pair_head`` entries are ``torch.Tensor`` state dicts, so hashing the raw payload raised
+    ``TypeError: Object of type Tensor is not JSON serializable`` -- for *every*
+    ``save_checkpoint`` call.  Tensors (and numpy arrays) are projected to a content hash with
+    their shape/dtype kept, so the payload hash still changes whenever a weight changes.
+    """
+    torch = _torch()
+    if isinstance(value, torch.Tensor):
+        arr = np.ascontiguousarray(value.detach().cpu().numpy())
+        return {"tensor_sha256": array_hash(arr), "shape": list(arr.shape),
+                "dtype": str(arr.dtype)}
+    if isinstance(value, Mapping):
+        return {str(k): _hashable_state(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_hashable_state(v) for v in value]
+    if isinstance(value, (set, frozenset)):
+        return sorted((_hashable_state(v) for v in value), key=repr)
+    if isinstance(value, np.ndarray):
+        arr = np.ascontiguousarray(value)
+        return {"ndarray_sha256": array_hash(arr), "shape": list(arr.shape),
+                "dtype": str(arr.dtype)}
+    return value
 
 
 @dataclass
@@ -624,10 +651,10 @@ class Trainer:
         }
         if extra:
             state["extra"] = dict(extra)
-        state["payload_hash"] = hash_json({
+        state["payload_hash"] = hash_json(_hashable_state({
             k: v for k, v in state.items()
             if k not in ("optimizer", "scheduler", "torch_rng_state", "rng_state")
-        })
+        }))
         return state
 
     def save_checkpoint(self, path: str | os.PathLike[str] | None = None, *,

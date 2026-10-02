@@ -217,6 +217,14 @@ class LineageBalancedSampler:
                  if i % self.world_size == self.rank]
         if not order:
             order = list(self._lineage_order)
+        if not order:
+            # an empty gallery is a structured refusal, not ZeroDivisionError: the pool exposes
+            # no ``lineup``/``fragment_ids``/``neighbours`` for this consumer to draw from
+            raise SynLabError(
+                ErrorCode.INPUT_UNAVAILABLE,
+                "the pool exposes no lineage fragment (lineup/fragment_ids is empty), so no "
+                "microbatch can be drawn",
+                stage="training.sampler.LineageBalancedSampler._draw_fragments")
         start = (draw_index * self.queries) % max(len(order), 1)
         out = []
         for k in range(self.queries):

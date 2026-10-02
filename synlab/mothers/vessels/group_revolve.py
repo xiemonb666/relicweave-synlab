@@ -102,6 +102,7 @@ class BowlParams(_Base):
 
 
 @register_vessel("V01", "碗", param_model=BowlParams,
+                 version="1.1",
                  applicable={"family": "revolve", "requires_cavity": True, "min_wall_mm": 1.0,
                              "scale_mm": [80, 300], "components": ["body"],
                              "shape_parameters": ["diameter_mm", "wall_mm", "base_mm",
@@ -152,6 +153,7 @@ class DeepDishParams(_Base):
 
 
 @register_vessel("V02", "深盘", param_model=DeepDishParams,
+                 version="1.1",
                  applicable={"family": "revolve", "requires_cavity": True, "min_wall_mm": 1.0,
                              "scale_mm": [80, 300], "components": ["body"],
                              "shape_parameters": ["diameter_mm", "wall_mm", "base_mm", "depth_mm",
@@ -199,6 +201,7 @@ class SaucerParams(_Base):
 
 
 @register_vessel("V03", "浅碟", param_model=SaucerParams,
+                 version="1.1",
                  applicable={"family": "revolve", "requires_cavity": True, "min_wall_mm": 0.9,
                              "scale_mm": [80, 260], "components": ["body"],
                              "shape_parameters": ["diameter_mm", "wall_mm", "base_mm", "depth_mm",
@@ -248,6 +251,7 @@ class CupParams(_Base):
 
 
 @register_vessel("V04", "杯", param_model=CupParams,
+                 version="1.1",
                  applicable={"family": "revolve+attachment", "requires_cavity": True,
                              "min_wall_mm": 1.0, "scale_mm": [50, 200],
                              "components": ["body", "handle"],
@@ -327,6 +331,7 @@ class StemmedCupParams(_Base):
 
 
 @register_vessel("V05", "高足杯", param_model=StemmedCupParams,
+                 version="1.1",
                  applicable={"family": "revolve+revolve", "requires_cavity": True,
                              "min_wall_mm": 1.0, "scale_mm": [60, 260],
                              "components": ["cup", "stem"],
@@ -409,6 +414,7 @@ class JarParams(_Base):
 
 
 @register_vessel("V06", "罐", param_model=JarParams,
+                 version="1.1",
                  applicable={"family": "revolve", "requires_cavity": True, "min_wall_mm": 1.2,
                              "scale_mm": [80, 340], "components": ["body"],
                              "shape_parameters": ["diameter_mm", "wall_mm", "base_mm",
@@ -467,6 +473,7 @@ class BottleParams(_Base):
 
 
 @register_vessel("V07", "瓶", param_model=BottleParams,
+                 version="1.1",
                  applicable={"family": "revolve", "requires_cavity": True, "min_wall_mm": 1.2,
                              "scale_mm": [100, 380], "components": ["body"],
                              "shape_parameters": ["diameter_mm", "wall_mm", "base_mm",
@@ -521,6 +528,7 @@ class AmphoraParams(_Base):
 
 
 @register_vessel("V08", "双耳瓶", param_model=AmphoraParams,
+                 version="1.1",
                  applicable={"family": "revolve+attachment", "requires_cavity": True,
                              "min_wall_mm": 1.2, "scale_mm": [90, 380],
                              "components": ["body", "ear_l", "ear_r"],
@@ -605,6 +613,7 @@ class VatParams(_Base):
 
 
 @register_vessel("V11", "坛", param_model=VatParams,
+                 version="1.1",
                  applicable={"family": "revolve", "requires_cavity": True, "min_wall_mm": 1.4,
                              "scale_mm": [100, 360], "components": ["body"],
                              "shape_parameters": ["diameter_mm", "wall_mm", "base_mm",
@@ -651,6 +660,7 @@ class BasinParams(_Base):
 
 
 @register_vessel("V12", "盆", param_model=BasinParams,
+                 version="1.1",
                  applicable={"family": "revolve", "requires_cavity": True, "min_wall_mm": 1.0,
                              "scale_mm": [120, 360], "components": ["body"],
                              "shape_parameters": ["diameter_mm", "wall_mm", "base_mm", "depth_mm",

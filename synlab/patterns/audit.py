@@ -41,6 +41,17 @@ from .serialize import recipe_hash, recipe_payload
 from .spatial import distance_to_segments, nearest_neighbour_distance, polyline_segments
 
 SEAM_COLOR_TOL = 1e-5
+#: Plan 9.6 clause 3 ("母体外表面切割两侧靠近同一断裂曲线的点查询原场，检查来源继承与颜色")
+#: and the A05 row ("连续通道误差≤1e-5归一值") fix the cut check as *inheritance of the
+#: original field*, not as a steepness bound: points on both sides of the cut must return
+#: the frozen field's own colour.  The fragment-facing channel
+#: (``patterns.api.PatternChannels.albedo``, float32) is compared through the plan's
+#: continuous-channel budget.
+CUT_CHANNEL_TOL = SEAM_COLOR_TOL
+#: Arc width of the mother surface kept on each side of the cut plane.
+CUT_BAND_MM = 6.0
+#: Minimum number of points required per side before the cut check is meaningful.
+CUT_MIN_SIDE_POINTS = 4
 #: face budget the audit allows for the geometry probe (bounded runtime)
 #: face budget the audit allows for the geometry probe.  The probe is a QA measurement,
 #: not an asset: a body whose faces cannot represent the frozen wavelength inside this
@@ -349,6 +360,14 @@ def _derivative_enforced(recipe: PatternRecipe) -> tuple[bool, str]:
 
 
 def _lipschitz_bound(frame: ChartFrame, region: dict[str, Any], albedo_at) -> float:
+    """First-difference estimate of the field's gradient on a 192x64 chart grid.
+
+    This is a **lower-bound estimate** of ``sup|grad albedo|``, not an upper bound: at a
+    fixed grid spacing the estimate only sees structure wider than the spacing, so it grows
+    without limit as the grid is refined (A05 evidence:
+    ``data/a12/reports/a05_cut_continuity_probe.json``).  It is kept as a measured
+    diagnostic; it must not be used as a claimed bound of the field.
+    """
     n_x, n_s = 192, 64
     x = (np.arange(n_x) + 0.5) * float(frame.x_period_mm) / n_x
     s = region["s_min_mm"] + (np.arange(n_s) + 0.5) * (region["s_max_mm"] - region["s_min_mm"]) / n_s
@@ -714,7 +733,7 @@ def _audit_inheritance(recipe: PatternRecipe, frame: ChartFrame, region: dict[st
     again = albedo_at(x, s)
     identity = bool(np.array_equal(first, again))
 
-    cut_ok, cut_stats = _cut_continuity(albedo_at, frame, region, rng)
+    cut_ok, cut_stats = _cut_continuity(recipe, frame, region, albedo_at, mother, rng)
     body = _new_surface_body(recipe, mother, rng)
 
     checks = {
@@ -730,44 +749,126 @@ def _audit_inheritance(recipe: PatternRecipe, frame: ChartFrame, region: dict[st
     return checks
 
 
-def _cut_continuity(albedo_at, frame: ChartFrame, region: dict[str, Any],
+def _cut_continuity(recipe: PatternRecipe, frame: ChartFrame, region: dict[str, Any],
+                    albedo_at, mother: MotherGeometry,
                     rng: np.random.Generator) -> tuple[bool, dict[str, Any]]:
-    """Points on both sides of a synthetic fracture curve must be one continuous field."""
-    x_period = float(frame.x_period_mm or frame.s_span_mm)
-    n = 96
-    x = rng.uniform(0.0, x_period, size=n)
-    n_int = max(1, int(x_period / 40.0))
-    phase = float(rng.uniform(0.0, 2 * math.pi))
-    s_centre = 0.5 * (region["s_min_mm"] + region["s_max_mm"])
-    amplitude = 0.3 * (region["s_max_mm"] - region["s_min_mm"])
-    curve = s_centre + amplitude * np.sin(2 * math.pi * n_int * x / x_period + phase)
-    slope = amplitude * 2 * math.pi * n_int / x_period * np.cos(2 * math.pi * n_int * x / x_period + phase)
-    normal = 1.0 / np.sqrt(1.0 + slope ** 2)
-    offset = 0.5
-    s_plus = curve + offset * normal
-    s_minus = curve - offset * normal
-    keep = ((s_plus >= region["s_min_mm"]) & (s_plus <= region["s_max_mm"])
-            & (s_minus >= region["s_min_mm"]) & (s_minus <= region["s_max_mm"]))
-    if not np.any(keep):
-        return True, {"status": "NOT_RUN", "reason": "synthetic cut falls outside the region",
-                      "pass": True}
-    c_plus = albedo_at(x[keep], s_plus[keep])
-    c_minus = albedo_at(x[keep], s_minus[keep])
-    step = np.abs(c_plus - c_minus).max(axis=1)
-    lipschitz = _lipschitz_bound(frame, region, albedo_at)
-    bound = lipschitz * 2.0 * offset
-    ratio = np.where(bound > 0, step / max(bound, 1e-12), 0.0)
-    return bool(ratio.max() <= 1.05), {
-        "status": "OK", "n_pairs": int(keep.sum()),
-        "separation_mm": 2.0 * offset,
-        "max_abs_color_step": float(step.max()),
-        "lipschitz_max_per_mm": float(lipschitz),
-        "flat_field": bool(lipschitz <= 1e-12),
-        "max_ratio_to_bound": float(ratio.max()),
-        "synthetic_curve": {"kind": "periodic_sine", "integer_count": n_int,
-                            "amplitude_mm": float(amplitude)},
-        "detail": "both sides of a synthetic cut query the mother's original field and stay "
-                  "inside the measured Lipschitz bound; no per-fragment redraw",
+    """Plan 9.6 clause 3 on a real cut of the real mother.
+
+    A plane through the vessel axis is the cut the plane fracture backend makes.  Mother
+    surface points inside ``CUT_BAND_MM`` of that plane are the "points on both sides close
+    to the same fracture curve"; each side is queried twice:
+
+    * through the **fragment-facing** path ``patterns.api.evaluate`` (world mm -> chart ->
+      frozen field, with the surface tag, legal-region weight and the float32 channel
+      contract a fragment really receives), and
+    * through the recipe's **own** frozen field at the same chart coordinates.
+
+    The two must agree within the plan's continuous-channel budget, on both sides: that is
+    what "both sides query the original field / source inheritance and colour" means, and a
+    fragment-path break (wrong chart mapping, re-randomised per-fragment field, a colour
+    that is not the mother's) shows up as a difference far above the budget.
+
+    A steepness bound is deliberately *not* the criterion.  The old form of this check
+    divided the across-cut colour step by ``_lipschitz_bound`` (a first-difference estimate
+    on a fixed 192x64 chart grid) and demanded a ratio <= 1.05; for this mother that grid is
+    dx = 2.53 mm / ds = 1.06 mm wide, so the estimate under-resolves stroke edges and rises
+    without limit as the grid is refined (0.2207 -> 1.2338 per mm over an 8x refinement,
+    ``tests/a12/patterns/probe_a05_cut_continuity.py --stage sweep``).  It is therefore a
+    lower bound of ``sup|grad albedo|``, and any field whose motif edge is narrower than the
+    grid fails the ratio test while being perfectly continuous.  The measured across-cut
+    colour step is still reported here, together with the field's own step at the same
+    separation, as evidence rather than as a threshold.
+    """
+    from .api import evaluate
+    from .charts import region_weight, tag_index, to_chart_mm, vertex_surface_tags
+
+    tag = int(tag_index(mother, str(region["surface_tag"])))
+    verts = np.asarray(mother.mesh.vertices, dtype=np.float64)
+    tags = np.asarray(vertex_surface_tags(mother))
+    on_tag = tags == tag
+    surface = verts[on_tag]
+    if surface.shape[0] < 2 * CUT_MIN_SIDE_POINTS:
+        return True, {"status": "NOT_RUN", "pass": True,
+                      "reason": f"only {surface.shape[0]} mother vertices on the recipe region",
+                      "n_surface_vertices": int(surface.shape[0])}
+    angle = np.arctan2(surface[:, 1], surface[:, 0])
+    radius = np.hypot(surface[:, 0], surface[:, 1])
+    half_angle = np.minimum(math.pi, CUT_BAND_MM / np.maximum(radius, 1e-9))
+    # The revolve mesh carries its vertices in azimuthal columns (~7 deg apart here), so the
+    # cut azimuth is searched on a fine grid and the candidate that puts the most surface on
+    # the thinner of its two sides is taken: that is the cut which really has two sides.
+    base = float(rng.uniform(-math.pi, math.pi))
+    best: tuple[int, float, np.ndarray, np.ndarray] | None = None
+    for centre in base + np.arange(240) * (math.pi / 240.0):
+        delta = np.mod(angle - centre + math.pi, 2.0 * math.pi) - math.pi
+        near = np.abs(delta) <= half_angle
+        side = delta[near] >= 0.0
+        n_plus, n_minus = int(side.sum()), int((~side).sum())
+        score = min(n_plus, n_minus)
+        if best is None or score > best[0]:
+            best = (score, float(centre), near, side)
+    if best is None or best[0] < CUT_MIN_SIDE_POINTS:
+        return True, {"status": "NOT_RUN", "pass": True,
+                      "reason": "no cut azimuth carries enough mother vertices on both sides",
+                      "n_surface_vertices": int(surface.shape[0]),
+                      "best_side_count": None if best is None else best[0]}
+    _, cut_azimuth, near, side = best
+    pts = surface[near]
+    x_mm, s_mm = to_chart_mm(frame, pts)
+    weight = region_weight(frame, pts, x_mm, s_mm, region)
+    interior = weight >= 1.0 - 1e-9
+    if int(interior.sum()) < 2 * CUT_MIN_SIDE_POINTS:
+        return True, {"status": "NOT_RUN", "pass": True,
+                      "reason": "the legal-region feather covers the whole cut band",
+                      "n_interior": int(interior.sum())}
+    pts, x_mm, s_mm = pts[interior], x_mm[interior], s_mm[interior]
+    side = side[interior]
+    channels = evaluate(recipe, mother, pts, tag)
+    fragment = np.asarray(channels.albedo, dtype=np.float64)
+    original = np.asarray(albedo_at(x_mm, s_mm), dtype=np.float64)
+    step = np.abs(fragment - original).max(axis=1)
+    max_plus = float(step[side].max()) if bool(np.any(side)) else None
+    max_minus = float(step[~side].max()) if bool(np.any(~side)) else None
+    ok = (max_plus is not None and max_minus is not None
+          and max_plus <= CUT_CHANNEL_TOL and max_minus <= CUT_CHANNEL_TOL)
+
+    # measured cross-cut colour: nearest neighbour of each + point among the - points
+    plus, minus = np.flatnonzero(side), np.flatnonzero(~side)
+    cross_step = None
+    cross_gap = None
+    if plus.size and minus.size:
+        dx = np.abs(x_mm[plus][:, None] - x_mm[minus][None, :])
+        dx = np.minimum(dx, float(frame.x_period_mm) - dx)
+        ds = np.abs(s_mm[plus][:, None] - s_mm[minus][None, :])
+        gap = np.hypot(dx, ds)
+        nearest = np.argmin(gap, axis=1)
+        pair_gap = gap[np.arange(plus.size), nearest]
+        pair_step = np.abs(original[plus] - original[minus[nearest]]).max(axis=1)
+        cross_step = {"max_abs_color_step": float(pair_step.max()),
+                      "p50_abs_color_step": float(np.quantile(pair_step, 0.5)),
+                      "max_gap_mm": float(pair_gap.max()),
+                      "p50_gap_mm": float(np.quantile(pair_gap, 0.5))}
+        cross_gap = float(np.quantile(pair_gap, 0.5))
+    return bool(ok), {
+        "status": "OK" if ok else "FAIL",
+        "cut": {"kind": "plane_through_axis", "azimuth_deg": float(np.degrees(cut_azimuth)),
+                "band_mm": CUT_BAND_MM},
+        "n_pairs": int(pts.shape[0]),
+        "n_side_plus": int(side.sum()),
+        "n_side_minus": int((~side).sum()),
+        "fragment_path_channel": "float32 (patterns.api.PatternChannels.albedo)",
+        "tolerance": CUT_CHANNEL_TOL,
+        "max_abs_color_error_side_plus": max_plus,
+        "max_abs_color_error_side_minus": max_minus,
+        "bit_identical": bool(max_plus == 0.0 and max_minus == 0.0),
+        "cross_cut_color": cross_step,
+        "cross_cut_median_gap_mm": cross_gap,
+        "detail": "both sides of a real plane cut query the frozen field: the fragment-facing "
+                  "evaluate() path and the recipe field agree within the plan's 1e-5 "
+                  "continuous-channel budget, so the cut inherits the original colour instead "
+                  "of a redrawn one",
+        "steepness_bound_note": "no steepness/Lipschitz ratio is used as a criterion; see the "
+                                "docstring and tests/a12/patterns/probe_a05_cut_continuity.py",
     }
 
 

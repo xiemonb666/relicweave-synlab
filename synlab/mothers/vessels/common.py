@@ -50,7 +50,7 @@ def shell_profile(*, R_mm: float, z_rim_mm: float, base_pts: Sequence[tuple[floa
     ctrl = np.asarray(base + wall[1:], dtype=np.float64)
     if ctrl[0, 0] > 1e-9:
         ctrl = np.vstack([[0.0, ctrl[0, 1]], ctrl])
-    ctrl = monotone_radius_control_points(ctrl, stage=stage)
+    ctrl = advancing_control_points(ctrl, stage=stage)
     if np.max(ctrl[:, 0]) < 0.2 * R_mm:
         raise SynLabError(ErrorCode.MOTHER_INVALID, "vessel radius is degenerate",
                           stage=stage, measurements={"r_max": float(np.max(ctrl[:, 0]))})
@@ -71,6 +71,11 @@ def shell_profile(*, R_mm: float, z_rim_mm: float, base_pts: Sequence[tuple[floa
     profile = build_shell_profile(ctrl, t_ctrl, chord_tol_mm=tolerance, rim_mode=rim_mode,
                                  rim_bulge=rim_bulge, min_wall_mm=wall_floor * 0.9, stage=stage)
     profile.metrics["z_rim_target_mm"] = float(z_rim_mm)
+    # Recording only (it changes no geometry): the parameter/geometry consistency column, so a
+    # reviewer can query "does this asset's body reach the rim its own parameters declare"
+    # without re-deriving it.  A value near zero means the two agree; a large positive value is
+    # the A2 truncation signature measured in docs/a12/mother_geometry_audit.md.
+    profile.metrics["z_rim_shortfall_mm"] = float(z_rim_mm) - float(profile.z_rim)
     profile.metrics["pole_blend_mm"] = float(pole_blend_mm)
     profile.metrics["pole_blend_fraction"] = float(blend_fraction)
     profile.metrics["design_min_wall_mm"] = float(min_wall_mm)
@@ -143,25 +148,35 @@ def _dedupe_sorted(t_ctrl: np.ndarray) -> np.ndarray:
     return np.asarray(out, dtype=np.float64)
 
 
-def monotone_radius_control_points(ctrl: np.ndarray, *, min_ratio: float = 0.05,
-                                   stage: str = "mothers.vessels.shell") -> np.ndarray:
-    """Keep the mid-line moving outwards: drop points that fold back in ``r``.
+def advancing_control_points(ctrl: np.ndarray, *, min_ratio: float = 0.05,
+                             stage: str = "mothers.vessels.shell") -> np.ndarray:
+    """Keep the mid-line advancing in ``z``: drop points that repeat or fall back.
 
-    A shoulder or a neck is described by radii that shrink towards the mouth, but the
-    control poly-line may never *revisit* a smaller radius while rising: PCHIP would then
-    fold the wall onto itself.  Points that violate the order are dropped (with the count
-    reported in the raised error's measurements only when nothing usable is left).
+    A shoulder or a neck is described by radii that shrink towards the mouth, which is a
+    perfectly ordinary function graph: :func:`~synlab.mothers.geometry.build_shell_profile`
+    builds ``r(t)`` and ``z(t)`` against the **arclength parameter** ``t``, which strictly
+    increases, so a radius that rises and then falls can never fold the wall onto itself.
+    What genuinely degenerates PCHIP is a *parameter* that does not advance - a duplicated or
+    backwards ``z``.  Only those points are dropped here (the kept/dropped counts are reported
+    in the raised error's measurements when nothing usable is left).
+
+    This function was previously named ``monotone_radius_control_points`` and enforced a
+    non-decreasing **radius**, which silently deleted every shoulder/neck segment of a necked
+    vessel (defect A2 in ``docs/a12/mother_geometry_audit.md``).  The real fold guards are the
+    *measured* ones inside ``build_shell_profile``: ``offset_clearance`` (inscribed radius at a
+    vertex), ``curvature_margin`` (local curvature radius vs half thickness) and
+    ``_self_intersects``; they still raise ``MOTHER_INVALID`` with their measurements.
     """
     pts = np.asarray(ctrl, dtype=np.float64)
     kept: list[np.ndarray] = [pts[0]]
     for row in pts[1:]:
-        if row[0] < kept[-1][0] - 1e-9:
+        if row[1] <= kept[-1][1] + 1e-9:      # z must strictly advance
             continue
         kept.append(row)
     out = np.asarray(kept, dtype=np.float64)
     if len(out) < 3:
         raise SynLabError(ErrorCode.MOTHER_INVALID,
-                          "mid-line control points collapse after enforcing monotone radius",
+                          "mid-line control points collapse after enforcing rising z",
                           stage=stage, measurements={"requested": int(len(pts)),
                                                      "kept": int(len(out))})
     if out[0, 0] > 1e-9:
@@ -187,10 +202,13 @@ def wall_points(*, r_start_mm: float, R_mm: float, z_start: float, z_rim_mm: flo
     ``flare_mm`` widens the last part of the profile (口沿) and may push the radius past
     ``R_mm``; ``neck_r_mm`` pulls the top in towards a neck (颈).
 
-    The returned radii are **monotonically non-increasing in z**, because a mid-line that
-    revisits a smaller radius while rising would fold the wall onto itself: a shoulder is a
-    *slope change*, not a step.  When a neck is requested, the belly tops out at the neck
-    radius (a real shoulder cone) instead of bulging to ``R_mm`` and collapsing back.
+    The returned points are the sampled mid-line, unchanged and in rising ``z``: the radius is
+    free to widen towards ``R_mm`` (and to overshoot it when ``flare_mm`` is requested), and to
+    narrow again towards a neck.  An earlier revision clamped every rising radius to the
+    previous one (``if out and rr > out[-1][0]: rr = out[-1][0]``), which flattened **every**
+    widening wall to the radius of its first sample - defect A1 in
+    ``docs/a12/mother_geometry_audit.md``.  Radii are still floored at zero; the anti-fold
+    guards live in :func:`~synlab.mothers.geometry.build_shell_profile` and are measured there.
     """
     n = int(max(count, 3))
     r_start_mm = float(r_start_mm)
@@ -209,12 +227,7 @@ def wall_points(*, r_start_mm: float, R_mm: float, z_start: float, z_rim_mm: flo
             w = (u - float(flare_from)) / max(1.0 - float(flare_from), 1e-6)
             rr = rr + float(flare_mm) * (w ** 1.6)
         pts.append((float(max(rr, 0.0)), float(z)))
-    out: list[tuple[float, float]] = []
-    for rr, z in pts:
-        if out and rr > out[-1][0]:
-            rr = out[-1][0]
-        out.append((rr, z))
-    return out
+    return [(float(rr), float(z)) for rr, z in pts]
 
 
 

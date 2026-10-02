@@ -77,16 +77,24 @@ def thin_bowl_mother(*, outer_radius_mm: float = 12.0, height_mm: float = 16.0,
                      wall_mm: float = 1.2, base_thickness_mm: float = 2.0,
                      sections: int = 48, mother_id: str = "bowl_thin",
                      material_id: str = "M_FIX") -> MotherGeometry:
-    """Thin-walled open bowl (outer shell minus an inner cavity), watertight."""
+    """Thin-walled open bowl (outer shell minus an inner cavity), watertight.
+
+    ``trimesh.creation.cone`` is already a *closed* solid with the base disc at ``z = 0`` and
+    the apex at ``z = height`` (measured on trimesh 5.1.0), so the bowl is built by flipping it
+    apex-down and lifting it back onto ``z = 0``: the rim (radius ``outer_radius_mm``) then sits
+    at ``z = height_mm``.  The cavity is a second cone of the same slope, offset so that
+    ``base_thickness_mm`` of material stays under the tip, and long enough to pass through the
+    rim so the bowl is genuinely open.
+    """
+    inner_height = height_mm - base_thickness_mm + _RIM_OVERLAP_MM
     outer = trimesh.creation.cone(radius=outer_radius_mm, height=height_mm, sections=sections)
-    outer.apply_translation([0.0, 0.0, height_mm / 2.0])
     outer = _cap_cone(outer, outer_radius_mm, height_mm)
-    inner_radius = outer_radius_mm - wall_mm
-    inner_height = height_mm - base_thickness_mm
-    inner = trimesh.creation.cone(radius=inner_radius, height=inner_height, sections=sections)
-    inner.apply_translation([0.0, 0.0, base_thickness_mm + inner_height / 2.0])
-    inner = _cap_cone(inner, inner_radius, inner_height)
-    inner.apply_translation([0.0, 0.0, 0.4])  # cut the cavity open through the rim
+    _flip_apex_down(outer, height_mm)
+    inner = trimesh.creation.cone(radius=outer_radius_mm - wall_mm, height=inner_height,
+                                  sections=sections)
+    inner = _cap_cone(inner, outer_radius_mm - wall_mm, inner_height)
+    _flip_apex_down(inner, inner_height)
+    inner.apply_translation([0.0, 0.0, base_thickness_mm])
     shell = trimesh.boolean.difference([outer, inner], engine="manifold")
     if not bool(shell.is_watertight):
         raise RuntimeError("thin_bowl_mother fixture is not watertight")
@@ -108,7 +116,13 @@ def thin_bowl_mother(*, outer_radius_mm: float = 12.0, height_mm: float = 16.0,
 
 
 def _cap_cone(cone: trimesh.Trimesh, radius: float, height: float) -> trimesh.Trimesh:
-    """Close a trimesh cone along +Z (its base sits at z = 0 in local coordinates)."""
+    """Close a cone along +Z when the installed trimesh returns an open one.
+
+    ``trimesh.creation.cone`` has been watertight since 4.x, so this is normally a no-op; it is
+    kept (and made idempotent) because the fixture must not depend on that detail.
+    """
+    if bool(cone.is_watertight):
+        return cone
     from trimesh.creation import triangulate_polygon
     from shapely.geometry import Point
 
@@ -119,6 +133,16 @@ def _cap_cone(cone: trimesh.Trimesh, radius: float, height: float) -> trimesh.Tr
                           faces=faces, process=False)
     cap.fix_normals()
     return trimesh.util.concatenate([cone, cap])
+
+
+#: how far the cavity cone pokes past the rim so the vessel is genuinely open (mm)
+_RIM_OVERLAP_MM = 0.5
+
+
+def _flip_apex_down(cone: trimesh.Trimesh, height: float) -> None:
+    """Rotate a ``z in [0, height]`` base-down cone so its apex sits on ``z = 0`` in place."""
+    cone.apply_transform(trimesh.transformations.rotation_matrix(np.pi, [1.0, 0.0, 0.0]))
+    cone.apply_translation([0.0, 0.0, float(height)])
 
 
 def two_block_mother(extents: tuple[float, float, float] = (20.0, 20.0, 20.0), *,

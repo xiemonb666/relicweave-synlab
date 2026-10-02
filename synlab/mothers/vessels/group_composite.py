@@ -148,6 +148,7 @@ class EwerParams(_Base):
 
 
 @register_vessel("V09", "壶", param_model=EwerParams,
+                 version="1.1",
                  applicable={"family": "revolve+attachment", "requires_cavity": True,
                              "min_wall_mm": 1.2, "scale_mm": [60, 320],
                              "components": ["body", "spout", "handle"],
@@ -243,6 +244,7 @@ class LiddedPotParams(_Base):
 
 
 @register_vessel("V10", "带盖壶", param_model=LiddedPotParams,
+                 version="1.1",
                  applicable={"family": "revolve+lid", "requires_cavity": True,
                              "min_wall_mm": 1.2, "scale_mm": [60, 340],
                              "components": ["body", "lid"],
@@ -530,6 +532,7 @@ class LampParams(_Base):
 
 
 @register_vessel("V15", "灯盏", param_model=LampParams,
+                 version="1.1",
                  applicable={"family": "revolve+spout", "requires_cavity": True,
                              "min_wall_mm": 1.0, "scale_mm": [30, 200],
                              "components": ["body", "spout"],
@@ -598,6 +601,7 @@ class CenserParams(_Base):
 
 
 @register_vessel("V16", "香炉", param_model=CenserParams,
+                 version="1.1",
                  applicable={"family": "revolve+attachment", "requires_cavity": True,
                              "min_wall_mm": 1.2, "scale_mm": [40, 300],
                              "components": ["body", "feet"],
@@ -729,6 +733,7 @@ class FlowerPotParams(_Base):
 
 
 @register_vessel("V17", "花盆", param_model=FlowerPotParams,
+                 version="1.1",
                  applicable={"family": "revolve+pierced", "requires_cavity": True,
                              "min_wall_mm": 1.2, "scale_mm": [60, 340], "components": ["body"],
                              "shape_parameters": ["diameter_mm", "wall_mm", "base_mm", "depth_mm",

@@ -1,9 +1,9 @@
 # A12 验收报告（A01–A36）
 
-- 生成时间：2026-10-02 10:06:27
+- 生成时间：2026-10-02 11:48:01
 - 发布 profile：`SANDBOX_CORE`
 - 平台：Windows-11-10.0.26200-SP0 / Python 3.12.14
-- 统计：{'PASS': 13, 'PENDING': 6, 'FAIL': 4, 'NOT_RUN': 6, 'NA': 7}
+- 统计：{'PASS': 14, 'PENDING': 6, 'FAIL': 3, 'NOT_RUN': 6, 'NA': 7}
 
 > 本报告的每一项都由实际命令产生。`NOT_RUN` 表示未运行，`PENDING` 表示前置条件（外部后端、实拍数据、规模运行）尚未具备，`NA` 表示该 profile 下不适用。没有任何一项用推测或复制设计值充当实测结果。
 
@@ -11,8 +11,8 @@
 |---|---|---|---|---|---|
 | A01 | 合同与权限（六 pack、features/labels 边界） | **PASS** | {"unknown_field_rejected": true, "leakage_detector": true, "forbidden_fields_in_committed_features": []} | synlab/observe/features.py::assert_no_leakage | schema rejection + recursive whitelist + committed feature audit |
 | A02 | 坐标投影（mm、K、T、depth/range、crop） | **PASS** | {"max_mm_error": 1.4210854715202004e-14, "max_px_error": 0.0} | docs/a12/env_report.json | analytic projection/back-projection round trip |
-| A03 | 母体（24 族 × ≥20 独立母体） | **PENDING** | {"vessels_present": 3, "min_lineages_per_vessel": 1, "total_mothers": 13} | - | counts come from committed mother assets; 24x20 requires the L2 run |
-| A04 | 材料层（12 材料 / 4 层结构） | **PENDING** | {"materials_present": 2, "ids": ["M01", "M04"]} | - | shading vs geometric layers must be distinguishable |
+| A03 | 母体（24 族 × ≥20 独立母体） | **PENDING** | {"vessels_present": 19, "min_lineages_per_vessel": 1, "total_mothers": 55} | - | counts come from committed mother assets; 24x20 requires the L2 run |
+| A04 | 材料层（12 材料 / 4 层结构） | **PENDING** | {"materials_present": 11, "ids": ["M01", "M02", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12"]} | - | shading vs geometric layers must be distinguishable |
 | A05 | 花纹（16 family） | **FAIL** | {"families": 16, "max_seam_error": 6.183942247162122e-14, "deterministic": true, "geometry_applied": true} | data/a12/reports/pattern_audit.json |  |
 | A06 | 断裂守恒（四必做后端、薄壳、复杂体） | **FAIL** | {"backends_pass": 0, "backends": {"plane_shared_cut": "FAIL"}, "conservation_ratio_max": null, "overlap_ratio_max": null} | data/a12/reports/fracture_audit.json |  |
 | A07 | 精度实现（cutter / 共形 warp） | **NOT_RUN** | {} | - | requires a fracture event with an error budget |
@@ -32,7 +32,7 @@
 | A21 | 资源与规模（L2/L3） | **NA** | {} | - | not applicable to profile SANDBOX_CORE |
 | A22 | 发布交接（新目录启动/读写恢复） | **PENDING** | {"runbook": true, "releases": 0, "store_health": true} | docs/a12/runbook.md |  |
 | A23 | 开源复用（第 2.4 节全部适用模块） | **PASS** | {"modules": 25, "incomplete": [], "custom_gap_without_evidence": [], "custom_gaps": 4} | docs/a12/reuse_manifest.json |  |
-| A24 | 观测来源/DAG | **FAIL** | {"checks": {"control_is_sensitive": true, "frame_source_kind": true, "gt_pose_invariance": false, "no_depth_or_scale_input": true, "pose_priors_empty": true}, "control_run": {"db_hash": "sha256:9a4e6e3f121ee6eec70b50d3c351f4e755d929544e93c44d3429c023d03b65cb", "keypoints": 4821, "keypoints_hash": "s | data/a12/reports/source_dependency_audit.json |  |
+| A24 | 观测来源/DAG | **PASS** | {"checks": {"control_is_sensitive": true, "frame_source_kind": true, "gt_pose_invariance": true, "no_depth_or_scale_input": true, "pose_priors_empty": true}, "control_run": {"db_hash": "sha256:8a9c321de994b34f38eabebd0de8d4a6355e5c4e0677cc0e5773c881fbf3f3db", "keypoints": 4821, "keypoints_hash": "sh | data/a12/reports/source_dependency_audit.json |  |
 | A25 | 坐标/展示（0.5px、resize、EXIF、COLMAP 往返、100mm GLB） | **PASS** | {"checks": {"colmap_convention": {"note": "", "ok": true}, "colmap_real_library": {"note": "", "ok": true}, "display": {"note": "GLB derivation + UI measurement + frontend matrices verified", "ok": true}, "exif": {"note": "", "ok": true}, "pixel_transforms": {"note": "", "ok": true}}, "colmap_conven | data/a12/reports/pixel_contract.json |  |
 | A26 | 分区形变（共享 PLC / 共形网格） | **NOT_RUN** | {} | - | requires the warped_partition backend to run |
 | A27 | 来源/对应（原三角 ID、公共面积、损伤关联分离） | **NOT_RUN** | {} | - | requires fracture + truth audits |
@@ -44,7 +44,7 @@
 | A33 | 权限/输入（服务端角色、路径/资源限制） | **PASS** | {"deployment_truth_denied": true, "operator_truth_denied": true, "path_traversal_denied": true, "unregistered_file_role_denied": true} | data/a12/reports/api_security.json |  |
 | A34 | 资产/调度（同 blob 多 role、code identity、GPU 清退、reservation） | **PASS** | {} | data/a12/reports/recovery_probe.json |  |
 | A35 | 续训/监督分母（acknowledged cursor、prefetch 重放） | **NA** | {} | - | not applicable to profile SANDBOX_CORE |
-| A36 | 配置/发布（route/scope 枚举、全部配置编译） | **PASS** | {"compiled": {"closed_loop.yaml": "OK", "coverage.yaml": "OK", "diagnose_sandbox.yaml": "OK", "pilot.yaml": "OK", "pool_dev.yaml": "OK", "pool_pilot.yaml": "OK", "sandbox.yaml": "OK", "train_pilot.yaml": "OK", "train_sandbox.yaml": "OK", "degrade_recipes/paired_edgewear_blur_bump.yaml": "OK", "degra | - | every shipped config must compile through the typed schema |
+| A36 | 配置/发布（route/scope 枚举、全部配置编译） | **PASS** | {"compiled": {"closed_loop.yaml": "OK", "coverage.yaml": "OK", "diagnose_sandbox.yaml": "OK", "next_experiment.yaml": "OK", "pilot.yaml": "OK", "pool_dev.yaml": "OK", "pool_pilot.yaml": "OK", "sandbox.yaml": "OK", "train_pilot.yaml": "OK", "train_sandbox.yaml": "OK", "degrade_recipes/paired_edgewear | - | every shipped config must compile through the typed schema |
 
 ## 状态矩阵
 

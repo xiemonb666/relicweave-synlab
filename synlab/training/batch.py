@@ -318,7 +318,7 @@ def build_training_batch(
             c_ix = index_of[cid]
             rel = relation_code(relation_lookup(qid, cid))
             confirmed = bool(confirmed_lookup(qid, cid))
-            history_r2 = cid in neighbours_lookup.get(qid, ())
+            history_r2 = cid in neighbours_lookup(qid)
             pair_index[i, slot] = (q_ix, c_ix)
             pair_valid[i, slot] = True
             labels_relation[i, slot] = rel
@@ -356,7 +356,7 @@ def build_training_batch(
             excluded_mask[i, slot] = True
             labels_relation[i, slot] = rel
             label_pair_valid[i, slot] = bool(confirmed_lookup(qid, cid))
-            if cid in neighbours_lookup.get(qid, ()) or rel == RELATION_R2_CODE:
+            if cid in neighbours_lookup(qid) or rel == RELATION_R2_CODE:
                 exclusion_reason[i, slot] = EXCLUSION_KNOWN_R2
             elif rel == RELATION_UNKNOWN_CODE:
                 exclusion_reason[i, slot] = EXCLUSION_UNKNOWN
@@ -456,25 +456,73 @@ class _SamplerCfg:
             return cls()
         if isinstance(spec, _SamplerCfg):
             return spec
-        if isinstance(spec, Mapping):
-            mix = spec.get("negative_mix", {"R1": 0.5, "R0": 0.5})
-            return cls(queries=int(spec.get("queries_per_microbatch", 2)),
-                       positive_limit=int(spec.get("positive_limit", 2)),
-                       negative_limit=int(spec.get("legal_negative_limit", 8)),
-                       negative_mix=(float(mix.get("R1", 0.5)), float(mix.get("R0", 0.5))))
-        mix = getattr(spec, "negative_mix", {"R1": 0.5, "R0": 0.5})
-        return cls(
-            queries=int(getattr(spec, "queries_per_microbatch", 2)),
-            positive_limit=int(getattr(spec, "positive_limit", 2)),
-            negative_limit=int(getattr(spec, "legal_negative_limit", 8)),
-            negative_mix=(float(mix.get("R1", 0.5)), float(mix.get("R0", 0.5))),
-        )
+
+        def field(name: str, default: Any) -> Any:
+            """Read one sampler field from either a mapping or an attribute view.
+
+            ``synlab.training.api.resume`` rebuilds the spec from ``recipe.json`` as
+            :class:`synlab.training.api._SpecView` (an *attribute* view whose missing keys read
+            as ``None``), so both access forms are part of this interface.
+            """
+            if isinstance(spec, Mapping):
+                value = spec[name] if name in spec else default
+            else:
+                value = getattr(spec, name, None)
+                if value is None:
+                    value = default
+            return value
+
+        return cls(queries=int(field("queries_per_microbatch", 2)),
+                   positive_limit=int(field("positive_limit", 2)),
+                   negative_limit=int(field("legal_negative_limit", 8)),
+                   negative_mix=_mix_weights(field("negative_mix", None)))
+
+
+def _mix_weights(raw: Any) -> tuple[float, float]:
+    """``negative_mix`` as ``(R1, R0)`` from a mapping, an attribute view, or ``None``."""
+    if raw is None:
+        return 0.5, 0.5
+
+    def weight(name: str) -> float:
+        value = raw.get(name) if isinstance(raw, Mapping) else getattr(raw, name, None)
+        return 0.5 if value is None else float(value)
+
+    return weight("R1"), weight("R0")
+
+
+class _NeighboursIndex(dict):
+    """Historical-R2 adjacency index: the documented ``neighbours(q) -> set`` lookup.
+
+    The contract of :func:`_build_lookup` -- and of the pool protocol used across the whole
+    repository (``pool.neighbours(fid)``) -- is a **callable**.  This object is that callable
+    and additionally keeps plain mapping access, because the frozen integration test
+    ``tests/a12/relations/test_sampler.py::test_rows_feed_training_batch`` wraps this return
+    value and reads it with ``.get(fid, set())``; that wrapper is documented as redundant once
+    the fix lands (``docs/a12/relations_diagnostics_episodes.md`` §5 G1) and
+    ``synlab/training`` never uses the mapping form.  Mapping access is therefore a
+    compatibility affordance, not the contract -- pinned by
+    ``tests/a12/training/test_batch_lookup_contract.py``.
+    """
+
+    __slots__ = ()
+
+    def __call__(self, fragment_id: str) -> set[str]:
+        return set(self.get(str(fragment_id), set()))
 
 
 def _build_lookup(labels, pool, ids):
-    """Return ``(relation(q,c)->name, neighbours(q)->set, confirmed(q,c)->bool)``."""
+    """Return ``(relation(q,c)->name, neighbours(q)->set, confirmed(q,c)->bool)``.
+
+    All three lookups are **callables**, matching the pool protocol used everywhere else in
+    the repository (``pool.neighbours(fid)`` -- ``relations.gallery.RelationPool``,
+    ``training.sampler.PoolIndex``, ``qc.loader_probe.ExportedRelationPool``) and the
+    ``labels``/callable form documented for :func:`build_training_batch`.  The adjacency is
+    materialised as a :class:`_NeighboursIndex`, which is callable per the contract and also
+    keeps plain mapping access for the frozen integration test (see its docstring); callers
+    inside ``synlab/training`` always call the lookup.
+    """
     rel_table: dict[tuple[str, str], str] = {}
-    neighbours: dict[str, set[str]] = {fid: set() for fid in ids}
+    neighbours = _NeighboursIndex({fid: set() for fid in ids})
     confirmed: dict[tuple[str, str], bool] = {}
 
     if pool is not None and hasattr(pool, "relation"):
@@ -526,19 +574,19 @@ def _build_lookup(labels, pool, ids):
     return relation_of, neighbours, confirmed_of
 
 
-def _sample_rows(ids, neighbours, relation_of, confirmed_of, cfg: _SamplerCfg,
+def _sample_rows(ids, neighbours_of, relation_of, confirmed_of, cfg: _SamplerCfg,
                  rng: np.random.Generator) -> list[dict]:
-    with_mates = [fid for fid in ids if neighbours.get(fid)]
+    with_mates = [fid for fid in ids if neighbours_of(fid)]
     candidates = with_mates or list(ids)
     n = min(cfg.queries, len(candidates))
     chosen = list(rng.choice(candidates, size=n, replace=False)) if n else []
     rows = []
     for qid in chosen:
-        pos = sorted(neighbours.get(qid, set()))
+        pos = sorted(neighbours_of(qid))
         pos = pos[: cfg.positive_limit]
         r1, r0 = [], []
         for cid in ids:
-            if cid == qid or cid in neighbours.get(qid, set()):
+            if cid == qid or cid in neighbours_of(qid):
                 continue
             if not confirmed_of(qid, cid):
                 continue
@@ -556,7 +604,7 @@ def _sample_rows(ids, neighbours, relation_of, confirmed_of, cfg: _SamplerCfg,
         picked = list(rng.permutation(r1)[:n1]) if r1 else []
         picked += list(rng.permutation(r0)[: max(0, budget - len(picked))])
         excluded = sorted({c for c in ids
-                           if c != qid and (c in neighbours.get(qid, set())
+                           if c != qid and (c in neighbours_of(qid)
                                             or relation_of(qid, c) in ("UNKNOWN", "TINY_CONTACT")
                                             or not confirmed_of(qid, c))})
         rows.append({"query": qid, "positives": pos, "negatives": picked,

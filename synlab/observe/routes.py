@@ -355,6 +355,14 @@ def resolve_target(physical_or_fragment: Any, fragment_id: str | None = None) ->
         surface_tag = np.zeros(n, dtype=np.int16)
     face_id = np.arange(n, dtype=np.int32)
     verts = np.asarray(mesh.vertices, dtype=np.float64)
+    if verts.ndim != 2 or verts.shape[1] != 3 or verts.shape[0] == 0:
+        raise SynLabError(
+            ErrorCode.SCHEMA_INVALID,
+            f"target mesh vertices must be (N,3) with N>0, got {tuple(verts.shape)} "
+            f"({n} faces); a 2-column vertex array would read column 2 out of bounds",
+            stage="observe.routes.resolve_target",
+            measurements={"actual_shape": list(verts.shape), "n_faces": int(n)},
+        )
     bbox = np.array([verts[:, 0].min(), verts[:, 1].min(), verts[:, 2].min(),
                      verts[:, 0].max(), verts[:, 1].max(), verts[:, 2].max()])
     return Target(
@@ -658,10 +666,44 @@ def _rescaled_frame(frame: ViewFrame, size: tuple[int, int]) -> ViewFrame:
     return out
 
 
+def _require_raster(arr: np.ndarray, size: tuple[int, int], *, what: str,
+                    size_order: str) -> tuple[int, int]:
+    """In-bounds precondition shared by the mask/depth resamplers of this module.
+
+    ``cv2.resize`` refuses an empty source or an empty request with an opaque ``cv2.error``;
+    a zero-sized or non-2-D raster is reported here as a structured ``SCHEMA_INVALID`` that
+    carries the actual raster size *and* the requested size.  ``size_order`` names the
+    convention of the caller (``"hw"`` for :func:`_resize_to`, ``"wh"`` for
+    :func:`_resize_int` / :func:`_resample_depth`) and is quoted in the error and in the
+    measurements; sizes alone cannot reveal a swap, only an empty request is refused.
+    """
+    shape = tuple(int(s) for s in np.asarray(arr).shape)
+    h, w = (int(size[0]), int(size[1])) if size_order == "hw" else (int(size[1]), int(size[0]))
+    if len(shape) != 2 or shape[0] < 1 or shape[1] < 1 or h < 1 or w < 1:
+        raise SynLabError(
+            ErrorCode.SCHEMA_INVALID,
+            f"{what}: cannot resample a raster of shape {shape} to size={list(size)} "
+            f"(interpreted as {'h,w' if size_order == 'hw' else 'w,h'})",
+            stage="observe.routes._require_raster",
+            measurements={"actual_shape": list(shape), "requested_size": [int(size[0]),
+                                                                         int(size[1])],
+                          "requested_size_order": size_order, "raster_kind": what},
+        )
+    return h, w
+
+
 def _resize_to(mask: np.ndarray, size: tuple[int, int]) -> np.ndarray:
+    """Nearest-neighbour resize of a boolean mask.
+
+    ``size`` is ``(h, w)`` for this helper (the historical convention of its call sites:
+    ``deployment_mask_from_render(...)`` is resized to ``image.shape[:2]``).  The delivered-grid
+    helpers :func:`_resize_int` / :func:`_resample_depth` take ``(w, h)`` instead.  Both
+    conventions are named here and in :func:`_require_raster` because a swapped pair cannot be
+    recognised from the sizes alone on a square raster - only an empty size is refused.
+    """
     import cv2
 
-    h, w = int(size[0]), int(size[1])
+    h, w = _require_raster(mask, size, what="mask_resize", size_order="hw")
     if mask.shape[0] == h and mask.shape[1] == w:
         return np.asarray(mask, dtype=bool)
     return cv2.resize(np.asarray(mask, dtype=np.uint8), (w, h),
@@ -734,7 +776,17 @@ def backproject_depth(depth_z: np.ndarray, K: np.ndarray, T_WC: np.ndarray,
         return (np.zeros((0, 3), dtype=np.float64), np.zeros((0, 2), dtype=np.int64),
                 np.zeros((0, 3), dtype=np.float64))
     if depth_bias_map is not None:
-        d = d + np.asarray(depth_bias_map, dtype=np.float64)[0:h:st, 0:w:st]
+        bias = np.asarray(depth_bias_map, dtype=np.float64)
+        if bias.ndim != 2 or bias.shape[0] < h or bias.shape[1] < w:
+            raise SynLabError(
+                ErrorCode.SCHEMA_INVALID,
+                f"depth_bias_map of shape {tuple(bias.shape)} does not cover the depth raster "
+                f"of shape ({h}, {w}): every sampled index must exist in both arrays",
+                stage="observe.routes.backproject_depth",
+                measurements={"actual_size_hw": [h, w],
+                              "requested_bias_shape": list(bias.shape)},
+            )
+        d = d + bias[0:h:st, 0:w:st]
     d = d * float(depth_scale)
     uv = np.stack([xx[valid].astype(np.float64), yy[valid].astype(np.float64)], axis=1)
     z = d[valid]
@@ -925,6 +977,7 @@ def route_proxy_scan(target: Target, profile: CameraProfile, spec: ObsSpec,
 
     all_pts, all_dirs, all_pix, all_view = [], [], [], []
     drift_log: list[dict[str, float]] = []
+    holes_clipped: list[dict[str, Any]] = []
     for vi, bundle in enumerate(bundles):
         rf = bundle.render_frame
         depth = np.asarray(bundle.render.depth_z, dtype=np.float64).copy()
@@ -945,8 +998,12 @@ def route_proxy_scan(target: Target, profile: CameraProfile, spec: ObsSpec,
             out = rng.random(depth.shape) < outlier_prob
             depth[out & valid] += rng.normal(scale=5.0 * max(depth_sigma, 0.1),
                                              size=int(np.count_nonzero(out & valid)))
-        # -- connected holes in the depth map
-        depth = _carve_holes(depth, hole_count, rng, min_radius_px=3, max_radius_px=7)
+        # -- connected holes in the depth map (a disc that touches the raster edge is carved as
+        #    ``disc ∩ raster`` and reported, see ``_carve_holes``)
+        view_clip: list[dict[str, Any]] = []
+        depth = _carve_holes(depth, hole_count, rng, min_radius_px=3, max_radius_px=7,
+                             clip_report=view_clip)
+        holes_clipped.extend({"view": int(vi), **entry} for entry in view_clip)
         # -- calibration fault: perturbed K/dist used for the back-projection
         K_fault = np.asarray(rf.K, dtype=np.float64).copy()
         K_fault[0, 0] *= calib_scale
@@ -1000,7 +1057,10 @@ def route_proxy_scan(target: Target, profile: CameraProfile, spec: ObsSpec,
                                     "outlier_prob": outlier_prob},
                 "G02_sparse": {"keep_fraction": sparse_keep,
                                "priority": "frozen_permutation_nested_prefix"},
-                "G03_holes": {"requested": hole_count, "radius_px": [3, 7]},
+                "G03_holes": {"requested": hole_count, "radius_px": [3, 7],
+                              "clip_rule": HOLE_CLIP_RULE,
+                              "clipped_count": len(holes_clipped),
+                              "clipped": holes_clipped[:24]},
                 "G04_drift": {"sigma_translation_mm": drift_sigma_mm,
                               "sigma_rotation_deg": drift_rot_deg,
                               "per_view": drift_log[:6]},
@@ -1044,23 +1104,109 @@ def _correlated_field(shape: tuple[int, int], *, sigma_mm: float, correlation_mm
     return (smooth / std) * float(sigma_mm)
 
 
+#: Rule applied when a requested hole disc does not fit inside the raster: the carved region is
+#: ``disc ∩ raster`` (recorded per hole in the ``G03_holes`` degradation report).
+HOLE_CLIP_RULE = "disc_intersect_raster"
+
+
 def _carve_holes(depth: np.ndarray, count: int, rng: np.random.Generator,
-                 *, min_radius_px: int, max_radius_px: int) -> np.ndarray:
-    """Delete connected image regions (plan 14.2 G03) and keep the local cover信息."""
+                 *, min_radius_px: int, max_radius_px: int,
+                 clip_report: list[dict[str, Any]] | None = None) -> np.ndarray:
+    """Delete connected image regions (plan 14.2 G03) and keep the local cover信息.
+
+    Boundary rule (defect fix; see ``docs/a12/observe_evidence.md``)
+    ---------------------------------------------------------------
+    A hole is the intersection of the requested disc with the **raster**: ``disc ∩ raster``.
+    The centre is always a pixel of the map, so for a non-empty raster that intersection is
+    never empty; pixels outside the raster do not exist and are therefore neither written nor
+    invented.  Clipping is never silent: with ``clip_report`` given, every disc whose bounding
+    box leaves the raster appends ``{rule, centre_yx, radius_px, raster_size_hw,
+    requested_bbox_yxhw, written_bbox_yxhw, disc_pixels, carved_pixels, out_of_raster_pixels}``,
+    and :func:`route_proxy_scan` records those entries in its ``G03_holes`` degradation report.
+
+    The draw order of ``rng`` is unchanged and the disc test keeps absolute pixel coordinates,
+    so for every disc that lies fully inside the raster the produced mask is bit-identical to
+    the historical implementation; only requests that used to raise ``IndexError``
+    (``x0 + r > w - 1`` or ``y0 + r > h - 1``) now carve their in-raster part instead of
+    aborting the whole lineage.
+
+    Structurally unusable requests raise a structured :class:`SynLabError` (never a bare
+    ``IndexError``/``ValueError``): a non-2-D raster, a non-floating raster (the deletion is
+    expressed as ``NaN``), an empty raster, and a radius range that is not a pixel radius
+    (``min < 0`` or ``max < min``; the historical code silently carved nothing for a negative
+    radius).  Every rejection reports the actual raster and the requested geometry.
+    """
     if count <= 0:
+        # no holes requested: identity, exactly as before (no validation, no copy, no draw)
         return depth
+    arr = np.asarray(depth)
+    requested = {"requested_hole_count": int(count),
+                 "requested_radius_px": [int(min_radius_px), int(max_radius_px)]}
+    if arr.ndim != 2:
+        raise SynLabError(
+            ErrorCode.SCHEMA_INVALID,
+            f"hole carving needs a 2-D depth raster, got shape {tuple(arr.shape)}",
+            stage="observe.routes._carve_holes",
+            measurements={"actual_shape": list(arr.shape), **requested},
+        )
+    if not np.issubdtype(arr.dtype, np.floating):
+        raise SynLabError(
+            ErrorCode.SCHEMA_INVALID,
+            f"hole carving marks pixels invalid with NaN, which dtype {arr.dtype} cannot "
+            f"represent; deliver the depth raster as float",
+            stage="observe.routes._carve_holes",
+            measurements={"actual_dtype": str(arr.dtype),
+                          "actual_size_hw": [int(arr.shape[0]), int(arr.shape[1])], **requested},
+        )
+    if int(min_radius_px) < 0 or int(max_radius_px) < int(min_radius_px):
+        raise SynLabError(
+            ErrorCode.SCHEMA_INVALID,
+            f"radius range [{int(min_radius_px)}, {int(max_radius_px)}] is not a pixel radius "
+            f"(needs 0 <= min_radius_px <= max_radius_px)",
+            stage="observe.routes._carve_holes",
+            measurements={"actual_size_hw": [int(arr.shape[0]), int(arr.shape[1])], **requested},
+        )
     out = depth.copy()
+    h, w = int(out.shape[0]), int(out.shape[1])
+    if h == 0 or w == 0:
+        raise SynLabError(
+            ErrorCode.TARGET_INFEASIBLE,
+            f"cannot carve {int(count)} hole(s) of radius "
+            f"[{int(min_radius_px)}, {int(max_radius_px)}] px into an empty raster {h}x{w}: "
+            f"no pixel can hold a disc",
+            stage="observe.routes._carve_holes",
+            measurements={"actual_size_hw": [h, w], **requested},
+        )
     valid = np.isfinite(out) & (out > 0)
     if not valid.any():
         return out
     ys, xs = np.nonzero(valid)
-    for _ in range(count):
+    for _ in range(int(count)):
         k = int(rng.integers(0, ys.size))
-        r = int(rng.integers(min_radius_px, max_radius_px + 1))
+        r = int(rng.integers(int(min_radius_px), int(max_radius_px) + 1))
         y0, x0 = int(ys[k]), int(xs[k])
-        yy, xx = np.mgrid[max(y0 - r, 0):y0 + r + 1, max(x0 - r, 0):x0 + r + 1]
+        # -- the *written window* is clipped to the raster; the disc test keeps absolute pixel
+        #    coordinates, so an in-raster pixel keeps exactly the verdict it had before.
+        y_lo, y_hi = max(y0 - r, 0), min(y0 + r + 1, h)
+        x_lo, x_hi = max(x0 - r, 0), min(x0 + r + 1, w)
+        yy, xx = np.mgrid[y_lo:y_hi, x_lo:x_hi]
         disc = (yy - y0) ** 2 + (xx - x0) ** 2 <= r * r
         out[yy[disc], xx[disc]] = np.nan
+        if clip_report is not None and (y_lo > y0 - r or x_lo > x0 - r
+                                        or y_hi < y0 + r + 1 or x_hi < x0 + r + 1):
+            fy, fx = np.mgrid[y0 - r:y0 + r + 1, x0 - r:x0 + r + 1]
+            full = (fy - y0) ** 2 + (fx - x0) ** 2 <= r * r
+            clip_report.append({
+                "rule": HOLE_CLIP_RULE,
+                "centre_yx": [y0, x0],
+                "radius_px": r,
+                "raster_size_hw": [h, w],
+                "requested_bbox_yxhw": [y0 - r, x0 - r, 2 * r + 1, 2 * r + 1],
+                "written_bbox_yxhw": [y_lo, x_lo, y_hi - y_lo, x_hi - x_lo],
+                "disc_pixels": int(full.sum()),
+                "carved_pixels": int(disc.sum()),
+                "out_of_raster_pixels": int(full.sum()) - int(disc.sum()),
+            })
     return out
 
 
@@ -1142,11 +1288,16 @@ def _obs_views(bundles: list[ViewBundle], spec: ObsSpec) -> list[ObsView]:
 
 
 def _resize_int(arr: np.ndarray, size: tuple[int, int], *, fill: int) -> np.ndarray:
-    """Nearest-neighbour resampling of an integer label map (never interpolated)."""
+    """Nearest-neighbour resampling of an integer label map (never interpolated).
+
+    ``size`` is ``(w, h)`` here (the delivered grid of the observation).  ``fill`` is kept for
+    call-site compatibility and is **unused**: nearest-neighbour resampling only ever returns
+    labels that exist in the source, so no out-of-range label can be invented.
+    """
     import cv2
 
     src = np.asarray(arr)
-    h, w = int(size[1]), int(size[0])
+    h, w = _require_raster(src, size, what="label_resize", size_order="wh")
     if src.shape[0] == h and src.shape[1] == w:
         return src.astype(np.int32 if src.dtype != np.int16 else np.int16, copy=True)
     out = cv2.resize(src.astype(np.int32), (w, h), interpolation=cv2.INTER_NEAREST)
@@ -1156,11 +1307,14 @@ def _resize_int(arr: np.ndarray, size: tuple[int, int], *, fill: int) -> np.ndar
 
 
 def _resample_depth(depth: np.ndarray, size: tuple[int, int]) -> np.ndarray:
-    """Linear depth resampling; an invalid (NaN) depth never becomes a finite value."""
+    """Linear depth resampling; an invalid (NaN) depth never becomes a finite value.
+
+    ``size`` is ``(w, h)`` here (the delivered grid of the observation).
+    """
     import cv2
 
     src = np.asarray(depth, dtype=np.float32)
-    h, w = int(size[1]), int(size[0])
+    h, w = _require_raster(src, size, what="depth_resample", size_order="wh")
     if src.shape[0] == h and src.shape[1] == w:
         return src.copy()
     valid = np.isfinite(src) & (src > 0)

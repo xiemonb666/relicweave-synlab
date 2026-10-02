@@ -162,15 +162,20 @@ class FragmentEncoder:
         self.quality_out_features = max(int(quality_target_dim or quality_channels), 1)
         self.gate = nn.Sequential(nn.Linear(width * 4, width * 2), nn.ReLU(inplace=True),
                                  nn.Linear(width * 2, 3))
-        self.proj = nn.Linear(width * 2, out_dim)
-        # deterministic initialisation so two runs from the same seed agree
-        for module in self.modules():
-            if isinstance(module, nn.Linear):
-                with torch.no_grad():
-                    module.weight.copy_(torch.randn(module.weight.shape, generator=g) * 0.05)
-                    if module.bias is not None:
-                        module.bias.zero_()
-            elif isinstance(module, nn.Conv2d):
+        #: projection head over the *gated weighted sum* of the three fused branches.
+        #: ``encode`` sums ``gate_j * branch_j`` over ``{rgb, geo, token}`` (each branch ends at
+        #: ``width``), so the projection input is ``width`` -- not ``width * 2`` (which is the
+        #: gate's hidden width).  Before this fix ``encode()`` could not run at all:
+        #: ``RuntimeError: mat1 and mat2 shapes cannot be multiplied (F x width and 2*width x out)``.
+        self.proj = nn.Linear(width, out_dim)
+        # deterministic initialisation so two runs from the same seed agree.  The iteration must
+        # descend into the ``nn.Sequential`` children: ``modules()`` yields the seven sub-modules
+        # as wholes, so testing ``isinstance(module, nn.Linear)`` against them never matched the
+        # four branches and the gate -- those kept their random default initialisation from the
+        # global torch RNG and two builds from the same seed disagreed (see
+        # ``parameter_modules``).
+        for module in self.parameter_modules():
+            if isinstance(module, (nn.Linear, nn.Conv2d)):
                 with torch.no_grad():
                     module.weight.copy_(torch.randn(module.weight.shape, generator=g) * 0.05)
                     if module.bias is not None:
@@ -181,14 +186,36 @@ class FragmentEncoder:
     SUB_MODULES = ("global_branch", "geometry_branch", "token_branch", "quality_branch",
                    "quality_head", "gate", "proj")
 
+    def parameter_modules(self):
+        """Leaf modules owning parameters, in a fixed order (``nn.Sequential`` children included).
+
+        :meth:`modules` deliberately yields the seven sub-modules as *wholes* (that is what
+        ``train``/``eval``/``to``/``zero_grad`` need); anything that must touch individual
+        ``nn.Linear``/``nn.Conv2d`` layers has to descend, which is what this generator is for.
+        """
+        for sub in self.SUB_MODULES:
+            for module in getattr(self, sub).modules():
+                if isinstance(module, (_torch().nn.Linear, _torch().nn.Conv2d)):
+                    yield module
+
     def parameters(self):
         for sub in self.SUB_MODULES:
             yield from getattr(self, sub).parameters()
 
     def named_parameters(self, prefix: str = ""):
+        """``(name, parameter)`` pairs whose names are exactly the ``state_dict()`` keys.
+
+        PyTorch treats ``prefix`` as a *module path* and inserts the separating ``"."`` itself,
+        so passing a prefix that already ended in ``"."`` produced names such as
+        ``global_branch..0.weight`` -- names that no longer matched :meth:`state_dict` keys, so
+        any per-parameter consumer that mapped one onto the other (checkpoint comparison,
+        per-parameter loading) silently failed to find anything.  A trailing ``"."`` is accepted
+        and normalised away.
+        """
+        base = prefix[:-1] if prefix.endswith(".") else prefix
         for sub in self.SUB_MODULES:
-            for name, p in getattr(self, sub).named_parameters(prefix=f"{prefix}{sub}."):
-                yield name, p
+            sub_prefix = f"{base}.{sub}" if base else sub
+            yield from getattr(self, sub).named_parameters(prefix=sub_prefix)
 
     def train(self, mode: bool = True):
         for sub in self.SUB_MODULES:
@@ -374,10 +401,12 @@ class PairRefineHead:
             yield from module.parameters()
 
     def named_parameters(self, prefix: str = ""):
-        yield f"{prefix}logit_scale", self.logit_scale
+        """Same contract as :meth:`FragmentEncoder.named_parameters`: names == ``state_dict()`` keys."""
+        base = prefix[:-1] if prefix.endswith(".") else prefix
+        pre = f"{base}." if base else ""
+        yield f"{pre}logit_scale", self.logit_scale
         for sub in ("q_proj", "c_proj", "mlp"):
-            for name, p in getattr(self, sub).named_parameters(prefix=f"{prefix}{sub}."):
-                yield name, p
+            yield from getattr(self, sub).named_parameters(prefix=f"{pre}{sub}")
 
     def modules(self):
         yield self.q_proj
