@@ -103,6 +103,13 @@ _FROZEN = {
     "synlab.relations.gallery": "gallery.py",
 }
 
+#: Repository-relative path of each frozen module (for the live-side fingerprint).
+_FROZEN_PATH = {
+    "synlab.qc.loader_probe": "synlab/qc/loader_probe.py",
+    "synlab.training.sampler": "synlab/training/sampler.py",
+    "synlab.relations.gallery": "synlab/relations/gallery.py",
+}
+
 
 def preload_snapshot() -> list[str]:
     """Load the pre-fix revisions of the three modules, if a snapshot is configured."""
@@ -134,6 +141,47 @@ def preload_snapshot() -> list[str]:
 
 
 _SNAPSHOT_NOTES = preload_snapshot()
+
+
+def _fingerprint(path: Path) -> dict[str, Any]:
+    import hashlib
+
+    data = path.read_bytes()
+    return {"path": str(path), "bytes": len(data),
+            "sha256": "sha256:" + hashlib.sha256(data).hexdigest()}
+
+
+def _revision_fact(path: Path) -> dict[str, Any]:
+    """What the module at ``path`` actually is: the fix's own markers, measured, not asserted.
+
+    A before/after comparison is worthless if the *before* side silently ran the fixed code (this
+    repository commits itself periodically, so ``HEAD`` can contain work in progress).  The
+    markers are read out of the file that is loaded -- not from a commit name -- so the report
+    carries the evidence that the two sides are different revisions.
+    """
+    text = path.read_text(encoding="utf-8", errors="replace")
+    return {
+        "has_negative_eligibility": "def negative_eligibility" in text,
+        "imports_the_single_truth_source": "legal_negative" in text,
+        "recomputes_from_the_kind": 'rel in ("R0", "R1", "R2")' in text,
+        "validation_gate_uses_loss_mask": "loss_mask" in text,
+    }
+
+
+def _frozen_fingerprints(root: Path | None = None) -> dict[str, Any]:
+    """Fingerprint the frozen revisions the before side is about to load (or ``{}``)."""
+    value = os.environ.get("SYNLAB_BEFORE_SNAPSHOT", "")
+    if not value:
+        return {}
+    base = Path(root) if root is not None else Path(value)
+    out: dict[str, Any] = {"snapshot": str(base), "modules": {}}
+    for dotted, filename in _FROZEN.items():
+        path = base / filename
+        if not path.exists():
+            out["modules"][dotted] = {"missing": str(path)}
+            continue
+        out["modules"][dotted] = {**_fingerprint(path), **_revision_fact(path)}
+    return out
 
 
 # --------------------------------------------------------------------------------------
@@ -508,6 +556,42 @@ def _delta(before: Any, after: Any) -> Any:
     return {"before": before, "after": after}
 
 
+def _revision_check(before: Mapping[str, Any], after: Mapping[str, Any]) -> dict[str, Any]:
+    """Prove the two sides are genuinely different revisions -- from the loaded files.
+
+    Three independent facts about the *files that ran*:
+
+    * the before side must **not** carry the fix (no ``negative_eligibility``, no import of the
+      single truth source, and the old kind-recomputation present);
+    * the after side must carry it;
+    * the two sides must differ byte-for-byte in every frozen module.
+
+    Without this, a before/after table could silently compare the fixed code with itself (this
+    repository auto-commits, so ``HEAD`` is not a safe provenance marker on its own).
+    """
+    frozen = dict(before.get("frozen_revision") or {})
+    live = dict(after.get("live_revision") or {})
+    modules: dict[str, Any] = {}
+    ok = bool(frozen.get("modules")) and bool(live)
+    for dotted, fp in (frozen.get("modules") or {}).items():
+        live_fp = live.get(dotted) or {}
+        item = {
+            "frozen_sha256": fp.get("sha256"), "live_sha256": live_fp.get("sha256"),
+            "differ": bool(fp.get("sha256") and live_fp.get("sha256")
+                           and fp["sha256"] != live_fp["sha256"]),
+            "before_declares_the_fix": bool(fp.get("has_negative_eligibility")
+                                            or fp.get("imports_the_single_truth_source")),
+            "before_recomputes_from_the_kind": bool(fp.get("recomputes_from_the_kind")),
+            "after_declares_the_fix": bool(live_fp.get("has_negative_eligibility")
+                                           and live_fp.get("imports_the_single_truth_source")),
+        }
+        item["ok"] = bool(item["differ"] and not item["before_declares_the_fix"]
+                          and item["after_declares_the_fix"])
+        modules[dotted] = item
+        ok = bool(ok and item["ok"])
+    return {"ok": ok, "snapshot": frozen.get("snapshot"), "modules": modules}
+
+
 def compare_step(package: str, store: str, snapshot: str, *, step: str,
                  out_dir: Path) -> dict[str, Any]:
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -597,8 +681,10 @@ def compare_step(package: str, store: str, snapshot: str, *, step: str,
     before_shows_the_defect = bool(before_report) and not bool(before_report.get("ok", True))
     comparison["before_shows_the_defect"] = before_shows_the_defect
     comparison["before_errored"] = not bool(before.get("audit")) and not bool(before.get("batch"))
+    comparison["revision_check"] = _revision_check(before, after)
     comparison["ok"] = bool(comparison["after_census_ok"] and before_shows_the_defect
                             and not comparison["before_errored"]
+                            and comparison["revision_check"]["ok"]
                             and runs["after"]["returncode"] == 0)
     return comparison
 
@@ -629,6 +715,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     else:
         payload = {"schema": SCHEMA, "package": args.package, "store": args.store,
                    "snapshot_loaded": list(_SNAPSHOT_NOTES), "steps": args.step,
+                   "frozen_revision": _frozen_fingerprints(),
+                   "live_revision": {dotted: {**_fingerprint(REPO_ROOT / _FROZEN_PATH[dotted]),
+                                              **_revision_fact(REPO_ROOT / _FROZEN_PATH[dotted])}
+                                     for dotted in _FROZEN},
                    "audit": {}, "batch": {}}
         ctx = pools = None
         if want_audit or want_batch:
@@ -702,6 +792,12 @@ def _summary(payload: Mapping[str, Any], out_path: Path) -> None:
                 for key, value in item.items() if isinstance(value, Mapping)
                 and "before" in value and key != "rank_reason"))
         print(f"  after census ok={payload.get('after_census_ok')}")
+        check = payload.get("revision_check") or {}
+        print(f"  revision check ok={check.get('ok')} snapshot={check.get('snapshot')}")
+        for dotted, item in sorted((check.get("modules") or {}).items()):
+            print(f"    {dotted}: differ={item['differ']} "
+                  f"before_declares_the_fix={item['before_declares_the_fix']} "
+                  f"after_declares_the_fix={item['after_declares_the_fix']} ok={item['ok']}")
     print(f"status={payload['status']} out={out_path}")
 
 
