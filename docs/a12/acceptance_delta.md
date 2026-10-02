@@ -212,3 +212,108 @@ foreach ($i in 0..30) { & $py tools/evidence_min.py --data-root data/a12 --step 
 & $py -m synlab.cli acceptance --profile SANDBOX_CORE --json
 & $py tools/gen_status_matrix.py --data-root data/a12
 ```
+
+## 8. 最终（收口轮：最小 release 冻结 + 泄漏修复 + 验收）
+
+本节由收口轮实跑结果汇总；闭环细节见 `docs/a12/closed_loop.md`，数字全部取自
+`data/a12/reports/*.json`、`data/a12_exports/closed_loop/closed_loop_report.json` 与
+`data/a12_exports/closed_loop/store/releases/rel_852ab2a1e4c3_1790905541/manifest.json`。
+
+### 8.1 命令与退出码
+
+| 命令 | 退出码 | 结果 |
+|---|---|---|
+| `python tools\closed_loop.py --step audit` | 0 | DEGRADED（3 个 `visible_labels` QA_FAIL + 特征角色带 `fragment_id/mother_id`，均为真实问题） |
+| `python tools\closed_loop.py --step release_freeze` | 0 | 冻结 `rel_852ab2a1e4c3_1790905541` / `SANDBOX_CORE`，165 资产，`scope_pending=[]` |
+| `python tools\closed_loop.py --step export_training_package` | 0 | 13 文件 / 3 785 587 B |
+| `python tools\closed_loop.py --step loader_probe` | 0 | `ok=true` / `status=PASS` |
+| `python tools\closed_loop.py --step report` | 0 | 账本 `ok=true`，`degraded_steps={audit}` |
+| `python tools\closed_loop.py --step all --resume` | 0（带 caveat） | 7 步全部有记录，`audit` 保持 DEGRADED |
+| `python data\a12\reports\repair_degrade_role.py --store data/a12 --apply` | 0 | 20/20 退化资产改挂 `degrade_measurement`，字节一致 |
+| `python tools\evidence_min.py --step leakage --data-root data/a12 --run-id run_2fad0ac4d3b67098` | 0 | `ok=false`（真实残余，见 8.3） |
+| `python -m synlab.cli acceptance --profile SANDBOX_CORE --json` | **1** | 前=后：FAIL 5 / PASS 12 / PENDING 6 / NOT_RUN 6 / NA 7 |
+| `python tools\gen_status_matrix.py --data-root data/a12` | 0 | `docs/a12/status_matrix.csv`（153 行：capability 92 / acceptance 36 / reuse 25） |
+
+### 8.2 前后计数（最终轮）
+
+| 快照 | `generated_at` | FAIL | PASS | PENDING | NOT_RUN | NA |
+|---|---|---|---|---|---|---|
+| 前 `acceptance_summary.before.json` | 1790905375.21 | 5 | 12 | 6 | 6 | 7 |
+| 后 `acceptance_summary.json`（并留 `acceptance_summary.after.json`） | 1790905610.66 | 5 | 12 | 6 | 6 | 7 |
+
+**状态迁移：0 项**（`summary_hash=sha256:3c7ecc0800902f467c443ff1cb426add5aec3bcfbcfd694fd91b93b7e339515c`）。
+本轮没有把任何一项“改绿”：修的是**可读性缺陷**（gate 读错层级）与**角色错挂**，
+A01 的实测明细变了但判定不变：
+
+| 指标 | 前 | 后 |
+|---|---|---|
+| `A01.metrics.forbidden_fields_in_committed_features` 条数 | **76** | **16** |
+| 其中 `axis_id`/`level`/`variant`（退化错挂） | 60 条（20 资产 × 3 键） | **0** |
+| 其中 `fragment_id`/`mother_id`（pipeline 特征 meta） | 16 条（8 资产 × 2 键） | 16 条（未变） |
+| `A01.status` | FAIL | **FAIL（口径未放宽）** |
+
+### 8.3 泄漏修复与残余（A01 / leakage）
+
+- **代码**：`synlab/roles.py` 新增 `ROLE_DEGRADE_MEASUREMENT="degrade_measurement"`；
+  `synlab/degrade/api.py` 的 `COMMIT_ROLES["X"]` 改为
+  `(degrade_measurement, synlab.measurement.v1)`。A01 判定口径未改。
+- **存量**：`data/a12` 的 20 个错挂 `feature_bundle` 行用模块自身 `load_source`→`commit_source`
+  往返重提交为正确角色（逐数组 hash 一致），然后删除错挂行与目录，墓碑与映射见
+  `data/a12/reports/degrade_role_repair.json`。`feature_bundle` 32 → **12**，
+  带因子标签的 0；`degrade_measurement` 0 → **20**；`health_check ok=true`（247 资产）。
+- **负控**（`data/a12/reports/leakage_negative_control.json`）：
+
+| 范围 | features | `truth_isolation` | `ok` |
+|---|---|---|---|
+| run `run_2fad0ac4d3b67098` | 4 | false | false |
+| 全店 | 12 | false | false |
+| 干净 run `run_23664ddb26eada4b` | 4 | **true** | **true** |
+
+- **为什么仍 false（真实原因，未掩盖）**：残余 8 个 QA_PASS 特征资产
+  （`run_2fad0ac4d3b67098` 4 个、`run_404bbe3c80f2c04e` 4 个）的 meta 带 `fragment_id`/`mother_id`
+  且写进 `feature_fields`，提交方是 `synlab/pipeline.py::_commit_features` /
+  `_observation_feature_block`。该文件**不在本轮写入范围**，且这些是真实 run 的 QA_PASS 资产
+  （被 run 覆盖与闭包引用，meta 参与 `payload_hash`/`asset_id`），故不删不改，如实保留 FAIL
+  并写明修法。闭环 store 自己的审计也抓到同一缺陷（`legal_inputs` 门因此 PENDING）。
+
+### 8.4 release 与导出（最小闭环）
+
+- **已冻结**：`rel_852ab2a1e4c3_1790905541`，`profile=SANDBOX_CORE`，`scope=SYNTHETIC`，
+  165 个 QA_PASS 资产，`manifest_hash=sha256:c86c14af36e243fef2b2ba5e5a909d73555ddcfcb79aa9899cd3d2f9a3b01ddd`，
+  引用闭包 `ok=true`（165/165 文件逐个哈希校验）。
+- **必需门（全部 PASS，全部来自 store 证据，`gate_overrides=[]`）**：`fixture_contract`、
+  `coordinate_contract`、`source_map`、`readonly_commit`、`fracture_operator_runs`、
+  `observation_operator_runs`。**未过必需门：无**（`scope_pending=[]`）。
+- **本轮修掉的两个“门读出错误”**：(1) `synlab/qc/gates.py` 用 `acceptance["A02"]` 读顶层键，
+  而验收报告嵌在 `items` 下，导致 `coordinate_contract` 恒 PENDING；新增 `acceptance_item()`
+  兼容两种形状后读到真实条目（A02 PASS）。(2) `tools/closed_loop.py` 里硬编码把 6 个必需门
+  强判 PASS 的 `GATE_DOWNGRADES` 表已清空，并加了“任何声明都不得把门抬成 PASS”的拒绝逻辑；
+  freeze 被拒时落盘 `release_freeze_blocked.json`（含门明细与 `scope_pending`），
+  并说明 SANDBOX_CORE 已是 `PROFILE_GATES` 最低档、不存在可降级 profile。
+- **导出包**：`training_package` 13 文件 / 3 785 587 B（deploy 8 / 3 766 777 B，
+  `contains_truth=false`、`deploy_truth_files=[]`；research 5 / 18 810 B，`contains_truth=true`）；
+  `geometry_points=6049`、`geometry_bytes=145176`、`obs_views=12`、`obs_bytes=2359296`、
+  `tokens=576`、`relations=3`（全 R2）、`queries=6`、`label_layers=3`（27/27/12 行）。
+  另出 `release_index` 平铺导出（165 资产）。
+- **loader**：`data/a12/reports/loader_probe.json` `ok=true`/`status=PASS`；真实分母
+  fragments 6（有观测 3 / 无观测 3）、points_valid 6049、tokens 576；
+  batch `n_queries=3 / positives=3 / negatives=0`，`negative_audit.ok=true`（负例为 0 的原因是
+  exposure 直方图 `none=3`、其余桶全 0：本环 pool 只有 R2，合法负例确实不存在）。
+
+### 8.5 诚实性说明（最终轮）
+
+1. **证据哈希的时点性**：release manifest 的 `evidence_reports` 记录“冻结那一刻读到的文件 +
+   哈希”。冻结后又补跑了 audit（修 `_run_contract_item`）与 loader_probe，因此 12 个证据文件中
+   4 个当前哈希与记录不同（`acceptance_summary`、`audit_run_852ab2a1e4c3b70f`、`loader_probe`、
+   `recovery_probe`）；四者的结论未变（A02 PASS / loader ok=true / recovery COMMITTED）。
+   冻结后重新核验：manifest 自校验通过、闭包 165/165 `ok=true`、6 个必需门仍全 PASS。
+2. **`export_manifest.json` 的 `separation.features_carry_answer_fields` 是硬编码常量**
+   （`synlab/storage/export.py` 第 696 行），不是测量值；不拿它当泄漏证据（A01 实测为 FAIL）。
+   包内真正的边界证据是 deployment 视图按文件名实测无 truth 文件 + 与 research 物理分目录。
+3. **store 里的残留文件**：闭环 store 报告目录的 `acceptance_summary.staged.json` 是
+   `_run_contract_item` 旧实现把 markdown 写成 `.json` 的遗留物，保留未删（它本身就是该 bug 的证据）。
+4. **`audit` DEGRADED 未消除**：3 个 `visible_labels` 资产 QA_FAIL 是真实缺口（交付前景 mask 为空），
+   不是流程噪声；它们被排除出冻结范围并逐个记录。
+5. **越权项**：`synlab/pipeline.py`（A01 残余）、`synlab/storage/export.py`（常量字段）不在写入范围，
+   均只报告不改动；`tools/evidence_min.py` 的 `leakage` 步骤同样是 run 范围口径，未修改，
+   全店/干净-run/残余原因写进同一份报告。

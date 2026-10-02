@@ -230,6 +230,12 @@ meta 里带 `axis_id` / `level` / `variant` —— 这三个键正是
 **76 → 16** 条（20 个退化资产 × 3 键 → 8 个 pipeline 特征 × 2 键），`leakage_detector=true`、
 `unknown_field_rejected=true` 不变；A01 状态仍为 **FAIL**（原因如上，未放宽口径让其变绿）。
 
+同一缺陷在闭环 store 内也被闭环自己的审计抓到（`audit_run_852ab2a1e4c3b70f.json` 第三条
+problem）：`asset_84a2eb0b437d1361ded9 / asset_cdd4f2a28f0d9075f697 / asset_60790a61ffd50cf21d32 …`
+`['fragment_id','mother_id']`，并且 `declared=['fragment_id','mother_id']`（即确实写进了
+`feature_fields`）。这同时是 `legal_inputs` 门 PENDING 的直接原因之一。两个 store 相互独立地
+指向同一个 `synlab/pipeline.py` 缺陷。
+
 ## 7. 验收（前后计数）
 
 `& .venv\Scripts\python.exe -m synlab.cli acceptance --profile SANDBOX_CORE --json`
