@@ -267,6 +267,14 @@ def main() -> int:
         GU, GV = np.meshgrid(gu, gv, indexing="ij")
         W = np.asarray(field(GU.ravel(), GV.ravel()), dtype=np.float64).reshape(GU.shape)
         inside = np.asarray(field.window.is_exactly_one(GU, GV), dtype=bool)
+        # erode by two cells: the finite-difference stencil reaches one cell out, and the band
+        # envelope decays to zero across the halo, so an un-eroded mask measures the ENVELOPE's
+        # slope (measured: 89.999 deg) instead of the fracture surface's
+        for _ in range(2):
+            inside[1:, :] &= inside[:-1, :]
+            inside[:-1, :] &= inside[1:, :]
+            inside[:, 1:] &= inside[:, :-1]
+            inside[:, :-1] &= inside[:, 1:]
         wu, wv = np.gradient(W, step, axis=0), np.gradient(W, step, axis=1)
         wuu = np.gradient(wu, step, axis=0)
         wuv = np.gradient(wu, step, axis=1)
