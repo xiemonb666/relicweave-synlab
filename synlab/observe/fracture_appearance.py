@@ -1,4 +1,4 @@
-"""Fracture appearance layer: deliver the sub-millimetre relief through the *normal* channel.
+﻿"""Fracture appearance layer: deliver the sub-millimetre relief through the *normal* channel.
 
 Why this file exists
 --------------------
@@ -393,8 +393,12 @@ class ReliefField:
     rq_at_unit_mm: float = 0.0
     sample_mm: float = 0.0
     dome_share: float = 0.0
+    slope_rms_at_unit: float = 0.0
+    slope_p95_at_unit: float = 0.0
     glaze_strip: Any = None
     meta: dict[str, Any] = field(default_factory=dict)
+    #: cached (gu, gv) grid at unit amplitude, used only by :meth:`predicted_shading_ddn`
+    _grid_cache: Any = None
 
     @property
     def realized_ra_mm(self) -> float:
@@ -432,6 +436,54 @@ class ReliefField:
                 (env * mod) * gu + (h_raw * mod) * d_env_du + (h_raw * env) * d_mod_du,
                 (env * mod) * gv + (h_raw * mod) * d_env_dv + (h_raw * env) * d_mod_dv)
 
+    def predicted_shading_ddn(self, *, albedo: Sequence[float], light: LightSpec,
+                              T_WC: np.ndarray, ra_scale: float = 1.0,
+                              levels: float = 255.0) -> dict[str, Any]:
+        """Predicted ``dDN`` of this field under the frozen model, using the *same* normals.
+
+        The frozen shading is ``lambert = clip(-(n @ T_WC[:3, :3] @ light.direction), 0, 1)``, so
+        the perturbation ``n -> n - gu*t_u - gv*t_v`` changes it by ``-(dn . l_eff)`` with
+        ``l_eff = T_WC[:3, :3] @ light.direction`` in world coordinates.  The RMS of that quantity
+        is evaluated on the field's **own** sample grid, which makes the prediction apples to apples
+        with the rendered difference: it uses the real gradient field (whose RMS is dominated by the
+        small-area pit and hackle features), not a nominal ``2 pi A / lambda``.
+        """
+        l_eff = np.asarray(T_WC, dtype=np.float64)[:3, :3] @ np.asarray(light.direction,
+                                                                       dtype=np.float64)
+        a_u = float(np.dot(self.u_axis, l_eff))
+        a_v = float(np.dot(self.v_axis, l_eff))
+        gu, gv = self._grid_gradients()
+        d_lambert = float(ra_scale) * (gu * a_u + gv * a_v)
+        rms = float(np.sqrt(np.mean(d_lambert ** 2)))
+        alb = np.asarray(albedo, dtype=np.float64).reshape(-1)[:3]
+        factor = float(levels) * float(np.mean(alb * np.asarray(light.color, dtype=np.float64)))
+        return {
+            "light_effective_world": [float(x) for x in l_eff],
+            "tangent_projection_u": a_u, "tangent_projection_v": a_v,
+            "d_lambert_rms": rms, "predicted_dDN": factor * rms,
+            "d_lambert_p95_abs": float(np.percentile(np.abs(d_lambert), 95)),
+            "predicted_dDN_p95": factor * float(np.percentile(np.abs(d_lambert), 95)),
+            "grid_points": int(gu.size), "ra_scale": float(ra_scale),
+            "convention": ("d_lambert = ra_scale * (dh/du * (t_u . l_eff) + dh/dv * (t_v . l_eff)); "
+                           "dDN = 255 * mean_c(albedo_c * color_c) * d_lambert; the clip of the "
+                           "frozen Lambert term is NOT modelled, so this is an upper bound where "
+                           "the surface sits at the terminator"),
+        }
+
+    def _grid_gradients(self) -> tuple[np.ndarray, np.ndarray]:
+        """Cached gradient grid of the field at unit amplitude (mm/mm), envelope included."""
+        if self._grid_cache is None:
+            radius = float(self.footprint_radius_mm)
+            step = float(self.sample_mm)
+            uu, vv = np.meshgrid(np.arange(-radius, radius + 0.5 * step, step),
+                                 np.arange(-radius, radius + 0.5 * step, step), indexing="ij")
+            gu, gv = self.height.gradient(uu, vv)
+            env, d_env_du, d_env_dv = _envelope(uu, vv, radius, float(self.ramp_width_mm))
+            h_raw = np.asarray(self.height.raw(uu, vv), dtype=np.float64)
+            self._grid_cache = (env * np.asarray(gu, dtype=np.float64) + h_raw * d_env_du,
+                                env * np.asarray(gv, dtype=np.float64) + h_raw * d_env_dv)
+        return self._grid_cache
+
     def as_dict(self) -> dict[str, Any]:
         return {
             "schema": APPEARANCE_SCHEMA + ".relief",
@@ -449,6 +501,8 @@ class ReliefField:
             "realized_ra_mm": self.realized_ra_mm,
             "sample_mm": float(self.sample_mm),
             "dome_share_of_ra_unit": float(self.dome_share),
+            "slope_rms_at_unit_scale": float(self.slope_rms_at_unit),
+            "slope_p95_at_unit_scale": float(self.slope_p95_at_unit),
             "lambda_min_mm": float(self.parameters.lambda_min_mm),
             "lambda_max_mm": float(self.parameters.lambda_max_mm),
             "sigma_r0_mm": float(self.parameters.sigma_r0_mm),
@@ -519,13 +573,19 @@ def triangle_areas_uv(tris_uv: np.ndarray) -> np.ndarray:
 
 
 def measure_wall_thickness_mm(mesh: Any, points: np.ndarray, inward: np.ndarray, *,
-                              max_probes: int = 240,
+                              max_probes: int = 240, clearance_mm: float = 0.1,
+                              max_thickness_mm: float = 200.0,
                               rng: np.random.Generator | None = None) -> dict[str, Any]:
     """Wall thickness under the fracture patch, measured by casting rays from the patch inward.
 
     The instrument is the target's own ``trimesh`` ray engine - the same one
-    :mod:`synlab.observe.fracture_roi` uses - so the audited ``sigma_f`` / mirror-radius
-    relations are fed a measurement, not a guess.
+    :mod:`synlab.observe.fracture_roi` uses.  Two measured properties of these assets force the
+    two declared guards:
+
+    * the delivered fracture shells carry **coincident duplicate** interface faces (the
+      mixed-level T-junction defect of ``docs/a12/fracture_realism.md`` §10.5), so the first hit
+      is the duplicate itself at ~0 mm: hits closer than ``clearance_mm`` are discarded;
+    * a ray can escape through an open boundary, so hits beyond ``max_thickness_mm`` are dropped.
     """
     pts = np.asarray(points, dtype=np.float64).reshape(-1, 3)
     dirs = np.asarray(inward, dtype=np.float64).reshape(-1, 3)
@@ -536,25 +596,31 @@ def measure_wall_thickness_mm(mesh: Any, points: np.ndarray, inward: np.ndarray,
                else np.linspace(0, pts.shape[0] - 1, int(max_probes)).astype(int))
         pts, dirs = pts[idx], dirs[idx]
     origins = pts + 1e-6 * dirs
-    hit = mesh.ray.intersects_location(origins, dirs, multiple_hits=False)
+    hit = mesh.ray.intersects_location(origins, dirs, multiple_hits=True)
     locations = np.asarray(hit[0], dtype=np.float64) if len(hit) else np.zeros((0, 3))
     index_ray = (np.asarray(hit[1], dtype=np.int64).reshape(-1) if len(hit) > 1
                  else np.zeros((0,), dtype=np.int64))
-    thickness = np.full(origins.shape[0], np.nan, dtype=np.float64)
+    # ``np.minimum`` propagates NaN, so the accumulator starts at +inf and is masked at the end
+    thickness = np.full(origins.shape[0], np.inf, dtype=np.float64)
+    n_hits = np.zeros(origins.shape[0], dtype=np.int64)
     if index_ray.size:
-        distance = np.linalg.norm(locations - origins[index_ray], axis=1)
-        good = distance > 1e-3
-        thickness[index_ray[good]] = distance[good]
+        t = np.linalg.norm(locations - origins[index_ray], axis=1)
+        np.add.at(n_hits, index_ray, 1)
+        keep = (t > float(clearance_mm)) & (t < float(max_thickness_mm))
+        np.minimum.at(thickness, index_ray[keep], t[keep])
+    thickness[~np.isfinite(thickness)] = np.nan
     valid = thickness[np.isfinite(thickness)]
+    base = {"probes": int(origins.shape[0]), "n_valid": int(valid.size),
+            "clearance_mm": float(clearance_mm), "max_thickness_mm": float(max_thickness_mm),
+            "hits_per_ray_median": float(np.median(n_hits)) if n_hits.size else 0.0,
+            "instrument": ("trimesh ray cast from fracture samples along -normal, "
+                           "multiple_hits=True; hits <= clearance or >= max are discarded "
+                           "(coincident duplicate faces and open boundaries)")}
     if valid.size == 0:
-        return {"status": "NO_HIT", "probes": int(origins.shape[0]), "n_valid": 0}
-    return {
-        "status": "OK", "probes": int(origins.shape[0]), "n_valid": int(valid.size),
-        "min_mm": float(valid.min()), "p05_mm": float(np.percentile(valid, 5)),
-        "median_mm": float(np.median(valid)), "max_mm": float(valid.max()),
-        "instrument": "trimesh ray cast from fracture samples along -normal "
-                      "(multiple_hits=False), t > 1e-3 mm kept",
-    }
+        return {"status": "NO_HIT", **base}
+    return {"status": "OK", **base,
+            "min_mm": float(valid.min()), "p05_mm": float(np.percentile(valid, 5)),
+            "median_mm": float(np.median(valid)), "max_mm": float(valid.max())}
 
 
 @dataclass
@@ -632,13 +698,21 @@ def build_relief_field(*, profile: Mapping[str, Any], roi: Any, patch_vertices: 
                        ramp_width_mm: float = 2.0, sample_mm: float | None = None,
                        material_id: str = "", window_area_mm2: float | None = None,
                        wall: Any | None = None, error_budget_mm: float = 0.01,
-                       max_cells: int = 30000, glaze_strip: bool = True) -> ReliefField:
+                       max_cells: int = 30000, glaze_strip: bool = True,
+                       include_dome: bool = False) -> ReliefField:
     """Realise the audited morphology field of one material over one fracture ROI.
 
     ``patch_triangles`` is the ``(n, 3)`` vertex-index array of the fracture patch
     (``mesh.faces[patch_face_indices]``).  ``amplitude_mm`` (when given) rescales the field so that
     its **measured** ``Ra`` on the ROI equals that value; ``None`` keeps the material's own
     ``sigma_r0`` spectrum as derived.
+
+    ``include_dome`` keeps the conchoidal bowl in the field.  It is **off** by default and the
+    reason is measured, not aesthetic: the bowl is *form* (the audited model's own ``_scale_params``
+    scales bands / hackle / ribs / pits / fibre and leaves the dome alone), its within-footprint
+    sag over a 75 mm frame is a nearly constant tilt that adds no shading contrast, and for the
+    ``a12_iface`` lineage the form is already in the geometry.  The audited dome numbers are
+    reported in ``meta`` either way, so nothing is hidden.
     """
     from ..fracture import morphology as mo
     from ..fracture.cut import FourierBand
@@ -702,7 +776,7 @@ def build_relief_field(*, profile: Mapping[str, Any], roi: Any, patch_vertices: 
                        "so the audited field is evaluated with its own band set and no "
                        "material-intersection envelope")},
         morphology=params, origin_uv=uv_centre,
-        dome_radius_mm=float(params.dome_radius_mm),
+        dome_radius_mm=(float(params.dome_radius_mm) if include_dome else 0.0),
         dome_amplitude_mm=float(params.dome_amplitude_mm),
         hackle_count=int(params.hackle_count),
         hackle_amplitude_mm=float(params.hackle_amplitude_mm),
@@ -740,7 +814,17 @@ def build_relief_field(*, profile: Mapping[str, Any], roi: Any, patch_vertices: 
               "core_area_mm2": core_area, "window_area_mm2": window_area,
               "extent_mm": [float(extent[0]), float(extent[1])],
               "uv_centre_mm": [uv_centre[0], uv_centre[1]],
-              "pit_centres_count": int(centres.shape[0])})
+              "pit_centres_count": int(centres.shape[0]),
+              "dome_included": bool(include_dome),
+              "audited_dome": {
+                  "dome_radius_mm": float(params.dome_radius_mm),
+                  "dome_amplitude_mm": float(params.dome_amplitude_mm),
+                  "sag_over_footprint_mm": float(radius ** 2
+                                                 / (2.0 * max(params.dome_radius_mm, 1e-9))),
+                  "note": ("the conchoidal bowl is FORM: the audited _scale_params scales bands / "
+                           "hackle / ribs / pits / fibre and leaves the dome alone, and over a "
+                           "75 mm frame its sag is a nearly constant tilt (no shading contrast)"),
+              }})
     if glaze_strip and float(params.glaze_strip_width_mm) > 0.0:
         field_obj.glaze_strip = build_glaze_strip(
             tris_uv=tris_uv, strip_width_mm=float(params.glaze_strip_width_mm),
@@ -749,10 +833,15 @@ def build_relief_field(*, profile: Mapping[str, Any], roi: Any, patch_vertices: 
     uu, vv = np.meshgrid(np.arange(-radius, radius + 0.5 * sample_mm, sample_mm),
                          np.arange(-radius, radius + 0.5 * sample_mm, sample_mm), indexing="ij")
     raw = np.asarray(height.raw(uu, vv), dtype=np.float64)
-    dome = np.asarray(height.dome(uu, vv), dtype=np.float64)
+    dome = np.asarray(height.dome(uu, vv), dtype=np.float64)  # 0 unless include_dome
+    gu, gv = height.gradient(uu, vv)
+    gu = np.asarray(gu, dtype=np.float64)
+    gv = np.asarray(gv, dtype=np.float64)
     centred = raw - float(np.mean(raw))
     field_obj.ra_at_unit_mm = float(np.mean(np.abs(centred)))
     field_obj.rq_at_unit_mm = float(np.sqrt(np.mean(centred ** 2)))
+    field_obj.slope_rms_at_unit = float(np.sqrt(np.mean(gu ** 2 + gv ** 2)))
+    field_obj.slope_p95_at_unit = float(np.percentile(np.hypot(gu, gv), 95))
     field_obj.dome_share = float(np.mean(np.abs(dome - float(np.mean(dome))))
                                  / max(field_obj.ra_at_unit_mm, 1e-30))
     if amplitude_mm is not None:
@@ -1556,3 +1645,6 @@ def write_json(payload: Any, path: str | Path) -> str:
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(json.dumps(payload, indent=1, ensure_ascii=False, default=str), encoding="utf-8")
     return str(p)
+
+
+

@@ -1043,27 +1043,27 @@ class _Quadtree:
             for edge, (start_corner, _end_corner, midpoint) in enumerate(walk):
                 ring.append(start_corner)
                 if s[edge]:
-                    ring.append(midpoint)
-                    if extra[edge] > 0:
-                        # T-junction resolution: the facing leaves already carry corners at
-                        # these dyadic positions, so this edge is emitted as ``2 ** extra``
-                        # sub-edges instead of two.  Walking *from the edge's own start corner*
-                        # keeps the traversal counter-clockwise and puts the shared points on
-                        # the same key-lattice integers the finer side computes, so the two
-                        # sides pair up by construction.
-                        corner = pts[start_corner]
-                        origin = (int(corner[0]), int(corner[1]))
-                        for q in range(1, 1 << int(extra[edge])):
-                            #: the sub-edge is ``half >> extra`` key units long; ``q`` walked in
-                            #: the (major, minor) order of the edge, then mapped to (u, v)
-                            unit = half >> int(extra[edge])
-                            major = ((q >> (span - 1 - int(extra[edge]))) & 1) * unit
-                            minor = (q & ((1 << (span - 1 - int(extra[edge]))) - 1)) * unit
-                            point = (origin[0] + major, origin[1] + minor) if edge % 2 == 0 \
-                                else (origin[0] + minor, origin[1] + major)
-                            p = len(pts)
-                            pts.append(point)
-                            ring.append(p)
+                    # One ordered walk from the edge's own start corner: ``q = 0`` is the
+                    # midpoint (a single step of ``half``), and an edge that needs finer steps
+                    # is walked in ``2 ** extra`` sub-steps of ``half >> extra`` instead.  The
+                    # counter-clockwise traversal is preserved because every step moves forward
+                    # along the same edge, and the sub-step points are the key-lattice integers
+                    # the finer side computes, so the two sides pair up by construction.
+                    sub = 0 if int(extra[edge]) == 0 else int(extra[edge]) + 1
+                    steps = 1 << sub
+                    unit = half >> sub
+                    corner = pts[start_corner]
+                    origin = (int(corner[0]), int(corner[1]))
+                    for q in range(1, steps + 1):
+                        along = q * unit
+                        point = (origin[0] + along, origin[1]) if edge % 2 == 0 \
+                            else (origin[0], origin[1] + along)
+                        if point == midpoint:
+                            ring.append(midpoint)
+                            continue
+                        p = len(pts)
+                        pts.append(point)
+                        ring.append(p)
             #: the ring is counter-clockwise in (u, v), so ``(this, next, centre)`` is
             #: counter-clockwise too (the previous branch table mixed both orientations, which is
             #: part of why its signed areas cancelled instead of adding up).
@@ -1125,13 +1125,17 @@ def edge_extra_all(tree: "_Quadtree", block: np.ndarray, key_level: int) -> np.n
     limit = np.int64(tree.side) << level
     alive = (si >= 0) & (sj >= 0) & (si < limit) & (sj < limit)
     #: sub-index of the *neighbour*'s cell inside the sub-lattice: 0 at the sub-lattice origin,
-    #: which is the neighbour's own edge.  A1: the sub-cell facing my edge is the one on the
+    #: which is the neighbour's own edge.  The sub-cell facing my edge is the one on the
     #: **opposite** side of the neighbour from that origin, so the sub-index is the complement of
-    #: the bit of my own key position that the edge sits on.
+    #: the bit of my own key position the edge sits on — and since the walk advances *along my
+    #: edge*, it is the coordinate that runs along the edge that supplies those bits:
+    #: ``u`` for a horizontal ("u") edge, ``v`` for a vertical ("v") one.
     shift_1 = span - 1
-    sub_u = np.int64(1) - ((corner_u >> shift_1) & np.int64(1))
-    sub_v = np.int64(1) - ((corner_v >> shift_1) & np.int64(1))
-    depth = np.zeros((n, 4), dtype=np.int64)
+    along_bits = np.where(vertical, corner_v, corner_u)
+    fixed_bits = np.where(vertical, corner_u, corner_v)
+    sub_along = np.int64(1) - ((along_bits >> shift_1) & np.int64(1))
+    sub_fixed = np.int64(1) - ((fixed_bits >> shift_1) & np.int64(1))
+    depth = np.zeros(n * 4, dtype=np.int64)
     #: halvings still available on my own edge (it is ``2 ** (span - 1)`` key units long)
     remaining = span - 1
     while True:
@@ -1148,15 +1152,15 @@ def edge_extra_all(tree: "_Quadtree", block: np.ndarray, key_level: int) -> np.n
             break
         #: descend one level: the neighbour's children that face my edge are ``2 * s + sub``,
         #: and the sub-index advances by one bit of my own key position
-        si = 2 * si + np.where(vertical, sub_u, sub_v)
-        sj = 2 * sj + np.where(vertical, sub_v, sub_u)
+        si = 2 * si + sub_along
+        sj = 2 * sj + sub_fixed
         level = level + 1
         shift_1 = shift_1 - 1
-        sub_u = np.int64(1) - ((corner_u >> shift_1) & np.int64(1))
-        sub_v = np.int64(1) - ((corner_v >> shift_1) & np.int64(1))
+        sub_along = np.int64(1) - ((along_bits >> shift_1) & np.int64(1))
+        sub_fixed = np.int64(1) - ((fixed_bits >> shift_1) & np.int64(1))
         limit = np.int64(tree.side) << level
         alive = (si >= 0) & (sj >= 0) & (si < limit) & (sj < limit)
-    return depth
+    return depth.reshape(n, 4)
 
 
 def build_closed_cutter(
@@ -1411,6 +1415,9 @@ def build_closed_cutter(
     for face in top_faces:
         mirror = tuple(bottom_vertex(v) for v in face)
         bottom_faces.append((mirror[0], mirror[2], mirror[1]))
+    #: multi-edge bookkeeping for the audit: a boundary edge must be traversed by exactly one top
+    #: face in one direction and by no top face in the other, otherwise the wall it produces is
+    #: emitted twice and the quad's own edges end up used 4 times
     for (a, b), uses in top_edge_use.items():
         if uses != 1 or (b, a) in top_edge_use:
             continue                          # interior edge (or inconsistent use): no side
@@ -1419,9 +1426,10 @@ def build_closed_cutter(
         # then b -> a -> ba -> bb, which shares every edge with opposite direction
         side_faces.append((b, a, ba))
         side_faces.append((b, ba, bb))
-
     verts = np.asarray(vertices, dtype=np.float64)
     faces = np.asarray(top_faces + bottom_faces + side_faces, dtype=np.int64)
+    #: top vertices are created first and are never removed, so their block is ``[0, N)``
+    top_vertex_count = len(top_index)
     volume = float(np.einsum(
         "ij,ij->i", np.cross(verts[faces[:, 1]] - verts[faces[:, 0]],
                              verts[faces[:, 2]] - verts[faces[:, 0]]),
@@ -1473,14 +1481,103 @@ def build_closed_cutter(
             counter[(min(a, b), max(a, b))] += 1
     bad_edges = {e: n for e, n in counter.items() if n != 2}
     local_mesh = trimesh.Trimesh(vertices=verts, faces=faces, process=False)
+
+    # ---------------------------------------------------------------- conformance audit
+    #
+    # The closed-solid check below only says *that* the top surface is non-conforming; this audit
+    # says *where*, using the geometry that was actually emitted.  Every leaf corner is a grid
+    # point on the key lattice and a hanging vertex is exactly a leaf corner lying strictly inside
+    # another leaf's edge, so for every leaf edge this counts the corners of *other* leaves inside
+    # it that the emitted ring does not carry.  A non-zero total is a T-junction the assembler
+    # failed to resolve, reported next to the bad-edge count so the two cannot disagree silently.
+    # The check is sorted-index arithmetic, so it stays sub-second on a 10^5-cell cutter.
+    corner_map: dict[Any, set[int]] = {}
+    for (li, lj, llevel) in leaves:
+        lspan = leaf_span_for(llevel)
+        step = 1 << lspan
+        lu, lv = li << lspan, lj << lspan
+        corner_map.setdefault(("v", lu), set()).update((lv, lv + step))
+        corner_map.setdefault(("v", lu + step), set()).update((lv, lv + step))
+        corner_map.setdefault(("u", lv), set()).update((lu, lu + step))
+        corner_map.setdefault(("u", lv + step), set()).update((lu, lu + step))
+    corner_columns = {key: np.sort(np.fromiter(values, dtype=np.int64, count=len(values)))
+                      for key, values in corner_map.items()}
+    del corner_map
+    missing_total = 0
+    edges_with_missing = 0
+    first_missing: list[list[int]] = []
+    ring_points_by_leaf: list[np.ndarray] = []
+    for row, (i, j, level) in enumerate(leaves):
+        ring_points_by_leaf.append(np.asarray(
+            tree.cell_triangles(i, j, level, leaf_span_for(level), extras[row])[0],
+            dtype=np.int64))
+    for row, (i, j, level) in enumerate(leaves):
+        span_row = leaf_span_for(level)
+        step = 1 << span_row
+        gu, gv = i << span_row, j << span_row
+        ring_rows = ring_points_by_leaf[row]
+        windows = (("v", gu, gv, step), ("u", gv, gu, step),
+                   ("v", gu + step, gv, step), ("u", gv + step, gu, step))
+        for edge_index, (orient, line, start, length) in enumerate(windows):
+            column = corner_columns.get((orient, int(line)))
+            if column is None:
+                continue
+            lo_index = int(np.searchsorted(column, int(start), side="right"))
+            hi_index = int(np.searchsorted(column, int(start) + int(length), side="left"))
+            if hi_index <= lo_index:
+                continue
+            #: a "v" edge lies at a fixed ``u`` and its positions run along ``v``; a "u" edge is
+            #: the other way round.  (Swapping these reads the wrong column and reports every
+            #: crossing edge as missing -- measured while building this audit.)
+            row_axis = 0 if orient == "v" else 1
+            position_axis = 1 - row_axis
+            on_line = ring_rows[:, row_axis] == int(line)
+            ring_axis = np.sort(ring_rows[on_line, position_axis])
+            wanted = column[lo_index:hi_index]
+            at = np.searchsorted(ring_axis, wanted)
+            at_clipped = np.minimum(at, ring_axis.shape[0] - 1) if ring_axis.shape[0] else at
+            hit = (ring_axis[at_clipped] == wanted) if ring_axis.shape[0] else np.zeros(
+                wanted.shape, dtype=bool)
+            missing = int(wanted.shape[0] - int(np.count_nonzero(hit)))
+            if missing:
+                missing_total += missing
+                edges_with_missing += 1
+                if len(first_missing) < 12:
+                    bad = wanted[~hit]
+                    first_missing.append([int(i), int(j), int(level), int(edge_index),
+                                          int(missing), int(line), int(start),
+                                          [int(v) for v in bad[:4]],
+                                          [int(x) for x in extras[row]],
+                                          int(tree.split_count(i, j, level))])
     if bad_edges:
+        kinds: Counter[str] = Counter()
+        details: list[list[float]] = []
+        for (a, b), n in bad_edges.items():
+            a_top, b_top = a < top_vertex_count, b < top_vertex_count
+            kind = ("top" if (a_top and b_top) else
+                    "bottom" if (not a_top and not b_top) else "side")
+            kinds[kind] += 1
+            if len(details) < 6:
+                details.append([int(a), int(b), int(n),
+                                [round(float(x), 9) for x in verts[a]],
+                                [round(float(x), 9) for x in verts[b]]])
         raise SynLabError(
             ErrorCode.CUTTER_NOT_CLOSED,
             f"cutter is not watertight: {len(bad_edges)} edges with != 2 incident faces",
             stage="fracture.cut.verify",
             measurements={"bad_edges": len(bad_edges), "faces": int(faces.shape[0]),
                           "edge_use_histogram": {str(k): int(v) for k, v in
-                                                 Counter(counter.values()).items()}},
+                                                 Counter(counter.values()).items()},
+                          "bad_edge_kind": dict(kinds),
+                          "bad_edge_details": details,
+                          "top_vertices": int(top_vertex_count),
+                          "hanging_corner_points": int(missing_total),
+                          "edges_missing_a_hanging_point": int(edges_with_missing),
+                          "edge_extra_histogram": {str(k): int(v) for k, v in
+                                                   sorted(Counter(
+                                                       int(x) for x in extras.reshape(-1)
+                                                   ).items())},
+                          "first_missing": first_missing},
         )
     if not bool(local_mesh.is_winding_consistent):
         raise SynLabError(ErrorCode.CUTTER_NOT_CLOSED, "cutter triangle winding is inconsistent",
@@ -1514,6 +1611,10 @@ def build_closed_cutter(
         "signed_volume_mm3": volume,
         "degenerate_faces": int(np.sum(local_mesh.area_faces <= 0.0)),
         "edge_use_histogram": {str(k): int(v) for k, v in sorted(Counter(counter.values()).items())},
+        "edge_extra_histogram": {str(k): int(v) for k, v in
+                                 sorted(Counter(int(x) for x in extras.reshape(-1)).items())},
+        "hanging_corner_points": int(missing_total),
+        "edges_missing_a_hanging_point": int(edges_with_missing),
         "cells": len(leaves),
         "leaf_level": int(leaf_level),
         "root_level": int(root_level),

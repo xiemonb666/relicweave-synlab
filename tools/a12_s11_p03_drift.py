@@ -167,7 +167,8 @@ def build_recipe(config: str | Path, recipe_id: str, lineage_id: str, mesh: Any,
 
 def _recipe_with_grid(recipe: Any, *, spacing_mm: float | None = None,
                       depth_mm: float | None = None,
-                      project_to_level_set: bool | None = None) -> Any:
+                      project_to_level_set: bool | None = None,
+                      damage_backend: str | None = None) -> Any:
     from dataclasses import replace
 
     grid = dict(recipe.grid or {})
@@ -175,6 +176,8 @@ def _recipe_with_grid(recipe: Any, *, spacing_mm: float | None = None,
         grid["spacing_mm"] = float(spacing_mm)
     if project_to_level_set is not None:
         grid["project_to_level_set"] = bool(project_to_level_set)
+    if damage_backend:
+        grid["damage_backend"] = str(damage_backend)
     params = dict(recipe.params or {})
     if depth_mm is not None:
         params["depth_mm"] = float(depth_mm)
@@ -298,11 +301,13 @@ def _halo_for(recipe: Any, ctx: Any) -> float:
 
 
 def step_extraction(mesh: Any, recipe: Any, fragment: Any, *, n_samples: int,
-                    spacing_mm: float | None = None, depth_mm: float | None = None) -> dict:
+                    spacing_mm: float | None = None, depth_mm: float | None = None,
+                    damage_backend: str | None = None) -> dict:
     from synlab.physical import sdf as S
     from synlab.physical.operators import SdfContext
 
-    use = _recipe_with_grid(recipe, spacing_mm=spacing_mm, depth_mm=depth_mm)
+    use = _recipe_with_grid(recipe, spacing_mm=spacing_mm, depth_mm=depth_mm,
+                            damage_backend=damage_backend)
     ctx = SdfContext(mesh, use, fragment=fragment)
     halo = _halo_for(use, ctx)
     started = time.perf_counter()
@@ -327,7 +332,8 @@ def step_extraction(mesh: Any, recipe: Any, fragment: Any, *, n_samples: int,
     return out
 
 
-def step_full(mesh: Any, recipe: Any, fragment: Any, *, n_samples: int) -> dict:
+def step_full(mesh: Any, recipe: Any, fragment: Any, *, n_samples: int,
+              damage_backend: str | None = None) -> dict:
     from synlab.physical import sdf as S
     from synlab.physical.api import apply_damage, audit_physical
     from synlab.physical.operators import SdfContext
@@ -344,17 +350,21 @@ def step_full(mesh: Any, recipe: Any, fragment: Any, *, n_samples: int) -> dict:
         return out, info
 
     clean_stub = SimpleNamespace(mother_id="S11", event_id="S11_E01", version=1)
+    use = _recipe_with_grid(recipe, damage_backend=damage_backend)
     rng = derive_named_rngs(20261001, "S11_LIN")["damage"]
     S.intersect_with_source = spy
     started = time.perf_counter()
     try:
-        result = apply_damage(clean_stub, fragment, recipe, rng)
+        result = apply_damage(clean_stub, fragment, use, rng)
     finally:
         S.intersect_with_source = original
     seconds = time.perf_counter() - started
-    ctx = SdfContext(mesh, recipe, fragment=fragment)
-    halo = _halo_for(recipe, ctx)
+    ctx = SdfContext(mesh, use, fragment=fragment)
+    halo = _halo_for(use, ctx)
     out: dict[str, Any] = {
+        "damage_backend": str((result.meta.get("details") or {}).get("damage_backend", "")),
+        "backend_selection": _jsonable((result.meta.get("details") or {}).get(
+            "backend_selection")),
         "seconds": float(seconds),
         "operator_measurements": {k: float(v) for k, v in (result.meta.get("measured") or {}).items()},
         "operator_units": _jsonable(result.meta.get("measurement_units")),
@@ -425,14 +435,17 @@ def step_narrowband(mesh: Any, recipe: Any, fragment: Any, *, n_samples: int) ->
 
 
 def step_sweep(mesh: Any, recipe: Any, fragment: Any, *, n_samples: int,
-               spacings: Sequence[float], depths: Sequence[float]) -> dict:
+               spacings: Sequence[float], depths: Sequence[float],
+               damage_backend: str | None = None) -> dict:
     grid_rows = []
     for spacing in spacings:
-        row = step_extraction(mesh, recipe, fragment, n_samples=n_samples, spacing_mm=spacing)
+        row = step_extraction(mesh, recipe, fragment, n_samples=n_samples, spacing_mm=spacing,
+                              damage_backend=damage_backend)
         grid_rows.append(row)
     depth_rows = []
     for depth in depths:
-        row = step_extraction(mesh, recipe, fragment, n_samples=n_samples, depth_mm=depth)
+        row = step_extraction(mesh, recipe, fragment, n_samples=n_samples, depth_mm=depth,
+                              damage_backend=damage_backend)
         radius = float(np.linalg.norm(np.asarray(mesh.bounds[1]) - np.asarray(mesh.bounds[0])))
         depth_rows.append({**row, "bbox_diagonal_mm": radius})
     return {"spacing_sweep": grid_rows, "depth_sweep": depth_rows}
@@ -468,6 +481,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--lineage", default=DEFAULT_LINEAGE)
     parser.add_argument("--fragment", default=None)
     parser.add_argument("--samples", type=int, default=20000)
+    parser.add_argument("--backend", default="",
+                        choices=("", "declared", "global_sdf", "narrowband"),
+                        help="override recipe.grid['damage_backend']; '' keeps the shipped "
+                             "routing (physical.operators.NARROWBAND_BACKEND_ROUTING)")
     parser.add_argument("--spacings", default="0.25,0.5,1.0")
     parser.add_argument("--depths", default="0.0,0.00625,0.0125,0.025,0.05")
     parser.add_argument("--out", default="data/a12_reports/s11_p03_drift.json")
@@ -493,9 +510,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             report["context"] = step_context(mesh, recipe, fragment)
         if args.step in ("extraction", "all"):
             report["extraction_only"] = step_extraction(mesh, recipe, fragment,
-                                                        n_samples=args.samples)
+                                                        n_samples=args.samples,
+                                                        damage_backend=args.backend)
         if args.step in ("full", "all"):
-            report["full"] = step_full(mesh, recipe, fragment, n_samples=args.samples)
+            report["full"] = step_full(mesh, recipe, fragment, n_samples=args.samples,
+                                       damage_backend=args.backend)
         if args.step in ("narrowband", "all"):
             report["narrowband"] = step_narrowband(mesh, recipe, fragment,
                                                    n_samples=args.samples)
@@ -503,7 +522,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             report["sweep"] = step_sweep(
                 mesh, recipe, fragment, n_samples=min(args.samples, 5000),
                 spacings=[float(v) for v in args.spacings.split(",") if v],
-                depths=[float(v) for v in args.depths.split(",") if v != ""])
+                depths=[float(v) for v in args.depths.split(",") if v != ""],
+                damage_backend=args.backend)
         if args.step in ("fix", "all"):
             report["fix"] = step_fix(mesh, recipe, fragment, n_samples=min(args.samples, 20000))
         report["ok"] = True

@@ -835,3 +835,339 @@ totals           : positives 24, negatives 96, effective_queries 12,
 * 4.69 GiB 仍是"8 片 × 12 视图 × 768×1024"的代价；若要单进程更低内存，
   需要减视图数或降低交付分辨率——那属于数据语义变更。
 * 未测 GPU 路径（本机 torch 是 CUDA 版但任务要求 CPU 冒烟）。
+
+---
+
+## S2 · 难负例类别隔离参与训练
+
+**Status: 完成（类别在线产出 + 训练侧独立损耗项，默认关；开/关对照实测**无增益** → 建议保持关闭）**
+
+Lead 裁决允许 `CANDIDATE_MATE_PRESENT_NOT_ORDINARY` 作为独立类别 `HARD_NEGATIVE_MATE_PRESENT`
+参与训练，四条约束全部按字面实现并**逐条实测**（`conformance` 四键全 true）。
+
+### 问题复现（真实数字）
+
+```
+.venv\Scripts\python.exe tools\a12_s2_hard_negatives.py --step class ^
+  --package data\a12_exports\trainable\next_experiment\training_package ^
+  --out data\a12_reports\s2_hard_negatives_class.json
+```
+退出码 **0**。实测（`data/a12_reports/s2_hard_negatives_class.json`）：
+
+| 项 | 值 |
+|---|---|
+| 关系行 | 1721 |
+| `POSITIVE_R2` | 28 |
+| `ORDINARY_NEGATIVE_MATE_ABSENT` | 440 |
+| **`CANDIDATE_MATE_PRESENT_NOT_ORDINARY`** | **1120**（不参与任何 loss） |
+| `EXCLUDED` | 133 |
+| `eligible_as_negative` true（冻结推导） | 1560 |
+| 有邻片片段 / 无邻片片段 | 56 / 15 |
+| 1120 行中 **query 有邻片** | **880**（可进入新类别） |
+| 1120 行中 **query 无邻片** | **240**（必须拒绝，见约束 4） |
+
+### 实现
+
+**在线侧（`synlab/relations/**`）**——复用 `mate_absent.py` 的类别语义，**不重写** `kind`/`valid`/`area_mm2`/身份：
+
+* `mate_absent.py`：新增 `CLASS_HARD_NEGATIVE`、`HARD_NEGATIVE_LOSS_MASK=True`、
+  `HARD_NEGATIVE_ELIGIBLE_AS_NEGATIVE=False`、`HARD_NEGATIVE_TASK`、`HARD_NEGATIVE_RULING`
+  （四条约束原文）、`hard_negative_records()`、`hard_negative_class_count()`。
+  `hard_negative_records` 只在 `row_class == CLASS_MATE_PRESENT` 的行上产出记录（**判决前后两种状态都认**，
+  与 `row_class` 同一判据），并强制约束 4：`query` 必须自带确认 R2 邻片，否则进 `rejected`
+  并带 `query_mate_absent`，**不静默丢弃、不监督**。
+* `sampler.py`：`hard_negative_candidates(pool, query, limit=)` 在**活池**上产出同一类别
+  （只接受被 `negative_exclusion_reason` 以 `candidate_mate_present` 拒绝的候补；自身、query 的历史 R2、
+  `TINY_CONTACT`、灰区、未确认仍一律拒绝）；`SamplerParams.hard_negative_limit` 默认 **0**
+  （该类别不进 batch），`sample_training_batch` 只在非 0 时给行加 `hard_negatives`，且**永不**并入 `negatives`。
+
+**类别为什么不能并进 `research/relations.parquet`（实测，不是声明）**：决策 D10 的单门规则要求
+`eligible_as_negative == (kind in {R0,R1} and loss_mask)` 对**每一行**成立，而本类别的契约正是
+`loss_mask=True` 且 `eligible_as_negative=False`。用**真正的**检查器
+`qc.decision_checks._check_loss_mask_authority` 对同一张表跑两遍：
+
+| | rows | 满足 D10 | 违反 |
+|---|---|---|---|
+| 类别留在主表之外 | 1721 | 1718 | 3（既有的 `TINY_CONTACT` 行，与本项无关） |
+| 类别并入主表 | 2601 | 1718 | **883**（+880，全部是本类别行） |
+
+→ 并入等于**新增 880 条审计违规**（即放宽 QA 判据），所以类别以**自己的记录集**产出
+（`s2_hard_negatives_class_records.json`），主表一字未动。
+`tests/a12/relations/test_s2_hard_negative_class.py::test_merging_the_class_into_relations_parquet_would_add_d10_violations`
+把这件事实固化（真 parquet + 真检查器）。
+
+**训练侧（`synlab/training/**`）**：
+
+* `batch.py`：新字段 `hard_neg_mask [Q,C]`、`hard_neg_query_mate [Q]`、`mate_present [F]`；
+  硬负例占用**追加在 pos/neg 块之后**的独立 slot 块（`c = c_pn + c_hard`），
+  `neg_mask`/`pos_mask`/`excluded_mask`/`exclusion_reason` 的既有 slot **逐位不变**；
+  `_corr_tensors(slots=)` 让对应权重张量跟住加宽后的 `C`；`negative_audit` 增加
+  hard∈neg / hard∈pos / hard∈excluded / 不可编码 / 未确认 / 类别码非法 / query 无邻片 七类判据；
+  `mate_present_shortcut_probe()` 用**标签侧**的"候补自己有没有邻片"这一个线索去分辨
+  「正例 vs 硬负例」，直接测出捷径强度。
+  约束 4 **无开关**：query 无邻片的行**抛错**而不是丢弃；另加"同一候补同时进 ordinary negative 与硬负例"直接拒绝。
+  `_mates_of()` 按**池**（而非本 micro-batch）判定候补的邻片，避免"邻片不在本 batch 就被误判"。
+* `losses.py`：`HARD_NEGATIVE_TASK="hard_negative"`、`DEFAULT_HARD_NEGATIVE_WEIGHT=0.0`（**默认关**），
+  且**不在** `TASK_ORDER` 里（五个核心任务的冻结集不变）；新增 `hard_negative_loss()`：
+  `L_h(q) = logsumexp([s(q,p)/τ] ∪ [s(q,h)/τ+margin]) − logsumexp([s(q,p)/τ])`，
+  只读 `hard_neg_mask`，**从不读 `neg_mask`**。
+* `trainer.py`：权重为 0 时**根本不构造**该项（组合、报告、反向与无本项时逐位一致）；
+  非 0 时以独立权重进入 `MultiTaskLoss.combine`，`task_report()` 仍只列五个核心任务。
+
+### 验证：开/关对照（同一最小可训子集，3 步，真实梯度）
+
+```
+.venv\Scripts\python.exe tools\a12_s2_hard_negatives.py --step all ^
+  --package data\a12_exports\negfix\next_experiment\training_package ^
+  --query LIN0101_V16_M12_PAT12_E01-m --steps 3 --negatives 4 --hard-negatives 4 --hard-weight 0.3 ^
+  --out data\a12_reports\s2_hard_negatives_ab.json
+```
+退出码 **0**；`data/a12_reports/s2_hard_negatives_ab.json`（27.7 s，device cuda）。
+子集 10 片（query + 1 正例 + 3 ordinary negative + 4 硬负例），三个 arm：
+
+* `off` = 无硬负例 slot、权重 0（S2 之前的批）；
+* `control` = 有硬负例 slot、权重 0（隔离"类别存在"本身）；
+* `on` = 同一批，权重 0.3。
+
+| | `off` | `control` | `on` |
+|---|---|---|---|
+| rank loss（3 步） | 6.923782 / 6.776347 / 6.667806 | 6.923782 / 6.776352 / 6.667811 | 6.923782 / **6.777000** / **6.668943** |
+| rank `n_valid`/`n_allowed` | 3 / 3 | 3 / 3 | 3 / 3 |
+| `effective_queries` | 3 | 3 | 3 |
+| positives / negatives / excluded | 1 / 1 / 8 | 1 / 1 / 8 | 1 / 1 / 8 |
+| 组合 loss（3 步） | 7.317972 / 7.170210 / 7.061428 | 7.317583 / 7.169848 / 7.061081 | 10.081157 / 9.878906 / 9.730040 |
+| grad norm | 329.33 / 322.71 / 317.82 | 329.32 / 322.70 / 317.81 | **459.55 / 450.33 / 443.53** |
+| aux 项 | 未构造 | 未构造 | 9.211914 / 9.028023 / 8.892738（权重 0.3） |
+| aux `n_valid`/`n_allowed`/`n_valid_labels` | — | — | 1 / 1 / 8（8 个 query 因非 mate-present 跳过） |
+
+**约束 2 的数字证明**（`denominator_invariance`）：`off` 与 `control` 的
+`positives / negatives / excluded / effective_queries / queries_with_positive / queries_with_legal_negative`
+**全部相等**（`moved_fields = {}`、`invariant = true`），rank 任务的 `n_valid`/`n_allowed`/`loss` 在
+step 0 **逐位相同**（6.9237823486328125）。唯一变动的是 `exclusion_histogram["none"]`，
+它正好增加 `hard_neg_mask.sum()`（= 4），即"被加宽的候补维度"，不是任何分母。
+
+**约束 4 的数字证明**（`mate_present_shortcut_probe`）：`on`/`control` 都是
+`queries_probed=1`、`queries_with_constant_cue=1`、`discriminative_power=0.0`
+——在辅助项自己的比较集（正例 ∪ 硬负例）里，"候补有没有邻片"这个线索**恒定**，
+AUC 未定义 ⇒ 该线索无法被用来解题。`tests/.../test_the_shortcut_probe_is_not_vacuous`
+人为把其中一个硬负例的线索改成 False，探针立刻报 AUC 0.75 / power 0.5，证明探针不是恒零。
+
+**指标（子集尺度）**：
+
+| | `control` | `on` |
+|---|---|---|
+| `positive_rank`（越小越好） | 5 | **5** |
+| `hard_negative_accept_rate`（越小越好） | 0.75 | **0.75** |
+| `mate_absent_misleading_rate`（越小越好） | 0.25 | **0.25** |
+| `candidates_scored` | 9 | 9 |
+
+（`off` 的 `positive_rank=2` 只是因为它的候补集里**没有**那 4 个硬负例；这正是"1120 行不参与训练"
+让检索看起来更容易的原因。`any@50`/`Hit@10`/`无邻片误导率` 的冻结分母在 roster 尺度由
+`synlab.diagnostics.metrics` 计算，本子集只有 9 个候补，所以这里报的是**子集尺度同义量**，
+报告里逐字写明，不冒充冻结指标。）
+
+### 结论与建议：**保持关闭**
+
+* **无增益**：3 步之后 `positive_rank`、`hard_negative_accept_rate`、`mate_absent_misleading_rate`
+  在 `control` 与 `on` 之间**完全相同**（5 / 0.75 / 0.25）；aux 项自身确实在降
+  （9.2119 → 8.8927，−3.5%），但没有迁移到任何被测指标上。
+* **rank 任务反而略差**：`on` 的 rank loss 6.777000/6.668943 vs `control` 6.776352/6.667811
+  （差在 1e-3 量级，方向一致地更差）。
+* **代价明确**：同一 rank 目标下梯度范数从 329/322/318 升到 460/450/444（**+40%**），
+  即多了一个只贡献梯度、不贡献可测指标的项。
+* **没有引入捷径**（约束 4 与探针都成立），所以这不是"要关掉因为它有害"，而是
+  **"在能测到的范围内没有收益，先关掉"**。默认 `DEFAULT_HARD_NEGATIVE_WEIGHT = 0.0`、
+  `SamplerParams.hard_negative_limit = 0`，两条路都默认不产出；打开只需要权重非 0。
+
+### 仍未解决
+
+* **3 步太小**：本项只跑了任务要求的最小对照（同一最小可训子集 3 步）。要判断该类别是否
+  在长训练里有价值，需要在**全包**（`tools/a12_chunked_smoke.py` 的分块路径，峰值 4.69 GiB）上
+  跑足步数并比较族级指标；本轮未做，因此结论限定为"这 3 步里没有增益"。
+* **只用到 4 个硬负例 / 1 个可训 query**：包内该 query 有 36 个硬负例，子集只取了 4 个（内存约束）。
+  更大的硬负例集与更多 query 可能改变结论，属上一条的同一解锁条件。
+* **240 行（query 无邻片）永久不可用**：这是约束 4 的直接结果，已如实计入 `rejected`，
+  没有为了凑数把它们放进来。它们也不是 ordinary negative（候补有邻片），所以这 240 行
+  在当前类别体系下**没有任何监督角色**——如果将来要利用，需要 Lead 另立类别与证据。
+* **类别没有进包**：`research/relations.parquet` 未写（会违反 D10）。要让下游开箱可用，
+  需要 Lead 决定新增一张辅助表（例如 `research/hard_negatives.parquet`）并更新列语义表；
+  本轮以 `data/a12_reports/s2_hard_negatives_class_records.json` + 活池 API 交付。
+
+---
+
+## S11 · P03 全局 SDF 提取漂移
+
+**Status: 完成（漂移来源已用实测证据链锁定 = 全局 level-set 重提取；最小修法 = 让 P03 走已存在的窄带后端，
+实测漂移 0.35424 → 0.000348 mm；另附"就地修"的实测反证）**
+
+### 问题复现（真实数字）
+
+复现对象：`data/a12_degrade/store` 的 `LIN0000_V02_M01_PAT02_E01-m`（与 `a09_p03_probe.json` 同一谱系），
+83262.62 mm³ / 4886 面 / watertight；配方 `P03_depth_light`（`depth_mm=0.05`）。
+
+```
+.venv\Scripts\python.exe tools\a12_s11_p03_drift.py --step context --store data\a12_degrade\store ^
+  --out data\a12_reports\s11_p03_context.json        # 退出码 0
+.venv\Scripts\python.exe tools\a12_s11_p03_drift.py --step sweep --backend global_sdf ^
+  --store data\a12_degrade\store --spacings 0.5701,1.1402,2.2804 --depths 0.0,0.0125,0.025,0.05 ^
+  --out data\a12_reports\s11_p03_sweep.json          # 退出码 0
+```
+
+`--step full --backend global_sdf`（即 `pipeline` 实际走的那条路，见下）实测：
+
+| 量 | 值 |
+|---|---|
+| `roi_external_drift_mm` | **0.35424** |
+| `lost_volume_mm3` | **319.31** |
+| 线性预估（`Σ area_face · b(质心)`） | **40.60** |
+| 网格 spacing（`basis`） | **1.1402 mm**（`min_wall_thickness/6`=0.95018 被 **node_budget_relaxation** 放大） |
+| grid shape / nodes / halo | 108×63×83 / 564 732 / 4.5207 mm |
+| ROI | 1214 面 / 1499.01 mm² |
+| **`surface_zero_level_max_mm`** | **0.26117**（RMS 0.03053，800 个真实表面采样点） |
+| 配方面元数 vs 交付面元数 | 4886 → 119 325（布尔求交后） |
+| 交付体 watertight / 边界边 | **False / 43** |
+
+### 证据链（四项独立实测，全部指向同一个来源）
+
+**(1) 零损伤对照——最决定性的一条。** 在同一网格、同一 `marching_cubes_mesh` 调用上只提取 `d0`
+（**完全不施加任何损伤**，与 `SdfContext.extract` 用的是同一条语句）：
+
+| | 零损伤提取 (`--step extraction`) | 真实全流程 (`--step full`) |
+|---|---|---|
+| 体积误差 | **−206.86 mm³ (−0.248 %)** | lost_volume **319.31 mm³** |
+| `roi_external_drift_mm` | **0.35424330830574036** | **0.35424330830574036**（逐位相同） |
+| 面数 | 58 494 | 119 325 |
+| watertight / 边界边 | True / 0 | False / 43 |
+
+→ 276.58/319.31 级别的"损失"里，**206.86 mm³（64.8 %）在没有任何损伤时就已产生**；
+而**漂移量完全等于**零损伤提取的漂移量：**漂移与损伤场无关**。
+`--step sweep` 的 depth 扫描（0 / 0.0125 / 0.025 / 0.05 mm）在这条对照上给出**逐位相同**的
+0.35424330830574036 / −206.85717324719008 —— 对照本身不施加场，所以这只证明"提取漂移对声明深度完全无感"，
+不能当作"全流程与深度无关"来读（报告里按此表述）。
+
+**(2) 场的采样/插值残差就是漂移的上界。** `surface_zero_level_max_mm = 0.26117`
+= **0.229 × spacing**：节点采样的 `d0` 经三线性插值后在**真实干净表面**上偏离 0 达 0.261 mm。
+marching cubes 把顶点放在这个插值零集上，所以交付表面对真实表面的位移不可能小于它。
+实测漂移 0.35424 = 1.36 × 该上界（多出的部分来自布尔求交与采样尾统计）。
+
+**(3) 提取顶点对干净表面的残差直接量化了误差。** 零损伤提取的 29 249 个顶点：
+`|signed distance|` 均值 **0.00293** / p95 **0.01152** / max **1.4010** mm，6.83 % 的顶点外偏 > 1e-3 mm。
+
+**(4) spacing 扫描（不单调，如实报告）。** `choose_spacing` 被 node budget 覆盖，
+请求值几乎无效（请求 1.1402 与 2.2804 都落到同一个 1.1402 mm；请求 0.5701 反而落到 1.1822 mm）：
+
+| 有效 spacing | 漂移 | 体积误差 | 面数 |
+|---|---|---|---|
+| 1.1402 mm | 0.35424 | −206.86 | 58 494 |
+| 1.1822 mm | 0.24084 | −215.70 | 54 288 |
+
+→ 漂移是**采样点的最大值统计**，在这个采样数下对 spacing 不单调；可控结论是
+"漂移由网格决定"，而不是"漂移 ∝ spacing"。这本身说明该指标只能当**上界探针**用。
+
+**(5) 就地修的反证（`--step fix`，`s11_p03_projection_fix.json`）。** 在 `synlab/physical/sdf.py`
+新增 `refine_to_level_set()`：把 marching-cubes 顶点用**精确场**（`d0(x) + t·α(x)·b(x)`，
+`d0` 由 Open3D 在任意点给出）做带保护的 Newton 投影（严格改进 + 位移 ≤ 0.75·spacing + 结果必须
+watertight/winding 一致且不产生退化面）。实测：
+
+| | 投影前 | 投影后 |
+|---|---|---|
+| 顶点残差 均值 / p95 / max | 0.00296 / 0.01152 / 1.4010 | **0.00017 / 6.1e-6 / 1.4010** |
+| 接受顶点比例 | — | 59.15 % |
+| lost_volume_mm3 | 319.31 | **242.03（−24.2 %）** |
+| `roi_external_drift_mm` | 0.35424 | **0.35407（−0.00018）** |
+| 交付体 watertight / 边界边 | False / 43 | False / **90** |
+
+→ 投影确实把"提取误差"压下去了（p95 好 1 900 倍、虚假体积损失少 24 %），但**漂移的尾巴动不了**：
+尾巴正好落在 1.14 mm 网格表示不了的地方（残差 max 仍是 1.401 mm，那些修正超过了 0.75·spacing 预算被拒），
+而且它经布尔求交后**把边界边从 43 条变成 90 条**。
+因此该投影**不是本缺陷的修法**，`PROJECT_TO_LEVEL_SET_DEFAULT = False`，仅作为可选、可复现的
+局部细化能力保留（`recipe.grid["project_to_level_set"]=True` 打开，效果写进
+`details["sdf_level_set_projection"]`）。
+
+**(6) 重合反向绕向三角对不是主因。** `a09_p03_probe.json` 里的 2 体 2 面 0 mm³ debris
+在本体上确实存在，但 `assemble_damage_bodies`（`subset_v2`）已按 `MIN_MATERIAL_VOLUME_MM3=1e-9`
+把它们判为引擎碎屑并剔除；本轮全流程 `component_count = 1`、无 `NON_POSITIVE_VOLUME`。
+它们影响的是 **watertight 判定**（43 条边界边），不是漂移。
+
+### 修法（最小）：把 P03 交回它自己声明的后端
+
+**根因不是提取参数，而是"谁来产生几何"**：
+
+* `synlab/degrade/axes.py` 已把 P02/P03/P04 声明为 **窄带轴**（`NARROWBAND = True`），
+  并把它们路由到 `synlab.degrade.physical_narrowband`——一个**表面算子**：只沿法线内移 ROI 顶点、
+  把 ROI 边缘钉死（实测 `rim_vertices_pinned = 618`、`narrowband_vertices = 917` / 1214 个 ROI 面）、
+  **其余三角面原样保留**，
+  `details.narrowband.grid = "none (surface operator, not a voxel field)"`、`spacing_mm = 0.0`。
+* 但 `synlab/pipeline.py:1705` 走的是 `physical.api.apply_damage` → `physical.operators.run_damage`
+  → **全局 SDF 路径**，于是"声明"和"实际产出"互相矛盾，交付数据带的就是全局路径的漂移。
+
+**改法（写在 `synlab/physical/**` 内）**：`physical/operators.py` 新增
+`NARROWBAND_BACKEND_ROUTING`（默认 `"declared"`）、`declared_narrowband_axis()`（只读地问
+`degrade.registry` 该轴是否声明为窄带）与 `selected_backend()`；
+`run_damage()` 在轴被声明为窄带且 `level > 0` 时调用
+`_run_narrowband_as_outcome()`（把 `run_narrowband_damage` 的 `PhysicalResult` 适配回
+`DamageOutcome`，`apply_damage` 之后的组件/台账/QA 逻辑一字未改）。
+每个结果都在 `details["damage_backend"]` / `details["backend_selection"]` 里写明**是哪个后端产出的**；
+`recipe.grid["damage_backend"] = "global_sdf" | "narrowband"` 可按配方覆盖（复现旧行为用前者）。
+
+### 验证（同一 body、同一冻结配方）
+
+```
+.venv\Scripts\python.exe tools\a12_s11_p03_drift.py --step full --backend narrowband ^
+  --store data\a12_degrade\store --out data\a12_reports\s11_p03_narrowband_routed.json   # 退出码 0
+```
+
+| | 全局 SDF（修前 / `--backend global_sdf`） | 窄带（修后 / 默认路由） |
+|---|---|---|
+| `roi_external_drift_mm` | 0.35424 | **0.000348**（**1 018×**） |
+| `lost_volume_mm3` | 319.31 | **32.88** |
+| 线性预估 | 40.60（context 的质心式） | 40.46（后端自己的 `linearised_predicted_loss_mm3`），比值 **0.813** |
+| 交付体 watertight / 边界边 | False / 43 | **True / 0**（`narrowband_path` 的 `assert_watertight`） |
+| 交付体面数 | 119 325 | **4 856** |
+| ROI 钉住顶点 / 窄带顶点 | —（全部重提取） | 618 / 917（共 1214 个 ROI 面） |
+| `audit_physical` | PASS（`roi_external_drift.pass = false`，**不作为失败码**） | **PASS，`failure_codes = []`** |
+| 后端标记 | `physical.operators.global_sdf_level_set` | `degrade.physical_narrowband`（`backend_selection.declared_narrowband = true`） |
+
+### 一处必须点名的 QA 缺口（本轮只记录，未改判据）
+
+`audit_physical` 把 `roi_external_drift_mm` 写进 `checks["roi_external_drift"]` 并给出
+`pass: false`，但**它不进 `failure_codes`**，所以 `a09_p03_probe.json` 之外的全局 P03 结果
+可以在漂移 0.354 mm 的情况下报 `audit status = PASS`。本项**没有**收紧这个判据
+（收紧会让已产出的包集体翻成 FAIL，属 QA 口径变更，需要 Lead 裁决），只把它作为
+"漂移能悄悄出厂"的机制记录在此，并已由 `run_damage` 的后端选择显式化。
+
+### 仍未解决
+
+* **历史数据不会被追溯修复**：`data/a12_exports/**` 里已写出的 P03 产物仍然是全局路径的几何。
+  要修复需要重新导出（本机可做，但会覆盖队友正在使用的包，未执行）。
+* **P02/P04 同属窄带声明，同样被路由**：本项只在 P03 上做了完整的前后对照（P02/P04 共用同一
+  适配路径，未逐轴复测）。若 Lead 只想改 P03，把 `NARROWBAND_BACKEND_ROUTING` 或单配方
+  `grid["damage_backend"]` 按轴收窄即可——这是**一行**的差别，不需要改实现。
+* **默认路由改变了 P03 的产出几何**：这是"让 `physical` 与 `degrade.axes` 的声明一致"，
+  但它确实会改变此后每次导出里 P03 的字节。`recipe.grid["damage_backend"]="global_sdf"`
+  完整保留旧行为，便于 A/B 与复现。
+* **漂移指标本身是"采样点的最大值"**：20000 个表面采样点里少数几点决定读数，缺一个稳健的
+  p95/p99 版本；本轮没有改指标定义（改它会让历史数字失去可比性），只如实报告两条 spacing 下的读数。
+* **1.14 mm 的 spacing 由 node budget 而非几何需求决定**（`min_wall_thickness/6 = 0.95018` 被
+  `+node_budget_relaxation` 放大 20 %）。在仍走全局路径的轴上这是一个独立的精度隐患，本轮未动
+  `choose_spacing`（改它会改所有轴的数据）。
+* **未改** `synlab/degrade/**`（只读导入）、`synlab/pipeline.py`、`synlab/fracture/**`、`synlab/observe/**`。
+
+---
+
+## 本轮回归（S2 + S11）
+
+| 命令 | 退出码 | 结果 |
+|---|---|---|
+| `.venv\Scripts\python.exe -m pytest tests\a12\relations tests\a12\training tests\a12\physical tests\a12\qc tests\a12\storage -q` | **0**（2026-10-02 两次） | 全绿 |
+| 同上（另一次运行，同代码） | 1 | 唯一失败 `tests/a12/qc/test_data_quality.py::test_store_sqlite_is_opened_read_only`（见下） |
+| `.venv\Scripts\python.exe -m pytest tests\a12\operators -q` | **0** | 全绿（含 `test_narrowband.py`，证明 S11 的路由没有破坏算子契约） |
+| `.venv\Scripts\python.exe -m pytest tests\a12\operators tests\a12\fracture -q` | 1 | 20+ 个 `tests/a12/fracture/**` setup error：`CUTTER_NOT_CLOSED (fracture.cut.verify) cutter is not watertight: 6442 edges` —— 来自**并行队友正在改的** `synlab/fracture/cut.py`（工作区未提交修改），与本项无关 |
+
+**关于 `test_store_sqlite_is_opened_read_only`**：单独运行退出码 **0**（通过），
+`pytest tests/a12/qc -q` 整目录运行退出码 **1**，`tests/a12/qc --ignore=test_data_quality.py` 退出码 **0**；
+在同一文件里让它失败的是它**前面任意一个测试**（逐个配对都复现），即顺序相关。
+该测试文件只 import `synlab.qc.data_quality` / `synlab.storage.store` / `synlab.roles`，
+这三个模块**均不在 S2/S11 的改动集内**（本轮改的是 `synlab/{relations,training}/**`、
+`synlab/physical/{sdf,operators}.py`、`tests/a12/{relations,training}/**`、`tools/**`、本文件）。
+因此如实记录为**既有的、顺序相关的失败**，本轮**未改**它（改 `tests/a12/qc/**` 也不在写入范围内）。

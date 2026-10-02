@@ -1,4 +1,4 @@
-"""Fracture-appearance run: relief through the normal channel, measured on real renders.
+﻿"""Fracture-appearance run: relief through the normal channel, measured on real renders.
 
 Stages (all outputs under the allowed write scope):
 
@@ -133,16 +133,28 @@ def render_and_image(*, target, frame, appearance, relief, obs_spec, imaging_see
     shading_spec.effective_gain = 1.0e6
     shading_res, shading_dn = _chain(shading_spec, imaging_seed)
     delivered_res, delivered_dn = _chain(imaging_spec, imaging_seed)
+    lin = np.asarray(shading_res.linear, dtype=np.float64)
+    dn_float = 255.0 * (lin.mean(axis=2) if lin.ndim == 3 else lin)
     mask = (render.id_map >= 0) & (render.surface_tag == RIM_TAG)
-    return {"render": render, "image": shading_res.image, "dn": shading_dn, "mask": mask,
+    return {"render": render, "image": shading_res.image, "dn": shading_dn,
+            "dn_float": dn_float, "mask": mask,
             "imaging": shading_res, "frame": frame, "appearance": appearance,
             "image_delivered": delivered_res.image, "dn_delivered": delivered_dn,
             "imaging_delivered": delivered_res,
             "imaging_gain_shading": 1.0e6}
 
 
-def measure(dn: np.ndarray, mask: np.ndarray, render) -> dict:
+def measure(res: dict) -> dict:
+    """Delivered-image statistics of one appearance render.
+
+    Both readings of the same render are reported: ``dn`` is the quantised delivered image (the
+    code values a reader sees) and ``dn_float`` is the pre-quantisation DN of the chain's linear
+    output, which is the channel a sub-code-value shading signal has to be measured in.
+    """
+    dn, mask, render = res["dn"], res["mask"], res["render"]
     out = {"dn": fa.dn_statistics(dn, mask),
+           "dn_float": fa.dn_statistics(res["dn_float"], mask),
+           "dn_delivered_shipped_gain": fa.dn_statistics(res["dn_delivered"], mask),
            "facet": fa.facet_metrics(dn, render.id_map, mask),
            "direction": fa.directional_index(dn, mask),
            "grain": fa.grain_pixel_statistics(dn, mask)}
@@ -153,32 +165,43 @@ def mm_per_px_of(frame) -> float:
     return float(frame.working_distance_mm / float(frame.K[0, 0]))
 
 
-def band_prediction(params: fa.AppearanceParameters, *, ra_mm: float, albedo: float,
-                    light=None, levels: float = 255.0) -> dict:
-    """The *band-correct* shading prediction: broadband slope from the audited band set.
+def band_prediction(field, *, ra_mm: float, albedo: float, light=None,
+                    levels: float = 255.0) -> dict:
+    """The shading prediction from the field's **measured** slope (not from a nominal formula).
 
     The existing ``fracture_roi.shading_contrast`` puts the whole amplitude at one representative
-    wavelength and therefore over-predicts by construction; this puts each audited band at its own
-    wavelength and sums the slopes in quadrature, which is what the rendered image can deliver.
+    wavelength and therefore over-predicts by construction; the band formula ``2 pi A / lambda``
+    also assumes that the whole ``Ra`` sits at ``lambda_min``.  The audited spectrum is red (M01's
+    longest band carries 32x the amplitude of its shortest), so the honest prediction uses the
+    gradient RMS that the field **actually has** on the ROI:
+
+        ``dDN = levels * albedo * color * |l_perp| * slope_rms``
     """
     light = light or fa.frozen_light()
     perpendicular = float(math.sqrt(max(0.0, 1.0 - float(light.direction[2]) ** 2)))
     color_mean = float(np.mean(light.color))
-    a = np.asarray(params.band_amplitudes_mm, dtype=np.float64)
-    lam = np.asarray(params.band_wavelengths_mm, dtype=np.float64)
-    sigma_r0 = max(float(params.sigma_r0_mm), 1e-9)
-    scale = float(ra_mm) / sigma_r0                     # Ra-scaled amplitudes
-    slopes = 2.0 * math.pi * (a * scale) / lam
-    slope_rms = float(math.sqrt(0.5 * float(np.sum(slopes ** 2))))
+    params = field.parameters
+    scale = float(ra_mm) / max(float(field.ra_at_unit_mm), 1e-30)
+    slope_measured = float(field.slope_rms_at_unit) * scale
+    slopes = 2.0 * math.pi * (np.asarray(params.band_amplitudes_mm, dtype=np.float64)
+                              * (float(ra_mm) / max(float(params.sigma_r0_mm), 1e-9))) \
+        / np.asarray(params.band_wavelengths_mm, dtype=np.float64)
+    band_slope_rms = float(math.sqrt(0.5 * float(np.sum(slopes ** 2))))
     single = 2.0 * math.pi * float(ra_mm) / float(params.lambda_min_mm)
+    factor = levels * float(albedo) * color_mean * perpendicular
     return {
-        "band_slope_rms": slope_rms,
-        "band_dDN": levels * float(albedo) * color_mean * perpendicular * slope_rms,
+        "slope_rms_measured": slope_measured,
+        "dDN_from_measured_slope": factor * slope_measured,
+        "band_slope_rms": band_slope_rms,
+        "band_dDN": factor * band_slope_rms,
         "single_lambda_slope_rms": single,
-        "single_lambda_dDN": levels * float(albedo) * color_mean * perpendicular * single,
+        "single_lambda_dDN": factor * single,
         "lambda_used_for_single_mm": float(params.lambda_min_mm),
-        "note": ("band_dDN sums each audited band at its own wavelength; single_lambda_dDN is the "
-                 "pre-existing upper bound that puts the whole Ra at lambda_min"),
+        "amplitude_scale": scale,
+        "note": ("dDN_from_measured_slope uses the gradient RMS measured on the ROI grid; "
+                 "band_dDN assumes each audited band carries its own amplitude; "
+                 "single_lambda_dDN is the pre-existing upper bound that puts the whole Ra at "
+                 "lambda_min"),
     }
 
 
@@ -237,7 +260,7 @@ def stage_sweep(*, config, target, body, mesh, roi, rng) -> dict:
             "long_edge_px": int(long_edge), "delivered_grid_px": [int(long_edge),
                                                                  int(round(long_edge * 0.75))],
             "mm_per_px_measured": measured_mm_px, "supersample": supersample,
-            "albedo_mean": albedo, "relief_off": measure(off["dn"], off["mask"], off["render"]),
+            "albedo_mean": albedo, "relief_off": measure(off),
             "amplitudes": [],
         }
         for amp in config.amplitudes_mm:
@@ -249,13 +272,15 @@ def stage_sweep(*, config, target, body, mesh, roi, rng) -> dict:
                                       label=f"relief_on Ra={amp}"),
                                   relief=scaled, obs_spec=spec_obs, imaging_seed=11,
                                   supersample=supersample)
-            diff = fa.difference_dn_statistics(on["dn"], off["dn"], on["mask"])
+            diff = fa.difference_dn_statistics(on["dn_float"], off["dn_float"], on["mask"])
+            changed = fa.difference_dn_statistics(on["dn"], off["dn"], on["mask"])
             diff_delivered = fa.difference_dn_statistics(on["dn_delivered"], off["dn_delivered"],
                                                          on["mask"])
             entry = {"ra_target_mm": float(amp), "ra_realized_mm": scaled.realized_ra_mm,
-                     "difference": diff, "difference_delivered": diff_delivered,
-                     "relief_on": measure(on["dn"], on["mask"], on["render"]),
-                     "prediction": band_prediction(params, ra_mm=float(amp), albedo=albedo)}
+                     "difference": diff, "changed_code_values": changed,
+                     "difference_delivered": diff_delivered,
+                     "relief_on": measure(on),
+                     "prediction": band_prediction(scaled, ra_mm=float(amp), albedo=albedo)}
             row["amplitudes"].append(entry)
             if abs(float(mm_px) - 0.073) < 1e-9:
                 images[float(amp)] = {"on": on, "off": off}
@@ -289,7 +314,10 @@ def stage_sweep(*, config, target, body, mesh, roi, rng) -> dict:
                              relief=None, obs_spec=spec_obs, imaging_seed=97,
                              supersample=int(config.supersample))
         control = {"mm_per_px": 0.073, "imaging_seed_a": 11, "imaging_seed_b": 97,
-                   "difference_shading": fa.difference_dn_statistics(a["dn"], b["dn"], a["mask"]),
+                   "difference_shading": fa.difference_dn_statistics(
+                       a["dn_float"], b["dn_float"], a["mask"]),
+                   "difference_shading_quantised": fa.difference_dn_statistics(
+                       a["dn"], b["dn"], a["mask"]),
                    "difference_delivered": fa.difference_dn_statistics(
                        a["dn_delivered"], b["dn_delivered"], a["mask"]),
                    "definition": ("same render, different imaging noise seed: the code-value "
@@ -336,7 +364,7 @@ def stage_facets(*, config, target, body, mesh, roi, rng) -> dict:
         out["variants"][mode] = {
             "label": label, "crease_angle_deg": crease,
             "geometry_hash": res["render"].meta["appearance"]["geometry_hash"],
-            "measured": measure(res["dn"], res["mask"], res["render"]),
+            "measured": measure(res),
         }
     after = fa.geometry_hash(np.asarray(mesh.vertices), np.asarray(mesh.faces))
     out["geometry_hash_after"] = after
@@ -425,12 +453,13 @@ def stage_materials(*, config, target, body, mesh, roi, rng) -> dict:
                               "band_wavelengths_mm", "band_amplitudes_mm")},
             "albedo": list(params.albedo),
             "diffuse_weight": 1.0 - float(params.transmission),
-            "relief_on": measure(res["dn"], res["mask"], res["render"]),
-            "relief_on_without_transmission_weight": measure(res_nw["dn"], res_nw["mask"],
-                                                             res_nw["render"]),
-            "relief_off": measure(off["dn"], off["mask"], off["render"]),
-            "difference_relief_on_minus_off": fa.difference_dn_statistics(res["dn"], off["dn"],
-                                                                         res["mask"]),
+            "relief_on": measure(res),
+            "relief_on_without_transmission_weight": measure(res_nw),
+            "relief_off": measure(off),
+            "difference_relief_on_minus_off": fa.difference_dn_statistics(
+                res["dn_float"], off["dn_float"], res["mask"]),
+            "changed_code_values_relief_on_minus_off": fa.difference_dn_statistics(
+                res["dn"], off["dn"], res["mask"]),
         }
         panels.append((material_id, res["image"],
                        [f"{material_id} {params.material_name}".strip(),
@@ -541,7 +570,8 @@ def stage_glaze(*, config, target, body, mesh, roi, rng) -> dict:
         "strip_width_px": float(with_strip.meta["derive_morphology_parameters"]
                                 ["glaze_strip_width_mm"]) / mm_per_px_of(frame),
         "ratio": float(with_strip.meta["derive_morphology_parameters"]["glaze_roughness_ratio"]),
-        "difference": fa.difference_dn_statistics(a["dn"], b["dn"], mask),
+        "difference": fa.difference_dn_statistics(a["dn_float"], b["dn_float"], mask),
+        "changed_code_values": fa.difference_dn_statistics(a["dn"], b["dn"], mask),
         "dn_with_strip": fa.dn_statistics(a["dn"], mask),
         "dn_without_strip": fa.dn_statistics(b["dn"], mask),
         "changed_pixel_fraction": float(np.mean((diff > 0.5)[mask])) if mask.any() else 0.0,
@@ -631,11 +661,12 @@ def stage_images(*, config, target, body, mesh, roi, rng, sweep: dict) -> dict:
                                          label=f"smooth + relief Ra={amp}"),
                                      relief=field, obs_spec=spec_obs, imaging_seed=11,
                                      supersample=supersample)
-        diff = fa.difference_dn_statistics(on["dn"], off["dn"], on["mask"])
+        diff = fa.difference_dn_statistics(on["dn_float"], off["dn_float"], on["mask"])
         facet_off = fa.facet_metrics(off["dn"], off["render"].id_map, off["mask"])
         facet_on = fa.facet_metrics(on["dn"], on["render"].id_map, on["mask"])
         facet_sm = fa.facet_metrics(smooth["dn"], smooth["render"].id_map, smooth["mask"])
-        common = [f"V10/M11 iface6_c000  mm/px={measured_mm_px:.5f}  L={int(long_edge)}px",
+        common = [f"{body['vessel_id']}/{body['material_id']} {roi.roi_id}"
+                  f"  mm/px={measured_mm_px:.5f}  L={int(long_edge)}px",
                   f"grid={int(long_edge)}x{int(round(long_edge*0.75))}  supersample={supersample}"
                   f"  Ra={amp}mm  lam_min={params.lambda_min_mm:.3f}mm"]
         path = ROOT / f"data/a12_reports/physical_layer/fracture_appearance_AB_{int(long_edge)}.png"
@@ -772,6 +803,7 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
 
 
 
