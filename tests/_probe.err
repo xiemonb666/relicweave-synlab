@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "C:\Users\xiemo\Desktop\ShardForge\relicweave-synlab\tests\_scratch_probe.py", line 13, in <module>
+    from synlab.fracture import cut as cut_module  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xiemo\Desktop\ShardForge\relicweave-synlab\synlab\fracture\cut.py", line 988
+    ``grid_ij`` rows come from :meth:`_Quadtree.cell_triangles`, which already scales a cell's
+                                                                                            ^
+SyntaxError: unterminated string literal (detected at line 988)

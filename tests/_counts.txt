@@ -1,0 +1,20 @@
+﻿.......xFxx.F............F.EF...EFF..E                                   [100%]
+============================== warnings summary ===============================
+tests/a12/fracture/test_event_qa.py::test_fixture_event_on_a_thin_shell
+tests/a12/fracture/test_event_qa.py::test_fixture_event_on_a_thin_shell
+tests/a12/fracture/test_shared_cutter.py::test_rough_cutter_is_closed_and_within_budget
+tests/a12/fracture/test_shared_cutter.py::test_rough_cutter_is_closed_and_within_budget
+  C:\Users\xiemo\Desktop\ShardForge\relicweave-synlab\.venv\Lib\site-packages\shapely\decorators.py:173: DeprecationWarning: The 'resolution' argument is deprecated. Use 'quad_segs' instead
+    result = func(*args, **kwargs)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/a12/truth/test_pipeline_contracts.py::test_audit_reports_the_keys_the_pipeline_reads
+FAILED tests/a12/truth/test_pipeline_contracts.py::test_clean_truth_never_carries_visible_labels
+FAILED tests/a12/fracture/test_event_qa.py::test_fixture_event_passes_the_a06_thresholds[rough_shared_cut]
+FAILED tests/a12/fracture/test_event_qa.py::test_clean_truth_of_a_fixture_event_is_consistent
+FAILED tests/a12/fracture/test_shared_cutter.py::test_zero_amplitude_rough_regresses_to_the_plane
+FAILED tests/a12/fracture/test_shared_cutter.py::test_cutter_build_is_reproducible
+ERROR tests/a12/fracture/test_event_qa.py::test_fixture_event_on_a_thin_shell
+ERROR tests/a12/fracture/test_shared_cutter.py::test_rough_cutter_is_closed_and_within_budget
+ERROR tests/a12/fracture/test_shared_cutter.py::test_default_cutter_reports_its_measured_error

@@ -1,0 +1,19 @@
+experiment_id: E-SYN-08
+title: 真实迁移 T0–T3
+question: 合成预训练是否改善独立真实碎片的检索、数据效率或可靠性？
+frozen:
+  real_finetune_set: identical across arms
+  selection_rule: identical layer unfreezing and dev-based selection
+  budget_views: fixed optimizer steps/GPU hours AND fixed per-mother exposure reported separately
+groups:
+  T0_SCRATCH_REAL: random backbone + head, real data only (extra from-scratch diagnostic)
+  T1_PUBLIC_REAL: public weights + real fine-tune (main transfer comparison)
+  T2_PUBLIC_SYN_REAL: public weights -> synthetic pretraining -> real fine-tune
+  T3_PUBLIC_MIXED_REAL: public weights -> mixed pretraining -> real fine-tune with real exposure controlled
+primary_metric: CovRecallAtK on the real confirmation set
+secondary_metrics: [HitAtK, AbsentRejectRisk, sample_efficiency_at_fixed_budget]
+alpha: 0.05
+statistical_unit: real independent object (lineage equivalent)
+real_subsets: nested 1/5/10/25/50/100 percent of real mothers
+status: REAL_DATA_PENDING
+notes: no real capture dataset exists on this host; the entry points and IO paths are implemented and tested, but no real result may be reported

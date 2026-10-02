@@ -1,0 +1,25 @@
+experiment_id: E-SYN-02
+title: 31 轴单因素退化曲线
+question: 固定模型、候选池与母体，只改变一个退化轴时，质量与找回性能如何变化？
+frozen:
+  checkpoint: fixed (frozen encoder + refinement head hash recorded)
+  candidate_pool: fixed gallery identity
+  query_roster: frozen query ids
+  basis_policy: paired_across_levels (one basis shared by all five levels)
+levels: [0, 1, 2, 3, 4]
+perturbation_side: QUERY_ONLY
+primary_metric: CovRecallAtK
+secondary_metrics: [HitAtK, PoolCovAtM, R1FalsePositive, AbsentRejectRisk, QueryCost]
+estimand: paired per-axis difference in macro CovRecallAtK between level 0 and level d (per lineage mean first)
+alpha: 0.05
+confidence: 0.95
+bootstrap_replicates: 10000
+statistical_unit: shape_lineage
+measurement_requirement: every axis must report the realized effect (measured change), not just the requested parameter
+applicability: pre-registered per axis/material/route BEFORE looking at retrieval scores
+sample_size:
+  plan: at least 20 independent applicable mothers per axis for the engineering audit; retrieval curves use the frozen dev roster
+  power_status: PILOT_PENDING
+failure_accounting: planned / attempted / NA / fail denominators are all reported; a not-realized effect is a FAIL, not NA
+status: PRE_REGISTERED
+notes: curves with five sparse points may only support a range statement, never an exact critical point

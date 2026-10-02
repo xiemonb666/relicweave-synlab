@@ -1,0 +1,44 @@
+{
+  "schema": "synlab.confirm_registry.v1",
+  "note": "Confirmation registry (plan 30.15). A confirmation comparison may only run on a frozen protocol; once opened, it cannot be re-opened as 'first confirmation' after a failure. Any post-hoc tuning becomes development work and requires new independent confirmation material.",
+  "confirmation_open": false,
+  "frozen_protocol_hash": null,
+  "models": [],
+  "calibrators": [],
+  "galleries": [],
+  "query_rosters": [],
+  "primary_comparisons": [
+    {
+      "id": "E-SYN-02-axis-effect",
+      "protocol_ref": "docs/a12/experiment_protocols/E-SYN-02.yaml",
+      "primary_metric": "CovRecallAtK",
+      "estimand": "paired macro difference level d vs level 0",
+      "min_meaningful_delta": 0.03,
+      "alpha": 0.05,
+      "family": "31-axis scan"
+    },
+    {
+      "id": "E-SYN-03-data-size",
+      "protocol_ref": "docs/a12/experiment_protocols/E-SYN-03.yaml",
+      "primary_metric": "CovRecallAtK",
+      "estimand": "paired macro difference between nested lineage prefixes",
+      "min_meaningful_delta": 0.03,
+      "alpha": 0.05,
+      "family": "N curve"
+    }
+  ],
+  "secondary_comparisons": [],
+  "multiple_testing": "holm_for_registered_comparisons",
+  "open_time": null,
+  "runs": [],
+  "verdicts": [],
+  "risk_gates": {
+    "absent_false_accept_target": 0.10,
+    "present_wrong_accept_target": 0.10,
+    "min_independent_zero_event_units_10pct": 29,
+    "min_independent_zero_event_units_5pct": 59,
+    "min_independent_zero_event_units_1pct": 299,
+    "acceptance_coverage_gate": "must be reported together with recall; rejecting everything is not a pass"
+  },
+  "status": "NOT_OPENED"
+}

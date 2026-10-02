@@ -1,0 +1,124 @@
+{
+ "vessel_id": "V01",
+ "backend": "plane_shared_cut",
+ "mother_asset": "asset_167bef6a43a93438ec26",
+ "mother": {
+  "faces": 7008,
+  "watertight": true,
+  "volume_mm3": 374595.74151829904,
+  "vertices": 3505,
+  "unique_edges": 10512,
+  "edge_use_histogram": {
+   "2": 10512
+  },
+  "boundary_edges": 0,
+  "winding_consistent": true,
+  "area_mm2": 114041.10362550538,
+  "duplicate_vertices": 0
+ },
+ "cutter_build_s": 0.443,
+ "cutter": {
+  "faces": 16896,
+  "vertices": 8450,
+  "unique_edges": 25344,
+  "edge_use_histogram": {
+   "2": 25344
+  },
+  "boundary_edges": 0,
+  "watertight": true,
+  "winding_consistent": true,
+  "volume_mm3": 2798241.237303128,
+  "area_mm2": 127833.46088226415,
+  "duplicate_vertices": 0
+ },
+ "cutter_report": {
+  "requested_error_mm": "0.01",
+  "realized_error_mm": "0.0",
+  "error_samples": "57344",
+  "watertight": "True",
+  "winding_consistent": "True",
+  "signed_volume_mm3": "2798241.237303128",
+  "degenerate_faces": "0",
+  "edge_use_histogram": {
+   "2": "25344"
+  },
+  "cells": "4096",
+  "leaf_level": "0",
+  "root_level": "6",
+  "grid_level": "6",
+  "start_level": "6",
+  "seed_rule": "flat",
+  "points_per_wavelength": "8.0",
+  "seed_cell_mm": "3.7090696888358456",
+  "refine_iterations": "1",
+  "cells_tested": "4096",
+  "triangles": "16896",
+  "vertices": "8450",
+  "top_triangles": "8192",
+  "bottom_triangles": "8192",
+  "side_triangles": "512",
+  "bottom_w_mm": "-93.42836332684647",
+  "w_range_mm": [
+   "-93.42836332684647",
+   "0.0"
+  ],
+  "planned_spacing_mm": [
+   "3.7090696888358456",
+   "1.9714304954817934"
+  ],
+  "max_cells": "400000",
+  "max_triangles": "3000000",
+  "key_level": "12",
+  "max_level": "12",
+  "cutter_local_hash": "sha256:dcaef8cac4de3eaf3e07d3cc3980aaae6ddf969c7eaf8f2560b35a1e7eda15a2",
+  "cutter_hash": "sha256:c93bed943d514a52d4255581bc62efde1c513708db37fbc90f4e57b42ed17087",
+  "backend": "plane_shared_cut"
+ },
+ "cutter_height_field": {
+  "bands": [],
+  "bend": [],
+  "mean_mm": "0.0",
+  "target_rms_mm": "0.0",
+  "realized_rms_mm": "0.0",
+  "wavelength_min_mm": "None",
+  "max_slope": "0.0",
+  "amplitude_max_mm": "0.0",
+  "curvature_bound": "0.0",
+  "flat": "True",
+  "meta": {
+   "zero_amplitude": "True",
+   "n_bands": "0",
+   "reason": "zero target RMS => analytically flat shared surface"
+  }
+ },
+ "M_minus": {
+  "faces": 3900,
+  "vertices": 2576,
+  "unique_edges": 6474,
+  "edge_use_histogram": {
+   "1": 1248,
+   "2": 5226
+  },
+  "boundary_edges": 1248,
+  "watertight": false,
+  "winding_consistent": true,
+  "volume_mm3": 122523.8103608557,
+  "area_mm2": 39954.89804204383,
+  "duplicate_vertices": 624
+ },
+ "M_plus": {
+  "faces": 6284,
+  "vertices": 3768,
+  "unique_edges": 10050,
+  "edge_use_histogram": {
+   "1": 1248,
+   "2": 8802
+  },
+  "boundary_edges": 1248,
+  "watertight": false,
+  "winding_consistent": true,
+  "volume_mm3": 252071.93129886978,
+  "area_mm2": 80186.74356997806,
+  "duplicate_vertices": 625
+ }
+}

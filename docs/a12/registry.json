@@ -1,0 +1,7245 @@
+{
+  "axis/G01": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "G01",
+    "kind": "axis",
+    "meta": {
+      "stage": "GEOMETRY_OBS",
+      "unit": "mm"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "G01",
+    "notes": "low-frequency correlated field x distance/incidence variance x a fixed outlier probability; the deployment estimate is reported separately from the audit reference RMS.",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/G02": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "G02",
+    "kind": "axis",
+    "meta": {
+      "stage": "GEOMETRY_OBS",
+      "unit": "mm"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "G02",
+    "notes": "fixed nested prefix of the frozen order with a point budget; an effective N0 source keeps its real size at level 0 (no upsampling to a nominal budget).",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/G03": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "G03",
+    "kind": "axis",
+    "meta": {
+      "stage": "GEOMETRY_OBS",
+      "unit": "mm"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "G03",
+    "notes": "connected holes on the observed lattice: the seed positions are frozen in the basis and only the hole radius grows with the level, so the removed sets are nested by construction and the hole area/posi",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/G04": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "G04",
+    "kind": "axis",
+    "meta": {
+      "stage": "GEOMETRY_OBS",
+      "unit": "mm"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "G04",
+    "notes": "per-frame SE(3) perturbation followed by a real re-fusion of the per-view depth; translation and rotation are separate single-factor variants and pose_drift_profile is the explicitly bundled stress va",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/G05": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "G05",
+    "kind": "axis",
+    "meta": {
+      "stage": "GEOMETRY_OBS",
+      "unit": "mm"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "G05",
+    "notes": "Open3D quadric edge collapse with a measured Hausdorff budget and an ROI retention constraint; level 0 bypasses the decimator entirely.",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/G06": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "G06",
+    "kind": "axis",
+    "meta": {
+      "stage": "GEOMETRY_OBS",
+      "unit": "mm"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "G06",
+    "notes": "only the observation frame and the legal scale fields change; the truth reference hash must stay identical (plan 15.4).",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/G07": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "G07",
+    "kind": "axis",
+    "meta": {
+      "stage": "GEOMETRY_OBS",
+      "unit": "mm"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "G07",
+    "notes": "focal / principal point / distortion are separate single-factor variants; the perturbation is applied before back-projection and the frames are re-fused. calibration_profile changes all three and is l",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/G08": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "G08",
+    "kind": "axis",
+    "meta": {
+      "stage": "GEOMETRY_OBS",
+      "unit": "mm"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "G08",
+    "notes": "three spurious-surface variants (support bump, warped hole lid, connecting bridge) reuse synlab.observe.spurious.apply_spurious; only the observed entity changes and spurious_mask stays an audit/super",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/I01": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "I01",
+    "kind": "axis",
+    "meta": {
+      "stage": "OPTICS",
+      "unit": "px"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "I01",
+    "notes": "Gaussian PSF in the plane, applied to the linear signal before the response; the depth-dependent variant blends two PSFs by depth and needs per-frame depth.",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/I02": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "I02",
+    "kind": "axis",
+    "meta": {
+      "stage": "OPTICS",
+      "unit": "px"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "I02",
+    "notes": "single-exposure directional kernel by default; the exposure_integration variant integrates a frozen number of sub-exposures along the same trajectory.",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/I03": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "I03",
+    "kind": "axis",
+    "meta": {
+      "stage": "SENSOR",
+      "unit": "px"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "I03",
+    "notes": "linear sensor noise y = Poisson(g*x)/g + N(0,sigma^2) with x = max(L*2^EV, 0); photon_scale varies the photon gain with the read noise fixed, read_sigma does the opposite, and camera_noise_profile cha",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/I04": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "I04",
+    "kind": "axis",
+    "meta": {
+      "stage": "OPTICS",
+      "unit": "px"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "I04",
+    "notes": "exposure_gain acts before the photon count; digital_gain is registered separately (it is not interchangeable). The negative sub-configuration is its own variant and the dark and bright directions are ",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/I05": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "I05",
+    "kind": "axis",
+    "meta": {
+      "stage": "ISP",
+      "unit": "px"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "I05",
+    "notes": "one frozen gain-direction vector; the developed profile is frozen after calibration",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/I06": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "I06",
+    "kind": "axis",
+    "meta": {
+      "stage": "SCENE",
+      "unit": "1"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "I06",
+    "notes": "scene light/BRDF re-render; the zero level is the same-source baseline scene and does not claim the physical glaze has no highlight. Changing BRDF, exposure and light angle together is labelled BUNDLE",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/I07": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "I07",
+    "kind": "axis",
+    "meta": {
+      "stage": "SCENE",
+      "unit": "1"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "I07",
+    "notes": "3-D occluder bodies are added to the scene and the views are re-rendered; a delivered-pixel patch would not be an occluder.",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/I08": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "I08",
+    "kind": "axis",
+    "meta": {
+      "stage": "ISP",
+      "unit": "px"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "I08",
+    "notes": "fixed-priority nested deletion; the baseline V0 source is returned unchanged at level 0 and every level is a subset of the previous one.",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/I09": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "I09",
+    "kind": "axis",
+    "meta": {
+      "stage": "ISP",
+      "unit": "px"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "I09",
+    "notes": "baseline long edge is kept at level 0; non-zero levels apply an anti-aliased downsample and update K through the frozen pixel transform. 1/8 is the extra stress level of the plan's candidate list.",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/I10": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "I10",
+    "kind": "axis",
+    "meta": {
+      "stage": "ISP",
+      "unit": "px"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "I10",
+    "notes": "level 0 does not re-encode at all; non-zero levels run a real JPEG encode/decode and report bytes, error RMS and blockiness.",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/P01": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "P01",
+    "kind": "axis",
+    "meta": {
+      "stage": "PHYSICAL",
+      "unit": "mm"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "P01",
+    "notes": "fixed filter radius and full recession basis; only recession_strength moves. The radius scan is a separate variant and never claims the same-basis nesting. radius_mm=2.0 is the resolution-qualified ch",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/P02": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "P02",
+    "kind": "axis",
+    "meta": {
+      "stage": "PHYSICAL",
+      "unit": "mm"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "P02",
+    "notes": "edge-distance driven inward fillet built from the analytic rolling-ball section of every convex edge on the ROI boundary and subtracted from the source; never a whole-patch Laplacian and never a globa",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/P03": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "P03",
+    "kind": "axis",
+    "meta": {
+      "stage": "PHYSICAL",
+      "unit": "mm"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "P03",
+    "notes": "non-negative smooth recession over the interface ROI with a wall-thickness guard; the depth field is frozen in the basis and pinned to zero on the ROI rim, so the five levels are nested and the untouc",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/P04": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "P04",
+    "kind": "axis",
+    "meta": {
+      "stage": "PHYSICAL",
+      "unit": "mm"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "P04",
+    "notes": "fixed cutter position/direction frozen in the basis; the cutter size is found by a 1-D geometric search that brackets the declared contact loss and then bisects, subject to the frozen minimum represen",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/P05": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "P05",
+    "kind": "axis",
+    "meta": {
+      "stage": "PHYSICAL",
+      "unit": "mm"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "P05",
+    "notes": "nested paint masks from one frozen rank field; the geometry hash must stay identical (appearance-only axis).",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/P06": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "P06",
+    "kind": "axis",
+    "meta": {
+      "stage": "PHYSICAL",
+      "unit": "mm"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "P06",
+    "notes": "smooth patch coverage of one frozen field; the core variant changes appearance only (geometry hash unchanged) and dirt_geometry adds an explicit contamination body registered as its own material class",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/P07": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "P07",
+    "kind": "axis",
+    "meta": {
+      "stage": "PHYSICAL",
+      "unit": "mm"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "P07",
+    "notes": "original outer-surface ROI only; hidden surfaces are never backfilled",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/P08": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "P08",
+    "kind": "axis",
+    "meta": {
+      "stage": "PHYSICAL",
+      "unit": "mm"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "P08",
+    "notes": "three single-factor variants (crack width, coat area, painted-coat loss) plus one explicitly bundled stress variant; crack width, crack length and layer area are never mixed into one comparable intens",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/X01": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "X01",
+    "kind": "axis",
+    "meta": {
+      "stage": "FEATURE_PROTOCOL",
+      "unit": "1"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "X01",
+    "notes": "modalities are removed from the payload (presence=false) 闂?never replaced by a zero image that claims to be valid data.",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/X02": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "X02",
+    "kind": "axis",
+    "meta": {
+      "stage": "FEATURE_PROTOCOL",
+      "unit": "1"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "X02",
+    "notes": "boundary px error / missing blob / false positive are separate variants; every crop or ROI change updates K and the pixel transform, and the research mask (mask_reference) is never presented as the in",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/X03": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "X03",
+    "kind": "axis",
+    "meta": {
+      "stage": "FEATURE_PROTOCOL",
+      "unit": "1"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "X03",
+    "notes": "missing context and conflicting context are separate variants; a missing context is never constructed as a necessary conflict (plan 15.5).",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/X04": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "X04",
+    "kind": "axis",
+    "meta": {
+      "stage": "FEATURE_PROTOCOL",
+      "unit": "1"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "X04",
+    "notes": "only the real OBS_EST fields are perturbed (never an oracle intensity). The regression variant shifts the estimate by a frozen multiple of its own measured spread, so the bias is comparable across cha",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "axis/X05": {
+    "applicable": {},
+    "has_builder": false,
+    "id": "X05",
+    "kind": "axis",
+    "meta": {
+      "stage": "FEATURE_PROTOCOL",
+      "unit": "1"
+    },
+    "module": "synlab.degrade.axes",
+    "name": "X05",
+    "notes": "baseline plus four held-out camera/light/ISP presets; this is a categorical shift, so no scalar monotonicity is claimed between levels.",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "fracture_backend/fracture_modes": {
+    "applicable": {},
+    "has_builder": true,
+    "id": "fracture_modes",
+    "kind": "fracture_backend",
+    "meta": {
+      "builder_name": "_backend_modes"
+    },
+    "module": "synlab.fracture.api",
+    "name": "fracture-modes 物理插件",
+    "notes": "author code not fetched; license and units unverified, so the backend is registered as MISSING and never approximated",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "MISSING",
+    "version": "1.0"
+  },
+  "fracture_backend/plane_shared_cut": {
+    "applicable": {
+      "shell": true,
+      "solid": true
+    },
+    "has_builder": true,
+    "id": "plane_shared_cut",
+    "kind": "fracture_backend",
+    "meta": {
+      "builder_name": "_backend_plane"
+    },
+    "module": "synlab.fracture.api",
+    "name": "共享平面切割",
+    "notes": "analytic plane cut with one shared closed cutter body",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "fracture_backend/rough_shared_cut": {
+    "applicable": {
+      "shell": true,
+      "solid": true
+    },
+    "has_builder": true,
+    "id": "rough_shared_cut",
+    "kind": "fracture_backend",
+    "meta": {
+      "builder_name": "_backend_rough"
+    },
+    "module": "synlab.fracture.api",
+    "name": "共享粗糙切割",
+    "notes": "finite Fourier height field frozen once, shared by both sides",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "fracture_backend/secondary_fracture": {
+    "applicable": {
+      "shell": true,
+      "solid": true
+    },
+    "has_builder": true,
+    "id": "secondary_fracture",
+    "kind": "fracture_backend",
+    "meta": {
+      "builder_name": "_backend_secondary"
+    },
+    "module": "synlab.fracture.api",
+    "name": "二次破碎",
+    "notes": "child event on the largest piece; adjacency is rebuilt from interface samples so old patches are clipped by membership",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "fracture_backend/warped_partition": {
+    "applicable": {
+      "shell": true,
+      "solid": true
+    },
+    "has_builder": true,
+    "id": "warped_partition",
+    "kind": "fracture_backend",
+    "meta": {
+      "builder_name": "_backend_warped"
+    },
+    "module": "synlab.fracture.api",
+    "name": "共享形变 Voronoi/Power 分区",
+    "notes": "weighted Power cells via scipy Qhull are implemented in the spec; the conformal gmsh PLC + shared warp stage is NOT implemented in this build (capability probe: gmsh 4.15.2 OK), so the backend reports PENDING instead of substituting planes",
+    "param_schema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "status": "PENDING",
+    "version": "1.0"
+  },
+  "layer_combo/L01": {
+    "applicable": {
+      "body_material": "M01",
+      "definition": {
+        "layers": [
+          {
+            "layer_id": 1,
+            "material_id": "M01",
+            "mode": "SHADING_LAYER",
+            "name": "body",
+            "thickness_mm": 0.0
+          },
+          {
+            "layer_id": 2,
+            "material_id": "M06",
+            "min_thickness_mm": 0.25,
+            "mode": "GEOMETRIC_LAYER",
+            "name": "glaze"
+          }
+        ],
+        "mode": "GEOMETRIC_LAYER",
+        "note": "geometric glaze: real thickness and a measured delamination volume"
+      },
+      "layers": 2,
+      "mode": "GEOMETRIC_LAYER",
+      "top_material": "M06"
+    },
+    "has_builder": true,
+    "id": "L01",
+    "kind": "layer_combo",
+    "meta": {
+      "builder_name": "build_glaze_combo"
+    },
+    "module": "synlab.materials.layers",
+    "name": "坯体+釉",
+    "notes": "body plus a real glaze body; delamination is a boolean quantity",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "glaze_albedo": {
+          "default": [
+            0.28,
+            0.4,
+            0.3
+          ],
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Glaze Albedo",
+          "type": "array"
+        },
+        "glaze_roughness": {
+          "default": 0.14,
+          "maximum": 0.6,
+          "minimum": 0.02,
+          "title": "Glaze Roughness",
+          "type": "number"
+        },
+        "glaze_thickness_mm": {
+          "default": 0.55,
+          "maximum": 2.5,
+          "minimum": 0.12,
+          "title": "Glaze Thickness Mm",
+          "type": "number"
+        },
+        "layer_seed": {
+          "default": 0,
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Layer Seed",
+          "type": "integer"
+        },
+        "min_thickness_mm": {
+          "default": 0.25,
+          "maximum": 1.5,
+          "minimum": 0.05,
+          "title": "Min Thickness Mm",
+          "type": "number"
+        },
+        "variation_scale": {
+          "default": 1.0,
+          "description": "appearance variation",
+          "maximum": 4.0,
+          "minimum": 0.0,
+          "title": "Variation Scale",
+          "type": "number"
+        }
+      },
+      "title": "GlazeComboParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "layer_combo/L02": {
+    "applicable": {
+      "body_material": "M05",
+      "definition": {
+        "layers": [
+          {
+            "layer_id": 1,
+            "material_id": "M05",
+            "mode": "SHADING_LAYER",
+            "name": "body",
+            "thickness_mm": 0.0
+          },
+          {
+            "layer_id": 2,
+            "material_id": "M05",
+            "mode": "SHADING_LAYER",
+            "name": "painting",
+            "thickness_mm": 0.0
+          }
+        ],
+        "mode": "SHADING_LAYER",
+        "note": "appearance only: no geometric thickness and no delamination truth is claimed"
+      },
+      "layers": 2,
+      "mode": "SHADING_LAYER",
+      "top_material": "M05"
+    },
+    "has_builder": true,
+    "id": "L02",
+    "kind": "layer_combo",
+    "meta": {
+      "builder_name": "build_painted_combo"
+    },
+    "module": "synlab.materials.layers",
+    "name": "坯体+彩绘",
+    "notes": "porcelain body plus appearance-only painting",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "layer_seed": {
+          "default": 0,
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Layer Seed",
+          "type": "integer"
+        },
+        "paint_albedo": {
+          "default": [
+            0.16,
+            0.26,
+            0.52
+          ],
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Paint Albedo",
+          "type": "array"
+        },
+        "paint_layers": {
+          "default": 1,
+          "maximum": 3,
+          "minimum": 1,
+          "title": "Paint Layers",
+          "type": "integer"
+        },
+        "paint_roughness": {
+          "default": 0.3,
+          "maximum": 0.9,
+          "minimum": 0.02,
+          "title": "Paint Roughness",
+          "type": "number"
+        },
+        "variation_scale": {
+          "default": 1.0,
+          "description": "appearance variation",
+          "maximum": 4.0,
+          "minimum": 0.0,
+          "title": "Variation Scale",
+          "type": "number"
+        }
+      },
+      "title": "PaintedComboParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "layer_combo/L03": {
+    "applicable": {
+      "body_material": "M08",
+      "definition": {
+        "layers": [
+          {
+            "layer_id": 1,
+            "material_id": "M08",
+            "mode": "SHADING_LAYER",
+            "name": "stone",
+            "thickness_mm": 0.0
+          },
+          {
+            "layer_id": 2,
+            "material_id": "M08",
+            "min_thickness_mm": 0.4,
+            "mode": "GEOMETRIC_LAYER",
+            "name": "coating"
+          }
+        ],
+        "mode": "GEOMETRIC_LAYER",
+        "note": "real coating body with a measured thickness and a watertight interface"
+      },
+      "layers": 2,
+      "mode": "GEOMETRIC_LAYER",
+      "top_material": "M08"
+    },
+    "has_builder": true,
+    "id": "L03",
+    "kind": "layer_combo",
+    "meta": {
+      "builder_name": "build_stone_coating_combo"
+    },
+    "module": "synlab.materials.layers",
+    "name": "石质+表面涂层",
+    "notes": "stone body plus a real surface coating",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "coating_albedo": {
+          "default": [
+            0.44,
+            0.42,
+            0.38
+          ],
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Coating Albedo",
+          "type": "array"
+        },
+        "coating_roughness": {
+          "default": 0.38,
+          "maximum": 0.9,
+          "minimum": 0.05,
+          "title": "Coating Roughness",
+          "type": "number"
+        },
+        "coating_thickness_mm": {
+          "default": 0.9,
+          "maximum": 3.5,
+          "minimum": 0.2,
+          "title": "Coating Thickness Mm",
+          "type": "number"
+        },
+        "layer_seed": {
+          "default": 0,
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Layer Seed",
+          "type": "integer"
+        },
+        "min_thickness_mm": {
+          "default": 0.4,
+          "maximum": 2.0,
+          "minimum": 0.1,
+          "title": "Min Thickness Mm",
+          "type": "number"
+        },
+        "variation_scale": {
+          "default": 1.0,
+          "description": "appearance variation",
+          "maximum": 4.0,
+          "minimum": 0.0,
+          "title": "Variation Scale",
+          "type": "number"
+        }
+      },
+      "title": "StoneCoatingComboParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "layer_combo/L04": {
+    "applicable": {
+      "body_material": "M11",
+      "definition": {
+        "layers": [
+          {
+            "layer_id": 1,
+            "material_id": "M11",
+            "mode": "SHADING_LAYER",
+            "name": "wood",
+            "thickness_mm": 0.0
+          },
+          {
+            "layer_id": 2,
+            "material_id": "M11",
+            "mode": "SHADING_LAYER",
+            "name": "finish",
+            "thickness_mm": 0.0
+          }
+        ],
+        "mode": "SHADING_LAYER",
+        "note": "appearance only; the finish has no geometric body"
+      },
+      "layers": 2,
+      "mode": "SHADING_LAYER",
+      "top_material": "M11"
+    },
+    "has_builder": true,
+    "id": "L04",
+    "kind": "layer_combo",
+    "meta": {
+      "builder_name": "build_wood_finish_combo"
+    },
+    "module": "synlab.materials.layers",
+    "name": "木基体+涂饰",
+    "notes": "wood body plus an appearance-only finish",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "finish_albedo": {
+          "default": [
+            0.46,
+            0.3,
+            0.16
+          ],
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Finish Albedo",
+          "type": "array"
+        },
+        "finish_gloss": {
+          "default": 0.35,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Finish Gloss",
+          "type": "number"
+        },
+        "finish_roughness": {
+          "default": 0.3,
+          "maximum": 0.9,
+          "minimum": 0.02,
+          "title": "Finish Roughness",
+          "type": "number"
+        },
+        "layer_seed": {
+          "default": 0,
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Layer Seed",
+          "type": "integer"
+        },
+        "variation_scale": {
+          "default": 1.0,
+          "description": "appearance variation",
+          "maximum": 4.0,
+          "minimum": 0.0,
+          "title": "Variation Scale",
+          "type": "number"
+        }
+      },
+      "title": "WoodFinishComboParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "material/M01": {
+    "applicable": {
+      "aggregate": true,
+      "family": "earthenware",
+      "grain_scale_mm": [
+        0.8,
+        3.0
+      ],
+      "layers": 1,
+      "porosity": "high"
+    },
+    "has_builder": true,
+    "id": "M01",
+    "kind": "material",
+    "meta": {
+      "builder_name": "build_coarse_earthenware"
+    },
+    "module": "synlab.materials.catalogue",
+    "name": "粗陶",
+    "notes": "large grog aggregate, visible pores and an uneven body colour",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "aggregate_density": {
+          "default": 0.00035,
+          "description": "inclusions per cubic millimetre",
+          "maximum": 0.004,
+          "minimum": 0.0,
+          "title": "Aggregate Density",
+          "type": "number"
+        },
+        "aggregate_radius_mm": {
+          "default": 1.6,
+          "description": "grog inclusion radius",
+          "maximum": 6.0,
+          "minimum": 0.2,
+          "title": "Aggregate Radius Mm",
+          "type": "number"
+        },
+        "body_albedo": {
+          "default": 0.42,
+          "maximum": 1.0,
+          "minimum": 0.05,
+          "title": "Body Albedo",
+          "type": "number"
+        },
+        "field_salt": {
+          "default": 0,
+          "description": "frozen hash salt of this material's field",
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Field Salt",
+          "type": "integer"
+        },
+        "pore_scale_mm": {
+          "default": 4.0,
+          "maximum": 20.0,
+          "minimum": 0.4,
+          "title": "Pore Scale Mm",
+          "type": "number"
+        },
+        "shell_ref_height_mm": {
+          "default": 130.0,
+          "description": "reference rim height of the coated shell",
+          "maximum": 520.0,
+          "minimum": 10.0,
+          "title": "Shell Ref Height Mm",
+          "type": "number"
+        },
+        "shell_ref_radius_mm": {
+          "default": 80.0,
+          "description": "reference outer radius of the coated shell",
+          "maximum": 400.0,
+          "minimum": 10.0,
+          "title": "Shell Ref Radius Mm",
+          "type": "number"
+        },
+        "variation_scale": {
+          "default": 1.0,
+          "description": "global multiplier on the appearance variation",
+          "maximum": 4.0,
+          "minimum": 0.0,
+          "title": "Variation Scale",
+          "type": "number"
+        }
+      },
+      "title": "CoarseEarthenwareParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "material/M02": {
+    "applicable": {
+      "aggregate": false,
+      "family": "earthenware",
+      "grain_scale_mm": [
+        0.2,
+        0.9
+      ],
+      "layers": 1,
+      "porosity": "medium"
+    },
+    "has_builder": true,
+    "id": "M02",
+    "kind": "material",
+    "meta": {
+      "builder_name": "build_fine_earthenware"
+    },
+    "module": "synlab.materials.catalogue",
+    "name": "细陶",
+    "notes": "fine grain with a short correlation length; polished and eroded apart",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "body_albedo": {
+          "default": 0.62,
+          "maximum": 1.0,
+          "minimum": 0.05,
+          "title": "Body Albedo",
+          "type": "number"
+        },
+        "field_salt": {
+          "default": 0,
+          "description": "frozen hash salt of this material's field",
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Field Salt",
+          "type": "integer"
+        },
+        "grain_scale_mm": {
+          "default": 0.55,
+          "maximum": 3.0,
+          "minimum": 0.1,
+          "title": "Grain Scale Mm",
+          "type": "number"
+        },
+        "polish_roughness": {
+          "default": 0.55,
+          "maximum": 1.0,
+          "minimum": 0.05,
+          "title": "Polish Roughness",
+          "type": "number"
+        },
+        "pore_scale_mm": {
+          "default": 1.1,
+          "maximum": 6.0,
+          "minimum": 0.2,
+          "title": "Pore Scale Mm",
+          "type": "number"
+        },
+        "shell_ref_height_mm": {
+          "default": 130.0,
+          "description": "reference rim height of the coated shell",
+          "maximum": 520.0,
+          "minimum": 10.0,
+          "title": "Shell Ref Height Mm",
+          "type": "number"
+        },
+        "shell_ref_radius_mm": {
+          "default": 80.0,
+          "description": "reference outer radius of the coated shell",
+          "maximum": 400.0,
+          "minimum": 10.0,
+          "title": "Shell Ref Radius Mm",
+          "type": "number"
+        },
+        "variation_scale": {
+          "default": 1.0,
+          "description": "global multiplier on the appearance variation",
+          "maximum": 4.0,
+          "minimum": 0.0,
+          "title": "Variation Scale",
+          "type": "number"
+        }
+      },
+      "title": "FineEarthenwareParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "material/M03": {
+    "applicable": {
+      "aggregate": false,
+      "family": "stoneware",
+      "grain_scale_mm": [
+        0.3,
+        1.2
+      ],
+      "layers": 2,
+      "porosity": "low"
+    },
+    "has_builder": true,
+    "id": "M03",
+    "kind": "material",
+    "meta": {
+      "builder_name": "build_stoneware"
+    },
+    "module": "synlab.materials.catalogue",
+    "name": "炻器",
+    "notes": "dense low-porosity body with an optional specular glaze state",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "body_albedo": {
+          "default": 0.38,
+          "maximum": 1.0,
+          "minimum": 0.05,
+          "title": "Body Albedo",
+          "type": "number"
+        },
+        "field_salt": {
+          "default": 0,
+          "description": "frozen hash salt of this material's field",
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Field Salt",
+          "type": "integer"
+        },
+        "glaze_thickness_mm": {
+          "default": 0.35,
+          "maximum": 1.2,
+          "minimum": 0.05,
+          "title": "Glaze Thickness Mm",
+          "type": "number"
+        },
+        "glazed": {
+          "default": true,
+          "description": "record a specular glaze state (no layer body)",
+          "title": "Glazed",
+          "type": "boolean"
+        },
+        "pore_scale_mm": {
+          "default": 6.0,
+          "maximum": 24.0,
+          "minimum": 1.0,
+          "title": "Pore Scale Mm",
+          "type": "number"
+        },
+        "shell_ref_height_mm": {
+          "default": 130.0,
+          "description": "reference rim height of the coated shell",
+          "maximum": 520.0,
+          "minimum": 10.0,
+          "title": "Shell Ref Height Mm",
+          "type": "number"
+        },
+        "shell_ref_radius_mm": {
+          "default": 80.0,
+          "description": "reference outer radius of the coated shell",
+          "maximum": 400.0,
+          "minimum": 10.0,
+          "title": "Shell Ref Radius Mm",
+          "type": "number"
+        },
+        "variation_scale": {
+          "default": 1.0,
+          "description": "global multiplier on the appearance variation",
+          "maximum": 4.0,
+          "minimum": 0.0,
+          "title": "Variation Scale",
+          "type": "number"
+        }
+      },
+      "title": "StonewareParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "material/M04": {
+    "applicable": {
+      "aggregate": false,
+      "family": "porcelain",
+      "grain_scale_mm": [
+        0.05,
+        0.3
+      ],
+      "layers": 2,
+      "min_wall_mm": 2.0,
+      "porosity": "very_low"
+    },
+    "has_builder": true,
+    "id": "M04",
+    "kind": "material",
+    "meta": {
+      "builder_name": "build_porcelain"
+    },
+    "module": "synlab.materials.catalogue",
+    "name": "白瓷",
+    "notes": "pale body with a thin glaze and small-scale fracture statistics",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "body_albedo": {
+          "default": 0.86,
+          "maximum": 1.0,
+          "minimum": 0.3,
+          "title": "Body Albedo",
+          "type": "number"
+        },
+        "field_salt": {
+          "default": 0,
+          "description": "frozen hash salt of this material's field",
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Field Salt",
+          "type": "integer"
+        },
+        "glaze_thickness_mm": {
+          "default": 0.22,
+          "maximum": 1.0,
+          "minimum": 0.03,
+          "title": "Glaze Thickness Mm",
+          "type": "number"
+        },
+        "shell_ref_height_mm": {
+          "default": 130.0,
+          "description": "reference rim height of the coated shell",
+          "maximum": 520.0,
+          "minimum": 10.0,
+          "title": "Shell Ref Height Mm",
+          "type": "number"
+        },
+        "shell_ref_radius_mm": {
+          "default": 80.0,
+          "description": "reference outer radius of the coated shell",
+          "maximum": 400.0,
+          "minimum": 10.0,
+          "title": "Shell Ref Radius Mm",
+          "type": "number"
+        },
+        "variation_scale": {
+          "default": 1.0,
+          "description": "global multiplier on the appearance variation",
+          "maximum": 4.0,
+          "minimum": 0.0,
+          "title": "Variation Scale",
+          "type": "number"
+        },
+        "wall_min_mm": {
+          "default": 2.0,
+          "description": "thin-wall guard in mm",
+          "maximum": 12.0,
+          "minimum": 0.6,
+          "title": "Wall Min Mm",
+          "type": "number"
+        }
+      },
+      "title": "PorcelainParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "material/M05": {
+    "applicable": {
+      "aggregate": false,
+      "family": "porcelain",
+      "grain_scale_mm": [
+        0.05,
+        0.3
+      ],
+      "layers": 3,
+      "porosity": "very_low"
+    },
+    "has_builder": true,
+    "id": "M05",
+    "kind": "material",
+    "meta": {
+      "builder_name": "build_painted_porcelain"
+    },
+    "module": "synlab.materials.catalogue",
+    "name": "彩瓷",
+    "notes": "porcelain body with a mother-continuous painted layer; new sections expose the body, never the paint",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "body_albedo": {
+          "default": 0.85,
+          "maximum": 1.0,
+          "minimum": 0.3,
+          "title": "Body Albedo",
+          "type": "number"
+        },
+        "field_salt": {
+          "default": 0,
+          "description": "frozen hash salt of this material's field",
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Field Salt",
+          "type": "integer"
+        },
+        "paint_albedo": {
+          "default": [
+            0.16,
+            0.26,
+            0.52
+          ],
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Paint Albedo",
+          "type": "array"
+        },
+        "paint_thickness_mm": {
+          "default": 0.06,
+          "maximum": 0.4,
+          "minimum": 0.01,
+          "title": "Paint Thickness Mm",
+          "type": "number"
+        },
+        "shell_ref_height_mm": {
+          "default": 130.0,
+          "description": "reference rim height of the coated shell",
+          "maximum": 520.0,
+          "minimum": 10.0,
+          "title": "Shell Ref Height Mm",
+          "type": "number"
+        },
+        "shell_ref_radius_mm": {
+          "default": 80.0,
+          "description": "reference outer radius of the coated shell",
+          "maximum": 400.0,
+          "minimum": 10.0,
+          "title": "Shell Ref Radius Mm",
+          "type": "number"
+        },
+        "variation_scale": {
+          "default": 1.0,
+          "description": "global multiplier on the appearance variation",
+          "maximum": 4.0,
+          "minimum": 0.0,
+          "title": "Variation Scale",
+          "type": "number"
+        }
+      },
+      "title": "PaintedPorcelainParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "material/M06": {
+    "applicable": {
+      "aggregate": true,
+      "family": "earthenware",
+      "grain_scale_mm": [
+        0.8,
+        3.0
+      ],
+      "layers": 2,
+      "porosity": "medium"
+    },
+    "has_builder": true,
+    "id": "M06",
+    "kind": "material",
+    "meta": {
+      "builder_name": "build_glazed_pottery"
+    },
+    "module": "synlab.materials.catalogue",
+    "name": "施釉陶",
+    "notes": "pottery body with an independent glaze layer: the layer interface, glaze loss and body loss are separate records",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "body_albedo": {
+          "default": 0.55,
+          "maximum": 1.0,
+          "minimum": 0.05,
+          "title": "Body Albedo",
+          "type": "number"
+        },
+        "field_salt": {
+          "default": 0,
+          "description": "frozen hash salt of this material's field",
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Field Salt",
+          "type": "integer"
+        },
+        "glaze_albedo": {
+          "default": [
+            0.3,
+            0.42,
+            0.3
+          ],
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Glaze Albedo",
+          "type": "array"
+        },
+        "glaze_crazing": {
+          "default": 0.35,
+          "description": "crazing network amplitude",
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Glaze Crazing",
+          "type": "number"
+        },
+        "glaze_thickness_mm": {
+          "default": 0.45,
+          "maximum": 2.0,
+          "minimum": 0.1,
+          "title": "Glaze Thickness Mm",
+          "type": "number"
+        },
+        "shell_ref_height_mm": {
+          "default": 130.0,
+          "description": "reference rim height of the coated shell",
+          "maximum": 520.0,
+          "minimum": 10.0,
+          "title": "Shell Ref Height Mm",
+          "type": "number"
+        },
+        "shell_ref_radius_mm": {
+          "default": 80.0,
+          "description": "reference outer radius of the coated shell",
+          "maximum": 400.0,
+          "minimum": 10.0,
+          "title": "Shell Ref Radius Mm",
+          "type": "number"
+        },
+        "variation_scale": {
+          "default": 1.0,
+          "description": "global multiplier on the appearance variation",
+          "maximum": 4.0,
+          "minimum": 0.0,
+          "title": "Variation Scale",
+          "type": "number"
+        }
+      },
+      "title": "GlazedPotteryParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "material/M07": {
+    "applicable": {
+      "aggregate": false,
+      "family": "glass",
+      "grain_scale_mm": [
+        0.02,
+        0.2
+      ],
+      "layers": 1,
+      "missing_scan_allowed": true,
+      "porosity": "none"
+    },
+    "has_builder": true,
+    "id": "M07",
+    "kind": "material",
+    "meta": {
+      "builder_name": "build_glass"
+    },
+    "module": "synlab.materials.catalogue",
+    "name": "玻璃",
+    "notes": "transmissive high-specular body with smooth cut faces; legal scans may have missing measurements",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "body_albedo": {
+          "default": 0.9,
+          "maximum": 1.0,
+          "minimum": 0.2,
+          "title": "Body Albedo",
+          "type": "number"
+        },
+        "cut_roughness": {
+          "default": 0.22,
+          "description": "smooth conchoidal cut faces",
+          "maximum": 0.6,
+          "minimum": 0.02,
+          "title": "Cut Roughness",
+          "type": "number"
+        },
+        "field_salt": {
+          "default": 0,
+          "description": "frozen hash salt of this material's field",
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Field Salt",
+          "type": "integer"
+        },
+        "shell_ref_height_mm": {
+          "default": 130.0,
+          "description": "reference rim height of the coated shell",
+          "maximum": 520.0,
+          "minimum": 10.0,
+          "title": "Shell Ref Height Mm",
+          "type": "number"
+        },
+        "shell_ref_radius_mm": {
+          "default": 80.0,
+          "description": "reference outer radius of the coated shell",
+          "maximum": 400.0,
+          "minimum": 10.0,
+          "title": "Shell Ref Radius Mm",
+          "type": "number"
+        },
+        "tint": {
+          "default": [
+            0.72,
+            0.86,
+            0.82
+          ],
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Tint",
+          "type": "array"
+        },
+        "transmission": {
+          "default": 0.82,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Transmission",
+          "type": "number"
+        },
+        "variation_scale": {
+          "default": 1.0,
+          "description": "global multiplier on the appearance variation",
+          "maximum": 4.0,
+          "minimum": 0.0,
+          "title": "Variation Scale",
+          "type": "number"
+        }
+      },
+      "title": "GlassParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "material/M08": {
+    "applicable": {
+      "aggregate": true,
+      "anisotropic": true,
+      "family": "stone",
+      "grain_scale_mm": [
+        0.5,
+        4.0
+      ],
+      "layers": 1,
+      "porosity": "low"
+    },
+    "has_builder": true,
+    "id": "M08",
+    "kind": "material",
+    "meta": {
+      "builder_name": "build_stone"
+    },
+    "module": "synlab.materials.catalogue",
+    "name": "石材",
+    "notes": "mineral grain with a real bedding direction; anisotropic cut faces and weathering statistics",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "bedding_direction": {
+          "default": [
+            0.3,
+            0.94,
+            0.0
+          ],
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Bedding Direction",
+          "type": "array"
+        },
+        "bedding_period_mm": {
+          "default": 14.0,
+          "maximum": 80.0,
+          "minimum": 2.0,
+          "title": "Bedding Period Mm",
+          "type": "number"
+        },
+        "body_albedo": {
+          "default": 0.52,
+          "maximum": 1.0,
+          "minimum": 0.05,
+          "title": "Body Albedo",
+          "type": "number"
+        },
+        "field_salt": {
+          "default": 0,
+          "description": "frozen hash salt of this material's field",
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Field Salt",
+          "type": "integer"
+        },
+        "mineral_radius_mm": {
+          "default": 1.2,
+          "maximum": 5.0,
+          "minimum": 0.2,
+          "title": "Mineral Radius Mm",
+          "type": "number"
+        },
+        "shell_ref_height_mm": {
+          "default": 130.0,
+          "description": "reference rim height of the coated shell",
+          "maximum": 520.0,
+          "minimum": 10.0,
+          "title": "Shell Ref Height Mm",
+          "type": "number"
+        },
+        "shell_ref_radius_mm": {
+          "default": 80.0,
+          "description": "reference outer radius of the coated shell",
+          "maximum": 400.0,
+          "minimum": 10.0,
+          "title": "Shell Ref Radius Mm",
+          "type": "number"
+        },
+        "variation_scale": {
+          "default": 1.0,
+          "description": "global multiplier on the appearance variation",
+          "maximum": 4.0,
+          "minimum": 0.0,
+          "title": "Variation Scale",
+          "type": "number"
+        },
+        "weathering": {
+          "default": 0.3,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Weathering",
+          "type": "number"
+        }
+      },
+      "title": "StoneParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "material/M09": {
+    "applicable": {
+      "aggregate": false,
+      "family": "plaster",
+      "grain_scale_mm": [
+        0.2,
+        1.2
+      ],
+      "layers": 1,
+      "porosity": "very_high"
+    },
+    "has_builder": true,
+    "id": "M09",
+    "kind": "material",
+    "meta": {
+      "builder_name": "build_plaster"
+    },
+    "module": "synlab.materials.catalogue",
+    "name": "石膏",
+    "notes": "pale porous body with powdering and erosion statistics",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "body_albedo": {
+          "default": 0.88,
+          "maximum": 1.0,
+          "minimum": 0.3,
+          "title": "Body Albedo",
+          "type": "number"
+        },
+        "field_salt": {
+          "default": 0,
+          "description": "frozen hash salt of this material's field",
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Field Salt",
+          "type": "integer"
+        },
+        "pore_scale_mm": {
+          "default": 2.2,
+          "maximum": 12.0,
+          "minimum": 0.4,
+          "title": "Pore Scale Mm",
+          "type": "number"
+        },
+        "powdering": {
+          "default": 0.4,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Powdering",
+          "type": "number"
+        },
+        "shell_ref_height_mm": {
+          "default": 130.0,
+          "description": "reference rim height of the coated shell",
+          "maximum": 520.0,
+          "minimum": 10.0,
+          "title": "Shell Ref Height Mm",
+          "type": "number"
+        },
+        "shell_ref_radius_mm": {
+          "default": 80.0,
+          "description": "reference outer radius of the coated shell",
+          "maximum": 400.0,
+          "minimum": 10.0,
+          "title": "Shell Ref Radius Mm",
+          "type": "number"
+        },
+        "variation_scale": {
+          "default": 1.0,
+          "description": "global multiplier on the appearance variation",
+          "maximum": 4.0,
+          "minimum": 0.0,
+          "title": "Variation Scale",
+          "type": "number"
+        }
+      },
+      "title": "PlasterParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "material/M10": {
+    "applicable": {
+      "aggregate": false,
+      "anisotropic": true,
+      "family": "bone",
+      "grain_scale_mm": [
+        0.2,
+        1.5
+      ],
+      "layers": 2,
+      "porosity": "high"
+    },
+    "has_builder": true,
+    "id": "M10",
+    "kind": "material",
+    "meta": {
+      "builder_name": "build_bone"
+    },
+    "module": "synlab.materials.catalogue",
+    "name": "骨质",
+    "notes": "porous bone with an outer/inner layer difference and a directional field; procedural statistics, no biomechanical claim",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "body_albedo": {
+          "default": 0.8,
+          "maximum": 1.0,
+          "minimum": 0.3,
+          "title": "Body Albedo",
+          "type": "number"
+        },
+        "field_salt": {
+          "default": 0,
+          "description": "frozen hash salt of this material's field",
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Field Salt",
+          "type": "integer"
+        },
+        "lamella_direction": {
+          "default": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Lamella Direction",
+          "type": "array"
+        },
+        "lamella_period_mm": {
+          "default": 3.5,
+          "maximum": 20.0,
+          "minimum": 0.5,
+          "title": "Lamella Period Mm",
+          "type": "number"
+        },
+        "outer_layer_mm": {
+          "default": 0.9,
+          "maximum": 4.0,
+          "minimum": 0.1,
+          "title": "Outer Layer Mm",
+          "type": "number"
+        },
+        "shell_ref_height_mm": {
+          "default": 130.0,
+          "description": "reference rim height of the coated shell",
+          "maximum": 520.0,
+          "minimum": 10.0,
+          "title": "Shell Ref Height Mm",
+          "type": "number"
+        },
+        "shell_ref_radius_mm": {
+          "default": 80.0,
+          "description": "reference outer radius of the coated shell",
+          "maximum": 400.0,
+          "minimum": 10.0,
+          "title": "Shell Ref Radius Mm",
+          "type": "number"
+        },
+        "variation_scale": {
+          "default": 1.0,
+          "description": "global multiplier on the appearance variation",
+          "maximum": 4.0,
+          "minimum": 0.0,
+          "title": "Variation Scale",
+          "type": "number"
+        }
+      },
+      "title": "BoneParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "material/M11": {
+    "applicable": {
+      "aggregate": false,
+      "anisotropic": true,
+      "family": "wood",
+      "grain_scale_mm": [
+        1.0,
+        8.0
+      ],
+      "layers": 1,
+      "porosity": "medium"
+    },
+    "has_builder": true,
+    "id": "M11",
+    "kind": "material",
+    "meta": {
+      "builder_name": "build_wood"
+    },
+    "module": "synlab.materials.catalogue",
+    "name": "木质",
+    "notes": "continuous fibre / growth-ring field with directional edges; procedural tear statistics, not a crack solver",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "body_albedo": {
+          "default": 0.52,
+          "maximum": 1.0,
+          "minimum": 0.05,
+          "title": "Body Albedo",
+          "type": "number"
+        },
+        "fibre_direction": {
+          "default": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Fibre Direction",
+          "type": "array"
+        },
+        "field_salt": {
+          "default": 0,
+          "description": "frozen hash salt of this material's field",
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Field Salt",
+          "type": "integer"
+        },
+        "ring_age_ratio": {
+          "default": 0.35,
+          "description": "latewood fraction",
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Ring Age Ratio",
+          "type": "number"
+        },
+        "ring_period_mm": {
+          "default": 5.5,
+          "description": "growth-ring spacing",
+          "maximum": 40.0,
+          "minimum": 0.8,
+          "title": "Ring Period Mm",
+          "type": "number"
+        },
+        "shell_ref_height_mm": {
+          "default": 130.0,
+          "description": "reference rim height of the coated shell",
+          "maximum": 520.0,
+          "minimum": 10.0,
+          "title": "Shell Ref Height Mm",
+          "type": "number"
+        },
+        "shell_ref_radius_mm": {
+          "default": 80.0,
+          "description": "reference outer radius of the coated shell",
+          "maximum": 400.0,
+          "minimum": 10.0,
+          "title": "Shell Ref Radius Mm",
+          "type": "number"
+        },
+        "tear_roughness": {
+          "default": 0.7,
+          "maximum": 1.0,
+          "minimum": 0.2,
+          "title": "Tear Roughness",
+          "type": "number"
+        },
+        "variation_scale": {
+          "default": 1.0,
+          "description": "global multiplier on the appearance variation",
+          "maximum": 4.0,
+          "minimum": 0.0,
+          "title": "Variation Scale",
+          "type": "number"
+        }
+      },
+      "title": "WoodParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "material/M12": {
+    "applicable": {
+      "aggregate": false,
+      "cut_statistics": "procedural",
+      "family": "metal",
+      "grain_scale_mm": [
+        0.05,
+        0.6
+      ],
+      "layers": 2,
+      "porosity": "none"
+    },
+    "has_builder": true,
+    "id": "M12",
+    "kind": "material",
+    "meta": {
+      "builder_name": "build_metal"
+    },
+    "module": "synlab.materials.catalogue",
+    "name": "金属",
+    "notes": "reflective body with a corrosion layer and procedural cut statistics; plastic fracture is outside the core backends",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "body_albedo": {
+          "default": 0.58,
+          "maximum": 1.0,
+          "minimum": 0.05,
+          "title": "Body Albedo",
+          "type": "number"
+        },
+        "corrosion_albedo": {
+          "default": [
+            0.3,
+            0.24,
+            0.18
+          ],
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Corrosion Albedo",
+          "type": "array"
+        },
+        "corrosion_thickness_mm": {
+          "default": 0.08,
+          "maximum": 0.8,
+          "minimum": 0.0,
+          "title": "Corrosion Thickness Mm",
+          "type": "number"
+        },
+        "field_salt": {
+          "default": 0,
+          "description": "frozen hash salt of this material's field",
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Field Salt",
+          "type": "integer"
+        },
+        "shell_ref_height_mm": {
+          "default": 130.0,
+          "description": "reference rim height of the coated shell",
+          "maximum": 520.0,
+          "minimum": 10.0,
+          "title": "Shell Ref Height Mm",
+          "type": "number"
+        },
+        "shell_ref_radius_mm": {
+          "default": 80.0,
+          "description": "reference outer radius of the coated shell",
+          "maximum": 400.0,
+          "minimum": 10.0,
+          "title": "Shell Ref Radius Mm",
+          "type": "number"
+        },
+        "specular_roughness": {
+          "default": 0.24,
+          "maximum": 0.8,
+          "minimum": 0.02,
+          "title": "Specular Roughness",
+          "type": "number"
+        },
+        "variation_scale": {
+          "default": 1.0,
+          "description": "global multiplier on the appearance variation",
+          "maximum": 4.0,
+          "minimum": 0.0,
+          "title": "Variation Scale",
+          "type": "number"
+        }
+      },
+      "title": "MetalParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "pattern/PAT01": {
+    "applicable": {
+      "appearance_only": true,
+      "complexity_tiers": [
+        1,
+        2,
+        3
+      ],
+      "geometry": false,
+      "height_policy": "none",
+      "periodic_axis": "u=atan2(y,x)/(2*pi) mod 1",
+      "profile_axis": "true profile arc length s_mm",
+      "requires_chart": true
+    },
+    "has_builder": true,
+    "id": "PAT01",
+    "kind": "pattern",
+    "meta": {
+      "builder_name": "build_pat01"
+    },
+    "module": "synlab.patterns.families",
+    "name": "素面 plain",
+    "notes": "constant colour with an optional low-frequency colour field; may be fully plain",
+    "param_schema": {
+      "additionalProperties": false,
+      "description": "PAT01 plain ware: constant colour, optionally a very low frequency colour field.",
+      "properties": {
+        "base_wavelength_mm": {
+          "default": 60.0,
+          "exclusiveMinimum": 0.0,
+          "title": "Base Wavelength Mm",
+          "type": "number"
+        },
+        "color_amount": {
+          "default": 0.05,
+          "maximum": 0.4,
+          "minimum": 0.0,
+          "title": "Color Amount",
+          "type": "number"
+        },
+        "colour_bands": {
+          "default": 2,
+          "maximum": 3,
+          "minimum": 1,
+          "title": "Colour Bands",
+          "type": "integer"
+        },
+        "complexity": {
+          "default": 1,
+          "maximum": 3,
+          "minimum": 1,
+          "title": "Complexity",
+          "type": "integer"
+        },
+        "line_width_mm": {
+          "default": 1.5,
+          "maximum": 3.0,
+          "minimum": 0.5,
+          "title": "Line Width Mm",
+          "type": "number"
+        },
+        "low_freq_color": {
+          "default": false,
+          "title": "Low Freq Color",
+          "type": "boolean"
+        },
+        "roughness_paint": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Roughness Paint"
+        },
+        "roughness_variation": {
+          "default": 0.04,
+          "maximum": 0.3,
+          "minimum": 0.0,
+          "title": "Roughness Variation",
+          "type": "number"
+        },
+        "spacing_mm": {
+          "default": 30.0,
+          "title": "Spacing Mm",
+          "type": "number"
+        }
+      },
+      "title": "PlainParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "pattern/PAT02": {
+    "applicable": {
+      "appearance_only": true,
+      "complexity_tiers": [
+        1,
+        2,
+        3
+      ],
+      "geometry": false,
+      "height_policy": "none",
+      "periodic_axis": "u=atan2(y,x)/(2*pi) mod 1",
+      "profile_axis": "true profile arc length s_mm",
+      "requires_chart": true
+    },
+    "has_builder": true,
+    "id": "PAT02",
+    "kind": "pattern",
+    "meta": {
+      "builder_name": "build_pat02"
+    },
+    "module": "synlab.patterns.families",
+    "name": "环带 bands",
+    "notes": "band centre lines in profile arc length, seamless in the azimuthal direction",
+    "param_schema": {
+      "additionalProperties": false,
+      "description": "PAT02 circumferential bands measured in profile arc length.",
+      "properties": {
+        "band_width_mm": {
+          "default": 2.0,
+          "maximum": 3.0,
+          "minimum": 0.5,
+          "title": "Band Width Mm",
+          "type": "number"
+        },
+        "complexity": {
+          "default": 1,
+          "maximum": 3,
+          "minimum": 1,
+          "title": "Complexity",
+          "type": "integer"
+        },
+        "filled": {
+          "default": false,
+          "title": "Filled",
+          "type": "boolean"
+        },
+        "gap_mm": {
+          "default": 8.0,
+          "maximum": 30.0,
+          "minimum": 1.0,
+          "title": "Gap Mm",
+          "type": "number"
+        },
+        "line_width_mm": {
+          "default": 2.0,
+          "title": "Line Width Mm",
+          "type": "number"
+        },
+        "pair_gap_mm": {
+          "default": 0.0,
+          "maximum": 10.0,
+          "minimum": 0.0,
+          "title": "Pair Gap Mm",
+          "type": "number"
+        },
+        "phase_s_mm": {
+          "default": 0.0,
+          "title": "Phase S Mm",
+          "type": "number"
+        },
+        "roughness_paint": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Roughness Paint"
+        },
+        "spacing_mm": {
+          "default": 10.0,
+          "maximum": 30.0,
+          "minimum": 5.0,
+          "title": "Spacing Mm",
+          "type": "number"
+        }
+      },
+      "title": "BandParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "pattern/PAT03": {
+    "applicable": {
+      "appearance_only": true,
+      "complexity_tiers": [
+        1,
+        2,
+        3
+      ],
+      "geometry": false,
+      "height_policy": "none",
+      "periodic_axis": "u=atan2(y,x)/(2*pi) mod 1",
+      "profile_axis": "true profile arc length s_mm",
+      "requires_chart": true
+    },
+    "has_builder": true,
+    "id": "PAT03",
+    "kind": "pattern",
+    "meta": {
+      "builder_name": "build_pat03"
+    },
+    "module": "synlab.patterns.families",
+    "name": "条纹 stripes",
+    "notes": "linear-phase stripes with an integer azimuthal count (the seam closes exactly)",
+    "param_schema": {
+      "additionalProperties": false,
+      "description": "PAT03 stripes with an integer azimuthal count (seam closes exactly).",
+      "properties": {
+        "complexity": {
+          "default": 1,
+          "maximum": 3,
+          "minimum": 1,
+          "title": "Complexity",
+          "type": "integer"
+        },
+        "double_line": {
+          "default": false,
+          "title": "Double Line",
+          "type": "boolean"
+        },
+        "line_width_mm": {
+          "default": 1.5,
+          "maximum": 3.0,
+          "minimum": 0.5,
+          "title": "Line Width Mm",
+          "type": "number"
+        },
+        "n_groups": {
+          "default": 1,
+          "maximum": 3,
+          "minimum": 1,
+          "title": "N Groups",
+          "type": "integer"
+        },
+        "n_stripes": {
+          "anyOf": [
+            {
+              "maximum": 400,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "N Stripes"
+        },
+        "roughness_paint": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Roughness Paint"
+        },
+        "spacing_mm": {
+          "default": 10.0,
+          "maximum": 30.0,
+          "minimum": 5.0,
+          "title": "Spacing Mm",
+          "type": "number"
+        },
+        "thin_ratio": {
+          "default": 0.45,
+          "exclusiveMinimum": 0.0,
+          "maximum": 1.0,
+          "title": "Thin Ratio",
+          "type": "number"
+        },
+        "tilt_deg": {
+          "default": 0.0,
+          "maximum": 75.0,
+          "minimum": 0.0,
+          "title": "Tilt Deg",
+          "type": "number"
+        }
+      },
+      "title": "StripeParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "pattern/PAT04": {
+    "applicable": {
+      "appearance_only": true,
+      "complexity_tiers": [
+        1,
+        2,
+        3
+      ],
+      "geometry": false,
+      "height_policy": "none",
+      "periodic_axis": "u=atan2(y,x)/(2*pi) mod 1",
+      "profile_axis": "true profile arc length s_mm",
+      "requires_chart": true
+    },
+    "has_builder": true,
+    "id": "PAT04",
+    "kind": "pattern",
+    "meta": {
+      "builder_name": "build_pat04"
+    },
+    "module": "synlab.patterns.families",
+    "name": "格网 grid",
+    "notes": "two (or three) stripe sets combined by union/intersection with explicit mix order",
+    "param_schema": {
+      "additionalProperties": false,
+      "description": "PAT04 grid: two stripe sets combined by union or intersection.",
+      "properties": {
+        "complexity": {
+          "default": 1,
+          "maximum": 3,
+          "minimum": 1,
+          "title": "Complexity",
+          "type": "integer"
+        },
+        "line_width_mm": {
+          "default": 1.5,
+          "maximum": 3.0,
+          "minimum": 0.5,
+          "title": "Line Width Mm",
+          "type": "number"
+        },
+        "mode": {
+          "default": "union",
+          "enum": [
+            "union",
+            "intersection"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "order": {
+          "default": "a_then_b",
+          "enum": [
+            "a_then_b",
+            "b_then_a"
+          ],
+          "title": "Order",
+          "type": "string"
+        },
+        "roughness_paint": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Roughness Paint"
+        },
+        "spacing_b_mm": {
+          "default": 10.0,
+          "maximum": 30.0,
+          "minimum": 5.0,
+          "title": "Spacing B Mm",
+          "type": "number"
+        },
+        "spacing_mm": {
+          "default": 10.0,
+          "maximum": 30.0,
+          "minimum": 5.0,
+          "title": "Spacing Mm",
+          "type": "number"
+        },
+        "thin_ratio": {
+          "default": 0.5,
+          "exclusiveMinimum": 0.0,
+          "maximum": 1.0,
+          "title": "Thin Ratio",
+          "type": "number"
+        },
+        "tilt_b_deg": {
+          "default": 90.0,
+          "maximum": 90.0,
+          "minimum": 0.0,
+          "title": "Tilt B Deg",
+          "type": "number"
+        }
+      },
+      "title": "GridParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "pattern/PAT05": {
+    "applicable": {
+      "appearance_only": true,
+      "complexity_tiers": [
+        1,
+        2,
+        3
+      ],
+      "geometry": false,
+      "height_policy": "none",
+      "periodic_axis": "u=atan2(y,x)/(2*pi) mod 1",
+      "profile_axis": "true profile arc length s_mm",
+      "requires_chart": true
+    },
+    "has_builder": true,
+    "id": "PAT05",
+    "kind": "pattern",
+    "meta": {
+      "builder_name": "build_pat05"
+    },
+    "module": "synlab.patterns.families",
+    "name": "波浪 waves",
+    "notes": "sine or Bezier centre line at an integer wave count, distance raster + EDT",
+    "param_schema": {
+      "additionalProperties": false,
+      "description": "PAT05 wave: sinusoidal or Bezier centre line, endpoint matched.",
+      "properties": {
+        "amplitude_mm": {
+          "default": 3.0,
+          "maximum": 25.0,
+          "minimum": 0.0,
+          "title": "Amplitude Mm",
+          "type": "number"
+        },
+        "complexity": {
+          "default": 1,
+          "maximum": 3,
+          "minimum": 1,
+          "title": "Complexity",
+          "type": "integer"
+        },
+        "double_line": {
+          "default": false,
+          "title": "Double Line",
+          "type": "boolean"
+        },
+        "line_width_mm": {
+          "default": 1.5,
+          "maximum": 3.0,
+          "minimum": 0.5,
+          "title": "Line Width Mm",
+          "type": "number"
+        },
+        "n_harmonics": {
+          "default": 1,
+          "maximum": 3,
+          "minimum": 1,
+          "title": "N Harmonics",
+          "type": "integer"
+        },
+        "n_waves": {
+          "anyOf": [
+            {
+              "maximum": 64,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "N Waves"
+        },
+        "roughness_paint": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Roughness Paint"
+        },
+        "row_spacing_mm": {
+          "default": 0.0,
+          "maximum": 60.0,
+          "minimum": 0.0,
+          "title": "Row Spacing Mm",
+          "type": "number"
+        },
+        "spacing_mm": {
+          "default": 20.0,
+          "title": "Spacing Mm",
+          "type": "number"
+        },
+        "variant": {
+          "default": "sine",
+          "enum": [
+            "sine",
+            "bezier"
+          ],
+          "title": "Variant",
+          "type": "string"
+        },
+        "wavelength_mm": {
+          "default": 40.0,
+          "exclusiveMinimum": 0.0,
+          "title": "Wavelength Mm",
+          "type": "number"
+        }
+      },
+      "title": "WaveParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "pattern/PAT06": {
+    "applicable": {
+      "appearance_only": true,
+      "complexity_tiers": [
+        1,
+        2,
+        3
+      ],
+      "geometry": false,
+      "height_policy": "none",
+      "periodic_axis": "u=atan2(y,x)/(2*pi) mod 1",
+      "profile_axis": "true profile arc length s_mm",
+      "requires_chart": true
+    },
+    "has_builder": true,
+    "id": "PAT06",
+    "kind": "pattern",
+    "meta": {
+      "builder_name": "build_pat06"
+    },
+    "module": "synlab.patterns.families",
+    "name": "点阵 dots",
+    "notes": "crystal lattice or scipy PoissonDisk dots with an audited periodic seam extension",
+    "param_schema": {
+      "additionalProperties": false,
+      "description": "PAT06 dot lattice: crystal lattice or periodic Poisson disk.",
+      "properties": {
+        "clearance_mm": {
+          "default": 0.5,
+          "maximum": 5.0,
+          "minimum": 0.0,
+          "title": "Clearance Mm",
+          "type": "number"
+        },
+        "complexity": {
+          "default": 1,
+          "maximum": 3,
+          "minimum": 1,
+          "title": "Complexity",
+          "type": "integer"
+        },
+        "density_target_per_100mm2": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Density Target Per 100Mm2"
+        },
+        "lattice_mode": {
+          "default": "hex",
+          "enum": [
+            "hex",
+            "square"
+          ],
+          "title": "Lattice Mode",
+          "type": "string"
+        },
+        "line_width_mm": {
+          "default": 1.5,
+          "maximum": 3.0,
+          "minimum": 0.5,
+          "title": "Line Width Mm",
+          "type": "number"
+        },
+        "mode": {
+          "default": "poisson",
+          "enum": [
+            "lattice",
+            "poisson"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "radius_mm": {
+          "default": 2.0,
+          "maximum": 6.0,
+          "minimum": 0.3,
+          "title": "Radius Mm",
+          "type": "number"
+        },
+        "ring_ratio": {
+          "default": 0.5,
+          "exclusiveMinimum": 0.0,
+          "maximum": 1.0,
+          "title": "Ring Ratio",
+          "type": "number"
+        },
+        "roughness_paint": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Roughness Paint"
+        },
+        "solid": {
+          "default": true,
+          "title": "Solid",
+          "type": "boolean"
+        },
+        "spacing_mm": {
+          "default": 10.0,
+          "maximum": 30.0,
+          "minimum": 5.0,
+          "title": "Spacing Mm",
+          "type": "number"
+        },
+        "var_radius_mm": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Var Radius Mm"
+        }
+      },
+      "title": "DotParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "pattern/PAT07": {
+    "applicable": {
+      "appearance_only": true,
+      "complexity_tiers": [
+        1,
+        2,
+        3
+      ],
+      "geometry": false,
+      "height_policy": "none",
+      "periodic_axis": "u=atan2(y,x)/(2*pi) mod 1",
+      "profile_axis": "true profile arc length s_mm",
+      "requires_chart": true
+    },
+    "has_builder": true,
+    "id": "PAT07",
+    "kind": "pattern",
+    "meta": {
+      "builder_name": "build_pat07"
+    },
+    "module": "synlab.patterns.families",
+    "name": "三角 triangles",
+    "notes": "triangular tile with integer column count; line or solid barycentric fill",
+    "param_schema": {
+      "additionalProperties": false,
+      "description": "PAT07 periodic triangular tile.",
+      "properties": {
+        "barycentric": {
+          "default": false,
+          "title": "Barycentric",
+          "type": "boolean"
+        },
+        "complexity": {
+          "default": 1,
+          "maximum": 3,
+          "minimum": 1,
+          "title": "Complexity",
+          "type": "integer"
+        },
+        "edge_mm": {
+          "default": 12.0,
+          "maximum": 40.0,
+          "minimum": 3.0,
+          "title": "Edge Mm",
+          "type": "number"
+        },
+        "line_width_mm": {
+          "default": 1.0,
+          "title": "Line Width Mm",
+          "type": "number"
+        },
+        "mode": {
+          "default": "line",
+          "enum": [
+            "line",
+            "solid"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "n_colours": {
+          "default": 1,
+          "maximum": 3,
+          "minimum": 1,
+          "title": "N Colours",
+          "type": "integer"
+        },
+        "orientation_deg": {
+          "default": 0.0,
+          "maximum": 60.0,
+          "minimum": 0.0,
+          "title": "Orientation Deg",
+          "type": "number"
+        },
+        "roughness_paint": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Roughness Paint"
+        },
+        "spacing_mm": {
+          "default": 12.0,
+          "title": "Spacing Mm",
+          "type": "number"
+        }
+      },
+      "title": "TriangleParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "pattern/PAT08": {
+    "applicable": {
+      "appearance_only": true,
+      "complexity_tiers": [
+        1,
+        2,
+        3
+      ],
+      "geometry": false,
+      "height_policy": "none",
+      "periodic_axis": "u=atan2(y,x)/(2*pi) mod 1",
+      "profile_axis": "true profile arc length s_mm",
+      "requires_chart": true
+    },
+    "has_builder": true,
+    "id": "PAT08",
+    "kind": "pattern",
+    "meta": {
+      "builder_name": "build_pat08"
+    },
+    "module": "synlab.patterns.families",
+    "name": "回纹 meander",
+    "notes": "meander fret in a periodic tile with shared endpoints across tile borders",
+    "param_schema": {
+      "additionalProperties": false,
+      "description": "PAT08 meander / key fret inside a periodic tile with shared endpoints.",
+      "properties": {
+        "complexity": {
+          "default": 1,
+          "maximum": 3,
+          "minimum": 1,
+          "title": "Complexity",
+          "type": "integer"
+        },
+        "double_line": {
+          "default": false,
+          "title": "Double Line",
+          "type": "boolean"
+        },
+        "line_width_mm": {
+          "default": 1.2,
+          "title": "Line Width Mm",
+          "type": "number"
+        },
+        "n_turns": {
+          "default": 2,
+          "maximum": 6,
+          "minimum": 1,
+          "title": "N Turns",
+          "type": "integer"
+        },
+        "roughness_paint": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Roughness Paint"
+        },
+        "spacing_mm": {
+          "default": 20.0,
+          "title": "Spacing Mm",
+          "type": "number"
+        },
+        "style": {
+          "default": "key",
+          "enum": [
+            "key",
+            "double_key",
+            "wave_key"
+          ],
+          "title": "Style",
+          "type": "string"
+        },
+        "tile_h_mm": {
+          "default": 12.0,
+          "maximum": 40.0,
+          "minimum": 3.0,
+          "title": "Tile H Mm",
+          "type": "number"
+        },
+        "tile_w_mm": {
+          "default": 20.0,
+          "maximum": 60.0,
+          "minimum": 4.0,
+          "title": "Tile W Mm",
+          "type": "number"
+        }
+      },
+      "title": "MeanderParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "pattern/PAT09": {
+    "applicable": {
+      "appearance_only": true,
+      "complexity_tiers": [
+        1,
+        2,
+        3
+      ],
+      "geometry": false,
+      "height_policy": "none",
+      "periodic_axis": "u=atan2(y,x)/(2*pi) mod 1",
+      "profile_axis": "true profile arc length s_mm",
+      "requires_chart": true
+    },
+    "has_builder": true,
+    "id": "PAT09",
+    "kind": "pattern",
+    "meta": {
+      "builder_name": "build_pat09"
+    },
+    "module": "synlab.patterns.families",
+    "name": "交叉线 crosshatch",
+    "notes": "2-3 layered line fields with deterministic missing strokes",
+    "param_schema": {
+      "additionalProperties": false,
+      "description": "PAT09 crosshatch: 2-3 line fields with optional deliberate missing strokes.",
+      "properties": {
+        "angles_deg": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Angles Deg",
+          "type": "array"
+        },
+        "complexity": {
+          "default": 1,
+          "maximum": 3,
+          "minimum": 1,
+          "title": "Complexity",
+          "type": "integer"
+        },
+        "groups": {
+          "default": 2,
+          "maximum": 3,
+          "minimum": 2,
+          "title": "Groups",
+          "type": "integer"
+        },
+        "line_width_mm": {
+          "default": 1.0,
+          "title": "Line Width Mm",
+          "type": "number"
+        },
+        "missing_fraction": {
+          "default": 0.0,
+          "maximum": 0.4,
+          "minimum": 0.0,
+          "title": "Missing Fraction",
+          "type": "number"
+        },
+        "mix_order": {
+          "default": "a_then_b",
+          "enum": [
+            "a_then_b",
+            "b_then_a"
+          ],
+          "title": "Mix Order",
+          "type": "string"
+        },
+        "roughness_paint": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Roughness Paint"
+        },
+        "spacing_mm": {
+          "default": 10.0,
+          "maximum": 30.0,
+          "minimum": 5.0,
+          "title": "Spacing Mm",
+          "type": "number"
+        },
+        "spacings_mm": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Spacings Mm",
+          "type": "array"
+        }
+      },
+      "title": "CrosshatchParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "pattern/PAT10": {
+    "applicable": {
+      "appearance_only": true,
+      "complexity_tiers": [
+        1,
+        2,
+        3
+      ],
+      "geometry": false,
+      "height_policy": "none",
+      "periodic_axis": "u=atan2(y,x)/(2*pi) mod 1",
+      "profile_axis": "true profile arc length s_mm",
+      "requires_chart": true
+    },
+    "has_builder": true,
+    "id": "PAT10",
+    "kind": "pattern",
+    "meta": {
+      "builder_name": "build_pat10"
+    },
+    "module": "synlab.patterns.families",
+    "name": "花叶 floral",
+    "notes": "bounded L-system/turtle skeleton plus svgpathtools Bezier leaf outlines",
+    "param_schema": {
+      "additionalProperties": false,
+      "description": "PAT10 floral: bounded L-system skeleton plus Bezier leaf outlines.",
+      "properties": {
+        "angle_deg": {
+          "default": 25.0,
+          "maximum": 70.0,
+          "minimum": 5.0,
+          "title": "Angle Deg",
+          "type": "number"
+        },
+        "bezier_curvature": {
+          "default": 0.3,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Bezier Curvature",
+          "type": "number"
+        },
+        "branch_probability": {
+          "default": 0.6,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Branch Probability",
+          "type": "number"
+        },
+        "complexity": {
+          "default": 1,
+          "maximum": 3,
+          "minimum": 1,
+          "title": "Complexity",
+          "type": "integer"
+        },
+        "generations": {
+          "default": 4,
+          "maximum": 5,
+          "minimum": 3,
+          "title": "Generations",
+          "type": "integer"
+        },
+        "leaf_aspect": {
+          "default": 0.45,
+          "exclusiveMinimum": 0.05,
+          "maximum": 1.0,
+          "title": "Leaf Aspect",
+          "type": "number"
+        },
+        "leaf_length_mm": {
+          "default": 6.0,
+          "maximum": 40.0,
+          "minimum": 1.0,
+          "title": "Leaf Length Mm",
+          "type": "number"
+        },
+        "leaf_spacing_mm": {
+          "default": 8.0,
+          "maximum": 40.0,
+          "minimum": 1.0,
+          "title": "Leaf Spacing Mm",
+          "type": "number"
+        },
+        "line_width_mm": {
+          "default": 1.0,
+          "title": "Line Width Mm",
+          "type": "number"
+        },
+        "roughness_paint": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Roughness Paint"
+        },
+        "segment_cap": {
+          "default": 256,
+          "maximum": 1024,
+          "minimum": 32,
+          "title": "Segment Cap",
+          "type": "integer"
+        },
+        "spacing_mm": {
+          "default": 6.0,
+          "title": "Spacing Mm",
+          "type": "number"
+        },
+        "stem_width_mm": {
+          "default": 1.0,
+          "title": "Stem Width Mm",
+          "type": "number"
+        },
+        "step_mm": {
+          "default": 6.0,
+          "exclusiveMinimum": 0.0,
+          "maximum": 30.0,
+          "title": "Step Mm",
+          "type": "number"
+        }
+      },
+      "title": "LeafParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "pattern/PAT11": {
+    "applicable": {
+      "appearance_only": true,
+      "complexity_tiers": [
+        1,
+        2,
+        3
+      ],
+      "geometry": false,
+      "height_policy": "none",
+      "periodic_axis": "u=atan2(y,x)/(2*pi) mod 1",
+      "profile_axis": "true profile arc length s_mm",
+      "requires_chart": true
+    },
+    "has_builder": true,
+    "id": "PAT11",
+    "kind": "pattern",
+    "meta": {
+      "builder_name": "build_pat11"
+    },
+    "module": "synlab.patterns.families",
+    "name": "局部徽记 medallion",
+    "notes": "programmatic vector symbol or a restricted, registered SVG path",
+    "param_schema": {
+      "additionalProperties": false,
+      "description": "PAT11 medallion: programmatic vector symbol or a restricted, registered SVG path.",
+      "properties": {
+        "complexity": {
+          "default": 1,
+          "maximum": 3,
+          "minimum": 1,
+          "title": "Complexity",
+          "type": "integer"
+        },
+        "connector_arcs": {
+          "default": false,
+          "title": "Connector Arcs",
+          "type": "boolean"
+        },
+        "count_around": {
+          "default": 4,
+          "maximum": 24,
+          "minimum": 1,
+          "title": "Count Around",
+          "type": "integer"
+        },
+        "fill": {
+          "default": false,
+          "title": "Fill",
+          "type": "boolean"
+        },
+        "keep_clear": {
+          "default": false,
+          "title": "Keep Clear",
+          "type": "boolean"
+        },
+        "license_ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "License Ref"
+        },
+        "line_width_mm": {
+          "default": 1.0,
+          "title": "Line Width Mm",
+          "type": "number"
+        },
+        "max_elements": {
+          "default": 64,
+          "maximum": 512,
+          "minimum": 1,
+          "title": "Max Elements",
+          "type": "integer"
+        },
+        "max_file_bytes": {
+          "default": 262144,
+          "maximum": 4194304,
+          "minimum": 1024,
+          "title": "Max File Bytes",
+          "type": "integer"
+        },
+        "max_segments": {
+          "default": 2048,
+          "maximum": 16384,
+          "minimum": 8,
+          "title": "Max Segments",
+          "type": "integer"
+        },
+        "placement_s_mm": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Placement S Mm"
+        },
+        "rotate_deg": {
+          "default": 0.0,
+          "maximum": 180.0,
+          "minimum": -180.0,
+          "title": "Rotate Deg",
+          "type": "number"
+        },
+        "roughness_paint": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Roughness Paint"
+        },
+        "size_mm": {
+          "default": 14.0,
+          "maximum": 80.0,
+          "minimum": 2.0,
+          "title": "Size Mm",
+          "type": "number"
+        },
+        "small_ratio": {
+          "default": 0.55,
+          "exclusiveMinimum": 0.1,
+          "maximum": 1.0,
+          "title": "Small Ratio",
+          "type": "number"
+        },
+        "source": {
+          "default": "programmatic",
+          "enum": [
+            "programmatic",
+            "svg_path"
+          ],
+          "title": "Source",
+          "type": "string"
+        },
+        "spacing_mm": {
+          "default": 14.0,
+          "title": "Spacing Mm",
+          "type": "number"
+        },
+        "stroke": {
+          "default": true,
+          "title": "Stroke",
+          "type": "boolean"
+        },
+        "stroke_width_mm": {
+          "default": 1.0,
+          "title": "Stroke Width Mm",
+          "type": "number"
+        },
+        "svg_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Svg Path"
+        },
+        "symbol_id": {
+          "default": "rosette",
+          "title": "Symbol Id",
+          "type": "string"
+        },
+        "two_sizes": {
+          "default": false,
+          "title": "Two Sizes",
+          "type": "boolean"
+        }
+      },
+      "title": "SymbolParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "pattern/PAT12": {
+    "applicable": {
+      "appearance_only": true,
+      "complexity_tiers": [
+        1,
+        2,
+        3
+      ],
+      "geometry": false,
+      "height_policy": "none",
+      "periodic_axis": "u=atan2(y,x)/(2*pi) mod 1",
+      "profile_axis": "true profile arc length s_mm",
+      "requires_chart": true
+    },
+    "has_builder": true,
+    "id": "PAT12",
+    "kind": "pattern",
+    "meta": {
+      "builder_name": "build_pat12"
+    },
+    "module": "synlab.patterns.families",
+    "name": "字符 glyphs",
+    "notes": "one-shot Pillow glyph layout with a SciPy distance map (font hash frozen)",
+    "param_schema": {
+      "additionalProperties": false,
+      "description": "PAT12 glyphs: one-shot Pillow layout plus a SciPy distance map.",
+      "properties": {
+        "baseline_s_mm": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Baseline S Mm"
+        },
+        "complexity": {
+          "default": 1,
+          "maximum": 3,
+          "minimum": 1,
+          "title": "Complexity",
+          "type": "integer"
+        },
+        "font_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Font Id"
+        },
+        "font_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Font Path"
+        },
+        "font_size_mm": {
+          "default": 10.0,
+          "maximum": 80.0,
+          "minimum": 1.0,
+          "title": "Font Size Mm",
+          "type": "number"
+        },
+        "letter_spacing_mm": {
+          "default": 1.5,
+          "maximum": 20.0,
+          "minimum": -5.0,
+          "title": "Letter Spacing Mm",
+          "type": "number"
+        },
+        "line_width_mm": {
+          "default": 1.0,
+          "title": "Line Width Mm",
+          "type": "number"
+        },
+        "ring2_size_ratio": {
+          "default": 0.6,
+          "exclusiveMinimum": 0.1,
+          "maximum": 1.0,
+          "title": "Ring2 Size Ratio",
+          "type": "number"
+        },
+        "ring_count": {
+          "default": 1,
+          "maximum": 2,
+          "minimum": 1,
+          "title": "Ring Count",
+          "type": "integer"
+        },
+        "roughness_paint": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Roughness Paint"
+        },
+        "rule_lines": {
+          "default": false,
+          "title": "Rule Lines",
+          "type": "boolean"
+        },
+        "run_gap_mm": {
+          "default": 6.0,
+          "maximum": 80.0,
+          "minimum": 0.0,
+          "title": "Run Gap Mm",
+          "type": "number"
+        },
+        "spacing_mm": {
+          "default": 16.0,
+          "title": "Spacing Mm",
+          "type": "number"
+        },
+        "stroke": {
+          "default": false,
+          "title": "Stroke",
+          "type": "boolean"
+        },
+        "stroke_width_mm": {
+          "default": 1.0,
+          "title": "Stroke Width Mm",
+          "type": "number"
+        },
+        "text": {
+          "default": "A",
+          "maxLength": 64,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "title": "GlyphParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "pattern/PAT13": {
+    "applicable": {
+      "appearance_only": true,
+      "complexity_tiers": [
+        1,
+        2,
+        3
+      ],
+      "geometry": false,
+      "height_policy": "none",
+      "periodic_axis": "u=atan2(y,x)/(2*pi) mod 1",
+      "profile_axis": "true profile arc length s_mm",
+      "requires_chart": true
+    },
+    "has_builder": true,
+    "id": "PAT13",
+    "kind": "pattern",
+    "meta": {
+      "builder_name": "build_pat13"
+    },
+    "module": "synlab.patterns.families",
+    "name": "窑变 kiln",
+    "notes": "multi-scale continuous blotch field, independent roughness sub-stream",
+    "param_schema": {
+      "additionalProperties": false,
+      "description": "PAT13 kiln transformation: multi-scale continuous blotches with a separate\nroughness sub-stream (no geometry change; Gray-Scott stays optional/unimplemented).",
+      "properties": {
+        "base_wavelength_mm": {
+          "default": 45.0,
+          "exclusiveMinimum": 0.0,
+          "title": "Base Wavelength Mm",
+          "type": "number"
+        },
+        "blotch_contrast": {
+          "default": 0.8,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Blotch Contrast",
+          "type": "number"
+        },
+        "colour_stops": {
+          "default": 4,
+          "maximum": 5,
+          "minimum": 2,
+          "title": "Colour Stops",
+          "type": "integer"
+        },
+        "complexity": {
+          "default": 1,
+          "maximum": 3,
+          "minimum": 1,
+          "title": "Complexity",
+          "type": "integer"
+        },
+        "line_width_mm": {
+          "default": 1.5,
+          "maximum": 3.0,
+          "minimum": 0.5,
+          "title": "Line Width Mm",
+          "type": "number"
+        },
+        "n_scales": {
+          "default": 3,
+          "maximum": 5,
+          "minimum": 3,
+          "title": "N Scales",
+          "type": "integer"
+        },
+        "roughness_coupling": {
+          "default": 0.5,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Roughness Coupling",
+          "type": "number"
+        },
+        "roughness_paint": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Roughness Paint"
+        },
+        "roughness_scale": {
+          "default": 0.25,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Roughness Scale",
+          "type": "number"
+        },
+        "spacing_mm": {
+          "default": 30.0,
+          "title": "Spacing Mm",
+          "type": "number"
+        },
+        "speckle_amount": {
+          "default": 0.25,
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Speckle Amount",
+          "type": "number"
+        },
+        "speckle_wavelength_mm": {
+          "default": 1.2,
+          "maximum": 10.0,
+          "minimum": 0.2,
+          "title": "Speckle Wavelength Mm",
+          "type": "number"
+        }
+      },
+      "title": "KilnParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "pattern/PAT14": {
+    "applicable": {
+      "appearance_only": false,
+      "complexity_tiers": [
+        1,
+        2,
+        3
+      ],
+      "geometry": true,
+      "height_policy": "relief",
+      "periodic_axis": "u=atan2(y,x)/(2*pi) mod 1",
+      "profile_axis": "true profile arc length s_mm",
+      "requires_chart": true
+    },
+    "has_builder": true,
+    "id": "PAT14",
+    "kind": "pattern",
+    "meta": {
+      "builder_name": "build_pat14"
+    },
+    "module": "synlab.patterns.families",
+    "name": "浮雕 relief",
+    "notes": "smooth relief mask -> positive height -> real displacement of the whole body",
+    "param_schema": {
+      "additionalProperties": false,
+      "description": "PAT14 relief: smooth mask -> positive height -> displacement of the whole body.",
+      "properties": {
+        "band_width_mm": {
+          "default": 6.0,
+          "maximum": 40.0,
+          "minimum": 1.0,
+          "title": "Band Width Mm",
+          "type": "number"
+        },
+        "base_wavelength_mm": {
+          "default": 20.0,
+          "exclusiveMinimum": 0.0,
+          "title": "Base Wavelength Mm",
+          "type": "number"
+        },
+        "complexity": {
+          "default": 1,
+          "maximum": 3,
+          "minimum": 1,
+          "title": "Complexity",
+          "type": "integer"
+        },
+        "height_mm": {
+          "default": 1.0,
+          "exclusiveMinimum": 0.0,
+          "maximum": 4.0,
+          "title": "Height Mm",
+          "type": "number"
+        },
+        "line_width_mm": {
+          "default": 3.0,
+          "title": "Line Width Mm",
+          "type": "number"
+        },
+        "mask_feather_mm": {
+          "default": 1.5,
+          "exclusiveMinimum": 0.0,
+          "maximum": 8.0,
+          "title": "Mask Feather Mm",
+          "type": "number"
+        },
+        "max_wall_fraction": {
+          "default": 0.25,
+          "exclusiveMinimum": 0.0,
+          "maximum": 0.5,
+          "title": "Max Wall Fraction",
+          "type": "number"
+        },
+        "medallion_count": {
+          "default": 4,
+          "maximum": 16,
+          "minimum": 1,
+          "title": "Medallion Count",
+          "type": "integer"
+        },
+        "motif": {
+          "default": "blobs",
+          "enum": [
+            "blobs",
+            "bands",
+            "medallion",
+            "panel_lattice"
+          ],
+          "title": "Motif",
+          "type": "string"
+        },
+        "n_scales": {
+          "default": 2,
+          "maximum": 4,
+          "minimum": 1,
+          "title": "N Scales",
+          "type": "integer"
+        },
+        "power": {
+          "default": 1.0,
+          "maximum": 4.0,
+          "minimum": 0.2,
+          "title": "Power",
+          "type": "number"
+        },
+        "roughness_paint": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Roughness Paint"
+        },
+        "spacing_mm": {
+          "default": 20.0,
+          "title": "Spacing Mm",
+          "type": "number"
+        },
+        "threshold": {
+          "default": 0.45,
+          "maximum": 1.0,
+          "minimum": -1.0,
+          "title": "Threshold",
+          "type": "number"
+        }
+      },
+      "title": "ReliefParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "pattern/PAT15": {
+    "applicable": {
+      "appearance_only": false,
+      "complexity_tiers": [
+        1,
+        2,
+        3
+      ],
+      "geometry": true,
+      "height_policy": "engrave",
+      "periodic_axis": "u=atan2(y,x)/(2*pi) mod 1",
+      "profile_axis": "true profile arc length s_mm",
+      "requires_chart": true
+    },
+    "has_builder": true,
+    "id": "PAT15",
+    "kind": "pattern",
+    "meta": {
+      "builder_name": "build_pat15"
+    },
+    "module": "synlab.patterns.families",
+    "name": "刻线 engrave",
+    "notes": "curve distance -> negative height -> real engraved displacement of the whole body",
+    "param_schema": {
+      "additionalProperties": false,
+      "description": "PAT15 engraving: curve distance -> negative displacement of the whole body.",
+      "properties": {
+        "complexity": {
+          "default": 1,
+          "maximum": 3,
+          "minimum": 1,
+          "title": "Complexity",
+          "type": "integer"
+        },
+        "crossing_depth_limit": {
+          "default": true,
+          "title": "Crossing Depth Limit",
+          "type": "boolean"
+        },
+        "curve_family": {
+          "default": "stripe",
+          "enum": [
+            "stripe",
+            "wave",
+            "meander",
+            "grid"
+          ],
+          "title": "Curve Family",
+          "type": "string"
+        },
+        "curve_params": {
+          "additionalProperties": true,
+          "title": "Curve Params",
+          "type": "object"
+        },
+        "depth_mm": {
+          "default": 0.6,
+          "exclusiveMinimum": 0.0,
+          "maximum": 3.0,
+          "title": "Depth Mm",
+          "type": "number"
+        },
+        "line_width_mm": {
+          "default": 1.5,
+          "title": "Line Width Mm",
+          "type": "number"
+        },
+        "max_wall_fraction": {
+          "default": 0.3,
+          "exclusiveMinimum": 0.0,
+          "maximum": 0.5,
+          "title": "Max Wall Fraction",
+          "type": "number"
+        },
+        "roughness_paint": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Roughness Paint"
+        },
+        "spacing_mm": {
+          "default": 12.0,
+          "title": "Spacing Mm",
+          "type": "number"
+        }
+      },
+      "title": "EngraveParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "pattern/PAT16": {
+    "applicable": {
+      "appearance_only": true,
+      "complexity_tiers": [
+        1,
+        2,
+        3
+      ],
+      "geometry": false,
+      "height_policy": "none",
+      "periodic_axis": "u=atan2(y,x)/(2*pi) mod 1",
+      "profile_axis": "true profile arc length s_mm",
+      "requires_chart": true
+    },
+    "has_builder": true,
+    "id": "PAT16",
+    "kind": "pattern",
+    "meta": {
+      "builder_name": "build_pat16"
+    },
+    "module": "synlab.patterns.families",
+    "name": "组合 combination",
+    "notes": "region masks and a bounded composition of the layers above",
+    "param_schema": {
+      "$defs": {
+        "ComboLayer": {
+          "additionalProperties": false,
+          "properties": {
+            "family": {
+              "title": "Family",
+              "type": "string"
+            },
+            "params": {
+              "additionalProperties": true,
+              "title": "Params",
+              "type": "object"
+            },
+            "weight": {
+              "default": 1.0,
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "title": "Weight",
+              "type": "number"
+            },
+            "zone": {
+              "default": "full",
+              "enum": [
+                "full",
+                "upper",
+                "lower",
+                "centre_band",
+                "side_bands"
+              ],
+              "title": "Zone",
+              "type": "string"
+            }
+          },
+          "required": [
+            "family"
+          ],
+          "title": "ComboLayer",
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "description": "PAT16 combination: region masks and a bounded mix of the layers above.",
+      "properties": {
+        "allow_geometry": {
+          "default": false,
+          "title": "Allow Geometry",
+          "type": "boolean"
+        },
+        "boundary": {
+          "default": "horizontal_band",
+          "enum": [
+            "horizontal_band",
+            "vertical_band",
+            "periodic_curve"
+          ],
+          "title": "Boundary",
+          "type": "string"
+        },
+        "boundary_feather_mm": {
+          "default": 3.0,
+          "maximum": 40.0,
+          "minimum": 0.0,
+          "title": "Boundary Feather Mm",
+          "type": "number"
+        },
+        "boundary_width_mm": {
+          "default": 20.0,
+          "exclusiveMinimum": 0.0,
+          "maximum": 200.0,
+          "title": "Boundary Width Mm",
+          "type": "number"
+        },
+        "complexity": {
+          "default": 1,
+          "maximum": 3,
+          "minimum": 1,
+          "title": "Complexity",
+          "type": "integer"
+        },
+        "layers": {
+          "items": {
+            "$ref": "#/$defs/ComboLayer"
+          },
+          "title": "Layers",
+          "type": "array"
+        },
+        "line_width_mm": {
+          "default": 1.5,
+          "title": "Line Width Mm",
+          "type": "number"
+        },
+        "mix_order": {
+          "default": "primary_then_aux",
+          "enum": [
+            "primary_then_aux",
+            "aux_then_primary"
+          ],
+          "title": "Mix Order",
+          "type": "string"
+        },
+        "roughness_paint": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Roughness Paint"
+        },
+        "spacing_mm": {
+          "default": 20.0,
+          "title": "Spacing Mm",
+          "type": "number"
+        }
+      },
+      "title": "ComboParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "vessel/V01": {
+    "applicable": {
+      "components": [
+        "body"
+      ],
+      "family": "revolve",
+      "min_wall_mm": 1.0,
+      "requires_cavity": true,
+      "scale_mm": [
+        80,
+        300
+      ],
+      "shape_parameters": [
+        "diameter_mm",
+        "wall_mm",
+        "base_mm",
+        "depth_ratio",
+        "rim_flare",
+        "foot_ring_ratio",
+        "foot_height_ratio",
+        "belly"
+      ]
+    },
+    "has_builder": true,
+    "id": "V01",
+    "kind": "vessel",
+    "meta": {
+      "builder_name": "build_bowl"
+    },
+    "module": "synlab.mothers.vessels.group_revolve",
+    "name": "碗",
+    "notes": "thick revolved bowl, foot ring kept as a real contact band",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "base_mm": {
+          "default": 6.5,
+          "description": "base thickness in mm",
+          "maximum": 80.0,
+          "minimum": 0.15,
+          "title": "Base Mm",
+          "type": "number"
+        },
+        "belly": {
+          "default": 0.75,
+          "description": "wall shape exponent",
+          "maximum": 1.6,
+          "minimum": 0.35,
+          "title": "Belly",
+          "type": "number"
+        },
+        "depth_ratio": {
+          "default": 0.42,
+          "description": "depth / diameter",
+          "maximum": 0.8,
+          "minimum": 0.18,
+          "title": "Depth Ratio",
+          "type": "number"
+        },
+        "diameter_mm": {
+          "description": "outer diameter in mm",
+          "maximum": 320.0,
+          "minimum": 60.0,
+          "title": "Diameter Mm",
+          "type": "number"
+        },
+        "foot_height_ratio": {
+          "default": 0.06,
+          "description": "foot ring height / depth",
+          "maximum": 0.3,
+          "minimum": 0.0,
+          "title": "Foot Height Ratio",
+          "type": "number"
+        },
+        "foot_ring_ratio": {
+          "default": 0.62,
+          "description": "foot ring inner radius / R",
+          "maximum": 0.92,
+          "minimum": 0.0,
+          "title": "Foot Ring Ratio",
+          "type": "number"
+        },
+        "rim_flare": {
+          "default": 0.1,
+          "description": "outward rim flare fraction of R",
+          "maximum": 0.6,
+          "minimum": -0.45,
+          "title": "Rim Flare",
+          "type": "number"
+        },
+        "wall_mm": {
+          "default": 4.0,
+          "description": "wall thickness in mm",
+          "maximum": 60.0,
+          "minimum": 0.15,
+          "title": "Wall Mm",
+          "type": "number"
+        },
+        "warp_amplitude": {
+          "default": 0.02,
+          "maximum": 0.08,
+          "minimum": 0.0,
+          "title": "Warp Amplitude",
+          "type": "number"
+        },
+        "warp_eccentricity_mm": {
+          "default": 0.8,
+          "maximum": 8.0,
+          "minimum": 0.0,
+          "title": "Warp Eccentricity Mm",
+          "type": "number"
+        },
+        "warp_lobes": {
+          "default": 2,
+          "maximum": 6,
+          "minimum": 2,
+          "title": "Warp Lobes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "diameter_mm"
+      ],
+      "title": "BowlParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "vessel/V02": {
+    "applicable": {
+      "components": [
+        "body"
+      ],
+      "family": "revolve",
+      "min_wall_mm": 1.0,
+      "requires_cavity": true,
+      "scale_mm": [
+        80,
+        300
+      ],
+      "shape_parameters": [
+        "diameter_mm",
+        "wall_mm",
+        "base_mm",
+        "depth_mm",
+        "base_width_ratio",
+        "wall_angle_deg",
+        "rim_lip_mm"
+      ]
+    },
+    "has_builder": true,
+    "id": "V02",
+    "kind": "vessel",
+    "meta": {
+      "builder_name": "build_deep_dish"
+    },
+    "module": "synlab.mothers.vessels.group_revolve",
+    "name": "深盘",
+    "notes": "deep dish: conical wall controlled by a real wall angle",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "base_mm": {
+          "default": 6.5,
+          "description": "base thickness in mm",
+          "maximum": 80.0,
+          "minimum": 0.15,
+          "title": "Base Mm",
+          "type": "number"
+        },
+        "base_width_ratio": {
+          "default": 0.42,
+          "description": "base width / diameter",
+          "maximum": 0.9,
+          "minimum": 0.08,
+          "title": "Base Width Ratio",
+          "type": "number"
+        },
+        "depth_mm": {
+          "default": 34.0,
+          "maximum": 120.0,
+          "minimum": 8.0,
+          "title": "Depth Mm",
+          "type": "number"
+        },
+        "diameter_mm": {
+          "description": "outer diameter in mm",
+          "maximum": 320.0,
+          "minimum": 60.0,
+          "title": "Diameter Mm",
+          "type": "number"
+        },
+        "rim_lip_mm": {
+          "default": 1.6,
+          "description": "thickened rim lip",
+          "maximum": 12.0,
+          "minimum": 0.0,
+          "title": "Rim Lip Mm",
+          "type": "number"
+        },
+        "wall_angle_deg": {
+          "default": 62.0,
+          "description": "wall angle from horizontal",
+          "maximum": 88.0,
+          "minimum": 15.0,
+          "title": "Wall Angle Deg",
+          "type": "number"
+        },
+        "wall_mm": {
+          "default": 4.0,
+          "description": "wall thickness in mm",
+          "maximum": 60.0,
+          "minimum": 0.15,
+          "title": "Wall Mm",
+          "type": "number"
+        },
+        "warp_amplitude": {
+          "default": 0.02,
+          "maximum": 0.08,
+          "minimum": 0.0,
+          "title": "Warp Amplitude",
+          "type": "number"
+        },
+        "warp_eccentricity_mm": {
+          "default": 0.8,
+          "maximum": 8.0,
+          "minimum": 0.0,
+          "title": "Warp Eccentricity Mm",
+          "type": "number"
+        },
+        "warp_lobes": {
+          "default": 2,
+          "maximum": 6,
+          "minimum": 2,
+          "title": "Warp Lobes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "diameter_mm"
+      ],
+      "title": "DeepDishParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "vessel/V03": {
+    "applicable": {
+      "components": [
+        "body"
+      ],
+      "family": "revolve",
+      "min_wall_mm": 0.9,
+      "requires_cavity": true,
+      "scale_mm": [
+        80,
+        260
+      ],
+      "shape_parameters": [
+        "diameter_mm",
+        "wall_mm",
+        "base_mm",
+        "depth_mm",
+        "rim_wave_mm",
+        "rim_wave_lobes",
+        "base_curvature",
+        "rim_lip_ratio"
+      ]
+    },
+    "has_builder": true,
+    "id": "V03",
+    "kind": "vessel",
+    "meta": {
+      "builder_name": "build_saucer"
+    },
+    "module": "synlab.mothers.vessels.group_revolve",
+    "name": "浅碟",
+    "notes": "shallow saucer with a dished base and a wavy rim",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "base_curvature": {
+          "default": 0.35,
+          "description": "dished base fraction of depth",
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Base Curvature",
+          "type": "number"
+        },
+        "base_mm": {
+          "default": 6.5,
+          "description": "base thickness in mm",
+          "maximum": 80.0,
+          "minimum": 0.15,
+          "title": "Base Mm",
+          "type": "number"
+        },
+        "depth_mm": {
+          "default": 14.0,
+          "maximum": 45.0,
+          "minimum": 4.0,
+          "title": "Depth Mm",
+          "type": "number"
+        },
+        "diameter_mm": {
+          "description": "outer diameter in mm",
+          "maximum": 320.0,
+          "minimum": 60.0,
+          "title": "Diameter Mm",
+          "type": "number"
+        },
+        "rim_lip_ratio": {
+          "default": 0.1,
+          "maximum": 0.4,
+          "minimum": 0.0,
+          "title": "Rim Lip Ratio",
+          "type": "number"
+        },
+        "rim_wave_lobes": {
+          "default": 6,
+          "maximum": 12,
+          "minimum": 3,
+          "title": "Rim Wave Lobes",
+          "type": "integer"
+        },
+        "rim_wave_mm": {
+          "default": 1.2,
+          "description": "non-axisymmetric rim undulation",
+          "maximum": 10.0,
+          "minimum": 0.0,
+          "title": "Rim Wave Mm",
+          "type": "number"
+        },
+        "wall_mm": {
+          "default": 4.0,
+          "description": "wall thickness in mm",
+          "maximum": 60.0,
+          "minimum": 0.15,
+          "title": "Wall Mm",
+          "type": "number"
+        },
+        "warp_amplitude": {
+          "default": 0.02,
+          "maximum": 0.08,
+          "minimum": 0.0,
+          "title": "Warp Amplitude",
+          "type": "number"
+        },
+        "warp_eccentricity_mm": {
+          "default": 0.8,
+          "maximum": 8.0,
+          "minimum": 0.0,
+          "title": "Warp Eccentricity Mm",
+          "type": "number"
+        },
+        "warp_lobes": {
+          "default": 2,
+          "maximum": 6,
+          "minimum": 2,
+          "title": "Warp Lobes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "diameter_mm"
+      ],
+      "title": "SaucerParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "vessel/V04": {
+    "applicable": {
+      "components": [
+        "body",
+        "handle"
+      ],
+      "family": "revolve+attachment",
+      "min_wall_mm": 1.0,
+      "requires_cavity": true,
+      "scale_mm": [
+        50,
+        200
+      ],
+      "shape_parameters": [
+        "diameter_mm",
+        "wall_mm",
+        "base_mm",
+        "height_mm",
+        "belly_ratio",
+        "handle_thickness_mm",
+        "handle_span_ratio"
+      ]
+    },
+    "has_builder": true,
+    "id": "V04",
+    "kind": "vessel",
+    "meta": {
+      "builder_name": "build_cup"
+    },
+    "module": "synlab.mothers.vessels.group_revolve",
+    "name": "杯",
+    "notes": "revolved cup with an optional swept handle (volumetric overlap at the root)",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "base_mm": {
+          "default": 6.5,
+          "description": "base thickness in mm",
+          "maximum": 80.0,
+          "minimum": 0.15,
+          "title": "Base Mm",
+          "type": "number"
+        },
+        "belly_ratio": {
+          "default": 1.0,
+          "description": "belly diameter / mouth diameter",
+          "maximum": 1.35,
+          "minimum": 0.6,
+          "title": "Belly Ratio",
+          "type": "number"
+        },
+        "diameter_mm": {
+          "description": "outer diameter in mm",
+          "maximum": 320.0,
+          "minimum": 60.0,
+          "title": "Diameter Mm",
+          "type": "number"
+        },
+        "handle_span_ratio": {
+          "default": 0.85,
+          "maximum": 1.2,
+          "minimum": 0.35,
+          "title": "Handle Span Ratio",
+          "type": "number"
+        },
+        "handle_thickness_mm": {
+          "default": 7.0,
+          "maximum": 20.0,
+          "minimum": 3.0,
+          "title": "Handle Thickness Mm",
+          "type": "number"
+        },
+        "height_mm": {
+          "default": 95.0,
+          "maximum": 240.0,
+          "minimum": 30.0,
+          "title": "Height Mm",
+          "type": "number"
+        },
+        "wall_mm": {
+          "default": 4.0,
+          "description": "wall thickness in mm",
+          "maximum": 60.0,
+          "minimum": 0.15,
+          "title": "Wall Mm",
+          "type": "number"
+        },
+        "warp_amplitude": {
+          "default": 0.02,
+          "maximum": 0.08,
+          "minimum": 0.0,
+          "title": "Warp Amplitude",
+          "type": "number"
+        },
+        "warp_eccentricity_mm": {
+          "default": 0.8,
+          "maximum": 8.0,
+          "minimum": 0.0,
+          "title": "Warp Eccentricity Mm",
+          "type": "number"
+        },
+        "warp_lobes": {
+          "default": 2,
+          "maximum": 6,
+          "minimum": 2,
+          "title": "Warp Lobes",
+          "type": "integer"
+        },
+        "with_handle": {
+          "default": true,
+          "title": "With Handle",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "diameter_mm"
+      ],
+      "title": "CupParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "vessel/V05": {
+    "applicable": {
+      "components": [
+        "cup",
+        "stem"
+      ],
+      "family": "revolve+revolve",
+      "min_wall_mm": 1.0,
+      "requires_cavity": true,
+      "scale_mm": [
+        60,
+        260
+      ],
+      "shape_parameters": [
+        "diameter_mm",
+        "wall_mm",
+        "base_mm",
+        "cup_depth_ratio",
+        "belly_ratio",
+        "stem_height_ratio",
+        "stem_root_ratio",
+        "foot_disc_ratio"
+      ]
+    },
+    "has_builder": true,
+    "id": "V05",
+    "kind": "vessel",
+    "meta": {
+      "builder_name": "build_stemmed_cup"
+    },
+    "module": "synlab.mothers.vessels.group_revolve",
+    "name": "高足杯",
+    "notes": "cup shell on a closed high stem with a flared foot disc",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "base_mm": {
+          "default": 6.5,
+          "description": "base thickness in mm",
+          "maximum": 80.0,
+          "minimum": 0.15,
+          "title": "Base Mm",
+          "type": "number"
+        },
+        "belly_ratio": {
+          "default": 0.95,
+          "maximum": 1.3,
+          "minimum": 0.55,
+          "title": "Belly Ratio",
+          "type": "number"
+        },
+        "cup_depth_ratio": {
+          "default": 0.55,
+          "description": "cup depth / cup diameter",
+          "maximum": 0.95,
+          "minimum": 0.2,
+          "title": "Cup Depth Ratio",
+          "type": "number"
+        },
+        "diameter_mm": {
+          "description": "outer diameter in mm",
+          "maximum": 320.0,
+          "minimum": 60.0,
+          "title": "Diameter Mm",
+          "type": "number"
+        },
+        "foot_disc_ratio": {
+          "default": 0.55,
+          "description": "foot disc radius / cup radius",
+          "maximum": 0.95,
+          "minimum": 0.2,
+          "title": "Foot Disc Ratio",
+          "type": "number"
+        },
+        "stem_height_ratio": {
+          "default": 0.55,
+          "description": "stem height / cup diameter",
+          "maximum": 1.4,
+          "minimum": 0.12,
+          "title": "Stem Height Ratio",
+          "type": "number"
+        },
+        "stem_root_ratio": {
+          "default": 0.3,
+          "description": "stem waist / cup radius",
+          "maximum": 0.7,
+          "minimum": 0.08,
+          "title": "Stem Root Ratio",
+          "type": "number"
+        },
+        "wall_mm": {
+          "default": 4.0,
+          "description": "wall thickness in mm",
+          "maximum": 60.0,
+          "minimum": 0.15,
+          "title": "Wall Mm",
+          "type": "number"
+        },
+        "warp_amplitude": {
+          "default": 0.02,
+          "maximum": 0.08,
+          "minimum": 0.0,
+          "title": "Warp Amplitude",
+          "type": "number"
+        },
+        "warp_eccentricity_mm": {
+          "default": 0.8,
+          "maximum": 8.0,
+          "minimum": 0.0,
+          "title": "Warp Eccentricity Mm",
+          "type": "number"
+        },
+        "warp_lobes": {
+          "default": 2,
+          "maximum": 6,
+          "minimum": 2,
+          "title": "Warp Lobes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "diameter_mm"
+      ],
+      "title": "StemmedCupParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "vessel/V06": {
+    "applicable": {
+      "components": [
+        "body"
+      ],
+      "family": "revolve",
+      "min_wall_mm": 1.2,
+      "requires_cavity": true,
+      "scale_mm": [
+        80,
+        340
+      ],
+      "shape_parameters": [
+        "diameter_mm",
+        "wall_mm",
+        "base_mm",
+        "height_mm",
+        "belly_ratio",
+        "shoulder_position",
+        "mouth_ratio"
+      ]
+    },
+    "has_builder": true,
+    "id": "V06",
+    "kind": "vessel",
+    "meta": {
+      "builder_name": "build_jar"
+    },
+    "module": "synlab.mothers.vessels.group_revolve",
+    "name": "罐",
+    "notes": "shoulder-belly-mouth jar profile with a real shoulder position",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "base_mm": {
+          "default": 6.5,
+          "description": "base thickness in mm",
+          "maximum": 80.0,
+          "minimum": 0.15,
+          "title": "Base Mm",
+          "type": "number"
+        },
+        "belly_ratio": {
+          "default": 1.0,
+          "description": "belly diameter / mouth diameter",
+          "maximum": 1.4,
+          "minimum": 0.6,
+          "title": "Belly Ratio",
+          "type": "number"
+        },
+        "diameter_mm": {
+          "description": "outer diameter in mm",
+          "maximum": 320.0,
+          "minimum": 60.0,
+          "title": "Diameter Mm",
+          "type": "number"
+        },
+        "height_mm": {
+          "default": 180.0,
+          "maximum": 420.0,
+          "minimum": 60.0,
+          "title": "Height Mm",
+          "type": "number"
+        },
+        "mouth_ratio": {
+          "default": 0.55,
+          "description": "mouth diameter / belly diameter",
+          "maximum": 0.95,
+          "minimum": 0.25,
+          "title": "Mouth Ratio",
+          "type": "number"
+        },
+        "shoulder_position": {
+          "default": 0.62,
+          "description": "shoulder height fraction",
+          "maximum": 0.9,
+          "minimum": 0.3,
+          "title": "Shoulder Position",
+          "type": "number"
+        },
+        "wall_mm": {
+          "default": 4.0,
+          "description": "wall thickness in mm",
+          "maximum": 60.0,
+          "minimum": 0.15,
+          "title": "Wall Mm",
+          "type": "number"
+        },
+        "warp_amplitude": {
+          "default": 0.02,
+          "maximum": 0.08,
+          "minimum": 0.0,
+          "title": "Warp Amplitude",
+          "type": "number"
+        },
+        "warp_eccentricity_mm": {
+          "default": 0.8,
+          "maximum": 8.0,
+          "minimum": 0.0,
+          "title": "Warp Eccentricity Mm",
+          "type": "number"
+        },
+        "warp_lobes": {
+          "default": 2,
+          "maximum": 6,
+          "minimum": 2,
+          "title": "Warp Lobes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "diameter_mm"
+      ],
+      "title": "JarParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "vessel/V07": {
+    "applicable": {
+      "components": [
+        "body"
+      ],
+      "family": "revolve",
+      "min_wall_mm": 1.2,
+      "requires_cavity": true,
+      "scale_mm": [
+        100,
+        380
+      ],
+      "shape_parameters": [
+        "diameter_mm",
+        "wall_mm",
+        "base_mm",
+        "height_mm",
+        "belly_ratio",
+        "neck_length_ratio",
+        "neck_ratio",
+        "shoulder_angle_deg"
+      ]
+    },
+    "has_builder": true,
+    "id": "V07",
+    "kind": "vessel",
+    "meta": {
+      "builder_name": "build_bottle"
+    },
+    "module": "synlab.mothers.vessels.group_revolve",
+    "name": "瓶",
+    "notes": "neck-shoulder-belly bottle; the cavity must survive the long neck",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "base_mm": {
+          "default": 6.5,
+          "description": "base thickness in mm",
+          "maximum": 80.0,
+          "minimum": 0.15,
+          "title": "Base Mm",
+          "type": "number"
+        },
+        "belly_ratio": {
+          "default": 1.0,
+          "maximum": 1.5,
+          "minimum": 0.6,
+          "title": "Belly Ratio",
+          "type": "number"
+        },
+        "diameter_mm": {
+          "description": "outer diameter in mm",
+          "maximum": 320.0,
+          "minimum": 60.0,
+          "title": "Diameter Mm",
+          "type": "number"
+        },
+        "height_mm": {
+          "default": 240.0,
+          "maximum": 520.0,
+          "minimum": 80.0,
+          "title": "Height Mm",
+          "type": "number"
+        },
+        "neck_length_ratio": {
+          "default": 0.32,
+          "description": "neck length / height",
+          "maximum": 0.6,
+          "minimum": 0.08,
+          "title": "Neck Length Ratio",
+          "type": "number"
+        },
+        "neck_ratio": {
+          "default": 0.3,
+          "description": "neck diameter / belly diameter",
+          "maximum": 0.7,
+          "minimum": 0.12,
+          "title": "Neck Ratio",
+          "type": "number"
+        },
+        "shoulder_angle_deg": {
+          "default": 52.0,
+          "maximum": 85.0,
+          "minimum": 15.0,
+          "title": "Shoulder Angle Deg",
+          "type": "number"
+        },
+        "wall_mm": {
+          "default": 4.0,
+          "description": "wall thickness in mm",
+          "maximum": 60.0,
+          "minimum": 0.15,
+          "title": "Wall Mm",
+          "type": "number"
+        },
+        "warp_amplitude": {
+          "default": 0.02,
+          "maximum": 0.08,
+          "minimum": 0.0,
+          "title": "Warp Amplitude",
+          "type": "number"
+        },
+        "warp_eccentricity_mm": {
+          "default": 0.8,
+          "maximum": 8.0,
+          "minimum": 0.0,
+          "title": "Warp Eccentricity Mm",
+          "type": "number"
+        },
+        "warp_lobes": {
+          "default": 2,
+          "maximum": 6,
+          "minimum": 2,
+          "title": "Warp Lobes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "diameter_mm"
+      ],
+      "title": "BottleParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "vessel/V08": {
+    "applicable": {
+      "components": [
+        "body",
+        "ear_l",
+        "ear_r"
+      ],
+      "family": "revolve+attachment",
+      "min_wall_mm": 1.2,
+      "requires_cavity": true,
+      "scale_mm": [
+        90,
+        380
+      ],
+      "shape_parameters": [
+        "diameter_mm",
+        "wall_mm",
+        "base_mm",
+        "height_mm",
+        "belly_ratio",
+        "neck_ratio",
+        "ear_arc_deg",
+        "ear_rise_ratio",
+        "ear_root_mm"
+      ]
+    },
+    "has_builder": true,
+    "id": "V08",
+    "kind": "vessel",
+    "meta": {
+      "builder_name": "build_amphora"
+    },
+    "module": "synlab.mothers.vessels.group_revolve",
+    "name": "双耳瓶",
+    "notes": "bottle body with two swept ears; every ear has a volumetric root",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "base_mm": {
+          "default": 6.5,
+          "description": "base thickness in mm",
+          "maximum": 80.0,
+          "minimum": 0.15,
+          "title": "Base Mm",
+          "type": "number"
+        },
+        "belly_ratio": {
+          "default": 1.0,
+          "maximum": 1.5,
+          "minimum": 0.6,
+          "title": "Belly Ratio",
+          "type": "number"
+        },
+        "diameter_mm": {
+          "description": "outer diameter in mm",
+          "maximum": 320.0,
+          "minimum": 60.0,
+          "title": "Diameter Mm",
+          "type": "number"
+        },
+        "ear_arc_deg": {
+          "default": 190.0,
+          "description": "ear sweep angle",
+          "maximum": 300.0,
+          "minimum": 80.0,
+          "title": "Ear Arc Deg",
+          "type": "number"
+        },
+        "ear_rise_ratio": {
+          "default": 0.62,
+          "description": "ear height / neck+shoulder",
+          "maximum": 0.95,
+          "minimum": 0.15,
+          "title": "Ear Rise Ratio",
+          "type": "number"
+        },
+        "ear_root_mm": {
+          "default": 9.0,
+          "description": "ear root cross-section",
+          "maximum": 26.0,
+          "minimum": 3.0,
+          "title": "Ear Root Mm",
+          "type": "number"
+        },
+        "height_mm": {
+          "default": 230.0,
+          "maximum": 480.0,
+          "minimum": 80.0,
+          "title": "Height Mm",
+          "type": "number"
+        },
+        "neck_ratio": {
+          "default": 0.34,
+          "maximum": 0.7,
+          "minimum": 0.14,
+          "title": "Neck Ratio",
+          "type": "number"
+        },
+        "wall_mm": {
+          "default": 4.0,
+          "description": "wall thickness in mm",
+          "maximum": 60.0,
+          "minimum": 0.15,
+          "title": "Wall Mm",
+          "type": "number"
+        },
+        "warp_amplitude": {
+          "default": 0.02,
+          "maximum": 0.08,
+          "minimum": 0.0,
+          "title": "Warp Amplitude",
+          "type": "number"
+        },
+        "warp_eccentricity_mm": {
+          "default": 0.8,
+          "maximum": 8.0,
+          "minimum": 0.0,
+          "title": "Warp Eccentricity Mm",
+          "type": "number"
+        },
+        "warp_lobes": {
+          "default": 2,
+          "maximum": 6,
+          "minimum": 2,
+          "title": "Warp Lobes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "diameter_mm"
+      ],
+      "title": "AmphoraParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "vessel/V09": {
+    "applicable": {
+      "components": [
+        "body",
+        "spout",
+        "handle"
+      ],
+      "family": "revolve+attachment",
+      "min_wall_mm": 1.2,
+      "requires_cavity": true,
+      "scale_mm": [
+        60,
+        320
+      ],
+      "shape_parameters": [
+        "diameter_mm",
+        "wall_mm",
+        "base_mm",
+        "height_mm",
+        "belly_ratio",
+        "neck_ratio",
+        "spout_length_mm",
+        "spout_bore_mm",
+        "spout_angle_deg",
+        "handle_span_ratio"
+      ]
+    },
+    "has_builder": true,
+    "id": "V09",
+    "kind": "vessel",
+    "meta": {
+      "builder_name": "build_ewer"
+    },
+    "module": "synlab.mothers.vessels.group_composite",
+    "name": "壶",
+    "notes": "ewer with a thick handle and a spout that keeps a real bore",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "base_mm": {
+          "default": 6.5,
+          "maximum": 80.0,
+          "minimum": 0.15,
+          "title": "Base Mm",
+          "type": "number"
+        },
+        "belly_ratio": {
+          "default": 1.0,
+          "maximum": 1.4,
+          "minimum": 0.55,
+          "title": "Belly Ratio",
+          "type": "number"
+        },
+        "diameter_mm": {
+          "maximum": 320.0,
+          "minimum": 40.0,
+          "title": "Diameter Mm",
+          "type": "number"
+        },
+        "handle_span_ratio": {
+          "default": 0.75,
+          "maximum": 1.3,
+          "minimum": 0.3,
+          "title": "Handle Span Ratio",
+          "type": "number"
+        },
+        "height_mm": {
+          "default": 180.0,
+          "maximum": 380.0,
+          "minimum": 60.0,
+          "title": "Height Mm",
+          "type": "number"
+        },
+        "neck_ratio": {
+          "default": 0.42,
+          "maximum": 0.8,
+          "minimum": 0.16,
+          "title": "Neck Ratio",
+          "type": "number"
+        },
+        "spout_angle_deg": {
+          "default": 38.0,
+          "maximum": 75.0,
+          "minimum": 5.0,
+          "title": "Spout Angle Deg",
+          "type": "number"
+        },
+        "spout_bore_mm": {
+          "default": 14.0,
+          "maximum": 40.0,
+          "minimum": 4.0,
+          "title": "Spout Bore Mm",
+          "type": "number"
+        },
+        "spout_length_mm": {
+          "default": 70.0,
+          "maximum": 180.0,
+          "minimum": 20.0,
+          "title": "Spout Length Mm",
+          "type": "number"
+        },
+        "wall_mm": {
+          "default": 4.0,
+          "maximum": 60.0,
+          "minimum": 0.15,
+          "title": "Wall Mm",
+          "type": "number"
+        },
+        "warp_amplitude": {
+          "default": 0.02,
+          "maximum": 0.08,
+          "minimum": 0.0,
+          "title": "Warp Amplitude",
+          "type": "number"
+        },
+        "warp_eccentricity_mm": {
+          "default": 0.8,
+          "maximum": 8.0,
+          "minimum": 0.0,
+          "title": "Warp Eccentricity Mm",
+          "type": "number"
+        },
+        "warp_lobes": {
+          "default": 2,
+          "maximum": 6,
+          "minimum": 2,
+          "title": "Warp Lobes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "diameter_mm"
+      ],
+      "title": "EwerParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "vessel/V10": {
+    "applicable": {
+      "components": [
+        "body",
+        "lid"
+      ],
+      "family": "revolve+lid",
+      "min_wall_mm": 1.2,
+      "requires_cavity": true,
+      "scale_mm": [
+        60,
+        340
+      ],
+      "shape_parameters": [
+        "diameter_mm",
+        "wall_mm",
+        "base_mm",
+        "height_mm",
+        "belly_ratio",
+        "mouth_ratio",
+        "lid_height_ratio",
+        "lid_seat_mm",
+        "knob_diameter_mm"
+      ]
+    },
+    "has_builder": true,
+    "id": "V10",
+    "kind": "vessel",
+    "meta": {
+      "builder_name": "build_lidded_pot"
+    },
+    "module": "synlab.mothers.vessels.group_composite",
+    "name": "带盖壶",
+    "notes": "body plus an independent pre-break lid component (contact is not R2)",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "base_mm": {
+          "default": 6.5,
+          "maximum": 80.0,
+          "minimum": 0.15,
+          "title": "Base Mm",
+          "type": "number"
+        },
+        "belly_ratio": {
+          "default": 1.0,
+          "maximum": 1.4,
+          "minimum": 0.55,
+          "title": "Belly Ratio",
+          "type": "number"
+        },
+        "diameter_mm": {
+          "maximum": 320.0,
+          "minimum": 40.0,
+          "title": "Diameter Mm",
+          "type": "number"
+        },
+        "height_mm": {
+          "default": 170.0,
+          "maximum": 380.0,
+          "minimum": 60.0,
+          "title": "Height Mm",
+          "type": "number"
+        },
+        "knob_diameter_mm": {
+          "default": 26.0,
+          "maximum": 70.0,
+          "minimum": 6.0,
+          "title": "Knob Diameter Mm",
+          "type": "number"
+        },
+        "lid_height_ratio": {
+          "default": 0.22,
+          "description": "lid height / body height",
+          "maximum": 0.6,
+          "minimum": 0.06,
+          "title": "Lid Height Ratio",
+          "type": "number"
+        },
+        "lid_seat_mm": {
+          "default": 4.0,
+          "description": "lid skirt overlap into the mouth",
+          "maximum": 20.0,
+          "minimum": 1.0,
+          "title": "Lid Seat Mm",
+          "type": "number"
+        },
+        "mouth_ratio": {
+          "default": 0.62,
+          "maximum": 0.98,
+          "minimum": 0.25,
+          "title": "Mouth Ratio",
+          "type": "number"
+        },
+        "wall_mm": {
+          "default": 4.0,
+          "maximum": 60.0,
+          "minimum": 0.15,
+          "title": "Wall Mm",
+          "type": "number"
+        },
+        "warp_amplitude": {
+          "default": 0.02,
+          "maximum": 0.08,
+          "minimum": 0.0,
+          "title": "Warp Amplitude",
+          "type": "number"
+        },
+        "warp_eccentricity_mm": {
+          "default": 0.8,
+          "maximum": 8.0,
+          "minimum": 0.0,
+          "title": "Warp Eccentricity Mm",
+          "type": "number"
+        },
+        "warp_lobes": {
+          "default": 2,
+          "maximum": 6,
+          "minimum": 2,
+          "title": "Warp Lobes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "diameter_mm"
+      ],
+      "title": "LiddedPotParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "vessel/V11": {
+    "applicable": {
+      "components": [
+        "body"
+      ],
+      "family": "revolve",
+      "min_wall_mm": 1.4,
+      "requires_cavity": true,
+      "scale_mm": [
+        100,
+        360
+      ],
+      "shape_parameters": [
+        "diameter_mm",
+        "wall_mm",
+        "base_mm",
+        "height_mm",
+        "body_to_mouth_ratio",
+        "shoulder_arc",
+        "base_ratio"
+      ]
+    },
+    "has_builder": true,
+    "id": "V11",
+    "kind": "vessel",
+    "meta": {
+      "builder_name": "build_vat"
+    },
+    "module": "synlab.mothers.vessels.group_revolve",
+    "name": "坛",
+    "notes": "large belly with a short neck; belly/mouth ratio and shoulder arc are real",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "base_mm": {
+          "default": 6.5,
+          "description": "base thickness in mm",
+          "maximum": 80.0,
+          "minimum": 0.15,
+          "title": "Base Mm",
+          "type": "number"
+        },
+        "base_ratio": {
+          "default": 0.45,
+          "description": "base diameter / mouth diameter",
+          "maximum": 0.85,
+          "minimum": 0.12,
+          "title": "Base Ratio",
+          "type": "number"
+        },
+        "body_to_mouth_ratio": {
+          "default": 1.85,
+          "description": "belly / mouth diameter",
+          "maximum": 3.2,
+          "minimum": 1.05,
+          "title": "Body To Mouth Ratio",
+          "type": "number"
+        },
+        "diameter_mm": {
+          "description": "outer diameter in mm",
+          "maximum": 320.0,
+          "minimum": 60.0,
+          "title": "Diameter Mm",
+          "type": "number"
+        },
+        "height_mm": {
+          "default": 210.0,
+          "maximum": 420.0,
+          "minimum": 70.0,
+          "title": "Height Mm",
+          "type": "number"
+        },
+        "shoulder_arc": {
+          "default": 0.55,
+          "description": "shoulder roundness fraction",
+          "maximum": 0.95,
+          "minimum": 0.1,
+          "title": "Shoulder Arc",
+          "type": "number"
+        },
+        "wall_mm": {
+          "default": 4.0,
+          "description": "wall thickness in mm",
+          "maximum": 60.0,
+          "minimum": 0.15,
+          "title": "Wall Mm",
+          "type": "number"
+        },
+        "warp_amplitude": {
+          "default": 0.02,
+          "maximum": 0.08,
+          "minimum": 0.0,
+          "title": "Warp Amplitude",
+          "type": "number"
+        },
+        "warp_eccentricity_mm": {
+          "default": 0.8,
+          "maximum": 8.0,
+          "minimum": 0.0,
+          "title": "Warp Eccentricity Mm",
+          "type": "number"
+        },
+        "warp_lobes": {
+          "default": 2,
+          "maximum": 6,
+          "minimum": 2,
+          "title": "Warp Lobes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "diameter_mm"
+      ],
+      "title": "VatParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "vessel/V12": {
+    "applicable": {
+      "components": [
+        "body"
+      ],
+      "family": "revolve",
+      "min_wall_mm": 1.0,
+      "requires_cavity": true,
+      "scale_mm": [
+        120,
+        360
+      ],
+      "shape_parameters": [
+        "diameter_mm",
+        "wall_mm",
+        "base_mm",
+        "depth_mm",
+        "base_to_mouth_ratio",
+        "foot_height_ratio",
+        "rim_thickness_factor"
+      ]
+    },
+    "has_builder": true,
+    "id": "V12",
+    "kind": "vessel",
+    "meta": {
+      "builder_name": "build_basin"
+    },
+    "module": "synlab.mothers.vessels.group_revolve",
+    "name": "盆",
+    "notes": "wide thin-walled basin: base/mouth ratio and rim thickening are real",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "base_mm": {
+          "default": 6.5,
+          "description": "base thickness in mm",
+          "maximum": 80.0,
+          "minimum": 0.15,
+          "title": "Base Mm",
+          "type": "number"
+        },
+        "base_to_mouth_ratio": {
+          "default": 0.55,
+          "description": "base diameter / mouth",
+          "maximum": 0.95,
+          "minimum": 0.12,
+          "title": "Base To Mouth Ratio",
+          "type": "number"
+        },
+        "depth_mm": {
+          "default": 70.0,
+          "maximum": 200.0,
+          "minimum": 20.0,
+          "title": "Depth Mm",
+          "type": "number"
+        },
+        "diameter_mm": {
+          "description": "outer diameter in mm",
+          "maximum": 320.0,
+          "minimum": 60.0,
+          "title": "Diameter Mm",
+          "type": "number"
+        },
+        "foot_height_ratio": {
+          "default": 0.05,
+          "maximum": 0.25,
+          "minimum": 0.0,
+          "title": "Foot Height Ratio",
+          "type": "number"
+        },
+        "rim_thickness_factor": {
+          "default": 1.25,
+          "maximum": 3.0,
+          "minimum": 0.8,
+          "title": "Rim Thickness Factor",
+          "type": "number"
+        },
+        "wall_mm": {
+          "default": 4.0,
+          "description": "wall thickness in mm",
+          "maximum": 60.0,
+          "minimum": 0.15,
+          "title": "Wall Mm",
+          "type": "number"
+        },
+        "warp_amplitude": {
+          "default": 0.02,
+          "maximum": 0.08,
+          "minimum": 0.0,
+          "title": "Warp Amplitude",
+          "type": "number"
+        },
+        "warp_eccentricity_mm": {
+          "default": 0.8,
+          "maximum": 8.0,
+          "minimum": 0.0,
+          "title": "Warp Eccentricity Mm",
+          "type": "number"
+        },
+        "warp_lobes": {
+          "default": 2,
+          "maximum": 6,
+          "minimum": 2,
+          "title": "Warp Lobes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "diameter_mm"
+      ],
+      "title": "BasinParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "vessel/V13": {
+    "applicable": {
+      "components": [
+        "body"
+      ],
+      "family": "prism",
+      "min_wall_mm": 1.0,
+      "requires_cavity": true,
+      "scale_mm": [
+        40,
+        340
+      ],
+      "shape_parameters": [
+        "length_mm",
+        "width_mm",
+        "height_mm",
+        "corner_mm",
+        "cavity_taper",
+        "wall_mm",
+        "base_mm"
+      ]
+    },
+    "has_builder": true,
+    "id": "V13",
+    "kind": "vessel",
+    "meta": {
+      "builder_name": "build_box"
+    },
+    "module": "synlab.mothers.vessels.group_extrude",
+    "name": "盒",
+    "notes": "rounded rectangular extruded shell with a real wall and floor",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "base_mm": {
+          "default": 7.0,
+          "maximum": 40.0,
+          "minimum": 1.2,
+          "title": "Base Mm",
+          "type": "number"
+        },
+        "cavity_taper": {
+          "default": 0.94,
+          "description": "inner section at the rim",
+          "maximum": 1.0,
+          "minimum": 0.55,
+          "title": "Cavity Taper",
+          "type": "number"
+        },
+        "corner_mm": {
+          "default": 12.0,
+          "description": "corner radius of the shell",
+          "maximum": 90.0,
+          "minimum": 0.0,
+          "title": "Corner Mm",
+          "type": "number"
+        },
+        "height_mm": {
+          "default": 70.0,
+          "maximum": 220.0,
+          "minimum": 20.0,
+          "title": "Height Mm",
+          "type": "number"
+        },
+        "length_mm": {
+          "default": 150.0,
+          "maximum": 340.0,
+          "minimum": 40.0,
+          "title": "Length Mm",
+          "type": "number"
+        },
+        "wall_mm": {
+          "default": 5.0,
+          "maximum": 28.0,
+          "minimum": 1.0,
+          "title": "Wall Mm",
+          "type": "number"
+        },
+        "warp_amplitude": {
+          "default": 0.012,
+          "description": "low-amplitude non-axisymmetric bed warp",
+          "maximum": 0.05,
+          "minimum": 0.0,
+          "title": "Warp Amplitude",
+          "type": "number"
+        },
+        "warp_eccentricity_mm": {
+          "default": 0.6,
+          "maximum": 4.0,
+          "minimum": 0.0,
+          "title": "Warp Eccentricity Mm",
+          "type": "number"
+        },
+        "warp_lobes": {
+          "default": 2,
+          "maximum": 6,
+          "minimum": 2,
+          "title": "Warp Lobes",
+          "type": "integer"
+        },
+        "width_mm": {
+          "default": 100.0,
+          "maximum": 340.0,
+          "minimum": 40.0,
+          "title": "Width Mm",
+          "type": "number"
+        }
+      },
+      "title": "BoxParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "vessel/V14": {
+    "applicable": {
+      "components": [
+        "body"
+      ],
+      "family": "revolve",
+      "min_wall_mm": 2.0,
+      "requires_cavity": false,
+      "scale_mm": [
+        40,
+        320
+      ],
+      "shape_parameters": [
+        "diameter_mm",
+        "thickness_mm",
+        "dome_height_mm",
+        "rim_drop_mm",
+        "rim_lip_mm",
+        "knob_diameter_mm",
+        "knob_height_mm",
+        "sides"
+      ]
+    },
+    "has_builder": true,
+    "id": "V14",
+    "kind": "vessel",
+    "meta": {
+      "builder_name": "build_lid"
+    },
+    "module": "synlab.mothers.vessels.group_composite",
+    "name": "盖",
+    "notes": "closed lid solid: dome, seat skirt, real knob and polygon rim",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "diameter_mm": {
+          "default": 150.0,
+          "maximum": 320.0,
+          "minimum": 40.0,
+          "title": "Diameter Mm",
+          "type": "number"
+        },
+        "dome_height_mm": {
+          "default": 26.0,
+          "description": "dome rise above the rim",
+          "maximum": 140.0,
+          "minimum": 0.0,
+          "title": "Dome Height Mm",
+          "type": "number"
+        },
+        "knob_diameter_mm": {
+          "default": 30.0,
+          "maximum": 80.0,
+          "minimum": 0.0,
+          "title": "Knob Diameter Mm",
+          "type": "number"
+        },
+        "knob_height_mm": {
+          "default": 18.0,
+          "maximum": 70.0,
+          "minimum": 0.0,
+          "title": "Knob Height Mm",
+          "type": "number"
+        },
+        "rim_drop_mm": {
+          "default": 8.0,
+          "description": "skirt length below the rim",
+          "maximum": 60.0,
+          "minimum": 0.0,
+          "title": "Rim Drop Mm",
+          "type": "number"
+        },
+        "rim_lip_mm": {
+          "default": 3.0,
+          "description": "outward lip of the seat",
+          "maximum": 20.0,
+          "minimum": 0.0,
+          "title": "Rim Lip Mm",
+          "type": "number"
+        },
+        "sides": {
+          "default": 0,
+          "description": "0 = round; >2 = regular polygon rim",
+          "maximum": 12,
+          "minimum": 0,
+          "title": "Sides",
+          "type": "integer"
+        },
+        "thickness_mm": {
+          "default": 9.0,
+          "maximum": 60.0,
+          "minimum": 2.0,
+          "title": "Thickness Mm",
+          "type": "number"
+        },
+        "warp_amplitude": {
+          "default": 0.01,
+          "description": "low-amplitude non-axisymmetric rim warp",
+          "maximum": 0.05,
+          "minimum": 0.0,
+          "title": "Warp Amplitude",
+          "type": "number"
+        },
+        "warp_eccentricity_mm": {
+          "default": 0.5,
+          "maximum": 4.0,
+          "minimum": 0.0,
+          "title": "Warp Eccentricity Mm",
+          "type": "number"
+        },
+        "warp_lobes": {
+          "default": 2,
+          "maximum": 6,
+          "minimum": 2,
+          "title": "Warp Lobes",
+          "type": "integer"
+        }
+      },
+      "title": "LidParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "vessel/V15": {
+    "applicable": {
+      "components": [
+        "body",
+        "spout"
+      ],
+      "family": "revolve+spout",
+      "min_wall_mm": 1.0,
+      "requires_cavity": true,
+      "scale_mm": [
+        30,
+        200
+      ],
+      "shape_parameters": [
+        "diameter_mm",
+        "depth_mm",
+        "wall_mm",
+        "base_mm",
+        "spout_length_mm",
+        "spout_angle_deg",
+        "foot_height_mm"
+      ]
+    },
+    "has_builder": true,
+    "id": "V15",
+    "kind": "vessel",
+    "meta": {
+      "builder_name": "build_lamp"
+    },
+    "module": "synlab.mothers.vessels.group_composite",
+    "name": "灯盏",
+    "notes": "shallow lamp body with a real wick spout and a foot ring",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "base_mm": {
+          "default": 7.0,
+          "maximum": 30.0,
+          "minimum": 1.2,
+          "title": "Base Mm",
+          "type": "number"
+        },
+        "depth_mm": {
+          "default": 26.0,
+          "maximum": 80.0,
+          "minimum": 6.0,
+          "title": "Depth Mm",
+          "type": "number"
+        },
+        "diameter_mm": {
+          "default": 85.0,
+          "maximum": 200.0,
+          "minimum": 30.0,
+          "title": "Diameter Mm",
+          "type": "number"
+        },
+        "foot_height_mm": {
+          "default": 9.0,
+          "maximum": 50.0,
+          "minimum": 0.0,
+          "title": "Foot Height Mm",
+          "type": "number"
+        },
+        "spout_angle_deg": {
+          "default": 16.0,
+          "description": "spout tilt from the rim",
+          "maximum": 60.0,
+          "minimum": 0.0,
+          "title": "Spout Angle Deg",
+          "type": "number"
+        },
+        "spout_length_mm": {
+          "default": 38.0,
+          "description": "wick spout projection",
+          "maximum": 120.0,
+          "minimum": 10.0,
+          "title": "Spout Length Mm",
+          "type": "number"
+        },
+        "wall_mm": {
+          "default": 5.0,
+          "maximum": 25.0,
+          "minimum": 1.0,
+          "title": "Wall Mm",
+          "type": "number"
+        },
+        "warp_amplitude": {
+          "default": 0.02,
+          "maximum": 0.08,
+          "minimum": 0.0,
+          "title": "Warp Amplitude",
+          "type": "number"
+        },
+        "warp_eccentricity_mm": {
+          "default": 0.8,
+          "maximum": 8.0,
+          "minimum": 0.0,
+          "title": "Warp Eccentricity Mm",
+          "type": "number"
+        },
+        "warp_lobes": {
+          "default": 2,
+          "maximum": 6,
+          "minimum": 2,
+          "title": "Warp Lobes",
+          "type": "integer"
+        }
+      },
+      "title": "LampParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "vessel/V16": {
+    "applicable": {
+      "components": [
+        "body",
+        "feet"
+      ],
+      "family": "revolve+attachment",
+      "min_wall_mm": 1.2,
+      "requires_cavity": true,
+      "scale_mm": [
+        40,
+        300
+      ],
+      "shape_parameters": [
+        "diameter_mm",
+        "wall_mm",
+        "base_mm",
+        "height_mm",
+        "belly_ratio",
+        "shoulder_ratio",
+        "foot_count",
+        "foot_height_mm",
+        "vent_count",
+        "vent_diameter_mm"
+      ]
+    },
+    "has_builder": true,
+    "id": "V16",
+    "kind": "vessel",
+    "meta": {
+      "builder_name": "build_censer"
+    },
+    "module": "synlab.mothers.vessels.group_composite",
+    "name": "香炉",
+    "notes": "belly on real legs with optional vent holes cut through the shoulder",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "base_mm": {
+          "default": 6.5,
+          "maximum": 80.0,
+          "minimum": 0.15,
+          "title": "Base Mm",
+          "type": "number"
+        },
+        "belly_ratio": {
+          "default": 1.0,
+          "maximum": 1.5,
+          "minimum": 0.55,
+          "title": "Belly Ratio",
+          "type": "number"
+        },
+        "diameter_mm": {
+          "maximum": 320.0,
+          "minimum": 40.0,
+          "title": "Diameter Mm",
+          "type": "number"
+        },
+        "foot_count": {
+          "default": 3,
+          "maximum": 6,
+          "minimum": 0,
+          "title": "Foot Count",
+          "type": "integer"
+        },
+        "foot_height_mm": {
+          "default": 26.0,
+          "maximum": 120.0,
+          "minimum": 0.0,
+          "title": "Foot Height Mm",
+          "type": "number"
+        },
+        "height_mm": {
+          "default": 120.0,
+          "maximum": 300.0,
+          "minimum": 40.0,
+          "title": "Height Mm",
+          "type": "number"
+        },
+        "shoulder_ratio": {
+          "default": 0.62,
+          "description": "belly height / total",
+          "maximum": 0.95,
+          "minimum": 0.3,
+          "title": "Shoulder Ratio",
+          "type": "number"
+        },
+        "vent_count": {
+          "default": 0,
+          "description": "ventilation holes through the shoulder",
+          "maximum": 24,
+          "minimum": 0,
+          "title": "Vent Count",
+          "type": "integer"
+        },
+        "vent_diameter_mm": {
+          "default": 9.0,
+          "maximum": 30.0,
+          "minimum": 2.0,
+          "title": "Vent Diameter Mm",
+          "type": "number"
+        },
+        "wall_mm": {
+          "default": 4.0,
+          "maximum": 60.0,
+          "minimum": 0.15,
+          "title": "Wall Mm",
+          "type": "number"
+        },
+        "warp_amplitude": {
+          "default": 0.02,
+          "maximum": 0.08,
+          "minimum": 0.0,
+          "title": "Warp Amplitude",
+          "type": "number"
+        },
+        "warp_eccentricity_mm": {
+          "default": 0.8,
+          "maximum": 8.0,
+          "minimum": 0.0,
+          "title": "Warp Eccentricity Mm",
+          "type": "number"
+        },
+        "warp_lobes": {
+          "default": 2,
+          "maximum": 6,
+          "minimum": 2,
+          "title": "Warp Lobes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "diameter_mm"
+      ],
+      "title": "CenserParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "vessel/V17": {
+    "applicable": {
+      "components": [
+        "body"
+      ],
+      "family": "revolve+pierced",
+      "min_wall_mm": 1.2,
+      "requires_cavity": true,
+      "scale_mm": [
+        60,
+        340
+      ],
+      "shape_parameters": [
+        "diameter_mm",
+        "wall_mm",
+        "base_mm",
+        "depth_mm",
+        "base_to_mouth_ratio",
+        "rim_thickness_factor",
+        "hole_count",
+        "hole_diameter_mm",
+        "foot_height_mm"
+      ]
+    },
+    "has_builder": true,
+    "id": "V17",
+    "kind": "vessel",
+    "meta": {
+      "builder_name": "build_flower_pot"
+    },
+    "module": "synlab.mothers.vessels.group_composite",
+    "name": "花盆",
+    "notes": "tapered thick shell with drainage holes cut through the floor",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "base_mm": {
+          "default": 6.5,
+          "maximum": 80.0,
+          "minimum": 0.15,
+          "title": "Base Mm",
+          "type": "number"
+        },
+        "base_to_mouth_ratio": {
+          "default": 0.62,
+          "description": "base diameter / mouth",
+          "maximum": 0.95,
+          "minimum": 0.2,
+          "title": "Base To Mouth Ratio",
+          "type": "number"
+        },
+        "depth_mm": {
+          "default": 110.0,
+          "maximum": 240.0,
+          "minimum": 30.0,
+          "title": "Depth Mm",
+          "type": "number"
+        },
+        "diameter_mm": {
+          "maximum": 320.0,
+          "minimum": 40.0,
+          "title": "Diameter Mm",
+          "type": "number"
+        },
+        "foot_height_mm": {
+          "default": 12.0,
+          "maximum": 60.0,
+          "minimum": 0.0,
+          "title": "Foot Height Mm",
+          "type": "number"
+        },
+        "hole_count": {
+          "default": 3,
+          "description": "drainage holes in the floor",
+          "maximum": 24,
+          "minimum": 0,
+          "title": "Hole Count",
+          "type": "integer"
+        },
+        "hole_diameter_mm": {
+          "default": 12.0,
+          "maximum": 45.0,
+          "minimum": 2.0,
+          "title": "Hole Diameter Mm",
+          "type": "number"
+        },
+        "rim_thickness_factor": {
+          "default": 1.6,
+          "description": "thickened rim band",
+          "maximum": 3.2,
+          "minimum": 0.8,
+          "title": "Rim Thickness Factor",
+          "type": "number"
+        },
+        "wall_mm": {
+          "default": 4.0,
+          "maximum": 60.0,
+          "minimum": 0.15,
+          "title": "Wall Mm",
+          "type": "number"
+        },
+        "warp_amplitude": {
+          "default": 0.02,
+          "maximum": 0.08,
+          "minimum": 0.0,
+          "title": "Warp Amplitude",
+          "type": "number"
+        },
+        "warp_eccentricity_mm": {
+          "default": 0.8,
+          "maximum": 8.0,
+          "minimum": 0.0,
+          "title": "Warp Eccentricity Mm",
+          "type": "number"
+        },
+        "warp_lobes": {
+          "default": 2,
+          "maximum": 6,
+          "minimum": 2,
+          "title": "Warp Lobes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "diameter_mm"
+      ],
+      "title": "FlowerPotParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "vessel/V18": {
+    "applicable": {
+      "components": [
+        "body"
+      ],
+      "family": "prism",
+      "min_wall_mm": 1.0,
+      "requires_cavity": false,
+      "scale_mm": [
+        60,
+        420
+      ],
+      "shape_parameters": [
+        "length_mm",
+        "width_mm",
+        "thickness_mm",
+        "corner_mm",
+        "groove_depth_mm",
+        "aeration_holes",
+        "camber_mm"
+      ]
+    },
+    "has_builder": true,
+    "id": "V18",
+    "kind": "vessel",
+    "meta": {
+      "builder_name": "build_brick"
+    },
+    "module": "synlab.mothers.vessels.group_extrude",
+    "name": "砖",
+    "notes": "rounded solid slab with real edge grooves, perforations and bed camber",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "aeration_holes": {
+          "default": 0,
+          "description": "perforation count through the brick",
+          "maximum": 24,
+          "minimum": 0,
+          "title": "Aeration Holes",
+          "type": "integer"
+        },
+        "camber_mm": {
+          "default": 0.8,
+          "description": "warping of the bed faces",
+          "maximum": 8.0,
+          "minimum": 0.0,
+          "title": "Camber Mm",
+          "type": "number"
+        },
+        "corner_mm": {
+          "default": 8.0,
+          "maximum": 60.0,
+          "minimum": 0.0,
+          "title": "Corner Mm",
+          "type": "number"
+        },
+        "groove_depth_mm": {
+          "default": 2.5,
+          "description": "edge groove depth",
+          "maximum": 12.0,
+          "minimum": 0.0,
+          "title": "Groove Depth Mm",
+          "type": "number"
+        },
+        "groove_width_mm": {
+          "default": 6.0,
+          "description": "edge groove width",
+          "maximum": 30.0,
+          "minimum": 0.5,
+          "title": "Groove Width Mm",
+          "type": "number"
+        },
+        "hole_diameter_mm": {
+          "default": 8.0,
+          "maximum": 30.0,
+          "minimum": 2.0,
+          "title": "Hole Diameter Mm",
+          "type": "number"
+        },
+        "length_mm": {
+          "default": 230.0,
+          "maximum": 420.0,
+          "minimum": 60.0,
+          "title": "Length Mm",
+          "type": "number"
+        },
+        "thickness_mm": {
+          "default": 45.0,
+          "maximum": 140.0,
+          "minimum": 8.0,
+          "title": "Thickness Mm",
+          "type": "number"
+        },
+        "width_mm": {
+          "default": 110.0,
+          "maximum": 260.0,
+          "minimum": 40.0,
+          "title": "Width Mm",
+          "type": "number"
+        }
+      },
+      "title": "BrickParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "vessel/V19": {
+    "applicable": {
+      "components": [
+        "body"
+      ],
+      "family": "prism",
+      "min_wall_mm": 1.0,
+      "requires_cavity": true,
+      "scale_mm": [
+        50,
+        420
+      ],
+      "shape_parameters": [
+        "length_mm",
+        "width_mm",
+        "thickness_mm",
+        "side_lip_mm",
+        "lip_width_mm",
+        "slope_mm",
+        "camber_mm",
+        "corner_mm"
+      ]
+    },
+    "has_builder": true,
+    "id": "V19",
+    "kind": "vessel",
+    "meta": {
+      "builder_name": "build_flat_tile"
+    },
+    "module": "synlab.mothers.vessels.group_extrude",
+    "name": "平瓦",
+    "notes": "thick parameterised tile: pan, side lips, slope and camber are real",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "camber_mm": {
+          "default": 3.0,
+          "description": "transverse camber of the pan",
+          "maximum": 25.0,
+          "minimum": 0.0,
+          "title": "Camber Mm",
+          "type": "number"
+        },
+        "corner_mm": {
+          "default": 6.0,
+          "maximum": 40.0,
+          "minimum": 0.0,
+          "title": "Corner Mm",
+          "type": "number"
+        },
+        "length_mm": {
+          "default": 240.0,
+          "maximum": 420.0,
+          "minimum": 60.0,
+          "title": "Length Mm",
+          "type": "number"
+        },
+        "lip_width_mm": {
+          "default": 10.0,
+          "maximum": 40.0,
+          "minimum": 0.0,
+          "title": "Lip Width Mm",
+          "type": "number"
+        },
+        "side_lip_mm": {
+          "default": 12.0,
+          "description": "raised side lip height",
+          "maximum": 40.0,
+          "minimum": 0.0,
+          "title": "Side Lip Mm",
+          "type": "number"
+        },
+        "slope_mm": {
+          "default": 9.0,
+          "description": "height difference across the tile",
+          "maximum": 60.0,
+          "minimum": 0.0,
+          "title": "Slope Mm",
+          "type": "number"
+        },
+        "thickness_mm": {
+          "default": 14.0,
+          "maximum": 60.0,
+          "minimum": 4.0,
+          "title": "Thickness Mm",
+          "type": "number"
+        },
+        "width_mm": {
+          "default": 160.0,
+          "maximum": 340.0,
+          "minimum": 50.0,
+          "title": "Width Mm",
+          "type": "number"
+        }
+      },
+      "title": "FlatTileParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "vessel/V20": {
+    "applicable": {
+      "components": [
+        "body"
+      ],
+      "family": "arc_band",
+      "min_wall_mm": 3.0,
+      "requires_cavity": false,
+      "scale_mm": [
+        30,
+        420
+      ],
+      "shape_parameters": [
+        "r_mid_mm",
+        "thickness_mm",
+        "length_mm",
+        "wrap_deg",
+        "tail_lift_mm",
+        "tail_drop_mm"
+      ]
+    },
+    "has_builder": true,
+    "id": "V20",
+    "kind": "vessel",
+    "meta": {
+      "builder_name": "build_arc_tile"
+    },
+    "module": "synlab.mothers.vessels.group_sheet",
+    "name": "弧瓦",
+    "notes": "thick arc band: real radius, wrap angle, length and nose lift",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "length_mm": {
+          "default": 230.0,
+          "maximum": 420.0,
+          "minimum": 40.0,
+          "title": "Length Mm",
+          "type": "number"
+        },
+        "r_mid_mm": {
+          "default": 120.0,
+          "description": "mid-surface radius",
+          "maximum": 400.0,
+          "minimum": 30.0,
+          "title": "R Mid Mm",
+          "type": "number"
+        },
+        "tail_drop_mm": {
+          "default": 4.0,
+          "description": "lowered tail of the tile",
+          "maximum": 40.0,
+          "minimum": 0.0,
+          "title": "Tail Drop Mm",
+          "type": "number"
+        },
+        "tail_lift_mm": {
+          "default": 16.0,
+          "description": "raised nose of the tile",
+          "maximum": 90.0,
+          "minimum": 0.0,
+          "title": "Tail Lift Mm",
+          "type": "number"
+        },
+        "thickness_mm": {
+          "default": 14.0,
+          "maximum": 60.0,
+          "minimum": 4.0,
+          "title": "Thickness Mm",
+          "type": "number"
+        },
+        "warp_amplitude": {
+          "default": 0.01,
+          "description": "low-amplitude non-axisymmetric warp",
+          "maximum": 0.05,
+          "minimum": 0.0,
+          "title": "Warp Amplitude",
+          "type": "number"
+        },
+        "warp_eccentricity_mm": {
+          "default": 0.8,
+          "maximum": 4.0,
+          "minimum": 0.0,
+          "title": "Warp Eccentricity Mm",
+          "type": "number"
+        },
+        "warp_lobes": {
+          "default": 2,
+          "maximum": 6,
+          "minimum": 2,
+          "title": "Warp Lobes",
+          "type": "integer"
+        },
+        "wrap_deg": {
+          "default": 70.0,
+          "description": "arc wrap angle",
+          "maximum": 340.0,
+          "minimum": 10.0,
+          "title": "Wrap Deg",
+          "type": "number"
+        }
+      },
+      "title": "ArcTileParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "vessel/V21": {
+    "applicable": {
+      "components": [
+        "body"
+      ],
+      "family": "curved_shell",
+      "min_wall_mm": 3.0,
+      "requires_cavity": false,
+      "scale_mm": [
+        40,
+        420
+      ],
+      "shape_parameters": [
+        "span_u_mm",
+        "span_v_mm",
+        "curvature_u_mm",
+        "curvature_v_mm",
+        "thickness_mm",
+        "warp_mm"
+      ]
+    },
+    "has_builder": true,
+    "id": "V21",
+    "kind": "vessel",
+    "meta": {
+      "builder_name": "build_curved_panel"
+    },
+    "module": "synlab.mothers.vessels.group_sheet",
+    "name": "曲面板",
+    "notes": "doubly curved B-spline panel with a real solidified thickness",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "curvature_u_mm": {
+          "default": 22.0,
+          "description": "sag across u",
+          "maximum": 120.0,
+          "minimum": 0.0,
+          "title": "Curvature U Mm",
+          "type": "number"
+        },
+        "curvature_v_mm": {
+          "default": 9.0,
+          "description": "sag across v",
+          "maximum": 120.0,
+          "minimum": 0.0,
+          "title": "Curvature V Mm",
+          "type": "number"
+        },
+        "span_u_mm": {
+          "default": 200.0,
+          "maximum": 420.0,
+          "minimum": 40.0,
+          "title": "Span U Mm",
+          "type": "number"
+        },
+        "span_v_mm": {
+          "default": 150.0,
+          "maximum": 420.0,
+          "minimum": 40.0,
+          "title": "Span V Mm",
+          "type": "number"
+        },
+        "thickness_mm": {
+          "default": 12.0,
+          "maximum": 60.0,
+          "minimum": 4.0,
+          "title": "Thickness Mm",
+          "type": "number"
+        },
+        "warp_amplitude": {
+          "default": 0.01,
+          "description": "low-amplitude non-axisymmetric warp",
+          "maximum": 0.05,
+          "minimum": 0.0,
+          "title": "Warp Amplitude",
+          "type": "number"
+        },
+        "warp_eccentricity_mm": {
+          "default": 0.8,
+          "maximum": 4.0,
+          "minimum": 0.0,
+          "title": "Warp Eccentricity Mm",
+          "type": "number"
+        },
+        "warp_lobes": {
+          "default": 2,
+          "maximum": 6,
+          "minimum": 2,
+          "title": "Warp Lobes",
+          "type": "integer"
+        },
+        "warp_mm": {
+          "default": 6.0,
+          "description": "anticlastic warp of the panel",
+          "maximum": 60.0,
+          "minimum": 0.0,
+          "title": "Warp Mm",
+          "type": "number"
+        }
+      },
+      "title": "CurvedPanelParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "vessel/V22": {
+    "applicable": {
+      "components": [
+        "body"
+      ],
+      "family": "prism",
+      "min_wall_mm": 3.0,
+      "requires_cavity": false,
+      "scale_mm": [
+        80,
+        520
+      ],
+      "shape_parameters": [
+        "height_mm",
+        "width_mm",
+        "thickness_mm",
+        "bevel_mm",
+        "relief_depth_mm",
+        "relief_rows",
+        "relief_height_ratio"
+      ]
+    },
+    "has_builder": true,
+    "id": "V22",
+    "kind": "vessel",
+    "meta": {
+      "builder_name": "build_stele"
+    },
+    "module": "synlab.mothers.vessels.group_extrude",
+    "name": "碑板",
+    "notes": "thick slab with a real chamfer and an engraved inscription band",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "bevel_mm": {
+          "default": 6.0,
+          "description": "chamfer around the decorated face",
+          "maximum": 40.0,
+          "minimum": 0.0,
+          "title": "Bevel Mm",
+          "type": "number"
+        },
+        "decorative_margin_mm": {
+          "default": 18.0,
+          "maximum": 80.0,
+          "minimum": 2.0,
+          "title": "Decorative Margin Mm",
+          "type": "number"
+        },
+        "height_mm": {
+          "default": 320.0,
+          "maximum": 520.0,
+          "minimum": 80.0,
+          "title": "Height Mm",
+          "type": "number"
+        },
+        "relief_depth_mm": {
+          "default": 4.0,
+          "description": "depth of the inscription band",
+          "maximum": 24.0,
+          "minimum": 0.0,
+          "title": "Relief Depth Mm",
+          "type": "number"
+        },
+        "relief_height_ratio": {
+          "default": 0.55,
+          "description": "band height / slab height",
+          "maximum": 0.9,
+          "minimum": 0.1,
+          "title": "Relief Height Ratio",
+          "type": "number"
+        },
+        "relief_rows": {
+          "default": 4,
+          "description": "number of inscription rows",
+          "maximum": 20,
+          "minimum": 0,
+          "title": "Relief Rows",
+          "type": "integer"
+        },
+        "thickness_mm": {
+          "default": 38.0,
+          "maximum": 140.0,
+          "minimum": 8.0,
+          "title": "Thickness Mm",
+          "type": "number"
+        },
+        "width_mm": {
+          "default": 160.0,
+          "maximum": 340.0,
+          "minimum": 40.0,
+          "title": "Width Mm",
+          "type": "number"
+        }
+      },
+      "title": "SteleParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "vessel/V23": {
+    "applicable": {
+      "components": [
+        "body",
+        "head",
+        "arms"
+      ],
+      "family": "superquadric",
+      "min_wall_mm": 2.0,
+      "requires_cavity": false,
+      "scale_mm": [
+        40,
+        420
+      ],
+      "shape_parameters": [
+        "height_mm",
+        "body_width_mm",
+        "body_depth_mm",
+        "head_ratio",
+        "neck_ratio",
+        "torso_taper",
+        "arm_count",
+        "arm_length_ratio",
+        "pose_tilt_deg",
+        "pose_twist_deg"
+      ]
+    },
+    "has_builder": true,
+    "id": "V23",
+    "kind": "vessel",
+    "meta": {
+      "builder_name": "build_figurine"
+    },
+    "module": "synlab.mothers.vessels.group_composite",
+    "name": "小雕像",
+    "notes": "closed superquadric torso/head plus swept limbs with real root overlap",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "arm_count": {
+          "default": 2,
+          "description": "swept limbs attached to the torso",
+          "maximum": 6,
+          "minimum": 0,
+          "title": "Arm Count",
+          "type": "integer"
+        },
+        "arm_length_ratio": {
+          "default": 0.55,
+          "maximum": 0.95,
+          "minimum": 0.15,
+          "title": "Arm Length Ratio",
+          "type": "number"
+        },
+        "base_mm": {
+          "default": 6.5,
+          "maximum": 80.0,
+          "minimum": 0.15,
+          "title": "Base Mm",
+          "type": "number"
+        },
+        "body_depth_mm": {
+          "default": 38.0,
+          "maximum": 160.0,
+          "minimum": 12.0,
+          "title": "Body Depth Mm",
+          "type": "number"
+        },
+        "body_width_mm": {
+          "default": 52.0,
+          "maximum": 160.0,
+          "minimum": 14.0,
+          "title": "Body Width Mm",
+          "type": "number"
+        },
+        "diameter_mm": {
+          "maximum": 320.0,
+          "minimum": 40.0,
+          "title": "Diameter Mm",
+          "type": "number"
+        },
+        "head_ratio": {
+          "default": 0.24,
+          "description": "head height / total height",
+          "maximum": 0.45,
+          "minimum": 0.1,
+          "title": "Head Ratio",
+          "type": "number"
+        },
+        "height_mm": {
+          "default": 180.0,
+          "description": "total height",
+          "maximum": 420.0,
+          "minimum": 40.0,
+          "title": "Height Mm",
+          "type": "number"
+        },
+        "neck_ratio": {
+          "default": 0.42,
+          "description": "neck radius / head radius",
+          "maximum": 0.9,
+          "minimum": 0.15,
+          "title": "Neck Ratio",
+          "type": "number"
+        },
+        "pose_tilt_deg": {
+          "default": 9.0,
+          "description": "lean of the whole figure",
+          "maximum": 45.0,
+          "minimum": 0.0,
+          "title": "Pose Tilt Deg",
+          "type": "number"
+        },
+        "pose_twist_deg": {
+          "default": 12.0,
+          "description": "twist along the height",
+          "maximum": 90.0,
+          "minimum": -90.0,
+          "title": "Pose Twist Deg",
+          "type": "number"
+        },
+        "torso_taper": {
+          "default": 0.72,
+          "description": "waist width / shoulder width",
+          "maximum": 1.0,
+          "minimum": 0.25,
+          "title": "Torso Taper",
+          "type": "number"
+        },
+        "wall_mm": {
+          "default": 4.0,
+          "maximum": 60.0,
+          "minimum": 0.15,
+          "title": "Wall Mm",
+          "type": "number"
+        },
+        "warp_amplitude": {
+          "default": 0.02,
+          "maximum": 0.08,
+          "minimum": 0.0,
+          "title": "Warp Amplitude",
+          "type": "number"
+        },
+        "warp_eccentricity_mm": {
+          "default": 0.8,
+          "maximum": 8.0,
+          "minimum": 0.0,
+          "title": "Warp Eccentricity Mm",
+          "type": "number"
+        },
+        "warp_lobes": {
+          "default": 2,
+          "maximum": 6,
+          "minimum": 2,
+          "title": "Warp Lobes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "diameter_mm"
+      ],
+      "title": "FigurineParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  },
+  "vessel/V24": {
+    "applicable": {
+      "components": [
+        "body"
+      ],
+      "family": "superquadric",
+      "min_wall_mm": 2.0,
+      "requires_cavity": false,
+      "scale_mm": [
+        20,
+        220
+      ],
+      "shape_parameters": [
+        "a_mm",
+        "b_mm",
+        "c_mm",
+        "squareness_e1",
+        "squareness_e2",
+        "repeat_count",
+        "repeat_depth",
+        "relief_depth_mm",
+        "relief_count",
+        "twisted_deg"
+      ]
+    },
+    "has_builder": true,
+    "id": "V24",
+    "kind": "vessel",
+    "meta": {
+      "builder_name": "build_ornament"
+    },
+    "module": "synlab.mothers.vessels.group_sheet",
+    "name": "装饰构件",
+    "notes": "superquadric base body with a real repetition field and relief pads",
+    "param_schema": {
+      "additionalProperties": false,
+      "properties": {
+        "a_mm": {
+          "default": 70.0,
+          "description": "half extent along x",
+          "maximum": 220.0,
+          "minimum": 20.0,
+          "title": "A Mm",
+          "type": "number"
+        },
+        "b_mm": {
+          "default": 55.0,
+          "description": "half extent along y",
+          "maximum": 220.0,
+          "minimum": 20.0,
+          "title": "B Mm",
+          "type": "number"
+        },
+        "c_mm": {
+          "default": 45.0,
+          "description": "half height",
+          "maximum": 200.0,
+          "minimum": 12.0,
+          "title": "C Mm",
+          "type": "number"
+        },
+        "relief_count": {
+          "default": 0,
+          "description": "number of relief pads",
+          "maximum": 16,
+          "minimum": 0,
+          "title": "Relief Count",
+          "type": "integer"
+        },
+        "relief_depth_mm": {
+          "default": 6.0,
+          "description": "local relief thickness",
+          "maximum": 30.0,
+          "minimum": 0.0,
+          "title": "Relief Depth Mm",
+          "type": "number"
+        },
+        "repeat_count": {
+          "default": 6,
+          "description": "symmetry repetition count",
+          "maximum": 24,
+          "minimum": 1,
+          "title": "Repeat Count",
+          "type": "integer"
+        },
+        "repeat_depth": {
+          "default": 0.1,
+          "description": "repetition field amplitude",
+          "maximum": 0.35,
+          "minimum": 0.0,
+          "title": "Repeat Depth",
+          "type": "number"
+        },
+        "squareness_e1": {
+          "default": 0.7,
+          "description": "vertical squareness exponent",
+          "maximum": 1.0,
+          "minimum": 0.2,
+          "title": "Squareness E1",
+          "type": "number"
+        },
+        "squareness_e2": {
+          "default": 0.6,
+          "description": "cross-section exponent",
+          "maximum": 1.0,
+          "minimum": 0.2,
+          "title": "Squareness E2",
+          "type": "number"
+        },
+        "twisted_deg": {
+          "default": 0.0,
+          "maximum": 180.0,
+          "minimum": -180.0,
+          "title": "Twisted Deg",
+          "type": "number"
+        },
+        "warp_amplitude": {
+          "default": 0.008,
+          "description": "low-amplitude non-axisymmetric warp",
+          "maximum": 0.05,
+          "minimum": 0.0,
+          "title": "Warp Amplitude",
+          "type": "number"
+        },
+        "warp_eccentricity_mm": {
+          "default": 0.6,
+          "maximum": 4.0,
+          "minimum": 0.0,
+          "title": "Warp Eccentricity Mm",
+          "type": "number"
+        },
+        "warp_lobes": {
+          "default": 2,
+          "maximum": 6,
+          "minimum": 2,
+          "title": "Warp Lobes",
+          "type": "integer"
+        }
+      },
+      "title": "OrnamentParams",
+      "type": "object"
+    },
+    "status": "IMPLEMENTED",
+    "version": "1.0"
+  }
+}

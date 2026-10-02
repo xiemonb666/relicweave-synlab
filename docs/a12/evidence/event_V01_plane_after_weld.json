@@ -1,0 +1,53 @@
+{
+ "vessel_id": "V01",
+ "backend": "plane_shared_cut",
+ "material_id": "M01",
+ "master_seed": 20261001,
+ "mother_source": "demo_store:asset_167bef6a43a93438ec26",
+ "mother": {
+  "faces": 7008,
+  "vertices": 3505,
+  "watertight": true,
+  "volume_mm3": 374595.74151829904,
+  "area_mm2": 114041.10362550538,
+  "extent_mm": [
+   182.73891505424604,
+   182.4469967932052,
+   66.24349944695405
+  ]
+ },
+ "status": "FAILED",
+ "failure": {
+  "code": "FRACTURE_CONSERVATION_FAIL",
+  "stage": "fracture.audit",
+  "message": "fracture audit failed: source coverage 0.838178 < 0.999; ambiguous area ratio 0.101666 > 0.02",
+  "measurements": {
+   "mother_volume_mm3": 374595.74151829904,
+   "fragment_volume_sum_mm3": 374595.7416597255,
+   "volume_rel_diff": 3.775442151485646e-10,
+   "volume_tolerance": 0.001,
+   "overlap_ratio": 0.0,
+   "overlap_tolerance": 0.0001,
+   "interface_count": 125,
+   "interface_faces": 4474,
+   "gap_p95_mm_max": 4.088567465755827e-05,
+   "gap_tolerance_mm": 0.02,
+   "normal_angle_p95_deg_max": 0.0006827221661986719,
+   "normal_angle_tolerance_deg": 2.0,
+   "source_coverage": 0.8381775333857031,
+   "ambiguous_area_ratio_max": 1.0,
+   "ambiguous_area_ratio_total": 0.10166574898921331,
+   "ambiguity_tolerance": 0.02,
+   "interface_area_rel_error_max": 0.9807353691469842,
+   "faces_total": 10184,
+   "tiny_fragments": 0,
+   "fragment_count": 2,
+   "failures": [
+    "source coverage 0.838178 < 0.999",
+    "ambiguous area ratio 0.101666 > 0.02"
+   ],
+   "passed": false
+  }
+ },
+ "duration_s": 12.356
+}

@@ -1,0 +1,447 @@
+{
+  "checks": [
+    {
+      "detail": {
+        "version": "2.5.3"
+      },
+      "name": "import:numpy",
+      "seconds": 0.0,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "version": "1.18.1"
+      },
+      "name": "import:scipy",
+      "seconds": 0.0,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "version": "0.26.0"
+      },
+      "name": "import:skimage",
+      "seconds": 0.0022,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "version": "5.0.0"
+      },
+      "name": "import:cv2",
+      "seconds": 0.0127,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "version": "12.3.0"
+      },
+      "name": "import:PIL",
+      "seconds": 0.0,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "version": "25.0.1"
+      },
+      "name": "import:pyarrow",
+      "seconds": 0.0167,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "version": "2.2.3"
+      },
+      "name": "import:pandas",
+      "seconds": 0.3096,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "version": "2.13.5"
+      },
+      "name": "import:pydantic",
+      "seconds": 0.0,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "version": "0.27.2"
+      },
+      "name": "import:typer",
+      "seconds": 0.0,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "version": "6.0.3"
+      },
+      "name": "import:yaml",
+      "seconds": 0.0,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "version": "5.1.0"
+      },
+      "name": "import:trimesh",
+      "seconds": 0.0,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "version": "3.5.4"
+      },
+      "name": "import:manifold3d",
+      "seconds": 0.0007,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "version": "2.1.2"
+      },
+      "name": "import:shapely",
+      "seconds": 0.0,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "version": "3.7"
+      },
+      "name": "import:networkx",
+      "seconds": 0.0,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "version": "4.26.0"
+      },
+      "name": "import:jsonschema",
+      "seconds": 0.0475,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "version": "0.142.2"
+      },
+      "name": "import:fastapi",
+      "seconds": 0.1693,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "version": "0.28.1"
+      },
+      "name": "import:httpx",
+      "seconds": 0.0635,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "version": "4.15.2"
+      },
+      "name": "import:gmsh",
+      "seconds": 0.083,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "version": "0.19.0"
+      },
+      "name": "import:open3d",
+      "seconds": 0.3827,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "version": "3.11.1"
+      },
+      "name": "import:pycolmap",
+      "seconds": 0.027,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "version": "1.15.1"
+      },
+      "name": "import:faiss",
+      "seconds": 0.0338,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "version": "2.5.1+cpu"
+      },
+      "name": "import:torch",
+      "seconds": 1.6273,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "version": "3.4.0"
+      },
+      "name": "import:zarr",
+      "seconds": 0.1865,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "version": "1.8.0"
+      },
+      "name": "import:svgpathtools",
+      "seconds": 0.076,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "version": "2.0.36"
+      },
+      "name": "import:sqlalchemy",
+      "seconds": 0.1211,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "analytic_remaining_mm3": 118800.0,
+        "components": 2,
+        "conservation_ratio": 0.0,
+        "engine": "manifold",
+        "removed_mm3": 1200.0,
+        "volume_total_mm3": 118800.0,
+        "watertight": true
+      },
+      "name": "geometry:mm_box_cut",
+      "seconds": 0.0051,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "components": 2,
+        "euler_number": 4,
+        "volume_shell_mm3": 114881.42029898847,
+        "watertight_all": true
+      },
+      "name": "geometry:hollow_thin_shell_cut",
+      "seconds": 0.0241,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "argv": [
+          "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\blender-5.2.2-windows-x64\\blender.exe",
+          "--background",
+          "--factory-startup",
+          "--python-exit-code",
+          "1",
+          "--python",
+          "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\blender_scripts\\selftest.py"
+        ],
+        "binary": "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\blender-5.2.2-windows-x64\\blender.exe",
+        "capability": "blender_render",
+        "cycles_engine": "CYCLES",
+        "cycles_samples_default": 4096,
+        "denoiser": "OPENIMAGEDENOISE",
+        "detail": "portable Blender 5.2.2 LTS driven as a subprocess worker; bpy is still not importable into this venv",
+        "python": "3.13.13",
+        "replacement": null,
+        "replacement_class": null,
+        "returncode": 0,
+        "seconds": 1.0865952998865396,
+        "status": "OK",
+        "stderr_tail": "",
+        "version": "5.2.2 LTS"
+      },
+      "name": "backend:blender_render",
+      "seconds": 1.1043,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "max_mm_error": 1.4210854715202004e-14,
+        "max_px_error": 0.0
+      },
+      "name": "geometry:projection_roundtrip",
+      "seconds": 0.0003,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "bytes": 1052,
+        "rows": 2
+      },
+      "name": "io:parquet_write_read",
+      "seconds": 0.1015,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "npz_shard": true,
+        "zarr_chunked": true,
+        "zarr_version": "3.4.0"
+      },
+      "name": "io:chunked_array_write_read",
+      "seconds": 0.0241,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "backup_integrity": "ok",
+        "wal": true
+      },
+      "name": "io:sqlite_transaction_backup",
+      "seconds": 0.0169,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "cuda": false,
+        "cuda_devices": 0,
+        "grad_finite": true,
+        "note": "CPU-only wheel on this host; GPU work must be scheduled elsewhere or left PENDING",
+        "threads": 8,
+        "version": "2.5.1+cpu"
+      },
+      "name": "training:torch_tensor_grad",
+      "seconds": 0.0032,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "mutual_exclusion": true,
+        "token_rotation": true
+      },
+      "name": "jobs:gpu_lease_mutex",
+      "seconds": 0.0135,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "array_roundtrip": true,
+        "asset_id": "asset_23efac3180de821cb71c",
+        "idempotent": true
+      },
+      "name": "storage:atomic_commit_idempotent",
+      "seconds": 0.0195,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "attributes": {
+          "face_id": {
+            "dtype": "<class 'list'>",
+            "size": null
+          },
+          "halfedge_tangent": {
+            "dtype": "float32",
+            "size": 0
+          },
+          "run_flags": {
+            "dtype": "<class 'list'>",
+            "size": null
+          },
+          "run_index": {
+            "dtype": "<class 'list'>",
+            "size": null
+          },
+          "run_original_id": {
+            "dtype": "<class 'list'>",
+            "size": null
+          },
+          "vert_properties": {
+            "dtype": "float32",
+            "size": 48
+          }
+        },
+        "has_mesh_glp": true,
+        "library_version": "unknown",
+        "note": "project keeps explicit source_triangle arrays on every input mesh; Manifold attributes are only an auxiliary hint",
+        "tri_verts": 24,
+        "volume_mm3": 6000.0
+      },
+      "name": "backend:manifold_source_attributes",
+      "seconds": 0.0005,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "interface_fragmented": true,
+        "nodes": 429,
+        "path": "",
+        "surface_elements": 740,
+        "tets": 5772,
+        "version": "4.15.2",
+        "volumes": 2
+      },
+      "name": "backend:gmsh_discrete_shared_surface",
+      "seconds": 0.0446,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "camera_models": [
+          "FOV",
+          "FULL_OPENCV",
+          "INVALID",
+          "OPENCV",
+          "OPENCV_FISHEYE",
+          "PINHOLE",
+          "RADIAL",
+          "RADIAL_FISHEYE",
+          "RAD_TAN_THIN_PRISM_FISHEYE",
+          "SIMPLE_PINHOLE",
+          "SIMPLE_RADIAL",
+          "SIMPLE_RADIAL_FISHEYE"
+        ],
+        "executable": null,
+        "gpu": [
+          "NVIDIA GeForce RTX 5060 Laptop GPU, 8151 MiB, 596.21"
+        ],
+        "has_reconstruction": true,
+        "version": "3.11.1"
+      },
+      "name": "backend:colmap_pycolmap",
+      "seconds": 0.0659,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "closed_mesh_signed_distance_mm": -5.0,
+        "note": "signed distance requires watertight solids; open observation meshes must use unsigned/estimated distances",
+        "version": "0.19.0"
+      },
+      "name": "backend:open3d_distance",
+      "seconds": 0.0011,
+      "status": "PASS"
+    }
+  ],
+  "device": {
+    "cpu_logical": 16,
+    "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+    "gpus": [
+      "NVIDIA GeForce RTX 5060 Laptop GPU, 8151 MiB, 596.21"
+    ],
+    "numpy_bit_generator": "PCG64",
+    "packages": {
+      "numpy": "2.5.3",
+      "scipy": "1.18.1"
+    },
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.14 (main, Sep  1 2026, 14:17:39) [MSC v.1944 64 bit (AMD64)]",
+    "python_executable": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\.venv\\Scripts\\python.exe"
+  },
+  "generated_at": 1790878325.865451,
+  "limitations": [
+    "Blender is absent (no binary, no bpy wheel for Windows/CPython 3.12): the reference imaging path uses the project software rasterizer; Blender remains an adapter target.",
+    "No CUDA-enabled torch wheel on this host and no real capture dataset: PHONE_RGB calibration and GPU-scale training stay PENDING."
+  ],
+  "ok": true,
+  "report_hash": "sha256:5bf4fc53914d9721486863e71184f2f990015676ca718a518eb1504405350231",
+  "schema": "synlab.env_report.v1",
+  "summary": {
+    "fail": 0,
+    "failed_checks": [],
+    "missing": 0,
+    "missing_checks": [],
+    "pass": 39
+  }
+}

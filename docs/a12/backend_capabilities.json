@@ -1,0 +1,126 @@
+{
+  "checks": [
+    {
+      "detail": {
+        "argv": [
+          "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\blender-5.2.2-windows-x64\\blender.exe",
+          "--background",
+          "--factory-startup",
+          "--python-exit-code",
+          "1",
+          "--python",
+          "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\blender_scripts\\selftest.py"
+        ],
+        "binary": "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\blender-5.2.2-windows-x64\\blender.exe",
+        "capability": "blender_render",
+        "cycles_engine": "CYCLES",
+        "cycles_samples_default": 4096,
+        "denoiser": "OPENIMAGEDENOISE",
+        "detail": "portable Blender 5.2.2 LTS driven as a subprocess worker; bpy is still not importable into this venv",
+        "python": "3.13.13",
+        "replacement": null,
+        "replacement_class": null,
+        "returncode": 0,
+        "seconds": 1.0865952998865396,
+        "status": "OK",
+        "stderr_tail": "",
+        "version": "5.2.2 LTS"
+      },
+      "name": "backend:blender_render",
+      "seconds": 1.1043,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "attributes": {
+          "face_id": {
+            "dtype": "<class 'list'>",
+            "size": null
+          },
+          "halfedge_tangent": {
+            "dtype": "float32",
+            "size": 0
+          },
+          "run_flags": {
+            "dtype": "<class 'list'>",
+            "size": null
+          },
+          "run_index": {
+            "dtype": "<class 'list'>",
+            "size": null
+          },
+          "run_original_id": {
+            "dtype": "<class 'list'>",
+            "size": null
+          },
+          "vert_properties": {
+            "dtype": "float32",
+            "size": 48
+          }
+        },
+        "has_mesh_glp": true,
+        "library_version": "unknown",
+        "note": "project keeps explicit source_triangle arrays on every input mesh; Manifold attributes are only an auxiliary hint",
+        "tri_verts": 24,
+        "volume_mm3": 6000.0
+      },
+      "name": "backend:manifold_source_attributes",
+      "seconds": 0.0005,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "interface_fragmented": true,
+        "nodes": 429,
+        "path": "",
+        "surface_elements": 740,
+        "tets": 5772,
+        "version": "4.15.2",
+        "volumes": 2
+      },
+      "name": "backend:gmsh_discrete_shared_surface",
+      "seconds": 0.0446,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "camera_models": [
+          "FOV",
+          "FULL_OPENCV",
+          "INVALID",
+          "OPENCV",
+          "OPENCV_FISHEYE",
+          "PINHOLE",
+          "RADIAL",
+          "RADIAL_FISHEYE",
+          "RAD_TAN_THIN_PRISM_FISHEYE",
+          "SIMPLE_PINHOLE",
+          "SIMPLE_RADIAL",
+          "SIMPLE_RADIAL_FISHEYE"
+        ],
+        "executable": null,
+        "gpu": [
+          "NVIDIA GeForce RTX 5060 Laptop GPU, 8151 MiB, 596.21"
+        ],
+        "has_reconstruction": true,
+        "version": "3.11.1"
+      },
+      "name": "backend:colmap_pycolmap",
+      "seconds": 0.0659,
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "closed_mesh_signed_distance_mm": -5.0,
+        "note": "signed distance requires watertight solids; open observation meshes must use unsigned/estimated distances",
+        "version": "0.19.0"
+      },
+      "name": "backend:open3d_distance",
+      "seconds": 0.0011,
+      "status": "PASS"
+    }
+  ],
+  "generated_at": 1790878325.865451,
+  "note": "actual behaviour measured on this host; absence is reported as MISSING, never replaced by a fake result",
+  "schema": "synlab.backend_capabilities.v1"
+}

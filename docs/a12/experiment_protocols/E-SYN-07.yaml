@@ -1,0 +1,15 @@
+experiment_id: E-SYN-07
+title: 主动观察（规则与学习型策略）
+question: 在相同可达动作集合与时间预算下，主动观察是否带来全库找回增益，且误荐风险不上升？
+frozen:
+  action_set: only actions declared reachable by the camera profile
+  time_budget: identical across arms (capture + human + inference seconds summed)
+  gallery: fixed gallery re-searched after every new observation (candidate set may change)
+primary_metric: CovRecallAtK gain per added second
+secondary_metrics: [AbsentRejectRisk, PresentWrongAcceptRisk, unnecessary_actions, wrong_to_right, right_to_wrong]
+estimand: paired difference in net recall gain with the risk gate
+alpha: 0.05
+statistical_unit: shape_lineage (a mother event counts as one unit including all its pre-registered queries/actions/seeds)
+required_reporting: all failed trajectories and STOP decisions, not only successful actions
+prohibited: choosing actions by current ground-truth covariance gain without labelling the run ORACLE_ACTION
+status: PRE_REGISTERED

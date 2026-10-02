@@ -1,0 +1,78 @@
+{
+  "schema": "synlab.contract_diff.v1",
+  "generated_on": "2026-10-01",
+  "integration_mode": "standalone",
+  "status": "MAIN_REPO_INTEGRATION_PENDING",
+  "external_contract": {
+    "ref": null,
+    "finding": "No A3/A4 schema file, no rw-schema-1.1 definition and no main repository were present in the workspace. Only A12_Codex_Execution_Plan_V1.2.md and RelicWeave_V1.44_Optimized_Complete_Plan.docx were found.",
+    "evidence": "docs/a12/repo_inventory.md section 1 (directory listing)",
+    "consequence": "The project must not claim rw-schema-1.1 compatibility. The standalone feature contract a12.obs.v1 is used and every unmapped field is marked PENDING."
+  },
+  "standalone_contract": {
+    "feature_schema": "a12.obs.v1",
+    "packs": ["MotherPack", "TruthPack", "PhysicalPack", "ObsPack", "RelationPack", "EpisodePack"],
+    "feature_entry_points": {
+      "features": "synlab/observe/features.py::adapt_observed_features (whitelisted keys only)",
+      "labels": "synlab/truth (RelationPack rows; never merged into features)",
+      "provenance": "separate provenance asset committed by synlab/pipeline.py::_commit_provenance"
+    },
+    "units": "mm, right-handed",
+    "frames": ["W_mm", "F_mm", "S_mm", "C_mm", "pixel_cv_center"],
+    "pixel_convention": "OpenCV pixel centre (top-left pixel centre at (0,0)); COLMAP export adds +0.5 to cx/cy"
+  },
+  "field_mapping": [
+    {
+      "standalone_field": "ObsPack.rgb",
+      "external_field": "unknown (A3/A4 not available)",
+      "unit_or_shape": "[H,W,3] uint8 encoded + linear float32 source",
+      "validity": "[H,W] deployment mask, separate from research labels",
+      "source_kind": "RAW_CAPTURE | SENSOR_SIM | OBS_EST",
+      "status": "PENDING_EXTERNAL_CONTRACT"
+    },
+    {
+      "standalone_field": "ObsPack.points / normals",
+      "external_field": "unknown",
+      "unit_or_shape": "[N,3] float32; mm only when scale_valid=true",
+      "validity": "point_valid / normal_valid single columns",
+      "source_kind": "OBS_EST | SENSOR_SIM",
+      "status": "PENDING_EXTERNAL_CONTRACT"
+    },
+    {
+      "standalone_field": "ObsPack.depth_z",
+      "external_field": "unknown",
+      "unit_or_shape": "[H,W] float32 camera z in mm",
+      "validity": "invalid mask separate; r != z is documented",
+      "source_kind": "SENSOR_SIM | SENSOR_UPPER_BOUND | OBS_EST",
+      "status": "PENDING_EXTERNAL_CONTRACT"
+    },
+    {
+      "standalone_field": "ObsPack.quality",
+      "external_field": "unknown",
+      "unit_or_shape": "[V,R,Cq] float32 with per-item validity",
+      "validity": "OBS_EST only; GT_ORACLE kept as a separate audit channel",
+      "source_kind": "OBS_EST",
+      "status": "PENDING_EXTERNAL_CONTRACT"
+    },
+    {
+      "standalone_field": "K / T_WC",
+      "external_field": "unknown",
+      "unit_or_shape": "[3,3] float64 / [4,4] float64 with explicit frame naming",
+      "validity": "frame_id and direction documented (T_AB maps B into A)",
+      "source_kind": "CALIBRATED | SENSOR_SIM",
+      "status": "PENDING_EXTERNAL_CONTRACT"
+    }
+  ],
+  "unmapped_fields": [
+    "A3/A4 encoder input tensor layout beyond the a12.obs.v1 adapter",
+    "existing ObsPack/FeaturePack field names and version tags",
+    "existing retrieval index identity fields",
+    "existing job/queue records"
+  ],
+  "adapters_to_write_when_contract_arrives": [
+    "synlab/observe/features.py::ObsPackAdapter (field rename + unit conversion + validity mapping)",
+    "synlab/storage/external.py (import/export between rw-schema-1.1 and a12.obs.v1)",
+    "versioned migrator that outputs a new version plus migration_report instead of silently filling answer fields"
+  ],
+  "blocking_rule": "Only the adapter is blocked. All independent modules continue on a12.obs.v1 and are released under the SANDBOX_CORE/PILOT profiles."
+}

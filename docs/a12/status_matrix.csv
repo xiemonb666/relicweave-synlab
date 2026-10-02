@@ -1,0 +1,154 @@
+area,kind,item,name,status,evidence,notes
+capability,axis,G01,G01,IMPLEMENTED,synlab.degrade.axes,low-frequency correlated field x distance/incidence variance x a fixed outlier probability; the deployment estimate is reported separately from the audit reference RMS.
+capability,axis,G02,G02,IMPLEMENTED,synlab.degrade.axes,fixed nested prefix of the frozen order with a point budget; an effective N0 source keeps its real size at level 0 (no upsampling to a nominal budget).
+capability,axis,G03,G03,IMPLEMENTED,synlab.degrade.axes,"connected holes on the observed lattice: the seed positions are frozen in the basis and only the hole radius grows with the level, so the removed sets are nested by construction and the hole area/posi"
+capability,axis,G04,G04,IMPLEMENTED,synlab.degrade.axes,per-frame SE(3) perturbation followed by a real re-fusion of the per-view depth; translation and rotation are separate single-factor variants and pose_drift_profile is the explicitly bundled stress va
+capability,axis,G05,G05,IMPLEMENTED,synlab.degrade.axes,Open3D quadric edge collapse with a measured Hausdorff budget and an ROI retention constraint; level 0 bypasses the decimator entirely.
+capability,axis,G06,G06,IMPLEMENTED,synlab.degrade.axes,only the observation frame and the legal scale fields change; the truth reference hash must stay identical (plan 15.4).
+capability,axis,G07,G07,IMPLEMENTED,synlab.degrade.axes,focal / principal point / distortion are separate single-factor variants; the perturbation is applied before back-projection and the frames are re-fused. calibration_profile changes all three and is l
+capability,axis,G08,G08,IMPLEMENTED,synlab.degrade.axes,"three spurious-surface variants (support bump, warped hole lid, connecting bridge) reuse synlab.observe.spurious.apply_spurious; only the observed entity changes and spurious_mask stays an audit/super"
+capability,axis,I01,I01,IMPLEMENTED,synlab.degrade.axes,"Gaussian PSF in the plane, applied to the linear signal before the response; the depth-dependent variant blends two PSFs by depth and needs per-frame depth."
+capability,axis,I02,I02,IMPLEMENTED,synlab.degrade.axes,single-exposure directional kernel by default; the exposure_integration variant integrates a frozen number of sub-exposures along the same trajectory.
+capability,axis,I03,I03,IMPLEMENTED,synlab.degrade.axes,"linear sensor noise y = Poisson(g*x)/g + N(0,sigma^2) with x = max(L*2^EV, 0); photon_scale varies the photon gain with the read noise fixed, read_sigma does the opposite, and camera_noise_profile cha"
+capability,axis,I04,I04,IMPLEMENTED,synlab.degrade.axes,exposure_gain acts before the photon count; digital_gain is registered separately (it is not interchangeable). The negative sub-configuration is its own variant and the dark and bright directions are 
+capability,axis,I05,I05,IMPLEMENTED,synlab.degrade.axes,one frozen gain-direction vector; the developed profile is frozen after calibration
+capability,axis,I06,I06,IMPLEMENTED,synlab.degrade.axes,"scene light/BRDF re-render; the zero level is the same-source baseline scene and does not claim the physical glaze has no highlight. Changing BRDF, exposure and light angle together is labelled BUNDLE"
+capability,axis,I07,I07,IMPLEMENTED,synlab.degrade.axes,3-D occluder bodies are added to the scene and the views are re-rendered; a delivered-pixel patch would not be an occluder.
+capability,axis,I08,I08,IMPLEMENTED,synlab.degrade.axes,fixed-priority nested deletion; the baseline V0 source is returned unchanged at level 0 and every level is a subset of the previous one.
+capability,axis,I09,I09,IMPLEMENTED,synlab.degrade.axes,baseline long edge is kept at level 0; non-zero levels apply an anti-aliased downsample and update K through the frozen pixel transform. 1/8 is the extra stress level of the plan's candidate list.
+capability,axis,I10,I10,IMPLEMENTED,synlab.degrade.axes,"level 0 does not re-encode at all; non-zero levels run a real JPEG encode/decode and report bytes, error RMS and blockiness."
+capability,axis,P01,P01,IMPLEMENTED,synlab.degrade.axes,fixed filter radius and full recession basis; only recession_strength moves. The radius scan is a separate variant and never claims the same-basis nesting. radius_mm=2.0 is the resolution-qualified ch
+capability,axis,P02,P02,IMPLEMENTED,synlab.degrade.axes,edge-distance driven inward fillet built from the analytic rolling-ball section of every convex edge on the ROI boundary and subtracted from the source; never a whole-patch Laplacian and never a globa
+capability,axis,P03,P03,IMPLEMENTED,synlab.degrade.axes,"non-negative smooth recession over the interface ROI with a wall-thickness guard; the depth field is frozen in the basis and pinned to zero on the ROI rim, so the five levels are nested and the untouc"
+capability,axis,P04,P04,IMPLEMENTED,synlab.degrade.axes,"fixed cutter position/direction frozen in the basis; the cutter size is found by a 1-D geometric search that brackets the declared contact loss and then bisects, subject to the frozen minimum represen"
+capability,axis,P05,P05,IMPLEMENTED,synlab.degrade.axes,nested paint masks from one frozen rank field; the geometry hash must stay identical (appearance-only axis).
+capability,axis,P06,P06,IMPLEMENTED,synlab.degrade.axes,smooth patch coverage of one frozen field; the core variant changes appearance only (geometry hash unchanged) and dirt_geometry adds an explicit contamination body registered as its own material class
+capability,axis,P07,P07,IMPLEMENTED,synlab.degrade.axes,original outer-surface ROI only; hidden surfaces are never backfilled
+capability,axis,P08,P08,IMPLEMENTED,synlab.degrade.axes,"three single-factor variants (crack width, coat area, painted-coat loss) plus one explicitly bundled stress variant; crack width, crack length and layer area are never mixed into one comparable intens"
+capability,axis,X01,X01,IMPLEMENTED,synlab.degrade.axes,modalities are removed from the payload (presence=false) 闂?never replaced by a zero image that claims to be valid data.
+capability,axis,X02,X02,IMPLEMENTED,synlab.degrade.axes,"boundary px error / missing blob / false positive are separate variants; every crop or ROI change updates K and the pixel transform, and the research mask (mask_reference) is never presented as the in"
+capability,axis,X03,X03,IMPLEMENTED,synlab.degrade.axes,missing context and conflicting context are separate variants; a missing context is never constructed as a necessary conflict (plan 15.5).
+capability,axis,X04,X04,IMPLEMENTED,synlab.degrade.axes,"only the real OBS_EST fields are perturbed (never an oracle intensity). The regression variant shifts the estimate by a frozen multiple of its own measured spread, so the bias is comparable across cha"
+capability,axis,X05,X05,IMPLEMENTED,synlab.degrade.axes,"baseline plus four held-out camera/light/ISP presets; this is a categorical shift, so no scalar monotonicity is claimed between levels."
+capability,fracture_backend,fracture_modes,fracture-modes 物理插件,MISSING,synlab.fracture.api,"author code not fetched; license and units unverified, so the backend is registered as MISSING and never approximated"
+capability,fracture_backend,plane_shared_cut,共享平面切割,IMPLEMENTED,synlab.fracture.api,analytic plane cut with one shared closed cutter body
+capability,fracture_backend,rough_shared_cut,共享粗糙切割,IMPLEMENTED,synlab.fracture.api,"finite Fourier height field frozen once, shared by both sides"
+capability,fracture_backend,secondary_fracture,二次破碎,IMPLEMENTED,synlab.fracture.api,child event on the largest piece; adjacency is rebuilt from interface samples so old patches are clipped by membership
+capability,fracture_backend,warped_partition,共享形变 Voronoi/Power 分区,PENDING,synlab.fracture.api,"weighted Power cells via scipy Qhull are implemented in the spec; the conformal gmsh PLC + shared warp stage is NOT implemented in this build (capability probe: gmsh 4.15.2 OK), so the backend reports"
+capability,layer_combo,L01,坯体+釉,IMPLEMENTED,synlab.materials.layers,body plus a real glaze body; delamination is a boolean quantity
+capability,layer_combo,L02,坯体+彩绘,IMPLEMENTED,synlab.materials.layers,porcelain body plus appearance-only painting
+capability,layer_combo,L03,石质+表面涂层,IMPLEMENTED,synlab.materials.layers,stone body plus a real surface coating
+capability,layer_combo,L04,木基体+涂饰,IMPLEMENTED,synlab.materials.layers,wood body plus an appearance-only finish
+capability,material,M01,粗陶,IMPLEMENTED,synlab.materials.catalogue,"large grog aggregate, visible pores and an uneven body colour"
+capability,material,M02,细陶,IMPLEMENTED,synlab.materials.catalogue,fine grain with a short correlation length; polished and eroded apart
+capability,material,M03,炻器,IMPLEMENTED,synlab.materials.catalogue,dense low-porosity body with an optional specular glaze state
+capability,material,M04,白瓷,IMPLEMENTED,synlab.materials.catalogue,pale body with a thin glaze and small-scale fracture statistics
+capability,material,M05,彩瓷,IMPLEMENTED,synlab.materials.catalogue,"porcelain body with a mother-continuous painted layer; new sections expose the body, never the paint"
+capability,material,M06,施釉陶,IMPLEMENTED,synlab.materials.catalogue,"pottery body with an independent glaze layer: the layer interface, glaze loss and body loss are separate records"
+capability,material,M07,玻璃,IMPLEMENTED,synlab.materials.catalogue,transmissive high-specular body with smooth cut faces; legal scans may have missing measurements
+capability,material,M08,石材,IMPLEMENTED,synlab.materials.catalogue,mineral grain with a real bedding direction; anisotropic cut faces and weathering statistics
+capability,material,M09,石膏,IMPLEMENTED,synlab.materials.catalogue,pale porous body with powdering and erosion statistics
+capability,material,M10,骨质,IMPLEMENTED,synlab.materials.catalogue,"porous bone with an outer/inner layer difference and a directional field; procedural statistics, no biomechanical claim"
+capability,material,M11,木质,IMPLEMENTED,synlab.materials.catalogue,"continuous fibre / growth-ring field with directional edges; procedural tear statistics, not a crack solver"
+capability,material,M12,金属,IMPLEMENTED,synlab.materials.catalogue,reflective body with a corrosion layer and procedural cut statistics; plastic fracture is outside the core backends
+capability,pattern,PAT01,素面 plain,IMPLEMENTED,synlab.patterns.families,constant colour with an optional low-frequency colour field; may be fully plain
+capability,pattern,PAT02,环带 bands,IMPLEMENTED,synlab.patterns.families,"band centre lines in profile arc length, seamless in the azimuthal direction"
+capability,pattern,PAT03,条纹 stripes,IMPLEMENTED,synlab.patterns.families,linear-phase stripes with an integer azimuthal count (the seam closes exactly)
+capability,pattern,PAT04,格网 grid,IMPLEMENTED,synlab.patterns.families,two (or three) stripe sets combined by union/intersection with explicit mix order
+capability,pattern,PAT05,波浪 waves,IMPLEMENTED,synlab.patterns.families,"sine or Bezier centre line at an integer wave count, distance raster + EDT"
+capability,pattern,PAT06,点阵 dots,IMPLEMENTED,synlab.patterns.families,crystal lattice or scipy PoissonDisk dots with an audited periodic seam extension
+capability,pattern,PAT07,三角 triangles,IMPLEMENTED,synlab.patterns.families,triangular tile with integer column count; line or solid barycentric fill
+capability,pattern,PAT08,回纹 meander,IMPLEMENTED,synlab.patterns.families,meander fret in a periodic tile with shared endpoints across tile borders
+capability,pattern,PAT09,交叉线 crosshatch,IMPLEMENTED,synlab.patterns.families,2-3 layered line fields with deterministic missing strokes
+capability,pattern,PAT10,花叶 floral,IMPLEMENTED,synlab.patterns.families,bounded L-system/turtle skeleton plus svgpathtools Bezier leaf outlines
+capability,pattern,PAT11,局部徽记 medallion,IMPLEMENTED,synlab.patterns.families,"programmatic vector symbol or a restricted, registered SVG path"
+capability,pattern,PAT12,字符 glyphs,IMPLEMENTED,synlab.patterns.families,one-shot Pillow glyph layout with a SciPy distance map (font hash frozen)
+capability,pattern,PAT13,窑变 kiln,IMPLEMENTED,synlab.patterns.families,"multi-scale continuous blotch field, independent roughness sub-stream"
+capability,pattern,PAT14,浮雕 relief,IMPLEMENTED,synlab.patterns.families,smooth relief mask -> positive height -> real displacement of the whole body
+capability,pattern,PAT15,刻线 engrave,IMPLEMENTED,synlab.patterns.families,curve distance -> negative height -> real engraved displacement of the whole body
+capability,pattern,PAT16,组合 combination,IMPLEMENTED,synlab.patterns.families,region masks and a bounded composition of the layers above
+capability,vessel,V01,碗,IMPLEMENTED,synlab.mothers.vessels.group_revolve,"thick revolved bowl, foot ring kept as a real contact band"
+capability,vessel,V02,深盘,IMPLEMENTED,synlab.mothers.vessels.group_revolve,deep dish: conical wall controlled by a real wall angle
+capability,vessel,V03,浅碟,IMPLEMENTED,synlab.mothers.vessels.group_revolve,shallow saucer with a dished base and a wavy rim
+capability,vessel,V04,杯,IMPLEMENTED,synlab.mothers.vessels.group_revolve,revolved cup with an optional swept handle (volumetric overlap at the root)
+capability,vessel,V05,高足杯,IMPLEMENTED,synlab.mothers.vessels.group_revolve,cup shell on a closed high stem with a flared foot disc
+capability,vessel,V06,罐,IMPLEMENTED,synlab.mothers.vessels.group_revolve,shoulder-belly-mouth jar profile with a real shoulder position
+capability,vessel,V07,瓶,IMPLEMENTED,synlab.mothers.vessels.group_revolve,neck-shoulder-belly bottle; the cavity must survive the long neck
+capability,vessel,V08,双耳瓶,IMPLEMENTED,synlab.mothers.vessels.group_revolve,bottle body with two swept ears; every ear has a volumetric root
+capability,vessel,V09,壶,IMPLEMENTED,synlab.mothers.vessels.group_composite,ewer with a thick handle and a spout that keeps a real bore
+capability,vessel,V10,带盖壶,IMPLEMENTED,synlab.mothers.vessels.group_composite,body plus an independent pre-break lid component (contact is not R2)
+capability,vessel,V11,坛,IMPLEMENTED,synlab.mothers.vessels.group_revolve,large belly with a short neck; belly/mouth ratio and shoulder arc are real
+capability,vessel,V12,盆,IMPLEMENTED,synlab.mothers.vessels.group_revolve,wide thin-walled basin: base/mouth ratio and rim thickening are real
+capability,vessel,V13,盒,IMPLEMENTED,synlab.mothers.vessels.group_extrude,rounded rectangular extruded shell with a real wall and floor
+capability,vessel,V14,盖,IMPLEMENTED,synlab.mothers.vessels.group_composite,"closed lid solid: dome, seat skirt, real knob and polygon rim"
+capability,vessel,V15,灯盏,IMPLEMENTED,synlab.mothers.vessels.group_composite,shallow lamp body with a real wick spout and a foot ring
+capability,vessel,V16,香炉,IMPLEMENTED,synlab.mothers.vessels.group_composite,belly on real legs with optional vent holes cut through the shoulder
+capability,vessel,V17,花盆,IMPLEMENTED,synlab.mothers.vessels.group_composite,tapered thick shell with drainage holes cut through the floor
+capability,vessel,V18,砖,IMPLEMENTED,synlab.mothers.vessels.group_extrude,"rounded solid slab with real edge grooves, perforations and bed camber"
+capability,vessel,V19,平瓦,IMPLEMENTED,synlab.mothers.vessels.group_extrude,"thick parameterised tile: pan, side lips, slope and camber are real"
+capability,vessel,V20,弧瓦,IMPLEMENTED,synlab.mothers.vessels.group_sheet,"thick arc band: real radius, wrap angle, length and nose lift"
+capability,vessel,V21,曲面板,IMPLEMENTED,synlab.mothers.vessels.group_sheet,doubly curved B-spline panel with a real solidified thickness
+capability,vessel,V22,碑板,IMPLEMENTED,synlab.mothers.vessels.group_extrude,thick slab with a real chamfer and an engraved inscription band
+capability,vessel,V23,小雕像,IMPLEMENTED,synlab.mothers.vessels.group_composite,closed superquadric torso/head plus swept limbs with real root overlap
+capability,vessel,V24,装饰构件,IMPLEMENTED,synlab.mothers.vessels.group_sheet,superquadric base body with a real repetition field and relief pads
+acceptance,A-item,A01,合同与权限（六 pack、features/labels 边界）,FAIL,synlab/observe/features.py::assert_no_leakage,schema rejection + recursive whitelist + committed feature audit
+acceptance,A-item,A02,坐标投影（mm、K、T、depth/range、crop）,PASS,docs/a12/env_report.json,analytic projection/back-projection round trip
+acceptance,A-item,A03,母体（24 族 × ≥20 独立母体）,PENDING,data/a12/reports,counts come from committed mother assets; 24x20 requires the L2 run
+acceptance,A-item,A04,材料层（12 材料 / 4 层结构）,PENDING,data/a12/reports,shading vs geometric layers must be distinguishable
+acceptance,A-item,A05,花纹（16 family）,FAIL,data/a12/reports/pattern_audit.json,
+acceptance,A-item,A06,断裂守恒（四必做后端、薄壳、复杂体）,FAIL,data/a12/reports/fracture_audit.json,
+acceptance,A-item,A07,精度实现（cutter / 共形 warp）,NOT_RUN,data/a12/reports,requires a fracture event with an error budget
+acceptance,A-item,A08,真值关系（R2/R1/R0/UNKNOWN 与事件树）,NOT_RUN,data/a12/reports,requires `synlab.truth` fixture run
+acceptance,A-item,A09,减法损伤（P01–P04/P07 + 适用 P08）,FAIL,data/a12/reports/physical_audit.json,
+acceptance,A-item,A10,31 轴身份与效果,PENDING,data/a12/reports/operator_audit.json,
+acceptance,A-item,A11,伪凸起/补面/假桥（G08 三变体）,PASS,data/a12/reports/spurious_audit.json,
+acceptance,A-item,A12,成像标签（RGB、深度、mask、可见性）,PASS,data/a12/reports/channel_audit.json,
+acceptance,A-item,A13,物理近远档（U 相机 profile）,PENDING,data/a12/reports/camera_profile_audit.json,A13.engineering and A13.real_calibration are reported separately
+acceptance,A-item,A14,实际 MVS 子集,NA,data/a12/reports,not applicable to profile SANDBOX_CORE
+acceptance,A-item,A15,全库和采样（多 R2、R1/R0、无邻片）,NOT_RUN,data/a12/reports,run `synlab build-pool` first
+acceptance,A-item,A16,训练有效性（五任务、valid 与 missing）,NA,data/a12/reports,not applicable to profile SANDBOX_CORE
+acceptance,A-item,A17,恢复（数据 job 与训练 checkpoint）,PASS,data/a12/reports/recovery_probe.json,
+acceptance,A-item,A18,诊断计算（指标与统计）,PASS,"data/a12/reports/metric_fixture.json, data/a12/reports/stat_fixture.json",
+acceptance,A-item,A19,规则 episode（actions/cost/STOP）,NOT_RUN,data/a12/reports,run `synlab episode` first
+acceptance,A-item,A20,UI/API（12 页与真实端到端）,PASS,docs/a12/api_ui.md,
+acceptance,A-item,A21,资源与规模（L2/L3）,NA,data/a12/reports,not applicable to profile SANDBOX_CORE
+acceptance,A-item,A22,发布交接（新目录启动/读写恢复）,PENDING,docs/a12/runbook.md,
+acceptance,A-item,A23,开源复用（第 2.4 节全部适用模块）,PASS,docs/a12/reuse_manifest.json,
+acceptance,A-item,A24,观测来源/DAG,FAIL,data/a12/reports/source_dependency_audit.json,
+acceptance,A-item,A25,坐标/展示（0.5px、resize、EXIF、COLMAP 往返、100mm GLB）,PASS,data/a12/reports/pixel_contract.json,
+acceptance,A-item,A26,分区形变（共享 PLC / 共形网格）,NOT_RUN,data/a12/reports,requires the warped_partition backend to run
+acceptance,A-item,A27,来源/对应（原三角 ID、公共面积、损伤关联分离）,NOT_RUN,data/a12/reports,requires fracture + truth audits
+acceptance,A-item,A28,物理身份/损伤（P01/P02 固定场、嵌套、多组件）,PENDING,data/a12/reports,requires physical identity audit (components/debris/ancestry)
+acceptance,A-item,A29,检索/匹配（双塔、TopM 精排、全 R2 排除）,NA,data/a12/reports,not applicable to profile SANDBOX_CORE
+acceptance,A-item,A30,拒识/分母（多正例接受集、失败主分母）,PASS,data/a12/reports/metric_fixture.json,
+acceptance,A-item,A31,独立数据/统计（N 广度深度、gallery 隔离、CP 假设）,NA,data/a12/reports,not applicable to profile SANDBOX_CORE
+acceptance,A-item,A32,全流程泄漏（置换、ID 重命名、同器库负控）,NA,data/a12/reports,not applicable to profile SANDBOX_CORE
+acceptance,A-item,A33,权限/输入（服务端角色、路径/资源限制）,PASS,data/a12/reports/api_security.json,
+acceptance,A-item,A34,资产/调度（同 blob 多 role、code identity、GPU 清退、reservation）,PASS,data/a12/reports/recovery_probe.json,
+acceptance,A-item,A35,续训/监督分母（acknowledged cursor、prefetch 重放）,NA,data/a12/reports,not applicable to profile SANDBOX_CORE
+acceptance,A-item,A36,配置/发布（route/scope 枚举、全部配置编译）,PASS,data/a12/reports,every shipped config must compile through the typed schema
+reuse,module,parameters_random,"parameter sampling and per-module random sub-streams (plan 5.1, 2.4)",IMPLEMENTED,tests/a12/foundation/test_core.py::test_seed_is_stable_and_order_independent (PASS),
+reuse,module,profile_interpolation,ordered profile midline with curvature/wall-thickness limits (plan 7.1),IMPLEMENTED,tests/a12/mothers (see module report),
+reuse,module,revolve_extrude_sweep,closed solid of revolution / extrusion / sweep in millimetres (plan 7.1),IMPLEMENTED,docs/a12/env_report.json geometry checks + tests/a12/mothers,
+reuse,module,solid_boolean_and_components,"closed-body boolean, connected components, volume (plan 10.1)",IMPLEMENTED,"docs/a12/env_report.json:geometry:mm_box_cut = PASS (2 components, conservation ratio < 1e-6)",
+reuse,module,manifold_source_attributes,"face provenance for origin mapping (plan 10.2, 30.5, R32)",IMPLEMENTED,docs/a12/backend_capabilities.json:backend:manifold_source_attributes,"library attributes are auxiliary only; the plan requires explicit per-input-triangle keys and barycentric reconstruction, which the library does not provide"
+reuse,module,conformal_shared_mesh,"shared PLC and conformal tetrahedral mesh for warped partition (plan 10.4, 30.4, R3)",IMPLEMENTED,"docs/a12/backend_capabilities.json:backend:gmsh_discrete_shared_surface = PASS (2 fragmented volumes, conformal tets)",
+reuse,module,voronoi_power_partition,"weighted Power diagram cells intersected with the material body (plan 10.4, R21)",IMPLEMENTED,tests/a12/fracture (see module report),"scipy has no weighted Power diagram; the half-space formulation 2(s_j-s_i)^T x <= |s_j|^2-|s_i|^2+w_i-w_j plus a finite box is the minimal extension, and unweighted Voronoi is never substituted for Po"
+reuse,module,physical_fracture_plugin,"optional fracture-modes physics plugin (plan 10.5, R2)",MISSING,MISSING - optional backend; dependency not installed and license not verified,"optional plugin; author code was not downloaded and its license/units were not verified, so the backend is registered as MISSING rather than approximated"
+reuse,module,noise_fields,"periodic Fourier height/colour fields in millimetres (plan 9.2, 10.1)",IMPLEMENTED,tests/a12/patterns (see module report),
+reuse,module,poisson_disk_sampling,"periodic variable-radius dot lattice (plan 9.4, R18, R6)",IMPLEMENTED,tests/a12/patterns (seam distance and density audit),"scipy has no periodic/variable-radius contract; only the seam copies, rejection rules and density audit are added, the sampler kernel is never rewritten"
+reuse,module,bezier_svg_2d,"bounded floral grammar, SVG symbols, 2D fill (plan 9.5, R16, R19)",IMPLEMENTED,tests/a12/patterns (see module report),
+reuse,module,text_rendering,"sealed character pattern with licensed font (plan 9.5, R20)",IMPLEMENTED,tests/a12/patterns (font hash recorded; failure returns an error when the font is missing),
+reuse,module,voxel_damage_isosurface,"subtractive SDF damage and iso-surface extraction (plan 12.1, 30.7, R22, R28)",IMPLEMENTED,tests/a12/physical (see module report),
+reuse,module,image_filters_and_codecs,"optics/sensor/ISP/lossy encoding chain (plan 13.3, R23)",IMPLEMENTED,"tests/a12/observe (linear noise mean/variance, identity bypass tests)",
+reuse,module,gpu_differentiable_filters,"optional GPU/differentiable filtering path (plan 2.4, R24)",MISSING,MISSING - no CUDA-enabled torch on this host; CPU OpenCV path is used instead,"host has torch 2.5.1+cpu only, so a GPU filter path cannot be verified; not needed for the declared CPU scope"
+reuse,module,rendering,"physically-based offline rendering with linear RGB, depth, integer ID, occlusion (plan 13.2, R7)",IMPLEMENTED,"data/a12/reports/blender/channel_verification.json (real render + channel-semantics verification; 15/15 backend tests PASS) and data/a12/reports/blender/doctor_run.txt; docs/a12/env_report.json:backend:blender_render = PASS (Blender 5.2.2 LTS, Cycles, background render OK)","No gap in the renderer itself: Blender is installed and drives the imaging path. It cannot be imported into the venv (no Windows/py3.12 bpy wheel), so it is driven as an external process with a frozen"
+reuse,module,pointcloud_processing,"observation point clouds: sampling, normals, simplification, error measurement (plan 14.2, R13)",IMPLEMENTED,docs/a12/backend_capabilities.json:backend:open3d_distance = PASS (-5.0 mm),
+reuse,module,photogrammetry_mvs,"real SfM/dense/fusion route for PHONE_RGB (plan 14.4, R10)",IMPLEMENTED,docs/a12/backend_capabilities.json:backend:colmap_pycolmap,"no standalone colmap binary; the Python bindings expose the real SfM/dense API, and all failures are recorded with STOP-SFM instead of falling back to ideal depth"
+reuse,module,training_and_retrieval,"dual encoder, pair head, five-task losses, checkpoints, exact vector search (plan 18, R11, R25)",IMPLEMENTED,tests/a12/training (toy fit + gradient checks); docs/a12/env_report.json:training:torch_tensor_grad = PASS,
+reuse,module,statistics,"paired cluster bootstrap, Holm correction, Clopper-Pearson risk bound, power approximation (plan 19.4, 30.15)",IMPLEMENTED,tests/a12/diagnostics (hand-computed fixtures),
+reuse,module,schema_api_cli,"typed schemas, OpenAPI service, CLI with exit codes (plan 21, 22, R26, R29)",IMPLEMENTED,tests/a12/api + tests/a12/foundation,
+reuse,module,execution_and_metadata,"resumable scheduler, leases, atomic asset commits, single-writer metadata (plan 6, R9, R30)",IMPLEMENTED,"tests/a12/foundation (fencing, expiry recovery, idempotency, atomic commit, backup integrity)",no existing project queue/ORM exists in this workspace; SQLite is explicitly allowed when no project framework is present
+reuse,module,forms_and_ui,"12 operator/researcher pages over real backend state (plan 20, 21.1)",IMPLEMENTED,docs/a12/api_ui.md,
+reuse,module,three_d_display,"derived GLB viewing with correct mm display mapping (plan 20.14, R12)",IMPLEMENTED,docs/a12/api_ui.md,
+reuse,module,array_and_table_storage,asset/observation/relation/report serialisation (plan 23.2),IMPLEMENTED,docs/a12/env_report.json:io checks = PASS,

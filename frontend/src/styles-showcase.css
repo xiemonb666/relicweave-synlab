@@ -1,0 +1,231 @@
+/* =========================================================================
+   U13 合成数据展示页（/synlab/showcase）样式。
+   与 styles.css 用同一套 CSS 变量；这里只加展示页自己的布局原语，
+   不改动任何既有选择器。窄屏（<900px）自动降为单列。
+   ========================================================================= */
+
+.page--showcase {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+/* ------------------------------------------------------------------ 母体卡片网格 */
+.showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 8px;
+  margin-bottom: var(--gap);
+}
+
+.showcase-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: stretch;
+  text-align: left;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-elev);
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+
+.showcase-card:hover {
+  border-color: var(--line-strong);
+  background: var(--bg-elev2);
+}
+
+.showcase-card--active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent) inset;
+}
+
+.showcase-card:focus-visible {
+  outline: 2px solid var(--info);
+  outline-offset: 2px;
+}
+
+.showcase-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ------------------------------------------------------------------ 通用布局 */
+.showcase-detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  margin-top: var(--gap);
+}
+
+.showcase-cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: var(--gap);
+  align-items: start;
+}
+
+.showcase-cols h4,
+.showcase-detail h4 {
+  margin: 10px 0 6px;
+  font-size: 0.95em;
+  color: var(--text);
+}
+
+.showcase-pre {
+  max-height: 300px;
+  font-size: 0.8em;
+}
+
+.showcase-list {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--text-dim);
+}
+
+/* ------------------------------------------------------------------ 通道 / 对比图像 */
+.showcase-channels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap);
+}
+
+.showcase-figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: #0a0e13;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 8px;
+  min-width: 0;
+}
+
+.showcase-figure img {
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+  image-rendering: pixelated;
+  border-radius: 4px;
+  background: #05070a;
+}
+
+.showcase-figure figcaption {
+  font-size: 0.85em;
+  color: var(--text-dim);
+}
+
+.showcase-figure--wide {
+  flex: 1 1 320px;
+}
+
+.showcase-compare {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap);
+  align-items: stretch;
+}
+
+/* ------------------------------------------------------------------ 轴选择条 */
+.showcase-axisbar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: var(--gap);
+}
+
+.showcase-axisbar__group {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.showcase-axisbar__label {
+  min-width: 74px;
+  color: var(--text-dim);
+  font-size: 0.85em;
+}
+
+.showcase-axisbar__items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  font: inherit;
+  font-size: 0.85em;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: var(--bg-elev);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.chip:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.chip--active {
+  border-color: var(--accent);
+  background: rgba(74, 157, 224, 0.18);
+}
+
+.chip:disabled,
+.chip--na {
+  color: var(--text-faint);
+  cursor: not-allowed;
+  border-style: dashed;
+}
+
+.chip:focus-visible {
+  outline: 2px solid var(--info);
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------------------------ 说明横幅 */
+.banner--legend {
+  background: rgba(88, 166, 255, 0.08);
+  border-left: 3px solid var(--info);
+}
+
+.banner--legend ul {
+  margin: 6px 0 6px;
+  padding-left: 18px;
+}
+
+.banner--warn {
+  background: rgba(210, 153, 34, 0.12);
+  border-left: 3px solid var(--warn);
+}
+
+.banner--ok {
+  background: rgba(63, 185, 80, 0.1);
+  border-left: 3px solid var(--ok);
+}
+
+/* ------------------------------------------------------------------ 窄屏 */
+@media (max-width: 900px) {
+  .showcase-cols {
+    grid-template-columns: 1fr;
+  }
+
+  .showcase-axisbar__label {
+    min-width: 100%;
+  }
+
+  .showcase-figure img {
+    max-width: 100%;
+  }
+}

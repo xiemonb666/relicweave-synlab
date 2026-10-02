@@ -1,0 +1,89 @@
+schema: synlab.v3
+data_scope: SYNTHETIC
+release_profile: CORE_COVERAGE
+experiment_purpose: DEVELOPMENT
+master_seed: 20261001
+units: mm
+integration:
+  mode: standalone
+  feature_schema: a12.obs.v1
+  external_contract_ref: null
+implementation:
+  policy: open_source_first
+  reuse_manifest_ref: docs/a12/reuse_manifest.json
+  require_poc_before_custom: true
+  require_gap_evidence: true
+dataset:
+  target_mothers: 480
+  target_fragments_estimate: 10000
+  shape_lineage_split: {train: 0.8, dev: 0.1, confirm: 0.1}
+  split_before_generation: true
+  replacement_fractures_share_lineage: true
+  include_all_components: true
+  debris_policy: quarantine_and_record
+  vessel_ids: [V01, V02, V03, V04, V05, V06, V07, V08, V09, V10, V11, V12, V13, V14, V15, V16, V17, V18, V19, V20, V21, V22, V23, V24]
+  material_ids: [M01, M02, M03, M04, M05, M06, M07, M08, M09, M10, M11, M12]
+  pattern_ids: [PAT01, PAT02, PAT03, PAT04, PAT05, PAT06, PAT07, PAT08, PAT09, PAT10, PAT11, PAT12, PAT13, PAT14, PAT15, PAT16]
+  layer_combo_ids: [L01, L02, L03, L04]
+  parameter_bounds_ref: configs/a12/registry_bounds.json
+sampling:
+  method: latin_hypercube
+  quota_policy: registry_balanced
+  seed_stride: 1
+  sobol_power_of_two: true
+pattern:
+  coordinate_space: mother_surface_mm
+  periodic_azimuth: true
+  geometry_before_fracture: true
+  antialias: analytic_or_mipmap
+  height_policy: none
+fracture:
+  backend: rough_shared_cut
+  target_piece_range: [12, 28]
+  min_feature_wavelength_mm: 0.24
+  shared_surface_max_error_mm: 0.01
+  max_attempts: 3
+  secondary_probability: 0.15
+  keep_parent_history: true
+  rough_amplitude_mm: [0.02, 0.3]
+  seed_count_range: [12, 28]
+physical:
+  recipe_registry_ref: configs/a12/physical_recipes.json
+  preserve_clean_assets: true
+  recipes: [P03_depth_light]
+observation:
+  input_profile: SENSOR_PROXY
+  routes: [proxy_scan]
+  views_per_fragment: 12
+  image_long_edge_px: 1024
+  point_count: 8192
+  camera_profile_ref: configs/a12/camera_profiles.json
+  persist_depth: selected_qa_only
+  persist_view_geometry: false
+  persist_fused_geometry: true
+  truth_channels_role: research_label_only
+  renderer: auto
+resources:
+  cpu_workers: 4
+  threads_per_worker: 2
+  cpu_rss_budget_gb: 30
+  gpu_device: 0
+  gpu_concurrency: 1
+  gpu_budget_gb: 26
+  disk_soft_fraction: 0.70
+  disk_restrict_fraction: 0.80
+  disk_stop_fraction: 0.90
+  reserve_temp_peak: true
+storage:
+  root: data/a12
+  database: data/a12/metadata.sqlite
+  shard_target_mb: 512
+  mutable_release: false
+quality:
+  protocol_ref: configs/a12/qa_protocol_v1.json
+  fail_closed: true
+  freeze_before_confirmation: true
+degraded_recipe_refs:
+  - configs/a12/degrade_recipes/paired_plane_levels.yaml
+  - configs/a12/degrade_recipes/paired_edgewear_blur_bump.yaml
+notes: "CORE_COVERAGE target: 24 vessels / 12 materials / 4 layer combos / 16 patterns / 4 fracture backends / 31 axes."

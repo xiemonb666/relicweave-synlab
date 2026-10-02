@@ -1,0 +1,85 @@
+{
+ "vessel_id": "V01",
+ "material_id": "M01",
+ "master_seed": 20261001,
+ "backends": {
+  "plane_shared_cut": {
+   "backend": "plane_shared_cut",
+   "status": "OK",
+   "triangles": 16896,
+   "realized_error_mm": 0.0,
+   "requested_error_mm": 0.01,
+   "watertight": true,
+   "cutter_hash": "sha256:1cbdf3545f8eefb8f1ff53318e92edf62a4193c35cfca60ae0d2c03b59930d76",
+   "report": {
+    "requested_error_mm": 0.01,
+    "realized_error_mm": 0.0,
+    "error_samples": 57344,
+    "watertight": true,
+    "winding_consistent": true,
+    "signed_volume_mm3": 5289781.449202766,
+    "degenerate_faces": 0,
+    "edge_use_histogram": {
+     "2": 25344
+    },
+    "cells": 4096,
+    "leaf_level": 0,
+    "root_level": 6,
+    "start_level": 6,
+    "seed_rule": "flat",
+    "points_per_wavelength": 8.0,
+    "seed_cell_mm": 4.536175931685356,
+    "refine_iterations": 1,
+    "cells_tested": 4096,
+    "triangles": 16896,
+    "vertices": 8450,
+    "top_triangles": 8192,
+    "bottom_triangles": 8192,
+    "side_triangles": 512,
+    "bottom_w_mm": -110.53721171019775,
+    "w_range_mm": [
+     -110.53721171019775,
+     0.0
+    ],
+    "planned_spacing_mm": [
+     4.536175931685356,
+     2.5756057499952716
+    ],
+    "max_cells": 400000,
+    "max_triangles": 3000000,
+    "key_level": 12,
+    "max_level": 12,
+    "cutter_local_hash": "sha256:a733b1e95513824453b26b786098e3d3a102a53303e7a28b18b66fe953a45f43",
+    "cutter_hash": "sha256:1cbdf3545f8eefb8f1ff53318e92edf62a4193c35cfca60ae0d2c03b59930d76",
+    "backend": "plane_shared_cut"
+   },
+   "duration_s": 0.399
+  }
+ },
+ "mother": {
+  "faces": 10464,
+  "vertices": 5233,
+  "watertight": true,
+  "volume_mm3": 656983.8722706684,
+  "area_mm2": 165982.01780029075,
+  "extent_mm": [
+   218.96193083532287,
+   220.40757299677674,
+   94.53617028057995
+  ],
+  "params": {
+   "diameter_mm": 245.515377745759,
+   "wall_mm": 8.27879210414946,
+   "base_mm": 7.724274808481589,
+   "warp_amplitude": 0.029858425928156004,
+   "warp_eccentricity_mm": 1.9931460118282982,
+   "warp_lobes": 2,
+   "depth_ratio": 0.3653118448324634,
+   "rim_flare": -0.38056461216538484,
+   "foot_ring_ratio": 0.1330169602693417,
+   "foot_height_ratio": 0.22819093922599512,
+   "belly": 0.3853488038613051
+  }
+ },
+ "duration_s": 1.066
+}

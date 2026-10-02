@@ -1,0 +1,147 @@
+{
+ "vessel_id": "V13",
+ "backend": "plane_shared_cut",
+ "material_id": "M01",
+ "master_seed": 20261001,
+ "mother_source": "demo_store:asset_b007426f56f21ab1c926",
+ "mother": {
+  "faces": 1362,
+  "vertices": 683,
+  "watertight": true,
+  "volume_mm3": 294800.037845668,
+  "area_mm2": 72354.21651883842,
+  "extent_mm": [
+   69.75043879437968,
+   262.97541896330563,
+   35.48280715942383
+  ]
+ },
+ "status": "OK",
+ "event": {
+  "fragments": 2,
+  "tiny": 0,
+  "debris": 0,
+  "interfaces": 5,
+  "cutter_ref": "sha256:085b8133b437b8690122716ef1de361c849304124e5d3de73e8190144d188bfb",
+  "backend": "plane_shared_cut",
+  "fragment_volumes_mm3": [
+   147226.54452112276,
+   147573.50129390295
+  ],
+  "fragment_faces": [
+   1342,
+   1332
+  ],
+  "interface_areas_mm2": [
+   619.9764251568772,
+   616.0874840285317,
+   358.0674970175788,
+   71.76820866747327,
+   0.07760072653669763
+  ],
+  "interface_area_mm2_total": 1665.9772155969977,
+  "unmatched_interface_faces": 158,
+  "unmatched_interface_area_mm2": 260.4876686533275,
+  "unmatched_interface_area_ratio": 0.1352153733934761
+ },
+ "qa": {
+  "mother_volume_mm3": 294800.037845668,
+  "fragment_volume_sum_mm3": 294800.0458150257,
+  "volume_rel_diff": 2.7033095965080506e-08,
+  "volume_tolerance": 0.001,
+  "overlap_ratio": 0.0,
+  "overlap_tolerance": 0.0001,
+  "interface_count": 5,
+  "interface_faces": 1198,
+  "gap_p95_mm_max": 6.773283173606793e-06,
+  "gap_tolerance_mm": 0.02,
+  "normal_angle_p95_deg_max": 0.003164191795724463,
+  "normal_angle_tolerance_deg": 2.0,
+  "source_coverage": 1.0,
+  "ambiguous_area_ratio_max": 0.8863846396046243,
+  "ambiguous_area_ratio_total": 0.0,
+  "ambiguity_tolerance": 0.02,
+  "interface_area_rel_error_max": 0.43648651948644424,
+  "faces_total": 2674,
+  "tiny_fragments": 0,
+  "fragment_count": 2,
+  "failures": [],
+  "passed": true,
+  "backend": "plane_shared_cut"
+ },
+ "event_tree": {
+  "event_id": "a12_demo_V13_plane_shared_cut",
+  "parent_id": null,
+  "backend": "plane_shared_cut",
+  "cutter_hash": "sha256:085b8133b437b8690122716ef1de361c849304124e5d3de73e8190144d188bfb",
+  "cutter": {
+   "basis_id": "sha256:db6f524d405ac38bbac7ef0a9",
+   "triangles": 16896,
+   "requested_error_mm": 0.01,
+   "realized_error_mm": 0.0,
+   "meta": {
+    "requested_error_mm": 0.01,
+    "realized_error_mm": 0.0,
+    "error_samples": 57344,
+    "watertight": true,
+    "winding_consistent": true,
+    "signed_volume_mm3": 2117347.4685808215,
+    "degenerate_faces": 0,
+    "edge_use_histogram": {
+     "2": 25344
+    },
+    "cells": 4096,
+    "leaf_level": 0,
+    "root_level": 6,
+    "grid_level": 6,
+    "start_level": 6,
+    "seed_rule": "flat",
+    "points_per_wavelength": 8.0,
+    "seed_cell_mm": 5.282236248357663,
+    "refine_iterations": 1,
+    "cells_tested": 4096,
+    "triangles": 16896,
+    "vertices": 8450,
+    "top_triangles": 8192,
+    "bottom_triangles": 8192,
+    "side_triangles": 512,
+    "bottom_w_mm": -53.41922259408333,
+    "w_range_mm": [
+     -53.41922259408333,
+     0.0
+    ],
+    "planned_spacing_mm": [
+     5.282236248357663,
+     1.831963436230793
+    ],
+    "max_cells": 400000,
+    "max_triangles": 3000000,
+    "key_level": 12,
+    "max_level": 12,
+    "cutter_local_hash": "sha256:b408e8aaeaadf2440db2c9a0eaea148cef1b8dcd1c0dfaa756b8ee04bca47f5f",
+    "cutter_hash": "sha256:085b8133b437b8690122716ef1de361c849304124e5d3de73e8190144d188bfb",
+    "backend": "plane_shared_cut"
+   }
+  },
+  "children": [
+   "a12_demo_V13_plane_shared_cut-m",
+   "a12_demo_V13_plane_shared_cut-p"
+  ],
+  "minus": [
+   "a12_demo_V13_plane_shared_cut-m"
+  ],
+  "plus": [
+   "a12_demo_V13_plane_shared_cut-p"
+  ],
+  "interfaces": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "mother_volume_mm3": 294800.037845668,
+  "fragment_volume_mm3": 294800.0458150257
+ },
+ "duration_s": 2.007
+}

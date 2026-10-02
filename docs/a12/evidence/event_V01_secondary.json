@@ -1,0 +1,235 @@
+{
+ "vessel_id": "V01",
+ "backend": "secondary_fracture",
+ "material_id": "M01",
+ "master_seed": 20261001,
+ "mother_source": "demo_store:asset_167bef6a43a93438ec26",
+ "mother": {
+  "faces": 7008,
+  "vertices": 3505,
+  "watertight": true,
+  "volume_mm3": 374595.74151829904,
+  "area_mm2": 114041.10362550538,
+  "extent_mm": [
+   182.73891505424604,
+   182.4469967932052,
+   66.24349944695405
+  ]
+ },
+ "status": "OK",
+ "event": {
+  "fragments": 3,
+  "tiny": 0,
+  "debris": 0,
+  "interfaces": 14,
+  "cutter_ref": "sha256:8d6f8d114a34d6a0c09dcb8adc95ee57916f93a4532cd56c623bb823c7ed0240",
+  "backend": "secondary_fracture",
+  "fragment_volumes_mm3": [
+   187283.99000840774,
+   68879.38968500655,
+   118432.36028742687
+  ],
+  "fragment_faces": [
+   5076,
+   3578,
+   4146
+  ],
+  "interface_areas_mm2": [
+   165.026199430889,
+   267.12730980402927,
+   316.8177324369653,
+   280.84547341934854,
+   376.87357219062295,
+   146.79838790194674,
+   213.39423865521454,
+   141.48410403580988,
+   159.19567205434214,
+   247.64092689743578,
+   160.0284909813679,
+   248.09732364948587,
+   214.84931242964208,
+   65.58238083364036
+  ]
+ },
+ "qa": {
+  "mother_volume_mm3": 374595.74151829904,
+  "fragment_volume_sum_mm3": 374595.7399808412,
+  "volume_rel_diff": 4.10431218188877e-09,
+  "volume_tolerance": 0.001,
+  "overlap_ratio": 0.0,
+  "overlap_tolerance": 0.0001,
+  "interface_count": 14,
+  "interface_faces": 4206,
+  "gap_p95_mm_max": 3.981256815883e-12,
+  "gap_tolerance_mm": 0.02,
+  "normal_angle_p95_deg_max": 1.4787793334710982e-06,
+  "normal_angle_tolerance_deg": 2.0,
+  "source_coverage": 1.0,
+  "ambiguous_area_ratio_max": 0.23434841523353672,
+  "ambiguous_area_ratio_total": 0.0,
+  "ambiguity_tolerance": 0.02,
+  "interface_area_rel_error_max": 0.0,
+  "faces_total": 12800,
+  "tiny_fragments": 0,
+  "fragment_count": 3,
+  "failures": [],
+  "passed": true,
+  "backend": "secondary_fracture"
+ },
+ "event_tree": {
+  "event_id": "a12_demo_V01_secondary_fracture",
+  "backend": "secondary_fracture",
+  "parent_event": {
+   "event_id": "a12_demo_V01_secondary_fracture",
+   "parent_id": null,
+   "backend": "plane_shared_cut",
+   "cutter_hash": "sha256:8d6f8d114a34d6a0c09dcb8adc95ee57916f93a4532cd56c623bb823c7ed0240",
+   "cutter": {
+    "basis_id": "sha256:db6f524d405ac38bbac7ef0a9",
+    "triangles": 16896,
+    "requested_error_mm": 0.01,
+    "realized_error_mm": 0.0,
+    "meta": {
+     "requested_error_mm": 0.01,
+     "realized_error_mm": 0.0,
+     "error_samples": 57344,
+     "watertight": true,
+     "winding_consistent": true,
+     "signed_volume_mm3": 4014367.970145335,
+     "degenerate_faces": 0,
+     "edge_use_histogram": {
+      "2": "<int>"
+     },
+     "cells": 4096,
+     "leaf_level": 0,
+     "root_level": 6,
+     "grid_level": 6,
+     "start_level": 6,
+     "seed_rule": "flat",
+     "points_per_wavelength": 8.0,
+     "seed_cell_mm": 3.8193382904747857,
+     "refine_iterations": 1,
+     "cells_tested": 4096,
+     "triangles": 16896,
+     "vertices": 8450,
+     "top_triangles": 8192,
+     "bottom_triangles": 8192,
+     "side_triangles": 512,
+     "bottom_w_mm": -91.11548802731828,
+     "w_range_mm": [
+      "<float>",
+      "<float>"
+     ],
+     "planned_spacing_mm": [
+      "<float>",
+      "<float>"
+     ],
+     "max_cells": 400000,
+     "max_triangles": 3000000,
+     "key_level": 12,
+     "max_level": 12,
+     "cutter_local_hash": "sha256:a5d0c89e047eba4ffc0d8ee7c5fd7f11a9172c70bc2a8f9c3ffcaee9692fc1ef",
+     "cutter_hash": "sha256:8d6f8d114a34d6a0c09dcb8adc95ee57916f93a4532cd56c623bb823c7ed0240",
+     "backend": "plane_shared_cut"
+    }
+   },
+   "children": [
+    "a12_demo_V01_secondary_fracture-m",
+    "a12_demo_V01_secondary_fracture-p"
+   ],
+   "minus": [
+    "a12_demo_V01_secondary_fracture-m"
+   ],
+   "plus": [
+    "a12_demo_V01_secondary_fracture-p"
+   ],
+   "interfaces": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "mother_volume_mm3": 374595.74151829904,
+   "fragment_volume_mm3": 374595.7401296741
+  },
+  "child_events": [
+   {
+    "event_id": "a12_demo_V01_secondary_fracture_S1",
+    "parent_id": null,
+    "backend": "plane_shared_cut",
+    "cutter_hash": "sha256:f16048513f7f7df15d9f5809ca83d6c453ee4ed9f7939f76492d1ebeeb499499",
+    "cutter": {
+     "basis_id": "sha256:db6f524d405ac38bbac7ef0a9",
+     "triangles": 16896,
+     "requested_error_mm": 0.01,
+     "realized_error_mm": 0.0,
+     "meta": {
+      "requested_error_mm": "<float>",
+      "realized_error_mm": "<float>",
+      "error_samples": "<int>",
+      "watertight": "<bool>",
+      "winding_consistent": "<bool>",
+      "signed_volume_mm3": "<float>",
+      "degenerate_faces": "<int>",
+      "edge_use_histogram": "<dict>",
+      "cells": "<int>",
+      "leaf_level": "<int>",
+      "root_level": "<int>",
+      "grid_level": "<int>",
+      "start_level": "<int>",
+      "seed_rule": "<str>",
+      "points_per_wavelength": "<float>",
+      "seed_cell_mm": "<float>",
+      "refine_iterations": "<int>",
+      "cells_tested": "<int>",
+      "triangles": "<int>",
+      "vertices": "<int>",
+      "top_triangles": "<int>",
+      "bottom_triangles": "<int>",
+      "side_triangles": "<int>",
+      "bottom_w_mm": "<float>",
+      "w_range_mm": "<list>",
+      "planned_spacing_mm": "<list>",
+      "max_cells": "<int>",
+      "max_triangles": "<int>",
+      "key_level": "<int>",
+      "max_level": "<int>",
+      "cutter_local_hash": "<str>",
+      "cutter_hash": "<str>",
+      "backend": "<str>"
+     }
+    },
+    "children": [
+     "a12_demo_V01_secondary_fracture_S1-m",
+     "a12_demo_V01_secondary_fracture_S1-p"
+    ],
+    "minus": [
+     "a12_demo_V01_secondary_fracture_S1-m"
+    ],
+    "plus": [
+     "a12_demo_V01_secondary_fracture_S1-p"
+    ],
+    "interfaces": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "mother_volume_mm3": 187311.75012126635,
+    "fragment_volume_mm3": 187311.74997243343
+   }
+  ],
+  "ancestor_of": {
+   "a12_demo_V01_secondary_fracture-p::a12_demo_V01_secondary_fracture_S1-m": "a12_demo_V01_secondary_fracture-p",
+   "a12_demo_V01_secondary_fracture-p::a12_demo_V01_secondary_fracture_S1-p": "a12_demo_V01_secondary_fracture-p"
+  },
+  "patch_clip_policy": "membership_filtered_by_truth"
+ },
+ "duration_s": 17.028
+}
