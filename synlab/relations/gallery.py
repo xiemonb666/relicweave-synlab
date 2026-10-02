@@ -44,6 +44,11 @@ from ..schemas.runtime import (
     RelationEdge,
 )
 from ..storage.store import AssetStore
+from .legal_negative import (
+    MISSING,
+    NegativeEligibility,
+    resolve_negative_eligibility,
+)
 
 #: Portable pool artifact schema (written next to the store so a roster/pool can be frozen).
 POOL_SCHEMA = "synlab.pool.v1"
@@ -117,6 +122,12 @@ class RelationsIndex:
 
     def __init__(self) -> None:
         self._edges: dict[tuple[str, str], RelationEdge] = {}
+        #: Explicit ``R0`` rows: the truth layer *did* measure these pairs, so their own
+        #: ``valid``/``loss_mask`` flags are the eligibility evidence (the implicit ``R0`` of a
+        #: pair the table never named has none).  Kept out of ``_edges`` so the "R0 is never
+        #: materialised in the sparse array payload" rule (plan 16.1) still holds, and out of
+        #: ``explicit_edges`` so the existing accounting is unchanged.
+        self._r0: dict[tuple[str, str], dict[str, Any]] = {}
         self._r2: dict[str, set[str]] = {}
         self._members: set[str] = set()
         self._unverified: set[str] = set()
@@ -136,8 +147,25 @@ class RelationsIndex:
             return
         kind = str(kind)
         if kind == RELATION_R0:
-            # R0 is implicit; storing it would materialise the N^2 table (plan 16.1).
+            # R0 is implicit for a pair **the truth layer never named**; an explicit R0 row is a
+            # measured non-adjacency and is what carries that row's eligibility flags.  Storing it
+            # here (and not in ``_edges``) keeps the sparse array payload free of R0 while letting
+            # ``negative_eligibility`` follow the extracted flags instead of the kind.  A caller
+            # that stored a ``False`` flag under the old kind-only reading is refused rather than
+            # silently re-qualified: the flags are stored, and an ambiguity is resolved against
+            # supply.
             self._edges.pop(canonical_pair(a, b), None)
+            key = canonical_pair(a, b)
+            previous = self._r0.get(key)
+            self._r0[key] = {
+                "kind": kind,
+                "valid": bool(valid) if previous is None else bool(previous["valid"] and valid),
+                "loss_mask": (bool(loss_mask) if previous is None
+                              else bool(previous["loss_mask"] and loss_mask)),
+                "area_mm2": float(area_mm2), "reason": str(reason or ""),
+                "interface_id": (None if interface_id is None else int(interface_id))}
+            self._r2.setdefault(a, set()).discard(b)
+            self._r2.setdefault(b, set()).discard(a)
             return
         if kind not in EXPLICIT_KINDS:
             raise SynLabError(ErrorCode.SCHEMA_INVALID,
@@ -166,6 +194,8 @@ class RelationsIndex:
         edge = self._edges.get(canonical_pair(a, b))
         if edge is not None:
             return edge.kind
+        if canonical_pair(a, b) in self._r0:
+            return RELATION_R0                 # an explicit, measured non-adjacency row
         if not edge and (a in self._unverified or b in self._unverified):
             return RELATION_UNKNOWN
         # Implicit R0: confirmed non-adjacency *by construction*.  Two fragments either come
@@ -173,9 +203,61 @@ class RelationsIndex:
         # without a shared interface (non-adjacent inside one body).
         return RELATION_R0
 
+    def negative_eligibility(self, a: str, b: str) -> NegativeEligibility:
+        """Whether ``b`` may be an **ordinary negative** of ``a``, under the frozen gate.
+
+        The rule itself lives in :mod:`synlab.relations.legal_negative` (one truth source); this
+        method only supplies the three inputs from *this* index's truth layer:
+
+        * an explicit edge -> the stored ``valid``/``loss_mask`` flags of the edge;
+        * an explicit ``R0`` row -> the same, from the stored row;
+        * an implicit ``R0`` (a pair the truth layer never named, two verified members of
+          mutually exclusive events) -> eligible **by construction**, which is the documented
+          gallery reading and is why the gallery can offer more negatives than the exported
+          reader (``pool_contract.classify_divergence`` counts that as a conservative gap);
+        * anything else (``SELF``/``ABSENT``/``UNKNOWN``/``TINY_CONTACT``/``R2``) -> refused by
+          the gate, or explicitly when the fragment is not a member.
+        """
+        a, b = str(a), str(b)
+        if a == b:
+            return NegativeEligibility(False, "query_is_its_own_candidate",
+                                       f"{a} is the query itself", SELF_RELATION)
+        if a not in self._members or b not in self._members:
+            return NegativeEligibility(
+                False, "fragment_not_a_pool_member",
+                f"{b if b not in self._members else a} is not a member of this index: the pair is "
+                f"ABSENT, not a measured non-adjacency", ABSENT_RELATION)
+        edge = self._edges.get(canonical_pair(a, b))
+        if edge is not None:
+            return resolve_negative_eligibility(edge.kind, edge.valid, edge.loss_mask,
+                                                reason=str(edge.reason or ""))
+        row = self._r0.get(canonical_pair(a, b))
+        if row is not None:
+            return resolve_negative_eligibility(row["kind"], row["valid"], row["loss_mask"],
+                                                reason=str(row.get("reason", "") or ""))
+        kind = self.relation(a, b)
+        if kind == RELATION_R0:
+            # constructed, not extracted: the truth layer named no row, so there is no flag to
+            # follow -- and the construction rule (*different event never adjacent* / *same event
+            # without a shared interface*) is the evidence.  Recorded so a reader can see it.
+            return NegativeEligibility(
+                True, "implicit_r0_by_construction",
+                f"{a}/{b} carry no explicit row: the pair is non-adjacent by the frozen "
+                f"construction rule (mutually exclusive events, or one event without a shared "
+                f"interface), so it is eligible as an ordinary negative",
+                RELATION_R0, None, None, source="implicit_R0_construction")
+        return resolve_negative_eligibility(kind, MISSING, MISSING)
+
     def confirmed(self, a: str, b: str) -> bool:
-        rel = self.relation(a, b)
-        return rel not in (RELATION_UNKNOWN, ABSENT_RELATION, SELF_RELATION)
+        """``True`` when ``b`` may serve as an ordinary negative of ``a`` (the frozen gate).
+
+        Historically this answered "is the pair an adjacency?" and ignored the row's own
+        ``valid``/``loss_mask``, which is how 24 withdrawn ``R1`` rows stayed in the negative
+        supply (``docs/a12/relation_negatives.md`` §9.1.1).  It now **consumes**
+        :meth:`negative_eligibility` -- the single truth source -- so the gate is applied in one
+        place and every reader agrees on it.  ``relation()`` is unchanged.
+        """
+        return bool(self.negative_eligibility(a, b).eligible)
 
     def neighbours(self, query_id: str) -> tuple[str, ...]:
         """Full in-gallery R2 set ``N_G(q)`` excluding ``q`` itself."""
@@ -356,6 +438,16 @@ class RelationPool:
     def relation(self, a: str, b: str) -> str:
         return self.index.relation(a, b)
 
+    def negative_eligibility(self, a: str, b: str) -> NegativeEligibility:
+        """The pool's answer to *"may ``b`` be an ordinary negative of ``a``?"*, with its reason.
+
+        Delegates to :meth:`RelationsIndex.negative_eligibility` -- the gallery's truth layer --
+        so the frozen gate is decided in exactly one place
+        (:func:`synlab.relations.legal_negative.resolve_negative_eligibility`) and no caller
+        re-derives it from the kind.
+        """
+        return self.index.negative_eligibility(a, b)
+
     def confirmed(self, a: str, b: str) -> bool:
         return self.index.confirmed(a, b)
 
@@ -405,9 +497,11 @@ class RelationPool:
     def legal_pool(self, fragment_id: str, *, relation: str | None = None) -> list[str]:
         """Confirmed ``R1``/``R0`` candidates that may serve as ordinary negatives.
 
-        ``R2``/``TINY_CONTACT``/``UNKNOWN`` and unconfirmed candidates are never offered; neither
-        is the query itself nor any of its mates.  ``relation=`` narrows the answer to one kind
-        (the sampler draws ``R1`` and ``R0`` separately).
+        ``R2``/``TINY_CONTACT``/``UNKNOWN`` and ineligible candidates are never offered; neither
+        is the query itself nor any of its mates.  Eligibility is **consumed**, never recomputed
+        from the kind: :meth:`negative_eligibility` applies the frozen gate to the row's own
+        ``valid``/``loss_mask`` (``docs/a12/relation_negatives.md`` §9.1.1).  ``relation=`` narrows
+        the answer to one kind (the sampler draws ``R1`` and ``R0`` separately).
         """
         fid = str(fragment_id)
         if relation is not None and str(relation) not in NEGATIVE_KINDS:
@@ -422,7 +516,7 @@ class RelationPool:
                 continue
             if relation is not None and self.relation(fid, candidate) != str(relation):
                 continue
-            if not self.confirmed(fid, candidate):
+            if not self.negative_eligibility(fid, candidate).eligible:
                 continue
             out.append(candidate)
         return sorted(out)
@@ -455,8 +549,10 @@ class RelationPool:
                               f"{rel} candidate {candidate} used as a negative of {query}",
                               stage="relations.gallery.RelationPool.assert_legal_negative")
         if not self.confirmed(query, candidate):
+            resolution = self.negative_eligibility(query, candidate)
             raise SynLabError(ErrorCode.LEAKAGE_DETECTED,
-                              f"unconfirmed candidate {candidate} used as a negative of {query}",
+                              f"unconfirmed candidate {candidate} ({rel}) used as a negative of "
+                              f"{query}: {resolution.reason}: {resolution.detail}",
                               stage="relations.gallery.RelationPool.assert_legal_negative")
 
     def candidate_ids(self, fragment_id: str) -> list[str]:

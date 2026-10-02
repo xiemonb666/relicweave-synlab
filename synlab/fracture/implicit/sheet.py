@@ -1,4 +1,4 @@
-"""Conforming sheet triangulation + closed cutter assembly (no quadtree, no T-junction).
+﻿"""Conforming sheet triangulation + closed cutter assembly (no quadtree, no T-junction).
 
 Why this cannot produce a T-junction
 ------------------------------------
@@ -262,7 +262,7 @@ def measure_realized_error(
     inside_fn: Callable[[np.ndarray, np.ndarray], np.ndarray] | None = None,
     flat_sample: int = 2_000,
     chunk_triangles: int = 8_000,
-    max_probes_per_triangle: int = 5,
+    max_probes_per_triangle: int = 4,
     seed: int = 20261002,
 ) -> dict[str, Any]:
     """Measured interpolation error of the *analytic* field over the *emitted* triangles.

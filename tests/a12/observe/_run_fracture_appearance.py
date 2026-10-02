@@ -295,6 +295,28 @@ def baseline_normals(mesh, res: dict) -> np.ndarray:
     return fn[fid]
 
 
+def rendered_albedo_channels(res: dict, *, n_faces: int | None = None) -> np.ndarray:
+    """Mean albedo per channel that the delivered scene actually shaded with, inside the mask.
+
+    ``render.build_scene`` fills a scene with ``render.procedural_albedo`` (one palette colour per
+    face) unless the caller passes an explicit albedo, so the number a dDN measurement is
+    proportional to is the **scene's** mean albedo and not the material record's.  Reading it back
+    from the render's own ``id_map`` keeps the two apart instead of silently conflating them.
+    """
+    from synlab.observe.render import procedural_albedo
+
+    idm = np.asarray(res["render"].id_map)
+    n = int(n_faces) if n_faces is not None else (int(idm.max()) + 1 if idm.size else 0)
+    lab = procedural_albedo(max(n, 0), seed=0x5EED)
+    if lab.shape[0] == 0:
+        return np.zeros(3, dtype=np.float64)
+    mask = np.asarray(res["mask"], dtype=bool) & (idm >= 0)
+    if not mask.any():
+        return np.zeros(3, dtype=np.float64)
+    idx = np.clip(idm[mask], 0, lab.shape[0] - 1)
+    return np.asarray(lab[idx].mean(axis=0), dtype=np.float64)
+
+
 def snr_of(*, signal_dn: np.ndarray, noise_dn: np.ndarray, mask: np.ndarray) -> dict:
     """SNR of the relief signal against the chain's own noise floor, both measured in code values."""
     m = np.asarray(mask, dtype=bool)
@@ -1524,9 +1546,11 @@ def stage_prediction_gap(*, config, target, body, mesh, roi, rng, light=None) ->
         measured = fa.difference_dn_statistics(on["dn_float"], off["dn_float"], on["mask"])
         world, uv, _ = hit_points_world(on)
         n_base = baseline_normals(mesh, on)
+        alb_render = rendered_albedo_channels(on, n_faces=np.asarray(mesh.faces).shape[0])
         pred_hit = field.predicted_shading_ddn_on_points(
             world, albedo=profile["appearance"]["albedo"], light=light_spec,
-            base_normals=n_base, ra_scale=field.amplitude_scale)
+            base_normals=n_base, ra_scale=field.amplitude_scale,
+            albedo_from_render=alb_render)
         legacy = field.predicted_shading_ddn(albedo=profile["appearance"]["albedo"],
                                              light=light_spec, T_WC=frame.T_WC,
                                              ra_scale=field.amplitude_scale)
@@ -1556,9 +1580,20 @@ def stage_prediction_gap(*, config, target, body, mesh, roi, rng, light=None) ->
             "legacy_prediction_roi_grid": legacy["predicted_dDN"],
             "legacy_ratio_measured_over_pred": (measured["dDN_rms"]
                                                 / max(legacy["predicted_dDN"], 1e-30)),
-            "hitpoint_prediction": pred_hit["predicted_dDN"],
-            "hitpoint_ratio_measured_over_pred": (measured["dDN_rms"]
-                                                  / max(pred_hit["predicted_dDN"], 1e-30)),
+            "hitpoint_prediction_material_albedo": pred_hit["predicted_dDN"],
+            "hitpoint_prediction_render_albedo": pred_hit["predicted_dDN_from_render_albedo"],
+            "hitpoint_ratio_measured_over_pred_material": (
+                measured["dDN_rms"] / max(pred_hit["predicted_dDN"], 1e-30)),
+            "hitpoint_ratio_measured_over_pred_render": (
+                measured["dDN_rms"]
+                / max(pred_hit["predicted_dDN_from_render_albedo"], 1e-30)),
+            "albedo_channels_material": [float(x) for x in profile["appearance"]["albedo"]],
+            "albedo_channels_render": [float(x) for x in alb_render],
+            "dDN_factor_material": pred_hit["dDN_factor"],
+            "dDN_factor_render": pred_hit["dDN_factor_from_render"],
+            "albedo_factor_ratio_render_over_material":
+                pred_hit["albedo_factor_ratio_render_over_material"],
+            "d_lambert_rms_predicted": pred_hit["d_lambert_rms"],
             "gradient_rms_roi_grid": float(np.sqrt(np.mean(gbu ** 2 + gbv ** 2))),
             "gradient_rms_hit_points": float(np.sqrt(np.mean(gau ** 2 + gav ** 2))),
             "gradient_rms_hit_points_finite_difference": float(np.sqrt(np.mean(fd_u ** 2
@@ -1575,20 +1610,67 @@ def stage_prediction_gap(*, config, target, body, mesh, roi, rng, light=None) ->
             / max(row["gradient_rms_hit_points_finite_difference"], 1e-30))
         row["grid_over_hit_gradient"] = (row["gradient_rms_roi_grid"]
                                          / max(row["gradient_rms_hit_points"], 1e-30))
-        row["residual_after_hitpoint_prediction"] = (
-            measured["dDN_rms"] / max(pred_hit["predicted_dDN"], 1e-30))
+        row["closing_ratio_measured_over_pred"] = row[
+            "hitpoint_ratio_measured_over_pred_render"]
+        #: the three independent factors that separate the legacy ROI-grid prediction from one
+        #: evaluated at the renderer's own points with the render's own albedo.  Their product,
+        #: times the legacy prediction, must reproduce the corrected prediction exactly.
+        f_points = (row["gradient_rms_hit_points_finite_difference"]
+                    / max(row["gradient_rms_roi_grid"], 1e-30))
+        f_estimator = row["analytic_over_finite_difference_same_points"]
+        f_albedo = float(pred_hit["albedo_factor_ratio_render_over_material"] or 1.0)
+        row["decomposition"] = {
+            "factor_radius_weighting_points": f_points,
+            "factor_estimator_finite_difference_to_analytic": f_estimator,
+            "factor_albedo_render_over_material": f_albedo,
+            "product": f_points * f_estimator * f_albedo,
+            "legacy_prediction_times_product": (legacy["predicted_dDN"] * f_points * f_estimator
+                                                * f_albedo),
+            "corrected_prediction": pred_hit["predicted_dDN_from_render_albedo"],
+            "identity_holds": bool(abs(legacy["predicted_dDN"] * f_points * f_estimator * f_albedo
+                                       - pred_hit["predicted_dDN_from_render_albedo"])
+                                   <= 1e-6 * max(abs(pred_hit["predicted_dDN_from_render_albedo"]),
+                                                 1.0)),
+            "definition": ("legacy_prediction * factor_radius * factor_estimator * factor_albedo "
+                           "== corrected_prediction, term by term measured, no free parameter"),
+        }
         row["attribution"] = {
-            "step_of_the_grid": ("the ROI grid step 0.1083 mm is NOT the cause: the analytic "
-                                 "gradient RMS is invariant from 0.5 mm down to 0.005 mm"),
-            "estimator": ("a forward difference with a 0.0542-0.1 mm step recovers only ~0.44 of "
-                          "the analytic gradient RMS (a red-spectrum field's difference quotient "
-                          "is a low-pass of its derivative) - a pure prediction artefact"),
-            "radius_weighting": ("the ROI plane grid covers a 74.7 mm disc while the rendered "
-                                 "fracture pixels sit at smaller radius, and the field's gradient "
-                                 "RMS is radius dependent (it carries the hackle/rib/pit terms "
-                                 "near the mirror radius)"),
-            "conclusion": ("evaluating the renderer's own linearisation at the renderer's own hit "
-                           "points removes the gap: see hitpoint_ratio_measured_over_pred"),
+            "legacy_prediction_error_factor": row["legacy_ratio_measured_over_pred"],
+            "closing_error_factor": row["hitpoint_ratio_measured_over_pred_render"],
+            "conclusion": (
+                "the ~1.9x is localized to THREE separately measured factors of the PREDICTION, "
+                "none of them in the renderer:\n"
+                "(1) estimator: the legacy prediction formed the field's gradient as a FINITE "
+                "FORWARD DIFFERENCE.  On the SAME points the analytic gradient RMS is {an:.4f} "
+                "against a forward difference of {fd:.4f} - a factor {r:.3f} - and the factor does "
+                "NOT converge as the step shrinks (0.4369 at 0.1083 mm, 0.4386 at 0.005 mm), "
+                "because a difference quotient low-passes a red spectrum's derivative;\n"
+                "(2) albedo: the prediction scaled by the MATERIAL record's albedo while the "
+                "delivered scene shades with render.procedural_albedo, whose mask-mean is {ar} "
+                "against the material's {am} - a dDN factor ratio of {fr:.3f};\n"
+                "(3) point set: the ROI plane grid samples a different radius distribution than "
+                "the rendered pixels, worth {fp:.3f}.\n"
+                "Their product is {prod:.3f}; applying all three to the legacy prediction gives "
+                "{corr:.2f} against a measured {meas:.2f}, i.e. a closing ratio of {res:.3f} "
+                "(was {leg:.3f}).  The ROI grid STEP is NOT a cause: the analytic gradient RMS is "
+                "invariant from 0.5 mm to 0.005 mm (0.7831 -> 0.7831)."
+            ).format(an=row["gradient_rms_hit_points"],
+                     fd=row["gradient_rms_hit_points_finite_difference"],
+                     r=row["analytic_over_finite_difference_same_points"],
+                     ar=[round(float(x), 4) for x in alb_render],
+                     am=[round(float(x), 4) for x in profile["appearance"]["albedo"]],
+                     fr=f_albedo, fp=f_points,
+                     prod=f_points * f_estimator * f_albedo,
+                     corr=pred_hit["predicted_dDN_from_render_albedo"],
+                     meas=measured["dDN_rms"],
+                     res=row["hitpoint_ratio_measured_over_pred_render"],
+                     leg=row["legacy_ratio_measured_over_pred"]),
+            "step_of_the_grid": ("NOT a cause: the analytic gradient RMS is invariant from 0.5 mm "
+                                 "down to 0.005 mm (measured 0.7831 -> 0.7831)"),
+            "residual": ("what remains (measured/predicted {:.3f}) is the frozen Lambert clip and "
+                         "the normal-renormalisation second order, both of which make the exact "
+                         "d_lambert slightly smaller than the linearisation"
+                         ).format(row["hitpoint_ratio_measured_over_pred_render"]),
         }
         out.setdefault("rows", []).append(row)
     return out

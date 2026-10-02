@@ -1,4 +1,4 @@
-"""Backend entry points: build the implicit cutter, run the event, publish the record.
+﻿"""Backend entry points: build the implicit cutter, run the event, publish the record.
 
 ``build_implicit_cutter`` is a drop-in for
 :func:`synlab.fracture.morphology.build_morphology_cutter`: it returns the same
@@ -191,7 +191,12 @@ def build_implicit_cutter(
     # on the *measured* error until it is inside the budget, and widens the footprint mask (then
     # rebuilds the field) when the triangle budget blocks the refinement.
     attempts: list[dict[str, Any]] = []
-    delta = float(min(delta_sampling, max(delta_budget, delta_sampling)))
+    #: the sheet may be refined below the sampling spacing to meet the interpolation budget, but
+    #: never below half of it: past that point the mask is widened instead, because a runaway
+    #: refinement is a memory/time hazard (the host kills heavy runs) and the mask is the cheaper
+    #: lever -- the trade-off is published either way.
+    delta_floor = float(max(delta_budget, 0.5 * delta_sampling))
+    delta = float(min(delta_sampling, max(delta_floor, delta_sampling)))
     sheet = None
     error: dict[str, Any] = {}
     closure: dict[str, Any] = {}
@@ -213,10 +218,10 @@ def build_implicit_cutter(
             attempts.append({"outer": outer, "inner": inner, "delta_mm": float(delta),
                              "realized_error_mm": float(error["realized_error_mm"]),
                              "triangles": int(sheet.faces.shape[0])})
-            if error["within_budget"] or delta <= delta_budget * (1.0 + 1e-12):
+            if error["within_budget"] or delta <= delta_floor * (1.0 + 1e-12):
                 break
             shrink = float(np.sqrt(0.85 * budget / max(error["realized_error_mm"], 1e-12)))
-            delta = float(max(delta_budget, delta * min(0.9, max(0.5, shrink))))
+            delta = float(max(delta_floor, delta * min(0.9, max(0.5, shrink))))
         if error["within_budget"]:
             break
         if outer >= outer_attempts:
@@ -234,7 +239,7 @@ def build_implicit_cutter(
         envelope = field.envelope
         h_fn = lambda u, v: np.asarray(field(u, v), dtype=np.float64)  # noqa: E731
         inside_fn = lambda u, v: envelope.smoothness(u, v) > 0.5  # noqa: E731
-        delta = float(delta_budget)
+        delta = float(delta_floor)
 
     if sheet is None or not error.get("within_budget", False):
         raise SynLabError(

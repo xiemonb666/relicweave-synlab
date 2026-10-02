@@ -44,6 +44,9 @@
 | 分块冒烟 | 19.63 GiB → **4.69 GiB（1/4.2）**，3/3 步通过 |
 | 训练包 | 数据卡（328 项抽查全相符）· 加载器（`--check` exit 0，篡改判 3）· quickstart exit 0（5.06 s）· **zarr 读回与 npz 逐字节一致 18/18** |
 | **导出三缺陷修复** | tokens 有效秩 **1→256**；`view_pos` 全零→T_WC（误差 0.0 mm）；`frame_id` 行号→**真实匹配 97.9%** |
+| **实验就绪包（可做消融）** | `data/a12_exports/experiment_ready/training_package`：**1375 文件 / 5.21 GB**；加载器 exit 0 → **rank n_allowed 1496**、`positives 56 / negatives 3120`、`effective_queries 44`；relations **3442 行 = 1721 对 × 2 方向**（`direction_complete=true`）、`leak_free=True`；`--check` exit 0（真反例：翻 1 bit → 3、未声明文件 → FAIL）；部署视图 **8 通道 / 0 真值通道**、`features_carry_answer_fields=false`、527 键扫描 `hits=[]`；**6 组消融开关全 present**（ROI 视图 96 / 合成 extras 9 模态 / 出土上下文 2 包 + `bag_id` / 退化 31 轴注册（9 轴物化 33 档）/ 断面 86 442 面 582 patch / 难负例 1760 行）；构建 120.5 s；`pytest tests/a12/storage` **119 passed exit 0** |
+| **协议一致性契约测试** | `relations.pool_protocol.v1`：**13 断言 × 4 实现 × 2 上下文全绿**；**失败注入 6/6 被抓**（含当年让 `rank` 停摆的缺陷原文） |
+| **QA 收紧（N9）** | `a12.qa.v2` 新增 `ROI_EXTERNAL_DRIFT_EXCEEDED`：漂移 0.35424 → **FAIL**（窄带 0.000348 仍 PASS）；**翻转 246 条记录 / 117 文件**，旧产物零改写（登记 `n9_qa_v2_flips.json`） |
 
 ### 环境与工程
 | 项 | 证据 |

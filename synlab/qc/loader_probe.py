@@ -38,6 +38,11 @@ from typing import Any, Mapping, Sequence
 import numpy as np
 
 from ..errors import ErrorCode, SynLabError
+from ..relations.legal_negative import (
+    MISSING,
+    NegativeEligibility,
+    resolve_negative_eligibility,
+)
 from ..roles import FORBIDDEN_FEATURE_FIELDS
 from ..storage.export import (
     EXCLUDED_NEGATIVE_KINDS,
@@ -73,6 +78,15 @@ class ExportedRelationPool:
         self.pool_id = str(pool_id)
         self._kinds: dict[tuple[str, str], str] = {}
         self._confirmed: dict[tuple[str, str], bool] = {}
+        #: The eligibility evidence of every named pair: the row's own ``valid``/``loss_mask``
+        #: flags (and its frozen ``eligible_as_negative``, when the exporter wrote one).  The rule
+        #: that turns them into an answer lives in ``relations.legal_negative`` -- one truth
+        #: source -- and this reader only *supplies* the flags.
+        self._flags: dict[tuple[str, str], dict[str, Any]] = {}
+        #: The classified rows this reader was built from, keyed both ways.  ``PoolIndex`` reads
+        #: them when a carrier exposes no ``negative_eligibility()``; keeping them makes the row
+        #: flags available to a consumer instead of forcing a kind-based recomputation.
+        self.rows: dict[tuple[str, str], Mapping[str, Any]] = {}
         self._neighbours: dict[str, set[str]] = {}
         self._r2: dict[str, set[str]] = {}
         #: maps (not methods), matching ``relations.gallery.RelationPool``: the training batch
@@ -101,7 +115,19 @@ class ExportedRelationPool:
             # relations are symmetric and a consumer may ask either way round.
             self._kinds[(query, candidate)] = kind
             self._kinds.setdefault((candidate, query), kind)
-            confirmed = bool(row.get("valid", False)) and kind in NEGATIVE_KINDS
+            flags = {"kind": kind, "valid": row.get("valid", MISSING),
+                     "loss_mask": row.get("loss_mask", MISSING),
+                     "eligible_as_negative": row.get("eligible_as_negative", MISSING),
+                     "reason": str(row.get("reason", "") or "")}
+            self._flags[(query, candidate)] = flags
+            self._flags.setdefault((candidate, query), flags)
+            self.rows[(query, candidate)] = flags
+            self.rows.setdefault((candidate, query), flags)
+            # eligibility is *consumed* from the single truth source, never re-derived from the
+            # kind: a row the truth layer withdrew (``valid=False`` / ``loss_mask=False``) is not
+            # an ordinary negative however it is spelled (``docs/a12/relation_negatives.md``
+            # §9.1.1).
+            confirmed = bool(self.negative_eligibility(query, candidate).eligible)
             self._confirmed[(query, candidate)] = confirmed
             self._confirmed.setdefault((candidate, query), confirmed)
             if kind == "R2":
@@ -143,8 +169,34 @@ class ExportedRelationPool:
         """Confirmed R1/R0 candidates; deliberately NOT what ``neighbours`` returns."""
         return set(self._neighbours.get(str(fragment_id), set()))
 
+    def negative_eligibility(self, a: str, b: str) -> NegativeEligibility:
+        """Whether ``b`` may be an **ordinary negative** of ``a``, with the refusal reason.
+
+        The rule lives in one place (:func:`...legal_negative.resolve_negative_eligibility`); this
+        reader supplies the row's own extracted flags -- ``valid``, ``loss_mask`` and the frozen
+        ``eligible_as_negative`` -- and a pair the exported table does not name is refused
+        (``UNKNOWN`` is not a measurement).  A row that carries no flag vocabulary at all is
+        resolved from the kind and *labelled* as such, so no report confuses the two.
+        """
+        key = (str(a), str(b))
+        if str(a) == str(b):
+            return NegativeEligibility(False, "query_is_its_own_candidate",
+                                       f"{a} is the query itself", "SELF")
+        flags = self._flags.get(key)
+        if flags is None:
+            return NegativeEligibility(
+                False, "row_absent_from_the_exported_table",
+                f"the exported table names no row for ({a}, {b}): the pair is UNKNOWN to this "
+                f"reader and unconfirmed, so it is never supplied as a negative", "UNKNOWN")
+        return resolve_negative_eligibility(**flags)
+
     def confirmed(self, a: str, b: str) -> bool:
-        return bool(self._confirmed.get((str(a), str(b)), False))
+        """``b`` may serve as an ordinary negative of ``a`` (consumed, never recomputed).
+
+        ``valid`` **and** ``loss_mask`` are both honoured: the frozen gate is
+        ``eligible_as_negative == (kind in {R0,R1} and valid and loss_mask)``.
+        """
+        return bool(self.negative_eligibility(a, b).eligible)
 
     def history_exclusions(self, fragment_id: str) -> set[str]:
         return self.mates(fragment_id)

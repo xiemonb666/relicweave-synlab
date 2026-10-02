@@ -955,6 +955,7 @@ def merge_hard_negatives(package: Path, deploy_keys: set[str],
                 "dimension": "relations.hard_negatives",
                 "ablation_group": "ABL_HARD_NEGATIVES",
                 "switch_field": "negative_mix.hard_negative_weight",
+                "status": "present",
                 "source": ("built by the class's own driver on *this* package's relation table; the "
                            "merge copies the produced bytes and re-measures them"),
                 "producer": measure,

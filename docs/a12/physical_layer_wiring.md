@@ -155,3 +155,25 @@ $r = "C:\Users\xiemo\Desktop\ShardForge\relicweave-synlab"
 # 分文件退出码
 & "$r\.venv\Scripts\python.exe" -B -m pytest "$r\tests\a12\fracture\test_cut_triangulation.py" -q
 ```
+
+---
+
+## 6. 测试退出码（本轮，分文件，2026-10-02）
+
+逐文件日志与退出码：`data/a12_reports/tjunction/pytest/*.log`、`pytest_exit_codes.csv`。
+
+| 文件 | 退出码 | 说明 |
+| --- | --- | --- |
+| `test_cut_triangulation.py` | **0** | 4 passed + 6 xfailed（本轮新增断言，详见 `fracture_realism.md` §11.6） |
+| `test_shared_cutter.py` | **1** | 3 个 `FAILED`，全部 `CUTTER_NOT_CLOSED`（rough 夹具）；与 §10.6 的失败名相同 |
+| `test_event_qa.py` | **1** | `test_fixture_event_passes_the_a06_thresholds[rough_shared_cut]`；同 §10.6 |
+| `test_morphology_event.py` | **1** | `ERROR at setup`（刀体建不出来）；同 §10.6 |
+| `test_physical_layer_wiring.py` | **1** | 1 个 `FAILED` + 10 个 `ERROR`；**同源**（形态学/rough 刀体建不出来） |
+| `test_multishell_shared_cut.py` | **1** | `configs/a12/next_experiment.yaml` 相对路径解析失败（**工作目录相对**，与本次改动无关；文件确实存在） |
+| `test_morphology_model.py` / `test_interface_clip.py` / `test_impact_count.py` / `test_target_selection_and_lid_skirt.py` / `test_fracture_realism.py` | **0** | 无变化 |
+| `pytest tests/a12/fracture -q`（整体） | **非 0** | 仍非全绿；**失败原因与改动前同类**（刀体不水密），无新引入的失败类别 |
+
+**与 §10.6 基线的差异**：新增 `test_cut_triangulation.py`（0），其余文件的失败**名字与原因相同**
+（`CUTTER_NOT_CLOSED` 及其派生 ERROR），坏边数字更小。`test_multishell_shared_cut.py` 与
+`test_physical_layer_wiring.py` 需要**从仓库根或带 `rootdir` 的方式**运行才能解析
+`configs/a12/next_experiment.yaml`（本轮按文件直接跑，故前者 1、后者 1）。

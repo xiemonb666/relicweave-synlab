@@ -921,7 +921,9 @@ class ReliefField:
                                         albedo: Sequence[float], light: LightSpec,
                                         base_normals: np.ndarray | None = None,
                                         ra_scale: float | None = None,
-                                        levels: float = 255.0) -> dict[str, Any]:
+                                        levels: float = 255.0,
+                                        albedo_from_render: Sequence[float] | None = None,
+                                        ) -> dict[str, Any]:
         """Predicted ``dDN`` **on a given point set**, with the renderer's own linearisation.
 
         This is the scale-free form of :meth:`predicted_shading_ddn` and the one that is comparable
@@ -936,6 +938,12 @@ class ReliefField:
         wherever the grid's radius distribution differs from the rendered pixels' (measured:
         finite forward differences recover ``0.437`` of the analytic gradient RMS ``0.783``, a
         factor ``1.79``, and that bias is *radius dependent*).
+
+        ``albedo`` is the material record's albedo; ``albedo_from_render`` is the albedo the
+        delivered scene actually shaded with (``render.procedural_albedo``), which is what a dDN
+        measurement is proportional to.  Passing it makes the prediction directly comparable with
+        the rendered difference; leaving it out keeps the material-albedo number and reports the
+        ratio between the two, because the pair is a factor the reader must see.
         """
         pts = np.asarray(points_world, dtype=np.float64).reshape(-1, 3)
         if pts.shape[0] == 0:
@@ -949,26 +957,43 @@ class ReliefField:
         else:
             n0 = np.asarray(base_normals, dtype=np.float64).reshape(-1, 3)
         n0 = n0 / np.maximum(np.linalg.norm(n0, axis=1, keepdims=True), 1e-30)
+
         def _proj(t):
             p = t[None, :] - (n0 @ t)[:, None] * n0
             return p / np.maximum(np.linalg.norm(p, axis=1, keepdims=True), 1e-30)
+
         tu, tv = _proj(self.u_axis), _proj(self.v_axis)
         d_lambert = s * (gu * (tu @ l_eff) + gv * (tv @ l_eff))
         rms = float(np.sqrt(np.mean(d_lambert ** 2)))
+        color = np.asarray(light.color, dtype=np.float64).reshape(3)
         alb = np.asarray(albedo, dtype=np.float64).reshape(-1)[:3]
-        factor = float(levels) * float(np.mean(alb * np.asarray(light.color, dtype=np.float64)))
-        return {
+        factor = float(levels) * float(np.mean(alb * color))
+        out: dict[str, Any] = {
             "status": "OK", "n_points": int(pts.shape[0]),
             "gradient_rms": float(np.sqrt(np.mean(gu ** 2 + gv ** 2))),
             "d_lambert_rms": rms, "predicted_dDN": factor * rms,
             "d_lambert_p95_abs": float(np.percentile(np.abs(d_lambert), 95)),
             "predicted_dDN_p95": factor * float(np.percentile(np.abs(d_lambert), 95)),
             "albedo_channels_used": [float(x) for x in alb],
+            "dDN_factor": factor,
             "ra_scale": s, "levels": float(levels),
             "convention": ("evaluated at the renderer's own hit points with the renderer's own "
                            "tangent renormalisation; the clip of the frozen Lambert term is not "
                            "modelled, so this is an upper bound at the terminator"),
         }
+        if albedo_from_render is not None:
+            alb_r = np.asarray(albedo_from_render, dtype=np.float64).reshape(-1)[:3]
+            factor_r = float(levels) * float(np.mean(alb_r * color))
+            out.update({
+                "albedo_channels_from_render": [float(x) for x in alb_r],
+                "dDN_factor_from_render": factor_r,
+                "predicted_dDN_from_render_albedo": factor_r * rms,
+                "albedo_factor_ratio_render_over_material": (factor_r / factor) if factor else None,
+                "note_albedo": ("the delivered scene shades with render.procedural_albedo while "
+                                "the material record carries its own albedo; a dDN measurement is "
+                                "proportional to the FORMER, so the comparison must use it"),
+            })
+        return out
 
     def _grid_gradients(self) -> tuple[np.ndarray, np.ndarray]:
         """Cached gradient grid of the field at unit amplitude (mm/mm), envelope included."""

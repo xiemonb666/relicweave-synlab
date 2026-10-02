@@ -27,6 +27,11 @@ from typing import Any, Iterator, Mapping, Sequence
 import numpy as np
 
 from ..errors import ErrorCode, SynLabError
+from ..relations.legal_negative import (
+    NegativeEligibility,
+    flags_from_row,
+    resolve_negative_eligibility,
+)
 from ..seeds import make_rng, seed64, seed_ref
 from .batch import QUALITY_TIERS, UNCALIBRATED_TIERS
 
@@ -99,18 +104,95 @@ class PoolIndex:
         return [str(fid) for fid in self.lineage if str(fid) != str(fragment_id)]
 
     def history_exclusions(self, fragment_id: str) -> set[str]:
-        """Fragments that may never be an ordinary negative of ``fragment_id``."""
+        """Fragments that may never be an ordinary negative of ``fragment_id``.
+
+        Every candidate this adapter will not offer: the historical R2 mates, the query itself,
+        the grey-zone/``UNKNOWN``/``TINY`` readings, and -- since the eligibility fix
+        (``docs/a12/relation_negatives.md`` §9.1.1) -- every candidate the carrier's own
+        eligibility resolution refuses (a row the truth layer withdrew).  The exclusions are
+        derived from the same resolution :meth:`legal_pool` consumes, so the two can never
+        disagree about a candidate.
+        """
         out = set(self.neighbours(fragment_id))
         out.add(fragment_id)
         for cand in self.lineage:
             rel = self.relation(fragment_id, cand)
             if rel in ("UNKNOWN", "TINY_CONTACT") or rel in self.gray_zone_relations:
                 out.add(cand)
+                continue
+            if not self.confirmed(fragment_id, cand):
+                out.add(cand)
         return out
 
+    # ------------------------------------------------------------------ eligibility
+    def _carrier_resolution(self, a: str, b: str) -> Any | None:
+        """The carrier's own eligibility resolution, when it exposes one (one truth source).
+
+        The contract (``relations.pool_protocol.v1``) requires every pool to answer
+        ``negative_eligibility(a, b)``; a carrier that does not is handled by
+        :meth:`_resolve_eligibility` below, which reads that carrier's **rows** instead of
+        re-deriving the rule from the kind.
+        """
+        accessor = getattr(self.pool, "negative_eligibility", None)
+        if not callable(accessor):
+            return None
+        try:
+            return accessor(a, b)
+        except Exception:  # noqa: BLE001 - a carrier that cannot answer confirms nothing
+            return None
+
+    def _resolve_eligibility(self, a: str, b: str) -> Any:
+        """Consume the carrier's eligibility, or read its **row flags**; never recompute by kind.
+
+        Order of trust:
+
+        1. ``carrier.negative_eligibility(a, b)`` -- the carrier's own truth layer (an exported
+           table row, a stored relation edge, an implicit-``R0`` construction);
+        2. ``carrier.rows`` -- when the carrier exposes the classified rows it was built from, the
+           row's ``kind``/``valid``/``loss_mask``/``eligible_as_negative`` go through the single
+           truth source (:func:`...legal_negative.resolve_negative_eligibility`);
+        3. otherwise **refuse**: an input that carries neither an eligibility resolution nor the
+           flags cannot confirm the frozen gate, and *"cannot confirm"* never becomes *"supply
+           it"*.  This is the failure mode the fix exists for: ``PoolIndex.confirmed()`` used to
+           answer ``relation() in {R0,R1,R2}`` here.
+        """
+        carrier = self._carrier_resolution(a, b)
+        if carrier is not None:
+            return carrier
+        rows = getattr(self.pool, "rows", None)
+        if isinstance(rows, Mapping):
+            row = rows.get((str(a), str(b))) or rows.get((str(b), str(a)))
+            if row is not None:
+                return resolve_negative_eligibility(**flags_from_row(row))
+            return NegativeEligibility(
+                False, "row_not_named_by_the_carrier",
+                f"the carrier names no row for ({a}, {b}): eligibility cannot be confirmed")
+        return NegativeEligibility(
+            False, "carrier_exposes_no_eligibility_evidence",
+            f"{type(self.pool).__module__}.{type(self.pool).__name__} exposes neither "
+            f"negative_eligibility() nor rows: the gate cannot be confirmed, so no candidate is "
+            f"supplied")
+
+    def negative_eligibility(self, a: str, b: str) -> Any:
+        """Pass-through of the carrier's resolution (the protocol name)."""
+        return self._resolve_eligibility(a, b)
+
+    def eligibility_reason(self, a: str, b: str) -> str:
+        """The machine-readable reason a candidate is (not) eligible, for reports."""
+        return str(getattr(self._resolve_eligibility(a, b), "reason", ""))
+
     def confirmed(self, a: str, b: str) -> bool:
-        rel = self.relation(a, b)
-        return rel in ("R0", "R1", "R2")
+        """Whether ``b`` may serve as an ordinary negative of ``a``.
+
+        **Consumed, not recomputed.**  This method used to answer
+        ``self.relation(a, b) in ("R0", "R1", "R2")`` -- it derived confirmation from the pair's
+        kind and ignored the row's own ``valid``/``loss_mask``, which is how 24 withdrawn ``R1``
+        rows stayed in the sampler's negative supply even over the exported reader that refused
+        them (``docs/a12/relation_negatives.md`` §9.1.1; the live sampler path).  It now asks the
+        carrier (one truth source: :mod:`synlab.relations.legal_negative`) and refuses when the
+        carrier cannot answer.
+        """
+        return bool(self._resolve_eligibility(a, b).eligible)
 
     def legal_pool(self, fragment_id: str, *, relation: str | None = None) -> list[str]:
         banned = self.history_exclusions(fragment_id)
@@ -141,8 +223,11 @@ class PoolIndex:
                               f"{rel} candidate {candidate_id} used as a negative of {query_id}",
                               stage="training.sampler.PoolIndex.assert_legal_negative")
         if not self.confirmed(query_id, candidate_id):
+            resolution = self._resolve_eligibility(query_id, candidate_id)
             raise SynLabError(ErrorCode.LEAKAGE_DETECTED,
-                              f"unconfirmed candidate {candidate_id} used as a negative of {query_id}",
+                              f"unconfirmed candidate {candidate_id} ({rel}) used as a negative of "
+                              f"{query_id}: {getattr(resolution, 'reason', '')}: "
+                              f"{getattr(resolution, 'detail', '')}",
                               stage="training.sampler.PoolIndex.assert_legal_negative")
 
     def quality_tier(self, fragment_id: str) -> int:

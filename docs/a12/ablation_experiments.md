@@ -457,7 +457,11 @@ cd C:\Users\xiemo\Desktop\ShardForge\relicweave-synlab
 | `ABL_CONTEXT` | `context.excavation` | `context.enabled` | **present** | 2 个 `context_pack`（`simulated=true`）、queries 表 14 列中 1 列（`bag_id`）为声明的采集上下文 |
 | `ABL_DEGRADE` | `degrade.axis_levels` | `degrade.axes.<axis_id>.level` | **present** | 注册 **31 轴** / 有物化档位 **9 轴** / 变体 **33** / 源 **3** |
 | `ABL_FRACTURE_IFACE` | `fracture.interface_channels` | `fracture.interface_channels.enabled` | **present** | 71 碎片扫描 / 63 有断面 / **86 442 面** / **582 patch** / `<1 mm` Ra 恰好 0 的 patch **13** |
-| `ABL_HARD_NEGATIVES` | `relations.hard_negatives` | `negative_mix.hard_negative_weight` | **missing** | 全仓 0 个 `hard_negatives*.parquet`；类别只在线产出（`hard_negative_limit` 默认 0） |
+| `ABL_HARD_NEGATIVES` | `relations.hard_negatives` | `negative_mix.hard_negative_weight` | **present** | **1760 行**（= 880 无序对 × 2 方向）/ 44 query / 44 candidate / 全部 `loss_mask=True` 且 `eligible_as_negative=False` / 600 行被产者按 `query_mate_absent` 拒收；`source_relations_hash` == 本包 `relations.parquet` 的 sha256 |
+
+**汇总：6 组全部 `present`，0 个 `missing`。** （本任务开始时的第一版合并里
+`ABL_HARD_NEGATIVES` 曾是 `missing`；期间另一条线 N10 落了产者，本包改为**调用真产者**把它建成
+`present`，见 `docs/a12/export_guide.md` §12.4。若产者失败，该组会回到 `missing` 并写出解锁条件。）
 
 ### 8.1 与 §4 的 E 编号对应
 
@@ -468,7 +472,7 @@ cd C:\Users\xiemo\Desktop\ShardForge\relicweave-synlab
 | `G-DEGRADE-*`（E16，包 B 里 I/G/P/X 四族 28 轴） | **`ABL_DEGRADE`** | 本包按**注册表**给 31 轴（不是按物化了多少），所以"缺的轴"是可读的而不是消失的；实际物化仍只有 9 轴 33 档 |
 | `G-FRAC-ATTR` / `G-FRAC-IFACE-TRUTH`（E04/E06） | **`ABL_FRACTURE_IFACE`** | 本包把"断面在哪"从 `tag` 图推进到**逐 patch 的平面残差与分带幅度**，并给出可直接切的 `<1 mm Ra == 0` 总体 |
 | 无对应（视图族/分辨率） | **`ABL_ROI_VIEWS`** | 对应 `fracture_visible.md` §7.2 的 A/B/C 三组：A=整片±ROI、B=ROI 方向数 0/3/4/6、C=`mm/px` 0.0730 vs 0.0365 |
-| 无对应（负例类别） | **`ABL_HARD_NEGATIVES`** | 对应 `docs/a12/smallfixes_report.md` §S2 的开/关对照（已实测**无增益**，建议保持关闭）；本包只如实登记缺口 |
+| 无对应（负例类别） | **`ABL_HARD_NEGATIVES`** | 对应 `docs/a12/smallfixes_report.md` §S2 的开/关对照（已实测**无增益**，建议保持关闭）；本包放的是该类别**自己的辅助表**（1760 行），它 `eligible_as_negative=False`，因此按 §S2 的实测它**不动任何主分母**——这正是"开关开/关时 `positives/negatives/effective_queries` 必须逐位相同"这条判据要检验的性质 |
 
 ### 8.2 判正负收益的口径（沿用 §3 与 §5，不新造）
 
@@ -482,6 +486,12 @@ cd C:\Users\xiemo\Desktop\ShardForge\relicweave-synlab
   2. `ABL_FRACTURE_IFACE`：把 patch 按 `planar`（整块共面）与 `ra_below_1mm_mm == 0` 两个
      实测标签分层后，断面定位增益应当**只出现在 `ra_below_1mm_mm > 0` 的子总体**；
      若在恰好为 0 的子总体上同样出现增益，说明模型读的是"平面"而不是"断口"**（预期负结果）**。
+  3. `ABL_HARD_NEGATIVES`：把 `negative_mix.hard_negative_weight` 从 0 调到 0.3 时，
+     `positives / negatives / excluded / effective_queries / queries_with_positive /
+     queries_with_legal_negative` 必须**逐位不变**（该表 `eligible_as_negative` 全 false）；
+     任何一项变动都说明这个类别被错误地并进了普通负例池。§S2 已用同一判据实测过一次
+     （`moved_fields = {}`、`invariant = true`），本包提供的是**该类别自身的表**，
+     所以这条现在是"对包内表复跑"而不是"对在线类别复跑"。
 
 ### 8.3 复算命令
 

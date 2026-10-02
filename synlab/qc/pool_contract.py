@@ -53,6 +53,15 @@ The protocol (what every pool must provide)
 ``confirmed(a, b) -> bool``
     ``True`` for a measured adjacency (``R0``/``R1``/``R2`` under a reader that can see all of
     them, ``R0``/``R1`` under the deliberately conservative exported reader).
+``negative_eligibility(a, b)``
+    The **one truth source** of the ordinary-negative gate, consumed by every implementation
+    (``relations.legal_negative.resolve_negative_eligibility``): a frozen result carrying
+    ``eligible`` plus the machine-readable ``reason`` and a human ``detail``.  A reader supplies
+    the inputs from its own truth layer (an exported table row's ``valid``/``loss_mask``, a stored
+    relation edge, an implicit-``R0`` construction) and **never** re-derives eligibility from the
+    pair's kind; a row the truth layer withdrew (``valid=False`` / ``loss_mask=False``) is refused
+    by every reader, and an input that carries no eligibility evidence refuses too.  This is the
+    clause ``eligibility_follows_extracted_flags`` asserts.
 ``assert_legal_negative(q, c) -> None``
     Raises for ``c == q``, for a mate of ``q``, for ``R2``/``TINY_CONTACT``/``UNKNOWN`` and for an
     unconfirmed candidate; accepts every candidate of ``legal_pool(q)``.
@@ -110,7 +119,7 @@ NON_ADJACENCY_READINGS: tuple[str, ...] = ("SELF", "ABSENT", RELATION_UNKNOWN)
 #: Methods the protocol requires every pool to expose.
 PROTOCOL_METHODS: tuple[str, ...] = (
     "relation", "mates", "neighbours", "legal_pool", "legal_negatives", "confirmed",
-    "history_exclusions", "candidate_ids", "assert_legal_negative",
+    "history_exclusions", "candidate_ids", "assert_legal_negative", "negative_eligibility",
 )
 
 #: The four parallel implementations, by dotted path (for the report).
@@ -123,6 +132,9 @@ IMPLEMENTATIONS: tuple[str, ...] = (
 
 _QUERY_KEYS: tuple[str, ...] = ("query", "a", "fragment_a")
 _CANDIDATE_KEYS: tuple[str, ...] = ("candidate", "b", "fragment_b")
+
+#: Reason code the injected kind-recomputation stamps on its answers (report-only).
+KIND_RECOMPUTED = "eligibility_recomputed_from_the_kind"
 
 
 class PoolContractError(SynLabError):
@@ -462,6 +474,90 @@ def _assert_legal_negative_refuses_illegal(pool: Any, ctx: ProtocolContext) -> l
     return out
 
 
+def _ineligible_directions(ctx: ProtocolContext) -> dict[tuple[str, str], dict[str, Any]]:
+    """``{(query, candidate): row}`` for every direction the **row set** marks ineligible.
+
+    Derived from the rows alone (the contract's own reading, ``reference_rows``), never from an
+    implementation: a direction is listed when the row names it, its kind is an
+    ordinary-negative kind, and the row is withdrawn -- ``valid=False`` or ``loss_mask=False``.
+    Its ``eligible_as_negative`` flag must agree with that gate; a row where it does not is a
+    table defect and is reported by this assertion as well, because no reader may supply it.
+    """
+    out: dict[tuple[str, str], dict[str, Any]] = {}
+    for (a, b), entry in ctx._reference().items():
+        kinds = sorted(set(entry["kinds"]))
+        if len(kinds) != 1 or kinds[0] not in NEGATIVE_KINDS:
+            continue
+        row = next((r for r in ctx.rows
+                    if {str(r.get("query")), str(r.get("candidate"))} == {a, b}), {})
+        valid = row.get("valid", None)
+        loss_mask = row.get("loss_mask", None)
+        declared = row.get("eligible_as_negative", None)
+        if valid is None and loss_mask is None and declared is None:
+            continue                          # no flag vocabulary: nothing is withdrawn
+        flag_gate = bool(valid is True and loss_mask is True)
+        ineligible = (declared is False) or not flag_gate
+        if not ineligible:
+            continue                          # eligible under the frozen gate: not a finding
+        out[(a, b)] = {"kind": kinds[0], "valid": bool(valid), "loss_mask": bool(loss_mask),
+                       "eligible_as_negative": declared, "reason": str(row.get("reason", "") or "")}
+        out[(b, a)] = out[(a, b)]             # relations are symmetric: both directions
+    return out
+
+
+def _eligibility_follows_extracted_flags(pool: Any, ctx: ProtocolContext) -> list[str]:
+    """**The eligibility clause**: eligibility follows the extracted flags, never the kind.
+
+    ``docs/a12/relation_negatives.md`` §9.1.1: 24 ``R1`` rows (48 directed pairs) carry
+    ``valid=False``/``loss_mask=False`` and were supplied as ordinary negatives by
+    ``relations.gallery.RelationPool``, ``PoolIndex[exported]`` and ``PoolIndex[gallery]`` while
+    ``ExportedRelationPool``/``TrainingPoolView`` refused them.  The frozen gate is
+    ``eligible_as_negative := (kind in {R0,R1}) and valid and loss_mask``, so a withdrawn row must
+    be refused by **every** implementation, in four places at once -- the legal set, the guard, the
+    ``confirmed``/``negative_eligibility`` reading, and the exclusion list -- and the refusal must
+    carry a reason.  A reader that recomputes eligibility from the kind fails this clause.
+    """
+    out: list[str] = []
+    rows = _ineligible_directions(ctx)
+    for (query, candidate), row in sorted(rows.items()):
+        where = f"({query}, {candidate}) [{row['kind']} valid={row['valid']} " \
+                f"loss_mask={row['loss_mask']}]"
+        if candidate in {str(x) for x in pool.legal_pool(query)}:
+            out.append(f"legal_pool{where} offers a row the extracted flags withdraw")
+        if candidate in {str(x) for x in pool.legal_negatives(query)}:
+            out.append(f"legal_negatives{where} offers a row the extracted flags withdraw")
+        if str(pool.relation(query, candidate)) in NEGATIVE_KINDS \
+                and bool(pool.confirmed(query, candidate)):
+            out.append(f"confirmed{where} returns True for a row the extracted flags withdraw")
+        resolution = None
+        accessor = getattr(pool, "negative_eligibility", None)
+        if callable(accessor):
+            try:
+                resolution = accessor(query, candidate)
+            except Exception as exc:  # noqa: BLE001 - an accessor that raises fails the clause
+                out.append(f"negative_eligibility{where} raised {type(exc).__name__}: {exc}")
+        if resolution is None:
+            continue
+        if bool(getattr(resolution, "eligible", True)):
+            out.append(f"negative_eligibility{where} says eligible=True: {resolution!r}")
+        if not str(getattr(resolution, "reason", "") or ""):
+            out.append(f"negative_eligibility{where} refuses without a reason")
+    # the same clause for the mate/exclusion side: a withdrawn candidate must not be *implied*
+    # legal by an exclusion list that stays silent about it while the legal set is filtered
+    for fid in ctx.universe():
+        legal = {str(x) for x in pool.legal_pool(fid)}
+        for (query, candidate) in rows:
+            if query != str(fid) or candidate in legal:
+                continue
+            try:
+                pool.assert_legal_negative(fid, candidate)
+                out.append(f"assert_legal_negative({fid}, {candidate}) accepted a row the "
+                           f"extracted flags withdraw")
+            except Exception:  # noqa: BLE001 - expected refusal
+                pass
+    return out
+
+
 #: The battery, in report order.  Every implementation must satisfy **every** clause.
 ASSERTIONS: tuple[Assertion, ...] = (
     Assertion("interface_present",
@@ -504,6 +600,11 @@ ASSERTIONS: tuple[Assertion, ...] = (
     Assertion("assert_legal_negative_refuses_illegal",
               "the guard refuses q itself, its mates and every R2/TINY/UNKNOWN candidate",
               _assert_legal_negative_refuses_illegal),
+    Assertion("eligibility_follows_extracted_flags",
+              "a row the truth layer withdrew (valid=False / loss_mask=False) is refused by every "
+              "implementation -- legal set, guard, confirmed()/negative_eligibility() and history "
+              "exclusions alike: eligibility is consumed, never recomputed from the kind",
+              _eligibility_follows_extracted_flags),
 )
 
 ASSERTION_NAMES: tuple[str, ...] = tuple(a.name for a in ASSERTIONS)
@@ -863,8 +964,11 @@ def gallery_pool(ctx: ProtocolContext, *, fragments: Mapping[str, Any] | None = 
         if query not in lineup or candidate not in lineup:
             continue
         kind = str(row.get("kind", RELATION_R0))
-        if kind == RELATION_R0:
-            continue                          # implicit; storing it would materialise N^2
+        # Every row of the context goes in, ``R0`` included: an explicit ``R0`` row is a measured
+        # non-adjacency and it is what carries that row's ``valid``/``loss_mask`` eligibility flags
+        # (``relations.legal_negative``).  Skipping it would make the gallery read the pair as an
+        # *implicit* R0 -- i.e. eligible by construction -- which is a different row reading, not
+        # the same one.
         index.add(query, candidate, kind,
                   area_mm2=float(row.get("area_mm2") or 0.0),
                   valid=bool(row.get("valid", True)),
@@ -1017,6 +1121,45 @@ class GuardAcceptsAMate(_InjectedPool):
         return None
 
 
+class EligibilityRecomputedFromTheKind(_InjectedPool):
+    """The 9.1.1 defect, verbatim: eligibility recomputed from the **kind** again.
+
+    Both readings the divergence had are injected at once -- ``confirmed()`` answers
+    ``relation() in {R0,R1,R2}`` (the ``PoolIndex`` mechanism) and ``legal_pool()`` offers every
+    ``R0``/``R1`` candidate the row set withdrew (the ``RelationPool`` mechanism, which never
+    looked at ``valid`` for an explicit edge).  ``assert_legal_negative`` is deliberately left
+    untouched: the clause must be caught by the eligibility assertion, not by the guard.
+    """
+
+    expected_assertion = "eligibility_follows_extracted_flags"
+
+    def negative_eligibility(self, a: str, b: str) -> Any:
+        from ..relations.legal_negative import NegativeEligibility
+
+        kind = str(self.inner.relation(a, b))
+        return NegativeEligibility(kind in ("R0", "R1", "R2"), KIND_RECOMPUTED,
+                                   f"{kind} recomputed from the kind alone", kind)
+
+    def confirmed(self, a: str, b: str) -> bool:
+        return str(self.inner.relation(a, b)) in ("R0", "R1", "R2")
+
+    def legal_pool(self, fragment_id: str, *, relation: str | None = None) -> list[str]:
+        kind_wanted = None if relation is None else str(relation)
+        out = [str(x) for x in self.inner.legal_pool(fragment_id, relation=None)]
+        for candidate in self.inner.candidate_ids(fragment_id):
+            candidate = str(candidate)
+            kind = str(self.inner.relation(fragment_id, candidate))
+            if kind not in NEGATIVE_KINDS or candidate in out:
+                continue
+            if kind_wanted is not None and kind != kind_wanted:
+                continue
+            out.append(candidate)
+        return sorted(dict.fromkeys(out))
+
+    def legal_negatives(self, fragment_id: str) -> set[str]:
+        return {str(x) for x in self.legal_pool(fragment_id)}
+
+
 #: ``{injection name: (wrapper, assertion that must catch it)}``.
 FAILURE_INJECTIONS: dict[str, type[_InjectedPool]] = {
     "neighbours_return_the_negative_set": NeighboursReturnTheNegativeSet,
@@ -1025,6 +1168,7 @@ FAILURE_INJECTIONS: dict[str, type[_InjectedPool]] = {
     "legal_set_offers_unknown": LegalSetOffersUnknown,
     "relation_is_asymmetric": RelationIsAsymmetric,
     "guard_accepts_a_mate": GuardAcceptsAMate,
+    "eligibility_recomputed_from_the_kind": EligibilityRecomputedFromTheKind,
 }
 
 
