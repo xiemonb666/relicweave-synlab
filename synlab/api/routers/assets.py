@@ -187,25 +187,43 @@ def get_assets(
     is_research = session.policy.can_read_truth
     requested_roles = list(role or [])
     if requested_roles:
-        if not is_research:
-            forbidden = [r for r in requested_roles if r in RESEARCH_ONLY_ROLES]
-            if forbidden:
-                raise ApiProblem(403, "ROLE_FORBIDDEN",
-                                 f"role(s) {forbidden} carry research answers; use the research entry",
-                                 stage="assets.roles", details={"role": session.role})
+        for requested_role in requested_roles:
+            require_generic_asset_access(session.policy, requested_role, stage="assets.roles")
     else:
-        requested_roles = sorted(DEPLOYMENT_SAFE_ROLES) if not is_research else []
+        if session.role == ROLE_DEPLOYMENT:
+            requested_roles = sorted(DEPLOYMENT_SAFE_ROLES)
+        elif session.role != ROLE_RESEARCHER:
+            requested_roles = sorted(OPERATOR_DEFAULT_ROLES)
     if include_research_roles and not is_research:
         raise ApiProblem(403, "ROLE_FORBIDDEN",
                          "include_research_roles requires a researcher session", stage="assets.roles")
-    exclude = () if is_research else tuple(sorted(RESEARCH_ONLY_ROLES))
+    exclude = () if is_research else tuple(sorted(_NON_RESEARCH_BLOCKED_ROLES))
     payload = page_assets(session.store, roles=requested_roles or None, exclude_roles=exclude,
                           lineage_id=lineage_id, split=split, qa_status=qa_status,
                           workspace=session.workspace, limit=limit, cursor=cursor,
                           with_total=with_total)
+    if session.role == ROLE_DEPLOYMENT:
+        projected: list[dict[str, Any]] = []
+        for item in payload["items"]:
+            if item.get("role") == ROLE_FEATURE_BUNDLE:
+                try:
+                    record = session.store.get_asset(str(item["asset_id"]))
+                except SynLabError as exc:
+                    raise from_synlab(exc) from exc
+                require_workspace_match(session.policy, session.workspace,
+                                        (record.meta or {}).get("workspace"),
+                                        object_kind="asset", object_id=record.asset_id)
+                array_names = _feature_bundle_arrays(session.store, record)
+                projected.append(_deployment_feature_view(record, array_names))
+            else:
+                projected.append(item)
+        payload["items"] = projected
     payload["ok"] = True
     payload["role_filter"] = requested_roles or None
-    payload["role_filter_default"] = "deployment-safe roles" if not is_research and not role else None
+    payload["role_filter_default"] = (
+        "deployment-safe roles" if session.role == ROLE_DEPLOYMENT and not role else
+        "operator-visible roles" if session.role != ROLE_RESEARCHER and not role else None
+    )
     payload["research_roles_hidden"] = sorted(exclude)
     payload["empty_reason"] = (None if payload["items"] else
                                "no asset in this workspace matches the filter; "
@@ -222,7 +240,12 @@ def get_asset(session: SessionDep, asset_id: str) -> dict[str, Any]:
         raise from_synlab(exc) from exc
     require_workspace_match(session.policy, session.workspace, (record.meta or {}).get("workspace"),
                             object_kind="asset", object_id=resolved)
-    require_truth_access(session.policy, record.role, stage="assets.get")
+    require_generic_asset_access(session.policy, record.role, stage="assets.get")
+    if session.role == ROLE_DEPLOYMENT and record.role == ROLE_FEATURE_BUNDLE:
+        array_names = _feature_bundle_arrays(session.store, record)
+        return {"ok": True, "asset": _deployment_feature_view(record, array_names),
+                "role": session.role, "metadata_view": "deployment_projection",
+                "interpretation_hash_note": "hash identifies the canonical stored record, not this projection"}
     integrity = verify_all_files(session.store, resolved)
     payload = record.as_dict()
     payload.pop("path", None)
@@ -264,12 +287,20 @@ def get_asset_file(
         raise from_synlab(exc) from exc
     require_workspace_match(session.policy, session.workspace, (record.meta or {}).get("workspace"),
                             object_kind="asset", object_id=resolved)
-    require_truth_access(session.policy, record.role, stage="assets.files")
+    require_generic_asset_access(session.policy, record.role, stage="assets.files")
     if record.role != role:
         raise role_mismatch(record.role, role)
 
     file_name = key
-    if file_name is None:
+    deployment_feature = session.role == ROLE_DEPLOYMENT and record.role == ROLE_FEATURE_BUNDLE
+    if deployment_feature:
+        if file_name not in (None, "arrays"):
+            raise ApiProblem(403, "ROLE_FORBIDDEN",
+                             "deployment feature downloads expose only the declared arrays payload",
+                             stage="assets.files",
+                             details={"asset_role": record.role, "file_key": file_name})
+        file_name = "arrays"
+    elif file_name is None:
         for candidate in FILE_KEY_PRIORITY:
             if candidate in record.files:
                 file_name = candidate
@@ -283,6 +314,8 @@ def get_asset_file(
                          stage="assets.files", details={"available": sorted(record.files)})
 
     ref = resolve_file(session.store, resolved, file_name, verify=verify)
+    if deployment_feature:
+        _feature_bundle_arrays(session.store, record, ref=ref)
     body = ref.path.read_bytes()
     media = MEDIA_TYPES.get(file_name) or _guess_media(file_name)
     headers = {

@@ -7,7 +7,7 @@ historical true neighbours, ``C_M`` = first-stage pool, ``T_K`` = refined TopK):
     CovRecall@K   = |T_K n N_G(q)| / |N_G(q)|
     any@M         = 1[C_M n N_G(q) != empty]
     PoolCov@M     = |C_M n N_G(q)| / |N_G(q)|
-    ConditionalCov= |C_M n N_G(q)| / |C_M n P(q)|      (in-pool positives only)
+    ConditionalCov@K = |T_K n C_M n N_G(q)| / |C_M n N_G(q)|
     EffectiveCov@K= |A(q) n N_G(q)| / |N_G(q)|, A(q) = accepted set
     EffectiveHit@K= 1[that intersection is non-empty]
 
@@ -22,8 +22,9 @@ Honesty rules implemented here
   effective metrics; a present query that was rejected has an effective recall of 0;
 * duplicate candidate identities collapse to one candidate; the query itself is never a
   candidate;
-* ``ConditionalCov`` has the in-pool positive count as denominator: zero in-pool positives is
-  NA and is counted as ``pool_miss``.
+* ``ConditionalCov@K`` has the in-pool positive count as denominator: zero in-pool positives is
+  NA and is counted as ``pool_miss``. The old two-argument ``conditional_cov`` remains a legacy
+  pool-presence census and must not be used to assess retrieval success.
 """
 
 from __future__ import annotations
@@ -126,12 +127,33 @@ def pool_cov_at_m(first_stage: Iterable[Any], neighbours: Iterable[Any]) -> floa
 
 
 def conditional_cov(first_stage: Iterable[Any], neighbours: Iterable[Any]) -> float | None:
-    """In-pool diagnostic: denominator is the number of positives inside the pool."""
+    """Legacy pool-presence census; use :func:`conditional_cov_at_k` for retrieval quality.
+
+    The historical two-argument interface cannot distinguish the first-stage pool from its
+    refined TopK. It therefore returns 1.0 whenever the pool contains any positive and None
+    otherwise. Kept only for compatibility with old diagnostics; this value is not a retrieval
+    success metric.
+    """
     neighbour_list = _as_ids(neighbours)
     in_pool = intersect(first_stage, neighbour_list)
     if not in_pool:
-        return None                      # NA + counted as pool_miss (plan 19.1)
+        return None
     return len(in_pool) / float(len(in_pool))
+
+
+def conditional_cov_at_k(top_k: Iterable[Any], first_stage: Iterable[Any],
+                         neighbours: Iterable[Any]) -> float | None:
+    """Refined coverage of the true positives admitted by the first-stage pool.
+
+    ``C_M`` is ``first_stage``, ``T_K`` is ``top_k``, and ``N_G`` is the full historical R2
+    set. The denominator is ``|C_M ∩ N_G|``; the numerator is
+    ``|T_K ∩ C_M ∩ N_G|``. A zero denominator is NA and should be paired with ``pool_miss``.
+    Candidate IDs are deduplicated by identity through :func:`intersect`.
+    """
+    in_pool = intersect(first_stage, _as_ids(neighbours))
+    if not in_pool:
+        return None
+    return len(intersect(top_k, in_pool)) / float(len(in_pool))
 
 
 def pool_miss(first_stage: Iterable[Any], neighbours: Iterable[Any]) -> bool:
@@ -265,7 +287,7 @@ def query_metrics(*, query_id: str, neighbours: Sequence[str], gallery_ids: Sequ
     }
     row["pool_cov"] = pool_cov_at_m(stage, neighbour_list)
     row["any_at_m"] = any_at_m(stage, neighbour_list)
-    row["conditional_cov"] = conditional_cov(stage, neighbour_list)
+    row["conditional_cov_legacy_pool_census"] = conditional_cov(stage, neighbour_list)
     row["pool_miss"] = bool(pool_miss(stage, neighbour_list))
     row["in_pool_positives"] = len(intersect(stage, neighbour_list))
 
@@ -279,6 +301,10 @@ def query_metrics(*, query_id: str, neighbours: Sequence[str], gallery_ids: Sequ
         row[f"hit@{k}"] = hit
         row[f"cov@{k}"] = cov
         row[f"topk_na@{k}"] = hit is None
+        row[f"conditional_cov@{k}"] = conditional_cov_at_k(top, stage, neighbour_list)
+    max_k = max((int(k) for k in top_k), default=0)
+    row["conditional_cov"] = (row.get(f"conditional_cov@{max_k}") if max_k
+                              else None)
     max_k = max((int(k) for k in top_k), default=0)
     top_ids = ordered[:max_k] if max_k else ordered
     if accepted is None:
@@ -365,6 +391,9 @@ def aggregate_metrics(rows: Sequence[Mapping[str, Any]],
             "hit_at_k_na_count": _count_na(hit_values),
             "cov_recall_at_k": _mean(cov_values),
             "cov_recall_at_k_na_count": _count_na(cov_values),
+            "conditional_cov_at_k": _mean([r.get(f"conditional_cov@{k}") for r in rows]),
+            "conditional_cov_at_k_na_count": _count_na(
+                [r.get(f"conditional_cov@{k}") for r in rows]),
             "effective_hit_at_k": _mean(eff_hit_present),
             "effective_hit_at_k_denominator": len(present),
             "effective_cov_at_k": _mean(eff_cov_present),
@@ -382,6 +411,10 @@ def aggregate_metrics(rows: Sequence[Mapping[str, Any]],
     summary["any_at_m_na_count"] = _count_na(anys)
     summary["conditional_cov"] = _mean(conditionals)
     summary["conditional_cov_na_count"] = _count_na(conditionals)
+    summary["conditional_cov_semantics"] = "max configured K; conditional_cov_at_k_v2"
+    summary["conditional_cov_legacy_semantics"] = (
+        "conditional_cov_legacy_pool_census is compatibility-only and is not retrieval success"
+    )
     summary["risk"] = {
         "absent_false_accept_events": int(sum(int(r.get("absent_false_accept", 0)) for r in rows)),
         "absent_denominator": len(absent),
@@ -446,7 +479,8 @@ __all__ = [
     "STATUS_OK", "STATUS_REJECTED", "STATUS_INPUT_UNAVAILABLE", "STATUS_TIMEOUT",
     "STATUS_RECONSTRUCTION_FAILED", "STATUS_NO_CANDIDATE", "STATUS_NA_NOT_APPLICABLE",
     "FAILURE_STATUSES", "DEFAULT_TOP_K", "dedupe_candidates", "intersect", "hit_at_k",
-    "cov_recall_at_k", "any_at_m", "pool_cov_at_m", "conditional_cov", "pool_miss",
+    "cov_recall_at_k", "any_at_m", "pool_cov_at_m", "conditional_cov",
+    "conditional_cov_at_k", "pool_miss",
     "accept_set", "effective_hit_at_k", "effective_cov_at_k", "risk_events", "query_metrics",
     "aggregate_metrics", "per_query_table",
 ]

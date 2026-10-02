@@ -222,11 +222,13 @@ def evaluate(checkpoint_ref: Any, pool_ref: Any = None, *, top_k: Sequence[int] 
         accept_set,
         any_at_m,
         conditional_cov,
+        conditional_cov_at_k,
         cov_recall_at_k,
         effective_cov_at_k,
         effective_hit_at_k,
         hit_at_k,
         pool_cov_at_m,
+        pool_miss,
         risk_events,
     )
 
@@ -258,27 +260,37 @@ def evaluate(checkpoint_ref: Any, pool_ref: Any = None, *, top_k: Sequence[int] 
     assert_cacheable_index_ok(model.index_identity())
 
     payloads = getattr(pool, "features", None) or {}
-    if not payloads:
+    pool_lineup = getattr(pool, "lineup", None)
+    lineup = list(payloads) if pool_lineup is None else list(pool_lineup)
+    if not lineup:
         raise SynLabError(ErrorCode.INPUT_UNAVAILABLE,
-                          "pool has no feature payloads to evaluate",
+                          "pool has no frozen gallery lineup to evaluate",
                           stage="training.api.evaluate")
-    lineup = list(getattr(pool, "lineup", list(payloads)))
     ids = [fid for fid in lineup if fid in payloads]
     missing_feature_ids = sorted({str(fid) for fid in lineup if fid not in payloads})
-    bundle = FeatureBundle.from_dict({fid: payloads[fid] for fid in ids}).check_shapes()
-    model.encoder.eval()
-    z, z_valid = model.encoder.encode_batch(bundle.to_torch())
-    emb = {fid: z[i] for i, fid in enumerate(ids)}
-    encodable = {fid: bool(z_valid[i]) for i, fid in enumerate(ids)}
+    if ids:
+        bundle = FeatureBundle.from_dict({fid: payloads[fid] for fid in ids}).check_shapes()
+        model.encoder.eval()
+        z, z_valid = model.encoder.encode_batch(bundle.to_torch())
+        emb = {fid: z[i] for i, fid in enumerate(ids)}
+        encodable = {fid: bool(z_valid[i]) for i, fid in enumerate(ids)}
+    else:
+        emb = {}
+        encodable = {}
     input_failures = sorted(fid for fid in ids if not encodable[fid])
 
-    query_ids = list(queries) if queries is not None else list(ids)
+    query_ids = list(queries) if queries is not None else list(lineup)
     rows: list[dict[str, Any]] = []
-    per_k: dict[int, dict[str, list[float]]] = {int(k): {"hit": [], "cov": [], "eff_hit": [],
-                                                         "eff_cov": []} for k in top_k}
+    per_k: dict[int, dict[str, list[float]]] = {
+        int(k): {"hit": [], "cov": [], "conditional_cov": [], "eff_hit": [], "eff_cov": []}
+        for k in top_k
+    }
     pool_covs: list[float] = []
     anys: list[float] = []
     conditionals: list[float] = []
+    legacy_conditionals: list[float] = []
+    pool_miss_count = 0
+    pool_miss_denominator = 0
     risk_absent: list[int] = []
     risk_present: list[int] = []
 
@@ -315,6 +327,9 @@ def evaluate(checkpoint_ref: Any, pool_ref: Any = None, *, top_k: Sequence[int] 
                 "pool_cov": None,
                 "any_at_m": None,
                 "conditional_cov": None,
+                "conditional_cov_legacy_pool_census": None,
+                "conditional_cov_semantics": "conditional_cov_at_k_v2 at maximum configured K",
+                "pool_miss": None,
                 "effective_hit": 0.0,
                 "effective_cov": 0.0,
                 "failure_code": ErrorCode.INPUT_UNAVAILABLE.value,
@@ -322,10 +337,18 @@ def evaluate(checkpoint_ref: Any, pool_ref: Any = None, *, top_k: Sequence[int] 
             for k in top_k:
                 row[f"hit@{int(k)}"] = None
                 row[f"cov@{int(k)}"] = None
+                row[f"conditional_cov@{int(k)}"] = None
                 row[f"effective_hit@{int(k)}"] = 0.0
                 row[f"effective_cov@{int(k)}"] = 0.0
+                per_k[int(k)]["hit"].append(np.nan)
+                per_k[int(k)]["cov"].append(np.nan)
+                per_k[int(k)]["conditional_cov"].append(np.nan)
                 per_k[int(k)]["eff_hit"].append(0.0)
                 per_k[int(k)]["eff_cov"].append(0.0)
+            pool_covs.append(np.nan)
+            anys.append(np.nan)
+            conditionals.append(np.nan)
+            legacy_conditionals.append(np.nan)
             rows.append(row)
             continue
         cand_ids = [c for c in ids if c != qid and encodable.get(c, False)]
@@ -350,12 +373,19 @@ def evaluate(checkpoint_ref: Any, pool_ref: Any = None, *, top_k: Sequence[int] 
             "candidate_input_failures": sorted(set(input_failures)),
             "pool_cov": pool_cov_at_m(first_stage, neighbours),
             "any_at_m": any_at_m(first_stage, neighbours),
-            "conditional_cov": conditional_cov(first_stage, neighbours),
+            "conditional_cov": None,
+            "conditional_cov_legacy_pool_census": conditional_cov(first_stage, neighbours),
+            "conditional_cov_semantics": "conditional_cov_at_k_v2 at maximum configured K",
+            "pool_miss": bool(pool_miss(first_stage, neighbours)),
         }
+        pool_miss_count += int(row["pool_miss"])
+        pool_miss_denominator += 1
         pool_covs.append(row["pool_cov"] if row["pool_cov"] is not None else np.nan)
         anys.append(row["any_at_m"] if row["any_at_m"] is not None else np.nan)
-        conditionals.append(row["conditional_cov"] if row["conditional_cov"] is not None
-                            else np.nan)
+        legacy_conditionals.append(
+            row["conditional_cov_legacy_pool_census"]
+            if row["conditional_cov_legacy_pool_census"] is not None else np.nan)
+        max_k = max((int(k) for k in top_k), default=None)
         for k in top_k:
             k = int(k)
             top = ranked[:k]
@@ -366,12 +396,18 @@ def evaluate(checkpoint_ref: Any, pool_ref: Any = None, *, top_k: Sequence[int] 
                         if accept_threshold is not None else top)
             eff_hit = effective_hit_at_k(accepted, neighbours)
             eff_cov = effective_cov_at_k(accepted, neighbours)
+            conditional = conditional_cov_at_k(top, first_stage, neighbours)
+            if k == max_k:
+                row["conditional_cov"] = conditional
             row[f"hit@{k}"] = hit
             row[f"cov@{k}"] = cov
+            row[f"conditional_cov@{k}"] = conditional
             row[f"effective_hit@{k}"] = eff_hit
             row[f"effective_cov@{k}"] = eff_cov
             per_k[k]["hit"].append(np.nan if hit is None else hit)
             per_k[k]["cov"].append(np.nan if cov is None else cov)
+            per_k[k]["conditional_cov"].append(
+                np.nan if conditional is None else conditional)
             per_k[k]["eff_hit"].append(eff_hit)
             per_k[k]["eff_cov"].append(eff_cov)
             if k == int(max(top_k)):
@@ -380,6 +416,8 @@ def evaluate(checkpoint_ref: Any, pool_ref: Any = None, *, top_k: Sequence[int] 
                 risk_present.append(int(events["present_wrong_accept"]))
                 row["accepted"] = accepted
                 row["risk"] = events
+        conditionals.append(row["conditional_cov"] if row["conditional_cov"] is not None
+                            else np.nan)
         rows.append(row)
 
     def _agg(values):
