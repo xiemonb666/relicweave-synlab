@@ -792,6 +792,160 @@ def _calibration_points(rows: Sequence[dict[str, Any]], *, label_prefix: str = "
     return points
 
 
+# ---------------------------------------------------------------------------- doc tables
+def doc_tables(inputs: Sequence[str], *, v_ref_mm3: float = 339292.0,
+               thickness_ref_mm: float = 6.0, weibull_modulus: float = 7.0,
+               weibull_volume_exponent: float = 0.5, min_pieces: int = 2,
+               max_pieces: int = 64) -> str:
+    """Regenerate the markdown tables of ``docs/a12/fracture_calibration.md`` from the raw JSON.
+
+    Hand-copied numbers in a calibration document drift from the measurements the moment anything
+    is re-run; this renders the tables straight from the files the instrument wrote, and
+    ``tests/a12/fracture/test_calibration_audit.py`` checks the same files, so the document and the
+    tests cannot disagree.
+    """
+    merged: dict[str, Any] = {"rows": []}
+    for path in inputs:
+        payload = json.loads(Path(path).read_text(encoding="utf-8"))
+        for row in payload.get("rows") or []:
+            row = dict(row)
+            row["_series"] = Path(path).stem.replace("fracture_calibration_", "")
+            merged["rows"].append(row)
+    rows = merged["rows"]
+    points = _calibration_points(rows)
+    lines: list[str] = []
+
+    def _status(row: dict[str, Any]) -> str:
+        return str(row.get("status", ""))
+
+    lines.append("### A. measurement points")
+    lines.append("")
+    lines.append("| # | vessel/material | series | volume mm^3 | wall mm | drop mm | U J | n_raw | "
+                 "N_det | N measured | status |")
+    lines.append("|---|---|---|---|---|---|---|---|---|---|---|")
+    for index, row in enumerate(rows, start=1):
+        body = row.get("body") or {}
+        measurement = row.get("measurement") or {}
+        count = measurement.get("count_model") or {}
+        status = _status(row)
+        if status == "OK":
+            failure = ""
+        else:
+            failure = " " + str((row.get("failure") or {}).get("code", ""))
+        energy_text = ("%.3f" % float(count["energy_j"])) if count.get("energy_j") else "-"
+        raw_text = ("%.3f" % float(count["n_raw"])) if count.get("n_raw") is not None else "-"
+        det_text = ("%.3f" % float(count["n_deterministic"])) if count.get("n_deterministic") else "-"
+        cells = [
+            str(index),
+            f"{row.get('vessel_id')}/{row.get('material_id')}",
+            str(row.get("_series")),
+            "%.0f" % float(body.get("volume_mm3") or 0.0),
+            "%.3f" % float(body.get("thickness_median_mm") or 0.0),
+            str(row.get("drop_height_mm")),
+            energy_text, raw_text, det_text,
+            str(measurement.get("pieces", "-")),
+            status + failure,
+        ]
+        lines.append("| " + " | ".join(cells) + " |")
+
+    lines.append("")
+    lines.append("### B. audit extremes over every green point")
+    lines.append("")
+    worst: dict[str, float] = {}
+    for row in rows:
+        measurement = row.get("measurement") or {}
+        if not measurement:
+            continue
+        for key in ("volume_rel_diff", "overlap_ratio", "gap_p95_mm_max",
+                    "normal_angle_p95_deg_max", "ambiguous_area_ratio_total",
+                    "unmatched_interface_area_ratio"):
+            value = measurement.get(key)
+            if isinstance(value, (int, float)):
+                worst[key] = max(worst.get(key, float("-inf")), float(value))
+        coverage = measurement.get("source_coverage")
+        if isinstance(coverage, (int, float)):
+            worst["source_coverage_min"] = min(worst.get("source_coverage_min", float("inf")),
+                                               float(coverage))
+        identity = measurement.get("vertex_identity_ratio_min")
+        if isinstance(identity, (int, float)):
+            worst["vertex_identity_ratio_min"] = min(
+                worst.get("vertex_identity_ratio_min", float("inf")), float(identity))
+        nearest = measurement.get("nearest_surface_p95_mm_max")
+        if isinstance(nearest, (int, float)):
+            worst["nearest_surface_p95_mm_max"] = max(
+                worst.get("nearest_surface_p95_mm_max", float("-inf")), float(nearest))
+    lines.append("| metric | worst over green points |")
+    lines.append("|---|---|")
+    for key, value in sorted(worst.items()):
+        lines.append(f"| {key} | {value:.6g} |")
+
+    lines.append("")
+    lines.append("### C. refusals")
+    lines.append("")
+    lines.append("| vessel/material | series | drop mm | count | status | message |")
+    lines.append("|---|---|---|---|---|---|")
+    for row in rows:
+        if _status(row) == "OK":
+            continue
+        failure = row.get("failure") or {}
+        lines.append("| {}/{} | {} | {} | {} | {} | {} |".format(
+            row.get("vessel_id"), row.get("material_id"), row.get("_series"),
+            row.get("drop_height_mm"), row.get("target_pieces_override"), _status(row),
+            str(failure.get("message", failure.get("code", "")))[:160]))
+
+    lines.append("")
+    lines.append("### D. fits")
+    lines.append("")
+    free = [p for p in points if float(p.get("n_deterministic") or 0.0) > float(min_pieces)]
+    fits = {
+        "unclamped (N > floor)": count_fit(free, v_ref_mm3=v_ref_mm3,
+                                           thickness_ref_mm=thickness_ref_mm,
+                                           weibull_modulus=weibull_modulus,
+                                           weibull_volume_exponent=weibull_volume_exponent,
+                                           min_pieces=min_pieces, max_pieces=max_pieces,
+                                           censor=False),
+        "all points, floor censored": count_fit(points, v_ref_mm3=v_ref_mm3,
+                                                thickness_ref_mm=thickness_ref_mm,
+                                                weibull_modulus=weibull_modulus,
+                                                weibull_volume_exponent=weibull_volume_exponent,
+                                                min_pieces=min_pieces, max_pieces=max_pieces,
+                                                censor=True),
+    }
+    lines.append("| fit | n | N0 | beta | R2(ln N) | RMSE(ln N) | MAE pieces | max abs |")
+    lines.append("|---|---|---|---|---|---|---|---|")
+    for label, fit in fits.items():
+        if "fitted" not in fit:
+            lines.append(f"| {label} | {fit.get('n')} | - | - | - | - | - | - |")
+            continue
+        lines.append("| {} | {} | {:.4f} | {:.4f} | {:.4f} | {:.4f} | {:.3f} | {:.3f} |".format(
+            label, fit["n"], fit["fitted"]["n0"], fit["fitted"]["beta"], fit["r2_log"],
+            fit["rmse_log"], fit["mae_pieces"], fit["max_abs_error_pieces"]))
+    lines.append("")
+    lines.append("### E. monotonicity")
+    lines.append("")
+    checks = {
+        "energy series (one body)": monotonicity_check(
+            [{"label": p["label"], "energy_j": p["energy_j"], "pieces": p["n_deterministic"]}
+             for p in points], key="energy_j"),
+        "controlled size series": monotonicity_check(
+            [{"label": p["label"], "volume_mm3": p["volume_mm3"],
+              "pieces": p["n_deterministic"]} for p in points if p.get("scale") is not None],
+            key="volume_mm3"),
+        "all points by volume": monotonicity_check(
+            [{"label": p["label"], "volume_mm3": p["volume_mm3"],
+              "pieces": p["n_deterministic"]} for p in points], key="volume_mm3"),
+    }
+    lines.append("| check | monotone non-decreasing | violations |")
+    lines.append("|---|---|---|")
+    for label, check in checks.items():
+        lines.append(f"| {label} | {check['monotone_non_decreasing']} | {len(check['violations'])} |")
+        for violation in check["violations"]:
+            lines.append("| ↳ {} vs {} | | pieces {} < {} |".format(
+                violation["smaller"]["label"], violation["larger"]["label"],
+                violation["larger"]["pieces"], violation["smaller"]["pieces"]))
+    return "\n".join(lines) + "\n"
+
+
 # ---------------------------------------------------------------------------- cli
 def _load(paths: Sequence[str]) -> dict[str, Any]:
     merged: dict[str, Any] = {"sources": []}
@@ -858,6 +1012,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     p.add_argument("--max-pieces", type=int, default=64)
     p.add_argument("--existing", default="configs/a12/fracture_physics.yaml",
                    help="current physics config, whose declared law is also evaluated on the points")
+
+    p = sub.add_parser("tables")
+    p.add_argument("--inputs", nargs="+", required=True)
+    p.add_argument("--out", required=True)
+    p.add_argument("--v-ref-mm3", type=float, default=339292.0)
+    p.add_argument("--thickness-ref-mm", type=float, default=6.0)
+    p.add_argument("--weibull-modulus", type=float, default=7.0)
 
     args = parser.parse_args(list(argv) if argv is not None else None)
     out = Path(args.out)
@@ -1018,6 +1179,13 @@ def main(argv: Sequence[str] | None = None) -> int:
                              "max_abs_error_pieces", "n", "n_censored_at_floor")},
             "declared_n_clamped": declared.get("n_clamped"),
         }, indent=1), flush=True)
+    elif args.command == "tables":
+        text = doc_tables(args.inputs, v_ref_mm3=args.v_ref_mm3,
+                          thickness_ref_mm=args.thickness_ref_mm,
+                          weibull_modulus=args.weibull_modulus)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(text, encoding="utf-8")
+        print(text[:2000], flush=True)
     print("wrote", out, flush=True)
     return 0
 

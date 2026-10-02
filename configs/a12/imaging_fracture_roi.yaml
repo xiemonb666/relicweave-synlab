@@ -80,6 +80,15 @@ fracture_roi:
   height_bands_mm: [5.0, 1.0, 0.25]
   # Rays per patch used for the occlusion test that orients the normal and scores a direction.
   visibility_rays: 400
+  # In-plane azimuths tried per tilted direction (measured occlusion/free-space planning).
+  azimuth_step_deg: 45.0
+  # A real close-up needs a place for the lens: the outward segment from the fracture surface
+  # must be material-free for at least the working distance (measured by ray casting).
+  require_free_optical_path: true
+  # Smallest |z| of any mesh vertex in the camera frame.  Below this the Blender worker's camera
+  # self-check cannot be evaluated (a vertex on the camera plane projects to f_px*x/z, where its
+  # float32 and float64 evaluations cannot agree), so the planner refuses that position.
+  min_camera_plane_clearance_mm: 2.0
   # A direction counts as showing the fracture when it delivers at least this many rim pixels.
   effective_rim_px_min: 200
   # Contract pointers, kept next to the numbers they justify.

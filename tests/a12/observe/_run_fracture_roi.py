@@ -148,9 +148,13 @@ def run_body(entry: dict, config: fr.FractureRoiConfig, *, backend: str, samples
                                           distortion_policy=rt.DISTORTION_POLICY_IGNORE,
                                           denoise=False, run_label=f"roi_{entry['vessel']}")
     profiles = {p.tier: p for p in camera_profiles()}
-    whole_profile = profiles["MID"]
+    # both families are rendered by the *same* node at the same delivered grid; they differ only
+    # in framing (whole fragment vs fracture close-up).  The delivered grid is the camera's own
+    # grid, so no crop/resize sits between the render and the measurement (A = identity) and the
+    # Blender worker's fx == fy requirement holds exactly.
+    whole_profile = fr.delivered_profile(profiles["MID"], long_edge_px=WHOLE_LONG_EDGE)
     closeup = fr.closeup_profile(config, base=profiles[config.base_tier],
-                                delivered_long_edge_px=ROI_LONG_EDGE)
+                                 delivered_long_edge_px=ROI_LONG_EDGE)
     f_px_closeup = float(closeup.K[0, 0]) * float(ROI_LONG_EDGE) / float(closeup.image_size[0])
     footprint_radius = fr.mm_per_px(working_distance_mm=config.working_distance_mm,
                                     f_px=f_px_closeup) * 0.5 * ROI_LONG_EDGE
@@ -189,10 +193,13 @@ def run_body(entry: dict, config: fr.FractureRoiConfig, *, backend: str, samples
                                      delivered=(int(extra_rung), int(extra_rung * 0.75)),
                                      max_render_pixels=int(extra_rung) * int(extra_rung),
                                      seed=20261001)
-            extra_frames = fr.make_fracture_roi_frames(rois=rois[:1], profile=closeup,
+            extra_profile = fr.closeup_profile(config, base=profiles[config.base_tier],
+                                               delivered_long_edge_px=int(extra_rung))
+            extra_frames = fr.make_fracture_roi_frames(rois=rois[:1], profile=extra_profile,
                                                        spec=extra_spec, config=config,
                                                        long_edge_px=int(extra_rung), rng=rng,
-                                                       run_id=f"roi_{entry['vessel']}_hi")
+                                                       run_id=f"roi_{entry['vessel']}_hi",
+                                                       mesh=target.mesh)
             started = time.perf_counter()
             extra_bundles, _ = fr.render_fracture_roi_views(
                 target=target, frames=extra_frames, spec=extra_spec, rng=rng, backend=backend,
@@ -200,12 +207,13 @@ def run_body(entry: dict, config: fr.FractureRoiConfig, *, backend: str, samples
             extra = {
                 "long_edge_px": int(extra_rung),
                 "seconds": float(time.perf_counter() - started),
-                "records": [fr.view_resolution_record(b) for b in extra_bundles],
+                "records": [fr.view_resolution_record(b, mesh=target.mesh)
+                            for b in extra_bundles],
             }
     timing["gpu_memory"] = gpu.report()
 
-    whole_records = [fr.view_resolution_record(b) for b in whole_bundles]
-    roi_records = [fr.view_resolution_record(b) for b in roi_bundles]
+    whole_records = [fr.view_resolution_record(b, mesh=target.mesh) for b in whole_bundles]
+    roi_records = [fr.view_resolution_record(b, mesh=target.mesh) for b in roi_bundles]
     for record, bundle in zip(roi_records, roi_bundles):
         roi_id = str((bundle.frame.meta or {}).get("fracture_roi_id") or "")
         roi = next((r for r in rois if r.roi_id == roi_id), None)
@@ -254,9 +262,9 @@ def run_body(entry: dict, config: fr.FractureRoiConfig, *, backend: str, samples
                                 "dof_far_mm": closeup.meta.get("dof_report", {}).get("far_mm"),
                                 "calibration_status": closeup.meta.get("calibration_status"),
                                 "footprint_radius_mm": footprint_radius},
-            "whole_spec": {"profile": whole_profile.profile_id, "delivered": [WHOLE_LONG_EDGE,
-                                                                            int(WHOLE_LONG_EDGE * 0.75)],
-                           "f_px_delivered": float(whole_profile.K[0, 0]) * 0.256,
+            "whole_spec": {"profile": whole_profile.profile_id,
+                           "delivered": list(whole_profile.image_size),
+                           "f_px_delivered": float(whole_profile.K[0, 0]),
                            "n_views": WHOLE_VIEW_COUNT},
             "roi_spec": {"delivered": [ROI_LONG_EDGE, int(ROI_LONG_EDGE * 0.75)],
                          "n_views_per_fracture": int(config.directions),
@@ -269,7 +277,7 @@ def resolvability(config: fr.FractureRoiConfig, measurements: dict) -> dict:
     from synlab.cameras.profiles import camera_profiles
 
     profiles = {p.tier: p for p in camera_profiles()}
-    whole_f_px = float(profiles["MID"].K[0, 0]) * 0.256          # 1024-long-edge delivered grid
+    whole_f_px = float(fr.delivered_profile(profiles["MID"], long_edge_px=1024).K[0, 0])
     closeup = fr.closeup_profile(config, base=profiles[config.base_tier],
                                  delivered_long_edge_px=1024)
     closeup_f_px = float(closeup.K[0, 0]) * 1024.0 / float(closeup.image_size[0])
@@ -439,6 +447,8 @@ def _aggregate(records: list[dict]) -> dict:
     return {
         "n_views": len(records),
         "mm_per_px_median": median("mm_per_px_measured"),
+        "mm_per_px_axis_raycast_median": median("mm_per_px_axis_raycast"),
+        "mm_per_px_at_centre_median": median("mm_per_px_at_centre"),
         "mm_per_px_min": min((float(r["mm_per_px_measured"]) for r in records
                               if r.get("mm_per_px_measured")), default=None),
         "px_per_mm_median": median("px_per_mm_measured"),
@@ -446,8 +456,10 @@ def _aggregate(records: list[dict]) -> dict:
         "rim_px_total": int(sum(int(r.get("rim_px", 0)) for r in records)),
         "rim_fraction_of_object_median": median("rim_fraction_of_object"),
         "delivered_sizes": sorted({tuple(r["delivered_size_px"]) for r in records}),
-        "structure_0p2mm_px": median("structure_0p2mm_px") if "structure_0p2mm_px" in
-        (records[0] if records else {}) else (
+        "structure_0p2mm_px_axis_raycast": (0.2 / median("mm_per_px_axis_raycast"))
+        if median("mm_per_px_axis_raycast") else None,
+        "rim_fraction_of_object_median_all": median("rim_fraction_of_object"),
+        "structure_0p2mm_px": (
             (0.2 / median("mm_per_px_measured")) if median("mm_per_px_measured") else None),
     }
 

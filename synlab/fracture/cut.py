@@ -955,53 +955,45 @@ class _Quadtree:
         s = self.edge_splits(i, j, level)
         n_split = int(sum(s))
         if n_split == 0:
+            # Unrefined cell: the two-triangle split.  This is the only branch a *flat* height
+            # field ever takes (the refinement fixed point never marks a zero-error cell), so it
+            # is what keeps the plane backend bitwise identical across the triangulation rewrite.
             pts = [c00, c10, c11, c01]
             tris = [(0, 1, 2), (0, 2, 3)]
-        elif n_split == 1:
-            if s[0]:      # left edge split
-                pts = [c00, c10, c11, c01, m_v0]
-                tris = [(0, 4, 3), (4, 1, 2), (4, 2, 3)]
-            elif s[1]:    # bottom edge split
-                pts = [c00, c10, c11, c01, m_u0]
-                tris = [(0, 1, 4), (1, 2, 4), (4, 2, 3)]
-            elif s[2]:    # right edge split
-                pts = [c00, c10, c11, c01, m_v1]
-                tris = [(0, 1, 2), (0, 2, 4), (4, 2, 3)]
-            else:         # top edge split
-                pts = [c00, c10, c11, c01, m_u1]
-                tris = [(0, 1, 4), (0, 4, 3), (4, 2, 3)]
-        elif n_split == 2 and s[0] and s[2]:
-            pts = [c00, c10, c11, c01, m_v0, m_v1]
-            tris = [(0, 4, 1), (4, 2, 1), (4, 5, 2), (4, 3, 5), (0, 3, 4)]
-        elif n_split == 2 and s[1] and s[3]:
-            pts = [c00, c10, c11, c01, m_u0, m_u1]
-            tris = [(0, 1, 5), (0, 5, 2), (0, 2, 4), (4, 2, 3), (5, 4, 2)]
-        elif n_split == 2:
-            if s[0] and s[1]:
-                pts = [c00, c10, c11, c01, m_v0, m_u0]
-                tris = [(0, 5, 4), (5, 1, 4), (1, 2, 4), (4, 2, 3)]
-            elif s[1] and s[2]:
-                pts = [c00, c10, c11, c01, m_u0, m_v1]
-                tris = [(0, 1, 5), (5, 2, 4), (1, 4, 5), (4, 2, 3)]
-            elif s[2] and s[3]:
-                pts = [c00, c10, c11, c01, m_v1, m_u1]
-                tris = [(0, 1, 4), (4, 2, 5), (4, 5, 3), (3, 5, 0)]
-            else:
-                pts = [c00, c10, c11, c01, m_u1, m_v0]
-                tris = [(0, 5, 1), (1, 5, 4), (5, 3, 4), (4, 3, 2)]
-        else:  # 3 or 4 split edges -> fan from the cell centre
+        else:
+            # ---------------------------------------------------------------- unified fan
+            #
+            # One algorithm for all of ``n_split in 1..4``: walk the cell boundary
+            # ``c00 -> c10 -> c11 -> c01 -> c00`` in counter-clockwise order and insert the
+            # midpoint of every *split* edge between the two halves of that edge, then fan the
+            # resulting ring from the cell centre.  Both halves of a split edge are kept, so the
+            # ring is an exact traversal of the cell boundary for every split pattern; the
+            # previous branch table instead *deleted* both halves of some edges (25 % hole -> the
+            # "edge used once" half of the defect) and emitted other triangles twice (the "edge
+            # used 3-7 times" half).
+            #
+            # The walk order is what makes the emitted triangles of a *fully* split cell
+            # identical to the previous ``n_split == 4`` fan; for the broken combinations it is
+            # the only difference between a tiling and a hole.
+            walk = (
+                (0, 1, 4),   # bottom edge c00 -> c10, midpoint m_u0
+                (1, 2, 5),   # right  edge c10 -> c11, midpoint m_v1
+                (2, 3, 6),   # top    edge c11 -> c01, midpoint m_u1
+                (3, 0, 7),   # left   edge c01 -> c00, midpoint m_v0
+            )
+            #: vertex layout: 0..3 corners, 4..7 midpoints (u0, v1, u1, v0), 8 centre.  A fully
+            #: split cell therefore still returns the same 8 ``pts`` and the same 8 ``tris``.
             centre = (c00[0] + half, c00[1] + half)
-            pts = [c00, c10, c11, c01, centre, m_v0, m_u0, m_v1, m_u1]
-            ring = [(0, 6), (6, 1), (1, 7), (7, 2), (2, 8), (8, 3), (3, 5), (5, 0)]
-            #: the ring walks ``c00 -> bottom -> c10 -> right -> c11 -> top -> c01 -> left``,
-            #: so each *pair* of consecutive segments belongs to one edge and must be dropped
-            #: together.  Naming them in ring order (not in edge order) is what keeps the fan a
-            #: tiling of the cell; a rotated name list silently deleted the wrong segments and
-            #: emitted triangles spanning the whole cell.
-            names = ["u0", "u0", "v1", "v1", "u1", "u1", "v0", "v0"]
-            flag = {"v0": s[0], "u0": s[1], "v1": s[2], "u1": s[3]}
-            ring = [seg for name, seg in zip(names, ring) if flag[name]]
-            tris = [(seg[0], seg[1], 4) for seg in ring]
+            pts = [c00, c10, c11, c01, m_u0, m_v1, m_u1, m_v0, centre]
+            ring: list[int] = []
+            for edge, (start_corner, _end_corner, midpoint) in enumerate(walk):
+                ring.append(start_corner)
+                if s[edge]:
+                    ring.append(midpoint)
+            #: the ring is counter-clockwise in (u, v), so ``(this, next, centre)`` is
+            #: counter-clockwise too (the previous branch table mixed both orientations, which is
+            #: part of why its signed areas cancelled instead of adding up).
+            tris = [(ring[k], ring[(k + 1) % len(ring)], 8) for k in range(len(ring))]
         return np.asarray(pts, dtype=np.int64), np.asarray(tris, dtype=np.int64)
 
 

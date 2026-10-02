@@ -1982,6 +1982,389 @@ def _correspondence_rows(store: AssetStore, relations: Sequence[Mapping[str, Any
     return rows, provenance
 
 
+#: Token layout of the deployment cache, stated once and checked against the writer.
+#: One token is one ``(view, block, channel)`` slot: ``48 = TOKEN_BLOCK**2 * 3`` per view and
+#: ``TOKEN_BLOCK = 4``, so a token index inside one view is ``block_row * 4 * 3 + block_col * 3
+#: + channel``.
+TOKENS_PER_VIEW = TOKEN_BLOCK * TOKEN_BLOCK * 3
+
+#: A correspondence sample becomes token-space supervision only when the surface point is
+#: really visible in a delivered view: the render's ``id_map`` is a **per-face label** of the
+#: observed mesh, so the sample's own face index is the exact identity test (no threshold on a
+#: depth residual, no nearest-point guess).
+CORRESPONDENCE_TOKEN_TOLERANCE_MM = float(FRAME_ID_TOLERANCE_MM)
+
+#: How the projection channels of a fragment's observation are obtained: either a ready mapping
+#: or a callable that loads one fragment on demand.  A **callable** is what keeps the projection
+#: inside a small memory budget -- the observation assets of this release hold ~270 MB of arrays
+#: each (12 delivered views of rgb_linear/depth_z/id_map at 768x1024), so materialising all 59 at
+#: once costs ~16 GB and the host kills the run.  Resolved fragment by fragment, the projection
+#: only ever holds the two fragments of the pair being processed.
+ObsArrayLookup = "Mapping[str, Mapping[str, np.ndarray]] | Callable[[str], Mapping[str, np.ndarray] | None]"
+
+
+def _resolve_obs_arrays(lookup: Any, fragment_id: str) -> Mapping[str, np.ndarray] | None:
+    """Fetch one fragment's projection arrays through either form of :data:`ObsArrayLookup`."""
+    if lookup is None:
+        return None
+    if callable(lookup):
+        try:
+            return lookup(fragment_id)
+        except (SynLabError, OSError, KeyError):
+            return None
+    return lookup.get(fragment_id)
+
+
+#: The only observation arrays the correspondence projection needs.  Loading these by key keeps
+#: one fragment's working set under ~40 MB instead of the asset's whole 270 MB payload.
+CORRESPONDENCE_PROJECTION_ARRAYS = tuple(
+    f"v{index:03d}.{name}"
+    for index in range(64)
+    for name in ("K", "T_WC", "depth_z", "id_map", "roi", "deployment_mask", "uncertain_mask")
+)
+
+
+def load_projection_arrays(store: AssetStore, asset_id: str) -> dict[str, np.ndarray]:
+    """Load just the projection channels of one observation asset (never the RGB tiles)."""
+    names = ("K", "T_WC", "depth_z", "id_map", "roi", "deployment_mask", "uncertain_mask")
+    record = store.get_asset(asset_id)
+    rel = record.files.get("arrays")
+    if not rel:
+        return {}
+    npz_path = store.root / Path(*rel.split("/"))
+    if not npz_path.exists():
+        raise SynLabError(ErrorCode.ASSET_HASH_MISMATCH,
+                          f"asset {asset_id} payload missing: {npz_path}",
+                          stage="export.load_projection_arrays")
+    out: dict[str, np.ndarray] = {}
+    with np.load(npz_path, allow_pickle=False) as data:
+        for key in data.files:
+            if key.rsplit(".", 1)[-1] in names:
+                out[key] = data[key]
+    return out
+
+
+def _correspondence_token_rows(store: AssetStore, relations: Sequence[Mapping[str, Any]],
+                               obs_of_fragment: Any
+                               ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Project every correspondence sample into the **delivered token grid** (plan 30.11).
+
+    Why this exists (measured on ``data/a12_exports/trainable``): the exporter used to put
+    ``corr_index_a``/``corr_index_b`` into ``research/labels/correspondence.parquet`` as the
+    only locator of a sample.  Those two arrays are *the endpoint ids of the pair*, not a
+    position: measured on the shipped package all 3299 rows carry ``index_a = 0`` and
+    ``index_b = 1`` (``np.unique`` of each is a single value), so the label table could not be
+    located in token space and the correspondence task reported ``n_allowed = 0`` with the
+    blocker ``one_side_of_every_labelled_pair_has_no_token_evidence``.
+
+    The real per-sample geometry is the surface point.  A correspondence sample is a point on a
+    mesh **face** (``corr_face_*``) with barycentric coordinates (``corr_bary_*``); reconstructing
+    it from the fragment mesh reproduces ``corr_point_*`` to ``4.3e-14`` mm and the barycentrics
+    are inside the triangle for all 552 samples, so both are real surface samples.
+
+    A sample is mapped to a token when, for one delivered view of its own fragment,
+
+    * its face is visible: ``id_map[v, u] == corr_face`` (an exact identity test, the render's
+      ``id_map`` is the per-face label of that fragment), and
+    * ``roi``/``deployment_mask`` accept the pixel and the reprojected depth agrees with the
+      rendered ``depth_z`` within :data:`CORRESPONDENCE_TOKEN_TOLERANCE_MM`, and
+    * the pixel falls inside the block grid the token cache was pooled over.
+
+    Anything that survives none of the views keeps ``valid = false`` with the measured reason;
+    no weight matrix is ever invented.
+    """
+    rows: list[dict[str, Any]] = []
+    provenance: dict[str, Any] = {
+        "pairs_supervised": 0, "pairs_with_correspondence": 0, "samples": 0,
+        "samples_mapped": 0, "weight_sum": 0.0, "valid_samples": 0, "ambiguous_samples": 0,
+        "skipped": [], "association_code_histogram": {}, "unmapped_reasons": {},
+        "views_used_per_side": {}, "token_layout": {
+            "tokens_per_view": TOKENS_PER_VIEW,
+            "definition": "(view, block_row, block_col, channel) slot of the TOKEN_BLOCK grid",
+        },
+        "tolerance_mm": CORRESPONDENCE_TOKEN_TOLERANCE_MM,
+    }
+    source_kind = {ROLE_CLEAN_TRUTH: "CLEAN_TRUTH", ROLE_PHYSICAL_TRUTH: "PHYSICAL_TRUTH"}
+
+    def _bump(bucket: dict[str, int], key: str) -> None:
+        bucket[key] = bucket.get(key, 0) + 1
+
+    # face ids per (asset, side) are read once per pair; the point projections are per row.
+    for row in relations:
+        if not (bool(row.get("valid", False)) and bool(row.get("loss_mask", False))):
+            continue
+        a = str(row.get("a", ""))
+        b = str(row.get("b", ""))
+        if not a or not b:
+            continue
+        provenance["pairs_supervised"] += 1
+        asset_id = str(row.get("_truth_asset") or "")
+        if not asset_id:
+            provenance["skipped"].append({"pair": [a, b], "reason": "no truth asset reference"})
+            continue
+        try:
+            record = store.get_asset(asset_id)
+            arrays = store.load_arrays(asset_id)
+        except SynLabError as exc:
+            provenance["skipped"].append({"pair": [a, b], "reason": f"{asset_id}: {exc}"})
+            continue
+        if "corr_point_a" not in arrays or "corr_face_a" not in arrays:
+            provenance["skipped"].append(
+                {"pair": [a, b], "asset_id": asset_id,
+                 "reason": "asset carries no corr_point_*/corr_face_* correspondence block"})
+            continue
+        pair_of_asset = {str(x) for x in np.asarray(
+            arrays.get("corr_fragment_ids", np.zeros(0, dtype="U1"))).tolist()}
+        if pair_of_asset and pair_of_asset != {a, b}:
+            provenance["skipped"].append(
+                {"pair": [a, b], "asset_id": asset_id,
+                 "reason": f"correspondence is between {sorted(pair_of_asset)}"})
+            continue
+        provenance["pairs_with_correspondence"] += 1
+        valid = np.asarray(arrays.get("corr_valid", np.ones(
+            np.asarray(arrays["corr_point_a"]).shape[0], bool)), dtype=bool)
+        ambiguous = np.asarray(arrays.get("corr_ambiguous", np.zeros(valid.size, bool)), dtype=bool)
+        weight = np.asarray(arrays.get("corr_weight", np.ones(valid.size)), dtype=np.float64)
+        code = np.asarray(arrays.get("corr_association_code", np.zeros(valid.size, np.int32)),
+                          dtype=np.int64)
+        residual = np.asarray(arrays.get("corr_residual_mm", np.zeros(valid.size, np.float32)),
+                              dtype=np.float64)
+        iface = np.asarray(arrays.get("corr_interface_id", np.full(valid.size, -1, np.int32)),
+                           dtype=np.int64)
+        index_a = np.asarray(arrays.get("corr_index_a", np.zeros(valid.size, np.int64)),
+                             dtype=np.int64)
+        index_b = np.asarray(arrays.get("corr_index_b", index_a), dtype=np.int64)
+
+        # per side: the surface points and the face each one lies on
+        side_geom: dict[str, np.ndarray] = {}
+        side_face: dict[str, np.ndarray] = {}
+        for side, fragment_id in (("a", a), ("b", b)):
+            point = arrays.get(f"corr_point_{side}")
+            face = arrays.get(f"corr_face_{side}")
+            if point is None or face is None:
+                side_geom.pop(side, None)
+                continue
+            side_geom[side] = np.asarray(point, dtype=np.float64).reshape(-1, 3)
+            side_face[side] = np.asarray(face, dtype=np.int64).reshape(-1)
+        # per fragment: the projection channels of its own observation asset.  ``obs_of_fragment``
+        # may be a ready mapping or a loader callable (see ``ObsArrayLookup``); either way the
+        # arrays are fetched for one fragment at a time.
+        lookup: Any = obs_of_fragment
+        if isinstance(obs_of_fragment, Mapping):
+            def lookup(fragment_id: str, _mapping=obs_of_fragment):
+                asset = _mapping.get(fragment_id)
+                return load_projection_arrays(store, asset) if asset else None
+        obs_arrays: dict[str, Mapping[str, np.ndarray] | None] = {}
+        for fragment_id in (a, b):
+            if fragment_id not in obs_arrays:
+                obs_arrays[fragment_id] = _resolve_obs_arrays(lookup, fragment_id)
+
+        for i in range(valid.size):
+            c = int(code[i])
+            _bump(provenance["association_code_histogram"], str(c))
+            provenance["weight_sum"] += float(weight[i])
+            provenance["valid_samples"] += int(bool(valid[i]))
+            provenance["ambiguous_samples"] += int(bool(ambiguous[i]))
+            entry: dict[str, Any] = {
+                "label_layer": "correspondence",
+                "fragment_a": a, "fragment_b": b,
+                "index_a": int(index_a[i]), "index_b": int(index_b[i]),
+                "weight": float(weight[i]),
+                "sample_valid": bool(valid[i]),
+                "ambiguous": bool(ambiguous[i]),
+                "association_code": c,
+                "residual_mm": float(residual[i]),
+                "interface_id": int(iface[i]),
+                "relation_kind": str(row.get("kind", "")),
+                "lineage": str(row.get("_lineage_id") or record.lineage_id or ""),
+                "split": record.split,
+                "source_kind": source_kind.get(record.role, record.role),
+                "source_ref": asset_id,
+                "asset_id": asset_id,
+                "valid": bool(valid[i]),
+                "reason": ("" if bool(valid[i]) else "correspondence sample marked invalid")
+                          + (";ambiguous" if bool(ambiguous[i]) else ""),
+                # token-space locator (``-1`` = not located in this view/side)
+                "token_a": -1, "token_b": -1,
+                "token_view_a": -1, "token_view_b": -1,
+                "token_pixel_a": [-1, -1], "token_pixel_b": [-1, -1],
+                "token_valid": False,
+                "token_reason": "",
+            }
+            if not bool(valid[i]):
+                entry["token_reason"] = "label_row_invalid"
+                rows.append(entry)
+                provenance["samples"] += 1
+                _bump(provenance["unmapped_reasons"], "label_row_invalid")
+                continue
+            side_token: dict[str, dict[str, Any]] = {}
+            for side, fragment_id in (("a", a), ("b", b)):
+                point = side_geom.get(side)
+                if point is None or i >= point.shape[0]:
+                    side_token[side] = {"ok": False, "reason": "no_correspondence_geometry"}
+                    continue
+                face_ids = side_face.get(side)
+                face = int(face_ids[i]) if face_ids is not None and i < face_ids.size else -1
+                payload = obs_arrays.get(fragment_id)
+                if payload is None:
+                    side_token[side] = {
+                        "ok": False, "reason": "fragment_carries_no_observation_to_project_into"}
+                    continue
+                point = point[i]
+                best: dict[str, Any] | None = None
+                seen_face = 0
+                seen_inside = 0
+                for view_index in range(_obs_view_count(payload)):
+                    view = _project_point_into_view(payload, view_index, point)
+                    if view is None:
+                        continue
+                    if view["face_visible"]:
+                        seen_face += 1
+                    if view["inside_grid"]:
+                        seen_inside += 1
+                    if not (view["face_visible"] and view["pixel_accepted"]
+                            and view["depth_ok"]):
+                        continue
+                    candidate = {**view, "token": view["grid_slot"],
+                                 "view": view_index}
+                    if best is None or (candidate["depth_residual_mm"]
+                                        < best["depth_residual_mm"]):
+                        best = candidate
+                if best is None:
+                    side_token[side] = {
+                        "ok": False,
+                        "reason": ("its_own_face_is_not_visible_in_any_delivered_view"
+                                   if seen_inside else
+                                   "the_face_the_sample_lies_on_is_not_rendered_in_this_"
+                                   "fragment_observation"),
+                        "face": face, "views_inside_grid": seen_inside,
+                        "views_with_face_visible": seen_face,
+                    }
+                    continue
+                side_token[side] = {"ok": True, "token": int(best["token"]),
+                                    "view": int(best["view"]),
+                                    "pixel": [int(best["u"]), int(best["v"])],
+                                    "depth_residual_mm": float(best["depth_residual_mm"]),
+                                    "face": face}
+            located = [s for s in ("a", "b") if side_token.get(s, {}).get("ok")]
+            provenance["samples"] += 1
+            if len(located) == 2:
+                entry.update({
+                    "token_a": int(side_token["a"]["token"]),
+                    "token_b": int(side_token["b"]["token"]),
+                    "token_view_a": int(side_token["a"]["view"]),
+                    "token_view_b": int(side_token["b"]["view"]),
+                    "token_pixel_a": list(side_token["a"]["pixel"]),
+                    "token_pixel_b": list(side_token["b"]["pixel"]),
+                    "token_valid": True,
+                    "token_reason": "",
+                })
+                provenance["samples_mapped"] += 1
+                _bump(provenance["views_used_per_side"], f"a:view_{side_token['a']['view']}")
+                _bump(provenance["views_used_per_side"], f"b:view_{side_token['b']['view']}")
+            elif len(located) == 1:
+                side = located[0]
+                other = "b" if side == "a" else "a"
+                entry[f"token_{side}"] = int(side_token[side]["token"])
+                entry[f"token_view_{side}"] = int(side_token[side]["view"])
+                entry[f"token_pixel_{side}"] = list(side_token[side]["pixel"])
+                entry["token_reason"] = (f"one_side_of_the_pair_has_no_token_evidence: "
+                                         f"fragment_{other} "
+                                         f"{side_token[other].get('reason', 'not_located')}")
+                _bump(provenance["unmapped_reasons"], "one_side_has_no_token_evidence")
+            else:
+                entry["token_reason"] = (
+                    "neither_side_has_token_evidence: "
+                    + "; ".join(f"fragment_{s} {side_token.get(s, {}).get('reason', 'not_located')}"
+                                for s in ("a", "b")))
+                _bump(provenance["unmapped_reasons"], "neither_side_has_token_evidence")
+            rows.append(entry)
+    provenance["samples"] = len(rows)
+    provenance["weight_sum"] = float(provenance["weight_sum"])
+    provenance["samples_with_both_sides_in_token_space"] = int(provenance["samples_mapped"])
+    provenance["unmapped_reason_histogram"] = dict(provenance["unmapped_reasons"])
+    return rows, provenance
+
+
+def _obs_view_count(payload: Mapping[str, np.ndarray]) -> int:
+    """How many delivered views an observation payload carries projection channels for."""
+    count = 0
+    while f"v{count:03d}.K" in payload and f"v{count:03d}.T_WC" in payload:
+        count += 1
+    return count
+
+
+def _project_point_into_view(payload: Mapping[str, np.ndarray], view_index: int,
+                             point: np.ndarray) -> dict[str, Any] | None:
+    """One surface point -> ``(u, v, token slot, face identity)`` in one delivered view.
+
+    The pixel is accepted only where the *deployment* masks accept it (``roi`` when the render
+    carries one, else ``deployment_mask``, and never an ``uncertain_mask`` pixel); the identity
+    test is ``id_map[v, u] == face``.
+    """
+    prefix = f"v{int(view_index):03d}."
+    pose = payload.get(prefix + "T_WC")
+    camera_matrix = payload.get(prefix + "K")
+    depth = payload.get(prefix + "depth_z")
+    id_map = payload.get(prefix + "id_map")
+    if pose is None or camera_matrix is None or depth is None or id_map is None:
+        return None
+    pose = np.asarray(pose, dtype=np.float64)
+    camera_matrix = np.asarray(camera_matrix, dtype=np.float64)
+    depth = np.asarray(depth, dtype=np.float64)
+    id_map = np.asarray(id_map, dtype=np.int64)
+    if pose.shape != (4, 4) or camera_matrix.shape != (3, 3) or depth.ndim != 2:
+        return None
+    if id_map.shape != depth.shape or not (np.isfinite(pose).all()
+                                           and np.isfinite(camera_matrix).all()):
+        return None
+    world = np.asarray(point, dtype=np.float64).reshape(3)
+    camera = np.linalg.inv(pose) @ np.append(world, 1.0)
+    camera = camera[:3]
+    if camera[2] <= 0 or not np.isfinite(camera).all():
+        return None
+    projected = camera_matrix @ camera
+    if abs(projected[2]) < 1e-12:
+        return None
+    u = int(np.rint(projected[0] / projected[2]))
+    v = int(np.rint(projected[1] / projected[2]))
+    height, width = depth.shape
+    if not (0 <= u < width and 0 <= v < height):
+        return None
+    face = int(id_map[v, u])
+    out: dict[str, Any] = {
+        "u": u, "v": v, "face_visible": face >= 0,
+        "rendered_face": face, "inside_grid": False, "pixel_accepted": False,
+        "depth_ok": False, "depth_residual_mm": float("inf"), "grid_slot": -1,
+    }
+    roi = payload.get(prefix + "roi")
+    deploy_mask = payload.get(prefix + "deployment_mask")
+    uncertain = payload.get(prefix + "uncertain_mask")
+    accepted = True
+    if roi is not None and np.asarray(roi).shape == depth.shape:
+        accepted = accepted and bool(np.asarray(roi, dtype=bool)[v, u])
+    elif deploy_mask is not None and np.asarray(deploy_mask).shape == depth.shape:
+        accepted = accepted and bool(np.asarray(deploy_mask, dtype=bool)[v, u])
+    if uncertain is not None and np.asarray(uncertain).shape == depth.shape:
+        accepted = accepted and not bool(np.asarray(uncertain, dtype=bool)[v, u])
+    out["pixel_accepted"] = bool(accepted)
+    rendered = float(depth[v, u])
+    if np.isfinite(rendered):
+        out["depth_residual_mm"] = float(abs(rendered - float(camera[2])))
+        out["depth_ok"] = bool(out["depth_residual_mm"] <= CORRESPONDENCE_TOKEN_TOLERANCE_MM)
+    # the pooling grid the token cache was built with: `_tokens_from_view` truncates the image to
+    # a whole number of blocks, so a pixel in the truncated margin has no token.
+    block_h = max(height // TOKEN_BLOCK, 1)
+    block_w = max(width // TOKEN_BLOCK, 1)
+    if 0 <= u < block_w * TOKEN_BLOCK and 0 <= v < block_h * TOKEN_BLOCK:
+        block_row = v // block_h
+        block_col = u // block_w
+        # one token is a (block, channel) slot and the triple is block-major inside a view
+        out["inside_grid"] = True
+        out["grid_slot"] = int((block_row * TOKEN_BLOCK + block_col) * 3)
+    return out
+
+
 def _write_parquet(path: Path, rows: Sequence[Mapping[str, Any]], row_group_size: int) -> None:
     import pyarrow as pa
     import pyarrow.parquet as pq

@@ -72,7 +72,7 @@
     "provenance": {}
    },
    "pieces": 2.0,
-   "n_deterministic": 2.0865629469735936,
+   "n_deterministic": 2.3571888328014325,
    "energy_j": 4.593634742010228,
    "volume_mm3": 425691.29293024074,
    "area_mm2": 88950.36621268556,
@@ -141,7 +141,7 @@
     "provenance": {}
    },
    "pieces": 2.0,
-   "n_deterministic": 2.0865629469735936,
+   "n_deterministic": 2.3571888328014325,
    "energy_j": 4.593634742010228,
    "volume_mm3": 425691.29293024074,
    "area_mm2": 88950.36621268556,
@@ -233,12 +233,12 @@
     "provenance": {}
    },
    "pieces": 2.0,
-   "n_deterministic": 2.0,
+   "n_deterministic": 2.265267615667079,
    "energy_j": 3.990252576836876,
    "volume_mm3": 184887.9889183985,
    "area_mm2": 107061.12013495606,
    "wall_mm": 4.081301264512989,
-   "clamped": true
+   "clamped": false
   },
   {
    "label": "V01/M01 h=2000.0",
@@ -256,7 +256,7 @@
     "provenance": {}
    },
    "pieces": 3.0,
-   "n_deterministic": 3.1354308541367484,
+   "n_deterministic": 3.4935202393278044,
    "energy_j": 7.980505153673755,
    "volume_mm3": 184887.9889183985,
    "area_mm2": 107061.12013495606,
@@ -279,7 +279,7 @@
     "provenance": {}
    },
    "pieces": 5.0,
-   "n_deterministic": 4.920018376421037,
+   "n_deterministic": 5.387744731873079,
    "energy_j": 15.961010307347504,
    "volume_mm3": 184887.9889183985,
    "area_mm2": 107061.12013495606,
@@ -485,9 +485,78 @@
     "grain_size_mm": 0.05,
     "provenance": {}
    },
-   "pieces": 3.0,
-   "n_deterministic": 2.839376231933584,
+   "pieces": 2.0,
+   "n_deterministic": 2.3571888328014325,
    "energy_j": 4.593634742010228,
+   "volume_mm3": 425691.29293024074,
+   "area_mm2": 88950.36621268556,
+   "wall_mm": 11.657917121080864,
+   "clamped": false
+  },
+  {
+   "label": "V13/M01 h=1000.0",
+   "vessel_id": "V13",
+   "material_id": "M01",
+   "drop_height_mm": 1000.0,
+   "scale": null,
+   "material": {
+    "material_id": "M01",
+    "density_g_cm3": 2.2,
+    "fracture_energy_j_mm2": null,
+    "weibull_modulus": null,
+    "porosity": 0.0,
+    "grain_size_mm": 0.05,
+    "provenance": {}
+   },
+   "pieces": 3.0,
+   "n_deterministic": 3.6352821354770772,
+   "energy_j": 9.187269484020455,
+   "volume_mm3": 425691.29293024074,
+   "area_mm2": 88950.36621268556,
+   "wall_mm": 11.657917121080864,
+   "clamped": false
+  },
+  {
+   "label": "V13/M01 h=2000.0",
+   "vessel_id": "V13",
+   "material_id": "M01",
+   "drop_height_mm": 2000.0,
+   "scale": null,
+   "material": {
+    "material_id": "M01",
+    "density_g_cm3": 2.2,
+    "fracture_energy_j_mm2": null,
+    "weibull_modulus": null,
+    "porosity": 0.0,
+    "grain_size_mm": 0.05,
+    "provenance": {}
+   },
+   "pieces": 5.0,
+   "n_deterministic": 5.606371462744845,
+   "energy_j": 18.374538968040913,
+   "volume_mm3": 425691.29293024074,
+   "area_mm2": 88950.36621268556,
+   "wall_mm": 11.657917121080864,
+   "clamped": false
+  },
+  {
+   "label": "V13/M01 h=4000.0",
+   "vessel_id": "V13",
+   "material_id": "M01",
+   "drop_height_mm": 4000.0,
+   "scale": null,
+   "material": {
+    "material_id": "M01",
+    "density_g_cm3": 2.2,
+    "fracture_energy_j_mm2": null,
+    "weibull_modulus": null,
+    "porosity": 0.0,
+    "grain_size_mm": 0.05,
+    "provenance": {}
+   },
+   "pieces": 8.0,
+   "n_deterministic": 8.646206761103251,
+   "energy_j": 36.74907793608182,
    "volume_mm3": 425691.29293024074,
    "area_mm2": 88950.36621268556,
    "wall_mm": 11.657917121080864,
@@ -555,12 +624,35 @@
     "provenance": {}
    },
    "pieces": 2.0,
-   "n_deterministic": 2.0,
+   "n_deterministic": 2.265267615667079,
    "energy_j": 3.990252576836876,
    "volume_mm3": 184887.9889183985,
    "area_mm2": 107061.12013495606,
    "wall_mm": 4.081301264512989,
-   "clamped": true
+   "clamped": false
+  },
+  {
+   "label": "V01/M01 h=1000.0 s=1.5",
+   "vessel_id": "V01",
+   "material_id": "M01",
+   "drop_height_mm": 1000.0,
+   "scale": 1.5,
+   "material": {
+    "material_id": "M01",
+    "density_g_cm3": 2.2,
+    "fracture_energy_j_mm2": null,
+    "weibull_modulus": null,
+    "porosity": 0.0,
+    "grain_size_mm": 0.05,
+    "provenance": {}
+   },
+   "pieces": 8.0,
+   "n_deterministic": 7.927123877346944,
+   "energy_j": 13.46710244682445,
+   "volume_mm3": 623996.9625995947,
+   "area_mm2": 240887.52030365114,
+   "wall_mm": 6.121954219287792,
+   "clamped": false
   },
   {
    "label": "V01/M01 h=2000.0",
@@ -578,7 +670,7 @@
     "provenance": {}
    },
    "pieces": 3.0,
-   "n_deterministic": 3.1354308541367484,
+   "n_deterministic": 3.4935202393278044,
    "energy_j": 7.980505153673755,
    "volume_mm3": 184887.9889183985,
    "area_mm2": 107061.12013495606,
@@ -601,7 +693,7 @@
     "provenance": {}
    },
    "pieces": 5.0,
-   "n_deterministic": 4.920018376421037,
+   "n_deterministic": 5.387744731873079,
    "energy_j": 15.961010307347504,
    "volume_mm3": 184887.9889183985,
    "area_mm2": 107061.12013495606,
@@ -623,8 +715,8 @@
     "grain_size_mm": 0.05,
     "provenance": {}
    },
-   "pieces": 7.0,
-   "n_deterministic": 7.720336358999474,
+   "pieces": 8.0,
+   "n_deterministic": 8.309038250029268,
    "energy_j": 31.92202061469502,
    "volume_mm3": 184887.9889183985,
    "area_mm2": 107061.12013495606,
@@ -647,8 +739,31 @@
     "provenance": {}
    },
    "pieces": 5.0,
-   "n_deterministic": 5.137720630518088,
+   "n_deterministic": 5.606371462744845,
    "energy_j": 18.374538968040913,
+   "volume_mm3": 425691.29293024074,
+   "area_mm2": 88950.36621268556,
+   "wall_mm": 11.657917121080864,
+   "clamped": false
+  },
+  {
+   "label": "V13/M01 h=4000.0",
+   "vessel_id": "V13",
+   "material_id": "M01",
+   "drop_height_mm": 4000.0,
+   "scale": null,
+   "material": {
+    "material_id": "M01",
+    "density_g_cm3": 2.2,
+    "fracture_energy_j_mm2": null,
+    "weibull_modulus": null,
+    "porosity": 0.0,
+    "grain_size_mm": 0.05,
+    "provenance": {}
+   },
+   "pieces": 8.0,
+   "n_deterministic": 8.646206761103251,
+   "energy_j": 36.74907793608182,
    "volume_mm3": 425691.29293024074,
    "area_mm2": 88950.36621268556,
    "wall_mm": 11.657917121080864,
@@ -670,7 +785,7 @@
     "provenance": {}
    },
    "pieces": 3.0,
-   "n_deterministic": 3.1354308541367484,
+   "n_deterministic": 3.4935202393278044,
    "energy_j": 7.980505153673755,
    "volume_mm3": 184887.9889183985,
    "area_mm2": 107061.12013495606,
@@ -693,7 +808,7 @@
     "provenance": {}
    },
    "pieces": 5.0,
-   "n_deterministic": 4.920018376421037,
+   "n_deterministic": 5.387744731873079,
    "energy_j": 15.961010307347504,
    "volume_mm3": 184887.9889183985,
    "area_mm2": 107061.12013495606,
@@ -715,8 +830,8 @@
     "grain_size_mm": 0.05,
     "provenance": {}
    },
-   "pieces": 7.0,
-   "n_deterministic": 7.720336358999474,
+   "pieces": 8.0,
+   "n_deterministic": 8.309038250029268,
    "energy_j": 31.92202061469502,
    "volume_mm3": 184887.9889183985,
    "area_mm2": 107061.12013495606,
@@ -739,8 +854,31 @@
     "provenance": {}
    },
    "pieces": 5.0,
-   "n_deterministic": 5.137720630518088,
+   "n_deterministic": 5.606371462744845,
    "energy_j": 18.374538968040913,
+   "volume_mm3": 425691.29293024074,
+   "area_mm2": 88950.36621268556,
+   "wall_mm": 11.657917121080864,
+   "clamped": false
+  },
+  {
+   "label": "V13/M04 h=4000.0",
+   "vessel_id": "V13",
+   "material_id": "M04",
+   "drop_height_mm": 4000.0,
+   "scale": null,
+   "material": {
+    "material_id": "M04",
+    "density_g_cm3": 2.2,
+    "fracture_energy_j_mm2": null,
+    "weibull_modulus": null,
+    "porosity": 0.0,
+    "grain_size_mm": 0.05,
+    "provenance": {}
+   },
+   "pieces": 8.0,
+   "n_deterministic": 8.646206761103251,
+   "energy_j": 36.74907793608182,
    "volume_mm3": 425691.29293024074,
    "area_mm2": 88950.36621268556,
    "wall_mm": 11.657917121080864,
@@ -748,12 +886,12 @@
   }
  ],
  "fit": {
-  "n": 32,
-  "n_censored_at_floor": 19,
+  "n": 38,
+  "n_censored_at_floor": 17,
   "model": "N = N0 * (U/U_ref)^beta * (V/V_ref)^alpha * (t_ref/t)^gamma",
   "fitted": {
-   "n0": 2.583303850795239,
-   "beta": 0.29500000000000004,
+   "n0": 2.771771081065865,
+   "beta": 0.355,
    "u_ref_j": 3.65641077428,
    "beta_fitted": true
   },
@@ -769,11 +907,11 @@
    "reference_density_g_cm3": 2.2,
    "provenance": "alpha/gamma pinned to the declared geometry + Weibull form and U_ref to the declared reference body: none of the three is fitted here"
   },
-  "r2_log": 0.7338342413789989,
-  "rmse_log": 0.22377673990937613,
-  "mae_pieces": 0.558436235775866,
-  "max_abs_error_pieces": 2.7203363589994742,
-  "beta_std_error": 0.10782978175647571,
+  "r2_log": 0.7912889934410292,
+  "rmse_log": 0.2532634634501408,
+  "mae_pieces": 0.7302164384571068,
+  "max_abs_error_pieces": 3.9271238773469443,
+  "beta_std_error": 0.07616692705596781,
   "points": [
    {
     "label": "V02/M01 h=500.0",
@@ -783,10 +921,10 @@
     "energy_j": 0.6717276386030947,
     "volume_mm3": 62248.87763905983,
     "wall_mm": 4.256277669209992,
-    "model": 1.9826405118563437,
-    "model_clamped": 2.0,
+    "model": 2.0158116116637923,
+    "model_clamped": 2.0158116116637923,
     "model_rounded": 2,
-    "residual_log": 0.0
+    "residual_log": 0.007874718687430615
    },
    {
     "label": "V01/M01 h=500.0",
@@ -796,23 +934,23 @@
     "energy_j": 1.9951262884184386,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 2.261139735586414,
-    "model_clamped": 2.261139735586414,
+    "model": 2.3612586229716266,
+    "model_clamped": 2.3612586229716266,
     "model_rounded": 2,
-    "residual_log": 0.12272181338541577
+    "residual_log": 0.16604761113425381
    },
    {
     "label": "V13/M01 h=500.0",
     "pieces": 2.0,
-    "n_used": 2.0865629469735936,
+    "n_used": 2.3571888328014325,
     "censored_at_floor": false,
     "energy_j": 4.593634742010228,
     "volume_mm3": 425691.29293024074,
     "wall_mm": 11.657917121080864,
-    "model": 2.9332687805739632,
-    "model_clamped": 2.9332687805739632,
+    "model": 3.2296543146404493,
+    "model_clamped": 3.2296543146404493,
     "model_rounded": 3,
-    "residual_log": 0.34059923666607006
+    "residual_log": 0.3149053716901745
    },
    {
     "label": "V02/M04 h=500.0",
@@ -822,10 +960,10 @@
     "energy_j": 0.6717276386030947,
     "volume_mm3": 62248.87763905983,
     "wall_mm": 4.256277669209992,
-    "model": 1.9826405118563437,
-    "model_clamped": 2.0,
+    "model": 2.0158116116637923,
+    "model_clamped": 2.0158116116637923,
     "model_rounded": 2,
-    "residual_log": 0.0
+    "residual_log": 0.007874718687430615
    },
    {
     "label": "V01/M04 h=500.0",
@@ -835,23 +973,23 @@
     "energy_j": 1.9951262884184386,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 2.261139735586414,
-    "model_clamped": 2.261139735586414,
+    "model": 2.3612586229716266,
+    "model_clamped": 2.3612586229716266,
     "model_rounded": 2,
-    "residual_log": 0.12272181338541577
+    "residual_log": 0.16604761113425381
    },
    {
     "label": "V13/M04 h=500.0",
     "pieces": 2.0,
-    "n_used": 2.0865629469735936,
+    "n_used": 2.3571888328014325,
     "censored_at_floor": false,
     "energy_j": 4.593634742010228,
     "volume_mm3": 425691.29293024074,
     "wall_mm": 11.657917121080864,
-    "model": 2.9332687805739632,
-    "model_clamped": 2.9332687805739632,
+    "model": 3.2296543146404493,
+    "model_clamped": 3.2296543146404493,
     "model_rounded": 3,
-    "residual_log": 0.34059923666607006
+    "residual_log": 0.3149053716901745
    },
    {
     "label": "V01/M01 h=100.0",
@@ -861,7 +999,7 @@
     "energy_j": 0.39902525768368774,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 1.4064725184252143,
+    "model": 1.3335496979909758,
     "model_clamped": 2.0,
     "model_rounded": 2,
     "residual_log": 0.0
@@ -874,7 +1012,7 @@
     "energy_j": 0.997563144209219,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 1.8429924381726739,
+    "model": 1.8461964368771397,
     "model_clamped": 2.0,
     "model_rounded": 2,
     "residual_log": 0.0
@@ -887,49 +1025,49 @@
     "energy_j": 1.9951262884184386,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 2.261139735586414,
-    "model_clamped": 2.261139735586414,
+    "model": 2.3612586229716266,
+    "model_clamped": 2.3612586229716266,
     "model_rounded": 2,
-    "residual_log": 0.12272181338541577
+    "residual_log": 0.16604761113425381
    },
    {
     "label": "V01/M01 h=1000.0",
     "pieces": 2.0,
-    "n_used": 2.0,
-    "censored_at_floor": true,
+    "n_used": 2.265267615667079,
+    "censored_at_floor": false,
     "energy_j": 3.990252576836876,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 2.77415837306261,
-    "model_clamped": 2.77415837306261,
+    "model": 3.0200157324477064,
+    "model_clamped": 3.0200157324477064,
     "model_rounded": 3,
-    "residual_log": 0.32720023165059964
+    "residual_log": 0.28756913622505564
    },
    {
     "label": "V01/M01 h=2000.0",
     "pieces": 3.0,
-    "n_used": 3.1354308541367484,
+    "n_used": 3.4935202393278044,
     "censored_at_floor": false,
     "energy_j": 7.980505153673755,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 3.4035732324333705,
-    "model_clamped": 3.4035732324333705,
-    "model_rounded": 3,
-    "residual_log": 0.08205923229752532
+    "model": 3.86255657703161,
+    "model_clamped": 3.86255657703161,
+    "model_rounded": 4,
+    "residual_log": 0.1004193974738703
    },
    {
     "label": "V01/M01 h=4000.0",
     "pieces": 5.0,
-    "n_used": 4.920018376421037,
+    "n_used": 5.387744731873079,
     "censored_at_floor": false,
     "energy_j": 15.961010307347504,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 4.175792867855672,
-    "model_clamped": 4.175792867855672,
-    "model_rounded": 4,
-    "residual_log": -0.16400801680125476
+    "model": 4.940154168891729,
+    "model_clamped": 4.940154168891729,
+    "model_rounded": 5,
+    "residual_log": -0.08673034127731483
    },
    {
     "label": "V02/M01 h=100.0",
@@ -939,7 +1077,7 @@
     "energy_j": 0.13434552772061895,
     "volume_mm3": 62248.87763905983,
     "wall_mm": 4.256277669209992,
-    "model": 1.2332406308004038,
+    "model": 1.1384542717128932,
     "model_clamped": 2.0,
     "model_rounded": 2,
     "residual_log": 0.0
@@ -952,7 +1090,7 @@
     "energy_j": 0.33586381930154724,
     "volume_mm3": 62248.87763905983,
     "wall_mm": 4.256277669209992,
-    "model": 1.6159954263146847,
+    "model": 1.5761019054260441,
     "model_clamped": 2.0,
     "model_rounded": 2,
     "residual_log": 0.0
@@ -965,10 +1103,10 @@
     "energy_j": 0.6717276386030947,
     "volume_mm3": 62248.87763905983,
     "wall_mm": 4.256277669209992,
-    "model": 1.9826405118563437,
-    "model_clamped": 2.0,
+    "model": 2.0158116116637923,
+    "model_clamped": 2.0158116116637923,
     "model_rounded": 2,
-    "residual_log": 0.0
+    "residual_log": 0.007874718687430615
    },
    {
     "label": "V02/M01 h=1000.0",
@@ -978,10 +1116,10 @@
     "energy_j": 1.343455277206189,
     "volume_mm3": 62248.87763905983,
     "wall_mm": 4.256277669209992,
-    "model": 2.4324718592913404,
-    "model_clamped": 2.4324718592913404,
-    "model_rounded": 2,
-    "residual_log": 0.19576078581450707
+    "model": 2.5781939858896057,
+    "model_clamped": 2.5781939858896057,
+    "model_rounded": 3,
+    "residual_log": 0.25394196778621114
    },
    {
     "label": "V02/M01 h=2000.0",
@@ -991,10 +1129,10 @@
     "energy_j": 2.686910554412379,
     "volume_mm3": 62248.87763905983,
     "wall_mm": 4.256277669209992,
-    "model": 2.9843631817571747,
-    "model_clamped": 2.9843631817571747,
+    "model": 3.2974729336889883,
+    "model_clamped": 3.2974729336889883,
     "model_rounded": 3,
-    "residual_log": 0.40023920407969105
+    "residual_log": 0.5000092168849918
    },
    {
     "label": "V02/M01 h=4000.0",
@@ -1004,10 +1142,10 @@
     "energy_j": 5.373821108824756,
     "volume_mm3": 62248.87763905983,
     "wall_mm": 4.256277669209992,
-    "model": 3.6614703543672413,
-    "model_clamped": 3.6614703543672413,
+    "model": 4.217420336840798,
+    "model_clamped": 4.217420336840798,
     "model_rounded": 4,
-    "residual_log": 0.6047176223448748
+    "residual_log": 0.7460764659837721
    },
    {
     "label": "V13/M01 h=100.0",
@@ -1017,7 +1155,7 @@
     "energy_j": 0.9187269484020457,
     "volume_mm3": 425691.29293024074,
     "wall_mm": 11.657917121080864,
-    "model": 1.8245497454680646,
+    "model": 1.823986789928083,
     "model_clamped": 2.0,
     "model_rounded": 2,
     "residual_log": 0.0
@@ -1030,23 +1168,62 @@
     "energy_j": 2.2968173710051136,
     "volume_mm3": 425691.29293024074,
     "wall_mm": 11.657917121080864,
-    "model": 2.3908262265462246,
-    "model_clamped": 2.3908262265462246,
-    "model_rounded": 2,
-    "residual_log": 0.17849182712626
+    "model": 2.52516866641665,
+    "model_clamped": 2.52516866641665,
+    "model_rounded": 3,
+    "residual_log": 0.2331606785173036
    },
    {
     "label": "V13/M01 h=500.0",
-    "pieces": 3.0,
-    "n_used": 2.839376231933584,
+    "pieces": 2.0,
+    "n_used": 2.3571888328014325,
     "censored_at_floor": false,
     "energy_j": 4.593634742010228,
     "volume_mm3": 425691.29293024074,
     "wall_mm": 11.657917121080864,
-    "model": 2.9332687805739632,
-    "model_clamped": 2.9332687805739632,
+    "model": 3.2296543146404493,
+    "model_clamped": 3.2296543146404493,
     "model_rounded": 3,
-    "residual_log": 0.03253303454503875
+    "residual_log": 0.3149053716901745
+   },
+   {
+    "label": "V13/M01 h=1000.0",
+    "pieces": 3.0,
+    "n_used": 3.6352821354770772,
+    "censored_at_floor": false,
+    "energy_j": 9.187269484020455,
+    "volume_mm3": 425691.29293024074,
+    "wall_mm": 11.657917121080864,
+    "model": 4.13068130093557,
+    "model_clamped": 4.13068130093557,
+    "model_rounded": 4,
+    "residual_log": 0.12775563293898906
+   },
+   {
+    "label": "V13/M01 h=2000.0",
+    "pieces": 5.0,
+    "n_used": 5.606371462744845,
+    "censored_at_floor": false,
+    "energy_j": 18.374538968040913,
+    "volume_mm3": 425691.29293024074,
+    "wall_mm": 11.657917121080864,
+    "model": 5.283081824748886,
+    "model_clamped": 5.283081824748886,
+    "model_rounded": 5,
+    "residual_log": -0.05939410581219606
+   },
+   {
+    "label": "V13/M01 h=4000.0",
+    "pieces": 8.0,
+    "n_used": 8.646206761103251,
+    "censored_at_floor": false,
+    "energy_j": 36.74907793608182,
+    "volume_mm3": 425691.29293024074,
+    "wall_mm": 11.657917121080864,
+    "model": 6.756985478562672,
+    "model_clamped": 6.756985478562672,
+    "model_rounded": 7,
+    "residual_log": -0.2465438445633812
    },
    {
     "label": "V01/M01 h=1000.0 s=0.5",
@@ -1056,7 +1233,7 @@
     "energy_j": 0.4987815721046095,
     "volume_mm3": 23110.998614799813,
     "wall_mm": 2.040650632256496,
-    "model": 1.925541794049774,
+    "model": 1.946156182627635,
     "model_clamped": 2.0,
     "model_rounded": 2,
     "residual_log": 0.0
@@ -1069,137 +1246,176 @@
     "energy_j": 1.6833878058530563,
     "volume_mm3": 77999.62032494934,
     "wall_mm": 3.0609771096438916,
-    "model": 2.3840498569741118,
-    "model_clamped": 2.3840498569741118,
-    "model_rounded": 2,
-    "residual_log": 0.17565348158476268
+    "model": 2.5165583222817554,
+    "model_clamped": 2.5165583222817554,
+    "model_rounded": 3,
+    "residual_log": 0.22974504235719684
    },
    {
     "label": "V01/M01 h=1000.0 s=1.0",
     "pieces": 2.0,
-    "n_used": 2.0,
-    "censored_at_floor": true,
+    "n_used": 2.265267615667079,
+    "censored_at_floor": false,
     "energy_j": 3.990252576836876,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 2.77415837306261,
-    "model_clamped": 2.77415837306261,
+    "model": 3.0200157324477064,
+    "model_clamped": 3.0200157324477064,
     "model_rounded": 3,
-    "residual_log": 0.32720023165059964
+    "residual_log": 0.28756913622505564
+   },
+   {
+    "label": "V01/M01 h=1000.0 s=1.5",
+    "pieces": 8.0,
+    "n_used": 7.927123877346944,
+    "censored_at_floor": false,
+    "energy_j": 13.46710244682445,
+    "volume_mm3": 623996.9625995947,
+    "wall_mm": 6.121954219287792,
+    "model": 3.905157146561476,
+    "model_clamped": 3.905157146561476,
+    "model_rounded": 4,
+    "residual_log": -0.7079922561208449
    },
    {
     "label": "V01/M01 h=2000.0",
     "pieces": 3.0,
-    "n_used": 3.1354308541367484,
+    "n_used": 3.4935202393278044,
     "censored_at_floor": false,
     "energy_j": 7.980505153673755,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 3.4035732324333705,
-    "model_clamped": 3.4035732324333705,
-    "model_rounded": 3,
-    "residual_log": 0.08205923229752532
+    "model": 3.86255657703161,
+    "model_clamped": 3.86255657703161,
+    "model_rounded": 4,
+    "residual_log": 0.1004193974738703
    },
    {
     "label": "V01/M01 h=4000.0",
     "pieces": 5.0,
-    "n_used": 4.920018376421037,
+    "n_used": 5.387744731873079,
     "censored_at_floor": false,
     "energy_j": 15.961010307347504,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 4.175792867855672,
-    "model_clamped": 4.175792867855672,
-    "model_rounded": 4,
-    "residual_log": -0.16400801680125476
+    "model": 4.940154168891729,
+    "model_clamped": 4.940154168891729,
+    "model_rounded": 5,
+    "residual_log": -0.08673034127731483
    },
    {
     "label": "V01/M01 h=8000.0",
-    "pieces": 7.0,
-    "n_used": 7.720336358999474,
+    "pieces": 8.0,
+    "n_used": 8.309038250029268,
     "censored_at_floor": false,
     "energy_j": 31.92202061469502,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 5.123217537695703,
-    "model_clamped": 5.123217537695703,
-    "model_rounded": 5,
-    "residual_log": -0.41007526590003573
+    "model": 6.318385951300102,
+    "model_clamped": 6.318385951300102,
+    "model_rounded": 6,
+    "residual_log": -0.27388008002849995
    },
    {
     "label": "V13/M01 h=2000.0",
     "pieces": 5.0,
-    "n_used": 5.137720630518088,
+    "n_used": 5.606371462744845,
     "censored_at_floor": false,
     "energy_j": 18.374538968040913,
     "volume_mm3": 425691.29293024074,
     "wall_mm": 11.657917121080864,
-    "model": 4.415293291241387,
-    "model_clamped": 4.415293291241387,
-    "model_rounded": 4,
-    "residual_log": -0.15153526153149066
+    "model": 5.283081824748886,
+    "model_clamped": 5.283081824748886,
+    "model_rounded": 5,
+    "residual_log": -0.05939410581219606
+   },
+   {
+    "label": "V13/M01 h=4000.0",
+    "pieces": 8.0,
+    "n_used": 8.646206761103251,
+    "censored_at_floor": false,
+    "energy_j": 36.74907793608182,
+    "volume_mm3": 425691.29293024074,
+    "wall_mm": 11.657917121080864,
+    "model": 6.756985478562672,
+    "model_clamped": 6.756985478562672,
+    "model_rounded": 7,
+    "residual_log": -0.2465438445633812
    },
    {
     "label": "V01/M04 h=2000.0",
     "pieces": 3.0,
-    "n_used": 3.1354308541367484,
+    "n_used": 3.4935202393278044,
     "censored_at_floor": false,
     "energy_j": 7.980505153673755,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 3.4035732324333705,
-    "model_clamped": 3.4035732324333705,
-    "model_rounded": 3,
-    "residual_log": 0.08205923229752532
+    "model": 3.86255657703161,
+    "model_clamped": 3.86255657703161,
+    "model_rounded": 4,
+    "residual_log": 0.1004193974738703
    },
    {
     "label": "V01/M04 h=4000.0",
     "pieces": 5.0,
-    "n_used": 4.920018376421037,
+    "n_used": 5.387744731873079,
     "censored_at_floor": false,
     "energy_j": 15.961010307347504,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 4.175792867855672,
-    "model_clamped": 4.175792867855672,
-    "model_rounded": 4,
-    "residual_log": -0.16400801680125476
+    "model": 4.940154168891729,
+    "model_clamped": 4.940154168891729,
+    "model_rounded": 5,
+    "residual_log": -0.08673034127731483
    },
    {
     "label": "V01/M04 h=8000.0",
-    "pieces": 7.0,
-    "n_used": 7.720336358999474,
+    "pieces": 8.0,
+    "n_used": 8.309038250029268,
     "censored_at_floor": false,
     "energy_j": 31.92202061469502,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 5.123217537695703,
-    "model_clamped": 5.123217537695703,
-    "model_rounded": 5,
-    "residual_log": -0.41007526590003573
+    "model": 6.318385951300102,
+    "model_clamped": 6.318385951300102,
+    "model_rounded": 6,
+    "residual_log": -0.27388008002849995
    },
    {
     "label": "V13/M04 h=2000.0",
     "pieces": 5.0,
-    "n_used": 5.137720630518088,
+    "n_used": 5.606371462744845,
     "censored_at_floor": false,
     "energy_j": 18.374538968040913,
     "volume_mm3": 425691.29293024074,
     "wall_mm": 11.657917121080864,
-    "model": 4.415293291241387,
-    "model_clamped": 4.415293291241387,
-    "model_rounded": 4,
-    "residual_log": -0.15153526153149066
+    "model": 5.283081824748886,
+    "model_clamped": 5.283081824748886,
+    "model_rounded": 5,
+    "residual_log": -0.05939410581219606
+   },
+   {
+    "label": "V13/M04 h=4000.0",
+    "pieces": 8.0,
+    "n_used": 8.646206761103251,
+    "censored_at_floor": false,
+    "energy_j": 36.74907793608182,
+    "volume_mm3": 425691.29293024074,
+    "wall_mm": 11.657917121080864,
+    "model": 6.756985478562672,
+    "model_clamped": 6.756985478562672,
+    "model_rounded": 7,
+    "residual_log": -0.2465438445633812
    }
   ]
  },
  "fit_unclamped_only": {
-  "n": 13,
+  "n": 21,
   "n_censored_at_floor": 0,
   "model": "N = N0 * (U/U_ref)^beta * (V/V_ref)^alpha * (t_ref/t)^gamma",
   "fitted": {
-   "n0": 1.7531943091465714,
-   "beta": 0.625,
+   "n0": 2.0520924444451754,
+   "beta": 0.5880000000000001,
    "u_ref_j": 3.65641077428,
    "beta_fitted": true
   },
@@ -1215,190 +1431,294 @@
    "reference_density_g_cm3": 2.2,
    "provenance": "alpha/gamma pinned to the declared geometry + Weibull form and U_ref to the declared reference body: none of the three is fitted here"
   },
-  "r2_log": 0.9675268795228587,
-  "rmse_log": 0.07514795141825675,
-  "mae_pieces": 0.2596041183125407,
-  "max_abs_error_pieces": 0.839376231933584,
-  "beta_std_error": 0.03452265540596269,
+  "r2_log": 0.8632453994688671,
+  "rmse_log": 0.18058369694240184,
+  "mae_pieces": 0.5854202752833237,
+  "max_abs_error_pieces": 3.9271238773469443,
+  "beta_std_error": 0.05372891623119538,
   "points": [
    {
     "label": "V13/M01 h=500.0",
     "pieces": 2.0,
-    "n_used": 2.0865629469735936,
+    "n_used": 2.3571888328014325,
     "censored_at_floor": false,
     "energy_j": 4.593634742010228,
     "volume_mm3": 425691.29293024074,
     "wall_mm": 11.657917121080864,
-    "model": 2.2947170281196487,
-    "model_clamped": 2.2947170281196487,
-    "model_rounded": 2,
-    "residual_log": 0.09509134733093572
+    "model": 2.643477276654651,
+    "model_clamped": 2.643477276654651,
+    "model_rounded": 3,
+    "residual_log": 0.1146254642389053
    },
    {
     "label": "V13/M04 h=500.0",
     "pieces": 2.0,
-    "n_used": 2.0865629469735936,
+    "n_used": 2.3571888328014325,
     "censored_at_floor": false,
     "energy_j": 4.593634742010228,
     "volume_mm3": 425691.29293024074,
     "wall_mm": 11.657917121080864,
-    "model": 2.2947170281196487,
-    "model_clamped": 2.2947170281196487,
+    "model": 2.643477276654651,
+    "model_clamped": 2.643477276654651,
+    "model_rounded": 3,
+    "residual_log": 0.1146254642389053
+   },
+   {
+    "label": "V01/M01 h=1000.0",
+    "pieces": 2.0,
+    "n_used": 2.265267615667079,
+    "censored_at_floor": false,
+    "energy_j": 3.990252576836876,
+    "volume_mm3": 184887.9889183985,
+    "wall_mm": 4.081301264512989,
+    "model": 2.365367202055233,
+    "model_clamped": 2.365367202055233,
     "model_rounded": 2,
-    "residual_log": 0.09509134733093572
+    "residual_log": 0.04324037046322149
    },
    {
     "label": "V01/M01 h=2000.0",
     "pieces": 3.0,
-    "n_used": 3.1354308541367484,
+    "n_used": 3.4935202393278044,
     "censored_at_floor": false,
     "energy_j": 7.980505153673755,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 3.1445466040107943,
-    "model_clamped": 3.1445466040107943,
-    "model_rounded": 3,
-    "residual_log": 0.0029031175150422417
+    "model": 3.5555288596091494,
+    "model_clamped": 3.5555288596091494,
+    "model_rounded": 4,
+    "residual_log": 0.017593924782503434
    },
    {
     "label": "V01/M01 h=4000.0",
     "pieces": 5.0,
-    "n_used": 4.920018376421037,
+    "n_used": 5.387744731873079,
     "censored_at_floor": false,
     "energy_j": 15.961010307347504,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 4.8495538137052225,
-    "model_clamped": 4.8495538137052225,
+    "model": 5.344534015914855,
+    "model_clamped": 5.344534015914855,
     "model_rounded": 5,
-    "residual_log": -0.014425561998956393
+    "residual_log": -0.008052520898214288
    },
    {
     "label": "V13/M01 h=500.0",
-    "pieces": 3.0,
-    "n_used": 2.839376231933584,
+    "pieces": 2.0,
+    "n_used": 2.3571888328014325,
     "censored_at_floor": false,
     "energy_j": 4.593634742010228,
     "volume_mm3": 425691.29293024074,
     "wall_mm": 11.657917121080864,
-    "model": 2.2947170281196487,
-    "model_clamped": 2.2947170281196487,
-    "model_rounded": 2,
-    "residual_log": -0.2129748547900956
-   },
-   {
-    "label": "V01/M01 h=2000.0",
-    "pieces": 3.0,
-    "n_used": 3.1354308541367484,
-    "censored_at_floor": false,
-    "energy_j": 7.980505153673755,
-    "volume_mm3": 184887.9889183985,
-    "wall_mm": 4.081301264512989,
-    "model": 3.1445466040107943,
-    "model_clamped": 3.1445466040107943,
+    "model": 2.643477276654651,
+    "model_clamped": 2.643477276654651,
     "model_rounded": 3,
-    "residual_log": 0.0029031175150422417
+    "residual_log": 0.1146254642389053
    },
    {
-    "label": "V01/M01 h=4000.0",
-    "pieces": 5.0,
-    "n_used": 4.920018376421037,
+    "label": "V13/M01 h=1000.0",
+    "pieces": 3.0,
+    "n_used": 3.6352821354770772,
     "censored_at_floor": false,
-    "energy_j": 15.961010307347504,
-    "volume_mm3": 184887.9889183985,
-    "wall_mm": 4.081301264512989,
-    "model": 4.8495538137052225,
-    "model_clamped": 4.8495538137052225,
-    "model_rounded": 5,
-    "residual_log": -0.014425561998956393
-   },
-   {
-    "label": "V01/M01 h=8000.0",
-    "pieces": 7.0,
-    "n_used": 7.720336358999474,
-    "censored_at_floor": false,
-    "energy_j": 31.92202061469502,
-    "volume_mm3": 184887.9889183985,
-    "wall_mm": 4.081301264512989,
-    "model": 7.4790343898945615,
-    "model_clamped": 7.4790343898945615,
-    "model_rounded": 7,
-    "residual_log": -0.031754241512954806
+    "energy_j": 9.187269484020455,
+    "volume_mm3": 425691.29293024074,
+    "wall_mm": 11.657917121080864,
+    "model": 3.9735732104089334,
+    "model_clamped": 3.9735732104089334,
+    "model_rounded": 4,
+    "residual_log": 0.08897901855818735
    },
    {
     "label": "V13/M01 h=2000.0",
     "pieces": 5.0,
-    "n_used": 5.137720630518088,
+    "n_used": 5.606371462744845,
     "censored_at_floor": false,
     "energy_j": 18.374538968040913,
     "volume_mm3": 425691.29293024074,
     "wall_mm": 11.657917121080864,
-    "model": 5.45778763351557,
-    "model_clamped": 5.45778763351557,
-    "model_rounded": 5,
-    "residual_log": 0.06043398830293856
+    "model": 5.972922180160017,
+    "model_clamped": 5.972922180160017,
+    "model_rounded": 6,
+    "residual_log": 0.06333257287746963
    },
    {
-    "label": "V01/M04 h=2000.0",
+    "label": "V13/M01 h=4000.0",
+    "pieces": 8.0,
+    "n_used": 8.646206761103251,
+    "censored_at_floor": false,
+    "energy_j": 36.74907793608182,
+    "volume_mm3": 425691.29293024074,
+    "wall_mm": 11.657917121080864,
+    "model": 8.978266532699914,
+    "model_clamped": 8.978266532699914,
+    "model_rounded": 9,
+    "residual_log": 0.037686127196751684
+   },
+   {
+    "label": "V01/M01 h=1000.0 s=1.0",
+    "pieces": 2.0,
+    "n_used": 2.265267615667079,
+    "censored_at_floor": false,
+    "energy_j": 3.990252576836876,
+    "volume_mm3": 184887.9889183985,
+    "wall_mm": 4.081301264512989,
+    "model": 2.365367202055233,
+    "model_clamped": 2.365367202055233,
+    "model_rounded": 2,
+    "residual_log": 0.04324037046322149
+   },
+   {
+    "label": "V01/M01 h=1000.0 s=1.5",
+    "pieces": 8.0,
+    "n_used": 7.927123877346944,
+    "censored_at_floor": false,
+    "energy_j": 13.46710244682445,
+    "volume_mm3": 623996.9625995947,
+    "wall_mm": 6.121954219287792,
+    "model": 3.6207158325275053,
+    "model_clamped": 3.6207158325275053,
+    "model_rounded": 4,
+    "residual_log": -0.783618530919014
+   },
+   {
+    "label": "V01/M01 h=2000.0",
     "pieces": 3.0,
-    "n_used": 3.1354308541367484,
+    "n_used": 3.4935202393278044,
     "censored_at_floor": false,
     "energy_j": 7.980505153673755,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 3.1445466040107943,
-    "model_clamped": 3.1445466040107943,
-    "model_rounded": 3,
-    "residual_log": 0.0029031175150422417
+    "model": 3.5555288596091494,
+    "model_clamped": 3.5555288596091494,
+    "model_rounded": 4,
+    "residual_log": 0.017593924782503434
    },
    {
-    "label": "V01/M04 h=4000.0",
+    "label": "V01/M01 h=4000.0",
     "pieces": 5.0,
-    "n_used": 4.920018376421037,
+    "n_used": 5.387744731873079,
     "censored_at_floor": false,
     "energy_j": 15.961010307347504,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 4.8495538137052225,
-    "model_clamped": 4.8495538137052225,
+    "model": 5.344534015914855,
+    "model_clamped": 5.344534015914855,
     "model_rounded": 5,
-    "residual_log": -0.014425561998956393
+    "residual_log": -0.008052520898214288
    },
    {
-    "label": "V01/M04 h=8000.0",
-    "pieces": 7.0,
-    "n_used": 7.720336358999474,
+    "label": "V01/M01 h=8000.0",
+    "pieces": 8.0,
+    "n_used": 8.309038250029268,
     "censored_at_floor": false,
     "energy_j": 31.92202061469502,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 7.4790343898945615,
-    "model_clamped": 7.4790343898945615,
-    "model_rounded": 7,
-    "residual_log": -0.031754241512954806
+    "model": 8.03369765093425,
+    "model_clamped": 8.03369765093425,
+    "model_rounded": 8,
+    "residual_log": -0.03369896657893223
    },
    {
-    "label": "V13/M04 h=2000.0",
+    "label": "V13/M01 h=2000.0",
     "pieces": 5.0,
-    "n_used": 5.137720630518088,
+    "n_used": 5.606371462744845,
     "censored_at_floor": false,
     "energy_j": 18.374538968040913,
     "volume_mm3": 425691.29293024074,
     "wall_mm": 11.657917121080864,
-    "model": 5.45778763351557,
-    "model_clamped": 5.45778763351557,
+    "model": 5.972922180160017,
+    "model_clamped": 5.972922180160017,
+    "model_rounded": 6,
+    "residual_log": 0.06333257287746963
+   },
+   {
+    "label": "V13/M01 h=4000.0",
+    "pieces": 8.0,
+    "n_used": 8.646206761103251,
+    "censored_at_floor": false,
+    "energy_j": 36.74907793608182,
+    "volume_mm3": 425691.29293024074,
+    "wall_mm": 11.657917121080864,
+    "model": 8.978266532699914,
+    "model_clamped": 8.978266532699914,
+    "model_rounded": 9,
+    "residual_log": 0.037686127196751684
+   },
+   {
+    "label": "V01/M04 h=2000.0",
+    "pieces": 3.0,
+    "n_used": 3.4935202393278044,
+    "censored_at_floor": false,
+    "energy_j": 7.980505153673755,
+    "volume_mm3": 184887.9889183985,
+    "wall_mm": 4.081301264512989,
+    "model": 3.5555288596091494,
+    "model_clamped": 3.5555288596091494,
+    "model_rounded": 4,
+    "residual_log": 0.017593924782503434
+   },
+   {
+    "label": "V01/M04 h=4000.0",
+    "pieces": 5.0,
+    "n_used": 5.387744731873079,
+    "censored_at_floor": false,
+    "energy_j": 15.961010307347504,
+    "volume_mm3": 184887.9889183985,
+    "wall_mm": 4.081301264512989,
+    "model": 5.344534015914855,
+    "model_clamped": 5.344534015914855,
     "model_rounded": 5,
-    "residual_log": 0.06043398830293856
+    "residual_log": -0.008052520898214288
+   },
+   {
+    "label": "V01/M04 h=8000.0",
+    "pieces": 8.0,
+    "n_used": 8.309038250029268,
+    "censored_at_floor": false,
+    "energy_j": 31.92202061469502,
+    "volume_mm3": 184887.9889183985,
+    "wall_mm": 4.081301264512989,
+    "model": 8.03369765093425,
+    "model_clamped": 8.03369765093425,
+    "model_rounded": 8,
+    "residual_log": -0.03369896657893223
+   },
+   {
+    "label": "V13/M04 h=2000.0",
+    "pieces": 5.0,
+    "n_used": 5.606371462744845,
+    "censored_at_floor": false,
+    "energy_j": 18.374538968040913,
+    "volume_mm3": 425691.29293024074,
+    "wall_mm": 11.657917121080864,
+    "model": 5.972922180160017,
+    "model_clamped": 5.972922180160017,
+    "model_rounded": 6,
+    "residual_log": 0.06333257287746963
+   },
+   {
+    "label": "V13/M04 h=4000.0",
+    "pieces": 8.0,
+    "n_used": 8.646206761103251,
+    "censored_at_floor": false,
+    "energy_j": 36.74907793608182,
+    "volume_mm3": 425691.29293024074,
+    "wall_mm": 11.657917121080864,
+    "model": 8.978266532699914,
+    "model_clamped": 8.978266532699914,
+    "model_rounded": 9,
+    "residual_log": 0.037686127196751684
    }
   ]
  },
  "fit_adopted": {
-  "n": 32,
-  "n_censored_at_floor": 19,
+  "n": 38,
+  "n_censored_at_floor": 17,
   "model": "N = N0 * (U/U_ref)^beta * (V/V_ref)^alpha * (t_ref/t)^gamma",
   "fitted": {
-   "n0": 2.504748693665778,
-   "beta": 0.625,
+   "n0": 2.529538487413321,
+   "beta": 0.5880000000000001,
    "u_ref_j": 3.65641077428,
    "beta_fitted": false
   },
@@ -1414,11 +1734,11 @@
    "reference_density_g_cm3": 2.2,
    "provenance": "alpha/gamma pinned to the declared geometry + Weibull form and U_ref to the declared reference body: none of the three is fitted here"
   },
-  "r2_log": 0.4621495119121679,
-  "rmse_log": 0.31810436904003225,
-  "mae_pieces": 0.9095323813565859,
-  "max_abs_error_pieces": 3.2796636410005258,
-  "beta_std_error": 0.16748556189177202,
+  "r2_log": 0.7630529278670521,
+  "rmse_log": 0.2698519363397552,
+  "mae_pieces": 0.8860561559717351,
+  "max_abs_error_pieces": 3.9271238773469443,
+  "beta_std_error": 0.08222009639922817,
   "points": [
    {
     "label": "V02/M01 h=500.0",
@@ -1428,7 +1748,7 @@
     "energy_j": 0.6717276386030947,
     "volume_mm3": 62248.87763905983,
     "wall_mm": 4.256277669209992,
-    "model": 1.4297667253458453,
+    "model": 1.49264818672101,
     "model_clamped": 2.0,
     "model_rounded": 2,
     "residual_log": 0.0
@@ -1441,7 +1761,7 @@
     "energy_j": 1.9951262884184386,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 1.8888812149366447,
+    "model": 1.9397122274888536,
     "model_clamped": 2.0,
     "model_rounded": 2,
     "residual_log": 0.0
@@ -1449,15 +1769,15 @@
    {
     "label": "V13/M01 h=500.0",
     "pieces": 2.0,
-    "n_used": 2.0865629469735936,
+    "n_used": 2.3571888328014325,
     "censored_at_floor": false,
     "energy_j": 4.593634742010228,
     "volume_mm3": 425691.29293024074,
     "wall_mm": 11.657917121080864,
-    "model": 3.278409842268536,
-    "model_clamped": 3.278409842268536,
+    "model": 3.258516705717123,
+    "model_clamped": 3.258516705717123,
     "model_rounded": 3,
-    "residual_log": 0.4518403113687658
+    "residual_log": 0.3238023571033687
    },
    {
     "label": "V02/M04 h=500.0",
@@ -1467,7 +1787,7 @@
     "energy_j": 0.6717276386030947,
     "volume_mm3": 62248.87763905983,
     "wall_mm": 4.256277669209992,
-    "model": 1.4297667253458453,
+    "model": 1.49264818672101,
     "model_clamped": 2.0,
     "model_rounded": 2,
     "residual_log": 0.0
@@ -1480,7 +1800,7 @@
     "energy_j": 1.9951262884184386,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 1.8888812149366447,
+    "model": 1.9397122274888536,
     "model_clamped": 2.0,
     "model_rounded": 2,
     "residual_log": 0.0
@@ -1488,15 +1808,15 @@
    {
     "label": "V13/M04 h=500.0",
     "pieces": 2.0,
-    "n_used": 2.0865629469735936,
+    "n_used": 2.3571888328014325,
     "censored_at_floor": false,
     "energy_j": 4.593634742010228,
     "volume_mm3": 425691.29293024074,
     "wall_mm": 11.657917121080864,
-    "model": 3.278409842268536,
-    "model_clamped": 3.278409842268536,
+    "model": 3.258516705717123,
+    "model_clamped": 3.258516705717123,
     "model_rounded": 3,
-    "residual_log": 0.4518403113687658
+    "residual_log": 0.3238023571033687
    },
    {
     "label": "V01/M01 h=100.0",
@@ -1506,7 +1826,7 @@
     "energy_j": 0.39902525768368774,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 0.690793742395435,
+    "model": 0.752909784255942,
     "model_clamped": 2.0,
     "model_rounded": 2,
     "residual_log": 0.0
@@ -1519,7 +1839,7 @@
     "energy_j": 0.997563144209219,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 1.224787936783548,
+    "model": 1.2904217250066126,
     "model_clamped": 2.0,
     "model_rounded": 2,
     "residual_log": 0.0
@@ -1532,7 +1852,7 @@
     "energy_j": 1.9951262884184386,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 1.8888812149366447,
+    "model": 1.9397122274888536,
     "model_clamped": 2.0,
     "model_rounded": 2,
     "residual_log": 0.0
@@ -1540,41 +1860,41 @@
    {
     "label": "V01/M01 h=1000.0",
     "pieces": 2.0,
-    "n_used": 2.0,
-    "censored_at_floor": true,
+    "n_used": 2.265267615667079,
+    "censored_at_floor": false,
     "energy_j": 3.990252576836876,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 2.9130530575849964,
-    "model_clamped": 2.9130530575849964,
+    "model": 2.91570069889399,
+    "model_clamped": 2.91570069889399,
     "model_rounded": 3,
-    "residual_log": 0.3760545113211645
+    "residual_log": 0.2524172633276849
    },
    {
     "label": "V01/M01 h=2000.0",
     "pieces": 3.0,
-    "n_used": 3.1354308541367484,
+    "n_used": 3.4935202393278044,
     "censored_at_floor": false,
     "energy_j": 7.980505153673755,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 4.492541960395284,
-    "model_clamped": 4.492541960395284,
+    "model": 4.382768972146286,
+    "model_clamped": 4.382768972146286,
     "model_rounded": 4,
-    "residual_log": 0.3596520815528723
+    "residual_log": 0.22677081764696694
    },
    {
     "label": "V01/M01 h=4000.0",
     "pieces": 5.0,
-    "n_used": 4.920018376421037,
+    "n_used": 5.387744731873079,
     "censored_at_floor": false,
     "energy_j": 15.961010307347504,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 6.9284468449210195,
-    "model_clamped": 6.9284468449210195,
+    "model": 6.588009486191297,
+    "model_clamped": 6.588009486191297,
     "model_rounded": 7,
-    "residual_log": 0.3423234020388739
+    "residual_log": 0.201124371966249
    },
    {
     "label": "V02/M01 h=100.0",
@@ -1584,7 +1904,7 @@
     "energy_j": 0.13434552772061895,
     "volume_mm3": 62248.87763905983,
     "wall_mm": 4.256277669209992,
-    "model": 0.52288831036273,
+    "model": 0.5793794606785799,
     "model_clamped": 2.0,
     "model_rounded": 2,
     "residual_log": 0.0
@@ -1597,7 +1917,7 @@
     "energy_j": 0.33586381930154724,
     "volume_mm3": 62248.87763905983,
     "wall_mm": 4.256277669209992,
-    "model": 0.927089021676169,
+    "model": 0.993005880274365,
     "model_clamped": 2.0,
     "model_rounded": 2,
     "residual_log": 0.0
@@ -1610,7 +1930,7 @@
     "energy_j": 0.6717276386030947,
     "volume_mm3": 62248.87763905983,
     "wall_mm": 4.256277669209992,
-    "model": 1.4297667253458453,
+    "model": 1.49264818672101,
     "model_clamped": 2.0,
     "model_rounded": 2,
     "residual_log": 0.0
@@ -1623,10 +1943,10 @@
     "energy_j": 1.343455277206189,
     "volume_mm3": 62248.87763905983,
     "wall_mm": 4.256277669209992,
-    "model": 2.205001721636424,
-    "model_clamped": 2.205001721636424,
+    "model": 2.243691254583435,
+    "model_clamped": 2.243691254583435,
     "model_rounded": 2,
-    "residual_log": 0.09758110912605311
+    "residual_log": 0.11497521055050264
    },
    {
     "label": "V02/M01 h=2000.0",
@@ -1636,10 +1956,10 @@
     "energy_j": 2.686910554412379,
     "volume_mm3": 62248.87763905983,
     "wall_mm": 4.256277669209992,
-    "model": 3.400577525150841,
-    "model_clamped": 3.400577525150841,
+    "model": 3.372630262562414,
+    "model_clamped": 3.372630262562414,
     "model_rounded": 3,
-    "residual_log": 0.5307980969760192
+    "residual_log": 0.5225457527197509
    },
    {
     "label": "V02/M01 h=4000.0",
@@ -1649,10 +1969,10 @@
     "energy_j": 5.373821108824756,
     "volume_mm3": 62248.87763905983,
     "wall_mm": 4.256277669209992,
-    "model": 5.2444074719265705,
-    "model_clamped": 5.2444074719265705,
+    "model": 5.069607890441964,
+    "model_clamped": 5.069607890441964,
     "model_rounded": 5,
-    "residual_log": 0.9640150848259849
+    "residual_log": 0.9301162948889986
    },
    {
     "label": "V13/M01 h=100.0",
@@ -1662,7 +1982,7 @@
     "energy_j": 0.9187269484020457,
     "volume_mm3": 425691.29293024074,
     "wall_mm": 11.657917121080864,
-    "model": 1.1989663437479157,
+    "model": 1.2648108699464082,
     "model_clamped": 2.0,
     "model_rounded": 2,
     "residual_log": 0.0
@@ -1675,23 +1995,62 @@
     "energy_j": 2.2968173710051136,
     "volume_mm3": 425691.29293024074,
     "wall_mm": 11.657917121080864,
-    "model": 2.1257857799055073,
-    "model_clamped": 2.1257857799055073,
+    "model": 2.1677755539016,
+    "model_clamped": 2.1677755539016,
     "model_rounded": 2,
-    "residual_log": 0.06099433224417383
+    "residual_log": 0.08055437086003059
    },
    {
     "label": "V13/M01 h=500.0",
-    "pieces": 3.0,
-    "n_used": 2.839376231933584,
+    "pieces": 2.0,
+    "n_used": 2.3571888328014325,
     "censored_at_floor": false,
     "energy_j": 4.593634742010228,
     "volume_mm3": 425691.29293024074,
     "wall_mm": 11.657917121080864,
-    "model": 3.278409842268536,
-    "model_clamped": 3.278409842268536,
+    "model": 3.258516705717123,
+    "model_clamped": 3.258516705717123,
     "model_rounded": 3,
-    "residual_log": 0.14377410924773448
+    "residual_log": 0.3238023571033687
+   },
+   {
+    "label": "V13/M01 h=1000.0",
+    "pieces": 3.0,
+    "n_used": 3.6352821354770772,
+    "censored_at_floor": false,
+    "energy_j": 9.187269484020455,
+    "volume_mm3": 425691.29293024074,
+    "wall_mm": 11.657917121080864,
+    "model": 4.89807678766708,
+    "model_clamped": 4.89807678766708,
+    "model_rounded": 5,
+    "residual_log": 0.29815591142265085
+   },
+   {
+    "label": "V13/M01 h=2000.0",
+    "pieces": 5.0,
+    "n_used": 5.606371462744845,
+    "censored_at_floor": false,
+    "energy_j": 18.374538968040913,
+    "volume_mm3": 425691.29293024074,
+    "wall_mm": 11.657917121080864,
+    "model": 7.362600343828271,
+    "model_clamped": 7.362600343828271,
+    "model_rounded": 7,
+    "residual_log": 0.2725094657419329
+   },
+   {
+    "label": "V13/M01 h=4000.0",
+    "pieces": 8.0,
+    "n_used": 8.646206761103251,
+    "censored_at_floor": false,
+    "energy_j": 36.74907793608182,
+    "volume_mm3": 425691.29293024074,
+    "wall_mm": 11.657917121080864,
+    "model": 11.067177215234926,
+    "model_clamped": 11.067177215234926,
+    "model_rounded": 11,
+    "residual_log": 0.2468630200612152
    },
    {
     "label": "V01/M01 h=1000.0 s=0.5",
@@ -1701,7 +2060,7 @@
     "energy_j": 0.4987815721046095,
     "volume_mm3": 23110.998614799813,
     "wall_mm": 2.040650632256496,
-    "model": 1.3439323793657612,
+    "model": 1.4081906146666336,
     "model_clamped": 2.0,
     "model_rounded": 2,
     "residual_log": 0.0
@@ -1714,335 +2073,410 @@
     "energy_j": 1.6833878058530563,
     "volume_mm3": 77999.62032494934,
     "wall_mm": 3.0609771096438916,
-    "model": 2.1130408451630482,
-    "model_clamped": 2.1130408451630482,
+    "model": 2.1555461026558445,
+    "model_clamped": 2.1555461026558445,
     "model_rounded": 2,
-    "residual_log": 0.05498088830032377
+    "residual_log": 0.0748969227976567
    },
    {
     "label": "V01/M01 h=1000.0 s=1.0",
     "pieces": 2.0,
-    "n_used": 2.0,
-    "censored_at_floor": true,
+    "n_used": 2.265267615667079,
+    "censored_at_floor": false,
     "energy_j": 3.990252576836876,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 2.9130530575849964,
-    "model_clamped": 2.9130530575849964,
+    "model": 2.91570069889399,
+    "model_clamped": 2.91570069889399,
     "model_rounded": 3,
-    "residual_log": 0.3760545113211645
+    "residual_log": 0.2524172633276849
+   },
+   {
+    "label": "V01/M01 h=1000.0 s=1.5",
+    "pieces": 8.0,
+    "n_used": 7.927123877346944,
+    "censored_at_floor": false,
+    "energy_j": 13.46710244682445,
+    "volume_mm3": 623996.9625995947,
+    "wall_mm": 6.121954219287792,
+    "model": 4.463122543605163,
+    "model_clamped": 4.463122543605163,
+    "model_rounded": 4,
+    "residual_log": -0.5744416380545507
    },
    {
     "label": "V01/M01 h=2000.0",
     "pieces": 3.0,
-    "n_used": 3.1354308541367484,
+    "n_used": 3.4935202393278044,
     "censored_at_floor": false,
     "energy_j": 7.980505153673755,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 4.492541960395284,
-    "model_clamped": 4.492541960395284,
+    "model": 4.382768972146286,
+    "model_clamped": 4.382768972146286,
     "model_rounded": 4,
-    "residual_log": 0.3596520815528723
+    "residual_log": 0.22677081764696694
    },
    {
     "label": "V01/M01 h=4000.0",
     "pieces": 5.0,
-    "n_used": 4.920018376421037,
+    "n_used": 5.387744731873079,
     "censored_at_floor": false,
     "energy_j": 15.961010307347504,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 6.9284468449210195,
-    "model_clamped": 6.9284468449210195,
+    "model": 6.588009486191297,
+    "model_clamped": 6.588009486191297,
     "model_rounded": 7,
-    "residual_log": 0.3423234020388739
+    "residual_log": 0.201124371966249
    },
    {
     "label": "V01/M01 h=8000.0",
-    "pieces": 7.0,
-    "n_used": 7.720336358999474,
+    "pieces": 8.0,
+    "n_used": 8.309038250029268,
     "censored_at_floor": false,
     "energy_j": 31.92202061469502,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 10.685125727500692,
-    "model_clamped": 10.685125727500692,
-    "model_rounded": 11,
-    "residual_log": 0.32499472252487527
+    "model": 9.902842076773261,
+    "model_clamped": 9.902842076773261,
+    "model_rounded": 10,
+    "residual_log": 0.17547792628553127
    },
    {
     "label": "V13/M01 h=2000.0",
     "pieces": 5.0,
-    "n_used": 5.137720630518088,
+    "n_used": 5.606371462744845,
     "censored_at_floor": false,
     "energy_j": 18.374538968040913,
     "volume_mm3": 425691.29293024074,
     "wall_mm": 11.657917121080864,
-    "model": 7.797416620641384,
-    "model_clamped": 7.797416620641384,
-    "model_rounded": 8,
-    "residual_log": 0.41718295234076885
+    "model": 7.362600343828271,
+    "model_clamped": 7.362600343828271,
+    "model_rounded": 7,
+    "residual_log": 0.2725094657419329
+   },
+   {
+    "label": "V13/M01 h=4000.0",
+    "pieces": 8.0,
+    "n_used": 8.646206761103251,
+    "censored_at_floor": false,
+    "energy_j": 36.74907793608182,
+    "volume_mm3": 425691.29293024074,
+    "wall_mm": 11.657917121080864,
+    "model": 11.067177215234926,
+    "model_clamped": 11.067177215234926,
+    "model_rounded": 11,
+    "residual_log": 0.2468630200612152
    },
    {
     "label": "V01/M04 h=2000.0",
     "pieces": 3.0,
-    "n_used": 3.1354308541367484,
+    "n_used": 3.4935202393278044,
     "censored_at_floor": false,
     "energy_j": 7.980505153673755,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 4.492541960395284,
-    "model_clamped": 4.492541960395284,
+    "model": 4.382768972146286,
+    "model_clamped": 4.382768972146286,
     "model_rounded": 4,
-    "residual_log": 0.3596520815528723
+    "residual_log": 0.22677081764696694
    },
    {
     "label": "V01/M04 h=4000.0",
     "pieces": 5.0,
-    "n_used": 4.920018376421037,
+    "n_used": 5.387744731873079,
     "censored_at_floor": false,
     "energy_j": 15.961010307347504,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 6.9284468449210195,
-    "model_clamped": 6.9284468449210195,
+    "model": 6.588009486191297,
+    "model_clamped": 6.588009486191297,
     "model_rounded": 7,
-    "residual_log": 0.3423234020388739
+    "residual_log": 0.201124371966249
    },
    {
     "label": "V01/M04 h=8000.0",
-    "pieces": 7.0,
-    "n_used": 7.720336358999474,
+    "pieces": 8.0,
+    "n_used": 8.309038250029268,
     "censored_at_floor": false,
     "energy_j": 31.92202061469502,
     "volume_mm3": 184887.9889183985,
     "wall_mm": 4.081301264512989,
-    "model": 10.685125727500692,
-    "model_clamped": 10.685125727500692,
-    "model_rounded": 11,
-    "residual_log": 0.32499472252487527
+    "model": 9.902842076773261,
+    "model_clamped": 9.902842076773261,
+    "model_rounded": 10,
+    "residual_log": 0.17547792628553127
    },
    {
     "label": "V13/M04 h=2000.0",
     "pieces": 5.0,
-    "n_used": 5.137720630518088,
+    "n_used": 5.606371462744845,
     "censored_at_floor": false,
     "energy_j": 18.374538968040913,
     "volume_mm3": 425691.29293024074,
     "wall_mm": 11.657917121080864,
-    "model": 7.797416620641384,
-    "model_clamped": 7.797416620641384,
-    "model_rounded": 8,
-    "residual_log": 0.41718295234076885
+    "model": 7.362600343828271,
+    "model_clamped": 7.362600343828271,
+    "model_rounded": 7,
+    "residual_log": 0.2725094657419329
+   },
+   {
+    "label": "V13/M04 h=4000.0",
+    "pieces": 8.0,
+    "n_used": 8.646206761103251,
+    "censored_at_floor": false,
+    "energy_j": 36.74907793608182,
+    "volume_mm3": 425691.29293024074,
+    "wall_mm": 11.657917121080864,
+    "model": 11.067177215234926,
+    "model_clamped": 11.067177215234926,
+    "model_rounded": 11,
+    "residual_log": 0.2468630200612152
    }
   ],
   "provenance": "beta from the unclamped fit (points whose measured count is above the floor); the amplitude N0 re-solved on every measured point with the floor treated as censored"
  },
  "declared_law_on_the_same_points": {
   "config": "configs/a12/fracture_physics.yaml",
-  "config_hash": "sha256:a47a9e3750da21bfe7700995d",
+  "config_hash": "sha256:667841bd17937e521512b7246",
   "u_ref_j": 3.6612999720000006,
   "points": [
    {
     "label": "V02/M01 h=500.0",
-    "n_raw": 0.329897509385706,
+    "n_raw": 0.39103533378844635,
     "n_deterministic": 2.0,
     "declared_raw_clamped": true
    },
    {
     "label": "V01/M01 h=500.0",
-    "n_raw": 1.273380612440926,
+    "n_raw": 1.468844322933525,
     "n_deterministic": 2.0,
     "declared_raw_clamped": true
    },
    {
     "label": "V13/M01 h=500.0",
-    "n_raw": 2.0865629469735936,
-    "n_deterministic": 2.0865629469735936,
+    "n_raw": 2.3571888328014325,
+    "n_deterministic": 2.3571888328014325,
     "declared_raw_clamped": false
    },
    {
     "label": "V02/M04 h=500.0",
-    "n_raw": 0.329897509385706,
+    "n_raw": 0.39103533378844635,
     "n_deterministic": 2.0,
     "declared_raw_clamped": true
    },
    {
     "label": "V01/M04 h=500.0",
-    "n_raw": 1.273380612440926,
+    "n_raw": 1.468844322933525,
     "n_deterministic": 2.0,
     "declared_raw_clamped": true
    },
    {
     "label": "V13/M04 h=500.0",
-    "n_raw": 2.0865629469735936,
-    "n_deterministic": 2.0865629469735936,
+    "n_raw": 2.3571888328014325,
+    "n_deterministic": 2.3571888328014325,
     "declared_raw_clamped": false
    },
    {
     "label": "V01/M01 h=100.0",
-    "n_raw": 0.4473296967458454,
+    "n_raw": 0.5371796060079783,
     "n_deterministic": 2.0,
     "declared_raw_clamped": true
    },
    {
     "label": "V01/M01 h=250.0",
-    "n_raw": 0.8115003961044462,
+    "n_raw": 0.9524277088023878,
     "n_deterministic": 2.0,
     "declared_raw_clamped": true
    },
    {
     "label": "V01/M01 h=500.0",
-    "n_raw": 1.273380612440926,
+    "n_raw": 1.468844322933525,
     "n_deterministic": 2.0,
     "declared_raw_clamped": true
    },
    {
     "label": "V01/M01 h=1000.0",
-    "n_raw": 1.9981483581823516,
-    "n_deterministic": 2.0,
-    "declared_raw_clamped": true
+    "n_raw": 2.265267615667079,
+    "n_deterministic": 2.265267615667079,
+    "declared_raw_clamped": false
    },
    {
     "label": "V01/M01 h=2000.0",
-    "n_raw": 3.1354308541367484,
-    "n_deterministic": 3.1354308541367484,
+    "n_raw": 3.4935202393278044,
+    "n_deterministic": 3.4935202393278044,
     "declared_raw_clamped": false
    },
    {
     "label": "V01/M01 h=4000.0",
-    "n_raw": 4.920018376421037,
-    "n_deterministic": 4.920018376421037,
+    "n_raw": 5.387744731873079,
+    "n_deterministic": 5.387744731873079,
     "declared_raw_clamped": false
    },
    {
     "label": "V02/M01 h=100.0",
-    "n_raw": 0.11589068609096922,
+    "n_raw": 0.14300780774381794,
     "n_deterministic": 2.0,
     "declared_raw_clamped": true
    },
    {
     "label": "V02/M01 h=250.0",
-    "n_raw": 0.2102371882568537,
+    "n_raw": 0.2535550440615088,
     "n_deterministic": 2.0,
     "declared_raw_clamped": true
    },
    {
     "label": "V02/M01 h=500.0",
-    "n_raw": 0.329897509385706,
+    "n_raw": 0.39103533378844635,
     "n_deterministic": 2.0,
     "declared_raw_clamped": true
    },
    {
     "label": "V02/M01 h=1000.0",
-    "n_raw": 0.5176646795995378,
+    "n_raw": 0.6030589248855495,
     "n_deterministic": 2.0,
     "declared_raw_clamped": true
    },
    {
     "label": "V02/M01 h=2000.0",
-    "n_raw": 0.8123029513132278,
+    "n_raw": 0.9300440023173687,
     "n_deterministic": 2.0,
     "declared_raw_clamped": true
    },
    {
     "label": "V02/M01 h=4000.0",
-    "n_raw": 1.2746399565499138,
+    "n_raw": 1.434323928479574,
     "n_deterministic": 2.0,
     "declared_raw_clamped": true
    },
    {
     "label": "V13/M01 h=100.0",
-    "n_raw": 0.7329949593952341,
+    "n_raw": 0.8620612468731893,
     "n_deterministic": 2.0,
     "declared_raw_clamped": true
    },
    {
     "label": "V13/M01 h=250.0",
-    "n_raw": 1.3297254893178954,
+    "n_raw": 1.528447858079271,
     "n_deterministic": 2.0,
     "declared_raw_clamped": true
    },
    {
     "label": "V13/M01 h=500.0",
-    "n_raw": 2.0865629469735936,
-    "n_deterministic": 2.0865629469735936,
+    "n_raw": 2.3571888328014325,
+    "n_deterministic": 2.3571888328014325,
+    "declared_raw_clamped": false
+   },
+   {
+    "label": "V13/M01 h=1000.0",
+    "n_raw": 3.6352821354770772,
+    "n_deterministic": 3.6352821354770772,
+    "declared_raw_clamped": false
+   },
+   {
+    "label": "V13/M01 h=2000.0",
+    "n_raw": 5.606371462744845,
+    "n_deterministic": 5.606371462744845,
+    "declared_raw_clamped": false
+   },
+   {
+    "label": "V13/M01 h=4000.0",
+    "n_raw": 8.646206761103251,
+    "n_deterministic": 8.646206761103251,
     "declared_raw_clamped": false
    },
    {
     "label": "V01/M01 h=1000.0 s=0.5",
-    "n_raw": 0.2228860130317224,
+    "n_raw": 0.26616555456126745,
     "n_deterministic": 2.0,
     "declared_raw_clamped": true
    },
    {
     "label": "V01/M01 h=1000.0 s=0.75",
-    "n_raw": 0.8040550588519693,
+    "n_raw": 0.9314251915743657,
     "n_deterministic": 2.0,
     "declared_raw_clamped": true
    },
    {
     "label": "V01/M01 h=1000.0 s=1.0",
-    "n_raw": 1.9981483581823516,
-    "n_deterministic": 2.0,
-    "declared_raw_clamped": true
+    "n_raw": 2.265267615667079,
+    "n_deterministic": 2.265267615667079,
+    "declared_raw_clamped": false
+   },
+   {
+    "label": "V01/M01 h=1000.0 s=1.5",
+    "n_raw": 7.927123877346944,
+    "n_deterministic": 7.927123877346944,
+    "declared_raw_clamped": false
    },
    {
     "label": "V01/M01 h=2000.0",
-    "n_raw": 3.1354308541367484,
-    "n_deterministic": 3.1354308541367484,
+    "n_raw": 3.4935202393278044,
+    "n_deterministic": 3.4935202393278044,
     "declared_raw_clamped": false
    },
    {
     "label": "V01/M01 h=4000.0",
-    "n_raw": 4.920018376421037,
-    "n_deterministic": 4.920018376421037,
+    "n_raw": 5.387744731873079,
+    "n_deterministic": 5.387744731873079,
     "declared_raw_clamped": false
    },
    {
     "label": "V01/M01 h=8000.0",
-    "n_raw": 7.720336358999474,
-    "n_deterministic": 7.720336358999474,
+    "n_raw": 8.309038250029268,
+    "n_deterministic": 8.309038250029268,
     "declared_raw_clamped": false
    },
    {
     "label": "V13/M01 h=2000.0",
-    "n_raw": 5.137720630518088,
-    "n_deterministic": 5.137720630518088,
+    "n_raw": 5.606371462744845,
+    "n_deterministic": 5.606371462744845,
+    "declared_raw_clamped": false
+   },
+   {
+    "label": "V13/M01 h=4000.0",
+    "n_raw": 8.646206761103251,
+    "n_deterministic": 8.646206761103251,
     "declared_raw_clamped": false
    },
    {
     "label": "V01/M04 h=2000.0",
-    "n_raw": 3.1354308541367484,
-    "n_deterministic": 3.1354308541367484,
+    "n_raw": 3.4935202393278044,
+    "n_deterministic": 3.4935202393278044,
     "declared_raw_clamped": false
    },
    {
     "label": "V01/M04 h=4000.0",
-    "n_raw": 4.920018376421037,
-    "n_deterministic": 4.920018376421037,
+    "n_raw": 5.387744731873079,
+    "n_deterministic": 5.387744731873079,
     "declared_raw_clamped": false
    },
    {
     "label": "V01/M04 h=8000.0",
-    "n_raw": 7.720336358999474,
-    "n_deterministic": 7.720336358999474,
+    "n_raw": 8.309038250029268,
+    "n_deterministic": 8.309038250029268,
     "declared_raw_clamped": false
    },
    {
     "label": "V13/M04 h=2000.0",
-    "n_raw": 5.137720630518088,
-    "n_deterministic": 5.137720630518088,
+    "n_raw": 5.606371462744845,
+    "n_deterministic": 5.606371462744845,
+    "declared_raw_clamped": false
+   },
+   {
+    "label": "V13/M04 h=4000.0",
+    "n_raw": 8.646206761103251,
+    "n_deterministic": 8.646206761103251,
     "declared_raw_clamped": false
    }
   ],
-  "n_clamped": 19
+  "n_clamped": 17
  },
  "monotonicity": {
   "scaled_size_series": {
    "key": "volume_mm3",
-   "n": 3,
+   "n": 4,
    "monotone_non_decreasing": true,
    "violations": [],
    "ordered": [
@@ -2059,13 +2493,18 @@
     {
      "label": "V01/M01 h=1000.0 s=1.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 2.0
+     "pieces": 2.265267615667079
+    },
+    {
+     "label": "V01/M01 h=1000.0 s=1.5",
+     "volume_mm3": 623996.9625995947,
+     "pieces": 7.927123877346944
     }
    ]
   },
   "scaled_size_series_measured_integer": {
    "key": "volume_mm3",
-   "n": 3,
+   "n": 4,
    "monotone_non_decreasing": true,
    "violations": [],
    "ordered": [
@@ -2083,60 +2522,101 @@
      "label": "V01/M01 h=1000.0 s=1.0",
      "volume_mm3": 184887.9889183985,
      "pieces": 2.0
+    },
+    {
+     "label": "V01/M01 h=1000.0 s=1.5",
+     "volume_mm3": 623996.9625995947,
+     "pieces": 8.0
     }
    ]
   },
   "all_points_in_volume": {
    "key": "volume_mm3",
-   "n": 32,
+   "n": 38,
    "monotone_non_decreasing": false,
    "violations": [
     {
      "smaller": {
       "label": "V01/M01 h=4000.0",
       "volume_mm3": 184887.9889183985,
-      "pieces": 4.920018376421037
+      "pieces": 5.387744731873079
      },
      "larger": {
       "label": "V01/M01 h=1000.0 s=1.0",
       "volume_mm3": 184887.9889183985,
-      "pieces": 2.0
+      "pieces": 2.265267615667079
      }
     },
     {
      "smaller": {
       "label": "V01/M01 h=8000.0",
       "volume_mm3": 184887.9889183985,
-      "pieces": 7.720336358999474
+      "pieces": 8.309038250029268
      },
      "larger": {
       "label": "V01/M04 h=2000.0",
       "volume_mm3": 184887.9889183985,
-      "pieces": 3.1354308541367484
+      "pieces": 3.4935202393278044
      }
     },
     {
      "smaller": {
       "label": "V01/M04 h=8000.0",
       "volume_mm3": 184887.9889183985,
-      "pieces": 7.720336358999474
+      "pieces": 8.309038250029268
      },
      "larger": {
       "label": "V13/M01 h=500.0",
       "volume_mm3": 425691.29293024074,
-      "pieces": 2.0865629469735936
+      "pieces": 2.3571888328014325
      }
     },
     {
      "smaller": {
       "label": "V13/M04 h=500.0",
       "volume_mm3": 425691.29293024074,
-      "pieces": 2.0865629469735936
+      "pieces": 2.3571888328014325
      },
      "larger": {
       "label": "V13/M01 h=100.0",
       "volume_mm3": 425691.29293024074,
       "pieces": 2.0
+     }
+    },
+    {
+     "smaller": {
+      "label": "V13/M01 h=4000.0",
+      "volume_mm3": 425691.29293024074,
+      "pieces": 8.646206761103251
+     },
+     "larger": {
+      "label": "V13/M01 h=2000.0",
+      "volume_mm3": 425691.29293024074,
+      "pieces": 5.606371462744845
+     }
+    },
+    {
+     "smaller": {
+      "label": "V13/M01 h=4000.0",
+      "volume_mm3": 425691.29293024074,
+      "pieces": 8.646206761103251
+     },
+     "larger": {
+      "label": "V13/M04 h=2000.0",
+      "volume_mm3": 425691.29293024074,
+      "pieces": 5.606371462744845
+     }
+    },
+    {
+     "smaller": {
+      "label": "V13/M04 h=4000.0",
+      "volume_mm3": 425691.29293024074,
+      "pieces": 8.646206761103251
+     },
+     "larger": {
+      "label": "V01/M01 h=1000.0 s=1.5",
+      "volume_mm3": 623996.9625995947,
+      "pieces": 7.927123877346944
      }
     }
    ],
@@ -2219,62 +2699,62 @@
     {
      "label": "V01/M01 h=1000.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 2.0
+     "pieces": 2.265267615667079
     },
     {
      "label": "V01/M01 h=2000.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 3.1354308541367484
+     "pieces": 3.4935202393278044
     },
     {
      "label": "V01/M01 h=4000.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 4.920018376421037
+     "pieces": 5.387744731873079
     },
     {
      "label": "V01/M01 h=1000.0 s=1.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 2.0
+     "pieces": 2.265267615667079
     },
     {
      "label": "V01/M01 h=2000.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 3.1354308541367484
+     "pieces": 3.4935202393278044
     },
     {
      "label": "V01/M01 h=4000.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 4.920018376421037
+     "pieces": 5.387744731873079
     },
     {
      "label": "V01/M01 h=8000.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 7.720336358999474
+     "pieces": 8.309038250029268
     },
     {
      "label": "V01/M04 h=2000.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 3.1354308541367484
+     "pieces": 3.4935202393278044
     },
     {
      "label": "V01/M04 h=4000.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 4.920018376421037
+     "pieces": 5.387744731873079
     },
     {
      "label": "V01/M04 h=8000.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 7.720336358999474
+     "pieces": 8.309038250029268
     },
     {
      "label": "V13/M01 h=500.0",
      "volume_mm3": 425691.29293024074,
-     "pieces": 2.0865629469735936
+     "pieces": 2.3571888328014325
     },
     {
      "label": "V13/M04 h=500.0",
      "volume_mm3": 425691.29293024074,
-     "pieces": 2.0865629469735936
+     "pieces": 2.3571888328014325
     },
     {
      "label": "V13/M01 h=100.0",
@@ -2289,36 +2769,78 @@
     {
      "label": "V13/M01 h=500.0",
      "volume_mm3": 425691.29293024074,
-     "pieces": 2.839376231933584
+     "pieces": 2.3571888328014325
+    },
+    {
+     "label": "V13/M01 h=1000.0",
+     "volume_mm3": 425691.29293024074,
+     "pieces": 3.6352821354770772
     },
     {
      "label": "V13/M01 h=2000.0",
      "volume_mm3": 425691.29293024074,
-     "pieces": 5.137720630518088
+     "pieces": 5.606371462744845
+    },
+    {
+     "label": "V13/M01 h=4000.0",
+     "volume_mm3": 425691.29293024074,
+     "pieces": 8.646206761103251
+    },
+    {
+     "label": "V13/M01 h=2000.0",
+     "volume_mm3": 425691.29293024074,
+     "pieces": 5.606371462744845
+    },
+    {
+     "label": "V13/M01 h=4000.0",
+     "volume_mm3": 425691.29293024074,
+     "pieces": 8.646206761103251
     },
     {
      "label": "V13/M04 h=2000.0",
      "volume_mm3": 425691.29293024074,
-     "pieces": 5.137720630518088
+     "pieces": 5.606371462744845
+    },
+    {
+     "label": "V13/M04 h=4000.0",
+     "volume_mm3": 425691.29293024074,
+     "pieces": 8.646206761103251
+    },
+    {
+     "label": "V01/M01 h=1000.0 s=1.5",
+     "volume_mm3": 623996.9625995947,
+     "pieces": 7.927123877346944
     }
    ]
   },
   "all_points_in_energy": {
    "key": "energy_j",
-   "n": 32,
+   "n": 38,
    "monotone_non_decreasing": false,
    "violations": [
     {
      "smaller": {
       "label": "V13/M01 h=500.0",
       "energy_j": 4.593634742010228,
-      "pieces": 2.839376231933584
+      "pieces": 2.3571888328014325
      },
      "larger": {
       "label": "V02/M01 h=4000.0",
       "energy_j": 5.373821108824756,
       "pieces": 2.0
      }
+    },
+    {
+     "smaller": {
+      "label": "V01/M01 h=1000.0 s=1.5",
+      "energy_j": 13.46710244682445,
+      "pieces": 7.927123877346944
+     },
+     "larger": {
+      "label": "V01/M01 h=4000.0",
+      "energy_j": 15.961010307347504,
+      "pieces": 5.387744731873079
+     }
     }
    ],
    "ordered": [
@@ -2405,27 +2927,27 @@
     {
      "label": "V01/M01 h=1000.0",
      "energy_j": 3.990252576836876,
-     "pieces": 2.0
+     "pieces": 2.265267615667079
     },
     {
      "label": "V01/M01 h=1000.0 s=1.0",
      "energy_j": 3.990252576836876,
-     "pieces": 2.0
+     "pieces": 2.265267615667079
     },
     {
      "label": "V13/M01 h=500.0",
      "energy_j": 4.593634742010228,
-     "pieces": 2.0865629469735936
+     "pieces": 2.3571888328014325
     },
     {
      "label": "V13/M04 h=500.0",
      "energy_j": 4.593634742010228,
-     "pieces": 2.0865629469735936
+     "pieces": 2.3571888328014325
     },
     {
      "label": "V13/M01 h=500.0",
      "energy_j": 4.593634742010228,
-     "pieces": 2.839376231933584
+     "pieces": 2.3571888328014325
     },
     {
      "label": "V02/M01 h=4000.0",
@@ -2435,154 +2957,220 @@
     {
      "label": "V01/M01 h=2000.0",
      "energy_j": 7.980505153673755,
-     "pieces": 3.1354308541367484
+     "pieces": 3.4935202393278044
     },
     {
      "label": "V01/M01 h=2000.0",
      "energy_j": 7.980505153673755,
-     "pieces": 3.1354308541367484
+     "pieces": 3.4935202393278044
     },
     {
      "label": "V01/M04 h=2000.0",
      "energy_j": 7.980505153673755,
-     "pieces": 3.1354308541367484
+     "pieces": 3.4935202393278044
+    },
+    {
+     "label": "V13/M01 h=1000.0",
+     "energy_j": 9.187269484020455,
+     "pieces": 3.6352821354770772
+    },
+    {
+     "label": "V01/M01 h=1000.0 s=1.5",
+     "energy_j": 13.46710244682445,
+     "pieces": 7.927123877346944
     },
     {
      "label": "V01/M01 h=4000.0",
      "energy_j": 15.961010307347504,
-     "pieces": 4.920018376421037
+     "pieces": 5.387744731873079
     },
     {
      "label": "V01/M01 h=4000.0",
      "energy_j": 15.961010307347504,
-     "pieces": 4.920018376421037
+     "pieces": 5.387744731873079
     },
     {
      "label": "V01/M04 h=4000.0",
      "energy_j": 15.961010307347504,
-     "pieces": 4.920018376421037
+     "pieces": 5.387744731873079
     },
     {
      "label": "V13/M01 h=2000.0",
      "energy_j": 18.374538968040913,
-     "pieces": 5.137720630518088
+     "pieces": 5.606371462744845
+    },
+    {
+     "label": "V13/M01 h=2000.0",
+     "energy_j": 18.374538968040913,
+     "pieces": 5.606371462744845
     },
     {
      "label": "V13/M04 h=2000.0",
      "energy_j": 18.374538968040913,
-     "pieces": 5.137720630518088
+     "pieces": 5.606371462744845
     },
     {
      "label": "V01/M01 h=8000.0",
      "energy_j": 31.92202061469502,
-     "pieces": 7.720336358999474
+     "pieces": 8.309038250029268
     },
     {
      "label": "V01/M04 h=8000.0",
      "energy_j": 31.92202061469502,
-     "pieces": 7.720336358999474
+     "pieces": 8.309038250029268
+    },
+    {
+     "label": "V13/M01 h=4000.0",
+     "energy_j": 36.74907793608182,
+     "pieces": 8.646206761103251
+    },
+    {
+     "label": "V13/M01 h=4000.0",
+     "energy_j": 36.74907793608182,
+     "pieces": 8.646206761103251
+    },
+    {
+     "label": "V13/M04 h=4000.0",
+     "energy_j": 36.74907793608182,
+     "pieces": 8.646206761103251
     }
    ]
   },
   "model_in_volume": {
    "key": "volume_mm3",
-   "n": 32,
+   "n": 38,
    "monotone_non_decreasing": false,
    "violations": [
     {
      "smaller": {
       "label": "V02/M04 h=500.0",
       "volume_mm3": 62248.87763905983,
-      "pieces": 1.4297667253458453
+      "pieces": 1.49264818672101
      },
      "larger": {
       "label": "V02/M01 h=100.0",
       "volume_mm3": 62248.87763905983,
-      "pieces": 0.52288831036273
+      "pieces": 0.5793794606785799
      }
     },
     {
      "smaller": {
       "label": "V02/M01 h=4000.0",
       "volume_mm3": 62248.87763905983,
-      "pieces": 5.2444074719265705
+      "pieces": 5.069607890441964
      },
      "larger": {
       "label": "V01/M01 h=1000.0 s=0.75",
       "volume_mm3": 77999.62032494934,
-      "pieces": 2.1130408451630482
+      "pieces": 2.1555461026558445
      }
     },
     {
      "smaller": {
       "label": "V01/M01 h=1000.0 s=0.75",
       "volume_mm3": 77999.62032494934,
-      "pieces": 2.1130408451630482
+      "pieces": 2.1555461026558445
      },
      "larger": {
       "label": "V01/M01 h=500.0",
       "volume_mm3": 184887.9889183985,
-      "pieces": 1.8888812149366447
+      "pieces": 1.9397122274888536
      }
     },
     {
      "smaller": {
       "label": "V01/M04 h=500.0",
       "volume_mm3": 184887.9889183985,
-      "pieces": 1.8888812149366447
+      "pieces": 1.9397122274888536
      },
      "larger": {
       "label": "V01/M01 h=100.0",
       "volume_mm3": 184887.9889183985,
-      "pieces": 0.690793742395435
+      "pieces": 0.752909784255942
      }
     },
     {
      "smaller": {
       "label": "V01/M01 h=4000.0",
       "volume_mm3": 184887.9889183985,
-      "pieces": 6.9284468449210195
+      "pieces": 6.588009486191297
      },
      "larger": {
       "label": "V01/M01 h=1000.0 s=1.0",
       "volume_mm3": 184887.9889183985,
-      "pieces": 2.9130530575849964
+      "pieces": 2.91570069889399
      }
     },
     {
      "smaller": {
       "label": "V01/M01 h=8000.0",
       "volume_mm3": 184887.9889183985,
-      "pieces": 10.685125727500692
+      "pieces": 9.902842076773261
      },
      "larger": {
       "label": "V01/M04 h=2000.0",
       "volume_mm3": 184887.9889183985,
-      "pieces": 4.492541960395284
+      "pieces": 4.382768972146286
      }
     },
     {
      "smaller": {
       "label": "V01/M04 h=8000.0",
       "volume_mm3": 184887.9889183985,
-      "pieces": 10.685125727500692
+      "pieces": 9.902842076773261
      },
      "larger": {
       "label": "V13/M01 h=500.0",
       "volume_mm3": 425691.29293024074,
-      "pieces": 3.278409842268536
+      "pieces": 3.258516705717123
      }
     },
     {
      "smaller": {
       "label": "V13/M04 h=500.0",
       "volume_mm3": 425691.29293024074,
-      "pieces": 3.278409842268536
+      "pieces": 3.258516705717123
      },
      "larger": {
       "label": "V13/M01 h=100.0",
       "volume_mm3": 425691.29293024074,
-      "pieces": 1.1989663437479157
+      "pieces": 1.2648108699464082
+     }
+    },
+    {
+     "smaller": {
+      "label": "V13/M01 h=4000.0",
+      "volume_mm3": 425691.29293024074,
+      "pieces": 11.067177215234926
+     },
+     "larger": {
+      "label": "V13/M01 h=2000.0",
+      "volume_mm3": 425691.29293024074,
+      "pieces": 7.362600343828271
+     }
+    },
+    {
+     "smaller": {
+      "label": "V13/M01 h=4000.0",
+      "volume_mm3": 425691.29293024074,
+      "pieces": 11.067177215234926
+     },
+     "larger": {
+      "label": "V13/M04 h=2000.0",
+      "volume_mm3": 425691.29293024074,
+      "pieces": 7.362600343828271
+     }
+    },
+    {
+     "smaller": {
+      "label": "V13/M04 h=4000.0",
+      "volume_mm3": 425691.29293024074,
+      "pieces": 11.067177215234926
+     },
+     "larger": {
+      "label": "V01/M01 h=1000.0 s=1.5",
+      "volume_mm3": 623996.9625995947,
+      "pieces": 4.463122543605163
      }
     }
    ],
@@ -2590,240 +3178,282 @@
     {
      "label": "V01/M01 h=1000.0 s=0.5",
      "volume_mm3": 23110.998614799813,
-     "pieces": 1.3439323793657612
+     "pieces": 1.4081906146666336
     },
     {
      "label": "V02/M01 h=500.0",
      "volume_mm3": 62248.87763905983,
-     "pieces": 1.4297667253458453
+     "pieces": 1.49264818672101
     },
     {
      "label": "V02/M04 h=500.0",
      "volume_mm3": 62248.87763905983,
-     "pieces": 1.4297667253458453
+     "pieces": 1.49264818672101
     },
     {
      "label": "V02/M01 h=100.0",
      "volume_mm3": 62248.87763905983,
-     "pieces": 0.52288831036273
+     "pieces": 0.5793794606785799
     },
     {
      "label": "V02/M01 h=250.0",
      "volume_mm3": 62248.87763905983,
-     "pieces": 0.927089021676169
+     "pieces": 0.993005880274365
     },
     {
      "label": "V02/M01 h=500.0",
      "volume_mm3": 62248.87763905983,
-     "pieces": 1.4297667253458453
+     "pieces": 1.49264818672101
     },
     {
      "label": "V02/M01 h=1000.0",
      "volume_mm3": 62248.87763905983,
-     "pieces": 2.205001721636424
+     "pieces": 2.243691254583435
     },
     {
      "label": "V02/M01 h=2000.0",
      "volume_mm3": 62248.87763905983,
-     "pieces": 3.400577525150841
+     "pieces": 3.372630262562414
     },
     {
      "label": "V02/M01 h=4000.0",
      "volume_mm3": 62248.87763905983,
-     "pieces": 5.2444074719265705
+     "pieces": 5.069607890441964
     },
     {
      "label": "V01/M01 h=1000.0 s=0.75",
      "volume_mm3": 77999.62032494934,
-     "pieces": 2.1130408451630482
+     "pieces": 2.1555461026558445
     },
     {
      "label": "V01/M01 h=500.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 1.8888812149366447
+     "pieces": 1.9397122274888536
     },
     {
      "label": "V01/M04 h=500.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 1.8888812149366447
+     "pieces": 1.9397122274888536
     },
     {
      "label": "V01/M01 h=100.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 0.690793742395435
+     "pieces": 0.752909784255942
     },
     {
      "label": "V01/M01 h=250.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 1.224787936783548
+     "pieces": 1.2904217250066126
     },
     {
      "label": "V01/M01 h=500.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 1.8888812149366447
+     "pieces": 1.9397122274888536
     },
     {
      "label": "V01/M01 h=1000.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 2.9130530575849964
+     "pieces": 2.91570069889399
     },
     {
      "label": "V01/M01 h=2000.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 4.492541960395284
+     "pieces": 4.382768972146286
     },
     {
      "label": "V01/M01 h=4000.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 6.9284468449210195
+     "pieces": 6.588009486191297
     },
     {
      "label": "V01/M01 h=1000.0 s=1.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 2.9130530575849964
+     "pieces": 2.91570069889399
     },
     {
      "label": "V01/M01 h=2000.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 4.492541960395284
+     "pieces": 4.382768972146286
     },
     {
      "label": "V01/M01 h=4000.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 6.9284468449210195
+     "pieces": 6.588009486191297
     },
     {
      "label": "V01/M01 h=8000.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 10.685125727500692
+     "pieces": 9.902842076773261
     },
     {
      "label": "V01/M04 h=2000.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 4.492541960395284
+     "pieces": 4.382768972146286
     },
     {
      "label": "V01/M04 h=4000.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 6.9284468449210195
+     "pieces": 6.588009486191297
     },
     {
      "label": "V01/M04 h=8000.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 10.685125727500692
+     "pieces": 9.902842076773261
     },
     {
      "label": "V13/M01 h=500.0",
      "volume_mm3": 425691.29293024074,
-     "pieces": 3.278409842268536
+     "pieces": 3.258516705717123
     },
     {
      "label": "V13/M04 h=500.0",
      "volume_mm3": 425691.29293024074,
-     "pieces": 3.278409842268536
+     "pieces": 3.258516705717123
     },
     {
      "label": "V13/M01 h=100.0",
      "volume_mm3": 425691.29293024074,
-     "pieces": 1.1989663437479157
+     "pieces": 1.2648108699464082
     },
     {
      "label": "V13/M01 h=250.0",
      "volume_mm3": 425691.29293024074,
-     "pieces": 2.1257857799055073
+     "pieces": 2.1677755539016
     },
     {
      "label": "V13/M01 h=500.0",
      "volume_mm3": 425691.29293024074,
-     "pieces": 3.278409842268536
+     "pieces": 3.258516705717123
+    },
+    {
+     "label": "V13/M01 h=1000.0",
+     "volume_mm3": 425691.29293024074,
+     "pieces": 4.89807678766708
     },
     {
      "label": "V13/M01 h=2000.0",
      "volume_mm3": 425691.29293024074,
-     "pieces": 7.797416620641384
+     "pieces": 7.362600343828271
+    },
+    {
+     "label": "V13/M01 h=4000.0",
+     "volume_mm3": 425691.29293024074,
+     "pieces": 11.067177215234926
+    },
+    {
+     "label": "V13/M01 h=2000.0",
+     "volume_mm3": 425691.29293024074,
+     "pieces": 7.362600343828271
+    },
+    {
+     "label": "V13/M01 h=4000.0",
+     "volume_mm3": 425691.29293024074,
+     "pieces": 11.067177215234926
     },
     {
      "label": "V13/M04 h=2000.0",
      "volume_mm3": 425691.29293024074,
-     "pieces": 7.797416620641384
+     "pieces": 7.362600343828271
+    },
+    {
+     "label": "V13/M04 h=4000.0",
+     "volume_mm3": 425691.29293024074,
+     "pieces": 11.067177215234926
+    },
+    {
+     "label": "V01/M01 h=1000.0 s=1.5",
+     "volume_mm3": 623996.9625995947,
+     "pieces": 4.463122543605163
     }
    ]
   },
   "model_in_energy": {
    "key": "energy_j",
-   "n": 32,
+   "n": 38,
    "monotone_non_decreasing": false,
    "violations": [
     {
      "smaller": {
       "label": "V02/M01 h=250.0",
       "energy_j": 0.33586381930154724,
-      "pieces": 0.927089021676169
+      "pieces": 0.993005880274365
      },
      "larger": {
       "label": "V01/M01 h=100.0",
       "energy_j": 0.39902525768368774,
-      "pieces": 0.690793742395435
+      "pieces": 0.752909784255942
      }
     },
     {
      "smaller": {
       "label": "V02/M01 h=500.0",
       "energy_j": 0.6717276386030947,
-      "pieces": 1.4297667253458453
+      "pieces": 1.49264818672101
      },
      "larger": {
       "label": "V13/M01 h=100.0",
       "energy_j": 0.9187269484020457,
-      "pieces": 1.1989663437479157
+      "pieces": 1.2648108699464082
      }
     },
     {
      "smaller": {
       "label": "V02/M01 h=1000.0",
       "energy_j": 1.343455277206189,
-      "pieces": 2.205001721636424
+      "pieces": 2.243691254583435
      },
      "larger": {
       "label": "V01/M01 h=1000.0 s=0.75",
       "energy_j": 1.6833878058530563,
-      "pieces": 2.1130408451630482
+      "pieces": 2.1555461026558445
      }
     },
     {
      "smaller": {
       "label": "V01/M01 h=1000.0 s=0.75",
       "energy_j": 1.6833878058530563,
-      "pieces": 2.1130408451630482
+      "pieces": 2.1555461026558445
      },
      "larger": {
       "label": "V01/M01 h=500.0",
       "energy_j": 1.9951262884184386,
-      "pieces": 1.8888812149366447
+      "pieces": 1.9397122274888536
      }
     },
     {
      "smaller": {
       "label": "V02/M01 h=2000.0",
       "energy_j": 2.686910554412379,
-      "pieces": 3.400577525150841
+      "pieces": 3.372630262562414
      },
      "larger": {
       "label": "V01/M01 h=1000.0",
       "energy_j": 3.990252576836876,
-      "pieces": 2.9130530575849964
+      "pieces": 2.91570069889399
      }
     },
     {
      "smaller": {
       "label": "V02/M01 h=4000.0",
       "energy_j": 5.373821108824756,
-      "pieces": 5.2444074719265705
+      "pieces": 5.069607890441964
      },
      "larger": {
       "label": "V01/M01 h=2000.0",
       "energy_j": 7.980505153673755,
-      "pieces": 4.492541960395284
+      "pieces": 4.382768972146286
+     }
+    },
+    {
+     "smaller": {
+      "label": "V13/M01 h=1000.0",
+      "energy_j": 9.187269484020455,
+      "pieces": 4.89807678766708
+     },
+     "larger": {
+      "label": "V01/M01 h=1000.0 s=1.5",
+      "energy_j": 13.46710244682445,
+      "pieces": 4.463122543605163
      }
     }
    ],
@@ -2831,252 +3461,318 @@
     {
      "label": "V02/M01 h=100.0",
      "energy_j": 0.13434552772061895,
-     "pieces": 0.52288831036273
+     "pieces": 0.5793794606785799
     },
     {
      "label": "V02/M01 h=250.0",
      "energy_j": 0.33586381930154724,
-     "pieces": 0.927089021676169
+     "pieces": 0.993005880274365
     },
     {
      "label": "V01/M01 h=100.0",
      "energy_j": 0.39902525768368774,
-     "pieces": 0.690793742395435
+     "pieces": 0.752909784255942
     },
     {
      "label": "V01/M01 h=1000.0 s=0.5",
      "energy_j": 0.4987815721046095,
-     "pieces": 1.3439323793657612
+     "pieces": 1.4081906146666336
     },
     {
      "label": "V02/M01 h=500.0",
      "energy_j": 0.6717276386030947,
-     "pieces": 1.4297667253458453
+     "pieces": 1.49264818672101
     },
     {
      "label": "V02/M04 h=500.0",
      "energy_j": 0.6717276386030947,
-     "pieces": 1.4297667253458453
+     "pieces": 1.49264818672101
     },
     {
      "label": "V02/M01 h=500.0",
      "energy_j": 0.6717276386030947,
-     "pieces": 1.4297667253458453
+     "pieces": 1.49264818672101
     },
     {
      "label": "V13/M01 h=100.0",
      "energy_j": 0.9187269484020457,
-     "pieces": 1.1989663437479157
+     "pieces": 1.2648108699464082
     },
     {
      "label": "V01/M01 h=250.0",
      "energy_j": 0.997563144209219,
-     "pieces": 1.224787936783548
+     "pieces": 1.2904217250066126
     },
     {
      "label": "V02/M01 h=1000.0",
      "energy_j": 1.343455277206189,
-     "pieces": 2.205001721636424
+     "pieces": 2.243691254583435
     },
     {
      "label": "V01/M01 h=1000.0 s=0.75",
      "energy_j": 1.6833878058530563,
-     "pieces": 2.1130408451630482
+     "pieces": 2.1555461026558445
     },
     {
      "label": "V01/M01 h=500.0",
      "energy_j": 1.9951262884184386,
-     "pieces": 1.8888812149366447
+     "pieces": 1.9397122274888536
     },
     {
      "label": "V01/M04 h=500.0",
      "energy_j": 1.9951262884184386,
-     "pieces": 1.8888812149366447
+     "pieces": 1.9397122274888536
     },
     {
      "label": "V01/M01 h=500.0",
      "energy_j": 1.9951262884184386,
-     "pieces": 1.8888812149366447
+     "pieces": 1.9397122274888536
     },
     {
      "label": "V13/M01 h=250.0",
      "energy_j": 2.2968173710051136,
-     "pieces": 2.1257857799055073
+     "pieces": 2.1677755539016
     },
     {
      "label": "V02/M01 h=2000.0",
      "energy_j": 2.686910554412379,
-     "pieces": 3.400577525150841
+     "pieces": 3.372630262562414
     },
     {
      "label": "V01/M01 h=1000.0",
      "energy_j": 3.990252576836876,
-     "pieces": 2.9130530575849964
+     "pieces": 2.91570069889399
     },
     {
      "label": "V01/M01 h=1000.0 s=1.0",
      "energy_j": 3.990252576836876,
-     "pieces": 2.9130530575849964
+     "pieces": 2.91570069889399
     },
     {
      "label": "V13/M01 h=500.0",
      "energy_j": 4.593634742010228,
-     "pieces": 3.278409842268536
+     "pieces": 3.258516705717123
     },
     {
      "label": "V13/M04 h=500.0",
      "energy_j": 4.593634742010228,
-     "pieces": 3.278409842268536
+     "pieces": 3.258516705717123
     },
     {
      "label": "V13/M01 h=500.0",
      "energy_j": 4.593634742010228,
-     "pieces": 3.278409842268536
+     "pieces": 3.258516705717123
     },
     {
      "label": "V02/M01 h=4000.0",
      "energy_j": 5.373821108824756,
-     "pieces": 5.2444074719265705
+     "pieces": 5.069607890441964
     },
     {
      "label": "V01/M01 h=2000.0",
      "energy_j": 7.980505153673755,
-     "pieces": 4.492541960395284
+     "pieces": 4.382768972146286
     },
     {
      "label": "V01/M01 h=2000.0",
      "energy_j": 7.980505153673755,
-     "pieces": 4.492541960395284
+     "pieces": 4.382768972146286
     },
     {
      "label": "V01/M04 h=2000.0",
      "energy_j": 7.980505153673755,
-     "pieces": 4.492541960395284
+     "pieces": 4.382768972146286
+    },
+    {
+     "label": "V13/M01 h=1000.0",
+     "energy_j": 9.187269484020455,
+     "pieces": 4.89807678766708
+    },
+    {
+     "label": "V01/M01 h=1000.0 s=1.5",
+     "energy_j": 13.46710244682445,
+     "pieces": 4.463122543605163
     },
     {
      "label": "V01/M01 h=4000.0",
      "energy_j": 15.961010307347504,
-     "pieces": 6.9284468449210195
+     "pieces": 6.588009486191297
     },
     {
      "label": "V01/M01 h=4000.0",
      "energy_j": 15.961010307347504,
-     "pieces": 6.9284468449210195
+     "pieces": 6.588009486191297
     },
     {
      "label": "V01/M04 h=4000.0",
      "energy_j": 15.961010307347504,
-     "pieces": 6.9284468449210195
+     "pieces": 6.588009486191297
     },
     {
      "label": "V13/M01 h=2000.0",
      "energy_j": 18.374538968040913,
-     "pieces": 7.797416620641384
+     "pieces": 7.362600343828271
+    },
+    {
+     "label": "V13/M01 h=2000.0",
+     "energy_j": 18.374538968040913,
+     "pieces": 7.362600343828271
     },
     {
      "label": "V13/M04 h=2000.0",
      "energy_j": 18.374538968040913,
-     "pieces": 7.797416620641384
+     "pieces": 7.362600343828271
     },
     {
      "label": "V01/M01 h=8000.0",
      "energy_j": 31.92202061469502,
-     "pieces": 10.685125727500692
+     "pieces": 9.902842076773261
     },
     {
      "label": "V01/M04 h=8000.0",
      "energy_j": 31.92202061469502,
-     "pieces": 10.685125727500692
+     "pieces": 9.902842076773261
+    },
+    {
+     "label": "V13/M01 h=4000.0",
+     "energy_j": 36.74907793608182,
+     "pieces": 11.067177215234926
+    },
+    {
+     "label": "V13/M01 h=4000.0",
+     "energy_j": 36.74907793608182,
+     "pieces": 11.067177215234926
+    },
+    {
+     "label": "V13/M04 h=4000.0",
+     "energy_j": 36.74907793608182,
+     "pieces": 11.067177215234926
     }
    ]
   },
   "declared_law_in_volume": {
    "key": "volume_mm3",
-   "n": 32,
+   "n": 38,
    "monotone_non_decreasing": false,
    "violations": [
     {
      "smaller": {
       "label": "V02/M04 h=500.0",
       "volume_mm3": 62248.87763905983,
-      "pieces": 0.329897509385706
+      "pieces": 0.39103533378844635
      },
      "larger": {
       "label": "V02/M01 h=100.0",
       "volume_mm3": 62248.87763905983,
-      "pieces": 0.11589068609096922
+      "pieces": 0.14300780774381794
      }
     },
     {
      "smaller": {
       "label": "V02/M01 h=4000.0",
       "volume_mm3": 62248.87763905983,
-      "pieces": 1.2746399565499138
+      "pieces": 1.434323928479574
      },
      "larger": {
       "label": "V01/M01 h=1000.0 s=0.75",
       "volume_mm3": 77999.62032494934,
-      "pieces": 0.8040550588519693
+      "pieces": 0.9314251915743657
      }
     },
     {
      "smaller": {
       "label": "V01/M04 h=500.0",
       "volume_mm3": 184887.9889183985,
-      "pieces": 1.273380612440926
+      "pieces": 1.468844322933525
      },
      "larger": {
       "label": "V01/M01 h=100.0",
       "volume_mm3": 184887.9889183985,
-      "pieces": 0.4473296967458454
+      "pieces": 0.5371796060079783
      }
     },
     {
      "smaller": {
       "label": "V01/M01 h=4000.0",
       "volume_mm3": 184887.9889183985,
-      "pieces": 4.920018376421037
+      "pieces": 5.387744731873079
      },
      "larger": {
       "label": "V01/M01 h=1000.0 s=1.0",
       "volume_mm3": 184887.9889183985,
-      "pieces": 1.9981483581823516
+      "pieces": 2.265267615667079
      }
     },
     {
      "smaller": {
       "label": "V01/M01 h=8000.0",
       "volume_mm3": 184887.9889183985,
-      "pieces": 7.720336358999474
+      "pieces": 8.309038250029268
      },
      "larger": {
       "label": "V01/M04 h=2000.0",
       "volume_mm3": 184887.9889183985,
-      "pieces": 3.1354308541367484
+      "pieces": 3.4935202393278044
      }
     },
     {
      "smaller": {
       "label": "V01/M04 h=8000.0",
       "volume_mm3": 184887.9889183985,
-      "pieces": 7.720336358999474
+      "pieces": 8.309038250029268
      },
      "larger": {
       "label": "V13/M01 h=500.0",
       "volume_mm3": 425691.29293024074,
-      "pieces": 2.0865629469735936
+      "pieces": 2.3571888328014325
      }
     },
     {
      "smaller": {
       "label": "V13/M04 h=500.0",
       "volume_mm3": 425691.29293024074,
-      "pieces": 2.0865629469735936
+      "pieces": 2.3571888328014325
      },
      "larger": {
       "label": "V13/M01 h=100.0",
       "volume_mm3": 425691.29293024074,
-      "pieces": 0.7329949593952341
+      "pieces": 0.8620612468731893
+     }
+    },
+    {
+     "smaller": {
+      "label": "V13/M01 h=4000.0",
+      "volume_mm3": 425691.29293024074,
+      "pieces": 8.646206761103251
+     },
+     "larger": {
+      "label": "V13/M01 h=2000.0",
+      "volume_mm3": 425691.29293024074,
+      "pieces": 5.606371462744845
+     }
+    },
+    {
+     "smaller": {
+      "label": "V13/M01 h=4000.0",
+      "volume_mm3": 425691.29293024074,
+      "pieces": 8.646206761103251
+     },
+     "larger": {
+      "label": "V13/M04 h=2000.0",
+      "volume_mm3": 425691.29293024074,
+      "pieces": 5.606371462744845
+     }
+    },
+    {
+     "smaller": {
+      "label": "V13/M04 h=4000.0",
+      "volume_mm3": 425691.29293024074,
+      "pieces": 8.646206761103251
+     },
+     "larger": {
+      "label": "V01/M01 h=1000.0 s=1.5",
+      "volume_mm3": 623996.9625995947,
+      "pieces": 7.927123877346944
      }
     }
    ],
@@ -3084,162 +3780,192 @@
     {
      "label": "V01/M01 h=1000.0 s=0.5",
      "volume_mm3": 23110.998614799813,
-     "pieces": 0.2228860130317224
+     "pieces": 0.26616555456126745
     },
     {
      "label": "V02/M01 h=500.0",
      "volume_mm3": 62248.87763905983,
-     "pieces": 0.329897509385706
+     "pieces": 0.39103533378844635
     },
     {
      "label": "V02/M04 h=500.0",
      "volume_mm3": 62248.87763905983,
-     "pieces": 0.329897509385706
+     "pieces": 0.39103533378844635
     },
     {
      "label": "V02/M01 h=100.0",
      "volume_mm3": 62248.87763905983,
-     "pieces": 0.11589068609096922
+     "pieces": 0.14300780774381794
     },
     {
      "label": "V02/M01 h=250.0",
      "volume_mm3": 62248.87763905983,
-     "pieces": 0.2102371882568537
+     "pieces": 0.2535550440615088
     },
     {
      "label": "V02/M01 h=500.0",
      "volume_mm3": 62248.87763905983,
-     "pieces": 0.329897509385706
+     "pieces": 0.39103533378844635
     },
     {
      "label": "V02/M01 h=1000.0",
      "volume_mm3": 62248.87763905983,
-     "pieces": 0.5176646795995378
+     "pieces": 0.6030589248855495
     },
     {
      "label": "V02/M01 h=2000.0",
      "volume_mm3": 62248.87763905983,
-     "pieces": 0.8123029513132278
+     "pieces": 0.9300440023173687
     },
     {
      "label": "V02/M01 h=4000.0",
      "volume_mm3": 62248.87763905983,
-     "pieces": 1.2746399565499138
+     "pieces": 1.434323928479574
     },
     {
      "label": "V01/M01 h=1000.0 s=0.75",
      "volume_mm3": 77999.62032494934,
-     "pieces": 0.8040550588519693
+     "pieces": 0.9314251915743657
     },
     {
      "label": "V01/M01 h=500.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 1.273380612440926
+     "pieces": 1.468844322933525
     },
     {
      "label": "V01/M04 h=500.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 1.273380612440926
+     "pieces": 1.468844322933525
     },
     {
      "label": "V01/M01 h=100.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 0.4473296967458454
+     "pieces": 0.5371796060079783
     },
     {
      "label": "V01/M01 h=250.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 0.8115003961044462
+     "pieces": 0.9524277088023878
     },
     {
      "label": "V01/M01 h=500.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 1.273380612440926
+     "pieces": 1.468844322933525
     },
     {
      "label": "V01/M01 h=1000.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 1.9981483581823516
+     "pieces": 2.265267615667079
     },
     {
      "label": "V01/M01 h=2000.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 3.1354308541367484
+     "pieces": 3.4935202393278044
     },
     {
      "label": "V01/M01 h=4000.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 4.920018376421037
+     "pieces": 5.387744731873079
     },
     {
      "label": "V01/M01 h=1000.0 s=1.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 1.9981483581823516
+     "pieces": 2.265267615667079
     },
     {
      "label": "V01/M01 h=2000.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 3.1354308541367484
+     "pieces": 3.4935202393278044
     },
     {
      "label": "V01/M01 h=4000.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 4.920018376421037
+     "pieces": 5.387744731873079
     },
     {
      "label": "V01/M01 h=8000.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 7.720336358999474
+     "pieces": 8.309038250029268
     },
     {
      "label": "V01/M04 h=2000.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 3.1354308541367484
+     "pieces": 3.4935202393278044
     },
     {
      "label": "V01/M04 h=4000.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 4.920018376421037
+     "pieces": 5.387744731873079
     },
     {
      "label": "V01/M04 h=8000.0",
      "volume_mm3": 184887.9889183985,
-     "pieces": 7.720336358999474
+     "pieces": 8.309038250029268
     },
     {
      "label": "V13/M01 h=500.0",
      "volume_mm3": 425691.29293024074,
-     "pieces": 2.0865629469735936
+     "pieces": 2.3571888328014325
     },
     {
      "label": "V13/M04 h=500.0",
      "volume_mm3": 425691.29293024074,
-     "pieces": 2.0865629469735936
+     "pieces": 2.3571888328014325
     },
     {
      "label": "V13/M01 h=100.0",
      "volume_mm3": 425691.29293024074,
-     "pieces": 0.7329949593952341
+     "pieces": 0.8620612468731893
     },
     {
      "label": "V13/M01 h=250.0",
      "volume_mm3": 425691.29293024074,
-     "pieces": 1.3297254893178954
+     "pieces": 1.528447858079271
     },
     {
      "label": "V13/M01 h=500.0",
      "volume_mm3": 425691.29293024074,
-     "pieces": 2.0865629469735936
+     "pieces": 2.3571888328014325
+    },
+    {
+     "label": "V13/M01 h=1000.0",
+     "volume_mm3": 425691.29293024074,
+     "pieces": 3.6352821354770772
     },
     {
      "label": "V13/M01 h=2000.0",
      "volume_mm3": 425691.29293024074,
-     "pieces": 5.137720630518088
+     "pieces": 5.606371462744845
+    },
+    {
+     "label": "V13/M01 h=4000.0",
+     "volume_mm3": 425691.29293024074,
+     "pieces": 8.646206761103251
+    },
+    {
+     "label": "V13/M01 h=2000.0",
+     "volume_mm3": 425691.29293024074,
+     "pieces": 5.606371462744845
+    },
+    {
+     "label": "V13/M01 h=4000.0",
+     "volume_mm3": 425691.29293024074,
+     "pieces": 8.646206761103251
     },
     {
      "label": "V13/M04 h=2000.0",
      "volume_mm3": 425691.29293024074,
-     "pieces": 5.137720630518088
+     "pieces": 5.606371462744845
+    },
+    {
+     "label": "V13/M04 h=4000.0",
+     "volume_mm3": 425691.29293024074,
+     "pieces": 8.646206761103251
+    },
+    {
+     "label": "V01/M01 h=1000.0 s=1.5",
+     "volume_mm3": 623996.9625995947,
+     "pieces": 7.927123877346944
     }
    ]
   }

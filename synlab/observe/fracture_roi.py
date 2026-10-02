@@ -124,6 +124,14 @@ class FractureRoiConfig:
     height_bands_mm: tuple[float, ...] = (5.0, 1.0, 0.25)
     #: Rays used for the occlusion test that orients the patch normal and scores a direction.
     visibility_rays: int = 400
+    #: In-plane azimuths tried per tilted direction (360 / step candidates, measured occlusion).
+    azimuth_step_deg: float = 45.0
+    #: A close-up needs free material-free space for the lens: the outward segment must be clear.
+    require_free_optical_path: bool = True
+    #: Smallest |z| of any mesh vertex in the camera frame.  Below this the Blender worker's
+    #: camera self-check cannot be evaluated (float32 vs float64 on a vertex at z ~ 0), so the
+    #: planner refuses the position instead of blaming the check.
+    min_camera_plane_clearance_mm: float = 2.0
     #: A direction is reported as *effective* when it shows at least this many fracture pixels.
     effective_rim_px_min: int = 200
     #: Raw document (kept verbatim in the observation meta for reproducibility).
@@ -145,6 +153,9 @@ class FractureRoiConfig:
             "target_mm_per_px": float(self.target_mm_per_px),
             "height_bands_mm": [float(v) for v in self.height_bands_mm],
             "visibility_rays": int(self.visibility_rays),
+            "azimuth_step_deg": float(self.azimuth_step_deg),
+            "require_free_optical_path": bool(self.require_free_optical_path),
+            "min_camera_plane_clearance_mm": float(self.min_camera_plane_clearance_mm),
             "effective_rim_px_min": int(self.effective_rim_px_min),
             "source_path": self.source_path,
             "schema": ROI_SPEC_SCHEMA,
@@ -165,6 +176,7 @@ def _config_from_document(document: Mapping[str, Any], *, source_path: str = "")
         "resolution_ladder_px", "max_fractures_per_target", "min_patch_area_mm2",
         "min_patch_faces", "include_unassigned_interface_faces", "base_tier",
         "target_mm_per_px", "height_bands_mm", "visibility_rays", "effective_rim_px_min",
+        "azimuth_step_deg", "require_free_optical_path", "min_camera_plane_clearance_mm",
         "contract_pointers",
     }
     unknown = sorted(set(block) - known)
@@ -190,6 +202,9 @@ def _config_from_document(document: Mapping[str, Any], *, source_path: str = "")
         target_mm_per_px=float(block.get("target_mm_per_px", 0.039)),
         height_bands_mm=tuple(float(v) for v in block.get("height_bands_mm", (5.0, 1.0, 0.25))),
         visibility_rays=int(block.get("visibility_rays", 400)),
+        azimuth_step_deg=float(block.get("azimuth_step_deg", 45.0)),
+        require_free_optical_path=bool(block.get("require_free_optical_path", True)),
+        min_camera_plane_clearance_mm=float(block.get("min_camera_plane_clearance_mm", 2.0)),
         effective_rim_px_min=int(block.get("effective_rim_px_min", 200)),
         document=dict(document), source_path=str(source_path),
     )
@@ -229,6 +244,10 @@ def validate_config(config: FractureRoiConfig) -> None:
         problems.append("target_mm_per_px must be > 0")
     if config.base_tier not in ("GLOBAL", "MID", "LOCAL"):
         problems.append(f"base_tier {config.base_tier!r} is not a camera tier")
+    if config.azimuth_step_deg <= 0 or config.azimuth_step_deg > 90:
+        problems.append("azimuth_step_deg must be in (0, 90]")
+    if config.min_camera_plane_clearance_mm < 0:
+        problems.append("min_camera_plane_clearance_mm must be >= 0")
     if problems:
         raise SynLabError(
             ErrorCode.SCHEMA_INVALID,
@@ -390,6 +409,51 @@ def documented_ladder() -> dict[str, Any]:
         "contract_cross_check": cross_check,
         "closeup_window_mm": [CLOSEUP_MIN_MM, CLOSEUP_MAX_MM],
         "source": "configs/a12/capture_contract.json working_distance_and_resolution (t051/p0518)",
+    }
+
+
+def shading_contrast(*, amplitude_mm: float, wavelength_mm: float,
+                     light_direction: Sequence[float], light_color: Sequence[float],
+                     ambient: Sequence[float], albedo: float = 0.55,
+                     bit_depth: int = 8, quantisation_levels: float | None = None
+                     ) -> dict[str, Any]:
+    """Would the relief change the *RGB* of a rendered pixel by at least one code value?
+
+    The renderer's frozen shading model is Lambert + ambient (``synlab.observe.render``): a
+    surface height field ``h`` tilts the normal, and the Lambert term changes by
+    ``|dl/dn| * slope``.  With one representative wavelength ``lambda`` per band and an RMS
+    amplitude ``A``, the RMS slope is ``2 pi A / lambda``.  The resulting code-value step is
+
+        ``dDN = levels * albedo * light_color * |light_perp| * slope``
+
+    which is compared with the 1-code-value quantisation floor.  This is the criterion that
+    decides whether a *sub-pixel-lateral* roughness is still visible as image texture: shading
+    does not need 4 px per feature, but it does need the height field to exist.
+    """
+    a = float(amplitude_mm)
+    lam = float(wavelength_mm)
+    if lam <= 0:
+        raise SynLabError(ErrorCode.SCHEMA_INVALID, "wavelength_mm must be > 0",
+                          stage="observe.fracture_roi.shading_contrast")
+    direction = np.asarray(light_direction, dtype=np.float64).reshape(3)
+    direction = direction / max(float(np.linalg.norm(direction)), 1e-30)
+    color = np.asarray(light_color, dtype=np.float64).reshape(3)
+    amb = np.asarray(ambient, dtype=np.float64).reshape(3)
+    levels = float(quantisation_levels if quantisation_levels is not None
+                   else ((1 << int(bit_depth)) - 1))
+    slope = 2.0 * math.pi * a / lam
+    perpendicular = float(math.sqrt(max(0.0, 1.0 - float(direction[2]) ** 2)))
+    delta_lambert = perpendicular * slope
+    delta_dn = levels * float(albedo) * float(np.mean(color)) * delta_lambert
+    return {
+        "amplitude_mm": a, "wavelength_mm": lam, "slope_rms": slope,
+        "light_perpendicular_component": perpendicular,
+        "delta_lambert": delta_lambert, "delta_code_value": delta_dn,
+        "code_value_floor": 1.0, "bit_depth": int(bit_depth),
+        "visible_in_rgb": bool(delta_dn >= 1.0),
+        "convention": ("one representative wavelength lambda per band; RMS amplitude A; "
+                       "slope_rms = 2 pi A / lambda; frozen Lambert+ambient shading model of "
+                       "synlab.observe.render"),
     }
 
 
@@ -821,6 +885,58 @@ def fracture_rois(target: Any, config: FractureRoiConfig, *,
 # ======================================================================================
 # the close-up camera condition
 # ======================================================================================
+def delivered_profile(base: CameraProfile, *, long_edge_px: int) -> CameraProfile:
+    """The same optical condition *delivered* on a ``long_edge_px`` grid (aspect preserved).
+
+    A real camera of the declared node outputs an image at its own resolution; this helper
+    expresses the delivered grid as the camera's grid, so the render grid and the delivered grid
+    are the same and no crop/resize sits between the render and the measurement
+    (``pixel_affine_A = identity``).  ``fx == fy`` holds exactly, which the Blender worker
+    requires, and the pixel scale is unchanged by construction (``z / f_px`` with ``f_px`` scaled
+    by the same factor as the grid).
+    """
+    width, height = int(base.image_size[0]), int(base.image_size[1])
+    long_edge = int(long_edge_px)
+    if long_edge < 64:
+        raise SynLabError(ErrorCode.SCHEMA_INVALID, f"long_edge_px {long_edge} is too small",
+                          stage="observe.fracture_roi.delivered_profile")
+    scale = float(long_edge) / float(width)
+    out_w = long_edge
+    out_h = max(int(round(height * scale)), 1)
+    K = np.asarray(base.K, dtype=np.float64).copy() * scale
+    K[2, 2] = 1.0
+    K[0, 2] = out_w / 2.0 - 0.5
+    K[1, 2] = out_h / 2.0 - 0.5
+    sensor_width_mm = float(base.meta.get("sensor_width_mm", 7.6))
+    dof = dof_report(working_distance_mm=float(base.working_distance_mm),
+                     focal_length_mm=float(base.meta.get("focal_length_mm", 6.1)),
+                     f_number=float(base.f_number),
+                     pixel_pitch_mm=sensor_width_mm / float(out_w),
+                     coc_px=float(base.meta.get("coC_px", 2.0)))
+    meta = dict(base.meta)
+    meta.update({
+        "delivered_from_profile": base.profile_id,
+        "native_image_size": [width, height],
+        "delivered_image_size": [out_w, out_h],
+        "delivered_long_edge_px": long_edge,
+        "delivered_scale": scale,
+        "f_px_native_equivalent": float(np.asarray(base.K, dtype=np.float64)[0, 0]),
+        "mm_per_pixel": float(base.working_distance_mm) / float(K[0, 0]),
+        "px_per_mm": float(K[0, 0]) / float(base.working_distance_mm),
+        "r_eff_mm": r_eff_mm(working_distance_mm=float(base.working_distance_mm),
+                             f_px=float(K[0, 0])),
+        "dof_cover_mm": dof["dof_cover_mm"],
+        "depth_of_field_mm": [dof["near_mm"], dof["far_mm"]],
+        "pixel_affine_is_identity": True,
+    })
+    return replace(
+        base, profile_id=f"{base.profile_id}_D{long_edge}", K=K, image_size=(out_w, out_h),
+        fov_mm=(float(base.working_distance_mm) * out_w / float(K[0, 0]),
+                float(base.working_distance_mm) * out_h / float(K[1, 1])),
+        depth_of_field_mm=(dof["near_mm"], dof["far_mm"]), meta=meta,
+    )
+
+
 def closeup_profile(config: FractureRoiConfig, *, base: CameraProfile | None = None,
                     delivered_long_edge_px: int | None = None) -> CameraProfile:
     """The fracture close-up camera condition (same node/lens, 5-10 cm object distance).
@@ -878,7 +994,7 @@ def closeup_profile(config: FractureRoiConfig, *, base: CameraProfile | None = N
             "CLOSEUP_CALIBRATION_PENDING: no target image at 5-10 cm exists in this repository",
         ],
     })
-    return CameraProfile(
+    native = CameraProfile(
         profile_id=f"{base.profile_id}_ROI{int(round(z))}mm",
         revision=int(base.revision), tier=base.tier, working_distance_mm=z,
         u_position_mm=float(base.u_position_mm) + (float(base.working_distance_mm) - z),
@@ -892,7 +1008,78 @@ def closeup_profile(config: FractureRoiConfig, *, base: CameraProfile | None = N
         action_cost_seconds=float(base.action_cost_seconds),
         f_number=float(base.f_number), meta=meta,
     )
+    if delivered_long_edge_px is None:
+        return native
+    return delivered_profile(native, long_edge_px=int(delivered_long_edge_px))
 
+
+def outward_clearance_mm(mesh: Any, aim: np.ndarray, direction: np.ndarray,
+                         max_distance_mm: float) -> tuple[float, dict[str, Any]]:
+    """How far the free line of sight runs outwards from ``aim`` along ``direction`` (mm).
+
+    A real close-up needs a place to put the lens: the segment from the fracture surface outwards
+    must be free of material for at least the working distance.  Measured by ray casting from just
+    off the surface (the first hit is the material the ray leaves from, so hits at ``t <= 0`` are
+    dropped).
+    """
+    origin = np.asarray(aim, dtype=np.float64).reshape(1, 3) + 1e-6 * np.asarray(
+        direction, dtype=np.float64).reshape(1, 3)
+    d = np.asarray(direction, dtype=np.float64).reshape(1, 3)
+    d = d / max(float(np.linalg.norm(d)), 1e-30)
+    try:
+        hit = mesh.ray.intersects_location(origin, d, multiple_hits=True)
+    except Exception as exc:  # noqa: BLE001
+        return float("nan"), {"status": "RAYCAST_FAILED", "error": str(exc)[:160]}
+    locations = np.asarray(hit[0], dtype=np.float64) if len(hit) else np.zeros((0, 3))
+    if locations.shape[0] == 0:
+        return float(max_distance_mm), {"status": "OK", "hits": 0}
+    distance = np.sort(np.linalg.norm(locations - origin, axis=1))
+    distance = distance[distance > 1e-3]
+    if distance.size == 0:
+        return float(max_distance_mm), {"status": "OK", "hits": 0}
+    return float(distance[0]), {"status": "OK", "hits": int(distance.size),
+                               "first_hit_mm": float(distance[0])}
+
+
+def point_inside_mesh(mesh: Any, point: np.ndarray) -> bool | None:
+    """Ray-parity inside test (odd number of crossings along one ray = inside).
+
+    ``None`` when the mesh exposes no intersector: the answer is then *unknown* rather than
+    guessed.  A non-watertight mesh makes the parity test unreliable, which is why the caller
+    records the instrument instead of treating the verdict as ground truth.
+    """
+    direction = np.array([0.5773502691896258, 0.5773502691896258, 0.5773502691896258])
+    try:
+        hit = mesh.ray.intersects_location(np.asarray(point, dtype=np.float64).reshape(1, 3),
+                                           direction.reshape(1, 3), multiple_hits=True)
+    except Exception:  # noqa: BLE001
+        return None
+    locations = np.asarray(hit[0], dtype=np.float64) if len(hit) else np.zeros((0, 3))
+    return bool(locations.shape[0] % 2 == 1)
+
+
+def camera_plane_clearance_mm(mesh: Any, eye: np.ndarray, rotation: np.ndarray) -> dict[str, Any]:
+    """Smallest ``|z|`` of any mesh vertex in the camera frame, plus how many are close.
+
+    The Blender worker verifies its camera by projecting **mesh vertices** through Blender and
+    through this project's pinhole and requiring agreement within 0.1 px.  A vertex that lands on
+    the camera plane (``z ~ 0``) projects to a coordinate of order ``f_px * x / z``, where the
+    float32 arithmetic inside Blender and the float64 arithmetic here cannot agree - the check
+    then reports a large error that says nothing about the camera.  A camera placed inside the
+    body's own extent reaches that configuration, so the planner measures this clearance and
+    refuses such a position instead of rendering it and blaming the check.
+    """
+    vertices = np.asarray(mesh.vertices, dtype=np.float64)
+    cam = (vertices - np.asarray(eye, dtype=np.float64).reshape(1, 3)) @ np.asarray(
+        rotation, dtype=np.float64)
+    z = cam[:, 2]
+    absolute = np.abs(z)
+    return {
+        "min_abs_z_mm": float(absolute.min()),
+        "n_vertices_within_1mm_of_camera_plane": int(np.count_nonzero(absolute < 1.0)),
+        "n_vertices": int(z.size),
+        "instrument": "mesh vertices projected into the camera frame (float64)",
+    }
 
 def _orthonormal_basis(normal: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     n = np.asarray(normal, dtype=np.float64).reshape(3)
@@ -904,6 +1091,97 @@ def _orthonormal_basis(normal: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.n
     a1 = a1 / max(float(np.linalg.norm(a1)), 1e-30)
     a2 = np.cross(n, a1)
     return n, a1, a2
+
+
+def _camera_frame(eye: np.ndarray, target_point: np.ndarray) -> np.ndarray:
+    """OpenCV camera rotation (columns: right, down, forward) looking from ``eye`` at a point."""
+    forward = (np.asarray(target_point, dtype=np.float64).reshape(3)
+               - np.asarray(eye, dtype=np.float64).reshape(3))
+    forward = forward / max(float(np.linalg.norm(forward)), 1e-30)
+    up = np.array([0.0, 1.0, 0.0])
+    if abs(float(np.dot(forward, up))) > 0.999:
+        up = np.array([1.0, 0.0, 0.0])
+    x_c = np.cross(up, forward)
+    x_c = x_c / max(float(np.linalg.norm(x_c)), 1e-30)
+    y_c = np.cross(forward, x_c)
+    rotation = np.stack([x_c, y_c, forward], axis=1)
+    return rotation
+
+
+def plan_closeup_direction(*, mesh: Any, aim: np.ndarray, normal: np.ndarray,
+                           theta_rad: float, points: np.ndarray, distance_mm: float,
+                           rays: int, rng: np.random.Generator,
+                           min_plane_clearance_mm: float = 2.0,
+                           require_free_path: bool = True,
+                           step_deg: float = 45.0
+                           ) -> tuple[float, dict[str, Any]]:
+    """Choose the in-plane azimuth of a tilted close-up by **measured** feasibility.
+
+    A tilt that is legal on paper can still bury the ROI behind the fragment's own wall, or put
+    the lens where no lens can go.  Each candidate azimuth is therefore evaluated with three
+    measurements:
+
+    1. ``outward_clearance_mm`` - is the segment from the fracture surface outwards free for at
+       least the working distance (a place for the lens)?
+    2. ``point_inside_mesh`` - is the camera centre actually outside the body (ray parity)?
+    3. ``camera_plane_clearance_mm`` - does any mesh vertex land on the camera plane, where the
+       Blender worker's camera self-check cannot be evaluated in float32?
+
+    Among the candidates that pass, the one with the highest measured ROI visibility wins; the
+    aim point is required to be visible.  When none passes, the best-visibility candidate is
+    returned with ``feasible: false`` and the failing measurement named - never silently.
+    """
+    n, a1, a2 = _orthonormal_basis(normal)
+    sample = points if points.shape[0] <= int(rays) else \
+        points[rng.choice(points.shape[0], size=int(rays), replace=False)]
+    if float(np.min(np.linalg.norm(sample - aim.reshape(1, 3), axis=1))) > 1e-9:
+        sample = np.vstack([aim.reshape(1, 3), sample])
+
+    def evaluate(direction: np.ndarray) -> dict[str, Any]:
+        eye = aim + float(distance_mm) * direction
+        visibility = _visible_fraction(mesh, eye, sample)
+        aim_visible = bool(_visible_fraction(mesh, eye, aim.reshape(1, 3)) >= 1.0 - 1e-9)
+        clearance, clearance_probe = outward_clearance_mm(mesh, aim, direction, distance_mm)
+        inside = point_inside_mesh(mesh, eye)
+        rotation = _camera_frame(eye, aim)
+        plane = camera_plane_clearance_mm(mesh, eye, rotation)
+        free_path = bool(not math.isfinite(clearance) or clearance >= distance_mm - 1e-6)
+        feasible = bool(
+            (free_path or not require_free_path)
+            and (inside is not True)
+            and float(plane["min_abs_z_mm"]) >= float(min_plane_clearance_mm))
+        return {
+            "eye_mm": [float(v) for v in eye], "visibility_fraction": visibility,
+            "aim_visible": aim_visible, "outward_clearance_mm": clearance,
+            "outward_probe": clearance_probe, "camera_inside_mesh": inside,
+            "camera_plane_clearance_mm": plane["min_abs_z_mm"],
+            "camera_plane_near_vertices": plane["n_vertices_within_1mm_of_camera_plane"],
+            "free_path": free_path, "feasible": feasible,
+        }
+
+    if abs(math.cos(theta_rad) - 1.0) < 1e-12:
+        candidate = evaluate(n)
+        candidate["phi_deg"] = 0.0
+        return 0.0, candidate
+    candidates: list[dict[str, Any]] = []
+    for phi_deg in np.arange(0.0, 360.0, float(step_deg)):
+        phi = math.radians(float(phi_deg))
+        in_plane = math.cos(phi) * a1 + math.sin(phi) * a2
+        direction = math.cos(theta_rad) * n + math.sin(theta_rad) * in_plane
+        direction = direction / max(float(np.linalg.norm(direction)), 1e-30)
+        entry = evaluate(direction)
+        entry["phi_deg"] = float(phi_deg)
+        candidates.append(entry)
+
+    def key(entry: dict[str, Any]) -> tuple:
+        visibility = entry["visibility_fraction"]
+        return (1 if entry["feasible"] else 0,
+                1 if entry["aim_visible"] else 0,
+                visibility if math.isfinite(visibility) else -1.0)
+
+    best = max(candidates, key=key)
+    best["candidates"] = candidates
+    return float(best["phi_deg"]), best
 
 
 def _choose_azimuth(mesh: Any, aim: np.ndarray, normal: np.ndarray, theta_rad: float,
@@ -996,18 +1274,31 @@ def make_fracture_roi_frames(*, rois: Sequence[FractureRoi], profile: CameraProf
             measured_visibility = float("nan")
             aim_visible: bool | None = None
             azimuth_candidates: list[dict[str, Any]] = []
+            feasibility: dict[str, Any] | None = None
             sample = (roi.sample_points if roi.sample_points is not None
                       else target_point.reshape(1, 3))
             if mesh is not None:
-                phi_deg, measured_visibility, aim_visible, azimuth_candidates = _choose_azimuth(
-                    mesh, target_point, roi.normal, theta, sample, z,
-                    min(int(config.visibility_rays), 120), rng)
+                phi_deg, feasibility = plan_closeup_direction(
+                    mesh=mesh, aim=target_point, normal=roi.normal, theta_rad=theta,
+                    points=sample, distance_mm=z,
+                    rays=min(int(config.visibility_rays), 120), rng=rng,
+                    min_plane_clearance_mm=float(config.min_camera_plane_clearance_mm),
+                    require_free_path=bool(config.require_free_optical_path),
+                    step_deg=float(config.azimuth_step_deg))
+                measured_visibility = float(feasibility["visibility_fraction"])
+                aim_visible = bool(feasibility["aim_visible"])
+                azimuth_candidates = list(feasibility.pop("candidates", []))
                 phi = math.radians(float(phi_deg))
                 azimuth_source = "OCCLUSION_RAYCAST_BEST_OF_AZIMUTHS"
             in_plane = math.cos(phi) * a1 + math.sin(phi) * a2
             direction = math.cos(theta) * n + math.sin(theta) * in_plane
             direction = direction / max(float(np.linalg.norm(direction)), 1e-30)
-            eye = target_point + z * direction
+            if feasibility is not None:
+                # the planned position is the measured one: no extra jitter, so the feasibility
+                # measurement describes the frame that is really rendered
+                eye = np.asarray(feasibility["eye_mm"], dtype=np.float64)
+            else:
+                eye = target_point + z * direction
             forward = (target_point - eye)
             forward = forward / max(float(np.linalg.norm(forward)), 1e-30)
             up = np.array([0.0, 1.0, 0.0])
@@ -1018,12 +1309,17 @@ def make_fracture_roi_frames(*, rois: Sequence[FractureRoi], profile: CameraProf
             y_c = np.cross(forward, x_c)
             T_WC = np.eye(4, dtype=np.float64)
             T_WC[:3, 0], T_WC[:3, 1], T_WC[:3, 2] = x_c, y_c, forward
-            axis = rng.normal(size=3)
-            axis /= max(float(np.linalg.norm(axis)), 1e-12)
-            from ..cameras.viewframes import rotation_about_axis
+            jitter_applied = False
+            if mesh is None:
+                # only an unplanned frame (no mesh to measure against) keeps the historical
+                # hand re-clamp jitter; a planned frame is rendered exactly where it was measured
+                axis = rng.normal(size=3)
+                axis /= max(float(np.linalg.norm(axis)), 1e-12)
+                from ..cameras.viewframes import rotation_about_axis
 
-            T_WC[:3, :3] = T_WC[:3, :3] @ rotation_about_axis(
-                axis, float(rng.normal(scale=np.deg2rad(0.35))))
+                T_WC[:3, :3] = T_WC[:3, :3] @ rotation_about_axis(
+                    axis, float(rng.normal(scale=np.deg2rad(0.35))))
+                jitter_applied = True
             T_WC[:3, 3] = eye
             frame = ViewFrame(
                 view_id=(f"{profile.profile_id}#roi{roi.interface_id:+03d}"
@@ -1050,6 +1346,10 @@ def make_fracture_roi_frames(*, rois: Sequence[FractureRoi], profile: CameraProf
                     "direction_azimuth_candidates": azimuth_candidates,
                     "direction_visibility_fraction": measured_visibility,
                     "direction_aim_visible": aim_visible,
+                    "capture_feasibility": feasibility,
+                    "capture_feasible": (None if feasibility is None
+                                         else bool(feasibility.get("feasible"))),
+                    "planner_jitter_applied": bool(jitter_applied),
                     "direction_vector": [float(v) for v in direction],
                     "camera_centre_mm": [float(v) for v in eye],
                     "roi_aim_mm": [float(v) for v in target_point],
@@ -1111,12 +1411,43 @@ def render_fracture_roi_views(*, target: Any, frames: Sequence[ViewFrame], spec:
     return bundles, float(time.perf_counter() - started)
 
 
+def axis_raycast_depth_mm(mesh: Any, frame: ViewFrame) -> tuple[float, dict[str, Any]]:
+    """First surface hit along the camera's optical axis, measured by ray casting (mm).
+
+    An *independent* instrument for the working distance of the aimed pixel: the rendered depth
+    channel is a rasterised buffer, and on grazing (near edge-on) triangles its screen-space
+    linear ``z`` interpolation is not perspective-correct, so it can disagree with the geometry by
+    centimetres.  This measurement is the cross-check, and the disagreement is reported rather
+    than hidden.
+    """
+    if mesh is None:
+        return float("nan"), {"status": "NO_MESH"}
+    eye = np.asarray(frame.T_WC[:3, 3], dtype=np.float64).reshape(1, 3)
+    forward = np.asarray(frame.T_WC[:3, 2], dtype=np.float64).reshape(1, 3)
+    forward = forward / max(float(np.linalg.norm(forward)), 1e-30)
+    try:
+        hit = mesh.ray.intersects_location(eye, forward, multiple_hits=True)
+    except Exception as exc:  # noqa: BLE001
+        return float("nan"), {"status": "RAYCAST_FAILED", "error": str(exc)[:160]}
+    locations = np.asarray(hit[0], dtype=np.float64) if len(hit) else np.zeros((0, 3))
+    if locations.shape[0] == 0:
+        return float("nan"), {"status": "NO_HIT"}
+    distance = np.linalg.norm(locations - eye, axis=1)
+    order = np.argsort(distance)
+    return float(distance[order[0]]), {
+        "status": "OK", "n_hits": int(distance.size),
+        "first_hits_mm": [float(distance[i]) for i in order[:5]],
+    }
+
+
 def view_resolution_record(bundle: Any, *, rim_tag: int = 2,
-                           object_min_px: int = 1) -> dict[str, Any]:
+                           mesh: Any | None = None) -> dict[str, Any]:
     """Measure one bundle's delivered resolution and fracture content.
 
     Everything here is measured from the bundle that was actually produced: the depth of the
-    delivered pixels, the delivered ``K``, and the delivered surface-tag map.
+    delivered pixels, the delivered ``K``, and the delivered surface-tag map.  When ``mesh`` is
+    given, the aimed-pixel distance is *also* measured by an independent ray cast
+    (:func:`axis_raycast_depth_mm`) and both numbers are reported, with their difference.
     """
     depth = np.asarray(bundle.render.depth_z, dtype=np.float64)
     size = (int(bundle.imaging.image.shape[1]), int(bundle.imaging.image.shape[0]))
@@ -1148,6 +1479,8 @@ def view_resolution_record(bundle: Any, *, rim_tag: int = 2,
     mean_depth = float(np.nanmean(depth[valid])) if bool(valid.any()) else float("nan")
     s_measured = (depth_median / f_px) if (f_px > 0 and math.isfinite(depth_median)) else float("nan")
     s_centre = (depth_centre / f_px) if (f_px > 0 and math.isfinite(depth_centre)) else float("nan")
+    axis_depth, axis_probe = axis_raycast_depth_mm(mesh, bundle.render_frame)
+    s_axis = (axis_depth / f_px) if (f_px > 0 and math.isfinite(axis_depth)) else float("nan")
     return {
         "view_id": str(bundle.frame.view_id),
         "view_family": str((bundle.frame.meta or {}).get("view_family", VIEW_FAMILY_WHOLE)),
@@ -1163,6 +1496,16 @@ def view_resolution_record(bundle: Any, *, rim_tag: int = 2,
         "depth_p99_mm": depth_p99,
         "mm_per_px_measured": s_measured,
         "mm_per_px_at_centre": s_centre,
+        "depth_axis_raycast_mm": axis_depth,
+        "axis_raycast_probe": axis_probe,
+        "mm_per_px_axis_raycast": s_axis,
+        "structure_0p2mm_px_axis_raycast": (0.2 / s_axis)
+        if (s_axis and math.isfinite(s_axis)) else float("nan"),
+        "depth_render_minus_raycast_mm": (depth_centre - axis_depth)
+        if (math.isfinite(depth_centre) and math.isfinite(axis_depth)) else float("nan"),
+        "instrument_disagreement_flag": (
+            abs(depth_centre - axis_depth) > 1.0
+            if (math.isfinite(depth_centre) and math.isfinite(axis_depth)) else None),
         "px_per_mm_at_centre": (1.0 / s_centre) if (s_centre and math.isfinite(s_centre))
         else float("nan"),
         "structure_0p2mm_px_at_centre": (0.2 / s_centre) if (s_centre and math.isfinite(s_centre))
@@ -1277,6 +1620,12 @@ def roi_summary(*, rois: Sequence[FractureRoi], whole_records: Sequence[Mapping[
     roi_s = _median(roi_records, "mm_per_px_measured")
     whole_c = _median(whole_records, "mm_per_px_at_centre")
     roi_c = _median(roi_records, "mm_per_px_at_centre")
+    whole_a = _median(whole_records, "mm_per_px_axis_raycast")
+    roi_a = _median(roi_records, "mm_per_px_axis_raycast")
+    disagreements = [float(r["depth_render_minus_raycast_mm"]) for r in
+                     list(whole_records) + list(roi_records)
+                     if r.get("depth_render_minus_raycast_mm") is not None
+                     and math.isfinite(float(r["depth_render_minus_raycast_mm"]))]
     amplitudes = {roi.roi_id: dict(roi.height.get("plane") or {}) for roi in rois}
     bands: dict[str, Any] = {}
     for roi in rois:
@@ -1319,6 +1668,25 @@ def roi_summary(*, rois: Sequence[FractureRoi], whole_records: Sequence[Mapping[
         if (roi_s and math.isfinite(roi_s) and math.isfinite(whole_s)) else None,
         "improvement_factor_mm_per_px_at_centre": (whole_c / roi_c)
         if (roi_c and math.isfinite(roi_c) and math.isfinite(whole_c)) else None,
+        "axis_raycast": {
+            "whole_fragment_mm_per_px_median": whole_a,
+            "fracture_roi_mm_per_px_median": roi_a,
+            "whole_fragment_structure_0p2mm_px": (0.2 / whole_a)
+            if (whole_a and math.isfinite(whole_a)) else None,
+            "fracture_roi_structure_0p2mm_px": (0.2 / roi_a)
+            if (roi_a and math.isfinite(roi_a)) else None,
+            "improvement_factor": (whole_a / roi_a)
+            if (roi_a and math.isfinite(roi_a) and math.isfinite(whole_a)) else None,
+            "note": ("first ray hit along the camera axis, cast on the target mesh: an "
+                     "independent instrument for the aimed-pixel distance, used because a "
+                     "rasterised depth buffer is not perspective-correct on grazing triangles"),
+        },
+        "instrument_disagreement_mm": {
+            "n_views": len(disagreements),
+            "median_mm": float(np.median(disagreements)) if disagreements else None,
+            "max_abs_mm": float(np.max(np.abs(disagreements))) if disagreements else None,
+            "n_views_over_1mm": int(sum(1 for d in disagreements if abs(d) > 1.0)),
+        },
         "scale_convention": ("mm_per_px_median is measured over every valid depth pixel of the "
                              "frame (the convention docs/a12/precision_audit.md uses); "
                              "mm_per_px_at_centre is measured at the pixel the camera is aimed "
@@ -1350,7 +1718,8 @@ __all__ = [
     "mm_per_px", "px_per_mm", "r_eff_mm", "structure_px", "amplitude_px",
     "max_working_distance_mm", "required_f_px", "required_long_edge_px", "dof_report",
     "documented_ladder", "resolvability_report", "inverse_solve", "height_field_stats",
-    "fracture_rois", "closeup_profile", "make_fracture_roi_frames",
+    "shading_contrast",
+    "fracture_rois", "closeup_profile", "delivered_profile", "make_fracture_roi_frames",
     "render_fracture_roi_views", "view_resolution_record", "amplitude_px_from_roi",
     "append_roi_views", "roi_summary",
 ]

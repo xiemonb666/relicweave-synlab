@@ -450,6 +450,21 @@ M01（grog 颗粒 + 气孔，粗陶）。实测壁厚 `p05 = 6.243 mm`、中位 
 是 §5 缺陷的既有表现，与本次接线无关**：冻结基线 `_fprec_pytest_shared_cutter.txt` 记录了
 **改动前**就已经失败的同样 3 个 `test_shared_cutter` 用例（4 486 坏边）。
 
+**接线无回归的验证**（`data/a12_reports/pytest_realism/post_*.log`）：接线后重跑所有触碰
+`api.make_closed_cutter` / `api.fracture_event` 的文件，**失败的测试名与改动前逐一相同**：
+
+| 文件 | 退出码 | 失败测试名 | 与改动前 |
+| --- | --- | --- | --- |
+| `test_shared_cutter.py` | 1 | `test_rough_cutter_is_closed_and_within_budget`、`test_cutter_build_is_reproducible`、`test_default_cutter_reports_its_measured_error` | **完全相同**（冻结基线同 3 个） |
+| `test_event_qa.py` | 1 | `test_fixture_event_passes_the_a06_thresholds[rough_shared_cut]` | **完全相同** |
+| `test_interface_clip.py` | 0 | — | 相同 |
+| `test_multishell_shared_cut.py` | 0 | — | 相同 |
+| `tests/a12/qc/test_coverage_gates.py` | **0**（16 passed） | — | 新增注册表条目（`status=SPECIFIED`）不改变 `COVERAGE_TARGETS["fracture_backends"]=4`（该常量是发布目标，非活体注册表计数） |
+
+代码层面的无回归论证：接线对 `api.py` 是**纯增量**——新增常量、2 个纯函数、1 个注册表条目，
+以及 `make_closed_cutter` / `fracture_event` 里各**一个前置分支**（`backend == BACKEND_MORPHOLOGY`）；
+`BUILT_BACKENDS`、`PENDING_BACKENDS`、`FractureSpec`、spec hash、`event.py` 全部未动。
+
 ### 8.3 `tests/a12/fracture/test_fracture_realism.py`（新增断言）
 
 把两条主张严格分开，**不用 xfail 掩盖任何东西**：
