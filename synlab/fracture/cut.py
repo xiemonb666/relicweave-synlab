@@ -53,6 +53,10 @@ __all__ = [
 ]
 
 _EPS = 1.0e-12
+#: scratch audit switch: print the ring of these cells during assembly (never set in production)
+_AUDIT_TRACE = False
+_AUDIT_CELLS: "set[tuple[int, int, int]]" = set()
+_AUDIT_EDGE_STEP = [0]
 #: reference samples per shortest wavelength for the shared surface (plan 10.1 step 3: "0.2 mm
 #: wavelength needs about 0.025 mm spacing", i.e. eight points per wavelength).  It is the
 #: *sampling* reference, not the acceptance criterion: A07 accepts on the realized
@@ -1049,19 +1053,25 @@ class _Quadtree:
                 ring.append(start_corner)
                 if not s[edge]:
                     continue
-                #: one ordered walk from the edge's own start corner: with ``extra == 0`` a single
-                #: step of ``half`` reaches the midpoint, and an edge that needs finer steps is
-                #: walked in ``2 ** extra`` sub-steps of ``half >> extra`` instead.  Every point is
-                #: a key-lattice integer the facing side computes as well, so the two sides pair
-                #: up by construction; ``cell_triangles`` never reorders them.
+                #: one ordered walk from the edge's own start corner.  ``extra == 0`` emits the
+                #: single midpoint (a step of ``half``); ``extra == d >= 1`` needs the edges's
+                #: interior points at the dyadic positions the facing side owns, which are the
+                #: multiples of ``half >> (d + 1)``: ``d == 1`` puts the point at one quarter of
+                #: the edge, ``d == 2`` at one quarter and the eighths.  (``half >> d`` would be
+                #: half the intended spacing and silently collide with neighbouring lattice
+                #: points — measured, and the reason the first version of this fix still left
+                #: duplicated directed edges.)  Every point is a key-lattice integer the facing
+                #: side computes as well; the midpoint is reused from ``pts`` rather than emitted
+                #: twice, or the assembler would create two global vertices for one key point.
                 sub = int(extra[edge])
+                segment = half if sub == 0 else (half >> (sub + 1))
                 steps = 1 << sub
-                unit = half >> sub
+                corner = pts[start_corner]
                 corner = pts[start_corner]
                 origin = (int(corner[0]), int(corner[1]))
                 midpoint_point = pts[midpoint]      # ``walk`` carries the *index*, not the point
                 for q in range(1, steps + 1):
-                    along = q * unit
+                    along = q * segment
                     point = (origin[0] + along, origin[1]) if edge % 2 == 0 \
                         else (origin[0], origin[1] + along)
                     if point == midpoint_point:
@@ -1133,17 +1143,19 @@ def edge_extra_all(tree: "_Quadtree", block: np.ndarray, key_level: int) -> np.n
                   np.repeat(rows[:, 1], 4) + np.where(lo_side, -1, 1))
     limit = np.int64(tree.side) << level
     alive = (si >= 0) & (sj >= 0) & (si < limit) & (sj < limit)
-    #: sub-index of the *neighbour*'s cell inside the sub-lattice: 0 at the sub-lattice origin,
-    #: which is the neighbour's own edge.  The sub-cell facing my edge is the one on the
-    #: **opposite** side of the neighbour from that origin, so the sub-index is the complement of
-    #: the bit of my own key position the edge sits on — and since the walk advances *along my
-    #: edge*, it is the coordinate that runs along the edge that supplies those bits:
-    #: ``u`` for a horizontal ("u") edge, ``v`` for a vertical ("v") one.
-    shift_1 = span - 1
-    along_bits = np.where(vertical, corner_v, corner_u)
-    fixed_bits = np.where(vertical, corner_u, corner_v)
-    sub_along = np.int64(1) - ((along_bits >> shift_1) & np.int64(1))
-    sub_fixed = np.int64(1) - ((fixed_bits >> shift_1) & np.int64(1))
+    #: The key-lattice position of the sub-edge being inspected, at the current sub-lattice
+    #: resolution: it starts at my own edge's start corner and is halved on every descent, so
+    #: "which half of the neighbour's cell am I facing" is one bit of *this* value.  Deriving it
+    #: from the edge's start corner alone instead (as the first version did) is exact only for the
+    #: first level: from the second level on, the accumulated sub-offsets move the target inside
+    #: the sub-lattice and the bit read off the corner points at the wrong half (measured: a
+    #: 2 ** 18 T-junction left unresolved while the walk reported depth 1).
+    target_u = corner_u.copy()
+    target_v = corner_v.copy()
+    sub_along = np.int64(1) - ((np.where(vertical, target_v, target_u) >> (span - 1))
+                               & np.int64(1))
+    sub_fixed = np.int64(1) - ((np.where(vertical, target_u, target_v) >> (span - 1))
+                               & np.int64(1))
     depth = np.zeros(n * 4, dtype=np.int64)
     #: halvings still available on my own edge (it is ``2 ** (span - 1)`` key units long)
     remaining = span - 1
@@ -1154,19 +1166,36 @@ def edge_extra_all(tree: "_Quadtree", block: np.ndarray, key_level: int) -> np.n
             if live.size:
                 keys = si[live] * (1 << 32) + sj[live] * (1 << 8) + level[live]
                 present[live] = np.isin(keys, lookup)
+        if _AUDIT_TRACE:
+            for slot in range(n * 4):
+                if tuple(int(v) for v in rows[slot // 4]) in _AUDIT_CELLS and slot % 4 == 1:
+                    if _AUDIT_EDGE_STEP[0] < 4:
+                        print(f"[walk] cell={tuple(int(v) for v in rows[slot // 4])} edge=1 "
+                              f"step={_AUDIT_EDGE_STEP[0]} si={int(si[slot])} sj={int(sj[slot])} "
+                              f"level={int(level[slot])} alive={bool(alive[slot])} "
+                              f"present={bool(present[slot])} remaining={int(remaining[slot])} "
+                              f"depth={int(depth[slot])}")
+            if bool(np.any(_AUDIT_EDGE_STEP[0] == 1)):
+                for probe in ((229, 207, 3), (228, 207, 4), (229, 207, 4), (228, 207, 3)):
+                    print(f"[walk]   refined{probe}={(probe in tree.refined)}")
+            _AUDIT_EDGE_STEP[0] += 1
         #: a refined neighbour puts its children's corner in the middle of the sub-edge
         depth = np.where(present, depth + 1, depth)
         remaining = np.where(present & (remaining > 0), remaining - 1, 0)
         if not bool(np.any(present & (remaining > 0))):
             break
         #: descend one level: the neighbour's children that face my edge are ``2 * s + sub``,
-        #: and the sub-index advances by one bit of my own key position
+        #: and the target halving follows the sub-lattice
         si = 2 * si + sub_along
         sj = 2 * sj + sub_fixed
         level = level + 1
-        shift_1 = shift_1 - 1
-        sub_along = np.int64(1) - ((along_bits >> shift_1) & np.int64(1))
-        sub_fixed = np.int64(1) - ((fixed_bits >> shift_1) & np.int64(1))
+        target_u = target_u >> 1
+        target_v = target_v >> 1
+        shift_1 = remaining - 1
+        sub_along = np.int64(1) - ((np.where(vertical, target_v, target_u) >> shift_1)
+                                   & np.int64(1))
+        sub_fixed = np.int64(1) - ((np.where(vertical, target_u, target_v) >> shift_1)
+                                   & np.int64(1))
         limit = np.int64(tree.side) << level
         alive = (si >= 0) & (sj >= 0) & (si < limit) & (sj < limit)
     return depth.reshape(n, 4)
@@ -1377,6 +1406,8 @@ def build_closed_cutter(
     # ------------------------------------------------------------ T-junction resolution
     #: per-leaf, per-edge extra halvings, measured from the real refinement state
     extras = edge_extra_all(tree, np.asarray(leaves, dtype=np.int64).reshape(-1, 3), key_level)
+    #: cell -> leaf row, for the audit below (the assembler iterates ``leaves`` in this order)
+    leaf_row_of = {tuple(int(v) for v in cell): row for row, cell in enumerate(leaves)}
 
     top_faces: list[tuple[int, int, int]] = []
     #: *directed* top edges exactly as the top faces wind them, so the side quads can be
@@ -1385,9 +1416,16 @@ def build_closed_cutter(
     #: vertex triplets of every top triangle *as assembled*, so the verification below checks
     #: the triangles that are actually exported rather than a second key-table lookup
     top_triangles_pts: list[tuple[int, int, int]] = []
+    #: the cell that emitted each top face, in the same order as ``top_faces`` (audit only)
+    top_face_cells: list[tuple[int, int, int]] = []
     for row, (i, j, level) in enumerate(leaves):
         pts_ij, tris = tree.cell_triangles(i, j, level, leaf_span_for(level), extras[row])
         local = [top_vertex(level, int(p[0]), int(p[1])) for p in pts_ij]
+        if _AUDIT_TRACE and (int(i), int(j), int(level)) in _AUDIT_CELLS:
+            print(f"[audit] cell=({i},{j},{level}) span={leaf_span_for(level)} "
+                  f"splits={tree.edge_splits(i, j, level)} extras={tuple(int(x) for x in extras[row])}")
+            print(f"[audit]   ring keys={[(int(p[0]), int(p[1])) for p in pts_ij]}")
+            print(f"[audit]   global ids={[int(v) for v in local]}")
         for tri in tris:
             # ---------------------------------------------------------------- degeneracy guard
             #
@@ -1415,6 +1453,7 @@ def build_closed_cutter(
                 continue
             top_faces.append(face)
             top_triangles_pts.append(face)
+            top_face_cells.append((int(i), int(j), int(level)))
             top_edge_use[edge_a] += 1
             top_edge_use[edge_b] += 1
             top_edge_use[edge_c] += 1
@@ -1424,6 +1463,18 @@ def build_closed_cutter(
     for face in top_faces:
         mirror = tuple(bottom_vertex(v) for v in face)
         bottom_faces.append((mirror[0], mirror[2], mirror[1]))
+    #: a *directed* edge may be traversed by at most one top face.  Two faces traversing the same
+    #: directed edge means the top surface is not an oriented 2-manifold there: the second one
+    #: would have to be its neighbour, and it walks the shared edge the wrong way round.  This is
+    #: measured on the faces that were actually emitted, so it is evidence, not a reconstruction.
+    directed_use: Counter[tuple[int, int]] = Counter()
+    directed_owner: dict[tuple[int, int], list[tuple[tuple[int, int, int], tuple[int, int, int]]]] = {}
+    for cell, face in zip(top_face_cells, top_faces):
+        for k in range(3):
+            edge_here = (face[k], face[(k + 1) % 3])
+            directed_use[edge_here] += 1
+            directed_owner.setdefault(edge_here, []).append((cell, face))
+    ambiguous = [e for e, n in directed_use.items() if n > 1]
     #: multi-edge bookkeeping for the audit: a boundary edge must be traversed by exactly one top
     #: face in one direction and by no top face in the other, otherwise the wall it produces is
     #: emitted twice and the quad's own edges end up used 4 times
@@ -1444,6 +1495,41 @@ def build_closed_cutter(
                                    sorted(Counter(silhouette_degree.values()).items())}
     verts = np.asarray(vertices, dtype=np.float64)
     faces = np.asarray(top_faces + bottom_faces + side_faces, dtype=np.int64)
+    #: audit: which cells emitted the two faces that traverse one ambiguous directed edge, and
+    #: where those vertices sit (this is what makes a non-manifold top surface attributable)
+    ambiguous_detail = []
+    for e in ambiguous[:3]:
+        record: dict[str, Any] = {"edge": [int(e[0]), int(e[1])],
+                                  "uv_a": [round(float(x), 9) for x in verts[e[0]]],
+                                  "uv_b": [round(float(x), 9) for x in verts[e[1]]],
+                                  "producers": []}
+        for (cell, face) in directed_owner[e]:
+            hx, hy = tree.cell_size(int(cell[2]))
+            row_here = leaf_row_of[tuple(int(v) for v in cell)]
+            cell_pts = tree.cell_triangles(int(cell[0]), int(cell[1]), int(cell[2]),
+                                           leaf_span_for(int(cell[2])), extras[row_here])[0]
+            row_here = leaf_row_of[tuple(int(v) for v in cell)]
+            cell_span = leaf_span_for(int(cell[2]))
+            cell_pts = tree.cell_triangles(int(cell[0]), int(cell[1]), int(cell[2]),
+                                           cell_span, extras[row_here])[0]
+            scale = 1 << cell_span
+            on_lattice = bool(np.all(np.asarray(cell_pts[:, 0]) % scale == 0)
+                              and np.all(np.asarray(cell_pts[:, 1]) % scale == 0))
+            record["producers"].append({
+                "cell": [int(cell[0]), int(cell[1]), int(cell[2])],
+                "face": [int(x) for x in face],
+                "span": int(cell_span),
+                "on_lattice": on_lattice,
+                "u_range": [round(tree.u0 + int(cell[0]) * hx, 9),
+                            round(tree.u0 + (int(cell[0]) + 1) * hx, 9)],
+                "v_range": [round(tree.v0 + int(cell[1]) * hy, 9),
+                            round(tree.v0 + (int(cell[1]) + 1) * hy, 9)],
+                "splits": [bool(x) for x in tree.edge_splits(int(cell[0]), int(cell[1]),
+                                                             int(cell[2]))],
+                "extras": [int(x) for x in extras[row_here]],
+                "ring_keys": [[int(p[0]), int(p[1])] for p in cell_pts],
+            })
+        ambiguous_detail.append(record)
     #: top vertices are created first and are never removed, so their block is ``[0, N)``
     top_vertex_count = len(top_index)
     volume = float(np.einsum(
@@ -1586,6 +1672,8 @@ def build_closed_cutter(
                                                  Counter(counter.values()).items()},
                           "bad_edge_kind": dict(kinds),
                           "bad_edge_details": details,
+                          "ambiguous_directed_edges": len(ambiguous),
+                          "ambiguous_directed_examples": ambiguous_detail,
                           "silhouette_degree_histogram": silhouette_degree_histogram,
                           "top_vertices": int(top_vertex_count),
                           "hanging_corner_points": int(missing_total),

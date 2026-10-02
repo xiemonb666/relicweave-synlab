@@ -72,7 +72,7 @@ def main() -> int:
     for row, (i, j, level) in enumerate(block):
         span = KEY_LEVEL - int(level)
         pts, tris = tree.cell_triangles(int(i), int(j), int(level), span, extras[row])
-        local = [top_vertex(int(level), int(p[0]), int(p[1])) for p in pts]
+        local = [int(top_vertex(int(level), int(p[0]), int(p[1]))) for p in pts]
         rings.append(((int(i), int(j), int(level)), row, local))
         for tri in tris:
             face = (local[tri[0]], local[tri[1]], local[tri[2]])
@@ -133,30 +133,21 @@ def main() -> int:
         for k in range(len(seq)):
             e = (seq[k], seq[(k + 1) % len(seq)])
             ring_sources[e].append((cell, (int(pts[k][0]), int(pts[k][1]))))
-    # which *triangles* use the duplicated directed edge?
-    tri_hits: list[tuple[tuple[int, int, int], tuple[int, int, int]]] = []
+    # every emitted triangle that touches the target vertex, with its cell
+    touching: list[tuple[tuple[int, int, int], tuple[int, int, int]]] = []
     for row, (i, j, level) in enumerate(block):
         span = KEY_LEVEL - int(level)
         _pts, tris = tree.cell_triangles(int(i), int(j), int(level), span, extras[row])
-        local = rings[row][2]
+        local = [int(v) for v in rings[row][2]]
         for tri in tris:
             face = (local[tri[0]], local[tri[1]], local[tri[2]])
             if len(set(face)) < 3:
                 continue
-            for k in range(3):
-                if (face[k], face[(k + 1) % 3]) in dup_directed[:4]:
-                    tri_hits.append(((int(i), int(j), int(level)), face))
-    print("triangles carrying a duplicated directed edge:", len(tri_hits), tri_hits[:8])
-    for (a, b), n in dup_directed[:4]:
-        print(f"  directed ({a},{b}) used {n}x, produced by "
-              f"{len(ring_sources[(a, b)])} ring(s):")
-        for cell, key in ring_sources[(a, b)]:
-            pos = index_of.get(cell)
-            hx, hy = tree.cell_size(cell[2])
-            print(f"     cell={cell} span={KEY_LEVEL - cell[2]} start_key={key} "
-                  f"splits={tree.edge_splits(*cell)} "
-                  f"extras={None if pos is None else tuple(int(x) for x in extras[pos])} "
-                  f"cell_u0={tree.u0 + cell[0] * hx:.9f} cell_v0={tree.v0 + cell[1] * hy:.9f}")
+            if target in face:
+                touching.append(((int(i), int(j), int(level)), face))
+    print(f"triangles touching vertex {target}: {len(touching)}")
+    for entry in touching:
+        print("   ", entry)
     return 0
 
 

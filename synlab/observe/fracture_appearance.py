@@ -656,11 +656,20 @@ class _GlazeStrip:
     ratio: float
 
     def sample(self, u: np.ndarray, v: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-        """``(modulation, d mod/du, d mod/dv)`` by bilinear lookup, outside the patch = 1."""
+        """``(modulation, d mod/du, d mod/dv)`` by bilinear lookup, outside the patch = 1.
+
+        ``cv2.remap`` wants ``(H, W)`` maps, so a flat query of N points is reshaped to ``(N, 1)``
+        and the result is reshaped back: the renderer queries one point per pixel, the builder
+        queries a whole grid, and both must give the same array shape back.
+        """
         import cv2
 
-        iu = ((np.asarray(u, dtype=np.float64) - self.u0) / self.step_mm).astype(np.float32)
-        iv = ((np.asarray(v, dtype=np.float64) - self.v0) / self.step_mm).astype(np.float32)
+        shape = np.broadcast(np.asarray(u, dtype=np.float64),
+                             np.asarray(v, dtype=np.float64)).shape
+        iu = ((np.asarray(u, dtype=np.float64) - self.u0) / self.step_mm)
+        iv = ((np.asarray(v, dtype=np.float64) - self.v0) / self.step_mm)
+        iu = np.ascontiguousarray(iu.astype(np.float32).reshape(-1, 1))
+        iv = np.ascontiguousarray(iv.astype(np.float32).reshape(-1, 1))
         grid = self.grid.astype(np.float32)
         mod = cv2.remap(grid, iu, iv, cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT,
                         borderValue=1.0)
@@ -669,7 +678,9 @@ class _GlazeStrip:
                              borderMode=cv2.BORDER_CONSTANT, borderValue=0.0)
         d_mod_dv = cv2.remap(gy.astype(np.float32), iu, iv, cv2.INTER_LINEAR,
                              borderMode=cv2.BORDER_CONSTANT, borderValue=0.0)
-        return (mod.astype(np.float64), d_mod_du.astype(np.float64), d_mod_dv.astype(np.float64))
+        return (mod.astype(np.float64).reshape(shape),
+                d_mod_du.astype(np.float64).reshape(shape),
+                d_mod_dv.astype(np.float64).reshape(shape))
 
     def as_dict(self) -> dict[str, Any]:
         return {"kind": "GLAZE_RELIEF_DAMPING_STRIP", "strip_width_mm": float(self.strip_width_mm),

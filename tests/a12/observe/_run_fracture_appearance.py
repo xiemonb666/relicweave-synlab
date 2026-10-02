@@ -456,21 +456,35 @@ def stage_facets(*, config, target, body, mesh, roi, rng) -> dict:
     before = fa.geometry_hash(np.asarray(mesh.vertices), np.asarray(mesh.faces))
     out = {"mm_per_px_measured": mm_per_px_of(frame), "long_edge_px": long_edge,
            "geometry_hash_before": before, "variants": {}}
+    # The delivered scene carries a per-face procedural palette albedo (render.procedural_albedo),
+    # so a triangle boundary shows TWO independent steps: the shading-normal step and the albedo
+    # step.  Both are measured, because a per-pixel normal can only remove the first.
+    params_specimen = fa.appearance_parameters_from_profile(
+        material_profile(body["material_id"]), material_id=body["material_id"])
+    flat_albedo = np.tile(np.asarray(params_specimen.albedo, dtype=np.float64),
+                          (len(mesh.faces), 1))
     for mode, crease, label in (("FLAT", 35.0, "flat (frozen)"),
                                 ("SMOOTH", 180.0, "smooth vertex normals"),
                                 ("SMOOTH_CREASE", float(config.crease_angle_deg),
                                  f"smooth + crease {config.crease_angle_deg:g} deg")):
-        res = render_and_image(target=target, frame=frame,
-                               appearance=fa.AppearanceSpec(
-                                   normal_mode=mode, crease_angle_deg=crease, relief=False,
-                                   interpolation="PERSPECTIVE_CORRECT", label=label),
-                               relief=None, obs_spec=spec_obs, imaging_seed=11,
-                               supersample=int(config.supersample))
-        out["variants"][mode] = {
-            "label": label, "crease_angle_deg": crease,
-            "geometry_hash": res["render"].meta["appearance"]["geometry_hash"],
-            "measured": measure(res),
-        }
+        entry: dict = {"label": label, "crease_angle_deg": crease}
+        for key, albedo in (("per_face_palette", None), ("constant_material_albedo", flat_albedo)):
+            res = render_and_image(target=target, frame=frame,
+                                   appearance=fa.AppearanceSpec(
+                                       normal_mode=mode, crease_angle_deg=crease, relief=False,
+                                       interpolation="PERSPECTIVE_CORRECT", label=label),
+                                   relief=None, obs_spec=spec_obs, imaging_seed=11,
+                                   supersample=int(config.supersample), albedo=albedo)
+            entry[key] = measure(res)
+            entry["geometry_hash"] = res["render"].meta["appearance"]["geometry_hash"]
+        out["variants"][mode] = entry
+    out["albedo_sources"] = {
+        "per_face_palette": ("render.procedural_albedo: the delivered scene's per-face speckle "
+                             "(declared SENSOR_SIM); its steps sit on every triangle boundary"),
+        "constant_material_albedo": ("the specimen material's own albedo, identical on every face: "
+                                     "isolates the shading-normal facet step"),
+        "material_albedo": [float(x) for x in params_specimen.albedo],
+    }
     after = fa.geometry_hash(np.asarray(mesh.vertices), np.asarray(mesh.faces))
     out["geometry_hash_after"] = after
     out["geometry_unchanged"] = bool(before == after)
@@ -817,6 +831,8 @@ def main() -> int:
     parser.add_argument("--quick", action="store_true",
                         help="one rung, one amplitude (smoke test)")
     parser.add_argument("--no-store", action="store_true")
+    parser.add_argument("--fresh", action="store_true",
+                        help="start a new report instead of merging into the existing one")
     args = parser.parse_args()
     stages = [s.strip() for s in args.stages.split(",") if s.strip()]
 
@@ -824,9 +840,20 @@ def main() -> int:
     config = fa.load_fracture_appearance_config()
     fa.validate_config(config)
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
+    # Stages are merged into an existing report when one is present, so a follow-up run of a single
+    # stage does not throw away the stages already measured in a previous process.
+    report_path = REPORT_DIR / "fracture_appearance_run.json"
     report: dict = {"schema": fa.APPEARANCE_SCHEMA + ".run", "config": config.as_dict(),
                     "master_seed": MASTER_SEED, "specimen_entry": SPECIMEN,
                     "started_at_s": 0.0, "stages": {}, "timing": {}}
+    if report_path.exists() and not args.fresh:
+        previous = json.loads(report_path.read_text(encoding="utf-8"))
+        report["stages"] = dict(previous.get("stages") or {})
+        report["timing"] = dict(previous.get("timing") or {})
+        report["previous_runs"] = list(previous.get("previous_runs") or []) + [
+            {"finished_at": previous.get("finished_at"), "timing": previous.get("timing")}]
+        print(f"[appearance] merging into {report_path} "
+              f"({sorted(report['stages'])})", flush=True)
     target, body = load_target(SPECIMEN)
     mesh = target.mesh
     rng = make_rng(MASTER_SEED, "appearance", "run")
@@ -902,10 +929,11 @@ def main() -> int:
         else:
             raise SystemExit(f"unknown stage {stage!r}")
         report["timing"][stage] = float(time.perf_counter() - t0)
-        fa.write_json(report, REPORT_DIR / "fracture_appearance_run.json")
+        report["finished_at"] = time.strftime("%Y-%m-%dT%H:%M:%S")
+        fa.write_json(report, report_path)
         print(f"[appearance] stage {stage} done in {report['timing'][stage]:.1f}s", flush=True)
     report["timing"]["total_s"] = float(time.perf_counter() - started)
-    fa.write_json(report, REPORT_DIR / "fracture_appearance_run.json")
+    fa.write_json(report, report_path)
     print(f"[appearance] total {report['timing']['total_s']:.1f}s -> "
           f"{REPORT_DIR / 'fracture_appearance_run.json'}", flush=True)
     return 0
