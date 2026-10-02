@@ -162,7 +162,8 @@ def _revision_fact(path: Path) -> dict[str, Any]:
     text = path.read_text(encoding="utf-8", errors="replace")
     return {
         "has_negative_eligibility": "def negative_eligibility" in text,
-        "imports_the_single_truth_source": "legal_negative" in text,
+        "imports_the_single_truth_source": ("from .legal_negative import" in text
+                                            or "from ..relations.legal_negative import" in text),
         "recomputes_from_the_kind": 'rel in ("R0", "R1", "R2")' in text,
         "validation_gate_uses_loss_mask": "loss_mask" in text,
     }
@@ -587,6 +588,10 @@ def _revision_check(before: Mapping[str, Any], after: Mapping[str, Any]) -> dict
         }
         item["ok"] = bool(item["differ"] and not item["before_declares_the_fix"]
                           and item["after_declares_the_fix"])
+        # the sampler is where the defect lived (``confirmed()`` answered the kind); require the
+        # old marker there so "the before side is the pre-fix code" is a measured fact, not a path
+        if dotted == "synlab.training.sampler":
+            item["ok"] = bool(item["ok"] and item["before_recomputes_from_the_kind"])
         modules[dotted] = item
         ok = bool(ok and item["ok"])
     return {"ok": ok, "snapshot": frozen.get("snapshot"), "modules": modules}

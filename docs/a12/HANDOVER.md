@@ -117,6 +117,7 @@ Start-Process -FilePath (Get-Command node).Source -ArgumentList "node_modules/vi
 3. **31 轴审计 + 负例资格修复**的结论合并进数据契约（漂移 p95/p99、资格单真源）。
 4. **补物化**：`degrade` 仅 **9/31 轴**有物化档位（33 档）→ 需专门一条物化线；`correspondence` 仍 **0/9**（`id_map` face_id 空间不一致，需改 `synlab/observe/**`）。
 5. **合并导出 v2**：把 ROI 视图族（现仅 `research/roi_views/`，跨 store 身份未证）与新增退化档、SDF 断口一起重导；更新 `ablation_index.json`。
+   ⚠️ **代际警告（必读）**：`data/a12_exports/{experiment_ready,negfix}/**` 的 `relations.parquet` 是**负例资格修复之前**的口径，其负例计数**被高估约 3.5×**（实验就绪包报 `negatives=3120`，修复后同一批数据的实时路径供给是 **880**；`effective_queries` 44 → **≈36**）。这些包自身 `--check` 仍会通过（哈希自洽），但**直接拿它训 `rank` 会训到真值层已撤回的负例**。处置：① 在数据卡/清单里把它们标 `superseded_by_eligibility_policy:v1`（**不改写旧 manifest**）；② 重导出（新口径）；③ **不要试图把负例数"调回去"** —— 变小是预期行为。依据：`docs/a12/relation_negatives.md` §9.1.2（单真源 `synlab/relations/legal_negative.py`；契约测试 14 断言 × 4 实现 × 2 上下文全绿、注入 7/7 被抓）。修复后的真实供给：每 query 负例中位数 **9**、R1 负例供给 **0**（本包无 `R1 ∧ valid ∧ loss_mask` 行）→ 解锁靠 **(a) 产出真实"有直接断口表面"的 R1 标注** 或 **(b) N10 独立辅助项**。
 6. **发布收口**：验收 **FAIL 4/PENDING 6/NOT_RUN 6**、PILOT **10/12**、12 个旧 release 标 `superseded` 并发新 `rel_*`、基线重算。
 7. **需硬件（不可在本机完成）**：真实标定（5 字段 0 命中）· 真实迁移结论 · 独立母体 ≥20 · `REAL_CAPTURE`；**"像不像真实"在拿到实物断口样本前只能标 `assumption` + 用户目视判定**。
 

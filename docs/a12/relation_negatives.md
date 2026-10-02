@@ -542,9 +542,17 @@ kind 复算。
 ### before/after 真实代价（同一最小可训子集；before 由**冻结的修订版**跑出）
 
 before 侧**不是**手写复现：`tools/a12_negfix_eligibility.py --step compare` 用
-`SYNLAB_BEFORE_SNAPSHOT` 把 `tmp/before/{loader_probe,sampler,gallery}.py`（`git show HEAD:` 逐字节
-等于改动前工作区文件）以真实包上下文装载，两侧跑同一份驱动、同一份输入。观测侧固定为同一份合成
-`a12.obs.v1`（真包的 obs 分片 2.5 GB，成本测量不需要它；两侧完全相同，因此差值只来自资格语义）。
+`SYNLAB_BEFORE_SNAPSHOT` 把 `tmp/before_prefix/{loader_probe,sampler,gallery}.py`（`git show
+1ebede6d:<path>` 逐字节取出——该 auto-checkpoint 是改动前的最后一次；文件 sha256 记录在报告里）
+以真实包上下文装载，两侧跑同一份驱动、同一份输入。观测侧固定为同一份合成 `a12.obs.v1`
+（真包的 obs 分片 2.5 GB，成本测量不需要它；两侧完全相同，因此差值只来自资格语义）。
+**出处自证（因为本仓库会自动 checkpoint，`HEAD` 不是可靠标记）**：报告里的 `revision_check` 从
+**实际被装载的文件**读出三条标记——before 侧无 `def negative_eligibility`、不 import
+`relations.legal_negative`、且 `sampler.py` 仍带旧式 `rel in ("R0", "R1", "R2")` 重算；after 侧三条
+相反；两侧 sha256 逐模块不同。`compare.ok` 只有在 after 普查通过 **且** before 侧**确实因资格普查
+失败**（而不是崩溃）**且** 出处自证通过时才为真（本轮 `revision check ok=True`，before rc=1 是
+**预期的失败**）。另外用两份独立取出的改动前快照各跑一次 before 侧，供给/普查/rank 数字**逐项相同**
+（3168 / 2288 / 48 / 48），确认这一口径可复现。
 
 **负例供给（真 `negfix` 包：71 片 / 1721 行 / 4970 个有向候选）**
 
@@ -754,7 +762,7 @@ rows  = attach_hard_negatives(rows, table, enabled=True, limit=4)  # 开：只�
 | 同上（`tests\a12\qc` 单独） | **0** | 全绿：`test_store_sqlite_is_opened_read_only` 的既有顺序相关失败**本轮未复现**（未改该测试） |
 | `.venv\Scripts\python.exe -m pytest tests\a12\storage tests\a12\operators tests\a12\diagnostics tests\a12\episodes -q` | **0** | 旁证全绿（`data/a12_reports/_negfix_pytest_side.txt`） |
 | `.venv\Scripts\python.exe tools\a12_pool_contract.py --step all` | **0** | 5 实例 × **14/14** × canonical/real、0 冲突、注入 **7/7**、资格分歧 **0**（保守缺口 861 → 835） |
-| `.venv\Scripts\python.exe tools\a12_negfix_eligibility.py --step compare` | **0** | before（冻结修订版）48 有向对**全部**被三个读者提供 → after **0**；代价表见 9.1.2（`data/a12_reports/negfix_eligibility.json`） |
+| `.venv\Scripts\python.exe tools\a12_negfix_eligibility.py --step compare` | **0** | before（`1ebede6d` 冻结修订版，`revision_check ok=True`）48 有向对**全部**被三个读者提供 → after **0**；两份独立改动前快照数字逐项相同；代价表见 9.1.2（`data/a12_reports/negfix_eligibility.json`） |
 | `.venv\Scripts\python.exe tools\a12_n9_qa_tighten.py --step all` | 0 | v2 翻转全局 SDF，窄带保持 PASS，扫描 396 条记录 |
 | `.venv\Scripts\python.exe tools\a12_n10_hard_negatives_table.py --step all` | 0 | 880 行、+880 违规反证、off/on 分母逐位相同 |
 

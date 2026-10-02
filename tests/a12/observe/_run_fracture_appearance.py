@@ -1229,47 +1229,33 @@ def stage_snr_gain(*, config, target, body, mesh, roi, rng, light=None) -> dict:
     palette_mean = (np.asarray(procedural_albedo(n_faces), dtype=np.float64).mean(axis=0)
                     if n_faces > 0 else np.full(3, 0.5))
     smooth_albedo = np.tile(palette_mean, (n_faces, 1))
-    off = render_and_image(target=target, frame=frame,
-                           appearance=fa.AppearanceSpec(normal_mode="FLAT", relief=False,
-                                                        interpolation="PERSPECTIVE_CORRECT",
-                                                        label="snr off", **common),
-                           relief=None, obs_spec=spec_obs, imaging_seed=11, supersample=ss,
-                           albedo=smooth_albedo, delivered_exposure_ev=0.0)
-    on = render_and_image(target=target, frame=frame,
-                          appearance=fa.AppearanceSpec(normal_mode="FLAT", relief=True,
-                                                       interpolation="PERSPECTIVE_CORRECT",
-                                                       label="snr on", **common),
-                          relief=field, obs_spec=spec_obs, imaging_seed=11, supersample=ss,
-                          albedo=smooth_albedo, delivered_exposure_ev=0.0)
-    mask = on["mask"]
-    # the relief signal of the SAME render pair at each gain, through the delivered chain
+
+    def _delivered(*, relief, seed: int, gain: float, ev: float) -> dict:
+        """One delivered image at a chosen photon scale / exposure, through the frozen chain."""
+        res = render_and_image(
+            target=target, frame=frame,
+            appearance=fa.AppearanceSpec(normal_mode="FLAT", relief=relief is not None,
+                                         interpolation="PERSPECTIVE_CORRECT",
+                                         label=f"snr gain={gain:g} ev={ev:g}", **common),
+            relief=relief, obs_spec=spec_obs, imaging_seed=seed, supersample=ss,
+            albedo=smooth_albedo, shading_gain=float(gain), delivered_exposure_ev=float(ev))
+        return res
+
+    def _no_tex(*, relief, seed: int, gain: float) -> dict:
+        return _delivered(relief=relief, seed=seed, gain=gain, ev=0.0)
+
+    off0 = _no_tex(relief=None, seed=11, gain=1.0e6)
+    on0 = _no_tex(relief=field, seed=11, gain=1.0e6)
+    mask = on0["mask"]
+    signal_ref = float(np.sqrt(np.mean(
+        (np.asarray(on0["dn_float"], dtype=np.float64)
+         - np.asarray(off0["dn_float"], dtype=np.float64))[mask] ** 2)))
     rows: list[dict] = []
-    for ev in (0.0, 2.0, 4.0, 5.0, 6.0, 7.0, 8.0, 10.0):
-        # noise: the SAME relief_off render at two imaging seeds through the delivered profile
-        n_a = render_and_image(target=target, frame=frame,
-                               appearance=fa.AppearanceSpec(normal_mode="FLAT", relief=False,
-                                                            interpolation="PERSPECTIVE_CORRECT",
-                                                            label="snr noise a", **common),
-                               relief=None, obs_spec=spec_obs, imaging_seed=11, supersample=ss,
-                               albedo=smooth_albedo, delivered_exposure_ev=ev)
-        n_b = render_and_image(target=target, frame=frame,
-                               appearance=fa.AppearanceSpec(normal_mode="FLAT", relief=False,
-                                                            interpolation="PERSPECTIVE_CORRECT",
-                                                            label="snr noise b", **common),
-                               relief=None, obs_spec=spec_obs, imaging_seed=97, supersample=ss,
-                               albedo=smooth_albedo, delivered_exposure_ev=ev)
-        s_a = render_and_image(target=target, frame=frame,
-                               appearance=fa.AppearanceSpec(normal_mode="FLAT", relief=True,
-                                                            interpolation="PERSPECTIVE_CORRECT",
-                                                            label="snr sig a", **common),
-                               relief=field, obs_spec=spec_obs, imaging_seed=11, supersample=ss,
-                               albedo=smooth_albedo, delivered_exposure_ev=ev)
-        s_b = render_and_image(target=target, frame=frame,
-                               appearance=fa.AppearanceSpec(normal_mode="FLAT", relief=True,
-                                                            interpolation="PERSPECTIVE_CORRECT",
-                                                            label="snr sig b", **common),
-                               relief=field, obs_spec=spec_obs, imaging_seed=97, supersample=ss,
-                               albedo=smooth_albedo, delivered_exposure_ev=ev)
+    for gain in (1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 64.0, 128.0, 256.0, 512.0, 1024.0, 2048.0,
+                 4096.0, 8192.0, 16384.0):
+        n_a = _no_tex(relief=None, seed=11, gain=gain)
+        n_b = _no_tex(relief=None, seed=97, gain=gain)
+        s_a = _no_tex(relief=field, seed=11, gain=gain)
         signal = np.abs(np.asarray(s_a["dn_delivered"], dtype=np.float64)
                         - np.asarray(n_a["dn_delivered"], dtype=np.float64))
         noise = np.abs(np.asarray(n_a["dn_delivered"], dtype=np.float64)
@@ -1277,23 +1263,64 @@ def stage_snr_gain(*, config, target, body, mesh, roi, rng, light=None) -> dict:
         stat = snr_of(signal_dn=signal, noise_dn=noise, mask=mask)
         info = n_a["imaging_delivered"]
         dn_masked = np.asarray(n_a["dn_delivered"], dtype=np.float64)[mask]
-        rows.append({"exposure_ev": float(ev), "photon_gain": float(2.0 ** ev),
-                     **stat,
-                     "noise_fraction_of_range": stat["noise_rms_dn"] / 255.0,
-                     "binary_fraction_of_output": float(np.mean((dn_masked <= 0.5)
-                                                                 | (dn_masked >= 254.5))),
-                     "dn_mean_delivered": float(dn_masked.mean()),
-                     "dn_delivered": fa.dn_statistics(n_a["dn_delivered"], mask),
-                     "saturated_fraction": next(
-                         (s.get("saturated_fraction") for s in info.stages
-                          if s.get("stage") == "SENSOR_NOISE"), None),
-                     "stage_order": info.meta["stage_order"],
-                     "denoise": float(info.meta["spec"].get("denoise", 0.0)),
-                     "post_processing_applied": bool(
-                         info.meta["spec"].get("denoise", 0.0) > 0
-                         or info.meta["spec"].get("sharpening", 0.0) > 0
-                         or info.meta["spec"].get("resize_scale") is not None)})
+        zero_frac = float(np.mean(dn_masked <= 0.5))
+        full_frac = float(np.mean(dn_masked >= 254.5))
+        rows.append({
+            "effective_gain": float(gain), "exposure_ev": 0.0,
+            "signal_rms_dn": stat["signal_rms_dn"], "noise_rms_dn": stat["noise_rms_dn"],
+            "snr": stat["snr"],
+            "noise_fraction_of_range": stat["noise_rms_dn"] / 255.0,
+            "binary_fraction_of_output": (zero_frac + full_frac if zero_frac + full_frac <= 1.0
+                                          else 1.0),
+            "zero_fraction": zero_frac, "full_fraction": full_frac,
+            "dn_mean_delivered": float(dn_masked.mean()),
+            "dn_p95_minus_p05": float(np.percentile(dn_masked, 95)
+                                      - np.percentile(dn_masked, 5)),
+            "saturated_fraction": next((s.get("saturated_fraction") for s in info.stages
+                                        if s.get("stage") == "SENSOR_NOISE"), None),
+            "delivered_exposure_ev": n_a["delivered_exposure_ev"],
+            "post_processing_applied": bool(
+                info.meta["spec"].get("denoise", 0.0) > 0
+                or info.meta["spec"].get("sharpening", 0.0) > 0
+                or info.meta["spec"].get("resize_scale") is not None),
+        })
+    # the gain that a pure 1/sqrt(g) law needs to bring the delivered noise to signal/10
     ok = [r for r in rows if r["snr"] >= 10.0]
+    n1 = next((r["noise_rms_dn"] for r in rows if r["effective_gain"] == 1.0), None)
+    required_gain = ((n1 / (signal_ref / 10.0)) ** 2) if (n1 and signal_ref > 0) else None
+    # the same chain at the configured default: delivered noise, and the albedo texture's own DN
+    profile_gain = float(config.imaging_gain)
+    p_off = _delivered(relief=None, seed=11, gain=profile_gain, ev=0.0)
+    p_noise = _delivered(relief=None, seed=97, gain=profile_gain, ev=0.0)
+    p_sig = _delivered(relief=field, seed=11, gain=profile_gain, ev=0.0)
+    p_signal = np.abs(np.asarray(p_sig["dn_delivered"], dtype=np.float64)
+                      - np.asarray(p_off["dn_delivered"], dtype=np.float64))
+    p_noise_d = np.abs(np.asarray(p_off["dn_delivered"], dtype=np.float64)
+                       - np.asarray(p_noise["dn_delivered"], dtype=np.float64))
+    profile_stat = snr_of(signal_dn=p_signal, noise_dn=p_noise_d, mask=mask)
+    profile_row = next(r for r in rows if r["effective_gain"] == profile_gain) \
+        if any(r["effective_gain"] == profile_gain for r in rows) else None
+    # the delivered albedo texture's own DN signature (A3), on the same view and profile
+    tex_row = None
+    if config.albedo_texture:
+        tex = fa.make_albedo_texture(
+            mm_per_px=mm_per_px_of(frame), material_albedo=profile["appearance"]["albedo"],
+            correlation_length_mm=float(profile["stats"]["correlation_length_mm"]),
+            contrast=float(config.albedo_texture_contrast))
+        t = render_and_image(target=target, frame=frame,
+                             appearance=fa.AppearanceSpec(normal_mode="FLAT", relief=False,
+                                                          interpolation="PERSPECTIVE_CORRECT",
+                                                          label="texture dn", albedo_texture=tex),
+                             relief=None, obs_spec=spec_obs, imaging_seed=11, supersample=ss,
+                             shading_gain=profile_gain, delivered_exposure_ev=0.0)
+        td = np.asarray(t["dn"], dtype=np.float64)[mask]
+        tex_row = {"contrast": float(config.albedo_texture_contrast),
+                   "mm_per_px": mm_per_px_of(frame),
+                   "dn_p95_minus_p05": float(np.percentile(td, 95) - np.percentile(td, 5)),
+                   "dn_std": float(td.std()),
+                   "declared_periods_mm": [float(w) for w in tex.wavelengths_mm],
+                   "note": ("the texture is SURFACE structure, not noise: it is reported next to "
+                            "the relief SNR so the two are never confused")}
     return {
         "instrument": ("tests/a12/observe/_run_fracture_appearance.py --stages snr_gain"),
         "specimen": {"vessel_id": body["vessel_id"], "material_id": body["material_id"],
@@ -1301,34 +1328,50 @@ def stage_snr_gain(*, config, target, body, mesh, roi, rng, light=None) -> dict:
                      "realized_ra_mm": field.realized_ra_mm},
         "mm_per_px_measured": mm_per_px_of(frame), "supersample": ss,
         "mask_px": int(np.count_nonzero(mask)),
+        "rows": rows,
+        "signal_reference_noise_free": signal_ref,
         "signal_source": ("rms |DN(relief_on) - DN(relief_off)| of the SAME render pair at one "
-                          "seed, delivered through the chain at each gain; the surface is shaded "
-                          "with one constant albedo (the delivered scene's own palette MEAN) so "
-                          "the number measures the RELIEF signal and not the albedo texture"),
+                          "seed, through the chain at each effective_gain; the surface is shaded "
+                          "with ONE constant albedo (the delivered scene's own palette MEAN) so "
+                          "the number measures the RELIEF signal and never the albedo texture"),
         "noise_source": ("rms |DN(relief_off, seed 11) - DN(relief_off, seed 97)| of the SAME "
-                         "render through the chain at each gain; the only difference is the sensor "
-                         "noise draw"),
+                         "render through the chain at each effective_gain; the only difference is "
+                         "the sensor noise draw"),
         "constant_albedo_used": [float(x) for x in palette_mean],
         "constant_albedo_source": "mean of render.procedural_albedo over the scene's faces",
-        "rows": rows,
-        "first_gain_reaching_snr_10": (ok[0]["photon_gain"] if ok else None),
-        "first_ev_reaching_snr_10": (ok[0]["exposure_ev"] if ok else None),
         "shipped_default": {"effective_gain": 1.0, "exposure_ev": 0.0,
-                            "snr": next((r["snr"] for r in rows if r["exposure_ev"] == 0.0), None),
+                            "noise_rms_dn": n1,
+                            "noise_definition": ("rms code-value change of the delivered image "
+                                                 "when only the sensor noise draw changes"),
+                            "signal_rms_dn": signal_ref,
+                            "snr": (signal_ref / n1) if n1 else None,
                             "note": "the frozen chain as shipped; kept as the reference row"},
-        "profile_default": {"exposure_ev": float(config.imaging_exposure_ev),
-                            "photon_gain": float(config.imaging_gain),
-                            "applied_at": "EXPOSURE_OPTICS (scene * 2**ev, before photon counting)",
-                            "snr": next((r["snr"] for r in rows
-                                         if r["exposure_ev"] == float(config.imaging_exposure_ev)),
-                                        None),
+        "required_gain_snr_10": required_gain,
+        "required_ev_snr_10": (math.log2(required_gain) if required_gain else None),
+        "first_row_reaching_snr_10": (ok[0] if ok else None),
+        "profile_default": {"effective_gain": profile_gain,
+                            "exposure_ev": float(config.imaging_exposure_ev),
+                            "applied_by": "ImagingSpec.effective_gain (photon scale, before the "
+                                          "sensor stage); no post-processing",
+                            "noise_rms_dn": profile_stat["noise_rms_dn"],
+                            "signal_rms_dn": profile_stat["signal_rms_dn"],
+                            "snr": profile_stat["snr"],
+                            "row_at_the_same_gain": profile_row,
                             "denoise": 0.0, "sharpening": 0.0, "upsampled": False,
                             "rig_side_justification": (
                                 "a real rig reaches this photon count with more lamps and a longer "
-                                "exposure, both of which are capture settings; it is NOT a "
-                                "post-process and the chain's denoise/sharpening stages stay at 0")},
+                                "exposure - both capture settings, neither a post-process; the "
+                                "chain's denoise and sharpening stages stay at 0 and nothing is "
+                                "resampled")},
+        "texture_dn_signature": tex_row,
         "definition": ("SNR = rms relief signal / rms chain noise, both in code values on the "
                        "fracture mask; no denoising, no upsampling, no filtering"),
+        "note_exposure": ("exposure_ev and effective_gain both act BEFORE photon counting and are "
+                          "equivalent for the noise, but NOT for the result: raising the exposure "
+                          "also scales the readout, and the frozen chain saturates at 1.0, so a "
+                          "large exposure clips the delivered image to 0/255 and destroys the "
+                          "relief signal.  The curve below therefore raises effective_gain, which "
+                          "raises the photon count while holding the readout fixed."),
     }
 
 
@@ -1451,7 +1494,8 @@ def stage_facets_texture(*, config, target, body, mesh, roi, rng, light=None) ->
         sp = np.abs(np.fft.fftshift(np.fft.fft2(prof * win))) ** 2
         fy = np.fft.fftshift(np.fft.fftfreq(prof.shape[0], d=m2))
         fx = np.fft.fftshift(np.fft.fftfreq(prof.shape[1], d=m2))
-        kx, ky = np.meshgrid(fx, fy, indexing="ij")
+        # the FFT axes follow the array axes: (rows = y, cols = x)
+        kx, ky = np.meshgrid(fx, fy, indexing="xy")
         kr = np.hypot(kx, ky)
         nq = 0.5 / m2
         valid = kr > 0

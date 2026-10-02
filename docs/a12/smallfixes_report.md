@@ -1304,8 +1304,11 @@ S2 的 1120 条 mate-present 类中 **880 条** query 侧有邻片 → 独立辅
 夹具 `eligibility_context()`，否则会空过）+ 注入 `eligibility_recomputed_from_the_kind`（把两处旧机制
 原样复原）→ **canonical 与 real 两套上下文各 7/7 被指名抓住**；四实现 × 两上下文 **14/14**。
 
-**before/after 真实代价**（`negfix` 包 71 片 / 1721 行；before 侧用 `git show HEAD:` 的**冻结修订版**
-装载，非手写复现）：
+**before/after 真实代价**（`negfix` 包 71 片 / 1721 行；before 侧用 `git show 1ebede6d:<path>`——改动前
+最后一次 checkpoint——取出的**冻结修订版**装载，非手写复现；报告内含**出处自证**
+`revision_check`：before 侧无 `def negative_eligibility`、不 import `relations.legal_negative`、
+`sampler.py` 仍带旧式 `rel in ("R0","R1","R2")` 重算，两侧 sha256 逐模块不同，`compare.ok` 要求
+"after 通过 + before 因资格普查失败 + 出处自证通过"三条同时成立）：
 
 | 指标（实时采样路径 `PoolIndex[exported]`） | before | after |
 |---|---|---|
@@ -1328,7 +1331,7 @@ S2 的 1120 条 mate-present 类中 **880 条** query 侧有邻片 → 独立辅
 | `pytest tests\a12\qc tests\a12\relations tests\a12\training -q` | **0** | **323 项 / 0 失败 / 0 错误 / 19 跳过**（59.9 s；`data/a12_reports/_negfix_pytest_qct.txt` + `_negfix_junit.xml`） |
 | `pytest tests\a12\storage tests\a12\operators tests\a12\diagnostics tests\a12\episodes -q` | **0** | 旁证全绿（`data/a12_reports/_negfix_pytest_side.txt`） |
 | `tools/a12_pool_contract.py --step all` | **0** | 5 实例 × 14/14 × 两上下文、注入 7/7、资格分歧 0（保守缺口 861 → 835） |
-| `tools/a12_negfix_eligibility.py --step compare` | **0** | before 48 有向对全被三读者提供 → after 0；`data/a12_reports/negfix_eligibility.json` |
+| `tools/a12_negfix_eligibility.py --step compare` | **0** | before（`1ebede6d` 冻结修订版，`revision_check ok=True`）48 有向对全被三读者提供 → after 0；`data/a12_reports/negfix_eligibility.json` |
 
 **仍未解决**：`R1` 负例供给为 0（需新标注或 N10 辅助项路线）；`relations.sampler`/`relations.negatives`
 （library 路线）未接入单真源；`negfix` 包 `relations.parquet` 仍是旧口径（`trainable` 包已是新口径，

@@ -260,9 +260,14 @@ def build_implicit_cutter(
                           "budget_mm": budget, "delta_mm": float(delta),
                           "delta_budget_mm": delta_budget, "attempts": attempts},
         )
-    world = _sheet_to_world(basis, sheet)
+    # The closure happens in the *cut basis* frame: the flat bottom is ``w = bottom_w`` there, not
+    # a horizontal plane in world coordinates.  Extruding along world z instead (the first revision)
+    # cut a near-vertical plane's mother with a horizontal slab, which produced a third fragment and
+    # a 0.14 mm conjugate gap -- measured, then fixed here.
+    local_top = np.column_stack([sheet.uv, sheet.heights])
     stage = time.time()
-    vertices, faces, closure = close_sheet(world, sheet.faces, bottom_w=bottom_w)
+    local_vertices, faces, closure = close_sheet(local_top, sheet.faces, bottom_w=bottom_w)
+    vertices = _local_to_world(basis, local_vertices)
     timings["closure_seconds"] = timings.get("closure_seconds", 0.0) + (time.time() - stage)
 
     import trimesh
@@ -342,18 +347,18 @@ def build_implicit_cutter(
     return cutter, field, field.morphology, report
 
 
-def _sheet_to_world(basis: Any, sheet: Any) -> np.ndarray:
-    """``(u, v, h)`` lattice -> world mm using the cut basis (same frame as the plane cutter)."""
+def _local_to_world(basis: Any, local: np.ndarray) -> np.ndarray:
+    """``(u, v, w)`` in the cut basis -> world mm (the frame the plane cutter also works in)."""
     matrix = np.stack([basis.e_u, basis.e_v, basis.normal], axis=0)
-    local = np.column_stack([sheet.uv, sheet.heights])
-    return local @ matrix + np.asarray(basis.origin, dtype=np.float64)[None, :]
+    return (np.asarray(local, dtype=np.float64) @ matrix
+            + np.asarray(basis.origin, dtype=np.float64)[None, :])
 
 
 def run_implicit_event(mother: Any, spec: Any, rng: np.random.Generator, *,
                        event_id: str) -> Any:
     """One implicit-sheet event through the frozen shared-cutter path (gated, off by default)."""
-    from .. import event as event_mod
     from .. import morphology as morphology_mod
+    from .assembler import assemble_implicit_event
 
     _gate(spec, stage="fracture.implicit.run_implicit_event")
     profile, options = implicit_options(spec)
@@ -372,7 +377,7 @@ def run_implicit_event(mother: Any, spec: Any, rng: np.random.Generator, *,
         basis=None, event_id=str(event_id), error_budget_mm=budget,
         max_triangles=int(getattr(spec, "max_cutter_triangles", 3_000_000)),
         options=options)
-    result = event_mod.run_shared_cut(
+    result = assemble_implicit_event(
         mother, cutter, event_id=event_id, backend=BACKEND_IMPLICIT,
         extra_meta={
             IMPLICIT_META_KEY: _jsonable(report),
