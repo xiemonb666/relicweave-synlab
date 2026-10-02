@@ -66,6 +66,11 @@ def relation_code(name: str) -> int:
     return RELATION_CODES.get(str(name), RELATION_UNKNOWN_CODE)
 
 
+#: ``adapter`` names the R2/R1/TINY/UNKNOWN codes but not R0 (it is code 0); the hard-negative
+#: class is a confirmed ``R1``/``R0`` by definition, so the R0 code is spelled once here.
+RELATION_R0_CODE = RELATION_CODES["R0"]
+
+
 def relation_name(code: int) -> str:
     return RELATION_NAMES.get(int(code), "UNKNOWN")
 
@@ -372,7 +377,6 @@ def build_training_batch(
     quality_target_valid: np.ndarray | None = None,
     quality_tier: Mapping[str, int] | None = None,
     contradiction_source: Any | None = None,
-    require_hard_negative_query_mate: bool = True,
     meta: Mapping[str, Any] | None = None,
 ) -> TrainingBatch:
     """Assemble a :class:`TrainingBatch` from a pool/fixture or pre-sampled rows.
@@ -388,10 +392,14 @@ def build_training_batch(
     **their own slots** and land in :attr:`TrainingBatch.hard_neg_mask`, never in ``neg_mask``:
     the rank denominator (``negative_counts`` / ``valid_query_indices`` /
     ``effective_query_count``) and every primary metric denominator are therefore bit-identical
-    whether or not the class is supplied.  ``require_hard_negative_query_mate`` enforces the
-    ruling's fourth condition at batch construction time (a mate-absent query supervising a
-    mate-present candidate would turn gallery-level mate-presence into a shortcut): a row that
-    violates it raises instead of being silently dropped.
+    whether or not the class is supplied.
+
+    Requirement (4) of the Lead ruling is enforced here and has **no switch**: a row whose query
+    is mate-absent raises instead of being dropped, because for such a query the candidate's own
+    mate-presence is a give-away of its negative role.  The same three refusals the class relies
+    on are checked too: a hard negative may not be a confirmed ``R2``/the query's own mate, must
+    be a confirmed ``R1``/``R0``, and must itself carry a confirmed ``R2`` mate **in the pool**
+    (``_mates_of``, not the batch-scoped lookup).
     """
     cfg = _SamplerCfg.from_spec(sampler_cfg)
     rng = rng or np.random.default_rng(0)
@@ -498,10 +506,17 @@ def build_training_batch(
         # ---- the auxiliary HARD_NEGATIVE_MATE_PRESENT class, in its own slot block ----------
         hard = [h for h in dict.fromkeys(row.get("hard_negatives", []) or [])
                 if h in index_of and h != qid and h not in positives]
+        if hard and set(hard) & set(negatives):
+            raise SynLabError(
+                ErrorCode.LEAKAGE_DETECTED,
+                f"{sorted(set(hard) & set(negatives))} is listed both as an ordinary negative "
+                f"and as a HARD_NEGATIVE_MATE_PRESENT candidate of {qid}; the two classes are "
+                "mutually exclusive (mate-absent vs mate-present)",
+                stage="training.batch.build_training_batch")
         if hard:
-            query_mates = neighbours_lookup(qid)
+            query_mates = _mates_of(labels, pool, qid)
             hard_neg_query_mate[i] = bool(query_mates)
-            if require_hard_negative_query_mate and not query_mates:
+            if not query_mates:
                 raise SynLabError(
                     ErrorCode.SCHEMA_INVALID,
                     f"{qid} is mate-absent in this pool but carries "
@@ -527,7 +542,7 @@ def build_training_batch(
                         f"hard negative {cid} of {qid} is {relation_name(rel)} "
                         f"(confirmed={confirmed}); the class is a confirmed R1/R0 by definition",
                         stage="training.batch.build_training_batch")
-                if cid not in neighbours_lookup(cid):
+                if not _mates_of(labels, pool, cid):
                     raise SynLabError(
                         ErrorCode.SCHEMA_INVALID,
                         f"hard negative {cid} of {qid} has no confirmed R2 mate of its own in "
@@ -542,7 +557,7 @@ def build_training_batch(
                 hard_neg_mask[i, slot] = True
 
     corr_weight, corr_row_valid, corr_col_valid = _corr_tensors(
-        correspondence, rows, index_of, features.token_budget)
+        correspondence, rows, index_of, features.token_budget, slots=c)
 
     quality_tier_arr = np.zeros(f, dtype=np.int8)
     for i, fid in enumerate(ids):
@@ -694,6 +709,27 @@ class _NeighboursIndex(dict):
         return set(self.get(str(fragment_id), set()))
 
 
+def _mates_of(labels, pool, fragment_id: str) -> set[str]:
+    """Confirmed ``R2`` mates of a fragment **in the pool**, not restricted to this batch.
+
+    The class ``HARD_NEGATIVE_MATE_PRESENT`` is defined by the candidate carrying its own
+    confirmed ``R2`` mate *somewhere in the pool* (``relations.mate_absent``, "inside the same
+    pool").  :func:`_build_lookup` deliberately only fills the batch's own fragments, so it
+    cannot answer that question for a candidate whose mate is not part of the same micro-batch;
+    this helper asks the pool (or the label table) instead, which is the scope the rule means.
+    Nothing else in the builder reads it -- the historical-R2 guard keeps using the batch lookup.
+    """
+    fid = str(fragment_id)
+    if pool is not None and hasattr(pool, "neighbours"):
+        try:
+            return {str(m) for m in pool.neighbours(fid) if str(m) != fid}
+        except Exception:  # noqa: BLE001 - a pool that cannot answer confirms nothing
+            return set()
+    if labels is not None and isinstance(labels.get("R2"), Mapping):
+        return {str(m) for m in (labels["R2"].get(fid) or []) if str(m) != fid}
+    return set()
+
+
 def _build_lookup(labels, pool, ids):
     """Return ``(relation(q,c)->name, neighbours(q)->set, confirmed(q,c)->bool)``.
 
@@ -797,10 +833,15 @@ def _sample_rows(ids, neighbours_of, relation_of, confirmed_of, cfg: _SamplerCfg
     return rows
 
 
-def _corr_tensors(correspondence, rows, index_of, token_budget: int):
+def _corr_tensors(correspondence, rows, index_of, token_budget: int, *, slots: int | None = None):
     q = len(rows)
-    c = max(1, max((len(r.get("positives", [])) + len(r.get("negatives", [])) for r in rows),
-                   default=1))
+    # ``slots`` is the batch's real candidate dimension.  It is larger than
+    # ``|positives| + |negatives|`` once the auxiliary hard-negative block exists, and every
+    # pair-shaped tensor in the batch must share that dimension (the correspondence weight is
+    # written into the pos/neg slots; the hard slots simply stay zero).
+    c = int(slots) if slots is not None else max(
+        1, max((len(r.get("positives", [])) + len(r.get("negatives", [])) for r in rows),
+               default=1))
     k = max(int(token_budget), 1)
     weight = np.zeros((q, c, k), dtype=np.float32)
     row_valid = np.zeros((q, c, k), dtype=bool)

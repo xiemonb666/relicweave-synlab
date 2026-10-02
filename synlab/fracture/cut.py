@@ -48,6 +48,7 @@ __all__ = [
     "build_band_window",
     "attach_material_band",
     "build_closed_cutter",
+    "edge_extra_all",
     "probe_barycentrics",
 ]
 
@@ -966,15 +967,25 @@ class _Quadtree:
                     return True
         return False
     # -------------------------------------------------------------- triangulation
-    def cell_triangles(self, i: int, j: int, level: int,
-                       span: int) -> tuple[np.ndarray, np.ndarray]:
+    def cell_triangles(self, i: int, j: int, level: int, span: int,
+                       edge_extra: "np.ndarray | tuple[int, int, int, int] | None" = None
+                       ) -> tuple[np.ndarray, np.ndarray]:
         """Return ``(grid_ij, triangles)`` for one leaf cell.
 
         ``grid_ij`` rows are *global* integer coordinates on the shared key grid, and ``span``
         is how many halvings separate the cell's own index grid from it (see
         :meth:`key_span`).  Because the key is global, a vertex is shared with any neighbour
         that computes the same integer pair, at any refinement level, by construction.
+
+        ``edge_extra[e]`` is how many halvings **beyond one** of edge ``e`` (0 left, 1 bottom,
+        2 right, 3 top — the order of :meth:`edge_splits`) the facing leaf structure requires:
+        a T-junction is exactly the case where the neighbour's leaves put a corner strictly
+        inside my edge while :meth:`edge_split` only inserted the midpoint.  It defaults to
+        zeros, which is the pre-existing geometry: one midpoint per split edge and nothing
+        else.  ``build_closed_cutter`` passes the handful of edges where the default would
+        leave a hanging vertex (measured in ``docs/a12/fracture_realism.md`` §11).
         """
+        span = int(span)
         half = 1 << (span - 1)
         c00 = (i << span, j << span)
         c10 = (c00[0] + (1 << span), c00[1])
@@ -986,7 +997,18 @@ class _Quadtree:
         m_u1 = (c00[0] + half, c00[1] + (1 << span))  # top edge midpoint
         s = self.edge_splits(i, j, level)
         n_split = int(sum(s))
-        if n_split == 0:
+        if edge_extra is None:
+            extra = (0, 0, 0, 0)
+        else:
+            extra = tuple(int(x) for x in np.asarray(edge_extra).reshape(-1))
+            if len(extra) != 4:
+                raise SynLabError(
+                    ErrorCode.PRECISION_NOT_REALIZED,
+                    f"cell_triangles got {len(extra)} edge-extra values, not 4",
+                    stage="fracture.cut.cell_triangles",
+                    measurements={"edge_extra": list(extra)},
+                )
+        if n_split == 0 and not any(extra):
             # Unrefined cell: the two-triangle split.  This is the only branch a *flat* height
             # field ever takes (the refinement fixed point never marks a zero-error cell), so it
             # is what keeps the plane backend bitwise identical across the triangulation rewrite.
@@ -1022,6 +1044,26 @@ class _Quadtree:
                 ring.append(start_corner)
                 if s[edge]:
                     ring.append(midpoint)
+                    if extra[edge] > 0:
+                        # T-junction resolution: the facing leaves already carry corners at
+                        # these dyadic positions, so this edge is emitted as ``2 ** extra``
+                        # sub-edges instead of two.  Walking *from the edge's own start corner*
+                        # keeps the traversal counter-clockwise and puts the shared points on
+                        # the same key-lattice integers the finer side computes, so the two
+                        # sides pair up by construction.
+                        corner = pts[start_corner]
+                        origin = (int(corner[0]), int(corner[1]))
+                        for q in range(1, 1 << int(extra[edge])):
+                            #: the sub-edge is ``half >> extra`` key units long; ``q`` walked in
+                            #: the (major, minor) order of the edge, then mapped to (u, v)
+                            unit = half >> int(extra[edge])
+                            major = ((q >> (span - 1 - int(extra[edge]))) & 1) * unit
+                            minor = (q & ((1 << (span - 1 - int(extra[edge]))) - 1)) * unit
+                            point = (origin[0] + major, origin[1] + minor) if edge % 2 == 0 \
+                                else (origin[0] + minor, origin[1] + major)
+                            p = len(pts)
+                            pts.append(point)
+                            ring.append(p)
             #: the ring is counter-clockwise in (u, v), so ``(this, next, centre)`` is
             #: counter-clockwise too (the previous branch table mixed both orientations, which is
             #: part of why its signed areas cancelled instead of adding up).
@@ -1030,6 +1072,91 @@ class _Quadtree:
 
 
 # ---------------------------------------------------------------------------- cutter
+
+
+def edge_extra_all(tree: "_Quadtree", block: np.ndarray, key_level: int) -> np.ndarray:
+    """Assembler-level T-junction resolution: extra halvings per leaf edge.
+
+    The per-cell split rule (:meth:`_Quadtree.edge_split`) inserts **one** midpoint per edge, which
+    is conforming only while the two leaves facing each other differ by at most one level.  Where a
+    leaf is two levels coarser across an edge, the finer side's *corner* hangs in the interior of
+    that edge: the two sides do not share the vertex, each emits its own boundary edge, and the
+    assembler turns each of them into a side quad — the paired duplicate edges measured in
+    ``docs/a12/fracture_realism.md`` §10.5.  Making the *predicate* stricter was measured worse
+    three times over (4655 / 4520 bad edges and a budget blow-up, against 4369 for the plain rule),
+    so the resolution belongs here, in the assembly: insert the neighbours' own vertices into the
+    coarse edge and both sides traverse the same sub-edges.
+
+    ``needs_balance`` already answers "is a leaf at ``level + 2`` present across this edge" — one
+    boolean per edge.  This walk asks the same question on the **dyadic sublattice at the key
+    resolution** (``cell_size(level) / 2 ** span``, the lattice :meth:`_Quadtree.cell_triangles`
+    emits on) and continues while the neighbour is refined: step ``t`` looks at the sub-cells
+    facing the ``t``-th sub-edge of my own edge, so each step costs one index shift and one
+    membership test for the whole generation.
+
+    Returns an ``(N, 4)`` array: ``[row, e]`` = how many halvings *beyond one* of edge ``e``
+    (0 left, 1 bottom, 2 right, 3 top, the order of :meth:`_Quadtree.edge_splits`) the facing leaf
+    structure requires.  0 means "the midpoint is enough".  The cost is bounded by the 2:1 grading
+    of the refinement fixed point: refining a cell pulls its 1-neighbourhood up, so the walk stops
+    as soon as a sub-cell is not refined.
+    """
+    rows = np.asarray(block, dtype=np.int64).reshape(-1, 3)
+    n = int(rows.shape[0])
+    if n == 0:
+        return np.zeros((0, 4), dtype=np.int64)
+    #: the refined set as one packed array, so membership is a vectorised ``isin``
+    lookup = np.fromiter(
+        (int(i) * (1 << 32) + int(j) * (1 << 8) + int(level)
+         for (i, j, level) in tree.refined),
+        dtype=np.int64, count=len(tree.refined)) if tree.refined else np.zeros(0, dtype=np.int64)
+
+    level = np.repeat(rows[:, 2], 4).astype(np.int64)
+    span = np.repeat(int(key_level) - rows[:, 2], 4).astype(np.int64)
+    corner_u = np.repeat(rows[:, 0], 4) << span
+    corner_v = np.repeat(rows[:, 1], 4) << span
+    edge = np.tile(np.arange(4, dtype=np.int64), n)
+    vertical = (edge % 2) == 0
+    lo_side = np.tile(np.array([True, True, False, False]), n)
+    #: index of the neighbour cell across the ``lo``/``hi`` side, on *its own* level lattice
+    si = np.where(vertical, np.repeat(rows[:, 0], 4) + np.where(lo_side, -1, 1),
+                  np.repeat(rows[:, 0], 4))
+    sj = np.where(vertical, np.repeat(rows[:, 1], 4),
+                  np.repeat(rows[:, 1], 4) + np.where(lo_side, -1, 1))
+    limit = np.int64(tree.side) << level
+    alive = (si >= 0) & (sj >= 0) & (si < limit) & (sj < limit)
+    #: sub-index of the *neighbour*'s cell inside the sub-lattice: 0 at the sub-lattice origin,
+    #: which is the neighbour's own edge.  A1: the sub-cell facing my edge is the one on the
+    #: **opposite** side of the neighbour from that origin, so the sub-index is the complement of
+    #: the bit of my own key position that the edge sits on.
+    shift_1 = span - 1
+    sub_u = np.int64(1) - ((corner_u >> shift_1) & np.int64(1))
+    sub_v = np.int64(1) - ((corner_v >> shift_1) & np.int64(1))
+    depth = np.zeros((n, 4), dtype=np.int64)
+    #: halvings still available on my own edge (it is ``2 ** (span - 1)`` key units long)
+    remaining = span - 1
+    while True:
+        present = np.zeros(alive.shape, dtype=bool)
+        if lookup.size:
+            live = np.flatnonzero(alive)
+            if live.size:
+                keys = si[live] * (1 << 32) + sj[live] * (1 << 8) + level[live]
+                present[live] = np.isin(keys, lookup)
+        #: a refined neighbour puts its children's corner in the middle of the sub-edge
+        depth = np.where(present, depth + 1, depth)
+        remaining = np.where(present & (remaining > 0), remaining - 1, 0)
+        if not bool(np.any(present & (remaining > 0))):
+            break
+        #: descend one level: the neighbour's children that face my edge are ``2 * s + sub``,
+        #: and the sub-index advances by one bit of my own key position
+        si = 2 * si + np.where(vertical, sub_u, sub_v)
+        sj = 2 * sj + np.where(vertical, sub_v, sub_u)
+        level = level + 1
+        shift_1 = shift_1 - 1
+        sub_u = np.int64(1) - ((corner_u >> shift_1) & np.int64(1))
+        sub_v = np.int64(1) - ((corner_v >> shift_1) & np.int64(1))
+        limit = np.int64(tree.side) << level
+        alive = (si >= 0) & (sj >= 0) & (si < limit) & (sj < limit)
+    return depth
 
 
 def build_closed_cutter(
@@ -1234,6 +1361,10 @@ def build_closed_cutter(
             bottom_index[top] = found
         return found
 
+    # ------------------------------------------------------------ T-junction resolution
+    #: per-leaf, per-edge extra halvings, measured from the real refinement state
+    extras = edge_extra_all(tree, np.asarray(leaves, dtype=np.int64).reshape(-1, 3), key_level)
+
     top_faces: list[tuple[int, int, int]] = []
     #: *directed* top edges exactly as the top faces wind them, so the side quads can be
     #: oriented from the same winding instead of guessing an outward direction per edge
@@ -1241,8 +1372,8 @@ def build_closed_cutter(
     #: vertex triplets of every top triangle *as assembled*, so the verification below checks
     #: the triangles that are actually exported rather than a second key-table lookup
     top_triangles_pts: list[tuple[int, int, int]] = []
-    for i, j, level in leaves:
-        pts_ij, tris = tree.cell_triangles(i, j, level, leaf_span_for(level))
+    for row, (i, j, level) in enumerate(leaves):
+        pts_ij, tris = tree.cell_triangles(i, j, level, leaf_span_for(level), extras[row])
         local = [top_vertex(level, int(p[0]), int(p[1])) for p in pts_ij]
         for tri in tris:
             # ---------------------------------------------------------------- degeneracy guard

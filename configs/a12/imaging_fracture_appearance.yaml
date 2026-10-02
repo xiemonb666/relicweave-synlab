@@ -1,0 +1,209 @@
+# =============================================================================================
+# A12 imaging -- fracture APPEARANCE: relieve the sub-millimetre relief through the normal
+# channel (switchable, DEFAULT OFF)
+# =============================================================================================
+# New file.  It does not touch configs/a12/next_experiment.yaml (frozen) and changes no default
+# behaviour: `fracture_appearance.enabled: false` is the shipped value, and a run that does not
+# ask for the appearance layer produces byte-for-byte the same images as before.
+#
+# What it switches on (`docs/a12/fracture_visible.md` is the evidence base):
+#
+#   * measured fact 1  the campaign fracture face is EXACTLY flat below 1 mm (local-detrended
+#                      Ra = 0.000 mm), so no optics can photograph relief that is not there;
+#   * measured fact 2  Ra = 0.02 mm can never reach 4 px under any real lens (needs
+#                      mm/px <= 0.005), so tens-of-micrometre relief is only deliverable through
+#                      normal -> shading;
+#   * measured fact 3  the frozen rasteriser shades ONE flat normal per triangle, so sub-triangle
+#                      relief is invisible and the triangles themselves dominate the image.
+#
+# The switch adds, per pixel and without touching the geometry:
+#   normal_mode   FLAT (frozen) | SMOOTH (area-weighted vertex normals) | SMOOTH_CREASE
+#                 (face-varying corner normals with a crease angle, so a real rim stays sharp);
+#   relief        the analytic gradient of the AUDITED fracture morphology field
+#                 (synlab.fracture.morphology: sigma_r0 = c_g*grain*(1 + c_p*porosity), the
+#                 a(k) ~ k^-(H+1/2) band set, hackle, ribs, pits, fibre, dome and the glaze
+#                 damping strip) evaluated in the ROI plane's (u, v) millimetres.
+#
+# Provenance classes as in configs/a12/fracture_physics.yaml -- never mixed silently:
+#   MEASURED    read from a rendered image or from the real mesh / material record
+#   AUDITED     a frozen constant of synlab.fracture.morphology (with its formula string)
+#   ENGINEERING an assumption of this implementation, reported as such in every view meta
+#
+# HONEST LIMITS OF THIS ARTEFACT (read before quoting it)
+#   1. `synlab.cli validate` validates the nested `generation_spec:` block only (the convention
+#      configs/a12/fracture_morphology.yaml and imaging_fracture_roi.yaml use).  The
+#      `fracture_appearance:` block is validated by
+#      `synlab.observe.fracture_appearance.load_fracture_appearance_config`, which fails closed
+#      (unknown key -> SCHEMA_INVALID, <3 materials, 5-10 cm window, supersample outside [1,4]).
+#   2. The relief is delivered as a SHADING NORMAL, not as mesh geometry.  It is therefore NOT
+#      the `morphology_shared_cut` backend (a different workstream, still FAILing its precision
+#      budget) and it does not repair the flat fracture face in the geometry: it makes the same
+#      audited field measurable in RGB while the geometry is repaired elsewhere.  Every render
+#      records `geometry_modified: false` and the geometry hash it was rendered from.
+#   3. `diffuse_weight = 1 - transmission` is a DECLARED extension of the frozen Lambert+ambient
+#      model for transmissive profiles (M07, 0.82); the unweighted number is reported next to it.
+#   4. Nothing upsamples: the delivered grid is never larger than the render grid, and the
+#      supersample factor is applied downward (pixel integration), never upward (interpolation).
+#   5. A 5-10 cm object distance is outside the declared U travel of every camera tier, so the
+#      condition stays labelled CLOSEUP_DECLARED_NOT_CALIBRATED exactly as the ROI family is.
+# =============================================================================================
+schema: synlab.imaging_fracture_appearance.v1
+units: mm
+version: "1.0.0"
+
+# ---------------------------------------------------------------------------------------------
+# 1. Switch + appearance definition
+# ---------------------------------------------------------------------------------------------
+fracture_appearance:
+  # DEFAULT OFF: a run that does not ask for the appearance layer is unchanged.
+  enabled: false
+  # Shading normal per pixel.  SMOOTH_CREASE is the production candidate: it removes the facet
+  # pattern while keeping the rim of a sherd a crease.
+  normal_mode: SMOOTH_CREASE
+  # AUDITED/ENGINEERING: a face pair whose normals differ by more than this stays a crease.
+  crease_angle_deg: 35.0
+  # Position and normal interpolation inside a triangle.  FROZEN reproduces the software
+  # rasteriser bit-exactly; PERSPECTIVE_CORRECT is the correct 1/z interpolation (the frozen
+  # rasteriser's screen-linear depth is measurably wrong on grazing triangles, see
+  # docs/a12/fracture_visible.md 2.5) and is what the appearance measurements use.
+  interpolation: PERSPECTIVE_CORRECT
+  # Pixel integration of the shading: subsamples per pixel axis.  A real sensor integrates over
+  # the pixel area; at the coarse mm/px rungs this is what limits the measured dDN.
+  supersample: 2
+  # The relief channel itself.
+  relief_enabled: true
+  # Ra anchors of the amplitude sweep (mm).  These three are the task's sweep AND they bracket the
+  # real material amplitudes: M04 porcelain sigma_r0 = 0.0221, M03 stoneware 0.1000, M01 coarse
+  # pottery 0.4103 mm (measured, see data/a12_reports/physical_layer/fracture_appearance_run.json).
+  amplitudes_mm: [0.02, 0.08, 0.4]
+  # >= 3 materials on the SAME fracture geometry.  Chosen so every axis differs:
+  #   M01 coarse pottery  grain 2.6 mm, porosity 0.1575, lambda_min 0.65 mm, no glaze, opaque
+  #   M04 porcelain       grain 0.18 mm, porosity 0.0105, lambda_min 0.20 mm, glaze 0.22 mm
+  #   M07 glass           grain 0.08 mm, porosity 0.0000, lambda_min 0.20 mm, transmission 0.82
+  #   M06 glazed pottery  GEOMETRIC glaze layer 0.45 mm -> the audited relief-damping strip
+  #   M11 wood            fibre period 5.5 mm, anisotropy 0.85 -> a directional surface
+  materials: [M01, M04, M07, M06, M11]
+  # The mm/px rungs of the measured dDN table.  0.0365 (2048 px at 60 mm) and 0.073 (1024 px at
+  # 60 mm) are this implementation's close-up rungs; 0.039/0.078/0.117/0.156/0.195 are the
+  # contract's t051 ladder and 0.2719 is the campaign's measured whole-fragment median.  Every
+  # rung is realised by the DELIVERED LONG EDGE at the same working distance and the same lens,
+  # never by resizing an image.
+  rung_mm_per_px: [0.0365, 0.039, 0.073, 0.078, 0.117, 0.156, 0.195, 0.2719]
+  # p0511 closeup_local_cm = [5, 10] cm; the loader refuses anything outside it.
+  working_distance_mm: 60.0
+  # Camera tier whose lens / f-number / distortion the close-up condition reuses.
+  base_tier: LOCAL
+  # Delivered long edges that get a rendered A/B image pair.
+  long_edges_px: [1024, 2048]
+  # Facet suppression path 2: required triangle edge = lambda_min / ratio.  ratio = 8 keeps a
+  # facet's own orientation error inside an eighth of the surface normal swing over lambda_min.
+  ratio_facet: 8.0
+  # AUDITED morphology term: damp the relief inside a strip of 2*t_glaze along the fracture
+  # front (morphology._GLAZE_FORMULA, ratio = GLAZE_ROUGHNESS_RATIO).
+  glaze_strip: true
+  # Separated stores: the appearance study never overwrites a production or ROI asset.
+  storage_root: data/a12_fapp/store
+  report_dir: data/a12_reports/physical_layer
+
+# ---------------------------------------------------------------------------------------------
+# 2. The generation spec this layer belongs to (validated by `synlab.cli validate`)
+#    Values are those of the executed pilot batch (configs/a12/next_experiment.yaml) so that
+#    `synlab.cli validate --config configs/a12/imaging_fracture_appearance.yaml` proves the layer
+#    is requested on a *legal* spec; this block is not used to generate anything by itself.
+# ---------------------------------------------------------------------------------------------
+generation_spec:
+  schema: synlab.v3
+  data_scope: SYNTHETIC
+  release_profile: PILOT
+  experiment_purpose: DEVELOPMENT
+  master_seed: 20261001
+  units: mm
+  integration:
+    mode: standalone
+    feature_schema: a12.obs.v1
+    external_contract_ref: null
+  implementation:
+    policy: open_source_first
+    reuse_manifest_ref: docs/a12/reuse_manifest.json
+    require_poc_before_custom: true
+    require_gap_evidence: true
+  dataset:
+    target_mothers: 120
+    target_fragments_estimate: 240
+    shape_lineage_split: {train: 0.8, dev: 0.1, confirm: 0.1}
+    split_before_generation: true
+    replacement_fractures_share_lineage: true
+    include_all_components: true
+    debris_policy: quarantine_and_record
+    vessel_ids: [V01, V02, V03, V04, V05, V06, V07, V08, V09, V10, V11, V12,
+                 V13, V14, V15, V16, V17, V18, V19, V20, V21, V22, V23, V24]
+    material_ids: [M01, M02, M03, M04, M05, M06, M07, M08, M09, M10, M11, M12]
+    pattern_ids: [PAT01, PAT02, PAT03, PAT04, PAT05, PAT06, PAT07, PAT08,
+                  PAT09, PAT10, PAT11, PAT12, PAT13, PAT14, PAT15, PAT16]
+    layer_combo_ids: [L01, L02, L03, L04]
+    parameter_bounds_ref: configs/a12/registry_bounds.json
+  sampling:
+    method: latin_hypercube
+    quota_policy: registry_balanced
+    seed_stride: 1
+    sobol_power_of_two: true
+  pattern:
+    coordinate_space: mother_surface_mm
+    periodic_azimuth: true
+    geometry_before_fracture: true
+    antialias: analytic_or_mipmap
+    height_policy: none
+  fracture:
+    backend: plane_shared_cut
+    target_piece_range: [2, 4]
+    min_feature_wavelength_mm: 0.24
+    shared_surface_max_error_mm: 0.01
+    max_attempts: 3
+    secondary_probability: 0.0
+    keep_parent_history: true
+    rough_amplitude_mm: [0.02, 0.3]
+    seed_count_range: [12, 28]
+  physical:
+    recipe_registry_ref: configs/a12/physical_recipes.json
+    preserve_clean_assets: true
+    recipes: [P03_depth_light, P01_polish_mid]
+  observation:
+    input_profile: SENSOR_PROXY
+    routes: [proxy_scan]
+    views_per_fragment: 12
+    image_long_edge_px: 1024
+    point_count: 8192
+    camera_profile_ref: configs/a12/camera_profiles.json
+    persist_depth: selected_qa_only
+    persist_view_geometry: false
+    persist_fused_geometry: true
+    truth_channels_role: research_label_only
+    renderer: auto
+  resources:
+    cpu_workers: 2
+    threads_per_worker: 2
+    cpu_rss_budget_gb: 30
+    gpu_device: 0
+    gpu_concurrency: 1
+    gpu_budget_gb: 26
+    disk_soft_fraction: 0.70
+    disk_restrict_fraction: 0.80
+    disk_stop_fraction: 0.90
+    reserve_temp_peak: true
+  storage:
+    root: data/a12_fapp
+    database: data/a12_fapp/metadata.sqlite
+    shard_target_mb: 512
+    mutable_release: false
+  quality:
+    protocol_ref: configs/a12/qa_protocol_v1.json
+    fail_closed: true
+    freeze_before_confirmation: true
+  degraded_recipe_refs:
+    - configs/a12/degrade_recipes/paired_plane_levels.yaml
+    - configs/a12/degrade_recipes/paired_edgewear_blur_bump.yaml
+  notes: >-
+    Fracture appearance layer (switchable, default OFF): the audited fracture morphology field
+    delivered through a per-pixel shading normal so that sub-millimetre relief is measurable in
+    RGB while the geometry is repaired elsewhere.  Same pilot spec as
+    configs/a12/next_experiment.yaml; storage points at the separate data/a12_fapp store.

@@ -23,6 +23,25 @@ from .recipe import DamageOutcome, DamageRecipe
 
 DEG = 180.0 / np.pi
 
+#: S11: project the extracted level set onto the exact field's zero set?  **Measured: this is a
+#: real refinement of the extraction but it is not a fix for ``roi_external_drift``**, and it
+#: costs post-clip watertightness, so it is OFF by default:
+#:
+#: ==================  ==========  ==============  ======================
+#: L0 P03 body         drift (mm)  lost vol (mm3)  accepted boundary edges
+#: ==================  ==========  ==============  ======================
+#: projection off        0.35424        319.31          43  (not watertight)
+#: projection on         0.35407        242.03          90  (not watertight)
+#: ==================  ==========  ==============  ======================
+#:
+#: The vertex residual against the *exact* field improves from mean 0.00296 / p95 0.0115 mm to
+#: mean 0.00017 / p95 6.1e-6 mm and the spurious volume loss drops by 24.2 %, but the drift is a
+#: **max over sampled clean-surface points** and its tail sits exactly where the 1.14 mm grid
+#: cannot represent the geometry (the corrections there exceed the 0.75 * spacing budget and are
+#: refused, so the residual max stays at 1.401 mm).  ``recipe.grid["project_to_level_set"]=True``
+#: enables it; the drift fix is the narrow-band backend, not this.
+PROJECT_TO_LEVEL_SET_DEFAULT = False
+
 
 # ---------------------------------------------------------------------------- context
 
@@ -100,6 +119,23 @@ class SdfContext:
         applied = field - self.d0
         roi_nodes = applied > 0
         candidate = S.marching_cubes_mesh(field, self.grid)
+        projection_info: dict[str, Any] = {"applied": False,
+                                           "reason": "project_to_level_set is off"}
+        # S11: marching cubes places vertices on the *interpolant* of the node samples, and that
+        # displacement is what ``roi_external_drift_mm`` measures.  Projecting onto the exact
+        # field's zero set removes it; the switch is explicit and its effect is reported.
+        if bool(self.recipe.grid.get("project_to_level_set",
+                                     PROJECT_TO_LEVEL_SET_DEFAULT)):
+            def exact_field(points: np.ndarray,
+                            _pointwise: Callable[[np.ndarray], np.ndarray] = pointwise
+                            ) -> np.ndarray:
+                return S.scene_for(self.mesh).signed_distance(points) + _pointwise(points)
+
+            candidate, projection_info = S.refine_to_level_set(
+                candidate, exact_field, spacing=float(self.grid.spacing),
+                iterations=int(self.recipe.grid.get("project_iterations",
+                                                    S.LEVEL_SET_PROJECTION_ITERATIONS)))
+        info_extra = {"level_set_projection": projection_info}
         accepted, clip_info = S.intersect_with_source(candidate, self.mesh)
         nesting_info = {"applied": False, "removed_volume_mm3": 0.0, "removed_area_mm2": 0.0}
         previous = self.recipe.previous_mesh
@@ -127,6 +163,7 @@ class SdfContext:
             "sdf": {k: v for k, v in self.sdf_info.items() if k != "grid"},
             "grid": self.grid.as_dict(), "spacing": self.spacing_info,
             "roi": self.roi_info, "mesh": S.watertight_report(accepted),
+            **info_extra,
         }
         return accepted, info
 
@@ -962,11 +999,101 @@ GEOMETRY_DISPATCH: dict[str, Callable[..., DamageOutcome]] = {
     "P08": crack_or_coat_loss,
 }
 
+#: S11: which backend runs a geometry axis.  ``"declared"`` (the default) follows the axis
+#: declaration of :mod:`synlab.degrade.axes` / :mod:`synlab.degrade.physical_narrowband`
+#: (``NARROWBAND = True`` for P02/P03/P04), so the two code paths that both claim to implement
+#: the same axis finally agree; ``"global_sdf"`` restores the shipped voxel-level-set path and
+#: ``"narrowband"`` forces the surface operator.  A recipe may override per call with
+#: ``recipe.grid["damage_backend"]``.  The chosen backend always reaches
+#: ``details["damage_backend"]``, so a result says which one produced it.
+NARROWBAND_BACKEND_ROUTING = "declared"
+
+
+def declared_narrowband_axis(axis_id: str) -> bool:
+    """Is ``axis_id`` declared as a narrow-band axis by ``synlab.degrade``?
+
+    Read-only: :mod:`synlab.degrade.axes` sets ``NARROWBAND = True`` on the axes whose declared
+    effect is smaller than the frozen global grid spacing and routes them to
+    :func:`synlab.degrade.physical_narrowband.run_narrowband_damage`.  An unavailable degrade
+    registry answers ``False`` (the shipped global path), never an exception.
+    """
+    try:
+        from ..degrade.registry import get_operator
+
+        return bool(getattr(get_operator(str(axis_id)), "NARROWBAND", False))
+    except Exception:  # noqa: BLE001 - no registry -> the shipped backend, recorded as such
+        return False
+
+
+def selected_backend(recipe: DamageRecipe) -> str:
+    """``"narrowband"`` or ``"global_sdf"`` for this recipe (see the module constant)."""
+    override = str((recipe.grid or {}).get("damage_backend", "") or "").strip().lower()
+    if override in ("narrowband", "global_sdf"):
+        return override
+    if NARROWBAND_BACKEND_ROUTING == "narrowband":
+        return "narrowband"
+    if NARROWBAND_BACKEND_ROUTING == "global_sdf":
+        return "global_sdf"
+    return "narrowband" if declared_narrowband_axis(recipe.axis_id) else "global_sdf"
+
+
+def _run_narrowband_as_outcome(mesh: trimesh.Trimesh, recipe: DamageRecipe, *,
+                               fragment: Any = None) -> DamageOutcome:
+    """Adapt the narrow-band backend's ``PhysicalResult`` to a :class:`DamageOutcome`.
+
+    The narrow band is a **surface** operator: it offsets the ROI vertices inward along the
+    observed normals, pins the ROI rim to zero and keeps the original triangles everywhere else,
+    so the untouched surface is never re-tessellated.  ``apply_damage`` re-derives the component
+    ledger from the returned mesh, so nothing but the mesh (and the operator's own measurements)
+    crosses this boundary.
+    """
+    from ..degrade.physical_narrowband import run_narrowband_damage
+
+    result = run_narrowband_damage(mesh, recipe, fragment=fragment, rng=None)
+    representative = next((c for c in result.components if c.is_representative),
+                          result.components[0] if result.components else None)
+    if representative is None:
+        raise SynLabError(ErrorCode.TARGET_INFEASIBLE,
+                          f"{recipe.axis_id}: the narrow-band backend returned no component",
+                          stage="physical.run_damage.narrowband")
+    measurements = {k: float(v) for k, v in (result.meta.get("measured") or {}).items()
+                    if isinstance(v, (int, float)) and not isinstance(v, bool)}
+    units = {k: str(v) for k, v in (result.meta.get("measurement_units") or {}).items()}
+    details = dict(result.meta.get("details") or {})
+    details["damage_backend"] = "degrade.physical_narrowband"
+    details["backend_selected_by"] = "physical.operators.selected_backend"
+    realized = bool(result.qa.get("realized"))
+    return DamageOutcome(mesh=representative.mesh, measurements=measurements, units=units,
+                         details=details, realized=realized,
+                         failure_code=None if realized
+                         else ErrorCode.OPERATOR_NOT_REALIZED.value)
+
 
 def run_damage(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any = None) -> DamageOutcome:
-    """Run one level of one P axis and return the damaged body plus measured quantities."""
+    """Run one level of one P axis and return the damaged body plus measured quantities.
+
+    NARROWBAND axes (S11): the declared backend of P02/P03/P04 is the surface operator, whose
+    untouched surface keeps the source triangles.  Extracting the whole body from the voxel level
+    set instead displaces the surface everywhere by the grid's own interpolation error and is what
+    ``roi_external_drift_mm`` measures -- 0.354 mm at a 1.14 mm spacing on the L0 P03 body, with
+    **no damage applied at all** (``data/a12/reports/s11_p03_drift.json``).
+    """
     handler = GEOMETRY_DISPATCH.get(recipe.axis_id)
     if handler is None:
         raise SynLabError(ErrorCode.SCHEMA_INVALID,
                           f"{recipe.axis_id} is not a physical damage axis", stage="physical.run")
-    return handler(mesh, recipe, fragment=fragment)
+    backend = selected_backend(recipe)
+    if backend == "narrowband" and hasattr(recipe, "level") and int(recipe.level) > 0:
+        outcome = _run_narrowband_as_outcome(mesh, recipe, fragment=fragment)
+        outcome.details.setdefault("backend_selection", {
+            "routing": NARROWBAND_BACKEND_ROUTING, "backend": backend,
+            "declared_narrowband": declared_narrowband_axis(recipe.axis_id),
+            "override": str((recipe.grid or {}).get("damage_backend", "") or "") or None})
+        return outcome
+    outcome = handler(mesh, recipe, fragment=fragment)
+    outcome.details.setdefault("damage_backend", "physical.operators.global_sdf_level_set")
+    outcome.details.setdefault("backend_selection", {
+        "routing": NARROWBAND_BACKEND_ROUTING, "backend": "global_sdf",
+        "declared_narrowband": declared_narrowband_axis(recipe.axis_id),
+        "override": str((recipe.grid or {}).get("damage_backend", "") or "") or None})
+    return outcome

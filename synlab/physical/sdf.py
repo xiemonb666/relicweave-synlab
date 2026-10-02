@@ -351,6 +351,113 @@ def clean_mesh(mesh: trimesh.Trimesh) -> trimesh.Trimesh:
     return out
 
 
+# ---------------------------------------------------------------------------- S11 refinement
+#: Newton projection of an extracted level set onto the **exact** zero set of the field it was
+#: extracted from.  ``marching_cubes`` places every vertex on the *trilinear interpolant of the
+#: node samples*, so wherever that interpolant differs from the field, the extracted surface is
+#: displaced -- measured on the L0 P03 body: the node-sampled ``d0``, interpolated, is up to
+#: 0.2612 mm from zero *on the true clean surface* at a grid spacing of 1.1402 mm, and the
+#: re-extracted body drifts 0.3542 mm outside the ROI with **no damage applied at all**
+#: (``data/a12/reports/s11_p03_drift.json``).  Projecting each vertex back along the field
+#: gradient removes that displacement without touching the declared effect: outside the ROI the
+#: exact field is ``d0`` and its zero set is the clean surface itself.
+LEVEL_SET_PROJECTION_ITERATIONS = 3
+#: A vertex is only accepted when it moves no further than this fraction of the grid spacing:
+#: a larger correction means the grid cannot represent the feature, and silently folding the
+#: surface there would trade a known displacement for an unknown one.
+LEVEL_SET_PROJECTION_MAX_SHIFT_FRACTION = 0.75
+#: Central-difference step of the field gradient (mm).
+LEVEL_SET_PROJECTION_STEP_MM = 0.05
+
+
+def refine_to_level_set(mesh: trimesh.Trimesh, field_fn: Callable[[np.ndarray], np.ndarray], *,
+                        spacing: float, iterations: int = LEVEL_SET_PROJECTION_ITERATIONS,
+                        max_shift_fraction: float = LEVEL_SET_PROJECTION_MAX_SHIFT_FRACTION,
+                        step_mm: float = LEVEL_SET_PROJECTION_STEP_MM
+                        ) -> tuple[trimesh.Trimesh, dict[str, Any]]:
+    """Move every vertex of ``mesh`` onto ``{field_fn = 0}`` by guarded Newton steps.
+
+    ``field_fn`` must be the **exact** evaluation of the field the level set was extracted from
+    (for ``SdfContext.extract`` that is ``d0(x) + t*alpha(x)*b(x)``), not the sampled grid.
+
+    A vertex is kept only when *all* of these hold: the field magnitude strictly decreased, the
+    total shift stayed within ``max_shift_fraction * spacing``, and the gradient was usable.
+    Vertices that fail keep their marching-cubes position, so the refinement can never make a
+    vertex worse than the extraction it started from.  The result is rejected entirely -- the
+    input mesh is returned unchanged -- when it is not watertight/winding-consistent or when it
+    creates a degenerate face, because a small displacement must never cost a closed solid.
+    """
+    report: dict[str, Any] = {
+        "applied": False, "iterations": int(iterations), "spacing_mm": float(spacing),
+        "max_shift_mm": float(max_shift_fraction) * float(spacing),
+        "step_mm": float(step_mm), "vertices": int(len(mesh.vertices)),
+        "n_faces": int(len(mesh.faces)),
+        "watertight_before": bool(mesh.is_watertight),
+    }
+    verts = np.asarray(mesh.vertices, dtype=np.float64)
+    if verts.size == 0:
+        report["reason"] = "empty mesh"
+        return mesh, report
+    original = verts.copy()
+    residual_before = np.abs(np.asarray(field_fn(verts), dtype=np.float64))
+    report["residual_before_mm"] = _residual_stats(residual_before)
+    moved = np.zeros(len(verts), dtype=bool)
+    current = verts.copy()
+    for _ in range(max(int(iterations), 1)):
+        values = np.asarray(field_fn(current), dtype=np.float64)
+        gradient = np.empty_like(current)
+        for axis in range(3):
+            offset = np.zeros(3, dtype=np.float64)
+            offset[axis] = float(step_mm)
+            plus = np.asarray(field_fn(current + offset), dtype=np.float64)
+            minus = np.asarray(field_fn(current - offset), dtype=np.float64)
+            gradient[:, axis] = (plus - minus) / (2.0 * float(step_mm))
+        norm2 = np.einsum("ij,ij->i", gradient, gradient)
+        usable = norm2 > 1e-12
+        shift = np.zeros_like(current)
+        shift[usable] = -(values[usable] / norm2[usable])[:, None] * gradient[usable]
+        candidate = current + shift
+        candidate_values = np.asarray(field_fn(candidate), dtype=np.float64)
+        within = np.linalg.norm(candidate - original, axis=1) <= report["max_shift_mm"]
+        improves = np.abs(candidate_values) < np.abs(values)
+        accept = usable & within & improves
+        current = np.where(accept[:, None], candidate, current)
+        moved |= accept
+    report["accepted_vertices"] = int(np.count_nonzero(moved))
+    report["accepted_fraction"] = float(np.mean(moved)) if len(moved) else 0.0
+    report["residual_after_mm"] = _residual_stats(np.asarray(field_fn(current),
+                                                              dtype=np.float64))
+    if not np.any(moved):
+        report["reason"] = "no vertex improved within the shift budget"
+        return mesh, report
+    refined = mesh.copy()
+    refined.vertices = current
+    if not (bool(refined.is_watertight) and bool(refined.is_winding_consistent)):
+        report["reason"] = "the projected body is not watertight / winding-consistent"
+        return mesh, report
+    areas = np.asarray(refined.area_faces, dtype=np.float64)
+    original_areas = np.asarray(mesh.area_faces, dtype=np.float64)
+    degenerate = int(np.count_nonzero(areas <= 1e-12))
+    collapsed = int(np.count_nonzero((original_areas > 1e-9) & (areas < 1e-6 * original_areas)))
+    report["degenerate_faces_after"] = degenerate
+    report["collapsed_faces"] = collapsed
+    if degenerate or collapsed:
+        report["reason"] = "the projection created a degenerate/collapsed face"
+        return mesh, report
+    report["applied"] = True
+    report["volume_delta_mm3"] = float(abs(refined.volume) - abs(mesh.volume))
+    return refined, report
+
+
+def _residual_stats(values: np.ndarray) -> dict[str, float]:
+    if values.size == 0:
+        return {"n": 0, "abs_mean_mm": 0.0, "abs_p95_mm": 0.0, "abs_max_mm": 0.0}
+    absolute = np.abs(values)
+    return {"n": int(absolute.size), "abs_mean_mm": float(absolute.mean()),
+            "abs_p95_mm": float(np.percentile(absolute, 95)),
+            "abs_max_mm": float(absolute.max())}
+
+
 def boolean_op(operation: str, meshes: list[trimesh.Trimesh], *,
                engine: str = "manifold") -> trimesh.Trimesh:
     """trimesh/manifold3d boolean; structured failure instead of a silent empty mesh."""
