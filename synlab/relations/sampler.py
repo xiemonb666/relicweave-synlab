@@ -36,7 +36,14 @@ from ..schemas.runtime import (
     RELATION_TINY,
     RELATION_UNKNOWN,
 )
-from .mate_absent import MATE_PRESENT_EXCLUSION_REASON
+from .mate_absent import (
+    CLASS_HARD_NEGATIVE,
+    HARD_NEGATIVE_ELIGIBLE_AS_NEGATIVE,
+    HARD_NEGATIVE_LOSS_MASK,
+    HARD_NEGATIVE_REJECT_QUERY_MATE_ABSENT,
+    HARD_NEGATIVE_TASK,
+    MATE_PRESENT_EXCLUSION_REASON,
+)
 
 SAMPLER_VERSION = "relations.sampler.v1"
 MINER_VERSION = "relations.miner.v1"
@@ -79,6 +86,11 @@ class SamplerParams:
     negative_limit: int = 8
     negative_mix: tuple[float, float] = (0.5, 0.5)
     r0_categories: tuple[str, ...] = R0_CATEGORIES
+    #: How many mate-present candidates to expose per query as ``HARD_NEGATIVE_MATE_PRESENT``
+    #: supervision.  ``0`` (the default) means the class is **not** produced for the batch at
+    #: all, so the auxiliary term is off end-to-end until a caller asks for it; a negative value
+    #: means "no limit".  The class is never folded into ``negatives`` at any setting.
+    hard_negative_limit: int = 0
 
     @classmethod
     def from_config(cls, cfg: Any | None) -> "SamplerParams":
@@ -94,7 +106,7 @@ class SamplerParams:
         else:
             data = {k: getattr(sampling, k) for k in
                     ("queries_per_microbatch", "positive_limit", "legal_negative_limit",
-                     "negative_mix") if hasattr(sampling, k)}
+                     "negative_mix", "hard_negative_limit") if hasattr(sampling, k)}
         mix = data.get("negative_mix") or {}
         if not isinstance(mix, Mapping):
             mix = {}
@@ -103,6 +115,7 @@ class SamplerParams:
             positive_limit=int(data.get("positive_limit", 2) or 2),
             negative_limit=int(data.get("legal_negative_limit", 8) or 0),
             negative_mix=(float(mix.get("R1", 0.5)), float(mix.get("R0", 0.5))),
+            hard_negative_limit=int(data.get("hard_negative_limit", 0) or 0),
         )
 
 
@@ -168,6 +181,120 @@ def assert_legal_negative(pool: Any, query_id: str, candidate_id: str) -> None:
             stage="relations.sampler.assert_legal_negative",
             measurements={"query": query_id, "candidate": candidate_id, "reason": reason},
         )
+
+
+# --------------------------------------------------------------------------------------
+# the auxiliary hard-negative class, produced online
+# --------------------------------------------------------------------------------------
+def _own_mates(pool: Any, fragment_id: str) -> set[str]:
+    """The fragment's confirmed ``R2`` mates in this pool (never the fragment itself)."""
+    try:
+        return {m for m in pool.neighbours(fragment_id) if m != fragment_id}
+    except Exception:  # noqa: BLE001 - a pool without neighbours() confirms nothing
+        return set()
+
+
+def _pool_area(pool: Any, query_id: str, candidate_id: str) -> float | None:
+    """The measured contact area of a pool edge, or ``None`` when the pool does not carry it.
+
+    ``None`` means *not reported by this pool*; it is never rendered as a measured ``0.0``.
+    """
+    for name in ("area_mm2", "area_of", "edge_area"):
+        table = getattr(pool, name, None)
+        if isinstance(table, Mapping):
+            value = table.get((query_id, candidate_id), table.get((candidate_id, query_id)))
+            if value is not None:
+                return float(value)
+    getter = getattr(pool, "area", None)
+    if callable(getter):
+        try:
+            value = getter(query_id, candidate_id)
+        except Exception:  # noqa: BLE001 - the pool answers with an exception -> "not reported"
+            return None
+        return None if value is None else float(value)
+    return None
+
+
+def hard_negative_candidates(pool: Any, query_id: str, *, limit: int | None = None
+                             ) -> dict[str, Any]:
+    """The ``HARD_NEGATIVE_MATE_PRESENT`` candidates of ``query_id`` in a **live** pool.
+
+    A candidate qualifies when it is a confirmed ``R1``/``R0`` of the query that
+    :func:`negative_exclusion_reason` refuses *only* because it carries its own confirmed ``R2``
+    mate in this pool (:data:`~synlab.relations.mate_absent.MATE_PRESENT_EXCLUSION_REASON`).
+    Every other exclusion reason (self, the query's own historical ``R2``, ``TINY_CONTACT``,
+    grey zone, unconfirmed label) still refuses the candidate outright -- this is not a second,
+    looser negative set.
+
+    Requirement (4) of the Lead ruling is enforced here as well: the **query** must be
+    mate-present, otherwise the candidate's mate-presence would be a perfect predictor of its
+    negative role for such a query.  A mate-absent query yields ``ok=False`` with the reason
+    :data:`~synlab.relations.mate_absent.HARD_NEGATIVE_REJECT_QUERY_MATE_ABSENT` and **no**
+    candidates.
+
+    Each returned record carries the class flags (``loss_mask=True``,
+    ``eligible_as_negative=False``) and the measured ``kind``/``area_mm2``; ``kind``, ``valid``
+    and the identities are never rewritten.  The records are supervision material for the
+    auxiliary term only -- they are never appended to a row's ordinary ``negatives``.
+    """
+    query_mates = sorted(_own_mates(pool, str(query_id)))
+    lineup = [str(f) for f in pool.lineup]
+    report: dict[str, Any] = {
+        "schema": "synlab.relations.hard_negative_candidates.v1",
+        "class": CLASS_HARD_NEGATIVE, "task": HARD_NEGATIVE_TASK,
+        "pool_id": str(getattr(pool, "pool_id", "")),
+        "query": str(query_id), "query_mates": query_mates,
+        "query_mate_present": bool(query_mates),
+        "candidates": [], "records": 0,
+        "omitted_by_limit": 0,
+        "flags": {"loss_mask": bool(HARD_NEGATIVE_LOSS_MASK),
+                  "eligible_as_negative": bool(HARD_NEGATIVE_ELIGIBLE_AS_NEGATIVE)},
+    }
+    if not query_mates:
+        report["ok"] = False
+        report["reason"] = HARD_NEGATIVE_REJECT_QUERY_MATE_ABSENT
+        return report
+    records: list[dict[str, Any]] = []
+    for candidate in sorted(lineup):
+        if candidate == str(query_id):
+            continue
+        reason = negative_exclusion_reason(pool, str(query_id), candidate)
+        if reason != MATE_PRESENT_EXCLUSION_REASON:
+            continue
+        records.append({
+            "query": str(query_id), "candidate": candidate,
+            "kind": str(pool.relation(str(query_id), candidate)),
+            # the exclusion rule above already passed, so the pair is a confirmed R1/R0: when the
+            # pool exposes ``confirmed`` it returned True, and when it does not the label is the
+            # pool's own relation reading.  Nothing is upgraded here.
+            "valid": True,
+            "area_mm2": _pool_area(pool, str(query_id), candidate),
+            "loss_mask": bool(HARD_NEGATIVE_LOSS_MASK),
+            "eligible_as_negative": bool(HARD_NEGATIVE_ELIGIBLE_AS_NEGATIVE),
+            "class": CLASS_HARD_NEGATIVE,
+            "exclusion_reason": reason,
+            "query_mate_present": True,
+            "query_mates": query_mates,
+            "candidate_mates": sorted(_own_mates(pool, candidate)),
+        })
+    if limit is not None and int(limit) >= 0 and len(records) > int(limit):
+        report["omitted_by_limit"] = len(records) - int(limit)
+        records = records[: int(limit)]
+    report["candidates"] = records
+    report["records"] = len(records)
+    report["ok"] = bool(records)
+    if not records:
+        report["reason"] = "no_mate_present_candidate_in_pool"
+    report["conformance"] = {
+        "loss_mask_true_and_eligible_false": bool(
+            all(r["loss_mask"] and not r["eligible_as_negative"] for r in records)),
+        "no_primary_denominator_contribution": bool(
+            all(not r["eligible_as_negative"] for r in records)),
+        "auxiliary_only": HARD_NEGATIVE_TASK,
+        "query_mate_present_for_every_row": bool(
+            all(r["query_mate_present"] for r in records)),
+    }
+    return report
 
 
 # --------------------------------------------------------------------------------------
@@ -330,6 +457,11 @@ def sample_training_batch(pool: Any, cfg: Any | None = None,
     hard_group_histogram = {group: 0 for group in HARD_GROUPS}
     r0_category_histogram = {name: 0 for name in R0_CATEGORIES}
     r0_category_unavailable: list[str] = []
+    #: accounting of the auxiliary hard-negative class; ``candidates`` counts *supervision rows*,
+    #: not negatives -- the class is never part of a row's ``negatives`` at any setting.
+    hard_negative_histogram: dict[str, Any] = {
+        "queries": 0, "candidates": 0, "omitted_by_limit": 0, "disabled_queries": 0,
+        "query_mate_absent": 0, "no_mate_present_candidate_in_pool": 0}
     r2_total, r2_exposed_now = 0, 0
     q5_queries: list[str] = []
 
@@ -413,6 +545,23 @@ def sample_training_batch(pool: Any, cfg: Any | None = None,
             "lineage_cluster": str(getattr(pool, "lineage_cluster_of", {}).get(query, "")),
             "quality_tier": int(getattr(pool, "quality_tier", {}).get(query, 0)),
         })
+        # ---- auxiliary hard-negative class (off by default; never part of ``negatives``) -----
+        row = rows[-1]
+        if int(params.hard_negative_limit) != 0:
+            limit = None if int(params.hard_negative_limit) < 0 else int(params.hard_negative_limit)
+            hard = hard_negative_candidates(pool, query, limit=limit)
+            row["hard_negatives"] = [r["candidate"] for r in hard["candidates"]]
+            row["hard_negative_class"] = hard["class"]
+            row["hard_negative_ok"] = bool(hard["ok"])
+            row["hard_negative_reason"] = hard.get("reason")
+            hard_negative_histogram["queries"] += 1
+            if not hard["ok"]:
+                hard_negative_histogram[
+                    str(hard.get("reason") or "no_mate_present_candidate_in_pool")] += 1
+            hard_negative_histogram["candidates"] += int(hard["records"])
+            hard_negative_histogram["omitted_by_limit"] += int(hard["omitted_by_limit"])
+        else:
+            hard_negative_histogram["disabled_queries"] += 1
 
     return {
         "schema": "synlab.relations.batch.v1",
@@ -447,6 +596,7 @@ def sample_training_batch(pool: Any, cfg: Any | None = None,
             "r0_categories_unavailable": sorted(set(r0_category_unavailable)),
             "q5_unresolvable_queries": sorted(set(q5_queries)),
             "r1_fallback_events": int(state.get("r1_fallback_events", 0)),
+            "hard_negatives": dict(hard_negative_histogram),
         },
         "exclusions": exclusion_histogram,
         "r2_cursor": dict(state["r2_cursor"]),
@@ -693,7 +843,7 @@ def _top_m_legal(query_vector: np.ndarray, candidate_vectors: Mapping[str, np.nd
 
 __all__ = [
     "SAMPLER_VERSION", "MINER_VERSION", "HARD_GROUPS", "R0_CATEGORIES", "SamplerParams",
-    "new_sampler_state", "negative_exclusion_reason", "assert_legal_negative", "draw_queries",
-    "assert_legal_feature_payload", "legal_retrieval_vector", "sample_training_batch",
-    "mine_hard_negatives",
+    "new_sampler_state", "negative_exclusion_reason", "assert_legal_negative",
+    "hard_negative_candidates", "draw_queries", "assert_legal_feature_payload",
+    "legal_retrieval_vector", "sample_training_batch", "mine_hard_negatives",
 ]

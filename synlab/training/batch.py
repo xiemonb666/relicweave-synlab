@@ -29,6 +29,10 @@ from typing import Any, Iterable, Mapping, Sequence
 import numpy as np
 
 from ..errors import ErrorCode, SynLabError
+from ..relations.mate_absent import (
+    CLASS_HARD_NEGATIVE as HARD_NEGATIVE_CLASS,
+    HARD_NEGATIVE_TASK as HARD_NEGATIVE_TASK_NAME,
+)
 from .adapter import (
     CONTRADICTION_COMPATIBLE,
     CONTRADICTION_MISSING,
@@ -79,6 +83,7 @@ class TrainingBatch:
     neg_mask: np.ndarray                   # [Q,C] bool
     excluded_mask: np.ndarray              # [Q,C] bool
     exclusion_reason: np.ndarray           # [Q,C] int8
+    hard_neg_mask: np.ndarray              # [Q,C] bool -- auxiliary class only, never a negative
     quality_target: np.ndarray             # [F,R,Cq] float32
     quality_target_valid: np.ndarray       # [F,R,Cq] bool
     corr_weight: np.ndarray                # [Q,C,K] float32 (many-to-many edge weight W)
@@ -89,8 +94,10 @@ class TrainingBatch:
     contradiction_valid: np.ndarray        # [Q,C] bool
     quality_tier: np.ndarray               # [F] int8
     lineage_cluster: np.ndarray            # [F] int64 (resolved to stable cluster ids)
+    mate_present: np.ndarray               # [F] bool -- label-side, never a model input
     negative_is_r2_history: np.ndarray     # [Q,C] bool -- must be all False
     r1_fallback_used: np.ndarray           # [Q,C] bool
+    hard_neg_query_mate: np.ndarray        # [Q] bool -- the query side is mate-present
     sample_keys: np.ndarray                # [Q] <U64 deterministic sample keys
     pool_id: str = ""
     meta: dict[str, Any] = field(default_factory=dict)
@@ -118,6 +125,19 @@ class TrainingBatch:
 
     def effective_query_count(self) -> int:
         return int(self.valid_query_indices().size)
+
+    def hard_negative_counts(self) -> np.ndarray:
+        """Per-query count of the auxiliary hard-negative class (never a negative count)."""
+        return self.hard_neg_mask.sum(axis=1).astype(np.int64)
+
+    def hard_negative_queries(self) -> np.ndarray:
+        """Queries with >=1 hard negative *and* a mate-present query side.
+
+        The second half is the ruling's requirement (4): with a mate-absent query the candidate's
+        own mate-presence would be a give-away of its negative role, so such a query is not
+        supervised by the auxiliary term at all.
+        """
+        return np.nonzero((self.hard_neg_mask.sum(axis=1) > 0) & self.hard_neg_query_mate)[0]
 
     def quality_tier_histogram(self) -> dict[str, int]:
         vals, counts = np.unique(self.quality_tier, return_counts=True)
@@ -148,6 +168,12 @@ class TrainingBatch:
             "clean_fraction": self.clean_fraction(),
             "tier_histogram": self.quality_tier_histogram(),
             "exclusion_histogram": exclusion_histogram(self),
+            # the auxiliary class is reported *beside* the negative counts, never inside them:
+            # ``legal_negatives`` above is the rank denominator and does not move when the
+            # hard-negative class is switched on.
+            "hard_negative_supervision_rows": int(self.hard_neg_mask.sum()),
+            "hard_negative_queries": int(self.hard_negative_queries().size),
+            "hard_negative_query_mate_present": int(self.hard_neg_query_mate.sum()),
         }
 
     def as_label_dict(self) -> dict[str, np.ndarray]:
@@ -157,6 +183,9 @@ class TrainingBatch:
             "labels_relation": self.labels_relation, "label_pair_valid": self.label_pair_valid,
             "pos_mask": self.pos_mask, "neg_mask": self.neg_mask,
             "excluded_mask": self.excluded_mask, "exclusion_reason": self.exclusion_reason,
+            "hard_neg_mask": self.hard_neg_mask,
+            "hard_neg_query_mate": self.hard_neg_query_mate,
+            "mate_present": self.mate_present,
             "quality_target": self.quality_target,
             "quality_target_valid": self.quality_target_valid,
             "corr_weight": self.corr_weight, "corr_row_valid": self.corr_row_valid,
@@ -217,12 +246,91 @@ def negative_audit(batch: TrainingBatch) -> dict[str, Any]:
         problems.append("excluded candidate inside neg_mask")
     if np.any(batch.pos_mask & ~batch.label_pair_valid):
         problems.append("unconfirmed label inside pos_mask")
+    # the auxiliary hard-negative class: a supervision set of its own, never a negative set
+    if np.any(batch.hard_neg_mask & batch.neg_mask):
+        problems.append("hard negative inside neg_mask")
+    if np.any(batch.hard_neg_mask & batch.pos_mask):
+        problems.append("hard negative inside pos_mask")
+    if np.any(batch.hard_neg_mask & batch.excluded_mask):
+        problems.append("hard negative inside excluded_mask")
+    if np.any(batch.hard_neg_mask & ~batch.pair_valid):
+        problems.append("unencodable pair inside hard_neg_mask")
+    if np.any(batch.hard_neg_mask & ~batch.label_pair_valid):
+        problems.append("unconfirmed label inside hard_neg_mask")
+    hard_rows = np.nonzero(batch.hard_neg_mask.any(axis=1))[0]
+    if hard_rows.size and not np.all(batch.hard_neg_query_mate[hard_rows]):
+        problems.append("hard-negative row whose query side is mate-absent")
+    if np.any(np.isin(batch.labels_relation, [RELATION_R2_CODE, RELATION_UNKNOWN_CODE,
+                                             RELATION_TINY_CODE]) & batch.hard_neg_mask):
+        problems.append("R2/UNKNOWN/TINY relation code inside hard_neg_mask")
     return {
         "ok": not problems,
         "problems": problems,
         "negatives": int(batch.neg_mask.sum()),
         "positives": int(batch.pos_mask.sum()),
         "r1_fallback_used": int(batch.r1_fallback_used.sum()),
+        "hard_negatives": int(batch.hard_neg_mask.sum()),
+        "hard_negative_queries": int(batch.hard_negative_queries().size),
+    }
+
+
+def mate_present_shortcut_probe(batch: "TrainingBatch", *, allowed: np.ndarray | None = None
+                                ) -> dict[str, Any]:
+    """Measure whether gallery-level mate-presence alone separates positives from hard negatives.
+
+    The hard-negative class is dangerous exactly when the *comparison set* of a query can be
+    split by a fragment-level, non-observable cue -- "the candidate has a mate somewhere in the
+    gallery".  So the probe scores every candidate of a supervised query by that cue alone
+    (``batch.mate_present[candidate]``) and computes the rank AUC of "is the true positive"
+    against it.  An AUC that is *undefined* (the cue is constant inside the comparison set) is
+    reported as ``discriminative_power = 0.0`` with ``constant_within_query = True``: the cue
+    cannot be used, which is the condition the ruling's fourth requirement is there to create.
+
+    Nothing here touches a model: it is a property of the labels, measured on the batch.
+    """
+    allow = (np.asarray(batch.pair_valid, dtype=bool) if allowed is None
+             else np.asarray(allowed, dtype=bool) & np.asarray(batch.pair_valid, dtype=bool))
+    rows: list[dict[str, Any]] = []
+    for i in batch.hard_negative_queries().tolist():
+        cand = np.nonzero((batch.pos_mask[i] | batch.hard_neg_mask[i]) & allow[i])[0]
+        if cand.size == 0:
+            continue
+        is_pos = np.asarray(batch.pos_mask[i], dtype=bool)[cand]
+        if not is_pos.any() or is_pos.all():
+            # a comparison set with only one class cannot be separated by anything
+            continue
+        frag = np.asarray(batch.pair_index[i, cand, 1], dtype=np.int64)
+        score = np.asarray(batch.mate_present, dtype=bool)[frag].astype(np.float64)
+        pos, neg = score[is_pos], score[~is_pos]
+        constant = bool(pos.size and neg.size and pos.min() == pos.max() == neg.min() == neg.max())
+        if constant:
+            auc: float | None = None
+        else:
+            wins = float((pos[:, None] > neg[None, :]).sum())
+            ties = float((pos[:, None] == neg[None, :]).sum())
+            auc = (wins + 0.5 * ties) / float(pos.size * neg.size)
+        rows.append({"query_index": int(i),
+                     "query_id": str(batch.features.fragment_ids[int(batch.pair_index[i, 0, 0])]),
+                     "positives": int(is_pos.sum()), "hard_negatives": int((~is_pos).sum()),
+                     "query_mate_present": bool(batch.hard_neg_query_mate[i]),
+                     "cue_constant_within_comparison": constant,
+                     "auc_mate_present_vs_positive": auc})
+    defined = [r["auc_mate_present_vs_positive"] for r in rows
+               if r["auc_mate_present_vs_positive"] is not None]
+    return {
+        "schema": "synlab.training.mate_present_shortcut_probe.v1",
+        "cue": "candidate has its own confirmed R2 mate in the pool (batch.mate_present)",
+        "queries_probed": len(rows),
+        "queries_with_defined_auc": len(defined),
+        "queries_with_constant_cue": sum(1 for r in rows
+                                         if r["cue_constant_within_comparison"]),
+        "mean_auc_mate_present_vs_positive": (float(np.mean(defined)) if defined else None),
+        "discriminative_power": (0.0 if not defined else
+                                 float(abs(np.mean(defined) - 0.5) * 2.0)),
+        "rows": rows,
+        "note": ("an AUC of 1.0 means the gallery-level cue alone identifies the positive; 0.5 "
+                 "(or a constant cue, whose AUC is undefined) means it carries no information "
+                 "about the comparison set"),
     }
 
 
@@ -264,6 +372,7 @@ def build_training_batch(
     quality_target_valid: np.ndarray | None = None,
     quality_tier: Mapping[str, int] | None = None,
     contradiction_source: Any | None = None,
+    require_hard_negative_query_mate: bool = True,
     meta: Mapping[str, Any] | None = None,
 ) -> TrainingBatch:
     """Assemble a :class:`TrainingBatch` from a pool/fixture or pre-sampled rows.
@@ -273,6 +382,16 @@ def build_training_batch(
     * ``{"R2": {fid: [mates]}, "R1": {fid: [..]}, "R0": {fid: [..]}, "UNKNOWN": {fid: [..]},
       "TINY_CONTACT": {fid: [..]}, "confirmed": {(a,b): bool}}`` (fixture style), or
     * a callable/object with ``relation(a, b) -> str`` plus ``neighbours(fid)``.
+
+    A row may additionally carry ``hard_negatives``: a list of candidates of the auxiliary
+    ``HARD_NEGATIVE_MATE_PRESENT`` class (``relations.mate_absent``).  They are placed in
+    **their own slots** and land in :attr:`TrainingBatch.hard_neg_mask`, never in ``neg_mask``:
+    the rank denominator (``negative_counts`` / ``valid_query_indices`` /
+    ``effective_query_count``) and every primary metric denominator are therefore bit-identical
+    whether or not the class is supplied.  ``require_hard_negative_query_mate`` enforces the
+    ruling's fourth condition at batch construction time (a mate-absent query supervising a
+    mate-present candidate would turn gallery-level mate-presence into a shortcut): a row that
+    violates it raises instead of being silently dropped.
     """
     cfg = _SamplerCfg.from_spec(sampler_cfg)
     rng = rng or np.random.default_rng(0)
@@ -287,8 +406,13 @@ def build_training_batch(
         rows = [dict(r) for r in rows]
 
     q = len(rows)
-    c = max(1, max((len(r.get("positives", [])) + len(r.get("negatives", [])) for r in rows),
-                   default=1))
+    # pos/neg/excluded share the first block (exactly as before); the auxiliary hard-negative
+    # class gets its own block after it, so supplying the class cannot shift a single existing
+    # slot.  With no hard negatives the geometry is bit-identical to the pre-S2 builder.
+    c_pn = max(1, max((len(r.get("positives", [])) + len(r.get("negatives", [])) for r in rows),
+                      default=1))
+    c_hard = max((len(r.get("hard_negatives", []) or []) for r in rows), default=0)
+    c = c_pn + c_hard
 
     pair_index = np.zeros((q, c, 2), dtype=np.int64)
     pair_valid = np.zeros((q, c), dtype=bool)
@@ -300,6 +424,8 @@ def build_training_batch(
     exclusion_reason = np.full((q, c), EXCLUSION_NONE, dtype=np.int8)
     negative_is_r2_history = np.zeros((q, c), dtype=bool)
     r1_fallback_used = np.zeros((q, c), dtype=bool)
+    hard_neg_mask = np.zeros((q, c), dtype=bool)
+    hard_neg_query_mate = np.zeros(q, dtype=bool)
     sample_keys = np.array([str(r.get("sample_key", f"q{i:04d}")) for i, r in enumerate(rows)],
                            dtype="U64")
 
@@ -348,7 +474,7 @@ def build_training_batch(
             slot += 1
 
         for cid in row.get("excluded", []):
-            if cid not in index_of or cid == qid or slot >= c:
+            if cid not in index_of or cid == qid or slot >= c_pn:
                 continue
             c_ix = index_of[cid]
             rel = relation_code(relation_lookup(qid, cid))
@@ -369,6 +495,52 @@ def build_training_batch(
                 exclusion_reason[i, slot] = EXCLUSION_GRAY_ZONE
             slot += 1
 
+        # ---- the auxiliary HARD_NEGATIVE_MATE_PRESENT class, in its own slot block ----------
+        hard = [h for h in dict.fromkeys(row.get("hard_negatives", []) or [])
+                if h in index_of and h != qid and h not in positives]
+        if hard:
+            query_mates = neighbours_lookup(qid)
+            hard_neg_query_mate[i] = bool(query_mates)
+            if require_hard_negative_query_mate and not query_mates:
+                raise SynLabError(
+                    ErrorCode.SCHEMA_INVALID,
+                    f"{qid} is mate-absent in this pool but carries "
+                    f"{len(hard)} HARD_NEGATIVE_MATE_PRESENT candidate(s); with a mate-absent "
+                    "query the candidate's own mate-presence is a give-away of its negative "
+                    "role, so the class may not be supervised for it",
+                    stage="training.batch.build_training_batch",
+                    evidence_refs=[str(qid), *[str(h) for h in hard[:4]]],
+                )
+            for k, cid in enumerate(hard[:c_hard]):
+                c_ix = index_of[cid]
+                rel = relation_code(relation_lookup(qid, cid))
+                confirmed = bool(confirmed_lookup(qid, cid))
+                if rel == RELATION_R2_CODE or cid in query_mates:
+                    raise SynLabError(
+                        ErrorCode.LEAKAGE_DETECTED,
+                        f"{cid} is a confirmed R2 mate/positive of {qid} and can never be a "
+                        "hard negative",
+                        stage="training.batch.build_training_batch")
+                if rel not in (RELATION_R1_CODE, RELATION_R0_CODE) or not confirmed:
+                    raise SynLabError(
+                        ErrorCode.SCHEMA_INVALID,
+                        f"hard negative {cid} of {qid} is {relation_name(rel)} "
+                        f"(confirmed={confirmed}); the class is a confirmed R1/R0 by definition",
+                        stage="training.batch.build_training_batch")
+                if cid not in neighbours_lookup(cid):
+                    raise SynLabError(
+                        ErrorCode.SCHEMA_INVALID,
+                        f"hard negative {cid} of {qid} has no confirmed R2 mate of its own in "
+                        "this pool; it is an ordinary-negative candidate, not a "
+                        "HARD_NEGATIVE_MATE_PRESENT row",
+                        stage="training.batch.build_training_batch")
+                slot = c_pn + k
+                pair_index[i, slot] = (q_ix, c_ix)
+                pair_valid[i, slot] = True
+                labels_relation[i, slot] = rel
+                label_pair_valid[i, slot] = confirmed
+                hard_neg_mask[i, slot] = True
+
     corr_weight, corr_row_valid, corr_col_valid = _corr_tensors(
         correspondence, rows, index_of, features.token_budget)
 
@@ -380,6 +552,11 @@ def build_training_batch(
         elif pool is not None and hasattr(pool, "quality_tier"):
             tier = int(getattr(pool, "quality_tier").get(fid, 0))
         quality_tier_arr[i] = tier
+
+    # label side: does this fragment carry its own confirmed R2 mate in this pool?  Kept as an
+    # array so the hard-negative shortcut probe (``mate_present_shortcut_probe``) can measure
+    # whether gallery-level mate-presence alone separates positives from hard negatives.
+    mate_present_arr = np.asarray([bool(neighbours_lookup(fid)) for fid in ids], dtype=bool)
 
     clusters = {}
     if pool is not None and hasattr(pool, "lineage_cluster_of"):
@@ -421,16 +598,21 @@ def build_training_batch(
         labels_relation=labels_relation, label_pair_valid=label_pair_valid,
         pos_mask=pos_mask, neg_mask=neg_mask,
         excluded_mask=excluded_mask, exclusion_reason=exclusion_reason,
+        hard_neg_mask=hard_neg_mask, hard_neg_query_mate=hard_neg_query_mate,
         quality_target=np.asarray(quality_target, dtype=np.float32),
         quality_target_valid=np.asarray(quality_target_valid, dtype=bool),
         corr_weight=corr_weight, corr_row_valid=corr_row_valid, corr_col_valid=corr_col_valid,
         corr_kind=corr_kind, contradiction=cont, contradiction_valid=cont_valid,
         quality_tier=quality_tier_arr, lineage_cluster=_cluster_ids(ids, clusters),
+        mate_present=mate_present_arr,
         negative_is_r2_history=negative_is_r2_history, r1_fallback_used=r1_fallback_used,
         sample_keys=sample_keys,
         pool_id=str(getattr(pool, "pool_id", "") or (labels or {}).get("pool_id", "")),
         meta={"exclusion_reason_names": EXCLUSION_REASON_NAMES,
               "relation_names": RELATION_NAMES,
+              "hard_negative_class": HARD_NEGATIVE_CLASS,
+              "hard_negative_task": HARD_NEGATIVE_TASK_NAME,
+              "hard_negative_c_pn": int(c_pn), "hard_negative_c_hard": int(c_hard),
               **dict(meta or {})},
     )
     audit = negative_audit(batch)
@@ -647,5 +829,6 @@ def _corr_tensors(correspondence, rows, index_of, token_budget: int):
 __all__ = [
     "QUALITY_TIERS", "UNCALIBRATED_TIERS", "TrainingBatch", "build_training_batch",
     "negative_audit", "assert_legal_negative", "exclusion_histogram",
-    "relation_code", "relation_name",
+    "relation_code", "relation_name", "HARD_NEGATIVE_CLASS",
+    "mate_present_shortcut_probe",
 ]

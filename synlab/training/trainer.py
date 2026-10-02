@@ -33,12 +33,15 @@ from ..canonical import array_hash, hash_json
 from ..errors import ErrorCode, SynLabError
 from ..seeds import make_rng
 from .adapter import FeatureBundle
-from .batch import TrainingBatch, build_training_batch
+from .batch import TrainingBatch, build_training_batch, mate_present_shortcut_probe
 from .losses import (
+    DEFAULT_HARD_NEGATIVE_WEIGHT,
     DEFAULT_WEIGHTS,
+    HARD_NEGATIVE_TASK,
     MultiTaskLoss,
     contradiction_loss,
     correspondence_loss,
+    hard_negative_loss,
     quality_loss,
     rank_loss_pair_head,
     task_gradient_norms,
@@ -289,8 +292,18 @@ class Trainer:
         loss_weights = getattr(spec, "losses", None)
         weights = ({name: float(getattr(loss_weights, name, DEFAULT_WEIGHTS[name]))
                     for name in DEFAULT_WEIGHTS} if loss_weights is not None else dict(DEFAULT_WEIGHTS))
+        # the S2 auxiliary hard-negative term is **off** unless a caller gives it a non-zero
+        # weight; it lives outside ``DEFAULT_WEIGHTS``/``TASK_ORDER`` so the five core tasks and
+        # their frozen defaults are untouched.
+        self.hard_negative_weight = float(
+            getattr(loss_weights, HARD_NEGATIVE_TASK, DEFAULT_HARD_NEGATIVE_WEIGHT)
+            if loss_weights is not None else DEFAULT_HARD_NEGATIVE_WEIGHT)
         self.loss_weights = weights
-        self.multi_task = MultiTaskLoss(loss_weights=weights)
+        # the combination weights carry the auxiliary task beside the five core ones; the core
+        # five keep their frozen values (``self.loss_weights`` is unchanged, so checkpoints and
+        # reports keep their existing shape).
+        self.multi_task = MultiTaskLoss(
+            loss_weights={**weights, HARD_NEGATIVE_TASK: self.hard_negative_weight})
         self.temperature = float(getattr(getattr(spec, "retrieval", spec), "temperature", 0.1)
                                 if hasattr(getattr(spec, "retrieval", spec), "temperature") else 0.1)
 
@@ -448,6 +461,22 @@ class Trainer:
                 temperature=self.temperature,
             )
             results["rank"]["n_valid_labels"] = int(pos_mask.sum() + neg_mask.sum())
+
+        # ---- B'. auxiliary hard-negative term (S2): OFF unless weighted ---------------------
+        # ``DEFAULT_HARD_NEGATIVE_WEIGHT`` is 0.0, in which case the term is not built at all:
+        # the combination, the report and the backward pass are then bit-identical to a run
+        # without the class.  When it is on, the term is combined *beside* the five core tasks
+        # with its own weight and its own mask -- ``neg_mask`` is never read here.
+        hard_mask = torch.as_tensor(np.asarray(batch.hard_neg_mask, dtype=bool),
+                                    dtype=torch.bool, device=self.device)
+        hard_query_mate = torch.as_tensor(np.asarray(batch.hard_neg_query_mate, dtype=bool),
+                                          dtype=torch.bool, device=self.device)
+        if self.hard_negative_weight != 0.0 and int(hard_mask.sum()) > 0:
+            results[HARD_NEGATIVE_TASK] = hard_negative_loss(
+                sim_masked, allowed, pos_mask=pos_mask & allowed,
+                hard_neg_mask=hard_mask & allowed, query_mate_present=hard_query_mate,
+                temperature=self.temperature)
+            results[HARD_NEGATIVE_TASK]["n_valid_labels"] = int(hard_mask.sum())
 
         # ---- A. same-fragment multi-view InfoNCE (R2 / grey-zone excluded from negatives)
         view_emb, view_valid = self._view_embeddings(features)

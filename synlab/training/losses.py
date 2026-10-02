@@ -31,6 +31,14 @@ DEFAULT_WEIGHTS: dict[str, float] = {
 
 TASK_ORDER = ("rank", "view", "correspondence", "quality", "contradiction")
 
+#: The auxiliary hard-negative task (S2).  It is deliberately **not** a member of
+#: :data:`TASK_ORDER`: the five core tasks are the frozen plan 18.2 set, while this one is an
+#: optional extra whose default weight is :data:`DEFAULT_HARD_NEGATIVE_WEIGHT` = ``0.0``
+#: ("off").  A caller that leaves the weight at 0 gets bit-identical losses to the S2-less
+#: checkout, because the term is not even built.
+HARD_NEGATIVE_TASK = "hard_negative"
+DEFAULT_HARD_NEGATIVE_WEIGHT = 0.0
+
 #: non-finite guard threshold for reported values
 _MAX_ABS_LOGIT = 1e6
 
@@ -212,6 +220,86 @@ def rank_loss_pair_head(sim_qc, overlap, *, pos_mask, neg_mask, max_q=None, max_
     loss = torch.stack(per_query).mean()
     return _result(loss, len(per_query), n_positives=n_pos,
                    n_negative_pairs=int(neg_mask.sum()))
+
+
+# --------------------------------------------------------------------------------------
+# B'. auxiliary hard-negative term (S2): the query's positive set must outrank the
+#     ``HARD_NEGATIVE_MATE_PRESENT`` class -------------------------------------------------
+# --------------------------------------------------------------------------------------
+def hard_negative_loss(sim_qc, allowed, *, pos_mask, hard_neg_mask, query_mate_present=None,
+                       temperature: float = 0.1, margin: float = 0.0) -> dict[str, Any]:
+    """Auxiliary term on the ``HARD_NEGATIVE_MATE_PRESENT`` class (S2).
+
+    For every query ``q`` with at least one allowed positive and at least one allowed hard
+    negative, and whose query side is mate-present::
+
+        L_h(q) = logsumexp( [s(q,p)/tau for p in P_q] + [s(q,h)/tau + margin for h in H_q] )
+                 - logsumexp( [s(q,p)/tau for p in P_q] )
+
+    i.e. the *same* functional form as the rank term, with the ordinary-negative set replaced by
+    the hard-negative class.  Three properties matter and are enforced, not assumed:
+
+    * ``hard_neg_mask`` is a **separate** mask -- the ordinary rank denominator
+      (``neg_mask``) is not read here at all, so switching this term on cannot move the rank
+      loss, its ``n_valid``/``n_allowed``, ``effective_query_count`` or any primary metric;
+    * ``query_mate_present[q]`` must be true for a query to be supervised: every positive and
+      every hard negative of such a query is then a mate-present fragment, so "the candidate has
+      a mate in the gallery" is constant inside the comparison set and cannot be used as a cue
+      (``training.batch.mate_present_shortcut_probe`` measures exactly that);
+    * a query with no allowed hard negative contributes nothing -- the term is *skipped* with a
+      counted reason rather than padded, exactly like the core tasks.
+
+    ``margin`` (in logit units, default 0.0) is the only free knob; it is reported, never
+    silently chosen.
+    """
+    torch = _torch()
+    sim = sim_qc
+    allow = allowed.to(torch.bool)
+    pos = pos_mask.to(torch.bool) & allow
+    hard = hard_neg_mask.to(torch.bool) & allow & ~pos
+    n_hard = int(hard.sum())
+    if n_hard == 0:
+        return _skip("no_allowed_hard_negative",
+                     n_hard_negative_label_rows=int(hard_neg_mask.to(torch.bool).sum()),
+                     n_positives=int(pos.sum()))
+    if int(pos.sum()) == 0:
+        return _skip("no_allowed_positive", n_hard_negatives=n_hard)
+    if query_mate_present is None:
+        mate_ok = torch.ones(hard.shape[0], dtype=torch.bool, device=hard.device)
+    else:
+        mate_ok = query_mate_present.to(hard.device).bool().reshape(-1)
+
+    inv_tau = 1.0 / max(float(temperature), 1e-8)
+    per_query = []
+    skipped: list[int] = []
+    n_pos = 0
+    n_hard_used = 0
+    for i in range(int(hard.shape[0])):
+        if not bool(mate_ok[i]):
+            skipped.append(i)
+            continue
+        hi = torch.nonzero(hard[i], as_tuple=False).reshape(-1)
+        pi = torch.nonzero(pos[i], as_tuple=False).reshape(-1)
+        if hi.numel() == 0 or pi.numel() == 0:
+            skipped.append(i)
+            continue
+        pos_logits = sim[i][pi] * inv_tau
+        hard_logits = sim[i][hi] * inv_tau + float(margin) * inv_tau
+        joint = torch.cat([pos_logits, hard_logits])
+        per_query.append(torch.logsumexp(joint, dim=0) - torch.logsumexp(pos_logits, dim=0))
+        n_pos += int(pi.numel())
+        n_hard_used += int(hi.numel())
+    if not per_query:
+        return _skip("no_query_with_allowed_positive_and_hard_negative",
+                     n_hard_negatives=n_hard,
+                     queries_not_supervised_by_mate_present=[
+                         int(i) for i in skipped[:8]],
+                     n_queries_without_query_mate=int((~mate_ok).sum()))
+    loss = torch.stack(per_query).mean()
+    return _result(loss, len(per_query), n_positives=n_pos, n_hard_negatives=n_hard_used,
+                   n_hard_negative_label_rows=n_hard,
+                   n_queries_skipped=len(skipped), temperature=float(temperature),
+                   margin=float(margin), task=HARD_NEGATIVE_TASK)
 
 
 def _valid_count(scores, valid) -> int:
@@ -511,6 +599,8 @@ def contradiction_loss(logits, labels, valid, *, class_weights=None) -> dict[str
 # --------------------------------------------------------------------------------------
 def _weight_of(loss_weights: Any, name: str) -> float:
     if loss_weights is None:
+        if name == HARD_NEGATIVE_TASK:
+            return float(DEFAULT_HARD_NEGATIVE_WEIGHT)
         return DEFAULT_WEIGHTS[name]
     if isinstance(loss_weights, Mapping):
         return float(loss_weights.get(name, 0.0))
@@ -626,7 +716,8 @@ def task_gradient_norms(loss_tensors: Mapping[str, Any], parameters: Sequence[An
 
 
 __all__ = [
-    "DEFAULT_WEIGHTS", "TASK_ORDER", "MultiTaskLoss",
-    "view_infonce", "rank_loss", "rank_loss_pair_head", "correspondence_loss",
-    "quality_loss", "contradiction_loss", "task_gradient_norms",
+    "DEFAULT_WEIGHTS", "TASK_ORDER", "MultiTaskLoss", "HARD_NEGATIVE_TASK",
+    "DEFAULT_HARD_NEGATIVE_WEIGHT",
+    "view_infonce", "rank_loss", "rank_loss_pair_head", "hard_negative_loss",
+    "correspondence_loss", "quality_loss", "contradiction_loss", "task_gradient_norms",
 ]

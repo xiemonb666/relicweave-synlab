@@ -47,6 +47,33 @@ labels), so nothing here is a *guard* violation.  It is refused by the plan's ma
 semantics, which is stricter.  Mechanism and counts are documented in
 ``docs/a12/relation_negatives.md``; the guard itself is untouched and never relaxed.
 
+The Lead ruling on the then-unused population resolved the open question in §7.2 of that
+document: the class may enter a loss as an **independent auxiliary class**
+:data:`CLASS_HARD_NEGATIVE` (``HARD_NEGATIVE_MATE_PRESENT``) under four conditions, all enforced
+by :func:`hard_negative_records` and recorded in its ``conformance`` block:
+
+1. ``loss_mask=True`` **and** ``eligible_as_negative=False`` -- the row is supervised, but never
+   as an ordinary negative;
+2. it contributes to **no** primary metric denominator (``any@50`` / ``Hit@10`` / the mate-absent
+   misleading rate), because it is not an ordinary negative of any query;
+3. it is used by an auxiliary loss / hard-negative mining term only -- :data:`HARD_NEGATIVE_TASK`,
+   registered with its own weight in ``synlab.training.losses`` and **off by default**;
+4. every supervised row has a **mate-present query**: for a mate-absent query the candidate's own
+   mate would be a give-away of its negative role, so such rows are rejected with
+   :data:`HARD_NEGATIVE_REJECT_QUERY_MATE_ABSENT` (measured on the ``trainable`` package: 880 of
+   the 1120 rows have a mate-present query, 240 do not).
+
+The class is a **supervision** class, not a fifth member of :data:`ROW_CLASSES`: the ruling of a
+row (exactly one of the four) and the eligibility of that row for the auxiliary term are two
+different facts and are kept apart here.  The class is emitted as its **own** record set and is
+deliberately *not* merged into ``research/relations.parquet``: that table's frozen single-gate
+rule (``qc.decision_checks._check_loss_mask_authority``, decision D10) requires
+``eligible_as_negative == (kind in {R0,R1} and loss_mask)`` for **every** row, so a row carrying
+``loss_mask=True`` with ``eligible_as_negative=False`` inside it would flip
+``relations.loss_mask_authority`` from PASS to FAIL -- i.e. it would relax an audit judgement,
+which condition (2) forbids.  The measured demonstration is
+``tests/a12/relations/test_s2_hard_negative_class.py``.
+
 What this module never does
 ---------------------------
 * it never changes ``kind``, ``valid``, ``area_mm2`` or the query/candidate identities -- only
@@ -83,6 +110,41 @@ ROW_CLASSES: tuple[str, ...] = (CLASS_POSITIVE, CLASS_ORDINARY_NEGATIVE,
                                 CLASS_MATE_PRESENT, CLASS_EXCLUDED)
 
 NEGATIVE_KINDS: frozenset[str] = frozenset({RELATION_R1, RELATION_R0})
+
+# --------------------------------------------------------------------------------------
+# The auxiliary hard-negative class (Lead ruling on the 1120 unused mate-present rows)
+# --------------------------------------------------------------------------------------
+#: ``HARD_NEGATIVE_MATE_PRESENT`` -- the *supervision* class a
+#: :data:`CLASS_MATE_PRESENT` row may additionally carry.  It is deliberately **not** a fifth
+#: member of :data:`ROW_CLASSES`: every row still gets exactly one of the four ruling classes,
+#: and this name records that the *same* row is additionally eligible for the auxiliary
+#: hard-negative term.  ``kind`` / ``valid`` / ``area_mm2`` and the identities are never
+#: rewritten by it -- only the two eligibility flags below.
+CLASS_HARD_NEGATIVE = "HARD_NEGATIVE_MATE_PRESENT"
+
+#: The two flags the ruling fixes for that class, in one place so a report can quote them.
+#: ``loss_mask=True`` -- the row *is* supervised (by the auxiliary term);
+#: ``eligible_as_negative=False`` -- it is **not** an ordinary negative and never contributes to
+#: the frozen ``eligible_as_negative := kind in {R1,R0} and valid and loss_mask`` derivation of
+#: the main relation table (``storage.export``), nor to any primary metric denominator.
+HARD_NEGATIVE_LOSS_MASK = True
+HARD_NEGATIVE_ELIGIBLE_AS_NEGATIVE = False
+
+#: Task/objective name the auxiliary term is registered under (``training.losses``).
+HARD_NEGATIVE_TASK = "hard_negative"
+
+#: Why a mate-present row is refused the hard-negative class, keyed for reports.
+HARD_NEGATIVE_REJECT_QUERY_MATE_ABSENT = "query_mate_absent"
+
+#: The rule text the four conditions of the ruling are checked against, quoted verbatim in the
+#: report so the conformance record can be re-read without the task description.
+HARD_NEGATIVE_RULING: tuple[str, ...] = (
+    "loss_mask=true and eligible_as_negative=false",
+    "no contribution to any primary metric denominator (any@50 / Hit@10 / mate-absent "
+    "misleading rate)",
+    "auxiliary loss / hard-negative mining only",
+    "the query side is mate-present for every supervised row",
+)
 
 _QUERY_KEYS: tuple[str, ...] = ("query", "a", "fragment_a")
 _CANDIDATE_KEYS: tuple[str, ...] = ("candidate", "b", "fragment_b")
@@ -344,6 +406,120 @@ def is_mate_absent(fragment_id: str, rows: Sequence[Mapping[str, Any]]) -> bool:
     return not r2_mates(rows).get(str(fragment_id))
 
 
+# --------------------------------------------------------------------------------------
+# the auxiliary hard-negative class
+# --------------------------------------------------------------------------------------
+def hard_negative_records(rows: Sequence[Mapping[str, Any]], *,
+                          require_query_mate_present: bool = True
+                          ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Emit the ``HARD_NEGATIVE_MATE_PRESENT`` supervision records of a relation table.
+
+    The records are the :data:`CLASS_MATE_PRESENT` rows of ``rows`` -- recognised in **both**
+    states the class is stable in (before the ruling: ``kind in {R1,R0} and valid and
+    loss_mask`` with a mate on the candidate; after it: the same row with ``loss_mask`` cleared
+    and :data:`MATE_PRESENT_REASON` in ``reason``), exactly as :func:`row_class` reads them.
+    ``kind`` / ``valid`` / ``area_mm2`` and the fragment identities are copied verbatim; the
+    only fields the class changes are
+
+    * ``loss_mask`` -> :data:`HARD_NEGATIVE_LOSS_MASK` (``True``: the row *is* supervised, by
+      the auxiliary term);
+    * ``eligible_as_negative`` -> :data:`HARD_NEGATIVE_ELIGIBLE_AS_NEGATIVE` (``False``: never
+      an ordinary negative);
+    * ``class`` -> :data:`CLASS_HARD_NEGATIVE`.
+
+    Requirement (4) of the ruling is enforced **here**, not left to the caller: when
+    ``require_query_mate_present`` is true a record is only produced for a row whose **query**
+    carries its own confirmed ``R2`` mate in the same pool.  For a mate-absent query the
+    candidate's mate-presence would be a perfect predictor of the negative role, i.e. a
+    gallery-level shortcut instead of surface evidence; such rows are returned in the report
+    under ``rejected`` with :data:`HARD_NEGATIVE_REJECT_QUERY_MATE_ABSENT`, never silently
+    dropped and never supervised.
+
+    Returns ``(records, report)``; the input is never mutated.
+    """
+    rows = [dict(row) for row in rows]
+    mates = r2_mates(rows)
+    records: list[dict[str, Any]] = []
+    rejected: list[dict[str, Any]] = []
+    seen: set[tuple[str, str]] = set()
+    for row in rows:
+        if row_class(row, mates) != CLASS_MATE_PRESENT:
+            continue
+        query, candidate = _endpoints(row)
+        if not query or not candidate or query == candidate:
+            continue
+        key = (query, candidate)
+        if key in seen:                      # the table may carry both directions of a pair
+            continue
+        seen.add(key)
+        query_mates = sorted(mates.get(query, set()))
+        record = {
+            "query": query, "candidate": candidate,
+            "kind": str(row.get("kind")),
+            "valid": bool(row.get("valid", False)),
+            "area_mm2": float(row.get("area_mm2") or 0.0),
+            "loss_mask": bool(HARD_NEGATIVE_LOSS_MASK),
+            "eligible_as_negative": bool(HARD_NEGATIVE_ELIGIBLE_AS_NEGATIVE),
+            "class": CLASS_HARD_NEGATIVE,
+            "ruling_class": CLASS_MATE_PRESENT,
+            "reason": str(row.get("reason", "") or ""),
+            "query_mate_present": bool(query_mates),
+            "query_mates": query_mates,
+            "candidate_mates": sorted(mates.get(candidate, set())),
+        }
+        if require_query_mate_present and not query_mates:
+            rejected.append({**record, "reject_reason": HARD_NEGATIVE_REJECT_QUERY_MATE_ABSENT})
+            continue
+        records.append(record)
+
+    report: dict[str, Any] = {
+        "schema": "synlab.relations.hard_negatives.v1",
+        "version": MATE_ABSENT_RULE_VERSION,
+        "class": CLASS_HARD_NEGATIVE,
+        "ruling": list(HARD_NEGATIVE_RULING),
+        "require_query_mate_present": bool(require_query_mate_present),
+        "rows_in_table": len(rows),
+        "rows_classed_mate_present": int(
+            sum(1 for row in rows if row_class(row, mates) == CLASS_MATE_PRESENT)),
+        "records": len(records),
+        "rejected": len(rejected),
+        "rejected_rows": rejected,
+        "queries": sorted({r["query"] for r in records}),
+        "candidates": sorted({r["candidate"] for r in records}),
+        "flags": {"loss_mask": bool(HARD_NEGATIVE_LOSS_MASK),
+                  "eligible_as_negative": bool(HARD_NEGATIVE_ELIGIBLE_AS_NEGATIVE)},
+    }
+    report["conformance"] = {
+        "loss_mask_true_and_eligible_false": bool(
+            all(r["loss_mask"] and not r["eligible_as_negative"] for r in records)),
+        "no_primary_denominator_contribution": bool(
+            all(not r["eligible_as_negative"] for r in records)),
+        "auxiliary_only": HARD_NEGATIVE_TASK,
+        "query_mate_present_for_every_row": bool(
+            all(r["query_mate_present"] for r in records)),
+    }
+    return records, report
+
+
+def hard_negative_class_count(rows: Sequence[Mapping[str, Any]], *,
+                              require_query_mate_present: bool = True) -> dict[str, Any]:
+    """Compact count table of the hard-negative class (records only, for a report)."""
+    records, report = hard_negative_records(
+        rows, require_query_mate_present=require_query_mate_present)
+    per_query: dict[str, int] = defaultdict(int)
+    for record in records:
+        per_query[record["query"]] += 1
+    return {
+        "schema": "synlab.relations.hard_negative_class_table.v1",
+        "version": MATE_ABSENT_RULE_VERSION, "class": CLASS_HARD_NEGATIVE,
+        "rows_classed_mate_present": report["rows_classed_mate_present"],
+        "records": len(records), "rejected": report["rejected"],
+        "queries": len(per_query), "candidates": len(report["candidates"]),
+        "records_by_query": dict(sorted(per_query.items())),
+        "conformance": report["conformance"],
+    }
+
+
 def observed_fragments_from_payloads(payloads: Mapping[str, Mapping[str, Any]]) -> dict[str, bool]:
     """Encodability of every fragment from packaged/loader payloads (real arrays only).
 
@@ -372,7 +548,11 @@ __all__ = [
     "MATE_ABSENT_RULE_VERSION", "MATE_PRESENT_REASON", "MATE_PRESENT_EXCLUSION_REASON",
     "ROW_CLASSES", "NEGATIVE_KINDS",
     "CLASS_POSITIVE", "CLASS_ORDINARY_NEGATIVE", "CLASS_MATE_PRESENT", "CLASS_EXCLUDED",
+    "CLASS_HARD_NEGATIVE", "HARD_NEGATIVE_TASK", "HARD_NEGATIVE_LOSS_MASK",
+    "HARD_NEGATIVE_ELIGIBLE_AS_NEGATIVE", "HARD_NEGATIVE_REJECT_QUERY_MATE_ABSENT",
+    "HARD_NEGATIVE_RULING",
     "r2_mates", "mate_absent_fragments", "row_class", "apply_rule", "class_count_table",
     "minimal_trainable_set", "ordinary_negative_pairs", "is_mate_absent",
+    "hard_negative_records", "hard_negative_class_count",
     "observed_fragments_from_payloads",
 ]
