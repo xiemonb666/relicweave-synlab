@@ -237,11 +237,12 @@ def assemble_damage_bodies(mesh: trimesh.Trimesh, *, source_volume_mm3: float,
     """Turn one raw operator body into the delivered bodies of ``damage_semantics = subset_v2``.
 
     Order matters and is measured: the boolean engine emits coincidence *pairs* of
-    opposite-winding triangles with zero volume (2 of them on the L0 P03 result).  Those pairs
-    are not connected to the material body, so ``component_split`` hands them out as separate
-    "debris" components -- but their edges are the very edges that make the material body look
-    open, so the pinholes can only be closed **after** they are removed.  Closing them first was
-    measured to fail (the patch would make those edges used three times).
+    opposite-winding triangles with zero volume (2 of them on the L0 P03 result), and those pairs
+    share the very vertices of the pinholes in the material body.  Patching the holes first was
+    measured to fail -- after the patch the mesh has 2 edges used **four** times (twice by the
+    pair, once by the body, once by the patch), so ``is_watertight`` stays False
+    (data/a12/reports/a09_p03_probe.json, a09_acceptance_after.json).  Removing the pairs first
+    leaves 3 edges used exactly twice, and the patch then closes the body.
 
     Returns the material bodies (engine debris dropped and counted) plus the assembly record.
     """

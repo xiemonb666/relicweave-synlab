@@ -303,3 +303,17 @@ levels_planned=155  levels_passed=155  levels_na=0  levels_failed=0
 | P04 | `target_abs_error` | ≤ 2.5e-4（预算 0.02） |
 | P04 | `contact_lost_area_mm2` / 接触总面积 434.062 mm² | 43.42/108.62/217.10/347.36 mm² |
 | P04 | `largest_component_ratio`（30.8 代表体守卫） | 0.9888 → 0.2178（守卫 0.02） |
+
+## 8. 与生成 pipeline 的关系（`damage_semantics = subset_v2`，2026-10-02 追加）
+
+- `batch_generate` / `run_generation` 走的**不是**本文的窄带后端：`pipeline._load_damage_recipe`
+  只从 degrade 注册表冻结 `basis`，算子仍是 `synlab.physical.operators.run_damage`
+  （P03 = 全局均匀 SDF + marching cubes + manifold 裁剪）。两条路径的实测差异（同一母体、
+  同一 recipe）：pipeline 全局路径 `lost_volume_mm3 = 276.5807`（`roi_external_drift
+  0.2866 mm`），窄带路径 `37.4510`（线性预估 43.5373，比值 0.860；`roi_external_drift
+  0.01323 mm`）。**本文件的数据表只描述窄带后端**，不要拿它当 pipeline 的期望值。
+- 生成侧本次只改了**合法性**（不改算子、不改损伤量级）：`synlab.physical.api` 现在
+  先丢弃 0 体积布尔残留连通体、再补纳米级边界环（≤1e-3 mm 对角线 / ≤1e-6 mm²，
+  补后必须水密+绕向一致+体积不变），并把 `damaged ⊆ clean` 换成精确 float64 量具
+  （容差 1e-3 mm 不变）。窄带侧只加了同一个 `damage_semantics` 标记。
+- 详情、before/after 数值与批产分界：`docs/a12/data_semantics_versions.md`。

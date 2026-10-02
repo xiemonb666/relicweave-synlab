@@ -302,6 +302,10 @@ def test_every_role_of_a_fresh_run_carries_its_run_id_at_commit(loop: dict) -> N
     tagging = loop["tool_audit"]["run_id_tagged"]
     assert tagging["tagged"] == [], tagging
     assert tagging["candidate_asset_ids"] == len(tagging["already_attributed"])
+    # the fixture itself commits one pool/roster pair *without* a run id on purpose (the
+    # backwards-compatibility control of the relations tests); every other asset of every role is
+    # stamped by the module that produced it
+    legacy = {a.asset_id for a in (loop["pool_asset"], loop["roster_asset"]) if a is not None}
     for role in (ROLE_MOTHER_MESH, ROLE_MATERIAL_PROFILE, ROLE_PATTERN_RECIPE,
                  ROLE_PATTERN_CHANNELS, ROLE_FRAGMENT_MESH, ROLE_CLEAN_TRUTH,
                  ROLE_PHYSICAL_COMPONENT, ROLE_PHYSICAL_TRUTH, ROLE_OBS_RESULT,
@@ -309,7 +313,8 @@ def test_every_role_of_a_fresh_run_carries_its_run_id_at_commit(loop: dict) -> N
                  ROLE_ROSTER):
         assets = [a for a in store.list_assets(role=role, limit=100)]
         assert assets, f"role {role} committed nothing"
-        missing = [a.asset_id for a in assets if (a.meta or {}).get("run_id") != run_id]
+        missing = [a.asset_id for a in assets
+                   if (a.meta or {}).get("run_id") != run_id and a.asset_id not in legacy]
         assert not missing, f"{role} assets without meta.run_id: {missing}"
 
 

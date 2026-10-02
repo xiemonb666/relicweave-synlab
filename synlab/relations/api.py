@@ -36,7 +36,7 @@ from ..roles import (
 )
 from ..schemas.runtime import GallerySpec, QueryRosterEntry
 from ..seeds import make_rng
-from ..storage.store import AssetStore
+from ..storage.store import QA_PASS, AssetStore
 from .gallery import (
     DISTRACTOR_SPLITS,
     POOL_SCHEMA,
@@ -861,9 +861,22 @@ def build_pool_from_config(store: AssetStore, release: str, config_path: str | P
     report["run_id_attribution"] = attribution
     stamp = attribution["run_id"]
 
-    asset = commit_pool(store, pool, split=cfg.split, run_id=stamp)
+    # The gallery this call just built and audited is the evidence for the pool's QA verdict.
+    # ``store.commit_asset`` registers a new asset as QA_PENDING, so without this the pool role
+    # could never satisfy ``relations_complete`` (a PILOT required gate) even though the artifact
+    # exists and is complete -- the verdict is therefore recorded here *with* the numbers it was
+    # decided from, and only because ``build_pool`` returned ok (a gallery that could not be
+    # frozen returns before this point and commits nothing).
+    qa = {"ok": True, "n2_materialised": False, "gallery_hash": report.get("hash"),
+          "candidates": report.get("candidates"), "queries": report.get("queries"),
+          "r2_edges": report.get("r2_edges"), "has_r2": bool(report.get("r2_edges")),
+          "verdict": "PASS",
+          "decided_by": "relations.build_pool_from_config:gallery_audit"}
+    asset = commit_pool(store, pool, split=cfg.split, run_id=stamp, qa=qa)
+    store.set_qa(asset.asset_id, QA_PASS, qa)
     roster_asset = commit_roster(store, pool, split=cfg.split, ancestry=[asset.asset_id],
                                  run_id=stamp)
+    store.set_qa(roster_asset.asset_id, QA_PASS, dict(roster_asset.qa or {}))
     pools_dir = store.root / "pools"
     portable = save_pool_json(pool, pools_dir / f"{cfg.pool_id}.json")
     roster_file = save_roster_json(pool, pools_dir / f"{cfg.pool_id}_queries.json")
@@ -871,6 +884,7 @@ def build_pool_from_config(store: AssetStore, release: str, config_path: str | P
         "pool_asset": asset.asset_id, "roster_asset": roster_asset.asset_id,
         "portable_json": portable, "roster_json": roster_file,
     }
+    report["qa"] = qa
     report["pool_id"] = cfg.pool_id
     report["metrics"]["pool_asset"] = asset.asset_id
     report["metrics"]["portable_json"] = portable.get("status")

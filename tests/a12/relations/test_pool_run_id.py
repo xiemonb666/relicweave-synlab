@@ -188,6 +188,12 @@ def test_build_pool_from_config_uses_the_single_contributing_run(tmp_path: Path)
     assert attribution["source"] == "contributing_runs"
     assert store.get_asset(report["artifacts"]["pool_asset"]).meta["run_id"] == "run_one"
     assert store.get_asset(report["artifacts"]["roster_asset"]).meta["run_id"] == "run_one"
+    # the gallery that was just built and audited is the evidence for the QA verdict, so the pool
+    # really is usable as `relations_complete` evidence (a committed-but-PENDING asset is not)
+    pool_asset = store.get_asset(report["artifacts"]["pool_asset"])
+    assert pool_asset.qa_status == QA_PASS
+    assert pool_asset.qa["verdict"] == "PASS" and pool_asset.qa["gallery_hash"] == report["hash"]
+    assert store.get_asset(report["artifacts"]["roster_asset"]).qa_status == QA_PASS
 
 
 def test_build_pool_from_config_refuses_to_guess_across_runs(tmp_path: Path) -> None:

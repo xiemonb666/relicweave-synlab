@@ -1056,4 +1056,367 @@ fresh store 里恰好是那 2 个。
 5. `visible_labels` 的 mask 侵蚀（§13.4）与 `physical_result` 的 A09 `QA_FAIL`（§13.6 第 1/2 条）
    保持原样：它们让相应资产被排除出 release，本轮未放宽、未删断言。
 
+## 15. 后续（本轮之后）：§14.4 第 5 条的两条已被修掉（**语义变更**）
+
+> 本节由 CoC 单位 + A09 修复任务追加，2026-10-02。§13.4 / §13.6 的数字保留作**修复前对照**，
+> 不再代表当前代码的行为。完整语义定义、判定式、影响面与批产分界见
+> **`docs/a12/data_semantics_versions.md`**。
+
+1. **§13.4 的 mask 侵蚀 = 弥散圆单位错误**：`render_view` 把像素单位 `f_px` 代进毫米制
+   薄透镜公式且未除传感器采样密度 `D = f_px / focal_length_mm`，旧值是声明光学的
+   `D × f_number = 74.105` 倍量级（4 视图逐像素比值中位数实测 71.96–72.24）。
+   修复后（`mask_semantics = coc_units_v2`）：L0 四视图物体像素 `uncertain` 由
+   2343/2040/1681/1700 → **0/0/0/0**；`deployment_mask` 由 204/50/5/27 px（覆盖
+   7.20/2.10/0.26/1.42 %）→ **2533/2029/1553/1558 px（89.41/85.40/81.44/82.22 %）**；
+   CoC 低于 profile 自己 2.0 px mark-out 的物体像素占比由 0.05–0.46 % → **100 %**；
+   交付网格 DOF 窗口 [167.4, 261.6] mm 覆盖物体 z 跨度 88.3–94.3 mm。
+   `visible_labels` 因此 **QA_FAIL → QA_PASS**（`samples_visible 146/1448 = 10.08 %`）。
+2. **§13.6 的 A09 `physical_result` QA_FAIL**：根因有三层，全部有实测
+   （`damage_semantics = subset_v2`）：
+   (a) 装配把 2 个 **0.0 mm³** 的布尔残留连通体登记成组件 → `NON_POSITIVE_VOLUME`；
+   (b) 裁剪输出的主连通体有 6 条边界边（2 个 50 nm / 23 nm 的孔），
+       `repair.fill_holes` 在 trimesh 5.1.0 上补不了 → `NOT_WATERTIGHT`；
+   (c) 子集判定用的 Open3D 近似符号距离在**网格对自身**时就有 0.0161 mm / 0.275 % 的噪声底，
+       **恒等（level 0）结果都会 FAIL** —— 判定不可满足，故换成精确 float64 量具
+       （容差 1e-3 mm **不变**）。
+   修复后：`audit_physical` **PASS**（`failure_codes=[]`、1 个水密正体积组件、
+   子集 max_outside 2.61e-6 mm、`lost_volume_mm3` 逐位不变 276.58071298516006）。
+3. **批产分界**：本提交点之前的 run/资产用旧语义，之后用新语义；新产物带
+   `data_semantics`（run 记录、`coverage.json`、`obs_result.meta.meta`）与
+   `damage_semantics`（`physical_result.meta`），旧产物**没有**这些键，这就是判别式
+   （不用时间戳）。`configs/a12/next_experiment.yaml`（sha256 `81866531…`）与
+   `tools/batch_generate.py` 未改；下一批经 `build_one_mother` 自动按新语义产出。
+   单母体端到端复验：`data/a12/reports/l0_after_fix/store`（run `run_548e5b5a4a27b144`，
+   QA_PASS 12 / QA_PENDING 3 / QA_FAIL **0**）。
+
+
+
+## 16. PILOT 门阻塞的四个缺陷：pool/roster 与 material/physical 的 `run_id`、覆盖类门的真实读数与跨 run 聚合
+
+> 本节 2026-10-02 由「PILOT release 门阻塞」任务追加。四个缺陷逐条修，判定全部来自
+> `qc.gates.evaluate_gates` 与 store 里的真实数值；**没有**放宽门、没有 override、没有降级
+> （`GATE_DOWNGRADES` 仍为空字典，`gate_overrides` 实测 `[]`）。§15 的语义修复（CoC 单位 + A09）
+> 在下面 fresh store 的端到端里已经生效：该 run 的 `QA_FAIL` 资产为 **0**（§16.5）。
+
+### 16.1 缺陷与改动（代码）
+
+| # | 缺陷（实测） | 修法 | 文件 |
+|---|---|---|---|
+| 1 | `relations_complete`（PILOT 必需门）恒 PENDING：`commit_pool`/`commit_roster` 写的 pool/roster **没有 `meta.run_id`**，门按 `meta.run_id` 过滤后看不到它们 | 两个 helper 加**可选** `run_id=None`（给了才写 → 未给时元数据与资产 id 逐字节不变）；`build_pool_from_config` 加 `run_id`，未给时用「该 gallery 的 `clean_truth`/`label_bundle` 只来自**一个** run」这一**可测**事实归属，多 run / 无 run 时**不猜**并写出原因；import 处传入 | `synlab/relations/api.py`、`tools/closed_loop.py` |
+| 2a | 覆盖类门读 `coverage.json`（store 全局，每次生成**覆盖前一次**）→ 单 run 聚合不可能达 24 器型 | 新增**跨 run/跨批次**聚合产物 `reports/coverage_aggregate.json`（+ parquet），覆盖门**优先**读它 | `synlab/qc/gates.py`、`tools/closed_loop.py` |
+| 2b | `coverage_4_backends` 读 `fracture_backends`，而实际键是**单数** `fracture_backend`（字符串） | 读取方同时接受单/复数两种拼写（`_coverage_values`），不再读一个从不存在的键 | `synlab/qc/gates.py` |
+| 2c | `coverage_31_axes` 读**不存在**的 `axes` 键 | 聚合产物给出「资产实际用到的轴集合」（`physical_*.meta.axis_id` ∩ 本构建注册的 31 个轴）；无聚合时从**本 run 资产**的 `axis_id` 实测，分母是 `AXIS_REGISTRY` 的 31 个轴 id | `synlab/qc/gates.py` |
+| 3 | `material_profile` / `physical_component` 提交路径不带 `run_id` | 同构加可选 `run_id=None`；`pipeline.py` 两处调用传入 | `synlab/materials/api.py`、`synlab/physical/api.py`、`synlab/pipeline.py` |
+| 4 | 下一批落地顺序（只写文档） | §16.8 | 本文档 |
+
+pool/roster 的提交路径同时补了一处**必要的**判定写入（在 `build_pool_from_config` 里）：把「刚建好并
+审计过的 gallery」作为证据写进 pool/roster 的 QA（`verdict=PASS` + `gallery_hash`/`candidates`/
+`queries`/`r2_edges`/`has_r2`）。原因：`commit_asset` 登记的新资产一律 `QA_PENDING`，而
+`relations_complete` 要求 `QA_PASS`；不写这一步，CLI 路径的 pool 永远进不了门（这不是"给门放水"：
+gallery 建不出来时 `build_pool` 直接返回 `ok=false` 且**什么都不提交**，判定只可能在真建成的
+gallery 上产生，且判定所依据的数字随资产一起落盘）。
+
+新增/改动工具入口（`tools/closed_loop.py`）：
+
+```
+--step coverage_aggregate      # 只刷新 <store>/reports/coverage_aggregate.json(+parquet)，不碰资产/QA/run
+--run <run_id>                 # 本次 release 针对哪个 run（覆盖 ledger 里的 run_id）
+--profile <PROFILE>            # 尝试用哪个 profile 冻结（默认 SANDBOX_CORE；允许更严，如 PILOT）
+--profile-as-run-profile       # 用 run 自己的生成 profile
+```
+
+`--profile PILOT` 是**加严**而不是放宽：必需门表换成 `PROFILE_GATES["PILOT"]`（12 门），
+`ReleaseManager.freeze` 对任何非 PASS 必需门照旧拒绝，拒绝内容写进
+`release_freeze_blocked.json`（含 `scope_pending`、逐门判定、`gate_measurements`、
+`coverage`、`relation_status`、`visibility_status`）。
+
+### 16.2 缺陷 1：`relations_complete` PENDING → PASS（同一份数据、真实 CLI `build-pool`）
+
+store：`data/a12_exports/pilot_gate/store`（**新建** fresh store），run
+`run_fa499425c9ddc181`（`configs/a12/closed_loop.yaml`，`--mothers 1`，accepted 1/1）。
+
+| 阶段 | 命中 | `relations_complete` | 门实际读到的证据 |
+|---|---|---|---|
+| generate 之后 | `build-pool` 未跑 | **PENDING** | `relation_pool {}`（该 run 范围内一个 pool 资产都没有） |
+| `synlab build-pool`（真实 CLI，见 §16.5 命令 2） | 提交 pool `asset_0002a4d4a2dabd7c091b` + roster `asset_16a2007d7b59771d6f76` | **PASS** | `relation_pool {QA_PASS: 1}`、`query_roster {QA_PASS: 1}`、`run_scoped_pool_assets ['asset_0002a4d4a2dabd7c091b']` |
+
+CLI（无 `--run`，走"归属解析"路径）实测：
+
+```
+run_id_attribution = {"run_id": "run_fa499425c9ddc181",
+                      "source": "contributing_runs",
+                      "contributing_run_ids": ["run_fa499425c9ddc181"], "lineage_count": 1}
+qa = {"verdict": "PASS", "candidates": 1, "queries": 1, "r2_edges": 0, "has_r2": false,
+      "gallery_hash": "sha256:66116132a758fc8f830d8655343917a8860858e9dc63080cb0649dafedd5110b",
+      "decided_by": "relations.build_pool_from_config:gallery_audit"}
+```
+
+pool 资产 id 在补 QA 判定前后**不变**（`asset_0002a4d4a2dabd7c091b`）：QA 不属于
+`interpret_hash` 的输入，因此这次改动不会移动任何既有资产的身份。
+
+**反向证据**（门不是"有 pool 就 PASS"）：
+
+* 同一个 pool 用 `commit_pool(..., qa=...)` 但不带 `run_id` 提交 → 对该 run 仍 **PENDING**
+  （`tests/a12/relations/test_pool_run_id.py::test_relations_complete_follows_the_run_scoped_pool`）；
+* 带 `run_id` 但资产仍 `QA_PENDING` → **PENDING**
+  （`…::test_relations_complete_requires_a_pass_verdict`）；
+* gallery 来自**多个** run 且调用方没给 `run_id` → **不写戳**、写原因
+  （`source="ambiguous"`，`reason` 里带 run id 列表），门保持 PENDING。
+
+### 16.3 缺陷 2：覆盖类门的真实读数 + 跨 run 聚合产物
+
+#### 16.3.1 聚合产物（`reports/coverage_aggregate.json` / `.parquet`）
+
+`python tools/closed_loop.py --step coverage_aggregate --store <store> --out <out> --report <out>/ledger.json`
+（`audit` 步也会顺带刷新一次）。schema `synlab.coverage_aggregate.v1`，字段：
+
+| 字段 | 含义 / 来源（全部实测，逐项记在 `sources`） |
+|---|---|
+| `runs[]` | 每个 run 一行：`run_id/status/profile/scope/accepted/attempted`（`runs` 表）+ 该 run 的 `assets/assets_qa_pass/assets_by_role/assets_by_qa_status`、`mothers/mother_ids`（`mother_mesh.mother_id` 去重）、`lineages`、`fragments`（`fragment_mesh`）、`observations`（`obs_result`）、`physical_components`、`material_profiles`、`pattern_recipes`、`run_id_attribution`（`meta.run_id_source` 为空 = 提交时写入） |
+| `runs[].vessels/materials/patterns` | 该 run 的 `mother_mesh.meta.vessel_id/material_id`、`pattern_recipe.meta.family_id`（**已实现**的资产，不是 plan） |
+| `runs[].fracture_backends` | 该 run 的 `fragment_mesh/clean_truth.meta.backend`；仅当 `coverage.json` 的 `run_id` 等于该 run 时才并入它的单数键 `fracture_backend` |
+| `runs[].axes` | 该 run 的 `physical_component/physical_result.meta.axis_id` |
+| `runs[].layer_combos` | **只能**来自逐谱系 coverage 行（`coverage_rows.json` 的 `layer_combo_id`，且只归给它兄弟 `coverage.json` 命名的 run；`next_experiment_batches.json` 的行自带 `run_id` 则按行归属），只计 `accepted/ok=true` 的行；没有资产携带层组合 id（`material_profile.layer_ids` 是层**序号** `[1]`） |
+| `totals` | 全 store 汇总（含无 `run_id` 的资产，另用 `unattributed_assets` 单列，便于相减） |
+| `vessels/materials/patterns/layer_combos/fracture_backends/axes` | 门读的顶层集合（与单 run `coverage.json` 同名键兼容；`fracture_backends` 是列表，同时给出单数 `fracture_backend`（只在一个后端时）） |
+| `axes_required/axes_missing/axes_unknown` | 分母 = 本构建注册的 31 个轴 id；差值即缺口 |
+| `coverage_targets` / `gaps` | 6 个覆盖门的目标与「实测值/目标/缺口/状态」（`coverage_gaps`） |
+| `orphan_run_ids` | 资产带了 `run_id` 但 `runs` 表里没有该 run → 单列成 `status="UNRECORDED"`，不丢、不并 |
+| `content_hash` | 对集合与计数（不含时间戳）做 `hash_json` → 同一 store 可复算同一哈希 |
+
+#### 16.3.2 实测缺口（门不会被改成永真）
+
+主库 `data/a12`（批次仍在跑，快照 2026-10-02 11:35；`coverage_aggregate.json`
+sha256 `adfba34dd2e155c04a0566a33958070103721b2ab3a310e352efe9c517dacfd1`）：16 runs /
+624 资产 / 388 QA_PASS / 27 独立母体 / 34 谱系 / 110 碎片 / 24 观测；
+`run_id_attribution = {stamped_at_commit 358, repair 0, none 266}`。
+（批次每接受一个母体这个快照就会变；用 §16.3.3 的命令 (1) 重跑即可复算，
+`content_hash` 只覆盖集合与计数，因此同一批数据永远得到同一个哈希。）
+
+| 门 | 实测 | 目标 | 缺口 | 判定 |
+|---|---|---|---|---|
+| `coverage_24_vessels` | 16：V01–V11, V13, V16, V17, V21, V23 | 24 | **8** | PENDING |
+| `coverage_12_materials` | 10：M01, M02, M04, M06–M12 | 12 | **2** | PENDING |
+| `coverage_16_patterns` | 13：PAT01–PAT10, PAT12, PAT15, PAT16 | 16 | **3** | PENDING |
+| `coverage_4_layers` | 4：L01–L04 | 4 | 0 | **PASS** |
+| `coverage_4_backends` | 1：`plane_shared_cut` | 4 | **3** | PENDING |
+| `coverage_31_axes` | 28（缺 `P02/P04/P08`） | 31 | **3** | PENDING |
+
+fresh store（单母体）：`{vessels 1, materials 1, patterns 1, layer_combos 1, backends 1, axes 1}`
+→ 6 门全 PENDING，缺口分别是 23/11/15/3/3/30。
+
+**读数修正的证据**：`coverage_4_backends` 在旧读取下无论数据如何都读不到值（键名多一个 `s`）；
+现在它能读到真实后端集合（主库 1 个、fresh store 1 个），并且当同一 store 真有 4 个后端时转
+PASS（`tests/a12/qc/test_coverage_gates.py::test_backend_gate_passes_with_four_real_backends`），
+少于 4 个时给出 `shortfall`。`coverage_31_axes` 同理：31 个轴全用到的 store → PASS，30 个 →
+PENDING 且 `missing=[第 31 个轴]`（同文件 `test_axis_gate_reads_the_axes_the_run_really_exercised`）。
+
+#### 16.3.3 复算方法（三种，互不复用实现）
+
+```powershell
+# (1) 重新生成聚合产物（幂等；只写 reports/coverage_aggregate.json + .parquet）
+& .venv\Scripts\python.exe tools\closed_loop.py --step coverage_aggregate `
+    --store data/a12 --out data/a12_exports/pilot_gate/main --report data/a12_exports/pilot_gate/main/ledger.json
+# (2) 直接读 parquet（每 run 一行）自己汇总
+& .venv\Scripts\python.exe -c "import pandas as pd; d=pd.read_parquet(r'data/a12/reports/coverage_aggregate.parquet'); print(d[['run_id','mothers','fragments','observations','vessels','axes']])"
+# (3) 完全不读聚合产物，直接查 store（SQLite JSON1）
+& .venv\Scripts\python.exe -c "import sqlite3; c=sqlite3.connect(r'file:data/a12/metadata.sqlite?mode=ro',uri=True); print(c.execute(\"SELECT COUNT(DISTINCT json_extract(meta_json,'$.vessel_id')) FROM assets WHERE role='mother_mesh'\").fetchone())"
+```
+
+SQL（可直接粘进 sqlite3，已在 `data/a12` 与 fresh store 上实跑）：
+
+```sql
+-- 每个 run 每个角色的资产数 / QA_PASS 数
+SELECT json_extract(meta_json,'$.run_id') AS run_id, role, COUNT(*) AS n,
+       SUM(CASE WHEN qa_status='QA_PASS' THEN 1 ELSE 0 END) AS qa_pass
+FROM assets GROUP BY 1,2 ORDER BY 1,2;
+
+-- 覆盖集合（与聚合产物同名键）
+SELECT DISTINCT json_extract(meta_json,'$.vessel_id')    FROM assets WHERE role='mother_mesh';
+SELECT DISTINCT json_extract(meta_json,'$.material_id')  FROM assets WHERE role IN ('mother_mesh','material_profile');
+SELECT DISTINCT json_extract(meta_json,'$.family_id')    FROM assets WHERE role='pattern_recipe';
+SELECT DISTINCT json_extract(meta_json,'$.backend')      FROM assets WHERE role IN ('fragment_mesh','clean_truth');
+SELECT DISTINCT json_extract(meta_json,'$.axis_id')      FROM assets WHERE json_extract(meta_json,'$.axis_id') IS NOT NULL;
+
+-- run_id 归属：提交时写入 / 修复写入 / 完全没有
+SELECT CASE WHEN json_extract(meta_json,'$.run_id') IS NULL THEN 'none'
+            WHEN json_extract(meta_json,'$.run_id_source') IS NULL THEN 'at_commit'
+            ELSE 'repair' END AS attribution, COUNT(*) FROM assets GROUP BY 1;
+
+-- 独立母体
+SELECT COUNT(DISTINCT json_extract(meta_json,'$.mother_id')) FROM assets WHERE role='mother_mesh';
+```
+
+自查脚本：`data/a12/reports/verify_pilot_gates.py`（逐门判定 + 实测原因 + 缺口）、
+`data/a12_exports/_scratch/check_doc_sql.py`（上面这段 SQL 的实跑）。层组合只能从 coverage 行
+复算，故聚合产物把行来源、归属规则与 sha256 都写在 `sources.layer_combos` / `row_sources`。
+
+### 16.4 缺陷 3：`material_profile` / `physical_component` 的 `run_id`
+
+`commit_material` / `commit_physical` 加同构的可选 `run_id=None`，`pipeline.build_one_mother`
+两处调用传入。实测（fresh store，run `run_fa499425c9ddc181`）：
+
+| 口径 | 修复前（§14.2.2 的 fresh store） | 本轮 fresh store |
+|---|---|---|
+| `coverage.run_id_attribution` | `{stamped_at_commit 12, stamped_by_run_attribution_repair 2}` | **`{stamped_at_commit 17, repair 0}`** |
+| 需要事后归属修复的角色 | `material_profile`、`physical_component` | **无**（`_tag_run_assets` 实测 `tagged=[]`、`candidate_asset_ids=11=len(already_attributed)`） |
+| run 内角色数 | 13 | **16**（多出 `relation_pool`、`query_roster`、`physical_result`；`material_profile`/`physical_component` 已计入） |
+
+`--step audit` 的实测输出：`run_id_tagged = {tagged: [], already_attributed: [11 个 id],
+candidate_asset_ids: 11, ledger_run_id: run_fa499425c9ddc181, reason: null}` —— 即新 store 里
+**没有任何角色需要补戳**。
+
+### 16.5 fresh store 端到端（命令 / 退出码 / 关键字段）
+
+store：`data/a12_exports/pilot_gate/store`；out：`data/a12_exports/pilot_gate/out`；
+evidence：`data/a12`；日志与退出码留档在同目录（`*_exit.txt`）。
+
+| # | 命令 | 退出码 | 结果 |
+|---|---|---|---|
+| 1 | `tools\closed_loop.py --step generate --mothers 1 --store data/a12_exports/pilot_gate/store --out …\out --report …\out\ledger.json --evidence data/a12` | **0** | accepted 1/1（183.4 s），run `run_fa499425c9ddc181` |
+| 2 | `python -m synlab.cli build-pool --release probe --config data/a12_exports/pilot_gate/pool_closed_loop.yaml --root data/a12_exports/pilot_gate/store --json` | **0** | `QA_PASSED`；pool `asset_0002a4d4a2dabd7c091b` / roster `asset_16a2007d7b59771d6f76`；`run_id_attribution.source=contributing_runs`；`status=QA_PASSED_WITH_FALLBACK`（`--release probe` 不存在 → 记录 store 扫描回退，未伪造 release） |
+| 3 | `tools\closed_loop.py --step audit …`（同 store/out） | **0** | `OK`；`qa_failed=[]`、`problems=[]`、`store_health_ok=true`；`lineage_splits={LIN0000_V02_M01_PAT02: [train]}`；提升 3 个延迟判定角色（`pattern_recipe`/`pattern_channels`/`physical_component`）；`ancestry_repairs`：首次审计 **1**（`physical_component` 的语义祖先键 → clean_truth 资产），重跑 **0**（幂等，已修好的祖先不再报）；写出 `coverage_aggregate.json` |
+| 4 | `tools\closed_loop.py --step release_freeze …`（默认 SANDBOX_CORE） | **0** | `rel_fa499425c9dd_1790912110`，**6/6 必需门 PASS**，`scope_pending=[]`，`gate_overrides=[]`，`refused_gate_overrides=[]`，`assets=17`，`closure={ok:true, files_checked:17}` |
+| 5 | `tools\closed_loop.py --step release_freeze --profile PILOT --run run_fa499425c9ddc181 … --out …\pilot_out` | **1** | **拒绝冻结**（`STOP_QA`）：10/12 PASS，`scope_pending=['train_dev_lineage','leakage_audit']`，`gate_overrides=[]`；写 `release_freeze_blocked.json` |
+
+冻结 manifest 关键字段（#4，全部可由 store 复算）：
+
+| 字段 | 实测值 |
+|---|---|
+| `release_id` / `profile` / `assets` | `rel_fa499425c9dd_1790912110` / `SANDBOX_CORE` / 17 |
+| `scope_completed` / `scope_pending` | 6/6 / `[]` |
+| `extra.gate_overrides` / `refused_gate_overrides` | `[]` / `[]` |
+| `extra.gate_measurements.coverage_source` | `<store>/reports/coverage_aggregate.json` |
+| `coverage.run_id` / `mothers` / `vessels` / `materials` / `patterns` / `layer_combos` | `run_fa499425c9ddc181` / 1 / `["V02"]` / `["M01"]` / `["PAT02"]` / `["L01"]` |
+| `coverage.fragment_assets_in_scope` / `observations` | 2 / 1 |
+| `coverage.r2_relations_in_scope` / `relations_in_scope` | **1** / 1（`clean_truth` 与 `label_bundle` 各 R2=1，`cross_check.agree=true`） |
+| `coverage.roles` | 16 个角色 17 个 `QA_PASS` 资产（含新增的 `relation_pool 1`、`query_roster 1`） |
+| `coverage.run_id_attribution` | `{stamped_at_commit 17, repair 0}` |
+| `manifest_hash` | `sha256:9881262325006b05b4650f7f016930ed9236af727c5d4847f488c1273e8e5b59` |
+
+fresh store 的聚合产物：17 资产全 `QA_PASS`；集合 `vessels ["V02"] / materials ["M01"] /
+patterns ["PAT02"] / layer_combos ["L01"] / fracture_backends ["plane_shared_cut"] / axes ["P03"]`；
+`axes_missing` 30 个；`content_hash sha256:9d84080c58448c195bb374fa03e8102c0fc7856ae273af7cab68bfc767799091`；
+json `sha256:e02d610ec64fda1f68c61cb9ce310f96d3c907d501fbcc8614fdbef3121bb39b`；
+parquet 1 行。
+
+### 16.6 PILOT 12 门清单（真实数值 / 缺口，未放宽）
+
+`profile=PILOT` 的 12 门 = SANDBOX_CORE 6 门 + `train_dev_lineage`、`operators_used_pass`、
+`legal_inputs`、`relations_complete`、`read_recovery`、`leakage_audit`。下表三列分别是：
+(a) fresh store（单母体，`run_fa499425c9ddc181`，after audit）；
+(b) 主库**当前批次**的 run `run_e031b5651fb7f7ff`（11:08:59 创建、仍在跑；该 run 的资产是
+本进程在代码修复**之前**导入的模块写的，见 §16.8）；
+(c) 主库批次**第一条** run `run_e69efa4cbcab8b94`（10:27 创建）——`tools/next_experiment_export.py`
+正是拿 `run_ids[0]` 去判门。
+
+| 门 | (a) fresh | (b) 当前批次 run | (c) 批次 run_ids[0] | 未过原因（实测） |
+|---|---|---|---|---|
+| `fixture_contract` | PASS | PASS | PASS | `docs/a12/reuse_manifest.json` 存在/已 staged |
+| `coordinate_contract` | PASS | PASS | PASS | `acceptance_summary` A02 = PASS |
+| `source_map` | PASS | PASS | PASS | `fragment_mesh` QA_PASS：2 / 12 / 15 |
+| `readonly_commit` | PASS | **PENDING** | **PENDING** | 缺 `reports/audit_<run_id>.json`（`store_health` 未判） |
+| `fracture_operator_runs` | PASS | PASS | **PENDING** | run 内 QA_PASS `clean_truth`：1 / 5 / **0**（(c) 的 clean_truth 是 10:27 进程写的、无 `run_id`） |
+| `observation_operator_runs` | PASS | PASS | **PENDING** | QA_PASS `obs_result`：1 / 5 / **0** |
+| `train_dev_lineage` | **PENDING** | **PENDING** | **PENDING** | 缺 `audit_<run_id>.json`；即使补上，单 run 只落在 `train`（fresh：`{LIN0000…: [train]}`）→ 要 PASS 必须让同一个 release 的 run 同时含 train+dev 谱系 |
+| `operators_used_pass` | PASS | PASS | PASS | `data/a12/reports/operator_audit.json` `ok=true`（经 `--evidence`） |
+| `legal_inputs` | PASS | **PENDING** | **PENDING** | (b)(c) 缺 `audit_<run_id>.json`（`audit.ok` 未判）；feature/label QA_PASS 齐备（5、5） |
+| `relations_complete` | **PASS** | **PENDING** | **PENDING** | 这两个 run 范围内没有带 `run_id` 的 QA_PASS `relation_pool`（主库从未为批次 run 建过 pool） |
+| `read_recovery` | PASS | **PENDING** | **PENDING** | 同上缺 `audit_<run_id>.json`（`recovery_probe.json` 本身 `ok=true`） |
+| `leakage_audit` | **PENDING** | **PENDING** | **PENDING** | `acceptance_summary` 的 A32 = **NA**（(a) 更弱：store 自己的 `acceptance_summary.json` 只跑了 A02 一项，A32 读不到 → PENDING） |
+| **合计** | **10/12** | **6/12** | **4/12** | |
+
+覆盖类门不属于 PILOT（属 CORE_COVERAGE）。主库当前批次 run 的 CORE_COVERAGE 实测：
+`8/21` PASS，其中 `coverage_4_layers` **PASS**（4/4），其余 5 个覆盖门 PENDING 且带实测缺口
+（16/24、10/12、13/16、1/4、28/31）。
+
+### 16.7 测试
+
+| # | 命令 | 退出码 | 结果 |
+|---|---|---|---|
+| 1 | `pytest tests/a12/integration -q -p no:cacheprovider --junitxml=data/a12_exports/pilot_gate/pytest_integration_after_gate_fix.xml` | **0** | **tests 39 / failures 0 / errors 0 / skipped 0**，146.2 s（`test_closed_loop 30` + `test_l0_loop 9`；基线 35 → 39，新增 4 条） |
+| 2 | `pytest tests/a12/qc tests/a12/relations -q -p no:cacheprovider --junitxml=…/pytest_units_gate_fix.xml` | 1（**与本次改动无关**） | 共 51 条：qc **16/16**、relations **34/35**；唯一失败是既有的 `test_sampler.py::test_rows_feed_training_batch`（`synlab/training/batch.py:321` 以 mapping 调 `neighbours_lookup.get()`，而该测试的 monkeypatch 返回 callable；`git status` 显示 `synlab/training/**` 与 `tests/a12/relations/test_sampler.py` 本轮均未改动） |
+
+新增测试：`tests/a12/relations/test_pool_run_id.py`（11 条：可选 `run_id` 的向后兼容、元数据键集合、
+门随 run 范围、归属三分支）、`tests/a12/qc/test_coverage_gates.py`（16 条：聚合语义、两种键拼写、
+层组合行归属、31 轴正反两向、缺口数值、缺证据不得 PASS）、
+`tests/a12/integration/test_closed_loop.py` +4 条（pool 步的 run 戳、`relations_complete` 由 run 决定、
+全角色提交即带 `run_id`、audit 写出聚合产物）。
+
+### 16.8 下一批落地建议（只写文档，不改他人文件）
+
+**结论：下一批必须写进新 store，并且在修复后的代码上启动进程。**
+
+1. **长驻进程会用启动时导入的代码。** 批次驱动是一次 `batch_generate.py` 进程连跑多批，进程内
+   导入的模块在启动那一刻就固定了。实测（判据是**每个 run 范围里有几个角色带 `run_id`**，
+   不是时间戳）：
+   * run `run_e69efa4cbcab8b94`（批次 ledger 的第一条，`next_experiment_export.py` 判门用的
+     `run_ids[0]`）：6 个谱系里只有 **5** 个角色带 `run_id`
+     （`mother_mesh/fragment_mesh/feature_bundle/label_bundle/provenance`），另外 **8** 个角色
+     （`clean_truth`/`obs_result`/`pattern_recipe`/`pattern_channels`/`physical_truth`/
+     `visible_labels`/`material_profile`/`physical_component`）在 store 里全是 `run_id=None`
+     —— 那是 §14.1 修复落盘之前提交的；
+   * run `run_e031b5651fb7f7ff`（当前批次）：**12** 个角色带 `run_id`，但
+     `material_profile`/`physical_component` 仍然**不在它的 run 范围里**（修复比该进程启动更晚）。
+2. **"补戳"不可回滚，所以别在旧 store 上补。** `data/a12` 现有 266 个资产完全没有 `run_id`
+   （`run_id_attribution.none = 266`）；批次 run 的 coverage 行**只有**
+   `next_experiment_batches.json` 这类 ledger，里面**没有 asset id**，因此按 §14.2.2 的精确归属规则
+   **无法**把这些资产归到某个 run（按 `lineage_id` 猜正是被禁掉的做法）。结论：
+   run `run_e69efa4cbcab8b94` 的 run 范围**永远**补不齐那 8 个角色（因此它的
+   `fracture_operator_runs`/`observation_operator_runs` 恒 PENDING，见 §16.6 (c) 列的 4/12）。
+3. **操作顺序**（新 store 记为 `$S`，新批次配置仍用冻结的 `configs/a12/next_experiment.yaml`）：
+   1. 启动 `tools/batch_generate.py --config … --root $S --batch N --resume`（**启动前**确认修复已在
+      工作树里；批次跑完后不要复用同一进程继续追加旧代码的批次）；
+   2. 每个 batch 的 `run_id` 记在 `$S/reports/next_experiment_batches.json`；跑完（或每个 batch
+      之后）对需要的 run 做一次审计：
+      `tools\closed_loop.py --step audit --run <run_id> --store $S --out $O --evidence $S`
+      —— 它写出 `audit_<run_id>.json`（`readonly_commit`/`train_dev_lineage`/`legal_inputs`/
+      `read_recovery` 的证据）、提升延迟判定角色、修复 `physical_component` 的语义祖先键、并刷新
+      `coverage_aggregate.json`；
+   3. 用**显式** `run_id` 建 pool（`tools/next_experiment_export.py` 判门用的是 `run_ids[0]`）：
+      `python -c "from synlab.storage.store import AssetStore; from synlab.relations.api import build_pool_from_config; build_pool_from_config(AssetStore(r'$S'),'pilot',r'configs/a12/pool_pilot.yaml', run_id='<run_ids[0]>')"`
+      —— 注意 CLI `synlab build-pool` 没有 `--run`，多 run store 会被判为 `ambiguous` 而**不写戳**
+      （这是有意的：宁可不归属也不猜）；
+   4. 冻结：`tools\next_experiment_export.py --step freeze --store $S --evidence $S`（PILOT）。
+4. **`next_experiment_export.py::batch_assets` 过滤因 `run_id` 新增而多纳入的角色**（该文件不改，
+   只说明影响）：过滤式是 `meta.run_id in run_set` →
+   * `material_profile`：由"完全不在批次范围"变成**在范围内**（`QA_PASS` 且 `lineage_id` 属于被接受
+     谱系 → 进入 `release_assets`，release 的 `roles`/资产数各 +1/谱系，其 `ancestry=[mother_asset]`
+     可解析）；
+   * `physical_component`：进入 `batch_assets`，但默认 `QA_PENDING` → 进 `excluded`（数量增），
+     除非先跑第 2.2 步的审计把它按契约提升为 `QA_PASS`；**提升后它才进 release**，而它的
+     `ancestry` 里原本是 `clean_ref` 语义键（`mother:event:version`），必须由审计步的
+     `_resolve_ancestry` 重定向，否则 `ReleaseManager.verify_closure` 会以
+     `missing asset <key>` 拒绝冻结；
+   * `relation_pool`/`query_roster`：`lineage_id=None` → 进入 `batch_assets`/`keep` 但**不**进入
+     `release_assets`（lineage 过滤），所以它们不会改变冻结范围；门读的是 run 范围（`meta.run_id`），
+     因此 `relations_complete` 可以在 pool 不入 manifest 的情况下转 PASS —— 这是现状，如实记录。
+5. **仍需先补的两块证据**（本轮范围之外）：PILOT 的 `train_dev_lineage` 要求同一 release 的 run
+   同时覆盖 train 与 dev 谱系（单母体 run 做不到，需要按 split 组织批次或在冻结前把同一批次的
+   dev run 也纳入范围）；`leakage_audit` 读 `acceptance_summary` 的 A32，当前
+   `data/a12/reports/acceptance_summary.json` 里 A32=**NA**（fresh store 自己那份只跑了 A02 一项）。
+
+### 16.9 仍未解决项（真实原因与分母）
+
+1. `leakage_audit`（PILOT）：A32 = NA → PENDING。要 PASS 需要一次覆盖 A32 的 acceptance 运行
+   （`qc.acceptance` 的 A32 项），或由 Lead 决定该门在本阶段的判据；本轮**没有**改
+   `acceptance_summary` 的读法去凑 PASS。
+2. `train_dev_lineage`（PILOT）：单 run 只有一个 split。`data/a12` 的批次是 6 母体/批，批次内
+   split 混合，但 `tools/next_experiment_export.py` 只对 `run_ids[0]` 判门 → 结构性缺口。
+3. `coverage_4_backends` / `coverage_31_axes` / `coverage_24_vessels` / `coverage_12_materials` /
+   `coverage_16_patterns`（CORE_COVERAGE）：实测缺口 3 / 3 / 8 / 2 / 3（主库 11:35 快照）。后端只有
+   `plane_shared_cut`：要 4 个后端必须改 `configs/a12/next_experiment.yaml` 的 `fracture.backend`
+   或增加批次变体（**配置冻结中，本轮不动**）；缺的轴 `P02/P04/P08` 需要相应 recipe 进入批次。
+4. `coverage_json_is_store_global`：`reports/coverage.json` 与 `coverage_rows.json` 仍是
+   store 全局、每次生成覆盖；本轮的聚合产物是**读侧**的补丁（按 run 归属后再汇总）。若要彻底解决，
+   应让 `pipeline.run_generation` 按 run 落一份 `reports/coverage_rows_<run_id>.json`——属于
+   pipeline 的写侧改动，本轮未做（避免在同一 store 上与正在跑的批次争写）。
+5. `physical_component` 的 `ancestry` 语义键（`clean_ref`）仍由 `tools/closed_loop.py` 的审计步
+   修复；`batch_generate.py` 产出后若不跑审计，release 侧仍会因 `missing asset` 拒绝包含它。
+6. 既有测试失败（非本轮引入）：`tests/a12/relations/test_sampler.py::test_rows_feed_training_batch`
+   —— `synlab/training/batch.py:321` 用 mapping 接口调 `neighbours_lookup.get()`，而该测试
+   monkeypatch 成 callable。涉及文件均不在本轮改动范围。
+
+
+
 
