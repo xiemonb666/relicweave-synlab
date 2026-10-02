@@ -339,6 +339,10 @@ def resolvability(config: fr.FractureRoiConfig, measurements: dict) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--bodies", type=int, default=len(STUDY))
+    parser.add_argument("--only", type=int, default=None,
+                        help="run a single study body by index and merge it into the existing "
+                             "report (a crashed run can be resumed without re-rendering the "
+                             "bodies that already succeeded)")
     parser.add_argument("--quick", action="store_true",
                         help="software rasteriser, 4 ROI views, no extra rung")
     parser.add_argument("--no-store", action="store_true")
@@ -353,12 +357,23 @@ def main() -> int:
     else:
         backend = "blender"
     bodies = STUDY[:max(1, int(args.bodies))]
+    if args.only is not None:
+        bodies = [STUDY[int(args.only)]]
     report: dict[str, object] = {
         "schema": "synlab.a12.fracture_roi_run.v1", "config": config.as_dict(),
         "backend": backend, "blender_samples": int(args.samples),
         "whole_view_count": WHOLE_VIEW_COUNT, "whole_long_edge": WHOLE_LONG_EDGE,
         "roi_long_edge": ROI_LONG_EDGE, "bodies": [],
     }
+    run_path = ROOT / "data/a12_reports/fracture_roi_run.json"
+    if args.only is not None and run_path.exists():
+        previous = json.loads(run_path.read_text(encoding="utf-8"))
+        rerunning = {entry["asset_id"] for entry in bodies}
+        report["bodies"] = [b for b in previous.get("bodies", [])
+                            if b["body"]["asset_id"] not in rerunning]
+        report["resumed_from"] = {"path": str(run_path),
+                                  "n_previous_bodies": len(previous.get("bodies", [])),
+                                  "kept_bodies": [b["body"]["asset_id"] for b in report["bodies"]]}
     all_roi_records: list[dict] = []
     all_whole_records: list[dict] = []
     timing_total: dict[str, float] = {"whole_fragment_seconds": 0.0,
@@ -401,6 +416,18 @@ def main() -> int:
                 amplitudes[f"{body['body']['vessel_id']}-{roi['roi_id']}-{band}_Ra"] = float(
                     stats.get("Ra_mm", 0.0))
     resolv = resolvability(config, amplitudes)
+    # totals are recomputed over every body in the report, so a resumed run reports the whole
+    # study rather than only the bodies of this process
+    timing_total = {key: 0.0 for key in timing_total}
+    for body in report["bodies"]:
+        for key in timing_total:
+            timing_total[key] += float((body.get("timing") or {}).get(key, 0.0) or 0.0)
+        if body.get("extra_rung"):
+            timing_total["extra_rung_seconds"] += float(
+                (body["extra_rung"] or {}).get("seconds", 0.0))
+    gpu_peaks = [int((b.get("timing", {}).get("gpu_memory") or {}).get("peak_mib"))
+                 for b in report["bodies"]
+                 if (b.get("timing", {}).get("gpu_memory") or {}).get("peak_mib")]
     timing = {
         "schema": "synlab.a12.fracture_roi_timing.v1", "backend": backend,
         "blender_samples": int(args.samples),
@@ -415,10 +442,11 @@ def main() -> int:
         "note": ("GPU memory sampled with nvidia-smi memory.used during the Blender renders; "
                  "the peak is the whole-device usage, not this job's allocation"),
     }
+    all_roi_records = [r for b in report["bodies"] for r in b.get("roi_records", [])]
+    all_whole_records = [r for b in report["bodies"] for r in b.get("whole_records", [])]
     compare = {
         "schema": "synlab.a12.fracture_roi_compare.v1",
-        "whole_fragment": _aggregate(all_whole_records),
-        "fracture_roi": _aggregate(all_roi_records),
+        "whole_fragment": _aggregate(all_whole_records),        "fracture_roi": _aggregate(all_roi_records),
         "per_body": [{"vessel": b["body"]["vessel_id"], "material": b["body"]["material_id"],
                       **b["summary"]} for b in report["bodies"]],
         "extra_rung": [b["extra_rung"] for b in report["bodies"] if b["extra_rung"]],

@@ -42,6 +42,21 @@ MASTER_SEED = 20261001
 LINEAGE_ID = "a12_physical_layer"
 
 
+class MeasurementRuler:
+    """The three fields the surface-feature tools read off a parameter record.
+
+    Module level (not a closure) so the measurement bundles stay picklable.
+    """
+
+    __slots__ = ("origin_uv_mm", "mirror_radius_mm", "mist_radius_mm")
+
+    def __init__(self, *, origin_uv_mm: tuple[float, float], mirror_radius_mm: float,
+                 mist_radius_mm: float) -> None:
+        self.origin_uv_mm = (float(origin_uv_mm[0]), float(origin_uv_mm[1]))
+        self.mirror_radius_mm = float(mirror_radius_mm)
+        self.mist_radius_mm = float(mist_radius_mm)
+
+
 # ---------------------------------------------------------------------------- json helper
 def jsonable(value: Any, *, depth: int = 0, max_array: int = 24) -> Any:
     if depth > 8:
@@ -289,13 +304,8 @@ def run_case(kind: str, *, mother: Any, basis: Any, profile: dict[str, Any] | No
         wall = wall_thickness(mother, max_probes=320)
         origin_uv = initiate_origin(tris_uv, wall.p05_mm)
         origin_world = basis.to_world(np.array([[origin_uv[0], origin_uv[1], 0.0]]))[0]
-
-        class _P:  # noqa: N801 - a minimal stand-in with the two fields the tools read
-            origin_uv_mm = (float(origin_uv[0]), float(origin_uv[1]))
-            mirror_radius_mm = 0.8
-            mist_radius_mm = 1.44
-
-        params = _P()
+        params = MeasurementRuler(origin_uv_mm=(float(origin_uv[0]), float(origin_uv[1])),
+                                  mirror_radius_mm=0.8, mist_radius_mm=1.44)
     else:
         cross_info = cutter_report.get("flat_cross_section")
         core_area = float(cutter_report.get("core_area_mm2", 0.0))

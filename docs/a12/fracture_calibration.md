@@ -320,8 +320,10 @@ backends:
 
 | 运行 | 谱系 | attempted / accepted / failed | 片段 | 断裂阶段 s | 全链 s | 产物 |
 |---|---|---|---|---|---|---|
-| `b1`（1 谱系，清库后） | `LIN0000_V02_M01_PAT02` | **1 / 1 / 0** | 3 | 1.54 | 31.7 | 21 资产 |
-| `b2`（2 谱系） | `LIN0000_V02_M01_PAT02`, `LIN0001_V02_M01_PAT01` | **2 / 2 / 0** | 3 / 2 | 1.54 / 1.52 | 96.6 | 60 资产 |
+| `b1`（1 谱系，清库后） | `LIN0000_V02_M01_PAT02` | **1 / 1 / 0** | 3 | 1.54 | 33.4 | 21 资产 |
+| `b2`（2 谱系） | `LIN0000_V02_M01_PAT02`, `LIN0001_V02_M01_PAT01` | **2 / 2 / 0** | 3 / 2 | 1.54 / 1.91 | 93.6 | 60 资产（含 b1） |
+
+（`全链 s` 是流水线自己的 `run.seconds`；驱动进程的墙钟含导入与报告写出，分别为 40.1 s / 101.5 s。）
 
 读回证明（`_run_calibration.py verify`，从 store 的资产元数据读，不靠假设）：
 
@@ -332,7 +334,7 @@ backends:
 * `data/a12_fcal/store/reports/coverage.json`：`planned 2 / attempted 2 / accepted 2 / quarantined 0 /
   failed 0 / complete true`，`fracture_backend = warp_voronoi_cut`；
 * `data/a12_fcal/store/reports/coverage_rows.json`：`backend = warp_voronoi_cut`、`fragments = 3 / 2`、
-  `accepted = 1`，含真实阶段耗时（fracture 1.54 / 1.52 s、physical 21.5 / 49.2 s、observe 6.2 / 8.9 s）。
+  `accepted = 1`，含真实阶段耗时（fracture 1.54 / 1.91 s、physical 21.5 / 49.2 s、observe 6.2 / 8.9 s）。
 
 **故障率如实预告**：接受率 0.8125 意味着生产里约 1/5 谱系会因 §5.2 的几何缺陷被判
 `FRACTURE_CONSERVATION_FAIL`（`failed`，不进数据集）。本轮两次批产全绿是因为 `target_pieces` 落在 4–6；
@@ -357,6 +359,6 @@ backends:
 | `pytest tests/a12/fracture/test_calibration_audit.py -q` | **0** | 13 passed（38 个实测点的 A06 逐点审计、拒绝机制、耗时表、共轭、闭合指示器） |
 | `pytest tests/a12/fracture/test_voronoi_backend_contract.py -q` | **0** | 10 passed（注册表、façade 派发、A06、同种子可复现、拒绝不可修复） |
 | 上述 3 个文件 + `test_impact_count.py` 一起 | **0** | 42 passed |
-| `pytest tests/a12/fracture -q`（整个目录） | **1** | 本轮新增的 **31 个用例全绿**；失败/报错全部落在**本轮未触碰**的模块（`cut.py` 的 `rough_shared_cut` / `morphology_shared_cut` 路径：`CUTTER_NOT_CLOSED`「37285/12125/8993… 条边非 2 面」、`PRECISION_NOT_REALIZED`「0.010323 mm > 0.01 mm」），与 `docs/a12/fracture_fix_evidence.md` 未解决项 1/2 是同一批真实失败；本轮**未**改这些模块、**未**放宽预算 |
+| `pytest tests/a12/fracture -q`（整个目录） | **1** | 本轮新增的 **31 个用例全绿**；该轮共 **5 FAILED / 46 ERROR**，全部落在**本轮未触碰**的模块（`cut.py` 的 `rough_shared_cut` / `morphology_shared_cut` 路径：`CUTTER_NOT_CLOSED`「37285/12125/8993… 条边非 2 面」、`PRECISION_NOT_REALIZED`「0.010323 mm > 0.01 mm」），与 `docs/a12/fracture_fix_evidence.md` 未解决项 1/2 是同一批真实失败；本轮**未**改这些模块、**未**放宽预算 |
 
 原始日志：`data/a12_reports/_fcal_pytest_{count,audit,voronoi2,scope2,fracture}.log`。

@@ -185,47 +185,56 @@ def _resolve_capture_context(payload: Mapping[str, Any], target: Path,
     * ``rig_obtainable`` and ``claim_allowed`` must both be exactly ``True``;
     * the name may not be truth-critical, a research-only channel or a truth-bearing supervision
       column -- otherwise the exemption would widen the truth-leak check.
+
+    ``table_columns`` (S4) is validated through the **same** rules: the block exists because the
+    deployment view also ships tables, and a table column needs the same kind of declaration a
+    channel gets.  A malformed or inadmissible table column is refused for the same reason.
     """
-    block = payload.get("capture_context_fields")
-    if block is None:
-        return []
-    if not isinstance(block, Mapping):
-        raise SynLabError(ErrorCode.SCHEMA_INVALID,
-                          f"capture_context_fields of {target} is not an object",
-                          stage="export.load_channel_policy")
-    declared = block.get("fields") or []
-    if not isinstance(declared, list):
-        raise SynLabError(ErrorCode.SCHEMA_INVALID,
-                          f"capture_context_fields.fields of {target} is not a list",
-                          stage="export.load_channel_policy")
     guarded = {str(name).lower() for name in TRUTH_CRITICAL_FIELDS}
     guarded |= {str(name).lower() for name in research_only}
     guarded |= {str(name).lower() for name in TRUTH_BEARING_FIELDS}
-    out: list[dict[str, Any]] = []
-    for entry in declared:
-        if not isinstance(entry, Mapping) or not str(entry.get("key", "")).strip():
+
+    def _entries(block_name: str, list_key: str, where: str) -> list[dict[str, Any]]:
+        block = payload.get(block_name)
+        if block is None:
+            return []
+        if not isinstance(block, Mapping):
             raise SynLabError(ErrorCode.SCHEMA_INVALID,
-                              f"capture_context_fields of {target} has an entry without a key",
+                              f"{block_name} of {target} is not an object",
                               stage="export.load_channel_policy")
-        key = str(entry["key"])
-        problems: list[str] = []
-        if str(entry.get("evidence_class", "")) != CAPTURE_CONTEXT_CLASS:
-            problems.append(f"evidence_class must be {CAPTURE_CONTEXT_CLASS!r}")
-        if entry.get("rig_obtainable") is not True:
-            problems.append("rig_obtainable must be exactly True")
-        if entry.get("claim_allowed") is not True:
-            problems.append("claim_allowed must be exactly True")
-        if key.lower() in guarded:
-            problems.append("a truth layer, truth-critical array, research-only channel or "
-                            "supervision column may never be declared capture context")
-        if problems:
-            raise SynLabError(
-                ErrorCode.LEAKAGE_DETECTED,
-                f"capture-context declaration {key!r} in {target} is inadmissible: "
-                + "; ".join(problems),
-                stage="export.load_channel_policy", evidence_refs=[key])
-        out.append(dict(entry))
-    return out
+        declared = block.get(list_key) or []
+        if not isinstance(declared, list):
+            raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                              f"{block_name}.{list_key} of {target} is not a list",
+                              stage="export.load_channel_policy")
+        out: list[dict[str, Any]] = []
+        for entry in declared:
+            if not isinstance(entry, Mapping) or not str(entry.get("key", "")).strip():
+                raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                                  f"{block_name} of {target} has an entry without a key",
+                                  stage="export.load_channel_policy")
+            key = str(entry["key"])
+            problems: list[str] = []
+            if str(entry.get("evidence_class", "")) != CAPTURE_CONTEXT_CLASS:
+                problems.append(f"evidence_class must be {CAPTURE_CONTEXT_CLASS!r}")
+            if entry.get("rig_obtainable") is not True:
+                problems.append("rig_obtainable must be exactly True")
+            if entry.get("claim_allowed") is not True:
+                problems.append("claim_allowed must be exactly True")
+            if key.lower() in guarded:
+                problems.append("a truth layer, truth-critical array, research-only channel or "
+                                "supervision column may never be declared capture context")
+            if problems:
+                raise SynLabError(
+                    ErrorCode.LEAKAGE_DETECTED,
+                    f"{where} declaration {key!r} in {target} is inadmissible: "
+                    + "; ".join(problems),
+                    stage="export.load_channel_policy", evidence_refs=[key])
+            out.append({**dict(entry), "declared_in": block_name})
+        return out
+
+    return (_entries("capture_context_fields", "fields", "capture-context")
+            + _entries("table_columns", "columns", "capture-context table-column"))
 
 
 def capture_context_keys(path: str | Path | None = None) -> set[str]:
@@ -1453,7 +1462,15 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
     # occurs in the deployment view is reported separately below -- so the exemption is measured
     # rather than asserted.  Nothing else in FORBIDDEN_FEATURE_FIELDS is affected: ``lineage_id``,
     # ``split``, ``iface_*``, ``corr_*``, ``id_map``, ``T_WC`` and the truth layers all still hit.
+    #
+    # S4: the exemption set is the union of the policy's ``capture_context_fields`` (array
+    # channels) **and** its ``table_columns`` (columns of the shipped tables, e.g. the
+    # ``bag_id`` column of ``deploy/queries.parquet``).  The scan reads every key of every
+    # written container -- parquet columns included -- so a channel-only declaration left the
+    # table column hitting the answer-field check.
     capture_keys = set(channel_policy.get("capture_context_keys") or [])
+    capture_blocks = {str(entry.get("declared_in") or "capture_context_fields")
+                      for entry in (channel_policy.get("capture_context") or [])}
     field_scan = scan_answer_fields(deploy_root, capture_keys=capture_keys, scan=deploy_scan)
     answer_hits = field_scan["answer_hits"]
     capture_hits = field_scan["capture_hits"]
@@ -1524,10 +1541,19 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
             "capture_context_scan": {
                 "view": VIEW_DEPLOY,
                 "declared_fields": sorted(capture_keys),
+                "declaration_blocks_used": sorted(capture_blocks),
+                "declarations": [
+                    {"key": entry.get("key"), "declared_in": entry.get("declared_in"),
+                     "evidence_class": entry.get("evidence_class"),
+                     "rig_obtainable": entry.get("rig_obtainable"),
+                     "claim_allowed": entry.get("claim_allowed"),
+                     "table": entry.get("table")}
+                    for entry in sorted(channel_policy.get("capture_context") or [],
+                                        key=lambda item: str(item.get("key")))],
                 "declaration_source": {
                     "path": channel_policy["path"],
                     "hash": channel_policy["hash"],
-                    "block": "capture_context_fields",
+                    "blocks": ["capture_context_fields", "table_columns"],
                     "evidence_class": CAPTURE_CONTEXT_CLASS,
                     "rig_obtainable": True,
                     "claim_allowed": True,
@@ -1536,10 +1562,13 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
                 "hits_by_field": field_scan["capture_hits_by_field"],
                 "note": ("declared acquisition context (the Lead's bag_id ruling): a real "
                          "excavation hands these over with the sherd, so they are permitted in "
-                         "the deployment view and are exempt from the answer-field scan.  Every "
-                         "name is validated against TRUTH_CRITICAL_FIELDS | research-only "
-                         "channels | TRUTH_BEARING_FIELDS when the policy is loaded, so an "
-                         "exemption can never cover a truth field."),
+                         "the deployment view and are exempt from the answer-field scan.  Both "
+                         "declaration blocks -- array channels (``capture_context_fields``) and "
+                         "shipped-table columns (``table_columns``, e.g. the ``bag_id`` column "
+                         "of ``deploy/queries.parquet``) -- are validated against "
+                         "TRUTH_CRITICAL_FIELDS | research-only channels | "
+                         "TRUTH_BEARING_FIELDS when the policy is loaded, so an exemption can "
+                         "never cover a truth field."),
             },
             "truth_content_scan": {
                 VIEW_DEPLOY: {
@@ -2159,6 +2188,30 @@ def _correspondence_token_rows(store: AssetStore, relations: Sequence[Mapping[st
             if fragment_id not in obs_arrays:
                 obs_arrays[fragment_id] = _resolve_obs_arrays(lookup, fragment_id)
 
+        # ---- token-space locator for every sample of this pair, vectorised per view -----------
+        # The scalar form of this loop (one numpy call per sample per view) measured ~0.6 s per
+        # 100 samples, i.e. minutes for one release; the whole fragment's samples are therefore
+        # projected in one shot per view, which is the same arithmetic with array operands.
+        side_token: dict[str, dict[str, Any]] = {}
+        for side, fragment_id in (("a", a), ("b", b)):
+            point = side_geom.get(side)
+            face_ids = side_face.get(side)
+            if point is None or face_ids is None:
+                side_token[side] = {"ok": np.zeros(valid.size, bool),
+                                    "reason": "no_correspondence_geometry"}
+                continue
+            payload = obs_arrays.get(fragment_id)
+            if payload is None:
+                side_token[side] = {
+                    "ok": np.zeros(valid.size, bool),
+                    "reason": "fragment_carries_no_observation_to_project_into"}
+                continue
+            located = _locate_samples_in_token_grid(payload, point, face_ids)
+            side_token[side] = located
+            for view_index, count in sorted(located.get("per_view", {}).items()):
+                provenance["views_used_per_side"][f"{side}:view_{view_index}"] = (
+                    int(provenance["views_used_per_side"].get(f"{side}:view_{view_index}", 0))
+                    + int(count))
         for i in range(valid.size):
             c = int(code[i])
             _bump(provenance["association_code_histogram"], str(c))
@@ -2191,83 +2244,31 @@ def _correspondence_token_rows(store: AssetStore, relations: Sequence[Mapping[st
                 "token_valid": False,
                 "token_reason": "",
             }
+            provenance["samples"] += 1
             if not bool(valid[i]):
                 entry["token_reason"] = "label_row_invalid"
                 rows.append(entry)
-                provenance["samples"] += 1
                 _bump(provenance["unmapped_reasons"], "label_row_invalid")
                 continue
-            side_token: dict[str, dict[str, Any]] = {}
-            for side, fragment_id in (("a", a), ("b", b)):
-                point = side_geom.get(side)
-                if point is None or i >= point.shape[0]:
-                    side_token[side] = {"ok": False, "reason": "no_correspondence_geometry"}
-                    continue
-                face_ids = side_face.get(side)
-                face = int(face_ids[i]) if face_ids is not None and i < face_ids.size else -1
-                payload = obs_arrays.get(fragment_id)
-                if payload is None:
-                    side_token[side] = {
-                        "ok": False, "reason": "fragment_carries_no_observation_to_project_into"}
-                    continue
-                point = point[i]
-                best: dict[str, Any] | None = None
-                seen_face = 0
-                seen_inside = 0
-                for view_index in range(_obs_view_count(payload)):
-                    view = _project_point_into_view(payload, view_index, point)
-                    if view is None:
-                        continue
-                    if view["face_visible"]:
-                        seen_face += 1
-                    if view["inside_grid"]:
-                        seen_inside += 1
-                    if not (view["face_visible"] and view["pixel_accepted"]
-                            and view["depth_ok"]):
-                        continue
-                    candidate = {**view, "token": view["grid_slot"],
-                                 "view": view_index}
-                    if best is None or (candidate["depth_residual_mm"]
-                                        < best["depth_residual_mm"]):
-                        best = candidate
-                if best is None:
-                    side_token[side] = {
-                        "ok": False,
-                        "reason": ("its_own_face_is_not_visible_in_any_delivered_view"
-                                   if seen_inside else
-                                   "the_face_the_sample_lies_on_is_not_rendered_in_this_"
-                                   "fragment_observation"),
-                        "face": face, "views_inside_grid": seen_inside,
-                        "views_with_face_visible": seen_face,
-                    }
-                    continue
-                side_token[side] = {"ok": True, "token": int(best["token"]),
-                                    "view": int(best["view"]),
-                                    "pixel": [int(best["u"]), int(best["v"])],
-                                    "depth_residual_mm": float(best["depth_residual_mm"]),
-                                    "face": face}
-            located = [s for s in ("a", "b") if side_token.get(s, {}).get("ok")]
-            provenance["samples"] += 1
-            if len(located) == 2:
+            present = [s for s in ("a", "b") if bool(side_token[s]["ok"][i])]
+            if len(present) == 2:
                 entry.update({
-                    "token_a": int(side_token["a"]["token"]),
-                    "token_b": int(side_token["b"]["token"]),
-                    "token_view_a": int(side_token["a"]["view"]),
-                    "token_view_b": int(side_token["b"]["view"]),
-                    "token_pixel_a": list(side_token["a"]["pixel"]),
-                    "token_pixel_b": list(side_token["b"]["pixel"]),
+                    "token_a": int(side_token["a"]["token"][i]),
+                    "token_b": int(side_token["b"]["token"][i]),
+                    "token_view_a": int(side_token["a"]["view"][i]),
+                    "token_view_b": int(side_token["b"]["view"][i]),
+                    "token_pixel_a": side_token["a"]["pixel"][i],
+                    "token_pixel_b": side_token["b"]["pixel"][i],
                     "token_valid": True,
                     "token_reason": "",
                 })
                 provenance["samples_mapped"] += 1
-                _bump(provenance["views_used_per_side"], f"a:view_{side_token['a']['view']}")
-                _bump(provenance["views_used_per_side"], f"b:view_{side_token['b']['view']}")
-            elif len(located) == 1:
-                side = located[0]
+            elif len(present) == 1:
+                side = present[0]
                 other = "b" if side == "a" else "a"
-                entry[f"token_{side}"] = int(side_token[side]["token"])
-                entry[f"token_view_{side}"] = int(side_token[side]["view"])
-                entry[f"token_pixel_{side}"] = list(side_token[side]["pixel"])
+                entry[f"token_{side}"] = int(side_token[side]["token"][i])
+                entry[f"token_view_{side}"] = int(side_token[side]["view"][i])
+                entry[f"token_pixel_{side}"] = side_token[side]["pixel"][i]
                 entry["token_reason"] = (f"one_side_of_the_pair_has_no_token_evidence: "
                                          f"fragment_{other} "
                                          f"{side_token[other].get('reason', 'not_located')}")
@@ -2275,7 +2276,7 @@ def _correspondence_token_rows(store: AssetStore, relations: Sequence[Mapping[st
             else:
                 entry["token_reason"] = (
                     "neither_side_has_token_evidence: "
-                    + "; ".join(f"fragment_{s} {side_token.get(s, {}).get('reason', 'not_located')}"
+                    + "; ".join(f"fragment_{s} {side_token[s].get('reason', 'not_located')}"
                                 for s in ("a", "b")))
                 _bump(provenance["unmapped_reasons"], "neither_side_has_token_evidence")
             rows.append(entry)
@@ -2286,21 +2287,83 @@ def _correspondence_token_rows(store: AssetStore, relations: Sequence[Mapping[st
     return rows, provenance
 
 
-def _obs_view_count(payload: Mapping[str, np.ndarray]) -> int:
-    """How many delivered views an observation payload carries projection channels for."""
-    count = 0
-    while f"v{count:03d}.K" in payload and f"v{count:03d}.T_WC" in payload:
-        count += 1
-    return count
+def _locate_samples_in_token_grid(payload: Mapping[str, np.ndarray],
+                                  points: np.ndarray, faces: np.ndarray) -> dict[str, Any]:
+    """Locate every sample of one fragment in the delivered token grid (vectorised per view).
+
+    Returns ``ok``/``token``/``view``/``pixel`` arrays parallel to ``points`` plus the reason and
+    per-view diagnostics.  All samples are projected at once, once per delivered view, so the cost
+    is ``n_views`` matrix operations instead of ``n_samples * n_views``.
+    """
+    n = int(points.shape[0])
+    out: dict[str, Any] = {
+        "ok": np.zeros(n, dtype=bool),
+        "token": np.full(n, -1, dtype=np.int64),
+        "view": np.full(n, -1, dtype=np.int64),
+        "pixel": [[-1, -1] for _ in range(n)],
+        "best_residual_mm": np.full(n, np.inf, dtype=np.float64),
+        "reason": "",
+        "per_view": {},
+        "views_with_a_face_visible": 0,
+        "views_inside_grid": 0,
+        "samples_on_their_own_face_in_some_view": 0,
+    }
+    if n == 0:
+        out["reason"] = "no_correspondence_geometry"
+        return out
+    world = np.asarray(points, dtype=np.float64).reshape(-1, 3)
+    face_ids = np.asarray(faces, dtype=np.int64).reshape(-1)
+    if face_ids.size < n:
+        face_ids = np.concatenate([face_ids, np.full(n - face_ids.size, -1, dtype=np.int64)])
+    homogeneous = np.concatenate([world, np.ones((n, 1), dtype=np.float64)], axis=1)
+    best = np.full(n, np.inf, dtype=np.float64)
+    n_identical_face = 0
+    for view_index in range(_obs_view_count(payload)):
+        projected = _project_samples_into_view(payload, view_index, homogeneous, face_ids)
+        if projected is None:
+            continue
+        n_identical_face += int(projected["face_identity"].sum())
+        if projected["face_visible"].any():
+            out["views_with_a_face_visible"] += 1
+        if projected["inside_grid"].any():
+            out["views_inside_grid"] += 1
+        accept = (projected["face_identity"] & projected["pixel_accepted"]
+                  & projected["depth_ok"] & projected["inside_grid"]
+                  & (projected["depth_residual_mm"] < best))
+        if not accept.any():
+            continue
+        best[accept] = projected["depth_residual_mm"][accept]
+        out["ok"][accept] = True
+        out["token"][accept] = projected["grid_slot"][accept]
+        out["view"][accept] = view_index
+        out["per_view"][view_index] = int(accept.sum())
+        for index in np.nonzero(accept)[0].tolist():
+            out["pixel"][index] = [int(projected["u"][index]), int(projected["v"][index])]
+    out["best_residual_mm"] = best
+    out["samples_on_their_own_face_in_some_view"] = int(n_identical_face)
+    if out["ok"].any():
+        out["reason"] = ""
+    elif not out["views_inside_grid"] and not out["views_with_a_face_visible"]:
+        out["reason"] = ("the_face_the_sample_lies_on_is_not_rendered_in_this_fragment_"
+                         "observation")
+    elif not out["views_with_a_face_visible"]:
+        out["reason"] = "its_own_face_is_not_visible_in_any_delivered_view"
+    else:
+        out["reason"] = ("no_delivered_view_passes_the_depth_and_mask_checks_for_this_face")
+    return out
 
 
-def _project_point_into_view(payload: Mapping[str, np.ndarray], view_index: int,
-                             point: np.ndarray) -> dict[str, Any] | None:
-    """One surface point -> ``(u, v, token slot, face identity)`` in one delivered view.
+def _project_samples_into_view(payload: Mapping[str, np.ndarray], view_index: int,
+                               homogeneous: np.ndarray,
+                               faces: np.ndarray | None = None) -> dict[str, Any] | None:
+    """Project every sample at once into one delivered view; ``None`` when the view cannot.
 
-    The pixel is accepted only where the *deployment* masks accept it (``roi`` when the render
-    carries one, else ``deployment_mask``, and never an ``uncertain_mask`` pixel); the identity
-    test is ``id_map[v, u] == face``.
+    Per sample the acceptance is the conjunction the docstring of
+    :func:`_correspondence_token_rows` states: the render's ``id_map`` names the sample's own face
+    at the projected pixel (``face_identity``), the pixel is inside the delivered grid and
+    accepted by the deployment masks, and the reprojected depth agrees with the rendered
+    ``depth_z``.  Everything is an array operation so a 552-sample pair costs 12 projections, not
+    6624.
     """
     prefix = f"v{int(view_index):03d}."
     pose = payload.get(prefix + "T_WC")
@@ -2318,51 +2381,70 @@ def _project_point_into_view(payload: Mapping[str, np.ndarray], view_index: int,
     if id_map.shape != depth.shape or not (np.isfinite(pose).all()
                                            and np.isfinite(camera_matrix).all()):
         return None
-    world = np.asarray(point, dtype=np.float64).reshape(3)
-    camera = np.linalg.inv(pose) @ np.append(world, 1.0)
-    camera = camera[:3]
-    if camera[2] <= 0 or not np.isfinite(camera).all():
+    n = int(homogeneous.shape[0])
+    try:
+        camera = (np.linalg.inv(pose) @ homogeneous.T).T[:, :3]
+    except np.linalg.LinAlgError:
         return None
-    projected = camera_matrix @ camera
-    if abs(projected[2]) < 1e-12:
-        return None
-    u = int(np.rint(projected[0] / projected[2]))
-    v = int(np.rint(projected[1] / projected[2]))
+    projected = (camera_matrix @ camera.T).T
+    z = projected[:, 2]
+    safe = np.where(np.abs(z) < 1e-12, np.nan, z)
+    u = np.rint(projected[:, 0] / safe)
+    v = np.rint(projected[:, 1] / safe)
     height, width = depth.shape
-    if not (0 <= u < width and 0 <= v < height):
-        return None
-    face = int(id_map[v, u])
-    out: dict[str, Any] = {
-        "u": u, "v": v, "face_visible": face >= 0,
-        "rendered_face": face, "inside_grid": False, "pixel_accepted": False,
-        "depth_ok": False, "depth_residual_mm": float("inf"), "grid_slot": -1,
-    }
+    inside = (camera[:, 2] > 0) & np.isfinite(u) & np.isfinite(v)
+    ui = np.where(inside, u, 0).astype(np.int64)
+    vi = np.where(inside, v, 0).astype(np.int64)
+    inside &= (ui >= 0) & (ui < width) & (vi >= 0) & (vi < height)
+    ui = np.clip(ui, 0, max(width - 1, 0))
+    vi = np.clip(vi, 0, max(height - 1, 0))
+    rendered_face = id_map[vi, ui]
+    rendered_depth = depth[vi, ui]
+    residual = np.where(np.isfinite(rendered_depth),
+                        np.abs(rendered_depth - camera[:, 2]), np.inf)
+    accepted = np.ones(n, dtype=bool)
     roi = payload.get(prefix + "roi")
-    deploy_mask = payload.get(prefix + "deployment_mask")
+    deployment_mask = payload.get(prefix + "deployment_mask")
     uncertain = payload.get(prefix + "uncertain_mask")
-    accepted = True
     if roi is not None and np.asarray(roi).shape == depth.shape:
-        accepted = accepted and bool(np.asarray(roi, dtype=bool)[v, u])
-    elif deploy_mask is not None and np.asarray(deploy_mask).shape == depth.shape:
-        accepted = accepted and bool(np.asarray(deploy_mask, dtype=bool)[v, u])
+        accepted &= np.asarray(roi, dtype=bool)[vi, ui]
+    elif deployment_mask is not None and np.asarray(deployment_mask).shape == depth.shape:
+        accepted &= np.asarray(deployment_mask, dtype=bool)[vi, ui]
     if uncertain is not None and np.asarray(uncertain).shape == depth.shape:
-        accepted = accepted and not bool(np.asarray(uncertain, dtype=bool)[v, u])
-    out["pixel_accepted"] = bool(accepted)
-    rendered = float(depth[v, u])
-    if np.isfinite(rendered):
-        out["depth_residual_mm"] = float(abs(rendered - float(camera[2])))
-        out["depth_ok"] = bool(out["depth_residual_mm"] <= CORRESPONDENCE_TOKEN_TOLERANCE_MM)
+        accepted &= ~np.asarray(uncertain, dtype=bool)[vi, ui]
     # the pooling grid the token cache was built with: `_tokens_from_view` truncates the image to
-    # a whole number of blocks, so a pixel in the truncated margin has no token.
+    # a whole number of blocks, so a pixel in the truncated margin has no token
     block_h = max(height // TOKEN_BLOCK, 1)
     block_w = max(width // TOKEN_BLOCK, 1)
-    if 0 <= u < block_w * TOKEN_BLOCK and 0 <= v < block_h * TOKEN_BLOCK:
-        block_row = v // block_h
-        block_col = u // block_w
-        # one token is a (block, channel) slot and the triple is block-major inside a view
-        out["inside_grid"] = True
-        out["grid_slot"] = int((block_row * TOKEN_BLOCK + block_col) * 3)
-    return out
+    inside_grid = inside & (ui < block_w * TOKEN_BLOCK) & (vi < block_h * TOKEN_BLOCK)
+    block_row = np.where(inside_grid, vi // block_h, 0)
+    block_col = np.where(inside_grid, ui // block_w, 0)
+    # one token is a (block, channel) slot and the triple is block-major inside a view
+    grid_slot = (block_row * TOKEN_BLOCK + block_col) * 3
+    return {
+        "u": ui, "v": vi,
+        "face_visible": inside & (rendered_face >= 0),
+        # the exact identity test: the pixel the sample reprojects to must be labelled with the
+        # very face the sample lies on -- not merely with some surface of the same fragment
+        "face_identity": (inside & (faces is not None)
+                          & (rendered_face == np.asarray(faces, dtype=np.int64))),
+        "rendered_face": rendered_face,
+        "inside_grid": inside_grid,
+        "pixel_accepted": inside & accepted,
+        "depth_ok": inside & np.isfinite(residual)
+                    & (residual <= CORRESPONDENCE_TOKEN_TOLERANCE_MM),
+        "depth_residual_mm": np.where(inside, residual, np.inf),
+        "grid_slot": grid_slot,
+    }
+
+
+def _obs_view_count(payload: Mapping[str, np.ndarray]) -> int:
+    """How many delivered views an observation payload carries projection channels for."""
+    count = 0
+    while f"v{count:03d}.K" in payload and f"v{count:03d}.T_WC" in payload:
+        count += 1
+    return count
+
 
 
 def _write_parquet(path: Path, rows: Sequence[Mapping[str, Any]], row_group_size: int) -> None:

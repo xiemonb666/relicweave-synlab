@@ -161,6 +161,36 @@
       }
     ]
   },
+  "table_columns": {
+    "note": [
+      "The deployment view is not only channel arrays: it also ships **tables** (the query roster",
+      "``deploy/queries.parquet``, the relation roster, the geometry/observation indices).  The",
+      "``capture_context_fields`` block above declares *array channel* names that a rig really",
+      "obtains; it says nothing about a table column, so the answer-field scan -- which reads every",
+      "key of every written container -- still counted ``bag_id`` as an answer field hit",
+      "(measured: ``deploy_view_answer_field_hit = defect_present`` on the shipped package,",
+      "``deploy/queries.parquet`` carrying ``bag_id``).",
+      "",
+      "This block closes that gap by declaring table columns with exactly the same admissibility",
+      "rules as ``capture_context_fields``: evidence_class=capture_context, rig_obtainable=true,",
+      "claim_allowed=true, and a name that is truth-critical, a research-only channel or a",
+      "truth-bearing supervision column may never be declared (``export.py`` validates every entry",
+      "against TRUTH_CRITICAL_FIELDS | research_only | TRUTH_BEARING_FIELDS and refuses to load the",
+      "policy when one overlaps).  ``lineage``/``mother``/``status`` are deliberately NOT declared:",
+      "they name the answer-side grouping and must keep hitting the scan."
+    ],
+    "columns": [
+      {
+        "key": "bag_id",
+        "meaning": "the simulated find bag the query's sherd was lifted in (plan t088)",
+        "table": "deploy/queries.parquet",
+        "evidence_class": "capture_context",
+        "rig_obtainable": true,
+        "claim_allowed": true,
+        "reason": "a real excavation labels the bag at lift time and the label travels with the sherd, so a deployment loader may obtain it -- the same Lead ruling that exempts the channel-side declaration"
+      }
+    ]
+  },
   "truth_roles": {
     "note": [
       "Roles whose payload is a ground-truth layer.  Their channel sets are never copied into the",

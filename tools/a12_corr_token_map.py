@@ -35,8 +35,9 @@ from synlab.storage.export import (  # noqa: E402
     CORRESPONDENCE_TOKEN_TOLERANCE_MM,
     TrainingPackage,
     _correspondence_token_rows,
+    _locate_samples_in_token_grid,
     _obs_view_count,
-    _project_point_into_view,
+    _project_samples_into_view,
     _truth_relations,
     _write_parquet,
 )

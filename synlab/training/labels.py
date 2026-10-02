@@ -118,13 +118,53 @@ class PackageLabelSource:
                                           "ambiguous_samples": 0, "asset_id": str(
                                               row.get("asset_id", "")),
                                           "relation_kind": str(row.get("relation_kind", "")),
-                                          "lineage": str(row.get("lineage", ""))})
+                                          "lineage": str(row.get("lineage", "")),
+                                          # token-space locator (S1): accumulated below
+                                          "token_mapped_samples": 0, "token_weight_sum": 0.0,
+                                          "_rows": [], "_cols": [], "_weights": [],
+                                          "token_view_pairs": {}})
             entry["samples"] += 1
             entry["valid_samples"] += int(bool(row.get("valid", False)))
             entry["ambiguous_samples"] += int(bool(row.get("ambiguous", False)))
             entry["weight_sum"] += float(row.get("weight") or 0.0)
+            token_a = row.get("token_a")
+            token_b = row.get("token_b")
+            if bool(row.get("token_valid", False)) and token_a is not None and token_b is not None:
+                try:
+                    token_a = int(token_a)
+                    token_b = int(token_b)
+                except (TypeError, ValueError):
+                    continue
+                if token_a < 0 or token_b < 0:
+                    continue
+                weight = float(row.get("weight") or 0.0)
+                entry["token_mapped_samples"] += 1
+                entry["token_weight_sum"] += weight
+                entry["_rows"].append(token_a)
+                entry["_cols"].append(token_b)
+                # a sample whose weight is 0 carries no edge mass; the loss reads `weight`, so a
+                # zero weight stays a zero weight and the row is left for the dustbin
+                entry["_weights"].append(weight)
+                view_pair = f"{row.get('token_view_a')}->{row.get('token_view_b')}"
+                entry["token_view_pairs"][view_pair] = int(
+                    entry["token_view_pairs"].get(view_pair, 0)) + 1
         for entry in corr.values():
             entry["weight_sum"] = float(entry["weight_sum"])
+            entry["token_weight_sum"] = float(entry["token_weight_sum"])
+            # one (row token, column token) edge per sample: duplicate samples of the same edge
+            # are folded so the loss sees a real many-to-many edge set, not repeated rows
+            edges: dict[tuple[int, int], float] = {}
+            for row_token, col_token, weight in zip(entry.pop("_rows"), entry.pop("_cols"),
+                                                    entry.pop("_weights")):
+                edge = (int(row_token), int(col_token))
+                edges[edge] = edges.get(edge, 0.0) + float(weight)
+            if edges:
+                entry["token_a"] = [edge[0] for edge in edges]
+                entry["token_b"] = [edge[1] for edge in edges]
+                entry["token_weight"] = [edges[edge] for edge in edges]
+                entry["token_pairs"] = len(edges)
+            else:
+                entry["token_pairs"] = 0
         return cls(quality=quality_out, correspondence=corr, quality_channel=channel,
                    package_dir=package_dir,
                    quality_provenance=dict(prov.get(QUALITY_LAYER) or {}),
@@ -169,16 +209,26 @@ class PackageLabelSource:
 
     # ------------------------------------------------------------------ correspondence
     def correspondence_for(self, features: Any, rows: Sequence[Mapping[str, Any]]
-                           ) -> tuple[None, dict[str, Any]]:
-        """Return ``(mapping, report)``; ``mapping`` is ``None`` while the labels cannot be
-        located in token space.
+                           ) -> tuple[dict[tuple[str, str], Any] | None, dict[str, Any]]:
+        """Return ``(mapping, report)`` for the correspondence loss.
 
-        A correspondence sample is a pair of **surface** points on the two fragments.  The loss
-        consumes ``W[q, c, i, j]`` over *token* indices, so a sample only becomes supervision if
-        (a) both fragments carry token evidence and (b) the sample can be projected into the
-        delivered views -- and the projection channels (``K``/``T_WC``/``id_map``/``depth_z``) are
-        forbidden in the deployment view by design.  The report states which of the two failed;
-        it never guesses a weight matrix.
+        A correspondence sample is a pair of surface points on the two fragments of a cut face.
+        The loss consumes ``W[q, c, i, j]`` over *token* indices, so a sample only becomes
+        supervision when **both** ids are locatable in the delivered token grid.  The projection
+        itself is done at export time (``synlab/storage/export.py::_correspondence_token_rows``),
+        because it needs the camera channels ``K``/``T_WC``/``id_map``/``depth_z`` that the
+        deployment view deliberately does not carry; the label table therefore ships the resulting
+        ``token_a``/``token_b`` (plus the view and pixel each token came from) and this reader
+        only re-shapes what the package stores.
+
+        Defect history (S1, measured on ``data/a12_exports/trainable``): the reader used to look
+        for ``positives``/``negatives`` keys on every label row -- keys the exported table has
+        never carried (it is keyed by ``fragment_a``/``fragment_b``) -- and then returned ``None``
+        unconditionally, so ``batch.corr_weight`` stayed all-zero and the task reported
+        ``correspondence_labels_never_reached_token_space`` no matter what the package held.
+
+        ``mapping`` is ``None`` when no labelled pair in this batch has both sides in token space;
+        the report then names the measured reason instead of inventing a weight matrix.
         """
         token_counts = {str(fid): int(np.count_nonzero(features.token_valid[i]))
                         for i, fid in enumerate(features.fragment_ids)}
@@ -187,12 +237,29 @@ class PackageLabelSource:
             entries = [str(x) for x in row.get("positives", [])] + \
                       [str(x) for x in row.get("negatives", [])]
             query = str(row.get("query", ""))
+            if not query:
+                continue
             for candidate in entries:
-                wanted.add((query, candidate) if query <= candidate else (candidate, query))
+                if candidate:
+                    wanted.add((query, candidate) if query <= candidate else (candidate, query))
         labelled = sorted(wanted & set(self.correspondence))
         samples_in_batch = int(sum(self.correspondence[p]["samples"] for p in labelled))
         both_observed = [pair for pair in labelled
                          if token_counts.get(pair[0], 0) > 0 and token_counts.get(pair[1], 0) > 0]
+        token_entries = {pair: entry for pair, entry in self.correspondence.items()
+                         if int(entry.get("token_mapped_samples", 0)) > 0}
+        mappable = [pair for pair in both_observed if pair in token_entries]
+        mapping: dict[tuple[str, str], Any] = {}
+        for pair in mappable:
+            entry = token_entries[pair]
+            mapping[pair] = {
+                "rows": np.asarray(entry["token_a"], dtype=np.int64),
+                "cols": np.asarray(entry["token_b"], dtype=np.int64),
+                "weights": np.asarray(entry["token_weight"], dtype=np.float32),
+                "row_valid": None,
+                "col_valid": None,
+                "source": "package_correspondence_token_table",
+            }
         one_side = [pair for pair in labelled
                     if (token_counts.get(pair[0], 0) > 0) != (token_counts.get(pair[1], 0) > 0)]
         report = {
@@ -204,8 +271,15 @@ class PackageLabelSource:
             "n_label_samples_in_batch": samples_in_batch,
             "pairs_with_both_sides_observable": len(both_observed),
             "pairs_with_one_side_observable": len(one_side),
-            "token_mapped_rows": 0,
-            "token_mapping_available": False,
+            "pairs_with_token_mapping": len(token_entries),
+            "pairs_mappable_in_batch": len(mappable),
+            "token_mapped_rows": int(sum(int(e.get("token_mapped_samples", 0))
+                                         for e in self.correspondence.values())),
+            "token_mapped_rows_in_batch": int(sum(int(self.correspondence[p].get(
+                "token_mapped_samples", 0)) for p in labelled)),
+            "token_pair_span": int(sum(int(e.get("token_pairs", 0))
+                                       for e in self.correspondence.values())),
+            "token_mapping_available": bool(token_entries),
             "reference_geometry_mm": {
                 "n_points": int(features.points.shape[1]),
                 "observed_fragments": sorted(fid for fid, n in token_counts.items() if n > 0),
@@ -225,12 +299,22 @@ class PackageLabelSource:
                 "renders exactly one side per cut event)")
         if not both_observed and not one_side and labelled:
             report["blocked_by"].append("no_labelled_pair_inside_the_batch")
-        report["blocked_by"].append(
-            "surface_sample_to_token_mapping_is_not_derivable_from_the_package")
-        report["unlock_condition"].append(
-            "export a token-mapped correspondence table (project the corr_* samples with the "
-            "camera channels in the truth/observe layer, which the deployment view must not carry)")
-        return None, report
+        if both_observed and not token_entries:
+            report["blocked_by"].append(
+                "surface_sample_to_token_mapping_is_not_in_the_label_table")
+            report["unlock_condition"].append(
+                "re-export the correspondence label table with the token locator "
+                "(tools/a12_corr_token_map.py, or a full export): project the corr_* samples "
+                "with the observation K/T_WC/id_map the deployment view must not carry")
+        if token_entries and not mappable and labelled:
+            report["blocked_by"].append(
+                "the_labelled_pairs_of_this_batch_carry_no_token_mapped_sample")
+            report["unlock_condition"].append(
+                "build a batch over a pair whose correspondence samples were located in token "
+                "space (see the package's supervision_labels.correspondence block)")
+        if not labelled and not self.correspondence:
+            report["blocked_by"].append("no_labelled_pair_inside_the_batch")
+        return (mapping or None), report
 
     # ------------------------------------------------------------------ diagnostics
     def report(self) -> dict[str, Any]:

@@ -39,6 +39,14 @@ PROBE = (
     "    globals()['PROBE_DATA'] = _PROBE\n"
     "    globals()['PROBE_VERTS'] = list(vertices)\n"
     "    globals()['PROBE_TOP_FACES'] = list(top_faces)\n"
+    "    globals()['PROBE_TOP_USE'] = dict(top_edge_use)\n"
+)
+
+#: installed into the module *after* execution: the assembler publishes its own stage tables here
+STAGE_PROBE = (
+    "    globals()['PROBE_BOTTOM_FACES'] = list(bottom_faces)\n"
+    "    globals()['PROBE_SIDE_FACES'] = list(side_faces)\n"
+    "    globals()['PROBE_FACES'] = list(top_faces + bottom_faces + side_faces)\n"
 )
 
 
@@ -47,6 +55,9 @@ def load_private():
     assert ANCHOR in source
     patched = source.replace(ANCHOR, PROBE + ANCHOR, 1)
     patched = patched.replace("    if bad_edges:\n", "    if bad_edges and not True:\n", 1)
+    stage_anchor = "    verts = np.asarray(vertices, dtype=np.float64)\n"
+    assert stage_anchor in patched
+    patched = patched.replace(stage_anchor, STAGE_PROBE + stage_anchor, 1)
     name = "synlab.fracture._cut_probe"
     module = types.ModuleType(name)
     module.__file__ = str(SOURCE)
@@ -113,49 +124,50 @@ def main() -> int:
     verts = np.asarray(module.__dict__["PROBE_VERTS"], dtype=np.float64)
     top_faces = module.__dict__["PROBE_TOP_FACES"]
 
-    # rebuild top + bottom + side exactly like the assembler and count directed uses
-    bottom_of: dict[int, int] = {}
-    for top in range(len(verts)):
-        pass
-    counter: Counter[tuple[int, int]] = Counter()
-    kind_of: dict[tuple[int, int], str] = {}
-    for face in top_faces:
-        for k in range(3):
-            a, b = face[k], face[(k + 1) % 3]
-            counter[(a, b)] += 1
-            kind_of.setdefault((a, b), "top")
-    print(f"distinct directed top edges: {len(counter)}")
-    over = {e: n for e, n in counter.items() if n > 1}
-    print(f"directed top edges traversed more than once (same direction): {len(over)}")
-    for e, n in list(over.items())[:6]:
-        print(f"   {e} x{n}  kind={kind_of[e]}")
+    def undirected(faces):
+        table: Counter[tuple[int, int]] = Counter()
+        for face in faces:
+            for k in range(3):
+                aa, bb = int(face[k]), int(face[(k + 1) % 3])
+                table[(min(aa, bb), max(aa, bb))] += 1
+        return table
 
-    # classify the *undirected* over-used edges of the final mesh by the faces that use them
-    faces = np.asarray(mesh.faces, dtype=np.int64)
-    a = faces[:, [0, 1, 2]].ravel()
-    b = faces[:, [1, 2, 0]].ravel()
-    keys = np.stack([np.minimum(a, b), np.maximum(a, b)], axis=1)
-    unique, counts = np.unique(keys, axis=0, return_counts=True)
-    bad = unique[counts != 2]
-    print(f"\nfinal mesh over-used (or under-used) edges: {bad.shape[0]}")
-    bottom_z = float(report["bottom_w_mm"])
-    top_vertices = set()
-    for face in top_faces:
-        top_vertices.update(int(x) for x in face)
-    cls = Counter()
-    for e in bad[:4000]:
-        p, q = int(e[0]), int(e[1])
-        p_top = p in top_vertices
-        q_top = q in top_vertices
-        p_bot = abs(verts[p, 2] - bottom_z) < 1e-9
-        q_bot = abs(verts[q, 2] - bottom_z) < 1e-9
-        if p_top and q_top:
-            cls["top-top"] += 1
-        elif p_bot and q_bot:
-            cls["bottom-bottom"] += 1
-        else:
-            cls["vertical"] += 1
-    print(f"class of the first {min(len(bad), 4000)} bad edges: {dict(cls)}")
+    top_use = undirected(top_faces)
+    bottom_use = undirected(module.__dict__["PROBE_BOTTOM_FACES"])
+    side_use = undirected(module.__dict__["PROBE_SIDE_FACES"])
+    all_faces = module.__dict__["PROBE_FACES"]
+    total = undirected(all_faces)
+    print(f"\nstage edge-use histograms:")
+    print(f"  top:    {dict(sorted(Counter(top_use.values()).items()))}")
+    print(f"  bottom: {dict(sorted(Counter(bottom_use.values()).items()))}")
+    print(f"  side:   {dict(sorted(Counter(side_use.values()).items()))}")
+    print(f"  total:  {dict(sorted(Counter(total.values()).items()))}")
+    print(f"  reported: {report['edge_use_histogram']}")
+    bad = [e for e, n in total.items() if n != 2]
+    print(f"reconstructed bad edges: {len(bad)}   reported: {report['bad_edges']}")
+    origin = Counter()
+    for e in bad:
+        pieces = []
+        if top_use.get(e):
+            pieces.append(f"top{top_use[e]}")
+        if bottom_use.get(e):
+            pieces.append(f"bot{bottom_use[e]}")
+        if side_use.get(e):
+            pieces.append(f"side{side_use[e]}")
+        origin["+".join(pieces)] += 1
+    print("composition of the bad edges (uses per stage):")
+    for combo, count in origin.most_common(10):
+        print(f"   {combo}: {count}")
+
+    # is every bad edge a *vertical* one (top vertex <-> its own bottom vertex)?
+    vertical = 0
+    for e in bad:
+        z0, z1 = verts[e[0], 2], verts[e[1], 2]
+        xy0 = verts[e[0], :2]
+        xy1 = verts[e[1], :2]
+        if abs(z0 - z1) > 1e-9 and float(np.linalg.norm(xy0 - xy1)) < 1e-9:
+            vertical += 1
+    print(f"bad edges that are exact verticals: {vertical} / {len(bad)}")
     return 0
 
 
