@@ -425,6 +425,11 @@ def _run_physical(mesh: Any, fragment: Any, recipe: Any) -> dict[str, Any]:
             "applied_depth_mm": measured.get("applied_depth_mm"),
             "achieved_contact_loss": measured.get("achieved_contact_loss"),
             "measured_max_recession_mm": measured.get("measured_max_recession_mm"),
+            # every displacement-family reading either backend produces, so a route that does not
+            # populate ``roi_external_drift_mm`` still has its own instrument recorded instead of
+            # leaving a hole a reader could mistake for zero
+            "displacement_family": {k: float(v) for k, v in measured.items()
+                                    if "drift" in k or "displacement" in k},
         },
         "body": _body_view(result, mesh),
         "audit": {"status": audit.get("status"),

@@ -642,6 +642,7 @@ def classify_divergence(pools: Mapping[str, Any], ctx: ProtocolContext) -> dict[
     eligibility: list[dict[str, Any]] = []
     gaps: list[dict[str, Any]] = []
     mate_conflicts: list[dict[str, Any]] = []
+    eligibility_keys: set[tuple[str, str]] = set()
     for fid in ctx.universe():
         for reading in ("mates", "neighbours"):
             values = {label: tuple(sorted(str(x) for x in getattr(pools[label], reading)(fid)))
@@ -688,6 +689,8 @@ def classify_divergence(pools: Mapping[str, Any], ctx: ProtocolContext) -> dict[
                                             "reader answers UNKNOWN and the gallery answers the "
                                             "implicit R0")})
                 if eligibility_candidates:
+                    for example in eligibility_candidates:
+                        eligibility_keys.add((str(fid), str(example["candidate"])))
                     eligibility.append({**pair, "reading": "legal_pool",
                                         "count": len(eligibility_candidates),
                                         "examples": eligibility_candidates[:5],
@@ -721,7 +724,11 @@ def classify_divergence(pools: Mapping[str, Any], ctx: ProtocolContext) -> dict[
         "readers": labels,
         "conservative_gaps": len(gaps),
         "eligibility_findings": len(eligibility),
-        "eligibility_pairs": int(sum(item["count"] for item in eligibility)),
+        # distinct (query, candidate) directions behind the findings: a fragment is compared once
+        # per pair of *distinct readings*, so the raw item count is not the number of affected
+        # pairs -- both are reported.
+        "eligibility_pairs": len(eligibility_keys),
+        "eligibility_queries": len({key[0] for key in eligibility_keys}),
         "conflicts": len(conflicts) + len(mate_conflicts) + len(conflict_pairs),
         "conflict_examples": (conflicts + mate_conflicts + conflict_pairs)[:16],
         "eligibility_examples": eligibility[:8],

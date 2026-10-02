@@ -212,6 +212,16 @@ def declare(manifest: dict[str, Any], root: Path, extras: Sequence[str] = ()) ->
     manifest["files"] = sorted(files, key=lambda item: item["path"])
     manifest["bytes_total"] = int(sum(int(f["bytes"]) for f in manifest["files"]))
     manifest["counts_total"] = len(manifest["files"])
+    # the manifest's own view summary must describe the bytes that are really in each view: after
+    # the merge the exporter's original numbers would understate ``research`` by every dimension.
+    views = manifest.setdefault("views", {})
+    for name, prefix in (("deploy", "deploy/"), ("research", "research/")):
+        block = views.setdefault(name, {})
+        owned = [f for f in manifest["files"] if str(f["path"]).startswith(prefix)]
+        block["files"] = len(owned)
+        block["bytes"] = int(sum(int(f["bytes"]) for f in owned))
+        block["counts_recomputed_by"] = ("tools/a12_experiment_ready_export.py::declare -- real scan "
+                                         "of the merged file set")
     manifest["manifest_hash"] = hash_json(
         {k: v for k, v in manifest.items() if k != "manifest_hash"})
     return manifest
@@ -790,8 +800,14 @@ def merge_fracture_interfaces(package: Path, deploy_keys: set[str], store_dir: P
     frame.to_parquet(fragment_table, index=False)
     planar = [r for r in rows if r.get("planar_geometry") is True]
     nonplanar = [r for r in rows if r.get("planar_geometry") is False]
+    # three mutually exclusive and jointly exhaustive buckets: a patch either measured exactly
+    # zero sub-mm amplitude, measured a positive one, or could not be measured at all
     sub_mm_zero = [p for p in patches if p.get("ra_below_1mm_mm") == 0.0]
-    sub_mm_nonzero = [p for p in patches if (p.get("ra_below_1mm_mm") or 0.0) > 0.0]
+    sub_mm_nonzero = [p for p in patches
+                      if isinstance(p.get("ra_below_1mm_mm"), (int, float))
+                      and p["ra_below_1mm_mm"] > 0.0]
+    sub_mm_unmeasurable = [p for p in patches
+                           if p not in sub_mm_zero and p not in sub_mm_nonzero]
     index = {
         "schema": "synlab.experiment_ready.fracture_interfaces.v1",
         "dimension": "fracture.interface_channels",
@@ -819,6 +835,7 @@ def merge_fracture_interfaces(package: Path, deploy_keys: set[str], store_dir: P
             "planar_patches": sum(1 for p in patches if p.get("planar")),
             "patches_below_1mm_ra_exactly_zero": len(sub_mm_zero),
             "patches_below_1mm_ra_nonzero": len(sub_mm_nonzero),
+            "patches_below_1mm_ra_unmeasurable": len(sub_mm_unmeasurable),
             "planar_fragments": len(planar), "non_planar_fragments": len(nonplanar),
             "bytes": int(table.stat().st_size) + int(fragment_table.stat().st_size),
             "interfaces_parquet": "research/fracture/interfaces.parquet (one row per patch)",
@@ -837,34 +854,179 @@ def merge_fracture_interfaces(package: Path, deploy_keys: set[str], store_dir: P
             "deploy_view_touched": False}
 
 
+def merge_hard_negatives(package: Path, deploy_keys: set[str],
+                         relations_hash: str | None) -> dict[str, Any]:
+    """Dimension 5: the ``HARD_NEGATIVE_MATE_PRESENT`` auxiliary table, if its line has landed.
+
+    The class may **not** be appended to ``research/relations.parquet`` (its contract --
+    ``loss_mask=True`` with ``eligible_as_negative=False`` -- violates decision D10's single gate on
+    every row; measured at +880 violations in ``docs/a12/smallfixes_report.md`` §S2), so it ships as
+    its own table.  This merge does **not** re-implement the producer: it calls the real driver
+    (``tools/a12_n10_hard_negatives_table.py --step build``) on *this* package's relation table and
+    then verifies the bytes it produced before they are admitted.  If the driver is absent, fails,
+    or produces a table that does not satisfy the contract, the dimension is recorded as
+    ``missing`` with the concrete reason -- never filled in with a placeholder.
+    """
+    import subprocess
+    import tempfile
+
+    root = package / "research"
+    producer = REPO_ROOT / "tools" / "a12_n10_hard_negatives_table.py"
+    gap: dict[str, Any] = {
+        "missing": "research/hard_negatives.parquet",
+        "status": "missing",
+        "ablation_group": "ABL_HARD_NEGATIVES",
+        "switch_field": "negative_mix.hard_negative_weight",
+        "unlock_condition": ("a producer that materialises CANDIDATE_MATE_PRESENT_NOT_ORDINARY as a "
+                            "shipped table; it must stay out of research/relations.parquet "
+                            "(merging it adds 880 D10 violations, measured in "
+                            "docs/a12/smallfixes_report.md S2)"),
+    }
+    if not producer.is_file():
+        gap["scanned"] = (f"no producer at {producer.relative_to(REPO_ROOT).as_posix()}; the class "
+                          "exists only online (synlab.relations.sampler.hard_negative_candidates)")
+        write_json(root / "hard_negatives.index.json", gap)
+        return {"dimension": "hard_negatives", "ablation_group": "ABL_HARD_NEGATIVES",
+                "switch_field": gap["switch_field"], "counts": {"rows": 0},
+                "deploy_view_touched": False, "status": "missing", "gap": gap}
+
+    measure: dict[str, Any] = {}
+    try:
+        with tempfile.TemporaryDirectory(prefix="n10_build_") as tmp:
+            tmp_path = Path(tmp)
+            started = time.time()
+            proc = subprocess.run(
+                [sys.executable, str(producer), "--step", "build",
+                 "--package", str(package), "--out", str(tmp_path / "hard_negatives.parquet")],
+                cwd=str(REPO_ROOT), capture_output=True, text=True, encoding="utf-8",
+                errors="replace", timeout=1800)
+            measure["producer_command"] = (
+                f"{sys.executable} {producer.relative_to(REPO_ROOT).as_posix()} --step build "
+                f"--package <package> --out <tmp>/hard_negatives.parquet")
+            measure["producer_exit_code"] = int(proc.returncode)
+            measure["producer_seconds"] = round(time.time() - started, 3)
+            measure["producer_stdout"] = (proc.stdout or "").strip()[-800:]
+            measure["producer_stderr"] = (proc.stderr or "").strip()[-800:]
+            built = tmp_path / "hard_negatives.parquet"
+            card = tmp_path / "hard_negatives.card.json"
+            if proc.returncode != 0 or not built.is_file():
+                gap["status"] = "missing"
+                gap["scanned"] = ("the producer driver exists but its build step did not produce a "
+                                  "table for this package's relation table")
+                gap["producer"] = measure
+                write_json(root / "hard_negatives.index.json", gap)
+                return {"dimension": "hard_negatives", "ablation_group": "ABL_HARD_NEGATIVES",
+                        "switch_field": gap["switch_field"], "counts": {"rows": 0},
+                        "deploy_view_touched": False, "status": "missing", "gap": gap}
+            frame = pd.read_parquet(built)
+            relations_ok = (relations_hash is None
+                            or str(frame["source_relations_hash"].iloc[0]) == relations_hash)
+            contract = {
+                "class_uniform": sorted({str(v) for v in frame["class"].unique()}),
+                "ruling_class_uniform": sorted({str(v) for v in frame["ruling_class"].unique()}),
+                "loss_mask_all_true": bool(frame["loss_mask"].all()),
+                "eligible_as_negative_all_false": bool(not frame["eligible_as_negative"].any()),
+                "query_mate_present_all_true": bool(frame["query_mate_present"].all()),
+                "source_relations_hash_matches_package": bool(relations_ok),
+                "n_queries": int(frame["query"].nunique()),
+                "n_candidates": int(frame["candidate"].nunique()),
+            }
+            contract["ok"] = (len(contract["class_uniform"]) == 1
+                              and contract["class_uniform"][0] == "HARD_NEGATIVE_MATE_PRESENT"
+                              and contract["loss_mask_all_true"]
+                              and contract["eligible_as_negative_all_false"]
+                              and contract["query_mate_present_all_true"]
+                              and contract["source_relations_hash_matches_package"])
+            if not contract["ok"]:
+                gap["scanned"] = ("the producer ran but its table failed this merge's own contract "
+                                  "check; nothing was admitted")
+                gap["producer"] = measure
+                gap["contract_check"] = contract
+                write_json(root / "hard_negatives.index.json", gap)
+                return {"dimension": "hard_negatives", "ablation_group": "ABL_HARD_NEGATIVES",
+                        "switch_field": gap["switch_field"], "counts": {"rows": int(len(frame))},
+                        "deploy_view_touched": False, "status": "missing", "gap": gap}
+            bytes_written = _copy(built, root / "hard_negatives.parquet")
+            sidecar = json.loads(card.read_text(encoding="utf-8")) if card.is_file() else {}
+            if sidecar:
+                write_json(root / "hard_negatives.card.json", sidecar)
+            index = {
+                "schema": "synlab.experiment_ready.hard_negatives.v1",
+                "dimension": "relations.hard_negatives",
+                "ablation_group": "ABL_HARD_NEGATIVES",
+                "switch_field": "negative_mix.hard_negative_weight",
+                "source": ("built by the class's own driver on *this* package's relation table; the "
+                           "merge copies the produced bytes and re-measures them"),
+                "producer": measure,
+                "producer_card_schema": sidecar.get("schema"),
+                "producer_constraints": sidecar.get("constraints"),
+                "rejected": sidecar.get("rejected"),
+                "contract_check": contract,
+                "counts": {
+                    "rows": int(len(frame)),
+                    "columns": int(frame.shape[1]),
+                    "queries": contract["n_queries"], "candidates": contract["n_candidates"],
+                    "rejected_rows": int((sidecar.get("rejected") or {}).get("rows") or 0),
+                    "rejected_reason": (sidecar.get("rejected") or {}).get("reason"),
+                    "bytes": bytes_written,
+                    "relations_parquet_hash": relations_hash,
+                    "distinct_pairs": int(frame[["query", "candidate"]].drop_duplicates().shape[0]),
+                },
+                "columns": {str(c): str(frame[c].dtype) for c in frame.columns},
+                "annotation": annotation("hard_negatives", deploy_channels=deploy_keys,
+                                         evidence="RESEARCH_ONLY_LABEL_TABLE"),
+                "deploy_view_touched": False,
+                "deploy_view_note": ("the table is a label table: it lives under research/ and the "
+                                     "deployment view ships no column of it"),
+            }
+            write_json(root / "hard_negatives.index.json", index)
+            return {"dimension": "hard_negatives", "ablation_group": "ABL_HARD_NEGATIVES",
+                    "switch_field": index["switch_field"], "counts": index["counts"],
+                    "deploy_view_touched": False, "status": "present",
+                    "contract_check": contract, "producer": measure}
+    except Exception as exc:                                            # noqa: BLE001
+        gap["scanned"] = f"the producer raised {type(exc).__name__}: {exc}"
+        gap["producer"] = measure
+        write_json(root / "hard_negatives.index.json", gap)
+        return {"dimension": "hard_negatives", "ablation_group": "ABL_HARD_NEGATIVES",
+                "switch_field": gap["switch_field"], "counts": {"rows": 0},
+                "deploy_view_touched": False, "status": "missing", "gap": gap}
+
+
 def step_merge(package: Path, store_dir: Path, scope_ids: Sequence[str],
                out_dir: Path) -> dict[str, Any]:
     deploy_keys = deploy_channel_keys(package)
+    relations_path = package / "research" / "relations.parquet"
+    relations_hash = sha256(relations_path) if relations_path.is_file() else None
     results = [
         merge_roi_views(package, deploy_keys, REPO_ROOT / ROI_STORE),
         merge_synthetic_extras(package, deploy_keys, REPO_ROOT / EXTRAS_EXPORT),
         merge_context(package, deploy_keys, REPO_ROOT / CONTEXT_STORE, REPO_ROOT / EXTRAS_STORE),
         merge_degrade(package, deploy_keys, REPO_ROOT / DEGRADE_STORE, REPO_ROOT / DEGRADE_EXPORT),
         merge_fracture_interfaces(package, deploy_keys, store_dir, scope_ids),
+        merge_hard_negatives(package, deploy_keys, relations_hash),
     ]
-    hard = package / "research" / "hard_negatives.parquet"
-    gap = {
-        "missing": "research/hard_negatives.parquet",
-        "status": "missing",
-        "scanned": ("a repository-wide scan for a file named hard_negatives*.parquet found none; "
-                    "tools/a12_s2_hard_negatives.py produces the class *online* "
-                    "(synlab.relations.sampler.hard_negative_candidates) and writes it to "
-                    "data/a12_reports/s2_hard_negatives_class.json, never into a package"),
-        "unlock_condition": ("a producer that materialises CANDIDATE_MATE_PRESENT_NOT_ORDINARY as a "
-                            "shipped table; it must stay out of research/relations.parquet "
-                            "(merging it adds 880 D10 violations, measured in "
-                            "docs/a12/smallfixes_report.md S2)"),
-        "ablation_group": "ABL_HARD_NEGATIVES",
-        "switch_field": "negative_mix.hard_negative_weight",
+    missing = [{"missing": "research/hard_negatives.parquet", "status": "missing",
+                "ablation_group": "ABL_HARD_NEGATIVES",
+                "switch_field": "negative_mix.hard_negative_weight",
+                "scanned": ("a repository-wide scan for a file named hard_negatives*.parquet found "
+                            "none; the class is produced online "
+                            "(synlab.relations.sampler.hard_negative_candidates) and had never "
+                            "been written into a package"),
+                "unlock_condition": ("a producer that materialises "
+                                     "CANDIDATE_MATE_PRESENT_NOT_ORDINARY as a shipped table; it "
+                                     "must stay out of research/relations.parquet (merging it adds "
+                                     "880 D10 violations, measured in "
+                                     "docs/a12/smallfixes_report.md S2)")}]
+    for entry in results:
+        if entry["dimension"] == "hard_negatives":
+            missing = [] if entry.get("status") == "present" else [entry.get("gap") or missing[0]]
+    return {
+        "dimensions": [e for e in results if e["dimension"] != "hard_negatives"],
+        "hard_negatives": next(e for e in results if e["dimension"] == "hard_negatives"),
+        "missing": missing,
+        "deploy_channel_keys": sorted(deploy_keys),
     }
-    write_json(package / "research" / "hard_negatives.index.json", gap)
-    return {"dimensions": results, "missing": [gap],
-            "deploy_channel_keys": sorted(deploy_keys)}
 
 
 # ----------------------------------------------------------------------------------------------
@@ -948,22 +1110,31 @@ def step_ablation(package: Path, merge_report: Mapping[str, Any]) -> dict[str, A
         "no gain, or a gain that exists only where planar_geometry is true (i.e. the model is "
         "reading the plane, not the break)",
         fracture_d.get("counts"), None)
+    hard = package / "research" / "hard_negatives.parquet"
+    hard_index = package / "research" / "hard_negatives.index.json"
+    hard_d = (json.loads(hard_index.read_text(encoding="utf-8"))
+              if hard_index.is_file() else {})
     dim("relations.hard_negatives", "ABL_HARD_NEGATIVES", "negative_mix.hard_negative_weight",
-        (package / "research" / "hard_negatives.parquet").is_file(),
-        ["research/hard_negatives.parquet"],
+        hard.is_file(), ["research/hard_negatives.parquet"],
         "The mate-present hard-negative class (hard_negative_loss, default weight 0.0) sharpens "
-        "the rank head beyond the ordinary mate-absent negatives.",
-        "rank loss / Hit@10 improve over the ordinary-negative-only arm at equal batch composition",
+        "the rank head beyond the ordinary mate-absent negatives, without touching any primary "
+        "denominator (eligible_as_negative is false on every row).",
+        "rank loss / Hit@10 improve over the ordinary-negative-only arm at equal batch composition, "
+        "with positives/negatives/effective_queries bit-identical between the two arms",
         "no gain at weight 0.3 with an unchanged rank denominator (measured once already in "
         "docs/a12/smallfixes_report.md S2: no gain, so the class is recommended off)",
-        {"measured_once": "data/a12_reports/s2_hard_negatives_ab.json",
-         "class_producer": "synlab.relations.sampler.hard_negative_candidates"},
+        {"index": hard_d.get("counts"), "contract_check": hard_d.get("contract_check"),
+         "producer": (hard_d.get("producer") or {}).get("producer_stdout"),
+         "measured_once": "data/a12_reports/s2_hard_negatives_ab.json",
+         "class_producer": "tools/a12_n10_hard_negatives_table.py (synlab.relations."
+                           "hard_negatives_table) built on this package's own relations table"},
+        None if hard.is_file() else
         "a producer that ships the class as a table; it must stay out of "
         "research/relations.parquet (adding it there creates 880 D10 audit violations)")
     for group in groups:
-        if group["dimension"] == "relations.hard_negatives":
-            group["missing_reason"] = ("no hard_negatives.parquet exists anywhere in the "
-                                       "repository (scanned); the class is produced online only")
+        if group["dimension"] == "relations.hard_negatives" and group["availability"] == "missing":
+            group["missing_reason"] = (hard_d.get("scanned")
+                                       or "no hard_negatives.parquet exists in this package")
 
     index = {
         "schema": "synlab.experiment_ready.ablation_index.v1",

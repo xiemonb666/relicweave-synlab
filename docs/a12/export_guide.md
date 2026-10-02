@@ -559,4 +559,182 @@ mini-batch   : view 18/18 有监督；rank 4/0、correspondence 0/0、quality 0/
   `correspondence / quality` 两层标签在该包里根本没有（`label_layers = 3`），
   所以那两个任务的 `why` 是"包里没有这类标签"，而不是"被掩码挡掉"。
 
+---
+
+## 12. 合并的"实验就绪"导出 `data/a12_exports/experiment_ready/training_package`
+
+### 12.0 一句话
+
+**此前每一族"已实现但没进包"的数据，现在都在同一个包里，并且每一族的每一行都是实测出来的。**
+本包由**真写者**（`synlab.storage.export.export_training_package`）重新导出一次基础包，再由
+新驱动 `tools/a12_experiment_ready_export.py` 只往 `research/` 下**拷贝真实载荷字节并当场测量**，
+最后用真实扫描重写 `export_manifest.json`、产出 `ablation_index.json` 与数据卡。
+
+工程政策（本轮遵守，逐条可查）：
+
+| 政策 | 本轮的落实 |
+|---|---|
+| **R1 三次补丁规则** | 只新增一个驱动 `tools/a12_experiment_ready_export.py`；对既有文件的改动只有 `tools/load_package.py` 的**语义表追加**（`FILE_PURPOSE` / `COLUMN_SEMANTICS` / `_file_family`，纯文档，不改判定） |
+| **R2 让性质构造性成立** | 基础包**不是**手写副本，而是真写者重跑（所以 S3 方向补全与 S4 表列声明自动生效）；五个维度**只拷贝真字节**，每个 `index.json` 的每个数字都由读这些字节得出，没有任何"应该有什么"的常量表 |
+| **R3 before/after 实测** | §12.6（文件数/字节/耗时），全部来自真实运行 |
+| **R4 不劣化既有包** | `closed_loop/training_package_v2` 的 **328 项抽查 328 相符 / 0 不相符**，`--check` exit 0（§12.7）；本轮**只写** `data/a12_exports/experiment_ready/**` |
+| **R5 不放宽判据** | `separation` 块由写者生成，本轮**没有**改它；`features_carry_answer_fields=false`、`answer_field_scan.hits=[]`、部署视图 0 条真值通道（§12.5） |
+
+### 12.1 复现命令
+
+```powershell
+cd C:\Users\xiemo\Desktop\ShardForge\relicweave-synlab
+
+# 全流程（base -> merge -> ablation -> finalise -> card），实测 90 s 左右
+& .venv\Scripts\python.exe tools\a12_experiment_ready_export.py --step all `
+    --store data/a12_trainable/store `
+    --state data/a12_exports/trainable/next_experiment/next_experiment_export_state.json `
+    --release rel_nexp_1790919836 --out data/a12_exports/experiment_ready
+```
+
+每一步都单独可跑（`--step base|merge|ablation|finalise|card`），结果累积写入
+`data/a12_exports/experiment_ready/experiment_ready_report.json`。**顺序有意固定**：
+`ablation` 必须在 `finalise` 之前，因为 `ablation_index.json` 是包根文件，而 `--check`
+只接受"清单自身 + 两个数据卡产物"作为未声明文件。
+
+### 12.2 基础包：真写者重跑（方向补全 + 表列声明自动生效）
+
+`data/a12_trainable/store` 的 328 个资产（`next_experiment_export_state.json` 里记录的
+`unverified_scope_ids`，profile 为拒绝冻结的 `PILOT_UNFROZEN`，因此**不写** `<store>/releases`）。
+50.4 s，1276 文件 / 3 001 840 824 B。三处关键量（都在 `experiment_ready_report.json` 里）：
+
+| 项 | 实测 |
+|---|---|
+| `relations` / `unordered_relation_pairs` | **3442 / 1721** |
+| `relation_rows_reverse_role` | **1721** |
+| `relation_pairs_direction_complete` | **true** |
+| `relation_kinds` | `R0 3120 / R2 56 / UNKNOWN 212 / R1 48 / TINY_CONTACT 6` |
+| `separation.features_carry_answer_fields` | **false** |
+| `separation.answer_field_scan.hits` | **[]** |
+
+> **与 S3 报告里"3588 行"的口径差（如实记录）**：`tools/a12_relation_direction_audit.py`
+> 用**整库**的 `relation_pool`/`clean_truth`/`label_bundle` 资产（78 个）建 scope，得 1794 个
+> 无序对；导出用的是**冻结的 328 资产 scope**，其中同类资产 71 个（`clean_truth` 少 10 个），
+> 得 1721 个无序对。方向补全这件事本身是**同一个**（`relation_rows_reverse_role ==
+> unordered_relation_pairs`、`..._direction_complete == true`），差的 73 对是 scope 外的资产，
+> 不是补全失败。
+
+### 12.3 五个维度：只拷贝真字节，然后当场测量
+
+| 维度 | ablation 组 | 开关字段 | 实测内容 |
+|---|---|---|---|
+| 观测 · 断口 ROI 特写族 | `ABL_ROI_VIEWS` | `observations.roi_views.enabled` | 4 个 `obs_result`、**96 视图**（`WHOLE_FRAGMENT 48` + `FRACTURE_ROI 48`）、**2 121 947 876 B**、11 个通道；逐视图记 `mm_per_px_axis_raycast` / `r_eff_mm_4px` / `rim_px` / `fracture_roi_id` / `direction_offset_deg` / `capture_feasible` |
+| 观测 · 合成额外模态 | `ABL_SYNTHETIC_EXTRAS` | `extras.enable_<modality_id>` | **9 个模态**、18 个实例、2 307 861 B；`rig_obtainable=0/9`、`claim_allowed=0/9`（标注**逐字来自产者自己的 index**，不是本工具的判断） |
+| 上下文 · 模拟出土 | `ABL_CONTEXT` | `context.enabled` | **2 个 context_pack**（`simulated=true` 2/2），含出土区/网格/层位/袋号/坑位/批次/共存物/尺度参考；另记 `deploy/queries.parquet` 的 **14 列**与其中 **1 列**（`bag_id`）的表列声明 |
+| 退化 · 轴×档位 | `ABL_DEGRADE` | `degrade.axes.<axis_id>.level` | 注册轴 **31**（读 `synlab.degrade.registry.AXIS_REGISTRY.ids()`）、**有物化档位的轴 9**、物化变体 **33**、档位单元 **33**、源资产 **3**、76 229 280 B；逐轴给出 `declared_levels` 与 `materialised_levels` |
+| 断裂信号 · 断面通道 | `ABL_FRACTURE_IFACE` | `fracture.interface_channels.enabled` | 扫 71 个碎片 mesh（scope 内全部），**63 个**有 `face__origin_kind==INTERFACE` 面，共 **86 442 面 / 751 474.75 mm²**，切成 **582 个 patch** |
+
+**断口平面性是真测的，而且是两档**：patch 级 `planar = (max|顶点 − 面积加权 patch 平面| ≤ 1e-9 mm)`，
+碎片级 `planar_geometry = 所有 patch 都平面`。本批**0 个 patch 整块共面、0 个碎片平面**，
+但把同一台仪器（`synlab.observe.fracture_roi.height_field_stats`，即
+`docs/a12/fracture_visible.md` §2.3 用的那台）按 `<1 mm` 带去趋势后：
+
+| `below_1mm` 的 Ra | patch 数 | 落在哪些谱系 |
+|---|---|---|
+| **恰好 0** | **13 / 582** | `LIN0110_V14_M03_PAT02` 12 个、`LIN0105_V22_M07_PAT06` 1 个 |
+| > 0（最大 0.10452 mm） | 566 / 582 | 其余 |
+| 不可测（NaN） | 3 / 582 | 样本不足的 patch |
+
+→ 同一批几何里**两族都在**："<1 mm 恰好为零"的那族是平面切割线，"有真实亚毫米起伏"的那族
+最大 Ra 0.105 mm。这正好是 ROI 消融要对照的两个总体，而且**是本包自己测出来的**。
+
+### 12.4 缺什么就标 `missing`（不填占位）
+
+`ABL_HARD_NEGATIVES` 是**唯一** `missing` 的组。全仓扫描 `hard_negatives*.parquet` → **0 个文件**；
+`CANDIDATE_MATE_PRESENT_NOT_ORDINARY` 类别是**在线**产出的
+（`synlab.relations.sampler.hard_negative_candidates`，`SamplerParams.hard_negative_limit` 默认 0），
+它只落在 `data/a12_reports/s2_hard_negatives_class.json`，**从未进过任何包**。
+解锁条件写在 `research/hard_negatives.index.json` 里，并附上"不能并进 `research/relations.parquet`"
+的实测理由（并入会新增 880 条 D10 审计违规，`docs/a12/smallfixes_report.md` §S2）。
+
+### 12.5 视图分离复核（实测）
+
+| 检查 | 结果 |
+|---|---|
+| 部署视图实际交付的通道 | `K, deployment_mask, depth_z, roi, tiles, uncertain_mask, valid, view_pos`（8 条，**无** `id_map`/`surface_tag`/`T_WC`/`dist`/`iface_*`/`corr_*`） |
+| `separation.features_carry_answer_fields` | **false** |
+| `separation.answer_field_scan` | `keys_scanned=527`、`hits=[]` |
+| `capture_context_scan` | `declaration_blocks_used=["capture_context_fields","table_columns"]`、`hits=[bag_id@queries.parquet]`（**是 S4 的豁免，不是答案字段命中**） |
+| 部署视图 JSON 里出现真值**名字**的地方 | 2 类、共 126 处：负向声明 `research_only_channels`（4 处，明说"不交付"）与派生注记（122 处，如 `frame_id_source="T_WC+K+depth_z"`、`view_pos.definition`）；**0 处是交付通道** |
+| 研究视图 | 5 层标签 `clean/correspondence/physical/quality/visible`；`views.research` = **100 文件 / 2 202 207 200 B**（由 `declare()` 真实重算，不再沿用写者导出时的 7 文件） |
+| 合并是否碰过 `deploy/` | **没有**：`deploy/**` 与写者写出时逐字节相同（`--check` 的 1370 项 sha256 全过，`deploy` 部分 1266 文件未变） |
+
+### 12.6 before / after（同一台机、同一次运行）
+
+| | before：`trainable/next_experiment/training_package` | after：`experiment_ready/training_package` |
+|---|---|---|
+| 声明文件 / 磁盘文件 | 1276 / 1279 | **1370 / 1373** |
+| 声明字节 / 磁盘字节 | 3 001 739 887 / 3 004 755 753 | **5 203 905 442 / 5 207 527 461** |
+| `manifest_hash` | `sha256:1405a460…` | **`sha256:67317463…`** |
+| 关系行 / 方向补全 | 1721 / **无此字段** | **3442 / `direction_complete=true`** |
+| 合法负例 | 1560 | **3120** |
+| `effective_queries` | 0（`rank` `n_allowed=0`） | **44**（`rank` `n_allowed=1496`） |
+| ROI 特写族 / 合成额外 / 出土上下文 / 退化变体 / 断面表 | 全**不存在** | 96 视图 / 9 模态 / 2 包 / 33 变体 / 582 patch |
+
+耗时（`experiment_ready_report.json`）：`base` 50.356 s、`merge` 12.176 s、`ablation` 0.019 s、
+`finalise` 7.548 s、`card` 44.978 s → **合计 115.077 s**（不含后续验收命令）。
+`--check` 6.8 s、`load_package` 57 s（含 5.2 GB 全量 sha256）、`pytest tests/a12/storage` 36 s。
+
+### 12.7 验收（真实数字）
+
+| # | 命令 | 结果 |
+|---|---|---|
+| ① | `tools/load_package.py --package data/a12_exports/experiment_ready/training_package` | **exit 0**；1373 文件 / 4.8 GiB、`hashes_match_manifest=True`；`relations={"R0":3120,"UNKNOWN":212,"R2":56,"R1":48,"TINY_CONTACT":6}`、`eligible_as_negative=3120`、`splits leak_free=True`；五任务 `view 590/589`、`rank 3176/1496`、`correspondence 3299/0`、`quality 5/5`、`contradiction 3176/1496`；mini-batch `fragments=77 observed=59 positives=56 negatives=3120 effective_queries=44`；`files_missing=[]` |
+| ② | `... --check` | **exit 0**：`file_set` 1370 声明 / 1373 在盘 / 0 缺失 / 0 非预期；`sha256` 1370/1370；`column_dictionary` 9 表 0 问题；`splits leak_free=true` |
+| ②b | 反例：翻转 `ablation_index.json` 第 10 字节一个 bit | **exit 3**（`sha256` FAIL 并打印两侧哈希）；逐字节还原后 **exit 0** |
+| ②c | 反例：塞入 `research/UNDECLARED.txt` | `file_set` **FAIL**，`unexpected_extra=["research/UNDECLARED.txt"]`；删除后 **exit 0** |
+| ③ | 视图分离 | 见 §12.5，`deploy_truth_channels_found=[]`、`features_carry_answer_fields=false`、`deploy_truth_name_occurrence_kinds={derivation_note:122, negative_declaration:4}` |
+| ④ | 数据卡真实扫描复算 | **5/5 相符**：`relations.parquet.kind`（行数/唯一值/缺失率）、`roi_views/asset_1d7d…npz` 的 `v000.depth_z`（shape/dtype/文件字节 531 167 742）、`obs/shard_0000.tar`（64 members / 8 entities）、`tokens/shard_0000.npz` 的 `__tokens` 有效秩 **256**、`fracture/interfaces.parquet`（582 行 × 21 列）。证据 `data/a12_reports/experiment_ready_evidence.{json,txt}`；`honest_boundaries.undocumented_columns` = **0 列**（追加了本包新表的列语义） |
+| ⑤ | before/after | 见 §12.6 |
+| ⑥ | `pytest tests/a12/storage -q` | **exit 0，119 passed in 33.5–36.0 s，0 failed**（无既有失败） |
+| ⑦ | R4：`tools/load_package.py --package …/closed_loop/training_package_v2 --check` | **exit 0** |
+| ⑦b | R4：`precision_probe_06_datacard.py --package …/training_package_v2` | **328 项检查 / 328 相符 / 0 不相符**（`data/a12_reports/precision_probe_06_datacard_cl_v2_after_merge.json`） |
+
+### 12.8 诚实边界（本包暴露出来的，未掩盖）
+
+1. **`correspondence` 仍是 0**：`n_valid=3299 / n_allowed=0`，
+   `why = surface_sample_to_token_mapping_is_not_in_the_label_table`。根因见 §S1：
+   同一 cut event 的两片一侧的 `id_map` 面 id 空间与 `corr_face_*` 不一致（0/9 对两侧可定位）。
+   本包**没有**伪造任何对应关系。
+2. **`relations` 的规模是 scope 决定的**（1721 无序对 / 3442 行），不是 S3 审计里的 1794/3588，
+   原因见 §12.2 的口径差。**方向补全本身为 true**。
+3. **`degrade` 注册 31 轴，只有 9 轴有物化档位**（33 个变体）。`P02/P04/P08` 等仍零物化，
+   与 `docs/a12/ablation_experiments.md` §7.2 的既有结论一致；本包把它们如实列成
+   `materialised_levels: []`，**没有**填占位。
+4. **`hard_negatives.parquet` 不存在**（§12.4）。
+5. **ROI 视图是研究侧**：它们的载荷含 `id_map`/`surface_tag`/`T_WC`/`dist`，
+   按 `synlab/schemas/view_channels.json` 属 research 通道，因此只进 `research/roi_views/`。
+   它们的 `lineage_id` 与基础包里的同名谱系**来自不同的 store**，本包**不**声称二者是同一片，
+   也没有把 ROI 视图合并进 `deploy/obs`（那会需要一个未经证实的身份假设）。
+6. **`views.*.contains_truth` 仍是 `true`**（写者按"视图里是否存在任何真值/标签"的既有口径写），
+   与本轮的部署通道洁净性不矛盾：部署**通道**0 条真值，`answer_field_scan` 0 命中。
+
+### 12.9 耗时与产物清单
+
+| 产物 | 大小 |
+|---|---|
+| `data/a12_exports/experiment_ready/training_package/` | 1373 文件 / 5 207 527 461 B |
+| ├ `export_manifest.json` | 814 501 B（含 `experiment_ready_dimensions` 块） |
+| ├ `ablation_index.json` | 11 702 B（6 组：5 present + 1 missing） |
+| ├ `dataset_card.json` / `README.md` | 2 514 303 / 293 215 B |
+| ├ `research/roi_views/` | 9 文件 / 2 122 211 704 B |
+| ├ `research/synthetic_extras/` | 37 文件 / 2 167 248 B |
+| ├ `research/context/` | 3 文件 / 14 798 B |
+| ├ `research/degrade/` | 40 文件 / 76 650 153 B |
+| ├ `research/fracture/` | 3 文件 / 1 008 308 B（`index.json` 含逐 patch 明细） |
+| ├ `research/hard_negatives.index.json` | 705 B（缺口登记） |
+| └ `research/labels/` | 6 文件 / 98 055 B |
+| `data/a12_exports/experiment_ready/experiment_ready_report.json` | 每步的实测结果 |
+| `data/a12_reports/experiment_ready_evidence.{json,txt}` | 视图分离 / 数据卡复算 / before-after |
+| `data/a12_reports/experiment_ready_card.json` | 本包数据卡的独立副本 |
+
+复现全部验收的驱动：`tools/a12_experiment_ready_export.py`（导出）、
+`tools/a12_experiment_ready_evidence.py`（证据）、
+`tests/a12/storage/test_experiment_ready_export.py`（护栏）。
+
 

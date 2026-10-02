@@ -235,8 +235,12 @@ def test_fracture_planarity_is_measured_per_fragment() -> None:
     assert (patches[patches["planar"] == False]["plane_residual_max_mm"] > 1e-9).all()  # noqa: E712
     # the band statistic is the instrument's, so the exactly-zero sub-mm population is real
     zero = patches[patches["ra_below_1mm_mm"] == 0.0]
+    positive = patches[patches["ra_below_1mm_mm"] > 0.0]
     assert len(zero) == index["counts"]["patches_below_1mm_ra_exactly_zero"]
-    assert len(patches) - len(zero) == index["counts"]["patches_below_1mm_ra_nonzero"]
+    assert len(positive) == index["counts"]["patches_below_1mm_ra_nonzero"]
+    unmeasurable = patches[patches["ra_below_1mm_mm"].isna()]
+    assert len(unmeasurable) == index["counts"]["patches_below_1mm_ra_unmeasurable"]
+    assert len(zero) + len(positive) + len(unmeasurable) == len(patches)
 
 
 def test_deploy_view_of_the_merged_package_carries_no_truth_channel() -> None:
@@ -261,8 +265,20 @@ def test_deploy_view_of_the_merged_package_carries_no_truth_channel() -> None:
               and any(token in p.name for token in ("roi_views", "synthetic_extras", "context",
                                                     "hard_negatives"))]
     assert leaked == [], f"research dimensions leaked into deploy/: {leaked}"
-    for name in ("id_map", "surface_tag", "T_WC", "dist"):
-        assert name not in json.dumps(manifest.get("views") or {}), name
+    # the *channel lists* of every deploy index must be free of truth names (the free text of
+    # ``views.deploy.forbidden`` names them on purpose, to say they are excluded)
+    deploy_truth = []
+    for path in sorted((package / "deploy").rglob("*.json")):
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        channels: list[str] = []
+        for entry in (payload.get("rows") or {}).values():
+            if isinstance(entry, dict):
+                channels.extend(str(c) for c in (entry.get("channels") or []))
+        channels.extend(str(c) for c in (payload.get("channel_names") or []))
+        for channel in channels:
+            if channel in TRUTH_CHANNELS or channel.startswith(TRUTH_PREFIXES):
+                deploy_truth.append(f"{path.name}:{channel}")
+    assert deploy_truth == [], f"a deploy index declares a truth channel: {deploy_truth}"
 
 
 def test_merged_manifest_declares_every_file_that_is_on_disk() -> None:
@@ -305,11 +321,35 @@ def test_ablation_index_covers_every_merged_dimension() -> None:
     assert index["counts"]["missing"] == sum(1 for g in groups if g["availability"] == "missing")
 
 
-def test_the_missing_dimension_is_recorded_and_not_faked() -> None:
+def test_the_hard_negative_dimension_is_either_real_or_recorded_as_missing() -> None:
+    """Either the producer's table is in the package and satisfies its contract, or the gap is
+    recorded with a concrete unlock condition.  A fabricated placeholder is neither."""
     package = _package()
-    assert not (package / "research" / "hard_negatives.parquet").exists()
-    gap = json.loads((package / "research" / "hard_negatives.index.json").read_text(encoding="utf-8"))
-    assert gap["status"] == "missing"
-    assert gap["unlock_condition"]
-    assert gap["scanned"]
-    assert gap["ablation_group"] == "ABL_HARD_NEGATIVES"
+    index = json.loads(
+        (package / "research" / "hard_negatives.index.json").read_text(encoding="utf-8"))
+    table = package / "research" / "hard_negatives.parquet"
+    if not table.is_file():
+        assert index["status"] == "missing"
+        assert index["unlock_condition"] and index["scanned"]
+        assert index["ablation_group"] == "ABL_HARD_NEGATIVES"
+        return
+    import pandas as pd
+
+    frame = pd.read_parquet(table)
+    assert index["status"] == "present" or index.get("counts")
+    assert int(index["counts"]["rows"]) == len(frame)
+    assert int(index["counts"]["columns"]) == frame.shape[1]
+    # the four ruling conditions of the class, re-measured on the shipped bytes
+    assert set(frame["class"]) == {"HARD_NEGATIVE_MATE_PRESENT"}
+    assert set(frame["ruling_class"]) == {"CANDIDATE_MATE_PRESENT_NOT_ORDINARY"}
+    assert bool(frame["loss_mask"].all())
+    assert not bool(frame["eligible_as_negative"].any()), "D10: never an ordinary negative"
+    assert bool(frame["query_mate_present"].all()), "ruling condition 4"
+    # the table must be tied to *this* package's relation table, not to somebody else's
+    import hashlib
+
+    relations = package / "research" / "relations.parquet"
+    digest = "sha256:" + hashlib.sha256(relations.read_bytes()).hexdigest()
+    assert set(frame["source_relations_hash"]) == {digest}
+    assert index["counts"]["relations_parquet_hash"] == digest
+    assert (index.get("contract_check") or {}).get("ok") is True

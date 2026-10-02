@@ -101,6 +101,22 @@ fracture_appearance:
   # AUDITED morphology term: damp the relief inside a strip of 2*t_glaze along the fracture
   # front (morphology._GLAZE_FORMULA, ratio = GLAZE_ROUGHNESS_RATIO).
   glaze_strip: true
+  # -------------------------------------------------------------------------------------------
+  # A2: the DELIVERED default exposure of the appearance profile, in stops.  The frozen chain
+  # applies it at EXPOSURE_OPTICS (`scene * 2**ev`, before photon counting), so it is a rig-side
+  # setting - more lamps / longer exposure - and NOT a post-process: `denoise` and `sharpening`
+  # stay at 0 and nothing is upsampled.  Measured (data/a12_reports/physical_layer/
+  # fracture_appearance_run.json -> stages.snr_gain_curve): at ev = 0 the Poisson noise of the
+  # frozen chain is 100.6 DN against a Ra = 0.08 mm relief signal of 24.6 DN (SNR 0.24, the
+  # delivered image degenerates to 0/255 binary noise); ev = 7 (photon scale 128) is the smallest
+  # whole stop that puts that SNR above 10 with ~2x headroom.
+  imaging_exposure_ev: 7.0
+  # A3: replace the frozen per-face palette (render.procedural_albedo, one colour per triangle,
+  # which draws the triangulation on the fracture) with a continuous band-limited texture whose
+  # three feature periods are 16/32/64 DELIVERED PIXELS - i.e. 16*mm_per_px ... 64*mm_per_px mm.
+  # Dominant frequency 1/16 = 0.0625 cyc/px = 0.125 x Nyquist, so it cannot alias at any rung.
+  albedo_texture: true
+  albedo_texture_contrast: 0.30
   # Separated stores: the appearance study never overwrites a production or ROI asset.
   storage_root: data/a12_fapp/store
   report_dir: data/a12_reports/physical_layer

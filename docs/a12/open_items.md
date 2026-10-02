@@ -42,7 +42,7 @@
 
 | # | 项 | 证据 | 解锁/处理 |
 |---|---|---|---|
-| N9 | **`roi_external_drift` 不进 `failure_codes`** | 全局 P03 漂移 **0.354 mm 仍报 PASS**；audit 把该指标写进 checks 却不进失败码 | **Lead 裁决：收紧并纳入 failure_codes**（版本化 QA 变更 + 重跑）；旧包按"修复前一代"标注（与 `_archive_pre_fix` 同口径），**不放宽判据** |
+| N9 | **`roi_external_drift` 不进 `failure_codes`** | 全局 P03 漂移 **0.354 mm 仍报 PASS**；audit 把该指标写进 checks 却不进失败码 | **Lead 裁决：收紧并纳入 failure_codes**（版本化 QA 变更 + 重跑）；旧包按"修复前一代"标注（与 `_archive_pre_fix` 同口径），**不放宽判据** → ✅ **已完成（`a12.qa.v2`）**：翻转 **246 条记录 / 117 文件**（含旧代归档 131/57），登记表 `data/a12_reports/n9_qa_v2_flips.json`；窄带 0.000348 mm 仍 PASS。**未做**：QA 版本戳尚未进落库资产（`physical/api.py::commit_physical` 未接线，排队） |
 | N10 | **S2 类别未进包，且 240 行无监督角色** | 并入即违反 D10（+880 违规）；240 行"query 无邻片"在当前类别体系下无角色 | Lead 已同意新增**辅助表 `research/hard_negatives.parquet`**（独立于 D10 主表 + 更新列语义表）；240 行待新的监督定义 |
 | N11 | **P02/P04 共用窄带适配路径但未逐轴复测** | S11 只实测 P03 | 逐轴复测（同一根因） |
 | N12 | **历史导出的 P03 几何未追溯修复** | `data/a12_exports/**` 为旧路径产出 | 重导出（或按"修复前一代"标注并归档） |

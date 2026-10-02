@@ -437,3 +437,64 @@ cd C:\Users\xiemo\Desktop\ShardForge\relicweave-synlab
    （一侧有 `payload.mesh`、缺 `appearance`，或反之）。
 9. **本文件不产生性能数字**：所有"预期正/负"都是**待验证假设**，
    只有跑完并附母体簇区间与 `honesty` 块之后才能写入结论。
+
+---
+
+## 8. 合并"实验就绪"包的消融索引（`experiment_ready/training_package/ablation_index.json`）
+
+`tools/a12_experiment_ready_export.py --step ablation` 把 §4 的实验组与
+`docs/a12/fracture_visible.md` §7.2 的 A/B/C/D 四组，落到**一个包内、机器可读**的索引上。
+每条给：`dimension`（维度）、`group_id`、`switch_field`（**开关字段名**）、`availability`
+（`present` / `missing`）、`files`、`hypothesis`（可检验假设）、`positive_gain` / `negative_gain`
+（正/负收益判定指标）、`evidence`（该维度的实测计数）、`unlock_condition`。
+`missing` 的条目**必须**带 `unlock_condition`，由
+`tests/a12/storage/test_experiment_ready_export.py` 钉住（缺了就 fail，不允许静默）。
+
+| 组 id | 维度 | 开关字段名 | 当前 | 实测证据（包内 `research/*/index.json`） |
+|---|---|---|---|---|
+| `ABL_ROI_VIEWS` | `observations.roi_view_family` | `observations.roi_views.enabled` | **present** | 4 体 × (12 整片 + 12 ROI) = **96 视图**、48/48 族分布、2 121 947 876 B |
+| `ABL_SYNTHETIC_EXTRAS` | `observations.synthetic_extras` | `extras.enable_<modality_id>` | **present** | 9 模态 / 18 实例；`rig_obtainable 0/9`、`claim_allowed 0/9` |
+| `ABL_CONTEXT` | `context.excavation` | `context.enabled` | **present** | 2 个 `context_pack`（`simulated=true`）、queries 表 14 列中 1 列（`bag_id`）为声明的采集上下文 |
+| `ABL_DEGRADE` | `degrade.axis_levels` | `degrade.axes.<axis_id>.level` | **present** | 注册 **31 轴** / 有物化档位 **9 轴** / 变体 **33** / 源 **3** |
+| `ABL_FRACTURE_IFACE` | `fracture.interface_channels` | `fracture.interface_channels.enabled` | **present** | 71 碎片扫描 / 63 有断面 / **86 442 面** / **582 patch** / `<1 mm` Ra 恰好 0 的 patch **13** |
+| `ABL_HARD_NEGATIVES` | `relations.hard_negatives` | `negative_mix.hard_negative_weight` | **missing** | 全仓 0 个 `hard_negatives*.parquet`；类别只在线产出（`hard_negative_limit` 默认 0） |
+
+### 8.1 与 §4 的 E 编号对应
+
+| §4 的组 | 本索引 | 关系 |
+|---|---|---|
+| `G-IMG-RGB` / `G-IMG-DEPTH` / `G-MASK-DEPLOY`（E01/E08/E15） | ——（基础包 `deploy/`，不在本索引里） | 本索引只列**可开关的合并维度**；基础包的部署通道由 §2.1 的组覆盖 |
+| `G-CONTEXT`（E17，两个 full 包都 `missing`） | **`ABL_CONTEXT`** | 本包把它从 `missing` 变成 **present**：`data/a12_context/store` 真的落了 2 个 `context_pack`。E17 的"预期负收益 / 必须留反例"判定方式不变，但"可跑"列从**不可**变成**可加载** |
+| `G-DEGRADE-*`（E16，包 B 里 I/G/P/X 四族 28 轴） | **`ABL_DEGRADE`** | 本包按**注册表**给 31 轴（不是按物化了多少），所以"缺的轴"是可读的而不是消失的；实际物化仍只有 9 轴 33 档 |
+| `G-FRAC-ATTR` / `G-FRAC-IFACE-TRUTH`（E04/E06） | **`ABL_FRACTURE_IFACE`** | 本包把"断面在哪"从 `tag` 图推进到**逐 patch 的平面残差与分带幅度**，并给出可直接切的 `<1 mm Ra == 0` 总体 |
+| 无对应（视图族/分辨率） | **`ABL_ROI_VIEWS`** | 对应 `fracture_visible.md` §7.2 的 A/B/C 三组：A=整片±ROI、B=ROI 方向数 0/3/4/6、C=`mm/px` 0.0730 vs 0.0365 |
+| 无对应（负例类别） | **`ABL_HARD_NEGATIVES`** | 对应 `docs/a12/smallfixes_report.md` §S2 的开/关对照（已实测**无增益**，建议保持关闭）；本包只如实登记缺口 |
+
+### 8.2 判正负收益的口径（沿用 §3 与 §5，不新造）
+
+* **正收益**：`Hit@10` 增益 ≥3 个百分点且母体簇配对双侧 95% 下界 >0，**并且在退化、hard negative
+  与真实微调后方向一致**（核心文档 §3.1）；干净集上的提升单独出现 ⇒ **记负结果**。
+* **负收益**：`NOT_RUN` / `NOT_ESTABLISHED` / `NOT_APPLICABLE` 三态照旧（§3 表），**不得填 0**。
+* **本索引新增的两条可证伪预测**（来自本轮实测，不是估计）：
+  1. `ABL_ROI_VIEWS` 组 C 档（分辨率翻倍）：因为同一批断面里 **566/582** 个 patch 的
+     `<1 mm` Ra 本来就 >0、而 **13/582** 恰好为 0，所以"提高分辨率"应当只在有起伏的那一族上
+     有收益、在恰好为 0 的那一族上**收益为 0**。这是一条可以直接按谱系分层的预测。
+  2. `ABL_FRACTURE_IFACE`：把 patch 按 `planar`（整块共面）与 `ra_below_1mm_mm == 0` 两个
+     实测标签分层后，断面定位增益应当**只出现在 `ra_below_1mm_mm > 0` 的子总体**；
+     若在恰好为 0 的子总体上同样出现增益，说明模型读的是"平面"而不是"断口"**（预期负结果）**。
+
+### 8.3 复算命令
+
+```powershell
+cd C:\Users\xiemo\Desktop\ShardForge\relicweave-synlab
+
+# 组清单（包内索引，机器可读）
+& .venv\Scripts\python.exe -c "import json;d=json.load(open('data/a12_exports/experiment_ready/training_package/ablation_index.json',encoding='utf-8'));print(json.dumps(d['counts'],ensure_ascii=False));[print(g['group_id'],g['availability'],g['switch_field']) for g in d['groups']]"
+
+# 组可用性 + 缺失原因
+& .venv\Scripts\python.exe -m pytest tests/a12/storage/test_experiment_ready_export.py -q   # exit 0
+
+# 完整证据（视图分离 / 数据卡复算 / before-after）
+& .venv\Scripts\python.exe tools\a12_experiment_ready_evidence.py
+#   -> data/a12_reports/experiment_ready_evidence.{json,txt}
+```

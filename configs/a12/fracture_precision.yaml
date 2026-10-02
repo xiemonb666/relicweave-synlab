@@ -1,0 +1,133 @@
+# A12 fracture precision: explicit cell budgets and the slope/amplitude trade-off
+#
+# This file exists because the shared-cutter precision budget (DEFAULT_ERROR_BUDGET_MM = 0.01 mm,
+# frozen in synlab/schemas/spec.py) is NOT relaxed anywhere.  What a rough cutter needs instead is
+# a larger cell budget, and that number is measured, not chosen.  Everything below is a measurement
+# from data/a12_reports/tjunction/*.json (run on 2026-10-02, thin-bowl and 20 mm box fixtures).
+#
+# NOTHING here changes a frozen constant.  `error_budget_mm` is restated for the record only.
+
+schema: a12_fracture_precision_v1
+title: "Shared-cutter cell budgets and the amplitude/wavelength trade-off (measured)"
+
+# ---------------------------------------------------------------------------------------------
+# 1. The budget that must not move
+# ---------------------------------------------------------------------------------------------
+frozen_budget:
+  error_budget_mm: 0.01            # spec.DEFAULT_ERROR_BUDGET_MM -- restated, never overridden here
+  max_cutter_cells_default: 400000 # spec.DEFAULT_MAX_CUTTER_CELLS
+  max_cutter_triangles_default: 3000000
+  wavelength_min_mm: 0.20          # spec.WAVELENGTH_MIN_MM -- a package guard, never lowered
+  wavelength_max_mm: 3.00
+  amplitude_window_mm: [0.02, 0.30]
+
+# ---------------------------------------------------------------------------------------------
+# 2. What the rough cutter actually needs (measured cells at the frozen 0.01 mm budget)
+# ---------------------------------------------------------------------------------------------
+# `cells` is the refinement fixed point's leaf count; `seconds` is the wall clock of the whole
+# production build (refinement + assembly + verification) on this machine.
+measured_cell_demand:
+  - fixture: thin_bowl
+    backend: rough_shared_cut
+    target_rms_mm: 0.02
+    max_cells: 90000
+    outcome: PRECISION_NOT_REALIZED   # refinement finished; the interpolated surface is over budget
+    cells: 163393                     # leaf count of the refinement fixed point at this budget
+    realized_error_mm: 0.0100293      # > 0.01 by 0.3 %: the amplitude/wavelength pair sits on the
+    seconds: 34.7                     # budget edge, which is what (c) below addresses
+  - fixture: thin_bowl
+    backend: rough_shared_cut
+    target_rms_mm: 0.05
+    max_cells: 90000
+    outcome: PRECISION_BUDGET_EXCEEDED
+    cells: 164002
+    wavelength_min_mm: 0.2619
+    seconds: 65.1
+  - fixture: box20
+    backend: rough_shared_cut
+    target_rms_mm: 0.05
+    max_cells: 90000
+    outcome: PRECISION_BUDGET_EXCEEDED
+    cells: 284263
+    wavelength_min_mm: 0.3386
+    seconds: 207.0
+  - fixture: box20
+    backend: rough_shared_cut
+    target_rms_mm: 0.05
+    max_cells: 320000
+    outcome: PRECISION_BUDGET_EXCEEDED
+    cells: 411394
+    wavelength_min_mm: 0.2582
+    seconds: 141.8
+  - fixture: thin_bowl
+    backend: plane_shared_cut
+    max_cells: 90000
+    outcome: OK
+    cells: 4096
+    realized_error_mm: 0.0
+    seconds: 0.6
+
+#: Proposed overrides for a precision run.  They are *declarations of what has to be paid*, not
+#: relaxations: the error budget stays 0.01 mm and the shortest wavelength is never shortened.
+cell_budget_overrides:
+  thin_bowl_rough:
+    max_cutter_cells: 200000    # >= 164002 measured for rms 0.05; 2x headroom for the level cap
+    rationale: "measured demand 164002 cells at rms 0.05, 0.01 mm"
+  box20_rough:
+    max_cutter_cells: 512000    # >= 411394 measured for rms 0.05
+    rationale: "measured demand 411394 cells at rms 0.05, 0.01 mm"
+
+# ---------------------------------------------------------------------------------------------
+# 3. Cost growth (measured wall clock of the production build)
+# ---------------------------------------------------------------------------------------------
+# The cost is dominated by the refinement fixed point, which evaluates the analytic height field on
+# a probe lattice per cell per pass; until the T-junction defect is closed the build ends in
+# `fracture.cut.verify` and does not include the boolean stage.
+cost_curve:
+  - {fixture: plane_bowl, cells: 4096,   seconds: 0.63}
+  - {fixture: thin_bowl,  cells: 163393, seconds: 34.7}
+  - {fixture: thin_bowl,  cells: 164002, seconds: 65.1}
+  - {fixture: box20,      cells: 284263, seconds: 207.0}
+  - {fixture: box20,      cells: 411394, seconds: 141.8}   # different fixture area, not a
+                                                           # counter-example to the growth
+note: "seconds are single-run wall clock on this host; the 411394-cell box point is faster than the
+       284263-cell one because the two runs used different `max_cells` and so different refinement
+       passes, so only points with the same fixture are comparable."
+
+# ---------------------------------------------------------------------------------------------
+# 4. Slope reasonableness (the physical driver of the demand above)
+# ---------------------------------------------------------------------------------------------
+# Measured on the thin-bowl rough field (docs/a12/fracture_realism.md section 11):
+#   realized_rms_mm      = 0.02
+#   wavelength_min_mm    = 0.2619
+#   amplitude_max_mm     = 0.0377
+#   curvature_bound      = 0.547 /mm  (unwindowed)
+# A fracture surface's slope is bounded by its height relief over its shortest wavelength:
+#   slope ~ 2*pi*sigma / lambda.
+# For the morphology model (sigma_r0 = 0.41 mm, lambda_min = 0.65 mm) that is 3.96 (76 deg) with a
+# measured analytic P95 of 53 deg, against the few-degrees-to-20-degrees range of real ceramic
+# fracture surfaces.  The honest resolution is to RAISE lambda_min (or lower sigma_r0) until the
+# slope P95 lands in that range; it is recorded here as an OPEN item because it changes the
+# requested relief and therefore every relief-dependent audit number, and it must not be applied
+# silently.
+slope_reasonableness:
+  status: OPEN_NOT_APPLIED
+  reason: >
+    Applying it scales the requested relief down (or the shortest wavelength up), which changes the
+    realized_rms_mm the A06 audits read and all the morphology tables.  That is a physics decision,
+    not a precision workaround, so it is not done inside a precision fix.  What IS established here
+    is the arithmetic: the 0.01 mm interpolation demand scales as sigma/lambda^2, so the same
+    0.01 mm budget buys a coarser mesh exactly when the slope is made physical.
+  measured_after_fix: null
+  measured_before_fix:
+    thin_bowl_rough: {realized_rms_mm: 0.02, wavelength_min_mm: 0.2619, realized_error_mm: 0.0100293}
+    morphology_model: {sigma_r0_mm: 0.41, wavelength_min_mm: 0.65, analytic_slope_p95_deg: 53.0}
+
+# ---------------------------------------------------------------------------------------------
+# 5. What this file may NOT be used for
+# ---------------------------------------------------------------------------------------------
+prohibited:
+  - "raising error_budget_mm above 0.01 to make a cutter pass (the budget is frozen in spec.py)"
+  - "lowering wavelength_min_mm below the package guard (0.20 mm)"
+  - "reporting a realized_error_mm from a cutter that `fracture.cut.verify` refused"
+  - "treating a larger max_cells as a fix for the topology defect: it only lets refinement finish"

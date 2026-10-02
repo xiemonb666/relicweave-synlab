@@ -77,15 +77,24 @@ from .render import (
 __all__ = [
     "APPEARANCE_SCHEMA",
     "BACKEND_APPEARANCE",
+    "CONTRACT_LIGHT_MODES",
+    "CONTRACT_LIGHT_PURPOSE",
     "FACET_RESOLUTION_RATIO",
     "INTERPOLATIONS",
     "NORMAL_MODES",
+    "TEXTURE_MIN_PERIOD_PX",
+    "TEXTURE_WAVELENGTH_FRACTIONS",
+    "TEXTURE_WAVE_DIRECTIONS",
+    "AlbedoTexture",
     "AppearanceParameters",
     "AppearanceSpec",
     "FractureAppearanceConfig",
+    "LightChoice",
     "ReliefField",
     "appearance_parameters_from_profile",
     "build_relief_field",
+    "choose_contract_light",
+    "contract_light",
     "corner_normals",
     "directional_index",
     "dn_statistics",
@@ -96,12 +105,16 @@ __all__ = [
     "glaze_step_report",
     "grain_pixel_statistics",
     "lambert_ambient_linear",
+    "lambert_response_score",
     "load_fracture_appearance_config",
+    "make_albedo_texture",
     "measured_edge_length_mm",
     "render_appearance_view",
     "required_mesh_density",
     "resample_relief_ra",
     "side_by_side_png",
+    "texture_consistency_report",
+    "texture_spectrum_report",
     "validate_config",
     "vertex_normals",
     "write_rgb_png",
@@ -302,6 +315,287 @@ def choose_contract_light(*, normal_world: np.ndarray,
                        response_score=float(lambert_response_score(normal_world=normal_world,
                                                                    light=light)),
                        ranking=ranking)
+
+
+# ======================================================================================
+# A3: a continuous, band-limited surface albedo bound to the sampling scale
+# ======================================================================================
+#: Feature wavelengths of the delivered albedo texture as fractions of the **material's own
+#: correlation length** (``stats.correlation_length_mm``, the same audited statistic the relief
+#: spectrum is built from).  ``(0.5, 1.0, 2.0) * correlation_length`` - for M01 coarse pottery
+#: (2.6 mm) that is ``1.3 / 2.6 / 5.2 mm``, i.e. the material's grain, its correlation length and
+#: one octave above it.  Expressing the scale in millimetres rather than in pixels is what makes
+#: the texture describe ONE surface: at a finer ``mm/px`` the same three wavelengths simply land on
+#: more pixels, their mm statistics stay identical, and the frequency-to-Nyquist ratio improves.
+TEXTURE_WAVELENGTH_FRACTIONS: tuple[float, ...] = (0.5, 1.0, 2.0)
+
+#: Unit propagation directions of the three texture plane waves as ``(dx, dy)`` with
+#: ``dx^2 + dy^2 = 1``: ``(1, 0)``, ``(3, 4)/5`` and ``(5, 12)/13``.  The two oblique waves use
+#: exact Pythagorean slopes so the pattern has no axis-aligned bias, and every wave is a pure
+#: plane wave of one wavelength - the texture is band-limited by construction, it is not filtered
+#: after the fact.
+TEXTURE_WAVE_DIRECTIONS: tuple[tuple[float, float], ...] = ((1.0, 0.0), (3.0 / 5.0, 4.0 / 5.0),
+                                                            (5.0 / 13.0, 12.0 / 13.0))
+
+#: Shortest feature a texture may be delivered at, in delivered pixels.  ``5 px`` is 2.5x the
+#: Nyquist limit, so the delivered texture can never alias; a rung that cannot carry a material's
+#: shortest wavelength reports ``nyquist_ok = False`` instead of silently filtering it.
+TEXTURE_MIN_PERIOD_PX: float = 5.0
+
+
+@dataclass(frozen=True)
+class AlbedoTexture:
+    """A continuous band-limited albedo modulation bound to one delivered sampling scale.
+
+    The modulation is a sum of three plane waves whose **physical** wavelengths are
+    :data:`TEXTURE_WAVELENGTH_FRACTIONS` times the material's correlation length.  Its value at a
+    point depends only on the point's position in millimetres, so:
+
+    * it is C0-continuous across triangle boundaries (nothing in it depends on which triangle a
+      point belongs to - which is what removes the per-face palette's facet pattern);
+    * its feature scale is tied to ``mm/px``: the pixel wavelength of each wave is
+      ``wavelength_mm / mm_per_px``, so a finer rung samples the same surface more densely;
+    * it is band-limited by construction with a measurable dominant frequency;
+    * it is normalised so its spatial RMS over a lattice window is exactly 1, so the delivered
+      albedo keeps the material's mean colour and carries a modulation of known depth.
+    """
+
+    mm_per_px: float
+    material_albedo: tuple[float, float, float]
+    wavelengths_mm: tuple[float, ...]
+    #: modulation depth: peak-to-mean contrast of the delivered albedo
+    contrast: float = 0.30
+    #: signature window used for the normalisation, in delivered pixels
+    normalise_window_px: int = 512
+    #: cached exact lattice RMS (depends only on the wavelengths, never on the query points)
+    _rms_value: float | None = field(default=None, init=False, repr=False, compare=False)
+
+    @property
+    def wavelengths_px(self) -> tuple[float, ...]:
+        return tuple(float(w) / float(self.mm_per_px) for w in self.wavelengths_mm)
+
+    @property
+    def dominant_wavelength_mm(self) -> float:
+        """The shortest wave carries the highest frequency, so it is the one Nyquist acts on."""
+        return float(min(self.wavelengths_mm))
+
+    @property
+    def shortest_period_px(self) -> float:
+        return float(min(self.wavelengths_px))
+
+    def dominant_cycles_per_px(self) -> float:
+        return 1.0 / self.shortest_period_px
+
+    def dominant_cycles_per_mm(self) -> float:
+        return 1.0 / self.dominant_wavelength_mm
+
+    def nyquist_ratio(self, *, cycles_per_px: float | None = None) -> float:
+        """Dominant spatial frequency as a fraction of Nyquist (0.5 cyc/px)."""
+        f = self.dominant_cycles_per_px() if cycles_per_px is None else float(cycles_per_px)
+        return float(f / 0.5)
+
+    def nyquist_ok(self) -> bool:
+        return bool(self.shortest_period_px >= TEXTURE_MIN_PERIOD_PX)
+
+    def raw(self, uv_mm: np.ndarray) -> np.ndarray:
+        """Un-normalised, zero-mean modulation at **millimetre** surface coordinates."""
+        uv = np.asarray(uv_mm, dtype=np.float64).reshape(-1, 2)
+        out = np.zeros(uv.shape[0], dtype=np.float64)
+        for wl, (dx, dy) in zip(self.wavelengths_mm, TEXTURE_WAVE_DIRECTIONS):
+            k = 2.0 * math.pi / float(wl)
+            out += np.cos(k * (dx * uv[:, 0] + dy * uv[:, 1]))
+        return out
+
+    def rms(self, *, window_px: int | None = None) -> float:
+        """Measured RMS of :meth:`raw` over an exact lattice window (not an assumed 1/sqrt(2))."""
+        n = int(window_px if window_px is not None else self.normalise_window_px)
+        ax = (np.arange(n, dtype=np.float64) + 0.5) * float(self.mm_per_px)
+        uu, vv = np.meshgrid(ax, ax, indexing="ij")
+        v = self.raw(np.stack([uu.ravel(), vv.ravel()], axis=1))
+        return float(np.sqrt(np.mean(v ** 2)))
+
+    def _rms_cached(self) -> float:
+        """The exact lattice RMS, computed once (it depends only on the wavelengths)."""
+        if self._rms_value is None:
+            object.__setattr__(self, "_rms_value", float(self.rms()))
+        return float(self._rms_value)
+
+    def modulation(self, uv_mm: np.ndarray) -> np.ndarray:
+        """Zero-mean modulation in ``[-1, 1] * contrast`` after exact RMS normalisation."""
+        v = self.raw(uv_mm) / max(self._rms_cached(), 1e-30)
+        return np.clip(float(self.contrast) * v, -0.95, 0.95)
+
+    def albedo(self, uv_mm: np.ndarray) -> np.ndarray:
+        """Per-point albedo: the material's own colour times ``1 + modulation`` (always positive)."""
+        mod = self.modulation(uv_mm)
+        base = np.asarray(self.material_albedo, dtype=np.float64).reshape(1, 3)
+        return base * (1.0 + mod)[:, None]
+
+    def as_dict(self) -> dict[str, Any]:
+        return {"kind": "CONTINUOUS_BANDLIMITED_ALBEDO",
+                "mm_per_px": float(self.mm_per_px),
+                "wavelengths_mm": [float(w) for w in self.wavelengths_mm],
+                "wavelengths_px": [float(w) for w in self.wavelengths_px],
+                "dominant_wavelength_mm": float(self.dominant_wavelength_mm),
+                "dominant_cycles_per_px": float(self.dominant_cycles_per_px()),
+                "dominant_cycles_per_mm": float(self.dominant_cycles_per_mm()),
+                "nyquist_cycles_per_px": 0.5,
+                "dominant_over_nyquist": float(self.nyquist_ratio()),
+                "shortest_period_px": float(self.shortest_period_px),
+                "min_period_px_required": float(TEXTURE_MIN_PERIOD_PX),
+                "nyquist_ok": bool(self.nyquist_ok()),
+                "contrast": float(self.contrast),
+                "material_albedo": [float(x) for x in self.material_albedo],
+                "wave_directions": [[float(a), float(b)] for a, b in TEXTURE_WAVE_DIRECTIONS],
+                "wavelength_fractions_of_correlation_length":
+                    [float(x) for x in TEXTURE_WAVELENGTH_FRACTIONS],
+                "normalise_window_px": int(self.normalise_window_px),
+                "measured_rms_before_normalisation": float(self.rms()),
+                "definition": ("a sum of three plane waves whose wavelengths are fixed in "
+                               "MILLIMETRES (fractions of the material correlation length); the "
+                               "value depends only on position, so it is C0-continuous across "
+                               "triangle boundaries, and its pixel wavelength is "
+                               "wavelength_mm / mm_per_px")}
+
+
+def make_albedo_texture(*, mm_per_px: float, material_albedo: Sequence[float],
+                        correlation_length_mm: float, contrast: float = 0.30) -> AlbedoTexture:
+    """The delivered albedo texture at one sampling scale, from the material's own length scale.
+
+    ``correlation_length_mm`` is the audited ``stats.correlation_length_mm`` of the material record,
+    the same statistic the relief band set is built from, so the texture's feature scale and the
+    relief's feature scale are the same physical quantity rather than two unrelated knobs.
+    """
+    if not (float(mm_per_px) > 0.0):
+        raise SynLabError(ErrorCode.SCHEMA_INVALID, "mm_per_px must be > 0",
+                          stage="observe.fracture_appearance.make_albedo_texture")
+    if not (float(correlation_length_mm) > 0.0):
+        raise SynLabError(ErrorCode.SCHEMA_INVALID, "correlation_length_mm must be > 0",
+                          stage="observe.fracture_appearance.make_albedo_texture")
+    wl = tuple(float(f) * float(correlation_length_mm) for f in TEXTURE_WAVELENGTH_FRACTIONS)
+    return AlbedoTexture(mm_per_px=float(mm_per_px),
+                         material_albedo=tuple(float(x) for x in
+                                               np.asarray(material_albedo).reshape(-1)[:3]),
+                         wavelengths_mm=wl, contrast=float(contrast))
+
+
+def texture_spectrum_report(texture: AlbedoTexture, *, n: int = 512) -> dict[str, Any]:
+    """Measure the delivered texture's spectrum: dominant frequency, Nyquist ratio, anisotropy.
+
+    The report is computed on a real ``n x n`` sampling of the modulation at one delivered pixel
+    per sample, so it is the spectrum of what is actually delivered rather than of the formula.
+    """
+    ax = np.arange(n, dtype=np.float64)
+    step = float(texture.mm_per_px)
+    uu, vv = np.meshgrid(ax * step, ax * step, indexing="ij")
+    img = texture.modulation(np.stack([uu.ravel(), vv.ravel()], axis=1)).reshape(n, n)
+    win = np.hanning(n)[:, None] * np.hanning(n)[None, :]
+    spec = np.abs(np.fft.fftshift(np.fft.fft2(img * win))) ** 2
+    # ``d=step`` makes the FFT axes cycles per MILLIMETRE; the delivered lattice's Nyquist is
+    # therefore 0.5/step cyc/mm, and dividing by it is the same as dividing the pixel-domain
+    # frequency by 0.5 cyc/px.
+    fy = np.fft.fftshift(np.fft.fftfreq(n, d=step))
+    fx = fy.copy()
+    kx, ky = np.meshgrid(fx, fy, indexing="ij")
+    kr = np.hypot(kx, ky)
+    nyquist_per_mm = 0.5 / step
+    valid = kr > 0
+    peak = float(kr[valid][np.argmax(spec[valid])])
+    total = float(spec[valid].sum())
+    gy, gx = np.gradient(img, step, step)
+    jxx, jyy, jxy = float(np.mean(gx ** 2)), float(np.mean(gy ** 2)), float(np.mean(gx * gy))
+    tr, det = jxx + jyy, jxx * jyy - jxy ** 2
+    disc = math.sqrt(max(tr * tr / 4.0 - det, 0.0))
+    lam1, lam2 = tr / 2.0 + disc, tr / 2.0 - disc
+    return {
+        "status": "OK", "grid": f"{n}x{n} at 1 delivered px ({step:.6f} mm)",
+        "n": int(n), "mm_per_px": step,
+        "dominant_cycles_per_mm": peak,
+        "dominant_cycles_per_px": float(peak * step),
+        "dominant_wavelength_mm": (float("inf") if peak <= 0 else 1.0 / peak),
+        "dominant_wavelength_px": (float("inf") if peak <= 0 else 1.0 / (peak * step)),
+        "nyquist_cycles_per_mm": float(nyquist_per_mm),
+        "nyquist_cycles_per_px": 0.5,
+        "dominant_over_nyquist": float(peak / nyquist_per_mm),
+        "declared_dominant_over_nyquist": float(texture.nyquist_ratio()),
+        "power_fraction_above_nyquist": float(
+            spec[valid & (kr > nyquist_per_mm)].sum() / max(total, 1e-30)),
+        "power_fraction_above_declared_shortest": float(
+            spec[valid & (kr > 1.0 / texture.dominant_wavelength_mm)].sum()
+            / max(total, 1e-30)),
+        "modulation_rms": float(np.sqrt(np.mean(img ** 2))),
+        "modulation_min": float(img.min()), "modulation_max": float(img.max()),
+        "slope_rms_per_mm": float(np.sqrt(np.mean(gx ** 2 + gy ** 2))),
+        "anisotropy": float((lam1 - lam2) / max(lam1 + lam2, 1e-30)),
+        "nyquist_ok": bool(texture.nyquist_ok()),
+        "definition": ("radial power spectrum of the delivered modulation sampled at one delivered "
+                       "pixel per sample; a per-face palette has no spectrum (its 'frequency' is "
+                       "one cycle per triangle) while this texture is band-limited by construction"),
+    }
+
+
+def texture_consistency_report(*, material_albedo: Sequence[float], correlation_length_mm: float,
+                               rungs_mm_per_px: Sequence[float], contrast: float = 0.30,
+                               n: int = 512) -> dict[str, Any]:
+    """The same material at several ``mm/px`` rungs: does the texture describe one surface?
+
+    For each rung the texture is built with that rung's scale and its spectrum is measured.  Two
+    rungs are *consistent* when their physical statistics agree - the same wavelengths in
+    millimetres, the same dominant frequency in ``cyc/mm``, the same modulation RMS and the same
+    ``mm^-1`` slope RMS - while their pixel wavelengths scale exactly as ``1/mm_per_px``.  That is
+    the precise statement of "the feature scale is bound to ``mm/px`` while the surface is not".
+    """
+    rows: list[dict[str, Any]] = []
+    for rung in rungs_mm_per_px:
+        tex = make_albedo_texture(mm_per_px=float(rung), material_albedo=material_albedo,
+                                  correlation_length_mm=float(correlation_length_mm),
+                                  contrast=contrast)
+        rep = texture_spectrum_report(tex, n=n)
+        rows.append({
+            "mm_per_px": float(rung),
+            "wavelengths_mm": [float(w) for w in tex.wavelengths_mm],
+            "wavelengths_px": [float(w) for w in tex.wavelengths_px],
+            "dominant_cycles_per_px": float(rep["dominant_cycles_per_px"]),
+            "dominant_cycles_per_mm": float(rep["dominant_cycles_per_mm"]),
+            "dominant_wavelength_mm": float(rep["dominant_wavelength_mm"]),
+            "dominant_over_nyquist": float(rep["dominant_over_nyquist"]),
+            "nyquist_ok": bool(rep["nyquist_ok"]),
+            "shortest_period_px": float(tex.shortest_period_px),
+            "power_fraction_above_nyquist": float(rep["power_fraction_above_nyquist"]),
+            "modulation_rms": float(rep["modulation_rms"]),
+            "slope_rms_per_mm": float(rep["slope_rms_per_mm"]),
+            "anisotropy": float(rep["anisotropy"]),
+        })
+    ref = rows[0] if rows else None
+    for row in rows:
+        if ref:
+            row["wavelengths_mm_ratio_to_first"] = [float(a / b) for a, b
+                                                    in zip(row["wavelengths_mm"],
+                                                           ref["wavelengths_mm"])]
+            row["wavelengths_px_ratio_to_first"] = [float(a / b) for a, b
+                                                    in zip(row["wavelengths_px"],
+                                                           ref["wavelengths_px"])]
+            row["slope_rms_ratio_to_first"] = float(
+                row["slope_rms_per_mm"] / max(float(ref["slope_rms_per_mm"]), 1e-30))
+            row["modulation_rms_ratio_to_first"] = float(
+                row["modulation_rms"] / max(float(ref["modulation_rms"]), 1e-30))
+    dev = max((max(abs(float(r["slope_rms_ratio_to_first"]) - 1.0),
+                   abs(float(r["modulation_rms_ratio_to_first"]) - 1.0),
+                   max(abs(float(x) - 1.0) for x in r["wavelengths_mm_ratio_to_first"]))
+               for r in rows), default=float("inf"))
+    all_ok = all(bool(r["nyquist_ok"]) for r in rows)
+    return {
+        "status": "OK", "rows": rows, "contrast": float(contrast),
+        "correlation_length_mm": float(correlation_length_mm),
+        "max_relative_deviation": float(dev),
+        "nyquist_ok_every_rung": bool(all_ok),
+        "verdict": ("CONSISTENT" if dev < 0.05 and all_ok
+                    else ("CONSISTENT_BUT_ALIASED" if dev < 0.05 else "INCONSISTENT")),
+        "definition": ("each rung gets the texture built with ITS mm/px from the material's own "
+                       "correlation length; a consistent texture must give the same wavelengths in "
+                       "mm and the same mm^-1 slope RMS, while the pixel wavelengths scale as "
+                       "1/mm_per_px and the frequency-to-Nyquist ratio improves with a finer rung"),
+    }
 
 
 # ======================================================================================
@@ -621,6 +915,59 @@ class ReliefField:
                            "dDN = 255 * mean_c(albedo_c * color_c) * d_lambert; the clip of the "
                            "frozen Lambert term is NOT modelled, so this is an upper bound where "
                            "the surface sits at the terminator"),
+        }
+
+    def predicted_shading_ddn_on_points(self, points_world: np.ndarray, *,
+                                        albedo: Sequence[float], light: LightSpec,
+                                        base_normals: np.ndarray | None = None,
+                                        ra_scale: float | None = None,
+                                        levels: float = 255.0) -> dict[str, Any]:
+        """Predicted ``dDN`` **on a given point set**, with the renderer's own linearisation.
+
+        This is the scale-free form of :meth:`predicted_shading_ddn` and the one that is comparable
+        with a rendered difference.  The renderer evaluates, per pixel,
+
+            ``tp = t_p - (n . t_p) n`` (renormalised),  ``n' = normalize(n - amp*gu*tu - amp*gv*tv)``
+
+        so the first-order change of the frozen Lambert term is
+        ``d_lambert = amp * sum_p (dh/dp) * (tp_hat . light.direction)``.  Evaluating that on the
+        points the renderer actually shaded is what makes prediction and measurement agree; the
+        ``_grid_gradients`` variant is kept only as the legacy ROI-grid number and is biased low
+        wherever the grid's radius distribution differs from the rendered pixels' (measured:
+        finite forward differences recover ``0.437`` of the analytic gradient RMS ``0.783``, a
+        factor ``1.79``, and that bias is *radius dependent*).
+        """
+        pts = np.asarray(points_world, dtype=np.float64).reshape(-1, 3)
+        if pts.shape[0] == 0:
+            return {"status": "NO_POINTS", "n_points": 0}
+        _, gu, gv = self.sample(pts, scale=1.0)
+        s = float(self.amplitude_scale if ra_scale is None else ra_scale)
+        l_eff = np.asarray(light.direction, dtype=np.float64).reshape(3)
+        if base_normals is None:
+            n0 = np.repeat(np.asarray(self.normal, dtype=np.float64).reshape(1, 3), pts.shape[0],
+                           axis=0)
+        else:
+            n0 = np.asarray(base_normals, dtype=np.float64).reshape(-1, 3)
+        n0 = n0 / np.maximum(np.linalg.norm(n0, axis=1, keepdims=True), 1e-30)
+        def _proj(t):
+            p = t[None, :] - (n0 @ t)[:, None] * n0
+            return p / np.maximum(np.linalg.norm(p, axis=1, keepdims=True), 1e-30)
+        tu, tv = _proj(self.u_axis), _proj(self.v_axis)
+        d_lambert = s * (gu * (tu @ l_eff) + gv * (tv @ l_eff))
+        rms = float(np.sqrt(np.mean(d_lambert ** 2)))
+        alb = np.asarray(albedo, dtype=np.float64).reshape(-1)[:3]
+        factor = float(levels) * float(np.mean(alb * np.asarray(light.color, dtype=np.float64)))
+        return {
+            "status": "OK", "n_points": int(pts.shape[0]),
+            "gradient_rms": float(np.sqrt(np.mean(gu ** 2 + gv ** 2))),
+            "d_lambert_rms": rms, "predicted_dDN": factor * rms,
+            "d_lambert_p95_abs": float(np.percentile(np.abs(d_lambert), 95)),
+            "predicted_dDN_p95": factor * float(np.percentile(np.abs(d_lambert), 95)),
+            "albedo_channels_used": [float(x) for x in alb],
+            "ra_scale": s, "levels": float(levels),
+            "convention": ("evaluated at the renderer's own hit points with the renderer's own "
+                           "tangent renormalisation; the clip of the frozen Lambert term is not "
+                           "modelled, so this is an upper bound at the terminator"),
         }
 
     def _grid_gradients(self) -> tuple[np.ndarray, np.ndarray]:
@@ -1090,6 +1437,10 @@ class AppearanceSpec:
     albedo: tuple[float, float, float] | None = None
     diffuse_weight: float = 1.0
     label: str = ""
+    #: A3: continuous band-limited surface albedo evaluated **per pixel** instead of the frozen
+    #: per-face palette.  ``None`` (the default) keeps the frozen ``scene.material.albedo``, so the
+    #: bit-exact reduction to the software rasteriser is untouched.
+    albedo_texture: "AlbedoTexture | None" = None
 
     def __post_init__(self) -> None:
         if self.normal_mode not in NORMAL_MODES:
@@ -1107,7 +1458,9 @@ class AppearanceSpec:
                 "interpolation": self.interpolation, "relief": bool(self.relief),
                 "amplitude_scale": float(self.amplitude_scale),
                 "albedo": None if self.albedo is None else [float(x) for x in self.albedo],
-                "diffuse_weight": float(self.diffuse_weight), "label": str(self.label)}
+                "diffuse_weight": float(self.diffuse_weight), "label": str(self.label),
+                "albedo_texture": (None if self.albedo_texture is None
+                                   else self.albedo_texture.as_dict())}
 
 
 # ======================================================================================
@@ -1206,6 +1559,10 @@ def render_appearance_view(scene: Scene, frame: ViewFrame, *, light: LightSpec,
             "relief_field": None if relief_field is None else relief_field.as_dict(),
             "geometry_hash": geometry_hash(posed.vertices, posed.faces),
             "relief_active": bool(appearance.relief and relief_field is not None),
+            "albedo_channel": ("PER_PIXEL_CONTINUOUS_TEXTURE" if appearance.albedo_texture is not None
+                               else "PER_FACE_PALETTE_FROZEN"),
+            "albedo_texture": (None if appearance.albedo_texture is None
+                               else appearance.albedo_texture.as_dict()),
             "realized_ra_mm": (float(relief_field.realized_ra_mm
                                      * float(appearance.amplitude_scale))
                                if relief_field is not None else None),
@@ -1326,6 +1683,17 @@ def _rasterise_appearance(scene: Scene, frame: ViewFrame, width: int, height: in
         raise SynLabError(ErrorCode.SCHEMA_INVALID, "albedo must have one row per face",
                           stage="observe.fracture_appearance._rasterise_appearance")
     albedo_px = base_albedo * float(appearance.diffuse_weight)
+    #: A3: when a delivered albedo texture is attached, the albedo is evaluated at the SAME
+    #: sub-pixel point the shading normal is evaluated at, so it is continuous across triangle
+    #: boundaries by construction (its value depends only on position).  Sub-pixel raster
+    #: coordinates are converted to delivered pixels (divide by the supersample factor) and then to
+    #: millimetres through the frame's own scale, which is what makes the pattern independent of
+    #: the supersampling.
+    texture = appearance.albedo_texture
+    #: ``_rasterise_appearance`` receives the ALREADY SCALED frame, so the supersample factor is
+    #: recovered from the render grid / delivered grid ratio rather than from a parameter.
+    tex_factor = max(int(round(float(width) / max(float(frame.image_size[0]), 1.0))), 1)
+    tex_inv_mm_per_px = (1.0 / float(texture.mm_per_px)) if texture is not None else 1.0
     perspective = appearance.interpolation == "PERSPECTIVE_CORRECT"
     relief_on = bool(appearance.relief and relief_field is not None)
     if relief_on:
@@ -1361,7 +1729,7 @@ def _rasterise_appearance(scene: Scene, frame: ViewFrame, width: int, height: in
         id_buf[ymin:ymax + 1, xmin:xmax + 1][better] = scene.face_id[f]
         tag_buf[ymin:ymax + 1, xmin:xmax + 1][better] = scene.surface_tag[f]
 
-        if appearance.normal_mode == "FLAT" and not relief_on:
+        if appearance.normal_mode == "FLAT" and not relief_on and texture is None:
             shaded = shade_world_normals(normals_world=world_normals[f][None, :],
                                          albedo=albedo_px[f][None, :], light=light)[0]
             rgba[ymin:ymax + 1, xmin:xmax + 1][better] = shaded.astype(np.float32)
@@ -1400,7 +1768,15 @@ def _rasterise_appearance(scene: Scene, frame: ViewFrame, width: int, height: in
             n_px = n_px / np.maximum(np.linalg.norm(n_px, axis=1, keepdims=True), 1e-30)
         shaded = shade_world_normals(
             normals_world=n_px,
-            albedo=np.repeat(albedo_px[f][None, :], pts.shape[0], axis=0), light=light)
+            albedo=(np.repeat(albedo_px[f][None, :], pts.shape[0], axis=0)
+                    if texture is None else
+                    np.asarray(texture.albedo(np.stack([(xmin + cols + 0.5) * tex_inv_mm_per_px
+                                                        / tex_factor,
+                                                        (ymin + rows + 0.5) * tex_inv_mm_per_px
+                                                        / tex_factor], axis=1)),
+                               dtype=np.float64)
+                    * float(appearance.diffuse_weight)),
+            light=light)
         rgba[ymin:ymax + 1, xmin:xmax + 1][rows, cols] = shaded.astype(np.float32)
         lambert_buf[ymin:ymax + 1, xmin:xmax + 1][rows, cols] = -(n_px @ l_unit)
     return {"depth": depth, "id": id_buf, "tag": tag_buf, "rgb": rgba, "lambert": lambert_buf}
@@ -1767,14 +2143,29 @@ class FractureAppearanceConfig:
     long_edges_px: tuple[int, ...] = (1024, 2048)
     ratio_facet: float = FACET_RESOLUTION_RATIO
     glaze_strip: bool = True
+    #: A2: the **delivered default** exposure of the appearance profile, in stops, applied by the
+    #: frozen chain at its ``EXPOSURE_OPTICS`` stage (``scene * 2**ev``, before photon counting).
+    #: It is a rig-side setting (more lamps / longer exposure), never a post-process: the chain's
+    #: ``denoise`` and ``sharpening`` stages stay at 0 and nothing is upsampled.
+    imaging_exposure_ev: float = 7.0
+    #: A3: use the continuous band-limited albedo texture instead of the frozen per-face palette.
+    albedo_texture: bool = True
+    #: A3: modulation depth (peak-to-mean) of that texture.
+    albedo_texture_contrast: float = 0.30
     storage_root: str = "data/a12_fapp/store"
     report_dir: str = "data/a12_reports/physical_layer"
     source_path: str = ""
+
+    @property
+    def imaging_gain(self) -> float:
+        """The photon scale the delivered profile actually reaches: ``2**imaging_exposure_ev``."""
+        return float(2.0 ** float(self.imaging_exposure_ev))
 
     def as_dict(self) -> dict[str, Any]:
         d = dict(self.__dict__)
         for key in ("amplitudes_mm", "materials", "rung_mm_per_px", "long_edges_px"):
             d[key] = [str(x) for x in d[key]]
+        d["imaging_gain"] = self.imaging_gain
         return d
 
 
@@ -1813,6 +2204,15 @@ def validate_config(config: FractureAppearanceConfig) -> None:
                           stage="observe.fracture_appearance.validate_config")
     if float(config.ratio_facet) < 2.0:
         raise SynLabError(ErrorCode.SCHEMA_INVALID, "ratio_facet must be >= 2",
+                          stage="observe.fracture_appearance.validate_config")
+    if not (0.0 <= float(config.imaging_exposure_ev) <= 16.0):
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          "imaging_exposure_ev must be in [0, 16] (a rig-side exposure of more "
+                          "than 16 stops is not a capture setting)",
+                          stage="observe.fracture_appearance.validate_config")
+    if not (0.0 < float(config.albedo_texture_contrast) <= 0.95):
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          "albedo_texture_contrast must be in (0, 0.95] so the albedo stays > 0",
                           stage="observe.fracture_appearance.validate_config")
 
 

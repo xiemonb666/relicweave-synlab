@@ -162,7 +162,15 @@ def _d10_counter_proof(rows: Sequence[Mapping[str, Any]], records: Sequence[Mapp
 
 def _undeclared_extra_rule() -> dict[str, Any]:
     """Measure the package checker's rule on a **minimal fixture** (no real package touched)."""
-    from tools.load_package import check_package            # type: ignore  # noqa: PLC0415
+    import importlib.util
+
+    from synlab.canonical import hash_json
+
+    spec = importlib.util.spec_from_file_location("_n10_load_package",
+                                                 REPO_ROOT / "tools" / "load_package.py")
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
 
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp) / "fixture_package"
@@ -174,9 +182,10 @@ def _undeclared_extra_rule() -> dict[str, Any]:
         manifest = {"schema": "synlab.training_package_manifest.v1",
                     "files": [{"path": "research/relations.parquet", "hash": _sha256(declared),
                                "bytes": declared.stat().st_size, "note": "fixture"}]}
+        manifest["manifest_hash"] = hash_json(manifest)
         (root / "export_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
         try:
-            result = check_package(root)
+            result = module.check_package(root)
             file_set = result["checks"]["file_set"]
             ok = bool(file_set["ok"])
             unexpected = list(file_set["unexpected_extra"])
@@ -209,6 +218,7 @@ def _ablation(package_dir: str | Path, *, query: str, negatives: int, hard_negat
     package = TrainingPackage(package_dir)
     rows = [dict(row) for row in package.relations()]
     table = load_hard_negatives(table_path, enabled=False)
+    class_size = len(table.by_query(query))
     candidates = table.by_query(query)[: int(hard_negatives)]
     pool = TrainingPoolView(rows, lineup=sorted({str(r["query"]) for r in rows}
                                                 | {str(r["candidate"]) for r in rows}
@@ -226,17 +236,22 @@ def _ablation(package_dir: str | Path, *, query: str, negatives: int, hard_negat
     base_rows = [{"query": query, "positives": positives[:1], "negatives": chosen_negatives,
                   "sample_key": f"n10::{query}"}]
     off_rows = attach_hard_negatives(base_rows, table, enabled=False)
-    on_rows = attach_hard_negatives(base_rows, table, enabled=True)
+    on_rows = attach_hard_negatives(base_rows, table, enabled=True, limit=hard_negatives)
     off = build_training_batch(bundle, pool=pool, rows=off_rows)
     on = build_training_batch(bundle, pool=pool, rows=on_rows)
     off_snapshot = denominator_snapshot(off)
     on_snapshot = denominator_snapshot(on)
-    primary = [key for key in off_snapshot if key != "hard_negatives"]
+    primary = [key for key in off_snapshot if key not in ("hard_negatives", "shape")]
     identical = all(off_snapshot[key] == on_snapshot[key] for key in primary)
+    c_off = int(off.n_candidates)
     return {
         "ok": bool(identical and on_snapshot["hard_negatives"] == len(candidates)
-                   and off_snapshot["hard_negatives"] == 0),
+                   and off_snapshot["hard_negatives"] == 0
+                   and np.array_equal(off.neg_mask, on.neg_mask[:, :c_off])
+                   and np.array_equal(off.pos_mask, on.pos_mask[:, :c_off])),
         "query": query,
+        "class_size_for_query": class_size,
+        "attached": len(candidates),
         "subset": subset,
         "positives": positives[:1],
         "negatives": chosen_negatives,
@@ -244,13 +259,15 @@ def _ablation(package_dir: str | Path, *, query: str, negatives: int, hard_negat
         "off": off_snapshot,
         "on": on_snapshot,
         "primary_denominators_identical": identical,
-        "neg_mask_identical": bool(np.array_equal(off.neg_mask, on.neg_mask)),
-        "pos_mask_identical": bool(np.array_equal(off.pos_mask, on.pos_mask)),
+        "neg_mask_identical": bool(np.array_equal(off.neg_mask, on.neg_mask[:, :c_off])),
+        "pos_mask_identical": bool(np.array_equal(off.pos_mask, on.pos_mask[:, :c_off])),
         "hard_neg_mask_is_a_separate_block": bool(on.hard_neg_mask.any()
                                                   and not (on.hard_neg_mask & on.neg_mask).any()),
         "negative_audit": {"off": negative_audit(off), "on": negative_audit(on)},
         "note": ("the switch only adds the separate 'hard_negatives' key; every primary "
-                 "denominator and both primary masks are bit-identical"),
+                 "denominator and both primary masks (restricted to the pos/neg block) are "
+                 "bit-identical.  The batch gets wider by the hard-negative slot block "
+                 "(c = c_pn + c_hard), which is a shape and is reported as such."),
     }
 
 

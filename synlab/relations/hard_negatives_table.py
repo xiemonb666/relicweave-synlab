@@ -319,13 +319,18 @@ def package_table_path(package_dir: str | Path) -> Path:
 
 
 def attach_hard_negatives(rows: Sequence[Mapping[str, Any]], table: HardNegativeTable, *,
-                          enabled: bool | None = None) -> list[dict[str, Any]]:
+                          enabled: bool | None = None, limit: int | None = None
+                          ) -> list[dict[str, Any]]:
     """**One-key switch**: return ``rows`` with or without the auxiliary class attached.
 
     Off (the default) the rows are copied unchanged -- every primary denominator downstream is
     therefore identical to a run without this table.  On, each row whose query is in the table
     gains :data:`ROW_KEY` (a list of candidate ids) under a key of its **own**; ``negatives`` is
     never touched, so an ordinary-negative reading cannot pick these rows up.
+
+    ``limit`` caps the class per query (``None`` attaches every candidate the table holds for the
+    query).  A cap is what a batch wants -- the batch's hard-negative slot block is sized by the
+    longest list -- and it is recorded in the caller's report, never applied silently.
     """
     state = table.enabled if enabled is None else bool(enabled)
     out = [dict(row) for row in rows]
@@ -334,6 +339,8 @@ def attach_hard_negatives(rows: Sequence[Mapping[str, Any]], table: HardNegative
     for row in out:
         query = str(row.get("query", ""))
         candidates = table.by_query(query)
+        if limit is not None and int(limit) >= 0:
+            candidates = candidates[: int(limit)]
         if not candidates:
             continue
         existing = [str(x) for x in (row.get("negatives") or [])]
@@ -346,17 +353,25 @@ def attach_hard_negatives(rows: Sequence[Mapping[str, Any]], table: HardNegative
 
 
 def denominator_snapshot(batch: Any) -> dict[str, Any]:
-    """The primary denominators of a batch -- the numbers the auxiliary class may not move."""
+    """The primary denominators of a batch -- the numbers the auxiliary class may not move.
+
+    ``shape`` is reported separately: the auxiliary class occupies its own slot block after the
+    pos/neg block, so the batch gets *wider* (``candidate_slots``); that is a shape, not a
+    denominator, and the S2 report already records it as ``c = c_pn + c_hard``.
+    """
+    hard = getattr(batch, "hard_neg_mask", None)
     return {
         "n_queries": int(getattr(batch, "n_queries", 0)),
-        "n_candidates": int(getattr(batch, "n_candidates", 0)),
         "positives": int(batch.pos_mask.sum()),
         "negatives": int(batch.neg_mask.sum()),
         "excluded": int(batch.excluded_mask.sum()),
         "effective_queries": int(batch.effective_query_count()),
-        "hard_negatives": int(getattr(batch, "hard_neg_mask", None).sum())
-        if getattr(batch, "hard_neg_mask", None) is not None else 0,
         "rank_denominator": int((batch.pos_mask | batch.neg_mask).sum()),
+        "hard_negatives": int(hard.sum()) if hard is not None else 0,
+        "shape": {"candidate_slots": int(getattr(batch, "n_candidates", 0)),
+                  "c_pn": int((batch.meta or {}).get("hard_negative_c_pn",
+                                                     getattr(batch, "n_candidates", 0))),
+                  "c_hard": int((batch.meta or {}).get("hard_negative_c_hard", 0))},
     }
 
 

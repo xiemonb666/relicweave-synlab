@@ -1200,3 +1200,84 @@ watertight/winding 一致且不产生退化面）。实测：
 | `tests/a12/relations/test_s2_hard_negative_class.py` | 类别语义 + 四条约束 + D10（真 parquet + 真检查器）+ 活池 API（14 passed） |
 | `tests/a12/training/test_s2_hard_negative_consumption.py` | 分母不变性、slot 布局、三处拒绝、loss 算术、捷径探针非空性（13 passed） |
 | `data/a12_reports/_s2s11_*.txt`、`_req*.txt`、`_dq*.txt`、`_wal.txt` | 本轮 pytest / 驱动的原始输出与退出码 |
+
+---
+
+## N9 · `roi_external_drift` 纳入失败码（版本化 QA 变更）
+
+**Status: 完成（QA 收紧，版本 `a12.qa.v2`；旧产物只标注、不改写）**
+
+S11 §"一处必须点名的 QA 缺口"记录的机制——`audit_physical` 把漂移写进 `checks` 却**不进
+`failure_codes`**，所以 0.354 mm 可以报 PASS——本轮按 `engineering_policy.md` R5 做成**版本化 QA
+变更**。`synlab/physical/**` 不在写入范围，因此收紧落在**独立策略层** `synlab/qc/qa_policy.py`：
+只读生产者已经算出的 `pass` 标志，**只增失败码**（`ROI_EXTERNAL_DRIFT_EXCEEDED`），从不把 FAIL 升为
+PASS，幂等，并在结果上打 `qa_policy.version` 戳（没有该块的旧记录即 `a12.qa.v1`，这就是旧产物的标注
+依据）。
+
+**before/after（真实重跑 + 真实录得审计）**：
+
+| | 全局 SDF | 窄带（S11 默认路由） |
+|---|---|---|
+| `roi_external_drift_mm` | **0.35424330830574036**（`--step full --backend global_sdf` 重跑逐位相同，退出码 0） | 0.00034815253457054496 |
+| audit v1 | `PASS` / `failure_codes=[]` | `PASS` / `[]` |
+| audit v2 | **`FAIL`** / `["ROI_EXTERNAL_DRIFT_EXCEEDED"]` | `PASS` / `[]` |
+
+**翻转清单（扫 `data/**` 的 7671 个 JSON + 48 个 sqlite）**：带漂移检查的记录 396 条 → **246 条由
+PASS 翻 FAIL**（117 个文件）、148 条本已 FAIL、2 条（窄带）仍 PASS。分类：`data/a12_exports/**`
+**13 记录 / 7 文件**（`full/assets/asset_*/meta.json` ×6 + `closed_loop/store/reports/coverage_rows.json`）、
+其它 store 资产 90/41（role 全为 `physical_result`）、`a12_reports/**` 7/7、`*/store/reports/coverage_rows.json`
+5/5、`data/_archive_pre_fix/**` 131/57。**如实说明**：训练包本身的 manifest 不带漂移检查字段（漂移审计
+在 physical 资产 QA 里），所以"翻 FAIL 的包"指 `data/a12_exports/**` 下的资产库；翻转是**正确行为**
+（这些几何确实超标），旧产物零改写，标签登记表 `data/a12_reports/n9_qa_v2_flips.json`
+（`superseded_by_qa_policy:a12.qa.v1`，与 `_archive_pre_fix` 同口径）。
+
+**残留缺口**：版本戳未写进落库资产——需要在提交边界（`physical/api.py::commit_physical`）调用策略层，
+不在写入范围，已如实登记。
+
+---
+
+## N10 · 难负例辅助表 `research/hard_negatives.parquet`
+
+**Status: 完成（表 + 列语义卡 + 一键开关加载器；未并入主表，未改任何已产出包）**
+
+S2 的 1120 条 mate-present 类中 **880 条** query 侧有邻片 → 独立辅助表；240 条 query 无邻片 →
+`rejected` 计数（不监督、不静默丢弃）。
+
+| 项 | 实测 |
+|---|---|
+| 行数 / 列数 | **880**（全 `kind=R0`）× **15** 列（含 `query_mates`/`candidate_mates` list 列） |
+| 产物 | `data/a12_reports/n10/hard_negatives.parquet` + `hard_negatives.card.json`（列语义/约束/rejected 块） |
+| 主表 | **一字未动**（构建前后 `relations.parquet` sha256 相同）；类别的 `(query,candidate)` 全部来自主表真实行 |
+| 并入反证 | 真检查器 D10：表外违反 3 → 并入 **883**（+880） |
+| 一键开关消融（真 batch） | off/on：`positives/negatives/excluded/effective_queries/rank_denominator` 逐位相同、`neg_mask`/`pos_mask` 在 pos/neg 块逐位相同；仅 `hard_negatives` 0→3、批次增宽 3 slot（`c = c_pn + c_hard`） |
+| 落位 | `<package>/research/hard_negatives.parquet` 由 `--step install` 一条命令写入；**本轮未对已产出包执行**，因为 `--check` 会把未声明的文件判 `unexpected_extra` 并退出 3（该规则用最小夹具包**实测**），声明写者在 `synlab/storage/export.py`（写入范围外） |
+
+驱动：`tools/a12_n10_hard_negatives_table.py --step all`（退出码 **0**）；加载器：
+`synlab/relations/hard_negatives_table.py`（`load_hard_negatives` / `attach_hard_negatives(enabled=)` /
+`SYNLAB_HARD_NEGATIVES` 环境开关，默认关）。
+
+---
+
+## 协议一致性契约（engineering_policy §3 第 5 行）
+
+**Status: 完成（13 断言 × 4 实现 × 2 上下文全绿；失败注入 6/6 被抓住）**
+
+细节写在 `docs/a12/relation_negatives.md` §9（本节只记结论）：`synlab/qc/pool_contract.py` 是契约单一
+真源，`tools/a12_pool_contract.py --step canonical|real` 退出码均 **0**；同一套断言钉死缺陷 (B) 那一类
+（`neighbours()` 语义漂移）并把它的注入逐条抓住。实测到一处**真实分歧**（24 条 `valid=False` 的 `R1`
+行被画廊/`PoolIndex` 当普通负例，导出读者拒绝），按"改它=改训练数据"处理为**报告 + 测试钉死**，未擅自
+改既有语义。
+
+**本轮回归**：
+
+| 命令 | 退出码 | 结果 |
+|---|---|---|
+| `pytest tests\a12\qc tests\a12\relations tests\a12\training -q` | **0** | 314 项 / 0 失败 / 0 错误 / 19 跳过（66.7 s；`data/a12_reports/_n9n10_pytest_qct.txt` + `_n9n10_junit.xml`） |
+| `pytest tests\a12\qc -q` | **0** | 全绿——`open_items.md` 记录的 `test_store_sqlite_is_opened_read_only` 顺序相关失败**本轮未复现**（如实记录，未改该测试） |
+| `tools/a12_pool_contract.py --step canonical` / `--step real` | 0 / 0 | 见上 |
+| `tools/a12_n9_qa_tighten.py --step all` | 0 | 翻转 246 记录 / 117 文件 |
+| `tools/a12_n10_hard_negatives_table.py --step all` | 0 | 880 行表 + 反证 + 消融 |
+
+**记账（不在本轮写入范围，需 Lead 收口）**：`docs/a12/open_items.md` 的 N9/N10 行状态、
+`docs/a12/engineering_policy.md` §3 第 5 行（关系池协议）批次，本轮**未改**（两个文件都不在写入范围内），
+其实测结论在本节与 `relation_negatives.md` §9。
