@@ -405,7 +405,7 @@ def look_at_T_WC(eye: np.ndarray, target: np.ndarray, up: np.ndarray | None = No
     def vector3(name: str, value: np.ndarray) -> np.ndarray:
         try:
             result = np.asarray(value, dtype=np.float64)
-        except (TypeError, ValueError) as exc:
+        except (OverflowError, TypeError, ValueError) as exc:
             raise SynLabError(ErrorCode.SCHEMA_INVALID,
                               f"{name} must be a finite 3-vector", stage=stage) from exc
         if result.shape != (3,) or not np.isfinite(result).all():

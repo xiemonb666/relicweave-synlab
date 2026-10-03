@@ -150,6 +150,15 @@ def _freeze_array(value: np.ndarray, dtype: np.dtype[Any] | type | None = None) 
     return out
 
 
+def _finite_json_number(value: Any) -> bool:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return False
+    try:
+        return math.isfinite(float(value))
+    except (OverflowError, TypeError, ValueError):
+        return False
+
+
 def _sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as stream:
@@ -289,7 +298,7 @@ def load_forge_asset(package_dir: str | Path) -> ForgeAsset:
         expected_hash = record.get("sha256")
         if isinstance(expected_bytes, bool) or not isinstance(expected_bytes, int) \
                 or expected_bytes < 0 or not isinstance(expected_hash, str) \
-                or re.fullmatch(r"[0-9a-fA-F]{64}", expected_hash) is None:
+                or re.fullmatch(r"[0-9a-f]{64}", expected_hash) is None:
             raise _error(ErrorCode.SCHEMA_INVALID, "invalid file byte-count/hash record",
                          stage=stage, measurements={"path": str(rel)})
         path = _contained_file(root, str(rel), stage=stage)
@@ -300,7 +309,7 @@ def load_forge_asset(package_dir: str | Path) -> ForgeAsset:
             raise _error(ErrorCode.INPUT_UNAVAILABLE, "cannot read declared payload",
                          stage=stage,
                          measurements={"path": str(rel), "error": str(exc)}) from exc
-        if actual_bytes != expected_bytes or digest.lower() != expected_hash.lower():
+        if actual_bytes != expected_bytes or digest != expected_hash:
             raise _error(
                 ErrorCode.ASSET_HASH_MISMATCH,
                 "Forge payload byte count or SHA-256 differs from its manifest",
@@ -393,14 +402,12 @@ def load_forge_asset(package_dir: str | Path) -> ForgeAsset:
                      stage=stage)
     for name in ("rho_kg_m3", "E_pa", "Gc_j_m2"):
         value = mechanics[name]
-        if isinstance(value, bool) or not isinstance(value, (int, float)) \
-                or not math.isfinite(value) or value <= 0.0:
+        if not _finite_json_number(value) or value <= 0.0:
             raise _error(ErrorCode.SCHEMA_INVALID,
                          f"material.mechanics.{name} must be finite and positive",
                          stage=stage)
     poisson = mechanics["nu"]
-    if isinstance(poisson, bool) or not isinstance(poisson, (int, float)) \
-            or not math.isfinite(poisson) or not -1.0 < poisson < 0.5:
+    if not _finite_json_number(poisson) or not -1.0 < poisson < 0.5:
         raise _error(ErrorCode.SCHEMA_INVALID,
                      "material.mechanics.nu must be finite and in (-1,0.5)", stage=stage)
     if ornament.get("kind") != "painted":
@@ -420,8 +427,7 @@ def load_forge_asset(package_dir: str | Path) -> ForgeAsset:
                      "prototype historical style status must remain NOT_VALIDATED",
                      stage=stage, measurements={"historical_style_validation": style_status})
     relief = recipe.get("geometry_relief_mm")
-    if isinstance(relief, bool) or not isinstance(relief, (int, float)) \
-            or not math.isfinite(relief) or relief != 0.0:
+    if not _finite_json_number(relief) or relief != 0.0:
         raise _error(ErrorCode.SCHEMA_INVALID,
                      "painted prototype ornament must declare zero geometry relief",
                      stage=stage, measurements={"geometry_relief_mm": relief})
