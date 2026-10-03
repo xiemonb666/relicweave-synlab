@@ -1,0 +1,557 @@
+{
+  "environment": "SynLab software rasterizer; preview_only; linear RGB encoded as sRGB PNG",
+  "previews": [
+    {
+      "canonical_brep_face_count": 26,
+      "geometry_pass_parity_with_legacy": {
+        "depth_z": true,
+        "id_map": true,
+        "surface_tag": true,
+        "uncertain_mask": true,
+        "visibility": true
+      },
+      "geometry_validation": {
+        "report": "validation/geometry.json",
+        "scope": "geometry_only",
+        "status": "PASS"
+      },
+      "independent_oracle": {
+        "depth_max_abs_error_mm": 7.628419268712605e-06,
+        "method": "Float64 scalar Moller-Trumbore, perspective ray through OpenCV pixel center, barycentric rest z, then exact recipe interval/palette",
+        "palette_tolerance_linear": 2e-05,
+        "rgb_max_abs_error_linear": 2.9737452944544884e-08
+      },
+      "output_contains_truth_fields": false,
+      "output_forbidden_keys_found": [],
+      "output_metadata_keys": [
+        "adapter_schema",
+        "albedo_source_kind",
+        "ambient",
+        "appearance_binding",
+        "appearance_sampling",
+        "appearance_sampling_boundary",
+        "appearance_variant",
+        "backend",
+        "backend_class",
+        "backend_report_ref",
+        "background_linear",
+        "base_renderer",
+        "bg_linear_present",
+        "blender_gap",
+        "coc_optics",
+        "coc_p95_px",
+        "coc_threshold_px",
+        "depth_method",
+        "depth_semantics",
+        "depth_semantics_version",
+        "face_region_255_policy",
+        "far_mm",
+        "feature_export_allowed",
+        "focus_distance_mm",
+        "fracture_output",
+        "geometry_validation_basis",
+        "geometry_validation_scope",
+        "geometry_validation_status",
+        "historical_style_validation",
+        "id_map_semantics",
+        "input_kind",
+        "light_color",
+        "light_direction",
+        "mask_semantics",
+        "material_binding_status",
+        "material_calibration_status",
+        "mm_per_pixel",
+        "n_faces_drawn",
+        "near_mm",
+        "object_pose_T_WO",
+        "preview_only",
+        "production_physical_pass",
+        "production_visual_pass",
+        "prototype_preview_requires_opt_in",
+        "r2_output",
+        "ray_candidate_edge_uncertainty",
+        "shade",
+        "supersample",
+        "surface_visible_fraction",
+        "tag_mapping_rule",
+        "tag_mapping_schema",
+        "uncertain_fraction",
+        "vf_region_taxonomy_forward"
+      ],
+      "output_schema_keys": [
+        "backend",
+        "depth_z",
+        "id_map",
+        "meta",
+        "rgb_linear",
+        "surface_tag",
+        "uncertain_mask",
+        "visibility"
+      ],
+      "package": "four_bands_narrow",
+      "package_hashes": {
+        "solid_step": "4623bd373aeed0acfacfbf6cc0dda65952339561779b43429c59d61b8b5a1c30",
+        "surface_npz": "29153a19e0ad8190ab802b51b35e68ef313c92e4c7ab306722121f3ef038e631"
+      },
+      "preview": "tmp\\review_20261003\\implementation\\a12_depth_noise\\forge_continuous\\actual_previews\\four_bands_narrow_320.png",
+      "preview_sha256": "552f578f4fb1499e7a7fdc219b3cac3bfd870afc3512b9ac0cc79827b889717c",
+      "size_px": [
+        320,
+        320
+      ],
+      "surface_counts": {
+        "surface_tags": [
+          -1,
+          0
+        ],
+        "triangles": 38486,
+        "vertices": 19243,
+        "visible_base_pixels": 17149,
+        "visible_hit_pixels": 21405,
+        "visible_pixels_per_band": [
+          {
+            "center_z_mm": 15.0,
+            "color": "dark",
+            "index": 0,
+            "pixels": 511,
+            "width_mm": 1.5
+          },
+          {
+            "center_z_mm": 25.0,
+            "color": "dark",
+            "index": 1,
+            "pixels": 456,
+            "width_mm": 1.2
+          },
+          {
+            "center_z_mm": 34.0,
+            "color": "red",
+            "index": 2,
+            "pixels": 455,
+            "width_mm": 1.2
+          },
+          {
+            "center_z_mm": 43.0,
+            "color": "dark",
+            "index": 3,
+            "pixels": 523,
+            "width_mm": 1.5
+          }
+        ],
+        "visible_target_region_pixels": 19094
+      }
+    },
+    {
+      "canonical_brep_face_count": 26,
+      "geometry_pass_parity_with_legacy": {
+        "depth_z": true,
+        "id_map": true,
+        "surface_tag": true,
+        "uncertain_mask": true,
+        "visibility": true
+      },
+      "geometry_validation": {
+        "report": "validation/geometry.json",
+        "scope": "geometry_only",
+        "status": "PASS"
+      },
+      "independent_oracle": {
+        "depth_max_abs_error_mm": 7.628419268712605e-06,
+        "method": "Float64 scalar Moller-Trumbore, perspective ray through OpenCV pixel center, barycentric rest z, then exact recipe interval/palette",
+        "palette_tolerance_linear": 2e-05,
+        "rgb_max_abs_error_linear": 2.9737452944544884e-08
+      },
+      "output_contains_truth_fields": false,
+      "output_forbidden_keys_found": [],
+      "output_metadata_keys": [
+        "adapter_schema",
+        "albedo_source_kind",
+        "ambient",
+        "appearance_binding",
+        "appearance_sampling",
+        "appearance_sampling_boundary",
+        "appearance_variant",
+        "backend",
+        "backend_class",
+        "backend_report_ref",
+        "background_linear",
+        "base_renderer",
+        "bg_linear_present",
+        "blender_gap",
+        "coc_optics",
+        "coc_p95_px",
+        "coc_threshold_px",
+        "depth_method",
+        "depth_semantics",
+        "depth_semantics_version",
+        "face_region_255_policy",
+        "far_mm",
+        "feature_export_allowed",
+        "focus_distance_mm",
+        "fracture_output",
+        "geometry_validation_basis",
+        "geometry_validation_scope",
+        "geometry_validation_status",
+        "historical_style_validation",
+        "id_map_semantics",
+        "input_kind",
+        "light_color",
+        "light_direction",
+        "mask_semantics",
+        "material_binding_status",
+        "material_calibration_status",
+        "mm_per_pixel",
+        "n_faces_drawn",
+        "near_mm",
+        "object_pose_T_WO",
+        "preview_only",
+        "production_physical_pass",
+        "production_visual_pass",
+        "prototype_preview_requires_opt_in",
+        "r2_output",
+        "ray_candidate_edge_uncertainty",
+        "shade",
+        "supersample",
+        "surface_visible_fraction",
+        "tag_mapping_rule",
+        "tag_mapping_schema",
+        "uncertain_fraction",
+        "vf_region_taxonomy_forward"
+      ],
+      "output_schema_keys": [
+        "backend",
+        "depth_z",
+        "id_map",
+        "meta",
+        "rgb_linear",
+        "surface_tag",
+        "uncertain_mask",
+        "visibility"
+      ],
+      "package": "three_bands_counterfactual",
+      "package_hashes": {
+        "solid_step": "7779f1a47954225cc9a2a78fd5db96f1e98c6b86513954bbf86a5e63eb788868",
+        "surface_npz": "29153a19e0ad8190ab802b51b35e68ef313c92e4c7ab306722121f3ef038e631"
+      },
+      "preview": "tmp\\review_20261003\\implementation\\a12_depth_noise\\forge_continuous\\actual_previews\\three_bands_counterfactual_320.png",
+      "preview_sha256": "b0ba6f05566663fa4b35a84e74044b2767eb30d402d425cea697910164131360",
+      "size_px": [
+        320,
+        320
+      ],
+      "surface_counts": {
+        "surface_tags": [
+          -1,
+          0
+        ],
+        "triangles": 38486,
+        "vertices": 19243,
+        "visible_base_pixels": 17298,
+        "visible_hit_pixels": 21405,
+        "visible_pixels_per_band": [
+          {
+            "center_z_mm": 18.0,
+            "color": "red",
+            "index": 0,
+            "pixels": 704,
+            "width_mm": 2.0
+          },
+          {
+            "center_z_mm": 29.0,
+            "color": "dark",
+            "index": 1,
+            "pixels": 360,
+            "width_mm": 1.0
+          },
+          {
+            "center_z_mm": 40.0,
+            "color": "red",
+            "index": 2,
+            "pixels": 732,
+            "width_mm": 2.0
+          }
+        ],
+        "visible_target_region_pixels": 19094
+      }
+    },
+    {
+      "canonical_brep_face_count": 26,
+      "geometry_pass_parity_with_legacy": {
+        "depth_z": true,
+        "id_map": true,
+        "surface_tag": true,
+        "uncertain_mask": true,
+        "visibility": true
+      },
+      "geometry_validation": {
+        "report": "validation/geometry.json",
+        "scope": "geometry_only",
+        "status": "PASS"
+      },
+      "independent_oracle": {
+        "depth_max_abs_error_mm": 7.629174518797299e-06,
+        "method": "Float64 scalar Moller-Trumbore, perspective ray through OpenCV pixel center, barycentric rest z, then exact recipe interval/palette",
+        "palette_tolerance_linear": 2e-05,
+        "rgb_max_abs_error_linear": 2.9737452944544884e-08
+      },
+      "output_contains_truth_fields": false,
+      "output_forbidden_keys_found": [],
+      "output_metadata_keys": [
+        "adapter_schema",
+        "albedo_source_kind",
+        "ambient",
+        "appearance_binding",
+        "appearance_sampling",
+        "appearance_sampling_boundary",
+        "appearance_variant",
+        "backend",
+        "backend_class",
+        "backend_report_ref",
+        "background_linear",
+        "base_renderer",
+        "bg_linear_present",
+        "blender_gap",
+        "coc_optics",
+        "coc_p95_px",
+        "coc_threshold_px",
+        "depth_method",
+        "depth_semantics",
+        "depth_semantics_version",
+        "face_region_255_policy",
+        "far_mm",
+        "feature_export_allowed",
+        "focus_distance_mm",
+        "fracture_output",
+        "geometry_validation_basis",
+        "geometry_validation_scope",
+        "geometry_validation_status",
+        "historical_style_validation",
+        "id_map_semantics",
+        "input_kind",
+        "light_color",
+        "light_direction",
+        "mask_semantics",
+        "material_binding_status",
+        "material_calibration_status",
+        "mm_per_pixel",
+        "n_faces_drawn",
+        "near_mm",
+        "object_pose_T_WO",
+        "preview_only",
+        "production_physical_pass",
+        "production_visual_pass",
+        "prototype_preview_requires_opt_in",
+        "r2_output",
+        "ray_candidate_edge_uncertainty",
+        "shade",
+        "supersample",
+        "surface_visible_fraction",
+        "tag_mapping_rule",
+        "tag_mapping_schema",
+        "uncertain_fraction",
+        "vf_region_taxonomy_forward"
+      ],
+      "output_schema_keys": [
+        "backend",
+        "depth_z",
+        "id_map",
+        "meta",
+        "rgb_linear",
+        "surface_tag",
+        "uncertain_mask",
+        "visibility"
+      ],
+      "package": "four_bands_narrow",
+      "package_hashes": {
+        "solid_step": "4623bd373aeed0acfacfbf6cc0dda65952339561779b43429c59d61b8b5a1c30",
+        "surface_npz": "29153a19e0ad8190ab802b51b35e68ef313c92e4c7ab306722121f3ef038e631"
+      },
+      "preview": "tmp\\review_20261003\\implementation\\a12_depth_noise\\forge_continuous\\actual_previews\\four_bands_narrow_512.png",
+      "preview_sha256": "2856ae1c773e0c31142ec44f6c45d320cbfede9d8527481db1f8384f5228cee9",
+      "size_px": [
+        512,
+        512
+      ],
+      "surface_counts": {
+        "surface_tags": [
+          -1,
+          0
+        ],
+        "triangles": 38486,
+        "vertices": 19243,
+        "visible_base_pixels": 43886,
+        "visible_hit_pixels": 54631,
+        "visible_pixels_per_band": [
+          {
+            "center_z_mm": 15.0,
+            "color": "dark",
+            "index": 0,
+            "pixels": 1307,
+            "width_mm": 1.5
+          },
+          {
+            "center_z_mm": 25.0,
+            "color": "dark",
+            "index": 1,
+            "pixels": 1160,
+            "width_mm": 1.2
+          },
+          {
+            "center_z_mm": 34.0,
+            "color": "red",
+            "index": 2,
+            "pixels": 1174,
+            "width_mm": 1.2
+          },
+          {
+            "center_z_mm": 43.0,
+            "color": "dark",
+            "index": 3,
+            "pixels": 1344,
+            "width_mm": 1.5
+          }
+        ],
+        "visible_target_region_pixels": 48871
+      }
+    },
+    {
+      "canonical_brep_face_count": 26,
+      "geometry_pass_parity_with_legacy": {
+        "depth_z": true,
+        "id_map": true,
+        "surface_tag": true,
+        "uncertain_mask": true,
+        "visibility": true
+      },
+      "geometry_validation": {
+        "report": "validation/geometry.json",
+        "scope": "geometry_only",
+        "status": "PASS"
+      },
+      "independent_oracle": {
+        "depth_max_abs_error_mm": 7.629174518797299e-06,
+        "method": "Float64 scalar Moller-Trumbore, perspective ray through OpenCV pixel center, barycentric rest z, then exact recipe interval/palette",
+        "palette_tolerance_linear": 2e-05,
+        "rgb_max_abs_error_linear": 2.9737452944544884e-08
+      },
+      "output_contains_truth_fields": false,
+      "output_forbidden_keys_found": [],
+      "output_metadata_keys": [
+        "adapter_schema",
+        "albedo_source_kind",
+        "ambient",
+        "appearance_binding",
+        "appearance_sampling",
+        "appearance_sampling_boundary",
+        "appearance_variant",
+        "backend",
+        "backend_class",
+        "backend_report_ref",
+        "background_linear",
+        "base_renderer",
+        "bg_linear_present",
+        "blender_gap",
+        "coc_optics",
+        "coc_p95_px",
+        "coc_threshold_px",
+        "depth_method",
+        "depth_semantics",
+        "depth_semantics_version",
+        "face_region_255_policy",
+        "far_mm",
+        "feature_export_allowed",
+        "focus_distance_mm",
+        "fracture_output",
+        "geometry_validation_basis",
+        "geometry_validation_scope",
+        "geometry_validation_status",
+        "historical_style_validation",
+        "id_map_semantics",
+        "input_kind",
+        "light_color",
+        "light_direction",
+        "mask_semantics",
+        "material_binding_status",
+        "material_calibration_status",
+        "mm_per_pixel",
+        "n_faces_drawn",
+        "near_mm",
+        "object_pose_T_WO",
+        "preview_only",
+        "production_physical_pass",
+        "production_visual_pass",
+        "prototype_preview_requires_opt_in",
+        "r2_output",
+        "ray_candidate_edge_uncertainty",
+        "shade",
+        "supersample",
+        "surface_visible_fraction",
+        "tag_mapping_rule",
+        "tag_mapping_schema",
+        "uncertain_fraction",
+        "vf_region_taxonomy_forward"
+      ],
+      "output_schema_keys": [
+        "backend",
+        "depth_z",
+        "id_map",
+        "meta",
+        "rgb_linear",
+        "surface_tag",
+        "uncertain_mask",
+        "visibility"
+      ],
+      "package": "three_bands_counterfactual",
+      "package_hashes": {
+        "solid_step": "7779f1a47954225cc9a2a78fd5db96f1e98c6b86513954bbf86a5e63eb788868",
+        "surface_npz": "29153a19e0ad8190ab802b51b35e68ef313c92e4c7ab306722121f3ef038e631"
+      },
+      "preview": "tmp\\review_20261003\\implementation\\a12_depth_noise\\forge_continuous\\actual_previews\\three_bands_counterfactual_512.png",
+      "preview_sha256": "e8c5ce7b9807b210f6d243923f79bfbe6800d795ec19893b96bbe255f8dd8642",
+      "size_px": [
+        512,
+        512
+      ],
+      "surface_counts": {
+        "surface_tags": [
+          -1,
+          0
+        ],
+        "triangles": 38486,
+        "vertices": 19243,
+        "visible_base_pixels": 44243,
+        "visible_hit_pixels": 54631,
+        "visible_pixels_per_band": [
+          {
+            "center_z_mm": 18.0,
+            "color": "red",
+            "index": 0,
+            "pixels": 1840,
+            "width_mm": 2.0
+          },
+          {
+            "center_z_mm": 29.0,
+            "color": "dark",
+            "index": 1,
+            "pixels": 963,
+            "width_mm": 1.0
+          },
+          {
+            "center_z_mm": 40.0,
+            "color": "red",
+            "index": 2,
+            "pixels": 1825,
+            "width_mm": 2.0
+          }
+        ],
+        "visible_target_region_pixels": 48871
+      }
+    }
+  ],
+  "same_geometry_between_packages": {
+    "faces_equal": true,
+    "triangle_count": 38486,
+    "vertex_count": 19243,
+    "vertices_equal": true
+  }
+}
