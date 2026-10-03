@@ -8,6 +8,13 @@ A12 adapter/camera32、depth/noise71、冻结 parity2 为 `PASS`；legacy appear
 
 当前 replacement runs：native double-body no-failure 三例、production read-only C2 shell 候选仍 `PENDING`。连续 paint sampler 的 38 PASS 因 half-pixel oracle 不独立而被主代理拒绝；修正 oracle 后的 SS=1/2/distance rerun 尚待接受。首轮 3 FAIL / 27 PASS 和 legacy appearance 的 4 FAIL 都按原样保留。A12 不替换主 A3/A4 的真实邻接检索、证据拒绝、补采、STOP。
 
+## 最新接续更正（2026-10-03）
+
+以 [接续矩阵](CONTINUATION_20261003.md) 为当前任务状态来源。root 接受了窄范围连续绘制 preview/oracle target：SS=1/2 与 nonzero distortion 的目标日志为 40 PASS；4-band 512/320 与 3-band 512 反事实图已实看。先前 38-PASS 的独立 oracle 将 half-pixel 加到未平移原始 K，未抵消 _scaled_frame 的 +0.5，导致错误射线；因此该次结果被拒，default/frozen 回归仍待补测。
+
+smooth-CAD 3D shell candidate 的 0.118432 mm 偏差超过 0.10 mm，native halfsection 无效/为空，不能将有限 192 wall-ray 或 C2 曲线报告当作 whole-geometry PASS；第二 2D 表示和 h8 cell-cap rerun 均 PENDING，精度门槛仍为 1%。旧 deploy 实包状态为 INVALID_DEPLOY_TRUTH_LEAK / PENDING：queries 实际含 lineage/mother/fragment/historical_N_G，deploy_index 用 raw lineage/M-style IDs，manifest 的 features_carry_answer_fields=false 不构成无泄漏证据。strict-v2 replacement 尚待验收。
+
+[现实效果验收依据](REALISM_ACCEPTANCE_20261003.md) 将数学几何、物理、材料来源/校准、实物形貌分开判定；当前视觉仅限展示，E/Gc 候选原值保留，实际材料 calibration UNKNOWN / UNVALIDATED。A12 不取代主流程 A3/A4 的真实邻接检索、拒绝、补采与 STOP。下文的 2026-10-02 项目状态保留为历史记录。
 ## 早期状态快照（以下细项保留历史状态；当前进度以接续矩阵为准）
 
 VF 当前 prototype 已窄验收 canonical STEP BRep face 分类、连续 rest-coordinate 四带绘制及几何-only 深度 parity；器身 C0 折角、接头真实度、材料/历史样式仍 `PENDING`。A12 生产 appearance 仍未全闭环（4 项 appearance 测试失败）；A12 adapter/camera32 为 `PASS`，但 per-face 近似仍漏掉窄红带。GPU 路径未实现，完整物理断裂链未完成。PG owner 报告 physics/time SHA 20/20 和 OSB/BB 独立 API fixture 的真实 CLI 验证通过，最终 wheel 检查进行中；jobs 修复 19 项测试通过，仍在审查中。A12 既有 ageing、capture 和 reconstruction 能力为部分实现，新 VF/PG 接入与真实效果综合验证待完成。

@@ -152,15 +152,16 @@ def load_real_inputs(package_dir: str | Path, *, token_budget: int | None = 256
     The fragment-id set and the row split follow ``qc.loader_probe.probe_training_package``
     exactly (same helpers: ``load_features``, ``ExportedRelationPool``, ``_batch_rows``).
     """
-    package = TrainingPackage(package_dir)
+    package = TrainingPackage(package_dir, access="research")
     verify = package.verify_files()
     relations = package.relations()
     queries = package.queries()
+    observed = set(package.observed_ids())
 
     fragment_ids = [str(row.get("fragment_id") or _query_fragment(row)) for row in queries]
-    fragment_ids = [f for f in dict.fromkeys(fragment_ids) if f]
+    fragment_ids = [f for f in dict.fromkeys(fragment_ids) if f in observed]
     for candidate in sorted({str(r.get("candidate", "")) for r in relations if r.get("candidate")}):
-        if candidate not in fragment_ids:
+        if candidate in observed and candidate not in fragment_ids:
             fragment_ids.append(candidate)
 
     payloads = load_features(package, fragment_ids, token_budget=token_budget)
@@ -343,7 +344,7 @@ def run_smoke(package_dir: str | Path = DEFAULT_PACKAGE, *, steps: int = 3,
         "queries_with_observation": sum(1 for q in real["queries"]
                                         if str(q.get("has_observation")).lower() == "true"),
         "fragments_in_batch_scope": len(real["fragment_ids"]),
-        "observed_fragments": sorted(package.observation_index().get("rows", {})),
+        "observed_fragments": sorted(package.observed_ids()),
     }
     if include_loader_probe:
         from ..qc.loader_probe import probe_training_package

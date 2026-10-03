@@ -38,6 +38,7 @@ import io
 import json
 import os
 import tarfile
+import uuid
 from collections import defaultdict
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Sequence
@@ -59,6 +60,7 @@ from ..roles import (
 )
 from ..storage.release import ReleaseManager
 from ..storage.store import QA_PASS, AssetStore
+from .deploy_boundary import DEPLOY_SCHEMA, is_opaque_id, validate_deploy_package
 
 REGISTERED_FORMATS = ("parquet", "json")
 
@@ -71,7 +73,7 @@ VIEW_RESEARCH = "research"
 VIEWS = (VIEW_DEPLOY, VIEW_RESEARCH)
 
 #: Formats :func:`export_training_package` can materialise.
-TRAINING_FORMATS = ("parquet", "npz", "zarr", "tar")
+TRAINING_FORMATS = ("parquet", "npz", "tar")
 
 #: Directory *inside a view* that holds the zarr replica of the geometry shards.  The writer
 #: and the manifest scanner both derive their path from :func:`_zarr_root`, so the replica can
@@ -754,7 +756,7 @@ def _frame_ids_from_views(points: np.ndarray, arrays: Mapping[str, np.ndarray],
 
 
 def export_training_package(store: AssetStore, release_id: str, out_dir: str | Path, *,
-                            formats: Sequence[str] = ("parquet", "npz", "zarr", "tar"),
+                            formats: Sequence[str] = ("parquet", "npz", "tar"),
                             pkg_id: str | None = None,
                             relations_per_shard: int = 512,
                             fragments_per_shard: int = 8,
@@ -771,6 +773,10 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
         raise SynLabError(ErrorCode.SCHEMA_INVALID,
                           f"unknown training package formats {unknown}; "
                           f"registered: {list(TRAINING_FORMATS)}",
+                          stage="export.export_training_package")
+    if "npz" not in formats or "tar" not in formats:
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          "deploy schema v2 requires npz geometry/tokens and tar observations",
                           stage="export.export_training_package")
     manager = ReleaseManager(store)
     manifest = manager.load(release_id)
@@ -824,6 +830,16 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
     # channel that a given observation does not carry is *absent* for that fragment and is
     # reported as missing -- never fabricated with a placeholder array.
     obs_by_fragment: dict[str, dict[str, Any]] = {}
+    # Per-export UUIDs prevent stable raw-id hashes and keep every deployment index and shard
+    # identity in the same namespace.  The reverse mapping is written only under research/.
+    opaque_by_fragment: dict[str, str] = {}
+
+    def opaque_for(fragment_id: str) -> str:
+        key = str(fragment_id)
+        if key not in opaque_by_fragment:
+            opaque_by_fragment[key] = uuid.uuid4().hex
+        return opaque_by_fragment[key]
+
     channel_availability: dict[str, int] = {key: 0 for key in deploy_channel_keys}
     for record in observations:
         meta = dict(record.meta or {})
@@ -896,6 +912,10 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
         for key in deploy_channel_keys}
 
     obs_index: dict[str, dict[str, Any]] = {}
+    quality_index: dict[str, Any] = {}
+    quality_prov: dict[str, Any] = {"estimator_version": [], "channels": [], "units": {},
+                                   "fragments_with_quality": 0,
+                                   "fragments_without_quality": []}
     if obs_by_fragment:
         shard_items = _shard(sorted(obs_by_fragment), fragments_per_shard)
         for index, members in enumerate(shard_items):
@@ -905,7 +925,7 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
             with tarfile.open(path, "w") as tar:
                 for fragment_id in members:
                     payload = obs_by_fragment[fragment_id]
-                    opaque = _opaque(fragment_id)
+                    opaque = opaque_for(fragment_id)
                     members_written: list[str] = []
                     for suffix, array in (
                         ("tiles.npy", payload["rgb"]),
@@ -925,16 +945,10 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
                         info.mtime = 0
                         tar.addfile(info, io.BytesIO(data))
                         members_written.append(channel_key)
-                    obs_index[fragment_id] = {
-                        # No ``split`` and no ``lineage_id``: they are answer-side bookkeeping
-                        # (both are in ``roles.FORBIDDEN_FEATURE_FIELDS``) and the deployment
-                        # view declares that it carries no lineage/split information.  The
-                        # research view keeps split/lineage per pair in ``relations.parquet``
-                        # and per label row in ``labels/<layer>.parquet``.
-                        "opaque": opaque, "shard": name, "views": payload["views"],
+                    obs_index[opaque] = {
+                        "shard": name, "views": payload["views"],
                         "shape": list(payload["rgb"].shape),
                         "hash": array_hash(payload["rgb"]),
-                        "truth_channels": [],
                         # the channels this fragment's member files really carry
                         "channels": sorted(members_written),
                         # where the delivered ``view_pos.npy`` really came from (D2 fix)
@@ -946,72 +960,11 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
         positions = (np.concatenate([payload["view_pos"] for payload in obs_by_fragment.values()])
                      if obs_by_fragment else np.zeros(0, dtype=np.float32))
         finite_positions = positions[np.isfinite(positions)]
-        quality_index, quality_prov = _observation_quality_index(store, observations, obs_index)
+        quality_index, quality_prov = _observation_quality_index(store, observations, obs_by_fragment)
         index_path = deploy_root / "obs" / "index.json"
         index_path.write_text(json.dumps({
-            "schema": "synlab.obs_index.v1",
-            "opaque_naming": "sha256(asset fragment id)[:24]",
-            "channel_policy": {
-                "schema": channel_policy["schema"],
-                "path": channel_policy["path"],
-                "hash": channel_policy["hash"],
-                "source": channel_policy["source"],
-                "env_override": VIEW_CHANNEL_POLICY_ENV,
-                "note": ("the deployment view's channel set is data, not a literal: this is the "
-                         "policy the shards were written under, with its own hash"),
-            },
-            "channels": [
-                {
-                    "key": entry["key"],
-                    "source_array": entry.get("source_array"),
-                    "dtype": entry.get("dtype"),
-                    "unit": entry.get("unit"),
-                    "reason": entry.get("reason"),
-                    "evidence_class": entry.get("evidence_class"),
-                    "caveat": entry.get("caveat"),
-                    "optional": bool(entry.get("optional", False)),
-                    "fragments_with_channel": int(counts["deploy_channels_per_fragment"]
-                                                  .get(entry["key"], 0)),
-                }
-                for entry in channel_policy["channels"].get(VIEW_DEPLOY, [])
-            ],
-            "channel_names": sorted(deploy_channel_keys),
-            "research_only_channels": sorted(channel_policy["research_only"]),
-            "view_pos": {
-                "unit": "mm",
-                "definition": ("camera slide coordinate in the scan frame, read from the delivered "
-                               "pose T_WC as T_WC[0, 3] -- the same definition "
-                               "synlab.degrade.api uses for a ViewFrame's u_position_mm"),
-                "fallback": "view_meta.u_position_mm, only when no pose was delivered",
-                "missing_marker": "nan (neither T_WC nor a real u_position_mm was delivered)",
-                "measured": {
-                    "views": int(positions.size),
-                    "finite": int(finite_positions.size),
-                    "nonzero_finite": int(np.count_nonzero(finite_positions)),
-                    "min": (float(finite_positions.min()) if finite_positions.size else None),
-                    "max": (float(finite_positions.max()) if finite_positions.size else None),
-                    "varies_across_views": bool(finite_positions.size
-                                                and float(np.ptp(finite_positions)) > 0.0),
-                },
-            },
-            "quality_research": {
-                "note": ("per-fragment OBS_EST observation-quality channels (S7): the asset "
-                         "metadata of every obs_result carries them, but the packaged observation "
-                         "shards do not, so a loader had nothing to read and wrote "
-                         "``quality = zeros((1,1))`` for every fragment.  A channel the model "
-                         "consumes as an *input* belongs in the research view beside its "
-                         "provenance, not inside the deployment shards; the deployment-view "
-                         "answer-field scan therefore never sees it."),
-                "source": "obs_result.meta.quality[*] with source_kind == OBS_EST",
-                "estimator_version": quality_prov["estimator_version"],
-                "channels": quality_prov["channels"],
-                "unit": "1 (mixed: mm for spacing-type channels, recorded per channel below)",
-                "units": quality_prov["units"],
-                "fragments_with_quality": quality_prov["fragments_with_quality"],
-                "fragments_without_quality": quality_prov["fragments_without_quality"],
-                "n_fragments_reported": quality_prov["n_fragments_reported"],
-                "rows": quality_index,
-            },
+            "schema": "synlab.obs_index.v2",
+            "channels": sorted(deploy_channel_keys),
             "rows": obs_index,
         }, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8")
         _record(files, index_path, out)
@@ -1057,13 +1010,13 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
             path.parent.mkdir(parents=True, exist_ok=True)
             payload: dict[str, np.ndarray] = {}
             for fragment_id in members:
-                opaque = _opaque(fragment_id)
+                opaque = opaque_for(fragment_id)
                 for key, array in geometry_by_fragment[fragment_id].items():
                     payload[f"{opaque}__{key}"] = array
                 frame_ids = np.asarray(geometry_by_fragment[fragment_id]["frame_id"])
                 matched = frame_ids[frame_ids >= 0]
-                geometry_index[fragment_id] = {
-                    "opaque": opaque, "shard": name,
+                geometry_index[opaque] = {
+                    "shard": name,
                     "n_points": int(geometry_by_fragment[fragment_id]["points"].shape[0]),
                     # "frames" counts the delivered views a point was really matched to; it used
                     # to be the number of distinct values of the row counter (always n_views).
@@ -1076,41 +1029,14 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
                 }
             np.savez(path, **payload)
             _record(files, path, out, note="geometry shard (points/normals/*_valid/scale_valid/frame_id)")
-        _matched_total = int(sum(int(row["n_points"]) - int(row["frame_id_unmatched"])
-                                 for row in geometry_index.values()))
-        _points_total = int(sum(int(row["n_points"]) for row in geometry_index.values()))
-        _with_pose = sorted({str(row["frame_id_source"]) for row in geometry_index.values()})
         index_path = deploy_root / "geometry" / "index.json"
         index_path.write_text(json.dumps({
-            "schema": "synlab.geometry_index.v1",
+            "schema": "synlab.geometry_index.v2",
             "arrays": ["points", "normals", "point_valid", "normal_valid", "scale_valid",
                        "frame_id"],
-            "frame_id": {
-                "unit": "1 (index of a delivered view inside the fragment)",
-                "definition": ("the delivered view whose rendered depth_z agrees with the point "
-                               "reprojected through K and T_WC; -1 = no delivered view explains "
-                               "the point"),
-                "tolerance_mm": float(FRAME_ID_TOLERANCE_MM),
-                "unmatched_marker": -1,
-                "sources": _with_pose,
-                "measured": {"points": _points_total, "matched": _matched_total,
-                             "match_fraction": (float(_matched_total / _points_total)
-                                                if _points_total else 0.0)},
-            },
             "rows": geometry_index,
         }, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8")
         _record(files, index_path, out)
-
-    if geometry_by_fragment and "zarr" in formats:
-        # write and register the replica through the same path helper: a file that is written
-        # is a file that is declared (and therefore hash-checked by ``TrainingPackage``).
-        zarr_root = _zarr_root(deploy_root)
-        _write_zarr(zarr_root, geometry_by_fragment)
-        counts["zarr_arrays"] = len(geometry_by_fragment)
-        zarr_files = [path for path in sorted(zarr_root.rglob("*")) if path.is_file()]
-        counts["zarr_files"] = len(zarr_files)
-        for path in zarr_files:
-            _record(files, path, out, note="zarr replica of the geometry shards")
 
     # ---------------- token cache ------------------------------------------------------
     tokens_by_fragment: dict[str, dict[str, np.ndarray]] = {}
@@ -1127,32 +1053,23 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
             path.parent.mkdir(parents=True, exist_ok=True)
             payload = {}
             for fragment_id in members:
-                opaque = _opaque(fragment_id)
+                opaque = opaque_for(fragment_id)
                 for key, array in tokens_by_fragment[fragment_id].items():
                     payload[f"{opaque}__{key}"] = array
-                token_index[fragment_id] = {
-                    "opaque": opaque, "shard": name,
+                token_index[opaque] = {
+                    "shard": name,
                     "tokens": int(tokens_by_fragment[fragment_id]["tokens"].shape[0]),
                     "token_dim": int(tokens_by_fragment[fragment_id]["tokens"].shape[1]),
                     "tokens_hash": array_hash(tokens_by_fragment[fragment_id]["tokens"]),
+                    "views": int(tokens_by_fragment[fragment_id]["token_view"].max(initial=-1) + 1),
+                    "tile_shape": list(obs_by_fragment[fragment_id]["valid"].shape),
                 }
             np.savez(path, **payload)
             _record(files, path, out, note="token cache shard")
         index_path = deploy_root / "tokens" / "index.json"
         index_path.write_text(json.dumps({
-            "schema": "synlab.token_index.v1",
+            "schema": "synlab.token_index.v2",
             "token_dim": TOKEN_DIM,
-            "encoder_id": ENCODER_ID,
-            "token_policy_id": TOKEN_POLICY_ID,
-            # What one token *is*, stated where a loader can read it: one token per
-            # ``(view, block, channel)`` slot, ``TOKEN_DIM`` sub-grid means of that slot.  The
-            # previous writer broadcast one scalar into ``token_dim`` columns per token (measured
-            # effective rank 1); the layout key is what makes that difference checkable.
-            "token_layout": TOKEN_LAYOUT,
-            "token_sub_grid": [TOKEN_SUB, TOKEN_SUB],
-            "tokens_per_view": TOKEN_BLOCK * TOKEN_BLOCK * 3,
-            "token_input": "coarse TOKEN_BLOCK x TOKEN_BLOCK block mean per view (real, rank-1 by"
-                           " construction); kept for provenance, not a 256-dim feature",
             "rows": token_index,
         }, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8")
         _record(files, index_path, out)
@@ -1211,9 +1128,25 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
     # Fragments without an observation are still exported (their feature rows are marked
     # invalid by the loader) and every row records which side carries the observation.
     observed_fragments = sorted(obs_by_fragment)
+    context_fragment_ids = {
+        str(member.get("id", ""))
+        for record in by_role.get(ROLE_CONTEXT_PACK, [])
+        for member in ((record.meta or {}).get("coexistents") or [])
+        if isinstance(member, Mapping) and str(member.get("id", ""))
+    }
     all_fragments = sorted(set(observed_fragments)
                            | {fid for fid in feature_meta if fid}
-                           | {str(fid) for fid in _release_fragment_ids(store, release_assets)})
+                           | {str(fid) for fid in _release_fragment_ids(store, release_assets)}
+                           | context_fragment_ids)
+    for fragment_id in all_fragments:
+        opaque_for(fragment_id)
+    opaque_map_path = research_root / "opaque_map.json"
+    opaque_map_path.write_text(json.dumps({
+        "schema": "synlab.research_opaque_map.v2",
+        "rows": {opaque_by_fragment[fid]: fid for fid in all_fragments},
+    }, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8")
+    _record(files, opaque_map_path, out, note="research-only source-id mapping for deploy UUIDs")
+
     index_of = {fid: i for i, fid in enumerate(all_fragments)}
     relation_rows: list[dict[str, Any]] = []
     # S3 fix.  ``merged`` is keyed by the *canonical* (sorted) pair, so emitting
@@ -1274,20 +1207,19 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
     counts["fragments_without_observation"] = len(all_fragments) - len(observed_fragments)
     observed_fragments = all_fragments
 
-    queries_rows = []
-    for fragment_id in observed_fragments:
+    deploy_queries_rows: list[dict[str, Any]] = []
+    research_queries_rows: list[dict[str, Any]] = []
+    for fragment_id in all_fragments:
         meta = feature_meta.get(fragment_id, {}).get("meta", {})
         obs = obs_by_fragment.get(fragment_id, {})
         mates = sorted({r["candidate"] for r in relation_rows
                         if r["query"] == fragment_id and r["kind"] == "R2"})
-        # the batch this query belongs to (plan t088): the same controlled metadata a real
-        # excavation hands over with a sherd, so the candidate scope of a query is addressable
+        # Full query/supervision metadata is kept on the research side.  The deployment roster
+        # gets only this export's opaque identity and policy-approved capture context.
         query_context = dict(obs.get("context") or {})
-        queries_rows.append({
-            # ``fragment_id`` is deliberately not a column: it is a forbidden feature-field name
-            # and it would only duplicate ``query_id`` (``q::<fragment_id>``) and ``fragment``.
-            # The loader derives the row identity from ``query_id``
-            # (``qc.loader_probe._query_fragment``).
+        source_query = {
+            "opaque_id": opaque_by_fragment[fragment_id],
+            "fragment_id": fragment_id,
             "query_id": f"q::{fragment_id}",
             "lineage": obs.get("lineage_id") or _lineage_of(feature_meta, obs_by_fragment,
                                                             fragment_id),
@@ -1304,34 +1236,62 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
             "excavation_area_id": str(query_context.get("excavation_area_id", "") or ""),
             "applicability": {"views": int(obs.get("views", 0)),
                               "scale_valid": bool(meta.get("scale_valid", False))},
-        })
+        }
+        research_queries_rows.append(source_query)
+        if fragment_id in obs_by_fragment:
+            deploy_row = {"opaque_id": opaque_by_fragment[fragment_id]}
+            if "bag_id" in set(channel_policy.get("capture_context_keys") or []):
+                deploy_row["bag_id"] = str(query_context.get("bag_id", "") or "")
+            deploy_queries_rows.append(deploy_row)
+
+    research_queries_path = research_root / ("queries.parquet" if "parquet" in formats
+                                              else "queries.json")
+    if "parquet" in formats:
+        _write_parquet(research_queries_path, research_queries_rows, relations_per_shard)
+    else:
+        research_queries_path.write_text(json.dumps(research_queries_rows, ensure_ascii=False,
+                                                    indent=2), encoding="utf-8")
+    _record(files, research_queries_path, out, note="research view: full query truth roster")
+
+    # Observation-derived quality is useful research metadata, but the v2 deployment contract
+    # does not expose it as a model input or a deployment index side channel.
+    quality_path = research_root / "observation_quality.json"
+    quality_path.write_text(json.dumps({
+        "schema": "synlab.research_observation_quality.v1",
+        "estimator_version": quality_prov.get("estimator_version", []),
+        "channels": quality_prov.get("channels", []),
+        "units": quality_prov.get("units", {}),
+        "fragments_with_quality": quality_prov.get("fragments_with_quality", 0),
+        "fragments_without_quality": quality_prov.get("fragments_without_quality", []),
+        "rows": quality_index,
+    }, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8")
+    _record(files, quality_path, out, note="research-only measured observation quality")
 
     if "parquet" in formats:
         relations_path = research_root / "relations.parquet"
         _write_parquet(relations_path, relation_rows, relations_per_shard)
         _record(files, relations_path, out, note="research view: relation labels")
         queries_path = deploy_root / "queries.parquet"
-        _write_parquet(queries_path, queries_rows, relations_per_shard)
-        _record(files, queries_path, out, note="deployment view: query roster without labels")
+        _write_parquet(queries_path, deploy_queries_rows, relations_per_shard)
+        _record(files, queries_path, out, note="deployment view: opaque roster plus capture context")
     else:
         relations_path = research_root / "relations.json"
         relations_path.write_text(json.dumps(relation_rows, ensure_ascii=False, indent=2),
                                   encoding="utf-8")
         _record(files, relations_path, out)
         queries_path = deploy_root / "queries.json"
-        queries_path.write_text(json.dumps(queries_rows, ensure_ascii=False, indent=2),
+        queries_path.write_text(json.dumps(deploy_queries_rows, ensure_ascii=False, indent=2),
                                 encoding="utf-8")
         _record(files, queries_path, out)
 
     deploy_index = deploy_root / "deploy_index.json"
     deploy_index.write_text(json.dumps({
-        "schema": "synlab.deploy_index.v1",
-        "note": "opaque-name map for the deployment view; contains no label and no split",
-        "rows": {fid: {"opaque": _opaque(fid),
-                       "obs_shard": (obs_index.get(fid) or {}).get("shard"),
-                       "geometry_shard": (geometry_index.get(fid) or {}).get("shard"),
-                       "token_shard": (token_index.get(fid) or {}).get("shard")}
-                 for fid in observed_fragments},
+        "schema": "synlab.deploy_index.v2",
+        "rows": {opaque_by_fragment[fid]: {
+            "obs_shard": (obs_index.get(opaque_by_fragment[fid]) or {}).get("shard"),
+            "geometry_shard": (geometry_index.get(opaque_by_fragment[fid]) or {}).get("shard"),
+            "token_shard": (token_index.get(opaque_by_fragment[fid]) or {}).get("shard"),
+        } for fid in observed_fragments},
     }, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8")
     _record(files, deploy_index, out)
 
@@ -1377,7 +1337,7 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
         mapping_path.write_text(json.dumps({
             "schema": "synlab.label_query_map.v1",
             "note": "research-only mapping between the opaque observation names and the ids",
-            "rows": {_opaque(fid): fid for fid in observed_fragments},
+            "rows": {opaque_by_fragment[fid]: fid for fid in observed_fragments},
         }, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8")
         _record(files, mapping_path, out)
     counts["label_layers"] = len(label_files)
@@ -1388,16 +1348,8 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
     degrade_block = _degrade_diversity_block(store, by_role, out, files)
     counts.update(degrade_block["counts"])
 
-    # ---------------- simulated excavation context (plan t088) --------------------------
-    # Context is *the metadata that travels with a sherd at a real excavation*, so it belongs to
-    # the deployment view: the pack document is written under ``deploy/context/`` and every query
-    # row names its own context/batch/bag.  Two answer-side fields are deliberately **not**
-    # exported here: the batch membership lists real fragment ids, so it stays on the research
-    # side (``research/context_membership.json``), and no lineage/split ever appears.
-    deploy_context_rows: dict[str, dict[str, Any]] = {}
+    # ---------------- simulated excavation context (research-only) -----------------------
     research_membership: dict[str, Any] = {}
-    # the accumulator the block below fills and ``counts``/``packs.json`` read; without it the
-    # whole export raised NameError at ``counts["context_packs"] = len(packs)``.
     packs: list[dict[str, Any]] = []
     for record in by_role.get(ROLE_CONTEXT_PACK, []):
         meta = dict(record.meta or {})
@@ -1430,30 +1382,21 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
             "frame": record.frame,
             "qa_status": record.qa_status,
         })
-        deploy_context_rows.setdefault(str(meta.get("context_id", "")), {
-            "context_id": str(meta.get("context_id", "")),
-            "batch_id": str(meta.get("batch_id", "")),
-            "bag_id": str(meta.get("bag_id", "")),
-            "pit_id": str(meta.get("pit_id", "")),
-            "stratum_id": str(meta.get("stratum_id", "")),
-            "excavation_area_id": str(meta.get("excavation_area_id", "")),
-        })
         members = [str(row.get("id", "")) for row in (meta.get("coexistents") or [])]
         research_membership[str(meta.get("context_id", ""))] = {
             "batch_id": str(meta.get("batch_id", "")),
             "members": sorted(members),
-            "opaque_members": sorted(_opaque(member) for member in members),
+            "opaque_members": sorted(opaque_for(member) for member in members),
             "note": ("research-only: the batch membership is a list of real fragment ids, which "
                      "is exactly the answer the deployment view's opaque names hide"),
         }
     counts["context_packs"] = len(packs)
     counts["context_batches"] = len({row["batch_id"] for row in packs})
-    counts["context_queries"] = int(sum(1 for row in queries_rows if row.get("context_id")))
+    counts["context_queries"] = int(sum(1 for row in research_queries_rows
+                                         if row.get("context_id")))
 
     if packs or research_membership:
-        context_dir = deploy_root / "context"
-        context_dir.mkdir(parents=True, exist_ok=True)
-        packs_path = context_dir / "packs.json"
+        packs_path = research_root / "context_packs.json"
         packs_path.write_text(json.dumps({
             "schema": "synlab.context_pack.v1",
             "simulated": True,
@@ -1468,7 +1411,7 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
             },
             "packs": packs,
         }, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8")
-        _record(files, packs_path, out, note="deployment view: simulated excavation context")
+        _record(files, packs_path, out, note="research view: synthetic excavation context")
         membership_path = research_root / "context_membership.json"
         membership_path.parent.mkdir(parents=True, exist_ok=True)
         membership_path.write_text(json.dumps({
@@ -1531,6 +1474,7 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
     manifest_payload: dict[str, Any] = {
         "schema": PACKAGE_MANIFEST_SCHEMA,
         "package_schema": PACKAGE_SCHEMA,
+        "deploy_schema": DEPLOY_SCHEMA,
         "package_id": pkg_id or f"pkg_{release_id}",
         "release_id": release_id,
         "release_manifest_hash": manifest.get("manifest_hash"),
@@ -1679,6 +1623,9 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
             "obs_view_limit": obs_view_limit,
         },
     }
+    # The old field scan remains useful explanatory evidence; deployment eligibility comes from
+    # the independent strict validator over the serialized files and closed v2 container schema.
+    manifest_payload["deploy_boundary"] = validate_deploy_package(out, manifest_payload)
     manifest_payload["manifest_hash"] = hash_json(
         {k: v for k, v in manifest_payload.items() if k != "manifest_hash"})
     manifest_path = out / "export_manifest.json"
@@ -3045,31 +2992,90 @@ def channel_separation_report(deploy_root: str | Path, research_root: str | Path
 # reading a package back (used by synlab.qc.loader_probe)
 # --------------------------------------------------------------------------------------
 class TrainingPackage:
-    """Reader for a package written by :func:`export_training_package`."""
+    """Permission-aware reader for a package written by :func:`export_training_package`.
 
-    def __init__(self, root: str | Path):
+    The default deployment reader only exposes the v2 opaque roster and observations.  Research
+    tables and identity mappings require the explicit ``access="research"`` capability.
+    Historical v1 research remains readable, while any forward observation read requires v2.
+    """
+
+    def __init__(self, root: str | Path, *, access: str = "deploy"):
+        if access not in {"deploy", "research"}:
+            raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                              f"unknown TrainingPackage access mode {access!r}",
+                              stage="export.TrainingPackage")
+        self.access = access
         self.root = Path(root)
         manifest_path = self.root / "export_manifest.json"
         if not manifest_path.exists():
             raise SynLabError(ErrorCode.INPUT_UNAVAILABLE,
                               f"training package manifest not found: {manifest_path}",
                               stage="export.TrainingPackage")
-        self.manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-        stored = self.manifest.get("manifest_hash")
-        recomputed = hash_json({k: v for k, v in self.manifest.items()
+        self._manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        if not isinstance(self._manifest, Mapping):
+            raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                              "training package manifest must be a JSON object",
+                              stage="export.TrainingPackage")
+        stored = self._manifest.get("manifest_hash")
+        recomputed = hash_json({k: v for k, v in self._manifest.items()
                                 if k != "manifest_hash"})
         if stored != recomputed:
             raise SynLabError(ErrorCode.ASSET_HASH_MISMATCH,
                               "training package manifest was modified after export",
                               stage="export.TrainingPackage")
+        if (self._manifest.get("schema") != PACKAGE_MANIFEST_SCHEMA or
+                self._manifest.get("package_schema") != PACKAGE_SCHEMA):
+            raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                              "unsupported training package manifest/package schema",
+                              stage="export.TrainingPackage")
+        declared_deploy_schema = self._manifest.get("deploy_schema")
+        if declared_deploy_schema not in {None, DEPLOY_SCHEMA}:
+            raise SynLabError(ErrorCode.LEAKAGE_DETECTED,
+                              f"INVALID_DEPLOY_TRUTH_LEAK: unsupported deploy schema "
+                              f"{declared_deploy_schema!r}",
+                              stage="export.TrainingPackage")
         self.deploy = self.root / VIEW_DEPLOY
         self.research = self.root / VIEW_RESEARCH
+        self._deploy_validation: dict[str, Any] | None = None
+        self._opaque_to_source: dict[str, str] | None = None
+        if access == "deploy":
+            self._ensure_strict_deploy()
+            # Do not make root-manifest research truth reachable through a deploy reader.
+            self.manifest = self._deployment_manifest()
+        else:
+            self.manifest = self._manifest
+
+    def _deployment_manifest(self) -> dict[str, Any]:
+        files = [dict(row) for row in self._manifest.get("files", [])
+                 if str(row.get("path", "")).startswith("deploy/")]
+        return {
+            "schema": self._manifest.get("schema"),
+            "package_schema": self._manifest.get("package_schema"),
+            "deploy_schema": self._manifest.get("deploy_schema"),
+            "package_id": self._manifest.get("package_id"),
+            "manifest_hash": self._manifest.get("manifest_hash"),
+            "views": {"deploy": dict((self._manifest.get("views") or {}).get("deploy") or {})},
+            "deploy_boundary": dict(self._deploy_validation or {}),
+            "files": files,
+            "bytes_total": int(sum(int(row.get("bytes", 0)) for row in files)),
+        }
+
+    def _require_research(self, operation: str) -> None:
+        if self.access != "research":
+            raise SynLabError(ErrorCode.LEAKAGE_DETECTED,
+                              f"{operation} requires TrainingPackage(access='research')",
+                              stage="export.TrainingPackage")
+
+    def _ensure_strict_deploy(self) -> dict[str, Any]:
+        if self._deploy_validation is None:
+            self._deploy_validation = validate_deploy_package(self.root, self._manifest)
+        return self._deploy_validation
 
     # ---------------------------------------------------------------- integrity
     def verify_files(self) -> dict[str, Any]:
         problems: list[str] = []
         checked = 0
-        for entry in self.manifest.get("files", []):
+        for entry in self._manifest.get("files", []):
             path = self.root / entry["path"]
             if not path.exists():
                 problems.append(f"{entry['path']} missing")
@@ -3081,14 +3087,27 @@ class TrainingPackage:
 
     # ---------------------------------------------------------------- relations
     def relations(self) -> list[dict[str, Any]]:
+        self._require_research("relations")
         return self._table(self.research / "relations.parquet", self.research / "relations.json")
 
     def queries(self) -> list[dict[str, Any]]:
+        if self.access == "deploy":
+            self._ensure_strict_deploy()
+            return self._table(self.deploy / "queries.parquet", self.deploy / "queries.json")
+        research_path = self.research / "queries.parquet"
+        if research_path.exists():
+            return self._table(research_path, self.research / "queries.json")
+        # Historical v1 query metadata is research-only.  It is never a forward input.
         return self._table(self.deploy / "queries.parquet", self.deploy / "queries.json")
 
     def labels(self, layer: str) -> list[dict[str, Any]]:
+        self._require_research("labels")
         return self._table(self.research / "labels" / f"{layer}.parquet",
                            self.research / "labels" / f"{layer}.json")
+
+    def supervision_labels(self) -> dict[str, Any]:
+        self._require_research("supervision label provenance")
+        return dict(self._manifest.get("supervision_labels") or {})
 
     @staticmethod
     def _table(parquet: Path, fallback: Path) -> list[dict[str, Any]]:
@@ -3102,17 +3121,74 @@ class TrainingPackage:
 
     # ---------------------------------------------------------------- observations
     def observation_index(self) -> dict[str, Any]:
+        self._ensure_strict_deploy()
         path = self.deploy / "obs" / "index.json"
-        return json.loads(path.read_text(encoding="utf-8")) if path.exists() else {"rows": {}}
+        return json.loads(path.read_text(encoding="utf-8"))
+
+    def observed_ids(self) -> list[str]:
+        """Observed identities in the caller's namespace (opaque for deploy, source for research)."""
+        rows = self.observation_index().get("rows", {})
+        if self.access == "deploy":
+            return sorted(str(opaque) for opaque in rows)
+        return sorted(self.source_id_for_opaque(str(opaque)) for opaque in rows)
+
+    def _load_opaque_map(self) -> dict[str, str]:
+        self._require_research("opaque identity mapping")
+        if self._opaque_to_source is not None:
+            return self._opaque_to_source
+        path = self.research / "opaque_map.json"
+        if not path.exists():
+            raise SynLabError(ErrorCode.LEAKAGE_DETECTED,
+                              "research opaque identity mapping is missing",
+                              stage="export.TrainingPackage.opaque_map")
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        rows = payload.get("rows") if isinstance(payload, Mapping) else None
+        if payload.get("schema") != "synlab.research_opaque_map.v2" or not isinstance(rows, Mapping):
+            raise SynLabError(ErrorCode.LEAKAGE_DETECTED,
+                              "research opaque identity mapping has an unsupported schema",
+                              stage="export.TrainingPackage.opaque_map")
+        mapping = {str(key): str(value) for key, value in rows.items()}
+        if (any(not is_opaque_id(key) or not value for key, value in mapping.items()) or
+                len(set(mapping.values())) != len(mapping)):
+            raise SynLabError(ErrorCode.LEAKAGE_DETECTED,
+                              "research opaque identity mapping is malformed or non-bijective",
+                              stage="export.TrainingPackage.opaque_map")
+        self._opaque_to_source = mapping
+        return mapping
+
+    def source_id_for_opaque(self, opaque_id: str) -> str:
+        self._require_research("opaque-to-source identity lookup")
+        source = self._load_opaque_map().get(str(opaque_id))
+        if source is None:
+            raise SynLabError(ErrorCode.LEAKAGE_DETECTED,
+                              f"opaque id {opaque_id!r} has no research mapping",
+                              stage="export.TrainingPackage.opaque_map")
+        return source
+
+    def opaque_id_for_source(self, fragment_id: str) -> str:
+        self._require_research("source-to-opaque identity lookup")
+        reverse = {source: opaque for opaque, source in self._load_opaque_map().items()}
+        opaque = reverse.get(str(fragment_id))
+        if opaque is None:
+            raise SynLabError(ErrorCode.LEAKAGE_DETECTED,
+                              f"source fragment {fragment_id!r} has no research mapping",
+                              stage="export.TrainingPackage.opaque_map")
+        return opaque
 
     def observation_quality(self, fragment_id: str) -> dict[str, Any] | None:
-        """The fragment's measured ``OBS_EST`` observation-quality channels, or ``None``.
-
-        ``None`` means *the package carries no measurement for this fragment* -- never "the
-        measurement is zero".  Older packages (written before S7) have no block at all, and a
-        loader must report that as missing instead of inventing a zero vector.
-        """
-        block = self.observation_index().get(OBSERVATION_QUALITY_KEY) or {}
+        """Research-only observation-quality measurement; never a v2 deploy feature input."""
+        self._require_research("observation-quality measurement")
+        if self._manifest.get("deploy_schema") == DEPLOY_SCHEMA:
+            quality_path = self.research / "observation_quality.json"
+            if not quality_path.exists():
+                return None
+            block = json.loads(quality_path.read_text(encoding="utf-8"))
+        else:
+            # Explicit research access preserves historical v1 measurements, which happened to
+            # be serialized under the deployment index before the strict boundary was added.
+            old_path = self.deploy / "obs" / "index.json"
+            block = json.loads(old_path.read_text(encoding="utf-8")) if old_path.exists() else {}
+            block = block.get(OBSERVATION_QUALITY_KEY) or {}
         entry = (block.get("rows") or {}).get(str(fragment_id))
         if not entry:
             return None
@@ -3125,25 +3201,38 @@ class TrainingPackage:
                                "units": block.get("units"),
                                "declared_channels": block.get("channels")}}
 
+    def _feature_opaque(self, identity: str) -> str:
+        self._ensure_strict_deploy()
+        if self.access == "deploy":
+            if not is_opaque_id(identity):
+                raise SynLabError(ErrorCode.LEAKAGE_DETECTED,
+                                  "deploy feature reads require an opaque id",
+                                  stage="export.TrainingPackage.forward_identity")
+            return identity
+        if is_opaque_id(identity) and identity in self._load_opaque_map():
+            return identity
+        return self.opaque_id_for_source(identity)
+
     def read_observation(self, fragment_id: str) -> dict[str, np.ndarray]:
+        opaque = self._feature_opaque(fragment_id)
         rows = self.observation_index().get("rows", {})
-        entry = rows.get(fragment_id)
+        entry = rows.get(opaque)
         if entry is None:
             raise SynLabError(ErrorCode.INPUT_UNAVAILABLE,
-                              f"fragment {fragment_id!r} is not in the observation index",
+                              f"opaque identity {opaque!r} is not in the observation index",
                               stage="export.TrainingPackage.read_observation")
         shard = self.deploy / entry["shard"]
         with tarfile.open(shard, "r") as tar:
-            out = {}
-            for suffix, key, dtype in (("tiles.npy", "rgb", np.uint8),
-                                       ("valid.npy", "valid", bool),
-                                       ("view_pos.npy", "view_pos", np.float32)):
-                member = tar.extractfile(f"{entry['opaque']}/{suffix}")
+            out: dict[str, np.ndarray] = {}
+            for channel in entry["channels"]:
+                member = tar.extractfile(f"{opaque}/{channel}.npy")
                 if member is None:
                     raise SynLabError(ErrorCode.INPUT_UNAVAILABLE,
-                                      f"{shard.name}:{entry['opaque']}/{suffix} missing",
+                                      f"{shard.name}:{opaque}/{channel}.npy missing",
                                       stage="export.TrainingPackage.read_observation")
-                out[key] = np.load(io.BytesIO(member.read()), allow_pickle=False).astype(dtype)
+                key = {"tiles": "rgb", "valid": "valid", "view_pos": "view_pos"}.get(channel,
+                                                                                           channel)
+                out[key] = np.load(io.BytesIO(member.read()), allow_pickle=False)
         return out
 
     # ---------------------------------------------------------------- geometry/tokens
@@ -3154,18 +3243,19 @@ class TrainingPackage:
         return self._read_shard("tokens/index.json", self.deploy, fragment_id)
 
     def _read_shard(self, index_rel: str, root: Path, fragment_id: str) -> dict[str, np.ndarray]:
+        opaque = self._feature_opaque(fragment_id)
         path = root / index_rel
         if not path.exists():
             raise SynLabError(ErrorCode.INPUT_UNAVAILABLE, f"index missing: {path}",
                               stage="export.TrainingPackage._read_shard")
         index = json.loads(path.read_text(encoding="utf-8"))
-        entry = (index.get("rows") or {}).get(fragment_id)
+        entry = (index.get("rows") or {}).get(opaque)
         if entry is None:
             raise SynLabError(ErrorCode.INPUT_UNAVAILABLE,
-                              f"fragment {fragment_id!r} is not in {index_rel}",
+                              f"opaque identity {opaque!r} is not in {index_rel}",
                               stage="export.TrainingPackage._read_shard")
         with np.load(root / entry["shard"], allow_pickle=False) as data:
-            prefix = f"{entry['opaque']}__"
+            prefix = f"{opaque}__"
             return {k[len(prefix):]: data[k] for k in data.files if k.startswith(prefix)}
 
 

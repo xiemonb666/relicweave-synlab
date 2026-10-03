@@ -14,6 +14,11 @@ VF 首件的 canonical STEP 面分类、连续 rest-coordinate 绘制和 BRep fa
 
 细节、图像和状态边界见 [2026-10-03 implementation ledger](INFRA_IMPLEMENTATION_20261003.md)；PG 接口裁决见 [v12 decisions](PGFRAG_V12_DECISIONS_20261003.md)。以下既有政策条文和历史记录保持原样。
 
+## 接续状态更正（2026-10-03）
+
+当前验收和剩余项见 [CONTINUATION_20261003.md](CONTINUATION_20261003.md)，小型、可复核证据见 [evidence/20261003/index.md](evidence/20261003/index.md)。连续绘制的 4-band preview 与独立像素中心 oracle 已获 root 窄范围接受：新 SS=1/2、nonzero distortion 目标 40 PASS；default/frozen 回归仍待完成。旧 38-PASS 被拒是原始 K 上的 half-pixel 射线偏移（未抵消 frame 已有 +0.5），不是复用 renderer。
+
+当前 smooth-CAD 3D shell candidate 的 sampled deviation 为 0.118432 mm，超过 0.10 mm 门槛，且 native halfsection 无效/为空；第二个 2D 表示仍 PENDING。实际旧 deploy package 已确认含 lineage/mother/fragment/historical_N_G 字段及 raw lineage/M-style index keys，状态为 INVALID_DEPLOY_TRUTH_LEAK / PENDING，等待 strict-v2 及 root 验收。现实校准与实物形貌结论见 [REALISM_ACCEPTANCE_20261003.md](REALISM_ACCEPTANCE_20261003.md)：视觉仅供展示，候选 E/Gc 数值保留而实际 calibration 为 UNKNOWN / UNVALIDATED。
 # A12 工程政策：算法选型与"停止死磕"规则
 
 **状态**：生效（用户裁决，2026-10-02）。

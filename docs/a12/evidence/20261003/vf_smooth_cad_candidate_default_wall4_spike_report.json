@@ -1,0 +1,4668 @@
+{
+  "artifacts": {
+    "axial_section_wire_npz": "geometry/axial_section.npz",
+    "body_step": "geometry/smooth_body.step",
+    "files_sha256": {
+      "geometry/axial_section.npz": "3b10ed6fb79e98c79e227d964d11443de1516ac42adb81abb0522c07128a6f4f",
+      "geometry/mesh_lineage.npz": "a1ab939ee7a90d45ebb291ae0c831dc47bf039ee23f0b4aabe3c23392c2f3955",
+      "geometry/smooth_body.step": "77934e088199fdc82131f2f45bb2510f761c3f615e26b079b5f31b9275631269",
+      "geometry/surface.npz": "e284c031e99269d5bb8c0e924e5810ab4cf59a8d4613fee542582e7888fd04c0"
+    },
+    "lineage_npz": "geometry/mesh_lineage.npz",
+    "surface_npz": "geometry/surface.npz"
+  },
+  "candidate_decision": "NOT_PROMOTED; main agent review required",
+  "canonical_STEP_body": {
+    "actual_height_mm": 56.000000203634784,
+    "actual_width_mm": 41.0210784148318,
+    "bbox_mm": {
+      "xlen_mm": 41.0210784148318,
+      "xmax_mm": 20.5105392074159,
+      "xmin_mm": -20.5105392074159,
+      "ylen_mm": 41.0210784148318,
+      "ymax_mm": 20.5105392074159,
+      "ymin_mm": -20.5105392074159,
+      "zlen_mm": 56.000000203634784,
+      "zmax_mm": 56.00000010363478,
+      "zmin_mm": -1e-07
+    },
+    "height_delta_mm": 2.0363478370200028e-07,
+    "nominal_height_mm": 56.0,
+    "nominal_width_mm": 41.0,
+    "shell_count": 1,
+    "solid_count": 1,
+    "valid": true,
+    "volume_mm3": 26447.806999628785,
+    "width_delta_mm": 0.021078414831798398
+  },
+  "checks": {
+    "canonical_body_valid_one_solid_one_shell": true,
+    "delivered_mesh_watertight_positive": true,
+    "floor_face_distance_within_0_05mm": true,
+    "mesh_deviation_sampled_under_0_10mm": false,
+    "native_section_fill_face_valid": false,
+    "native_section_wire_closed": true,
+    "native_volumetric_halfsection_valid_and_nonempty": false,
+    "source_meridian_c2": true,
+    "step_meridian_c2": true,
+    "wall_rays_all_known": true
+  },
+  "construction": {
+    "STEP_sha256": "77934e088199fdc82131f2f45bb2510f761c3f615e26b079b5f31b9275631269",
+    "cadquery_version": "2.8.0",
+    "canonical_STEP_native_BSpline_edges": [
+      {
+        "bbox_mm": {
+          "xlen_mm": 6.510539307415899,
+          "xmax_mm": 20.5105392074159,
+          "xmin_mm": 13.9999999,
+          "ylen_mm": 2e-07,
+          "ymax_mm": 1e-07,
+          "ymin_mm": -1e-07,
+          "zlen_mm": 56.00000020000017,
+          "zmax_mm": 56.00000010000017,
+          "zmin_mm": -1e-07
+        },
+        "degree": 3,
+        "edge_index_zero_based": 1,
+        "global_continuity": "GeomAbs_Shape.GeomAbs_C2",
+        "internal_knot_count": 8,
+        "is_C2_at_all_internal_knots": true,
+        "multiplicities": [
+          4,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          4
+        ]
+      },
+      {
+        "bbox_mm": {
+          "xlen_mm": 28.00000024940001,
+          "xmax_mm": 14.000000100000008,
+          "xmin_mm": -14.0000001494,
+          "ylen_mm": 28.000000297989935,
+          "ymax_mm": 14.0000001489515,
+          "ymin_mm": -14.000000149038433,
+          "zlen_mm": 2.0000000233721948e-07,
+          "zmax_mm": 56.0000001,
+          "zmin_mm": 55.9999999
+        },
+        "degree": 8,
+        "edge_index_zero_based": 3,
+        "global_continuity": "GeomAbs_Shape.GeomAbs_C1",
+        "internal_knot_count": 7,
+        "is_C2_at_all_internal_knots": false,
+        "multiplicities": [
+          8,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          8
+        ]
+      },
+      {
+        "bbox_mm": {
+          "xlen_mm": 5.710670054024272,
+          "xmax_mm": 16.51053858902306,
+          "xmin_mm": 10.799868534998788,
+          "ylen_mm": 2.0006840755970964e-07,
+          "ymax_mm": 1.0001881114037436e-07,
+          "ymin_mm": -1.0004959641933528e-07,
+          "zlen_mm": 54.75538821835679,
+          "zmax_mm": 56.000000099230405,
+          "zmin_mm": 1.244611880873613
+        },
+        "degree": 14,
+        "edge_index_zero_based": 5,
+        "global_continuity": "GeomAbs_Shape.GeomAbs_C0",
+        "internal_knot_count": 74,
+        "is_C2_at_all_internal_knots": false,
+        "multiplicities": [
+          15,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          14,
+          12,
+          11,
+          9,
+          9,
+          7,
+          8,
+          7,
+          7,
+          13,
+          14,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          13,
+          15
+        ]
+      }
+    ],
+    "height_spanning_STEP_meridian_edge": {
+      "bbox_mm": {
+        "xlen_mm": 6.510539307415899,
+        "xmax_mm": 20.5105392074159,
+        "xmin_mm": 13.9999999,
+        "ylen_mm": 2e-07,
+        "ymax_mm": 1e-07,
+        "ymin_mm": -1e-07,
+        "zlen_mm": 56.00000020000017,
+        "zmax_mm": 56.00000010000017,
+        "zmin_mm": -1e-07
+      },
+      "degree": 3,
+      "edge_index_zero_based": 1,
+      "global_continuity": "GeomAbs_Shape.GeomAbs_C2",
+      "internal_knot_count": 8,
+      "is_C2_at_all_internal_knots": true,
+      "multiplicities": [
+        4,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        4
+      ]
+    },
+    "method": "legacy outer profile control points → one native interpolating C2 B-spline meridian → OCC revolve → remove top cap → native inward shell(-4 mm, kind='arc')",
+    "source_meridian_native_curve": {
+      "construction": "CadQuery Workplane.spline interpolation; no interior tangent constraints",
+      "degree": 3,
+      "edge_type": "BSPLINE",
+      "end_point_mm": [
+        18.0,
+        0.0,
+        56.0
+      ],
+      "end_tangent_dot_vertical_lip_direction": 1.0,
+      "endpoint_join_continuity": "C1 constrained at start and lip endpoints; C2 at unconstrained interior interpolation points",
+      "global_continuity": "GeomAbs_Shape.GeomAbs_C2",
+      "internal_knot_derivative_checks": [
+        {
+          "d1_left": [
+            -0.007005712986140097,
+            0.0,
+            1.2656935534584643
+          ],
+          "d1_relative_jump": 1.0249523079322491e-05,
+          "d1_right": [
+            -0.006997648702434795,
+            0.0,
+            1.2656833915263617
+          ],
+          "d2_left": [
+            0.1871756287112561,
+            0.0,
+            -0.23586593786819404
+          ],
+          "d2_relative_jump": 7.076946365623493e-05,
+          "d2_right": [
+            0.18719074756653117,
+            0.0,
+            -0.23588095703629658
+          ],
+          "knot": 2.154065922853802,
+          "multiplicity": 1
+        },
+        {
+          "d1_left": [
+            0.35570495141296926,
+            0.0,
+            0.8653328766724555
+          ],
+          "d1_relative_jump": 3.8052924022995773e-06,
+          "d1_right": [
+            0.35570402347013935,
+            0.0,
+            0.8653363138155579
+          ],
+          "d2_left": [
+            -0.011251465357940499,
+            0.0,
+            0.04167947573226313
+          ],
+          "d2_relative_jump": 7.384367037770462e-05,
+          "d2_right": [
+            -0.011253473869769045,
+            0.0,
+            0.041681951657006264
+          ],
+          "knot": 6.277171548471463,
+          "multiplicity": 1
+        },
+        {
+          "d1_left": [
+            0.2728618012016809,
+            0.0,
+            0.983570122851102
+          ],
+          "d1_relative_jump": 1.926810213751652e-06,
+          "d1_right": [
+            0.2728599109203231,
+            0.0,
+            0.9835695798435122
+          ],
+          "d2_left": [
+            -0.014943969770929915,
+            0.0,
+            -0.0042925207144571785
+          ],
+          "d2_relative_jump": 2.6074602795521782e-05,
+          "d2_right": [
+            -0.014943961969493774,
+            0.0,
+            -0.004292926056460721
+          ],
+          "knot": 12.601726868808221,
+          "multiplicity": 1
+        },
+        {
+          "d1_left": [
+            0.17408603704381623,
+            0.0,
+            0.9772905631881248
+          ],
+          "d1_relative_jump": 1.54985942779135e-06,
+          "d1_right": [
+            0.17408456418631513,
+            0.0,
+            0.9772910078143212
+          ],
+          "d2_left": [
+            -0.009147649119189374,
+            0.0,
+            0.0027614317316548686
+          ],
+          "d2_relative_jump": 1.7985269307669957e-05,
+          "d2_right": [
+            -0.009147782034664712,
+            0.0,
+            0.002761540676019596
+          ],
+          "knot": 20.801726868808224,
+          "multiplicity": 1
+        },
+        {
+          "d1_left": [
+            0.024037161981968723,
+            0.0,
+            1.0154961533483369
+          ],
+          "d1_relative_jump": 4.564770678303491e-06,
+          "d1_right": [
+            0.024032652439187133,
+            0.0,
+            1.0154972322506381
+          ],
+          "d2_left": [
+            -0.02812966251991063,
+            0.0,
+            0.006730061133948225
+          ],
+          "d2_relative_jump": 1.0132772127660365e-05,
+          "d2_right": [
+            -0.02812965446191274,
+            0.0,
+            0.006729768169022546
+          ],
+          "knot": 28.85219269383972,
+          "multiplicity": 1
+        },
+        {
+          "d1_left": [
+            -0.12246504129319166,
+            0.0,
+            0.9361935451314645
+          ],
+          "d1_relative_jump": 4.724173542798698e-06,
+          "d1_right": [
+            -0.12246639176537043,
+            0.0,
+            0.9361892940637783
+          ],
+          "d2_left": [
+            -0.008424176857562936,
+            0.0,
+            -0.026517476276307607
+          ],
+          "d2_relative_jump": 3.1692791218690454e-05,
+          "d2_right": [
+            -0.00842391954835937,
+            0.0,
+            -0.026516632850515608
+          ],
+          "knot": 36.86780246478042,
+          "multiplicity": 1
+        },
+        {
+          "d1_left": [
+            -0.16601689424979343,
+            0.0,
+            1.2016785397007956
+          ],
+          "d1_relative_jump": 9.199626704063486e-06,
+          "d1_right": [
+            -0.16601717793441018,
+            0.0,
+            1.2016896961929666
+          ],
+          "d2_left": [
+            -0.0023434364833191798,
+            0.0,
+            0.09215576597826741
+          ],
+          "d2_relative_jump": 4.326515049127858e-05,
+          "d2_right": [
+            -0.0023429851190894992,
+            0.0,
+            0.09215180317871213
+          ],
+          "knot": 44.95730183124309,
+          "multiplicity": 1
+        },
+        {
+          "d1_left": [
+            -0.05736699456543522,
+            0.0,
+            0.29142239483165816
+          ],
+          "d1_relative_jump": 0.00015949659547457722,
+          "d1_right": [
+            -0.05736240541871479,
+            0.0,
+            0.2913752447362259
+          ],
+          "d2_left": [
+            0.03824273102138364,
+            0.0,
+            -0.3929185741933782
+          ],
+          "d2_relative_jump": 3.5631685496601585e-05,
+          "d2_right": [
+            0.03824255967933663,
+            0.0,
+            -0.3929045087287628
+          ],
+          "knot": 51.010400211411714,
+          "multiplicity": 1
+        }
+      ],
+      "is_C2_at_all_internal_knots": true,
+      "knot_multiplicities": [
+        4,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        4
+      ],
+      "knot_parameters": [
+        0.0,
+        2.154065922853802,
+        6.277171548471463,
+        12.601726868808221,
+        20.801726868808224,
+        28.85219269383972,
+        36.86780246478042,
+        44.95730183124309,
+        51.010400211411714,
+        57.010400211411714
+      ],
+      "start_point_mm": [
+        14.0,
+        0.0,
+        0.0
+      ],
+      "start_tangent_dot_flat_floor_direction": 1.0
+    },
+    "source_meridian_wire_edge_count": 4,
+    "source_profile_control_points_mm": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        14.0,
+        0.0
+      ],
+      [
+        14.8,
+        2.0
+      ],
+      [
+        15.8,
+        6.0
+      ],
+      [
+        17.8,
+        12.0
+      ],
+      [
+        19.6,
+        20.0
+      ],
+      [
+        20.5,
+        28.0
+      ],
+      [
+        20.0,
+        36.0
+      ],
+      [
+        18.8,
+        44.0
+      ],
+      [
+        18.0,
+        50.0
+      ],
+      [
+        18.0,
+        56.0
+      ]
+    ],
+    "spec": {
+      "body_height_mm": 56.0,
+      "body_width_mm": 41.0,
+      "handle_high_z_mm": 44.0,
+      "handle_low_z_mm": 12.0,
+      "handle_outreach_mm": 30.0,
+      "handle_radius_mm": 2.6,
+      "tessellation_angular_rad": 0.08,
+      "tessellation_linear_mm": 0.1,
+      "wall_mm": 4.0
+    }
+  },
+  "experiment_id": "vf.c2-meridian-native-inward-shell-spike/1.0.0",
+  "handle_fusion_diagnostic": {
+    "body_then_handle": {
+      "is_null": false,
+      "is_valid": true,
+      "shell_count": 1,
+      "solid_count": 1,
+      "status": "COMPUTED",
+      "volume_mm3": 27618.075079011534
+    },
+    "body_volume_mm3": 26447.806999628785,
+    "handle_then_body": {
+      "conservation_check": false,
+      "excess_over_input_volume_sum_mm3": 52.06834024066484,
+      "input_volume_sum_mm3": 27566.006738770866,
+      "is_null": false,
+      "is_valid": true,
+      "shell_count": 1,
+      "solid_count": 1,
+      "status": "COMPUTED",
+      "volume_mm3": 27618.07507901153
+    },
+    "handle_volume_mm3": 1118.1997391420798,
+    "intersection_volume_mm3": 30.69254074249809,
+    "reason": "the bounded diagnostic result is reported for review; no fused candidate is delivered",
+    "root_geometry_status": "PENDING; no root fillet or stress claim",
+    "status": "NOT_DELIVERED"
+  },
+  "limitations": [
+    "This candidate is not promoted because native volumetric half-section boolean checks returned empty/invalid results despite a valid one-solid canonical body.",
+    "The exact section intersection is saved as closed wire linework only; OCC failed to form a valid planar fill face from that wire.",
+    "A valid body label cannot substitute for the failed half-section topology evidence.",
+    "No handle is included; root/handle geometry remains PENDING and no root fillet or stress claim is made.",
+    "Native shell and sampled rays do not prove a global wall minimum or offset self-intersection absence.",
+    "No historical type/style authenticity, material calibration, impact, or fracture validation is claimed."
+  ],
+  "mesh": {
+    "absolute_chord_target_mm": 0.1,
+    "absolute_sampling_acceptance_mm": 0.1,
+    "angular_tolerance_rad": 0.08,
+    "mesh_to_canonical_STEP": {
+      "canonical_step_face_map": {
+        "0": {
+          "canonical_step_face_index_zero_based": 0,
+          "method": "identity: triangle was tessellated from this canonical STEP-imported face",
+          "status": "MATCHED"
+        },
+        "1": {
+          "canonical_step_face_index_zero_based": 1,
+          "method": "identity: triangle was tessellated from this canonical STEP-imported face",
+          "status": "MATCHED"
+        },
+        "2": {
+          "canonical_step_face_index_zero_based": 2,
+          "method": "identity: triangle was tessellated from this canonical STEP-imported face",
+          "status": "MATCHED"
+        },
+        "3": {
+          "canonical_step_face_index_zero_based": 3,
+          "method": "identity: triangle was tessellated from this canonical STEP-imported face",
+          "status": "MATCHED"
+        },
+        "4": {
+          "canonical_step_face_index_zero_based": 4,
+          "method": "identity: triangle was tessellated from this canonical STEP-imported face",
+          "status": "MATCHED"
+        }
+      },
+      "face_match_method": "identity triangle lineage on canonical STEP-imported solid",
+      "first_unknown_sample": null,
+      "max_sampled_deviation_mm": 0.11843204269746681,
+      "periodic_brep_extrema_disagreement_sample_count": 0,
+      "projection_status": "PASS",
+      "sample_count": 602,
+      "sampling_method": "deterministic edge-midpoint and triangle-centroid samples linked to canonical STEP B-rep face; not a full Hausdorff proof",
+      "trim_validation_method": "all GeomAPI projection candidates + periodic shifts + BRepClass_FaceClassifier IN/ON; out-of-trim projections use exact BRepExtrema point-to-trim-edge distance",
+      "unknown_sample_count": 0,
+      "unknown_samples_first_20": [],
+      "valid_sample_count": 602,
+      "worst_valid_sample": {
+        "BRepExtrema_DistShapeShape_step_point_to_trimmed_face_mm": 0.11843204269746772,
+        "BRepExtrema_note": "diagnostic only; periodic-seam mismatch is recorded when it disagrees with classifier-valid UV projection",
+        "matched_step_face_index_zero_based": 3,
+        "max_valid_trimmed_surface_projection_distance_mm": 0.11843204269746681,
+        "mesh_triangle_index": 79080,
+        "mesh_triangle_source_brep_face_indices": [
+          3
+        ],
+        "mesh_triangle_vertices_xyz_mm": [
+          [
+            -14.074768670941236,
+            -1.4659062285909714,
+            48.92393521897848
+          ],
+          [
+            -13.983005208258012,
+            -1.3332396439192875,
+            49.306291139049485
+          ],
+          [
+            -13.964974213505537,
+            -1.5104495416297865,
+            49.306291139002354
+          ]
+        ],
+        "sample_index": 229,
+        "sample_kind": "edge_midpoint",
+        "sample_xyz_mm": [
+          -14.019871442223387,
+          -1.488177885110379,
+          49.11511317899041
+        ],
+        "source_brep_face_index_zero_based": 3,
+        "status": "CANONICAL_STEP_TRIMMED_FACE_DISTANCE_MEASURED",
+        "step_face_match": {
+          "canonical_step_face_index_zero_based": 3,
+          "method": "identity: triangle was tessellated from this canonical STEP-imported face",
+          "status": "MATCHED"
+        },
+        "step_trimmed_projection": {
+          "candidates_in_bounds": [
+            {
+              "distance_mm": 52.706901048754965,
+              "periodic_shift": [
+                0,
+                0
+              ],
+              "state": "TopAbs_State.TopAbs_IN",
+              "u": 0.10575175988505539,
+              "v": 0.38463792622653864
+            },
+            {
+              "distance_mm": 28.173066734021056,
+              "periodic_shift": [
+                0,
+                0
+              ],
+              "state": "TopAbs_State.TopAbs_IN",
+              "u": 0.10575176101327069,
+              "v": 50.88942490575144
+            },
+            {
+              "distance_mm": 28.066178216548536,
+              "periodic_shift": [
+                0,
+                0
+              ],
+              "state": "TopAbs_State.TopAbs_IN",
+              "u": 0.10575176099893975,
+              "v": 52.84157014000129
+            },
+            {
+              "distance_mm": 45.11522099854115,
+              "periodic_shift": [
+                0,
+                0
+              ],
+              "state": "TopAbs_State.TopAbs_ON",
+              "u": 3.2473446884888406,
+              "v": -4.49773107150369e-08
+            },
+            {
+              "distance_mm": 0.11843204269746681,
+              "periodic_shift": [
+                0,
+                0
+              ],
+              "state": "TopAbs_State.TopAbs_IN",
+              "u": 3.2473444148716695,
+              "v": 50.889424905743276
+            },
+            {
+              "distance_mm": 0.6243741229365475,
+              "periodic_shift": [
+                0,
+                0
+              ],
+              "state": "TopAbs_State.TopAbs_IN",
+              "u": 3.247344414865373,
+              "v": 52.092752657851946
+            },
+            {
+              "distance_mm": 53.963410270615626,
+              "periodic_shift": [
+                0,
+                0
+              ],
+              "state": "TopAbs_State.TopAbs_IN",
+              "u": 0.10575176026447794,
+              "v": 1.4175299154366052
+            },
+            {
+              "distance_mm": 53.94762953614454,
+              "periodic_shift": [
+                0,
+                0
+              ],
+              "state": "TopAbs_State.TopAbs_ON",
+              "u": 6.28318530718,
+              "v": 1.4175299154255507
+            },
+            {
+              "distance_mm": 28.133692648376343,
+              "periodic_shift": [
+                0,
+                0
+              ],
+              "state": "TopAbs_State.TopAbs_ON",
+              "u": 6.28318530718,
+              "v": 50.88942469882391
+            },
+            {
+              "distance_mm": 28.02702242349772,
+              "periodic_shift": [
+                0,
+                0
+              ],
+              "state": "TopAbs_State.TopAbs_ON",
+              "u": 6.28318530718,
+              "v": 52.85267336948293
+            }
+          ],
+          "chosen": {
+            "distance_mm": 0.11843204269746681,
+            "periodic_shift": [
+              0,
+              0
+            ],
+            "state": "TopAbs_State.TopAbs_IN",
+            "u": 3.2473444148716695,
+            "v": 50.889424905743276
+          },
+          "distance_mm": 0.11843204269746681,
+          "projection_count": 14,
+          "status": "IN_OR_ON"
+        }
+      }
+    },
+    "scope": "finite edge-midpoint and triangle-centroid samples; not a global Hausdorff proof",
+    "topology": {
+      "boundary_edges": 0,
+      "minimum_double_area_mm2": 2.093555054557748e-08,
+      "nonmanifold_edges": 0,
+      "signed_volume_mm3": 25228.524111819996,
+      "triangles": 127924,
+      "vertices": 63964,
+      "watertight": true
+    }
+  },
+  "native_section": {
+    "section_wire": {
+      "edge_records": [
+        {
+          "bbox_mm": [
+            -14.0,
+            0.0,
+            0.0,
+            14.0,
+            0.0,
+            0.0
+          ],
+          "curve_type": "GeomAbs_CurveType.GeomAbs_Line",
+          "edge_index_zero_based": 0,
+          "end_xyz_mm": [
+            -14.0,
+            0.0,
+            0.0
+          ],
+          "first_parameter": -14.0,
+          "last_parameter": 14.0,
+          "sample_count": 2,
+          "start_xyz_mm": [
+            14.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "bbox_mm": [
+            13.9999999,
+            -1e-07,
+            -1e-07,
+            20.5105392074159,
+            1e-07,
+            56.00000010000017
+          ],
+          "curve_type": "GeomAbs_CurveType.GeomAbs_BSplineCurve",
+          "edge_index_zero_based": 1,
+          "end_xyz_mm": [
+            18.0,
+            0.0,
+            56.0
+          ],
+          "first_parameter": 0.0,
+          "last_parameter": 57.010400211412,
+          "sample_count": 161,
+          "start_xyz_mm": [
+            14.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "bbox_mm": [
+            -20.510539225754695,
+            -1e-07,
+            -1e-07,
+            -13.9999999,
+            1e-07,
+            56.00000010000035
+          ],
+          "curve_type": "GeomAbs_CurveType.GeomAbs_BSplineCurve",
+          "edge_index_zero_based": 2,
+          "end_xyz_mm": [
+            -18.0,
+            0.0,
+            56.0
+          ],
+          "first_parameter": 0.0,
+          "last_parameter": 1.0,
+          "sample_count": 161,
+          "start_xyz_mm": [
+            -14.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "bbox_mm": [
+            -18.0,
+            0.0,
+            56.0,
+            -14.0000000494,
+            0.0,
+            56.0
+          ],
+          "curve_type": "GeomAbs_CurveType.GeomAbs_Line",
+          "edge_index_zero_based": 3,
+          "end_xyz_mm": [
+            -18.0,
+            0.0,
+            56.0
+          ],
+          "first_parameter": 14.0000000494,
+          "last_parameter": 18.0,
+          "sample_count": 2,
+          "start_xyz_mm": [
+            -14.0000000494,
+            0.0,
+            56.0
+          ]
+        },
+        {
+          "bbox_mm": [
+            13.999999999896,
+            0.0,
+            56.0,
+            18.0,
+            0.0,
+            56.0
+          ],
+          "curve_type": "GeomAbs_CurveType.GeomAbs_Line",
+          "edge_index_zero_based": 4,
+          "end_xyz_mm": [
+            13.999999999896,
+            0.0,
+            56.0
+          ],
+          "first_parameter": -18.0,
+          "last_parameter": -13.999999999896,
+          "sample_count": 2,
+          "start_xyz_mm": [
+            18.0,
+            0.0,
+            56.0
+          ]
+        },
+        {
+          "bbox_mm": [
+            10.799868534998788,
+            -1.0004959641933528e-07,
+            1.244611880873613,
+            16.51053858902306,
+            1.0001881114037436e-07,
+            56.00000009923039
+          ],
+          "curve_type": "GeomAbs_CurveType.GeomAbs_BSplineCurve",
+          "edge_index_zero_based": 5,
+          "end_xyz_mm": [
+            13.999999999988752,
+            3.4945795156620014e-13,
+            55.999999999233005
+          ],
+          "first_parameter": 0.0,
+          "last_parameter": 57.01039993842501,
+          "sample_count": 161,
+          "start_xyz_mm": [
+            13.999999223474,
+            1.069633763306e-14,
+            4.0
+          ]
+        },
+        {
+          "bbox_mm": [
+            -16.510539202318434,
+            -1e-07,
+            3.9999999000011326,
+            -10.962319885575694,
+            1e-07,
+            56.00000010804205
+          ],
+          "curve_type": "GeomAbs_CurveType.GeomAbs_BSplineCurve",
+          "edge_index_zero_based": 6,
+          "end_xyz_mm": [
+            -13.999999999997458,
+            0.0,
+            56.00000000804216
+          ],
+          "first_parameter": 0.18534705465755766,
+          "last_parameter": 1.0,
+          "sample_count": 161,
+          "start_xyz_mm": [
+            -10.962319985575693,
+            0.0,
+            4.000000000001132
+          ]
+        },
+        {
+          "bbox_mm": [
+            -14.000000099998964,
+            -1e-07,
+            1.2446118577470062,
+            -10.799868532120456,
+            1e-07,
+            4.0000001000011745
+          ],
+          "curve_type": "GeomAbs_CurveType.GeomAbs_BSplineCurve",
+          "edge_index_zero_based": 7,
+          "end_xyz_mm": [
+            -10.962319985575693,
+            0.0,
+            4.000000000001132
+          ],
+          "first_parameter": 0.0,
+          "last_parameter": 0.18534705465755766,
+          "sample_count": 161,
+          "start_xyz_mm": [
+            -13.999999999998964,
+            0.0,
+            4.0
+          ]
+        },
+        {
+          "bbox_mm": [
+            -14.0,
+            0.0,
+            4.0,
+            -10.962319985575876,
+            0.0,
+            4.0
+          ],
+          "curve_type": "GeomAbs_CurveType.GeomAbs_Line",
+          "edge_index_zero_based": 8,
+          "end_xyz_mm": [
+            -14.0,
+            0.0,
+            4.0
+          ],
+          "first_parameter": 10.962319985575876,
+          "last_parameter": 14.0,
+          "sample_count": 2,
+          "start_xyz_mm": [
+            -10.962319985575876,
+            0.0,
+            4.0
+          ]
+        },
+        {
+          "bbox_mm": [
+            -10.962319985575876,
+            0.0,
+            4.0,
+            14.0,
+            0.0,
+            4.0
+          ],
+          "curve_type": "GeomAbs_CurveType.GeomAbs_Line",
+          "edge_index_zero_based": 9,
+          "end_xyz_mm": [
+            -10.962319985575876,
+            0.0,
+            4.0
+          ],
+          "first_parameter": -14.0,
+          "last_parameter": 10.962319985575876,
+          "sample_count": 2,
+          "start_xyz_mm": [
+            14.0,
+            0.0,
+            4.0
+          ]
+        }
+      ],
+      "method": "OpenCascade BRepAlgoAPI_Section of canonical STEP body with a plane face spanning ±100 mm in both plane parameters; edges assembled with CadQuery Wire.combine(tol=1e-5)",
+      "planar_fill_face": {
+        "area_mm2": 516.4481309567345,
+        "valid": false
+      },
+      "scope": "exact canonical STEP intersection edges, discretized only for NPZ/PNG linework; not a volumetric half-section",
+      "section_algorithm_done": true,
+      "section_edge_count": 10,
+      "section_shape_valid": true,
+      "section_shape_volume_mm3_non_solid_diagnostic_only": 302.24347987612316,
+      "section_shell_count": 0,
+      "section_solid_count": 0,
+      "section_vertex_count": 9,
+      "wire_count": 1,
+      "wires": [
+        {
+          "bbox_mm": {
+            "xlen_mm": 41.021078433170594,
+            "xmax_mm": 20.5105392074159,
+            "xmin_mm": -20.510539225754695,
+            "ylen_mm": 2.0006840755970964e-07,
+            "ymax_mm": 1.0001881114037436e-07,
+            "ymin_mm": -1.0004959641933528e-07,
+            "zlen_mm": 56.00000020804205,
+            "zmax_mm": 56.00000010804205,
+            "zmin_mm": -1e-07
+          },
+          "closed": true,
+          "edge_count": 10,
+          "length_mm": 302.23322933572086,
+          "valid": true
+        }
+      ]
+    },
+    "volumetric_halfspace_boolean": {
+      "acceptance": "FAIL: no volume-preserving valid half-section solid was produced; empty commons and an invalid over-volume cut are not accepted as real geometry",
+      "negative_x_halfspace_intersection": {
+        "bbox_mm": null,
+        "is_null": false,
+        "is_valid": true,
+        "shell_count": 0,
+        "solid_count": 0,
+        "solid_shell_counts": [],
+        "solid_validity": [],
+        "solid_volumes_mm3": [],
+        "volume_mm3": 0.0
+      },
+      "negative_y_cut_volume_exceeds_parent": true,
+      "negative_y_removed_by_cut": {
+        "bbox_mm": {
+          "xlen_mm": 41.02107842253966,
+          "xmax_mm": 20.5105392074159,
+          "xmin_mm": -20.510539215123757,
+          "ylen_mm": 41.0210784148318,
+          "ymax_mm": 20.5105392074159,
+          "ymin_mm": -20.5105392074159,
+          "zlen_mm": 56.00000021170438,
+          "zmax_mm": 56.00000011170438,
+          "zmin_mm": -1e-07
+        },
+        "is_null": false,
+        "is_valid": false,
+        "shell_count": 2,
+        "solid_count": 1,
+        "solid_shell_counts": [
+          2
+        ],
+        "solid_validity": [
+          false
+        ],
+        "solid_volumes_mm3": [
+          31087.208041581667
+        ],
+        "volume_mm3": 31087.208041581667
+      },
+      "positive_y_halfspace_intersection": {
+        "bbox_mm": null,
+        "is_null": false,
+        "is_valid": true,
+        "shell_count": 0,
+        "solid_count": 0,
+        "solid_shell_counts": [],
+        "solid_validity": [],
+        "solid_volumes_mm3": [],
+        "volume_mm3": 0.0
+      },
+      "production_section_helper_contract": "one valid solid after intersection with a half-space box"
+    }
+  },
+  "production_generator_changed": false,
+  "rendering": {
+    "mesh_boolean_cut_visualization": {
+      "faces": 0,
+      "non_manifold_edges": 0,
+      "source": "Blender Boolean modifier on the canonical STEP tessellation; render intentionally skipped after empty result",
+      "status": "FAILED_EMPTY",
+      "vertices": 0
+    },
+    "native_section_wire_png": "renders/native_section_wire.png",
+    "native_section_wire_png_scope": "unfilled linework from the ten canonical STEP section edges; the OCC planar fill face was invalid",
+    "renderer": "Blender 5.2.2 EEVEE",
+    "whole_porcelain_png": "renders/whole_porcelain.png"
+  },
+  "semantics": {
+    "production_semantics_changed": false,
+    "reason": "production face semantics currently recognizes analytic cylinder/cone prototype faces; the delivered BSpline/offset surface is not to be silently assigned a region",
+    "status": "UNKNOWN_EXPECTED"
+  },
+  "stage": "candidate_default_wall4_initial_native_3d_shell",
+  "status": "FAIL_NATIVE_HALFSECTION_BOOLEAN",
+  "wall": {
+    "declared_mm": 4.0,
+    "floor_thickness": {
+      "distance_mm": 4.0,
+      "inner_face_area_mm2": 615.7521601035994,
+      "inner_face_center_z_mm": 4.0,
+      "method": "OCC trimmed-face distance between canonical STEP planar underside and cavity-floor faces",
+      "outer_face_area_mm2": 615.7521601035994,
+      "outer_face_center_z_mm": 0.0,
+      "scope": "actual CAD floor face separation; not global solid minimum wall",
+      "status": "MEASURED_FROM_CANONICAL_STEP_PLANAR_FACES"
+    },
+    "normal_ray_sampling": {
+      "candidate_outer_side_samples": 192,
+      "coverage_fraction": 1.0,
+      "face_coverage": [
+        {
+          "candidate_outer_side_samples": 192,
+          "face_index_zero_based": 1,
+          "measured_samples": 192,
+          "uv_bounds": [
+            0.0,
+            6.283185307179586,
+            0.0,
+            57.010400211412
+          ]
+        }
+      ],
+      "measured_sample_count": 192,
+      "method": "canonical STEP face UV samples; BRepClass_FaceClassifier trim inclusion; BRepGProp_Face normals; BRepClass3d solid inside/outside orientation; IntCurvesFace_ShapeIntersector first inward boundary hit",
+      "sampled_wall_max_mm": 4.001523606573146,
+      "sampled_wall_mean_mm": 3.99978801501279,
+      "sampled_wall_min_mm": 3.9721456495793874,
+      "samples": [
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.9657516960246518,
+            0.2587723870387926,
+            0.018987188621639263
+          ],
+          "point_xyz_mm": [
+            14.30452502791935,
+            3.8328859293417725,
+            1.5187641003023946
+          ],
+          "radial_normal_dot": 0.9998197270849611,
+          "ray_inner_hit_distance_mm": 4.000000000482133,
+          "u": 0.2617993877991494,
+          "v": 1.781575006606625
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.8957596618018461,
+            0.24001807799218022,
+            -0.374173690317187
+          ],
+          "point_xyz_mm": [
+            14.94281045979181,
+            4.003913995352549,
+            5.20214600780284
+          ],
+          "radial_normal_dot": 0.927358641235643,
+          "ray_inner_hit_distance_mm": 4.000000000483921,
+          "u": 0.2617993877991494,
+          "v": 5.344725019819875
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.9141781509316514,
+            0.24495329728031298,
+            -0.32291824121701346
+          ],
+          "point_xyz_mm": [
+            16.126172329182584,
+            4.32099485260959,
+            8.398614240203004
+          ],
+          "radial_normal_dot": 0.9464268643108725,
+          "ray_inner_hit_distance_mm": 4.000000000526845,
+          "u": 0.2617993877991494,
+          "v": 8.907875033033125
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.9303308349751223,
+            0.2492813959253561,
+            -0.26896714137603833
+          ],
+          "point_xyz_mm": [
+            17.1589084131506,
+            4.597715652303299,
+            11.87141166451797
+          ],
+          "radial_normal_dot": 0.963149353350768,
+          "ray_inner_hit_distance_mm": 4.000000000571602,
+          "u": 0.2617993877991494,
+          "v": 12.471025046246375
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.9409809317090914,
+            0.25213508074453644,
+            -0.2257936828563555
+          ],
+          "point_xyz_mm": [
+            18.017716023576433,
+            4.8278324579706045,
+            15.35656170208267
+          ],
+          "radial_normal_dot": 0.9741751448185093,
+          "ray_inner_hit_distance_mm": 4.000000000337365,
+          "u": 0.2617993877991494,
+          "v": 16.034175059459624
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.9488698760784191,
+            0.25424891701743185,
+            -0.18709208018082574
+          ],
+          "point_xyz_mm": [
+            18.723014413059374,
+            5.016816591855529,
+            18.824701613023745
+          ],
+          "radial_normal_dot": 0.9823423810126545,
+          "ray_inner_hit_distance_mm": 3.999999999961265,
+          "u": 0.2617993877991494,
+          "v": 19.597325072672874
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.9554975765310049,
+            0.25602480400137756,
+            -0.14654583235094956
+          ],
+          "point_xyz_mm": [
+            19.299216282761623,
+            5.171209417519551,
+            22.313943195896837
+          ],
+          "radial_normal_dot": 0.9892038814221097,
+          "ray_inner_hit_distance_mm": 3.9999999999908846,
+          "u": 0.2617993877991494,
+          "v": 23.160475085886123
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.9629716134061113,
+            0.2580274661462628,
+            -0.0781504861672018
+          ],
+          "point_xyz_mm": [
+            19.694169618431715,
+            5.27703684486033,
+            25.85290064835268
+          ],
+          "radial_normal_dot": 0.996941573770414,
+          "ray_inner_hit_distance_mm": 4.000000000064675,
+          "u": 0.2617993877991494,
+          "v": 26.723625099099372
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.9658377162211178,
+            0.25879543608096833,
+            0.013506597959412767
+          ],
+          "point_xyz_mm": [
+            19.807993431081343,
+            5.307535843539228,
+            29.461698017828116
+          ],
+          "radial_normal_dot": 0.9999087817453965,
+          "ray_inner_hit_distance_mm": 3.999999999804929,
+          "u": 0.2617993877991494,
+          "v": 30.286775112312625
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.962367132673223,
+            0.25786549602204517,
+            0.085760643139051
+          ],
+          "point_xyz_mm": [
+            19.62757756927449,
+            5.259193559066317,
+            33.0729337600097
+          ],
+          "radial_normal_dot": 0.996315769266138,
+          "ray_inner_hit_distance_mm": 3.9999999998423728,
+          "u": 0.2617993877991494,
+          "v": 33.84992512552587
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.9569349470914938,
+            0.25640994628228486,
+            0.1361229094697714
+          ],
+          "point_xyz_mm": [
+            19.252824666643008,
+            5.158778821444993,
+            36.50693382353099
+          ],
+          "radial_normal_dot": 0.9906919569258067,
+          "ray_inner_hit_distance_mm": 3.999999999922826,
+          "u": 0.2617993877991494,
+          "v": 37.413075138739124
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.95401833780807,
+            0.25562844318015443,
+            0.1565346931616689
+          ],
+          "point_xyz_mm": [
+            18.77223899349588,
+            5.0300062784312525,
+            39.79202586636383
+          ],
+          "radial_normal_dot": 0.9876724608071149,
+          "ray_inner_hit_distance_mm": 3.9999999999287814,
+          "u": 0.2617993877991494,
+          "v": 40.97622515195237
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.9563755927594173,
+            0.25626006774072213,
+            0.14027295981618804
+          ],
+          "point_xyz_mm": [
+            18.226217802735956,
+            4.883700341316851,
+            43.505653849831
+          ],
+          "radial_normal_dot": 0.9901128707093986,
+          "ray_inner_hit_distance_mm": 3.999999999930992,
+          "u": 0.2617993877991494,
+          "v": 44.53937516516562
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.9581042318010844,
+            0.2567232551759417,
+            0.12700177658884254
+          ],
+          "point_xyz_mm": [
+            17.677426551288676,
+            4.736652168678287,
+            47.819826632514044
+          ],
+          "radial_normal_dot": 0.9919024895337635,
+          "ray_inner_hit_distance_mm": 3.9999288342766595,
+          "u": 0.2617993877991494,
+          "v": 48.102525178378876
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 2,
+          "outward_normal": [
+            0.9148931884031825,
+            0.24514489099336773,
+            0.3207404499487221
+          ],
+          "point_xyz_mm": [
+            17.357853741202316,
+            4.651022892292702,
+            50.12133973442941
+          ],
+          "radial_normal_dot": 0.9471671255732492,
+          "ray_inner_hit_distance_mm": 4.001523606427276,
+          "u": 0.2617993877991494,
+          "v": 51.66567519159212
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.9658418486503932,
+            0.2587965433620555,
+            -0.013186073693207071
+          ],
+          "point_xyz_mm": [
+            17.36605645977257,
+            4.653220804109341,
+            51.668740507076876
+          ],
+          "radial_normal_dot": 0.9999130599509927,
+          "ray_inner_hit_distance_mm": 3.9999560297554906,
+          "u": 0.2617993877991494,
+          "v": 55.228825204805375
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.7069793089858593,
+            0.7069793089858593,
+            0.018987188621639263
+          ],
+          "point_xyz_mm": [
+            10.471639098577578,
+            10.471639098577578,
+            1.5187641003023946
+          ],
+          "radial_normal_dot": 0.9998197270849611,
+          "ray_inner_hit_distance_mm": 4.0000000034743985,
+          "u": 0.7853981633974483,
+          "v": 1.781575006606625
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.6557415838096657,
+            0.6557415838096657,
+            -0.37417369031718706
+          ],
+          "point_xyz_mm": [
+            10.938896464439262,
+            10.938896464439262,
+            5.20214600780284
+          ],
+          "radial_normal_dot": 0.9273586412356428,
+          "ray_inner_hit_distance_mm": 4.000000003388706,
+          "u": 0.7853981633974483,
+          "v": 5.344725019819875
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.6692248536513384,
+            0.6692248536513384,
+            -0.3229182412170135
+          ],
+          "point_xyz_mm": [
+            11.805177476572993,
+            11.805177476572993,
+            8.398614240203004
+          ],
+          "radial_normal_dot": 0.9464268643108725,
+          "ray_inner_hit_distance_mm": 4.000000003729478,
+          "u": 0.7853981633974483,
+          "v": 8.907875033033125
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.6810494390497661,
+            0.6810494390497661,
+            -0.2689671413760384
+          ],
+          "point_xyz_mm": [
+            12.561192760847298,
+            12.561192760847298,
+            11.87141166451797
+          ],
+          "radial_normal_dot": 0.9631493533507679,
+          "ray_inner_hit_distance_mm": 4.000000004039573,
+          "u": 0.7853981633974483,
+          "v": 12.471025046246375
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.6888458509645549,
+            0.6888458509645549,
+            -0.22579368285635548
+          ],
+          "point_xyz_mm": [
+            13.189883565605829,
+            13.189883565605829,
+            15.35656170208267
+          ],
+          "radial_normal_dot": 0.9741751448185093,
+          "ray_inner_hit_distance_mm": 4.000000002625567,
+          "u": 0.7853981633974483,
+          "v": 16.034175059459624
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.6946209590609873,
+            0.6946209590609873,
+            -0.18709208018082574
+          ],
+          "point_xyz_mm": [
+            13.706197821203844,
+            13.706197821203844,
+            18.824701613023745
+          ],
+          "radial_normal_dot": 0.9823423810126547,
+          "ray_inner_hit_distance_mm": 4.000000000325816,
+          "u": 0.7853981633974483,
+          "v": 19.597325072672874
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.6994727725296273,
+            0.6994727725296273,
+            -0.14654583235094956
+          ],
+          "point_xyz_mm": [
+            14.128006865242073,
+            14.128006865242073,
+            22.313943195896837
+          ],
+          "radial_normal_dot": 0.9892038814221098,
+          "ray_inner_hit_distance_mm": 4.0000000001915,
+          "u": 0.7853981633974483,
+          "v": 23.160475085886123
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.7049441472598484,
+            0.7049441472598484,
+            -0.0781504861672018
+          ],
+          "point_xyz_mm": [
+            14.417132773571385,
+            14.417132773571385,
+            25.85290064835268
+          ],
+          "radial_normal_dot": 0.996941573770414,
+          "ray_inner_hit_distance_mm": 4.000000000198332,
+          "u": 0.7853981633974483,
+          "v": 26.723625099099372
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.7070422801401492,
+            0.7070422801401492,
+            0.013506597959412765
+          ],
+          "point_xyz_mm": [
+            14.500457587542115,
+            14.500457587542115,
+            29.461698017828116
+          ],
+          "radial_normal_dot": 0.9999087817453962,
+          "ray_inner_hit_distance_mm": 4.000000000082178,
+          "u": 0.7853981633974483,
+          "v": 30.286775112312625
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.7045016366511778,
+            0.7045016366511778,
+            0.08576064313905102
+          ],
+          "point_xyz_mm": [
+            14.368384010208171,
+            14.368384010208171,
+            33.0729337600097
+          ],
+          "radial_normal_dot": 0.9963157692661381,
+          "ray_inner_hit_distance_mm": 4.000000000121007,
+          "u": 0.7853981633974483,
+          "v": 33.84992512552587
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.700525000809209,
+            0.700525000809209,
+            0.13612290946977143
+          ],
+          "point_xyz_mm": [
+            14.094045845198016,
+            14.094045845198016,
+            36.50693382353099
+          ],
+          "radial_normal_dot": 0.9906919569258067,
+          "ray_inner_hit_distance_mm": 4.000000000108876,
+          "u": 0.7853981633974483,
+          "v": 37.413075138739124
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.6983898946279157,
+            0.6983898946279157,
+            0.15653469316166893
+          ],
+          "point_xyz_mm": [
+            13.742232715064628,
+            13.742232715064628,
+            39.79202586636383
+          ],
+          "radial_normal_dot": 0.9876724608071151,
+          "ray_inner_hit_distance_mm": 4.0000000001285025,
+          "u": 0.7853981633974483,
+          "v": 40.97622515195237
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.7001155250186951,
+            0.7001155250186951,
+            0.14027295981618804
+          ],
+          "point_xyz_mm": [
+            13.342517461419106,
+            13.342517461419106,
+            43.505653849831
+          ],
+          "radial_normal_dot": 0.9901128707093987,
+          "ray_inner_hit_distance_mm": 4.000000000127758,
+          "u": 0.7853981633974483,
+          "v": 44.53937516516562
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.7013809766251425,
+            0.7013809766251425,
+            0.12700177658884257
+          ],
+          "point_xyz_mm": [
+            12.940774382610389,
+            12.940774382610389,
+            47.819826632514044
+          ],
+          "radial_normal_dot": 0.9919024895337633,
+          "ray_inner_hit_distance_mm": 3.999928834402191,
+          "u": 0.7853981633974483,
+          "v": 48.102525178378876
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 2,
+          "outward_normal": [
+            0.6697482974098148,
+            0.6697482974098148,
+            0.32074044994872214
+          ],
+          "point_xyz_mm": [
+            12.706830848909615,
+            12.706830848909615,
+            50.12133973442941
+          ],
+          "radial_normal_dot": 0.9471671255732493,
+          "ray_inner_hit_distance_mm": 4.001523606562354,
+          "u": 0.7853981633974483,
+          "v": 51.66567519159212
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.7070453052883376,
+            0.7070453052883376,
+            -0.013186073693207071
+          ],
+          "point_xyz_mm": [
+            12.712835655663227,
+            12.712835655663227,
+            51.668740507076876
+          ],
+          "radial_normal_dot": 0.9999130599509926,
+          "ray_inner_hit_distance_mm": 3.9999560299401833,
+          "u": 0.7853981633974483,
+          "v": 55.228825204805375
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.2587723870387926,
+            0.9657516960246518,
+            0.018987188621639263
+          ],
+          "point_xyz_mm": [
+            3.8328859293417725,
+            14.30452502791935,
+            1.5187641003023946
+          ],
+          "radial_normal_dot": 0.9998197270849611,
+          "ray_inner_hit_distance_mm": 3.9999999983102628,
+          "u": 1.3089969389957472,
+          "v": 1.781575006606625
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.24001807799218022,
+            0.8957596618018461,
+            -0.374173690317187
+          ],
+          "point_xyz_mm": [
+            4.003913995352549,
+            14.94281045979181,
+            5.20214600780284
+          ],
+          "radial_normal_dot": 0.9273586412356429,
+          "ray_inner_hit_distance_mm": 3.9999999983512704,
+          "u": 1.3089969389957472,
+          "v": 5.344725019819875
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.24495329728031298,
+            0.9141781509316514,
+            -0.32291824121701346
+          ],
+          "point_xyz_mm": [
+            4.32099485260959,
+            16.126172329182584,
+            8.398614240203004
+          ],
+          "radial_normal_dot": 0.9464268643108725,
+          "ray_inner_hit_distance_mm": 3.999999998185516,
+          "u": 1.3089969389957472,
+          "v": 8.907875033033125
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.2492813959253561,
+            0.9303308349751223,
+            -0.26896714137603833
+          ],
+          "point_xyz_mm": [
+            4.597715652303299,
+            17.1589084131506,
+            11.87141166451797
+          ],
+          "radial_normal_dot": 0.963149353350768,
+          "ray_inner_hit_distance_mm": 3.999999998036102,
+          "u": 1.3089969389957472,
+          "v": 12.471025046246375
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.25213508074453644,
+            0.9409809317090914,
+            -0.2257936828563555
+          ],
+          "point_xyz_mm": [
+            4.8278324579706045,
+            18.017716023576433,
+            15.35656170208267
+          ],
+          "radial_normal_dot": 0.9741751448185093,
+          "ray_inner_hit_distance_mm": 3.9999999987670605,
+          "u": 1.3089969389957472,
+          "v": 16.034175059459624
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.25424891701743185,
+            0.9488698760784191,
+            -0.18709208018082574
+          ],
+          "point_xyz_mm": [
+            5.016816591855529,
+            18.723014413059374,
+            18.824701613023745
+          ],
+          "radial_normal_dot": 0.9823423810126546,
+          "ray_inner_hit_distance_mm": 3.9999999999521068,
+          "u": 1.3089969389957472,
+          "v": 19.597325072672874
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.25602480400137756,
+            0.9554975765310049,
+            -0.14654583235094956
+          ],
+          "point_xyz_mm": [
+            5.171209417519551,
+            19.299216282761623,
+            22.313943195896837
+          ],
+          "radial_normal_dot": 0.9892038814221097,
+          "ray_inner_hit_distance_mm": 4.000000000024764,
+          "u": 1.3089969389957472,
+          "v": 23.160475085886123
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.2580274661462628,
+            0.9629716134061113,
+            -0.0781504861672018
+          ],
+          "point_xyz_mm": [
+            5.27703684486033,
+            19.694169618431715,
+            25.85290064835268
+          ],
+          "radial_normal_dot": 0.996941573770414,
+          "ray_inner_hit_distance_mm": 4.000000000024037,
+          "u": 1.3089969389957472,
+          "v": 26.723625099099372
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.25879543608096833,
+            0.9658377162211178,
+            0.013506597959412767
+          ],
+          "point_xyz_mm": [
+            5.307535843539228,
+            19.807993431081343,
+            29.461698017828116
+          ],
+          "radial_normal_dot": 0.9999087817453965,
+          "ray_inner_hit_distance_mm": 4.000000000087084,
+          "u": 1.3089969389957472,
+          "v": 30.286775112312625
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.25786549602204517,
+            0.962367132673223,
+            0.085760643139051
+          ],
+          "point_xyz_mm": [
+            5.259193559066317,
+            19.62757756927449,
+            33.0729337600097
+          ],
+          "radial_normal_dot": 0.9963157692661379,
+          "ray_inner_hit_distance_mm": 4.000000000065702,
+          "u": 1.3089969389957472,
+          "v": 33.84992512552587
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.25640994628228486,
+            0.9569349470914938,
+            0.1361229094697714
+          ],
+          "point_xyz_mm": [
+            5.158778821444993,
+            19.252824666643008,
+            36.50693382353099
+          ],
+          "radial_normal_dot": 0.9906919569258067,
+          "ray_inner_hit_distance_mm": 4.000000000068188,
+          "u": 1.3089969389957472,
+          "v": 37.413075138739124
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.25562844318015443,
+            0.95401833780807,
+            0.1565346931616689
+          ],
+          "point_xyz_mm": [
+            5.0300062784312525,
+            18.77223899349588,
+            39.79202586636383
+          ],
+          "radial_normal_dot": 0.9876724608071149,
+          "ray_inner_hit_distance_mm": 4.000000000054818,
+          "u": 1.3089969389957472,
+          "v": 40.97622515195237
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.25626006774072213,
+            0.9563755927594173,
+            0.14027295981618804
+          ],
+          "point_xyz_mm": [
+            4.883700341316851,
+            18.226217802735956,
+            43.505653849831
+          ],
+          "radial_normal_dot": 0.9901128707093986,
+          "ray_inner_hit_distance_mm": 4.000000000051593,
+          "u": 1.3089969389957472,
+          "v": 44.53937516516562
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.2567232551759417,
+            0.9581042318010844,
+            0.12700177658884254
+          ],
+          "point_xyz_mm": [
+            4.736652168678287,
+            17.677426551288676,
+            47.819826632514044
+          ],
+          "radial_normal_dot": 0.9919024895337635,
+          "ray_inner_hit_distance_mm": 3.9999288344467625,
+          "u": 1.3089969389957472,
+          "v": 48.102525178378876
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 2,
+          "outward_normal": [
+            0.24514489099336773,
+            0.9148931884031825,
+            0.3207404499487221
+          ],
+          "point_xyz_mm": [
+            4.651022892292702,
+            17.357853741202316,
+            50.12133973442941
+          ],
+          "radial_normal_dot": 0.9471671255732492,
+          "ray_inner_hit_distance_mm": 4.0015236065728095,
+          "u": 1.3089969389957472,
+          "v": 51.66567519159212
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.2587965433620555,
+            0.9658418486503932,
+            -0.013186073693207071
+          ],
+          "point_xyz_mm": [
+            4.653220804109341,
+            17.36605645977257,
+            51.668740507076876
+          ],
+          "radial_normal_dot": 0.9999130599509927,
+          "ray_inner_hit_distance_mm": 3.999956029907958,
+          "u": 1.3089969389957472,
+          "v": 55.228825204805375
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.2587723870387926,
+            0.9657516960246518,
+            0.018987188621639263
+          ],
+          "point_xyz_mm": [
+            -3.8328859293417725,
+            14.30452502791935,
+            1.5187641003023946
+          ],
+          "radial_normal_dot": 0.9998197270849611,
+          "ray_inner_hit_distance_mm": 3.99999999831052,
+          "u": 1.832595714594046,
+          "v": 1.781575006606625
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.24001807799218022,
+            0.8957596618018461,
+            -0.374173690317187
+          ],
+          "point_xyz_mm": [
+            -4.003913995352549,
+            14.94281045979181,
+            5.20214600780284
+          ],
+          "radial_normal_dot": 0.9273586412356429,
+          "ray_inner_hit_distance_mm": 3.9999999983514547,
+          "u": 1.832595714594046,
+          "v": 5.344725019819875
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.24495329728031298,
+            0.9141781509316514,
+            -0.32291824121701346
+          ],
+          "point_xyz_mm": [
+            -4.32099485260959,
+            16.126172329182584,
+            8.398614240203004
+          ],
+          "radial_normal_dot": 0.9464268643108725,
+          "ray_inner_hit_distance_mm": 3.9999999981856917,
+          "u": 1.832595714594046,
+          "v": 8.907875033033125
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.2492813959253561,
+            0.9303308349751223,
+            -0.26896714137603833
+          ],
+          "point_xyz_mm": [
+            -4.597715652303299,
+            17.1589084131506,
+            11.87141166451797
+          ],
+          "radial_normal_dot": 0.963149353350768,
+          "ray_inner_hit_distance_mm": 3.999999998036506,
+          "u": 1.832595714594046,
+          "v": 12.471025046246375
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.25213508074453644,
+            0.9409809317090914,
+            -0.2257936828563555
+          ],
+          "point_xyz_mm": [
+            -4.8278324579706045,
+            18.017716023576433,
+            15.35656170208267
+          ],
+          "radial_normal_dot": 0.9741751448185093,
+          "ray_inner_hit_distance_mm": 3.999999998767624,
+          "u": 1.832595714594046,
+          "v": 16.034175059459624
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.25424891701743185,
+            0.9488698760784191,
+            -0.18709208018082574
+          ],
+          "point_xyz_mm": [
+            -5.016816591855529,
+            18.723014413059374,
+            18.824701613023745
+          ],
+          "radial_normal_dot": 0.9823423810126546,
+          "ray_inner_hit_distance_mm": 3.9999999999529328,
+          "u": 1.832595714594046,
+          "v": 19.597325072672874
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.25602480400137756,
+            0.9554975765310049,
+            -0.14654583235094956
+          ],
+          "point_xyz_mm": [
+            -5.171209417519551,
+            19.299216282761623,
+            22.313943195896837
+          ],
+          "radial_normal_dot": 0.9892038814221097,
+          "ray_inner_hit_distance_mm": 4.000000000025415,
+          "u": 1.832595714594046,
+          "v": 23.160475085886123
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.2580274661462628,
+            0.9629716134061113,
+            -0.0781504861672018
+          ],
+          "point_xyz_mm": [
+            -5.27703684486033,
+            19.694169618431715,
+            25.85290064835268
+          ],
+          "radial_normal_dot": 0.996941573770414,
+          "ray_inner_hit_distance_mm": 4.000000000024597,
+          "u": 1.832595714594046,
+          "v": 26.723625099099372
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.25879543608096833,
+            0.9658377162211178,
+            0.013506597959412767
+          ],
+          "point_xyz_mm": [
+            -5.307535843539228,
+            19.807993431081343,
+            29.461698017828116
+          ],
+          "radial_normal_dot": 0.9999087817453965,
+          "ray_inner_hit_distance_mm": 4.000000000087729,
+          "u": 1.832595714594046,
+          "v": 30.286775112312625
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.25786549602204517,
+            0.962367132673223,
+            0.085760643139051
+          ],
+          "point_xyz_mm": [
+            -5.259193559066317,
+            19.62757756927449,
+            33.0729337600097
+          ],
+          "radial_normal_dot": 0.9963157692661379,
+          "ray_inner_hit_distance_mm": 4.000000000066272,
+          "u": 1.832595714594046,
+          "v": 33.84992512552587
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.25640994628228486,
+            0.9569349470914938,
+            0.1361229094697714
+          ],
+          "point_xyz_mm": [
+            -5.158778821444993,
+            19.252824666643008,
+            36.50693382353099
+          ],
+          "radial_normal_dot": 0.9906919569258067,
+          "ray_inner_hit_distance_mm": 4.00000000006897,
+          "u": 1.832595714594046,
+          "v": 37.413075138739124
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.25562844318015443,
+            0.95401833780807,
+            0.1565346931616689
+          ],
+          "point_xyz_mm": [
+            -5.0300062784312525,
+            18.77223899349588,
+            39.79202586636383
+          ],
+          "radial_normal_dot": 0.9876724608071149,
+          "ray_inner_hit_distance_mm": 4.000000000055261,
+          "u": 1.832595714594046,
+          "v": 40.97622515195237
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.25626006774072213,
+            0.9563755927594173,
+            0.14027295981618804
+          ],
+          "point_xyz_mm": [
+            -4.883700341316851,
+            18.226217802735956,
+            43.505653849831
+          ],
+          "radial_normal_dot": 0.9901128707093986,
+          "ray_inner_hit_distance_mm": 4.0000000000519265,
+          "u": 1.832595714594046,
+          "v": 44.53937516516562
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.2567232551759417,
+            0.9581042318010844,
+            0.12700177658884254
+          ],
+          "point_xyz_mm": [
+            -4.736652168678287,
+            17.677426551288676,
+            47.819826632514044
+          ],
+          "radial_normal_dot": 0.9919024895337635,
+          "ray_inner_hit_distance_mm": 3.9999288344471893,
+          "u": 1.832595714594046,
+          "v": 48.102525178378876
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 2,
+          "outward_normal": [
+            -0.24514489099336773,
+            0.9148931884031825,
+            0.3207404499487221
+          ],
+          "point_xyz_mm": [
+            -4.651022892292702,
+            17.357853741202316,
+            50.12133973442941
+          ],
+          "radial_normal_dot": 0.9471671255732492,
+          "ray_inner_hit_distance_mm": 4.001523606573146,
+          "u": 1.832595714594046,
+          "v": 51.66567519159212
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.2587965433620555,
+            0.9658418486503932,
+            -0.013186073693207071
+          ],
+          "point_xyz_mm": [
+            -4.653220804109341,
+            17.36605645977257,
+            51.668740507076876
+          ],
+          "radial_normal_dot": 0.9999130599509927,
+          "ray_inner_hit_distance_mm": 3.9999560299085752,
+          "u": 1.832595714594046,
+          "v": 55.228825204805375
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.7069793089858591,
+            0.7069793089858594,
+            0.018987188621639263
+          ],
+          "point_xyz_mm": [
+            -10.471639098577576,
+            10.471639098577578,
+            1.5187641003023946
+          ],
+          "radial_normal_dot": 0.999819727084961,
+          "ray_inner_hit_distance_mm": 4.000000003476578,
+          "u": 2.356194490192345,
+          "v": 1.781575006606625
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.6557415838096656,
+            0.6557415838096657,
+            -0.374173690317187
+          ],
+          "point_xyz_mm": [
+            -10.93889646443926,
+            10.938896464439262,
+            5.20214600780284
+          ],
+          "radial_normal_dot": 0.9273586412356427,
+          "ray_inner_hit_distance_mm": 4.000000003390354,
+          "u": 2.356194490192345,
+          "v": 5.344725019819875
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.6692248536513384,
+            0.6692248536513385,
+            -0.32291824121701357
+          ],
+          "point_xyz_mm": [
+            -11.805177476572991,
+            11.805177476572993,
+            8.398614240203004
+          ],
+          "radial_normal_dot": 0.9464268643108725,
+          "ray_inner_hit_distance_mm": 4.000000003731339,
+          "u": 2.356194490192345,
+          "v": 8.907875033033125
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.6810494390497661,
+            0.6810494390497662,
+            -0.2689671413760384
+          ],
+          "point_xyz_mm": [
+            -12.561192760847296,
+            12.561192760847298,
+            11.87141166451797
+          ],
+          "radial_normal_dot": 0.9631493533507679,
+          "ray_inner_hit_distance_mm": 4.00000000404101,
+          "u": 2.356194490192345,
+          "v": 12.471025046246375
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.6888458509645549,
+            0.688845850964555,
+            -0.22579368285635548
+          ],
+          "point_xyz_mm": [
+            -13.189883565605827,
+            13.189883565605829,
+            15.35656170208267
+          ],
+          "radial_normal_dot": 0.9741751448185093,
+          "ray_inner_hit_distance_mm": 4.000000002628312,
+          "u": 2.356194490192345,
+          "v": 16.034175059459624
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.6946209590609872,
+            0.6946209590609873,
+            -0.1870920801808257
+          ],
+          "point_xyz_mm": [
+            -13.706197821203842,
+            13.706197821203844,
+            18.824701613023745
+          ],
+          "radial_normal_dot": 0.9823423810126546,
+          "ray_inner_hit_distance_mm": 4.000000000329214,
+          "u": 2.356194490192345,
+          "v": 19.597325072672874
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.6994727725296271,
+            0.6994727725296273,
+            -0.14654583235094956
+          ],
+          "point_xyz_mm": [
+            -14.128006865242071,
+            14.128006865242073,
+            22.313943195896837
+          ],
+          "radial_normal_dot": 0.9892038814221097,
+          "ray_inner_hit_distance_mm": 4.00000000019459,
+          "u": 2.356194490192345,
+          "v": 23.160475085886123
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.7049441472598484,
+            0.7049441472598486,
+            -0.0781504861672018
+          ],
+          "point_xyz_mm": [
+            -14.417132773571383,
+            14.417132773571385,
+            25.85290064835268
+          ],
+          "radial_normal_dot": 0.996941573770414,
+          "ray_inner_hit_distance_mm": 4.00000000020097,
+          "u": 2.356194490192345,
+          "v": 26.723625099099372
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.7070422801401492,
+            0.7070422801401494,
+            0.013506597959412763
+          ],
+          "point_xyz_mm": [
+            -14.500457587542112,
+            14.500457587542115,
+            29.461698017828116
+          ],
+          "radial_normal_dot": 0.9999087817453963,
+          "ray_inner_hit_distance_mm": 4.000000000085021,
+          "u": 2.356194490192345,
+          "v": 30.286775112312625
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.7045016366511777,
+            0.7045016366511778,
+            0.085760643139051
+          ],
+          "point_xyz_mm": [
+            -14.36838401020817,
+            14.368384010208171,
+            33.0729337600097
+          ],
+          "radial_normal_dot": 0.996315769266138,
+          "ray_inner_hit_distance_mm": 4.0000000001235385,
+          "u": 2.356194490192345,
+          "v": 33.84992512552587
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.7005250008092089,
+            0.7005250008092091,
+            0.13612290946977143
+          ],
+          "point_xyz_mm": [
+            -14.094045845198012,
+            14.094045845198016,
+            36.50693382353099
+          ],
+          "radial_normal_dot": 0.9906919569258067,
+          "ray_inner_hit_distance_mm": 4.000000000112304,
+          "u": 2.356194490192345,
+          "v": 37.413075138739124
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.6983898946279156,
+            0.6983898946279157,
+            0.1565346931616689
+          ],
+          "point_xyz_mm": [
+            -13.742232715064626,
+            13.742232715064628,
+            39.79202586636383
+          ],
+          "radial_normal_dot": 0.987672460807115,
+          "ray_inner_hit_distance_mm": 4.000000000130894,
+          "u": 2.356194490192345,
+          "v": 40.97622515195237
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.7001155250186951,
+            0.7001155250186952,
+            0.14027295981618804
+          ],
+          "point_xyz_mm": [
+            -13.342517461419105,
+            13.342517461419106,
+            43.505653849831
+          ],
+          "radial_normal_dot": 0.9901128707093987,
+          "ray_inner_hit_distance_mm": 4.00000000013009,
+          "u": 2.356194490192345,
+          "v": 44.53937516516562
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.7013809766251426,
+            0.7013809766251426,
+            0.12700177658884257
+          ],
+          "point_xyz_mm": [
+            -12.940774382610387,
+            12.940774382610389,
+            47.819826632514044
+          ],
+          "radial_normal_dot": 0.9919024895337635,
+          "ray_inner_hit_distance_mm": 3.999928834404673,
+          "u": 2.356194490192345,
+          "v": 48.102525178378876
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 2,
+          "outward_normal": [
+            -0.6697482974098148,
+            0.6697482974098148,
+            0.3207404499487221
+          ],
+          "point_xyz_mm": [
+            -12.706830848909613,
+            12.706830848909615,
+            50.12133973442941
+          ],
+          "radial_normal_dot": 0.9471671255732493,
+          "ray_inner_hit_distance_mm": 4.001523606564708,
+          "u": 2.356194490192345,
+          "v": 51.66567519159212
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.7070453052883375,
+            0.7070453052883376,
+            -0.01318607369320707
+          ],
+          "point_xyz_mm": [
+            -12.712835655663225,
+            12.712835655663227,
+            51.668740507076876
+          ],
+          "radial_normal_dot": 0.9999130599509924,
+          "ray_inner_hit_distance_mm": 3.9999560299431725,
+          "u": 2.356194490192345,
+          "v": 55.228825204805375
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 2,
+          "outward_normal": [
+            -0.9657516960246518,
+            0.2587723870387928,
+            0.018987188621639263
+          ],
+          "point_xyz_mm": [
+            -14.304525027919349,
+            3.8328859293417765,
+            1.5187641003023946
+          ],
+          "radial_normal_dot": 0.9998197270849611,
+          "ray_inner_hit_distance_mm": 3.972145649583198,
+          "u": 2.8797932657906435,
+          "v": 1.781575006606625
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.8957596618018459,
+            0.2400180779921805,
+            -0.37417369031718695
+          ],
+          "point_xyz_mm": [
+            -14.942810459791808,
+            4.003913995352553,
+            5.20214600780284
+          ],
+          "radial_normal_dot": 0.9273586412356428,
+          "ray_inner_hit_distance_mm": 4.000000000487687,
+          "u": 2.8797932657906435,
+          "v": 5.344725019819875
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.9141781509316513,
+            0.24495329728031326,
+            -0.3229182412170135
+          ],
+          "point_xyz_mm": [
+            -16.12617232918258,
+            4.320994852609594,
+            8.398614240203004
+          ],
+          "radial_normal_dot": 0.9464268643108725,
+          "ray_inner_hit_distance_mm": 4.0000000005314265,
+          "u": 2.8797932657906435,
+          "v": 8.907875033033125
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.930330834975122,
+            0.24928139592535634,
+            -0.26896714137603833
+          ],
+          "point_xyz_mm": [
+            -17.158908413150595,
+            4.597715652303304,
+            11.87141166451797
+          ],
+          "radial_normal_dot": 0.9631493533507677,
+          "ray_inner_hit_distance_mm": 4.000000000574936,
+          "u": 2.8797932657906435,
+          "v": 12.471025046246375
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.9409809317090913,
+            0.25213508074453667,
+            -0.22579368285635548
+          ],
+          "point_xyz_mm": [
+            -18.01771602357643,
+            4.827832457970609,
+            15.35656170208267
+          ],
+          "radial_normal_dot": 0.9741751448185091,
+          "ray_inner_hit_distance_mm": 4.0000000003414975,
+          "u": 2.8797932657906435,
+          "v": 16.034175059459624
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.9488698760784191,
+            0.2542489170174322,
+            -0.1870920801808257
+          ],
+          "point_xyz_mm": [
+            -18.72301441305937,
+            5.016816591855535,
+            18.824701613023745
+          ],
+          "radial_normal_dot": 0.9823423810126546,
+          "ray_inner_hit_distance_mm": 3.999999999965774,
+          "u": 2.8797932657906435,
+          "v": 19.597325072672874
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.9554975765310049,
+            0.2560248040013779,
+            -0.1465458323509496
+          ],
+          "point_xyz_mm": [
+            -19.29921628276162,
+            5.171209417519556,
+            22.313943195896837
+          ],
+          "radial_normal_dot": 0.9892038814221097,
+          "ray_inner_hit_distance_mm": 3.9999999999964673,
+          "u": 2.8797932657906435,
+          "v": 23.160475085886123
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.9629716134061113,
+            0.2580274661462631,
+            -0.0781504861672018
+          ],
+          "point_xyz_mm": [
+            -19.69416961843171,
+            5.277036844860335,
+            25.85290064835268
+          ],
+          "radial_normal_dot": 0.9969415737704141,
+          "ray_inner_hit_distance_mm": 4.000000000068728,
+          "u": 2.8797932657906435,
+          "v": 26.723625099099372
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.9658377162211176,
+            0.2587954360809686,
+            0.013506597959412763
+          ],
+          "point_xyz_mm": [
+            -19.807993431081343,
+            5.307535843539235,
+            29.461698017828116
+          ],
+          "radial_normal_dot": 0.9999087817453964,
+          "ray_inner_hit_distance_mm": 3.99999999980926,
+          "u": 2.8797932657906435,
+          "v": 30.286775112312625
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.9623671326732228,
+            0.2578654960220455,
+            0.085760643139051
+          ],
+          "point_xyz_mm": [
+            -19.627577569274486,
+            5.259193559066323,
+            33.0729337600097
+          ],
+          "radial_normal_dot": 0.9963157692661379,
+          "ray_inner_hit_distance_mm": 3.9999999998465263,
+          "u": 2.8797932657906435,
+          "v": 33.84992512552587
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.9569349470914938,
+            0.2564099462822852,
+            0.1361229094697714
+          ],
+          "point_xyz_mm": [
+            -19.252824666643004,
+            5.158778821444998,
+            36.50693382353099
+          ],
+          "radial_normal_dot": 0.9906919569258066,
+          "ray_inner_hit_distance_mm": 3.9999999999268625,
+          "u": 2.8797932657906435,
+          "v": 37.413075138739124
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.9540183378080699,
+            0.2556284431801546,
+            0.1565346931616689
+          ],
+          "point_xyz_mm": [
+            -18.77223899349588,
+            5.030006278431258,
+            39.79202586636383
+          ],
+          "radial_normal_dot": 0.9876724608071149,
+          "ray_inner_hit_distance_mm": 3.9999999999331357,
+          "u": 2.8797932657906435,
+          "v": 40.97622515195237
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.9563755927594172,
+            0.25626006774072235,
+            0.14027295981618804
+          ],
+          "point_xyz_mm": [
+            -18.226217802735956,
+            4.883700341316856,
+            43.505653849831
+          ],
+          "radial_normal_dot": 0.9901128707093986,
+          "ray_inner_hit_distance_mm": 3.9999999999365463,
+          "u": 2.8797932657906435,
+          "v": 44.53937516516562
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.9581042318010843,
+            0.256723255175942,
+            0.12700177658884257
+          ],
+          "point_xyz_mm": [
+            -17.677426551288672,
+            4.736652168678291,
+            47.819826632514044
+          ],
+          "radial_normal_dot": 0.9919024895337635,
+          "ray_inner_hit_distance_mm": 3.999928834281152,
+          "u": 2.8797932657906435,
+          "v": 48.102525178378876
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 2,
+          "outward_normal": [
+            -0.9148931884031825,
+            0.245144890993368,
+            0.32074044994872203
+          ],
+          "point_xyz_mm": [
+            -17.357853741202316,
+            4.6510228922927075,
+            50.12133973442941
+          ],
+          "radial_normal_dot": 0.9471671255732494,
+          "ray_inner_hit_distance_mm": 4.001523606431496,
+          "u": 2.8797932657906435,
+          "v": 51.66567519159212
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.965841848650393,
+            0.25879654336205576,
+            -0.013186073693207071
+          ],
+          "point_xyz_mm": [
+            -17.366056459772565,
+            4.653220804109346,
+            51.668740507076876
+          ],
+          "radial_normal_dot": 0.9999130599509923,
+          "ray_inner_hit_distance_mm": 3.9999560297596894,
+          "u": 2.8797932657906435,
+          "v": 55.228825204805375
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.9657516960246518,
+            -0.25877238703879263,
+            0.01898718862163926
+          ],
+          "point_xyz_mm": [
+            -14.304525027919349,
+            -3.8328859293417734,
+            1.5187641003023946
+          ],
+          "radial_normal_dot": 0.9998197270849611,
+          "ray_inner_hit_distance_mm": 4.000000000486845,
+          "u": 3.4033920413889427,
+          "v": 1.781575006606625
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.895759661801846,
+            -0.2400180779921803,
+            -0.374173690317187
+          ],
+          "point_xyz_mm": [
+            -14.942810459791808,
+            -4.0039139953525495,
+            5.20214600780284
+          ],
+          "radial_normal_dot": 0.9273586412356429,
+          "ray_inner_hit_distance_mm": 4.000000000487449,
+          "u": 3.4033920413889427,
+          "v": 5.344725019819875
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.9141781509316513,
+            -0.2449532972803131,
+            -0.3229182412170135
+          ],
+          "point_xyz_mm": [
+            -16.12617232918258,
+            -4.320994852609591,
+            8.398614240203004
+          ],
+          "radial_normal_dot": 0.9464268643108724,
+          "ray_inner_hit_distance_mm": 4.0000000005311875,
+          "u": 3.4033920413889427,
+          "v": 8.907875033033125
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.9303308349751223,
+            -0.24928139592535617,
+            -0.26896714137603833
+          ],
+          "point_xyz_mm": [
+            -17.158908413150595,
+            -4.5977156523033,
+            11.87141166451797
+          ],
+          "radial_normal_dot": 0.9631493533507678,
+          "ray_inner_hit_distance_mm": 4.000000000575533,
+          "u": 3.4033920413889427,
+          "v": 12.471025046246375
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.9409809317090914,
+            -0.25213508074453655,
+            -0.2257936828563555
+          ],
+          "point_xyz_mm": [
+            -18.01771602357643,
+            -4.827832457970605,
+            15.35656170208267
+          ],
+          "radial_normal_dot": 0.9741751448185094,
+          "ray_inner_hit_distance_mm": 4.0000000003419585,
+          "u": 3.4033920413889427,
+          "v": 16.034175059459624
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.9488698760784191,
+            -0.25424891701743196,
+            -0.18709208018082568
+          ],
+          "point_xyz_mm": [
+            -18.72301441305937,
+            -5.01681659185553,
+            18.824701613023745
+          ],
+          "radial_normal_dot": 0.9823423810126546,
+          "ray_inner_hit_distance_mm": 3.999999999965199,
+          "u": 3.4033920413889427,
+          "v": 19.597325072672874
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.955497576531005,
+            -0.2560248040013777,
+            -0.14654583235094962
+          ],
+          "point_xyz_mm": [
+            -19.29921628276162,
+            -5.1712094175195515,
+            22.313943195896837
+          ],
+          "radial_normal_dot": 0.9892038814221099,
+          "ray_inner_hit_distance_mm": 3.999999999997274,
+          "u": 3.4033920413889427,
+          "v": 23.160475085886123
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.9629716134061114,
+            -0.25802746614626293,
+            -0.0781504861672018
+          ],
+          "point_xyz_mm": [
+            -19.69416961843171,
+            -5.277036844860331,
+            25.85290064835268
+          ],
+          "radial_normal_dot": 0.9969415737704141,
+          "ray_inner_hit_distance_mm": 4.000000000068929,
+          "u": 3.4033920413889427,
+          "v": 26.723625099099372
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.9658377162211178,
+            -0.2587954360809684,
+            0.013506597959412763
+          ],
+          "point_xyz_mm": [
+            -19.807993431081343,
+            -5.30753584353923,
+            29.461698017828116
+          ],
+          "radial_normal_dot": 0.9999087817453965,
+          "ray_inner_hit_distance_mm": 3.999999999809732,
+          "u": 3.4033920413889427,
+          "v": 30.286775112312625
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.962367132673223,
+            -0.2578654960220453,
+            0.08576064313905102
+          ],
+          "point_xyz_mm": [
+            -19.627577569274486,
+            -5.2591935590663175,
+            33.0729337600097
+          ],
+          "radial_normal_dot": 0.996315769266138,
+          "ray_inner_hit_distance_mm": 3.9999999998476414,
+          "u": 3.4033920413889427,
+          "v": 33.84992512552587
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.9569349470914938,
+            -0.256409946282285,
+            0.13612290946977137
+          ],
+          "point_xyz_mm": [
+            -19.252824666643004,
+            -5.158778821444994,
+            36.50693382353099
+          ],
+          "radial_normal_dot": 0.9906919569258067,
+          "ray_inner_hit_distance_mm": 3.999999999927539,
+          "u": 3.4033920413889427,
+          "v": 37.413075138739124
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.95401833780807,
+            -0.25562844318015443,
+            0.1565346931616689
+          ],
+          "point_xyz_mm": [
+            -18.77223899349588,
+            -5.030006278431253,
+            39.79202586636383
+          ],
+          "radial_normal_dot": 0.987672460807115,
+          "ray_inner_hit_distance_mm": 3.999999999933048,
+          "u": 3.4033920413889427,
+          "v": 40.97622515195237
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.9563755927594172,
+            -0.25626006774072213,
+            0.140272959816188
+          ],
+          "point_xyz_mm": [
+            -18.226217802735956,
+            -4.883700341316852,
+            43.505653849831
+          ],
+          "radial_normal_dot": 0.9901128707093985,
+          "ray_inner_hit_distance_mm": 3.999999999935804,
+          "u": 3.4033920413889427,
+          "v": 44.53937516516562
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.9581042318010843,
+            -0.25672325517594186,
+            0.12700177658884254
+          ],
+          "point_xyz_mm": [
+            -17.677426551288672,
+            -4.736652168678288,
+            47.819826632514044
+          ],
+          "radial_normal_dot": 0.9919024895337635,
+          "ray_inner_hit_distance_mm": 3.999928834280332,
+          "u": 3.4033920413889427,
+          "v": 48.102525178378876
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 2,
+          "outward_normal": [
+            -0.9148931884031825,
+            -0.24514489099336775,
+            0.32074044994872203
+          ],
+          "point_xyz_mm": [
+            -17.357853741202316,
+            -4.651022892292703,
+            50.12133973442941
+          ],
+          "radial_normal_dot": 0.9471671255732493,
+          "ray_inner_hit_distance_mm": 4.001523606425975,
+          "u": 3.4033920413889427,
+          "v": 51.66567519159212
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.9658418486503932,
+            -0.2587965433620556,
+            -0.013186073693207071
+          ],
+          "point_xyz_mm": [
+            -17.366056459772565,
+            -4.653220804109342,
+            51.668740507076876
+          ],
+          "radial_normal_dot": 0.9999130599509928,
+          "ray_inner_hit_distance_mm": 3.999956029792015,
+          "u": 3.4033920413889427,
+          "v": 55.228825204805375
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.7069793089858597,
+            -0.7069793089858589,
+            0.018987188621639263
+          ],
+          "point_xyz_mm": [
+            -10.471639098577583,
+            -10.47163909857757,
+            1.5187641003023946
+          ],
+          "radial_normal_dot": 0.9998197270849611,
+          "ray_inner_hit_distance_mm": 4.00000000347838,
+          "u": 3.926990816987241,
+          "v": 1.781575006606625
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.6557415838096661,
+            -0.6557415838096654,
+            -0.374173690317187
+          ],
+          "point_xyz_mm": [
+            -10.938896464439267,
+            -10.938896464439255,
+            5.20214600780284
+          ],
+          "radial_normal_dot": 0.9273586412356428,
+          "ray_inner_hit_distance_mm": 4.000000003392551,
+          "u": 3.926990816987241,
+          "v": 5.344725019819875
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.6692248536513388,
+            -0.669224853651338,
+            -0.32291824121701346
+          ],
+          "point_xyz_mm": [
+            -11.805177476572998,
+            -11.805177476572986,
+            8.398614240203004
+          ],
+          "radial_normal_dot": 0.9464268643108724,
+          "ray_inner_hit_distance_mm": 4.000000003733477,
+          "u": 3.926990816987241,
+          "v": 8.907875033033125
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.6810494390497666,
+            -0.6810494390497658,
+            -0.26896714137603833
+          ],
+          "point_xyz_mm": [
+            -12.561192760847304,
+            -12.56119276084729,
+            11.87141166451797
+          ],
+          "radial_normal_dot": 0.9631493533507679,
+          "ray_inner_hit_distance_mm": 4.000000004045123,
+          "u": 3.926990816987241,
+          "v": 12.471025046246375
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.6888458509645553,
+            -0.6888458509645545,
+            -0.22579368285635548
+          ],
+          "point_xyz_mm": [
+            -13.189883565605836,
+            -13.18988356560582,
+            15.35656170208267
+          ],
+          "radial_normal_dot": 0.9741751448185093,
+          "ray_inner_hit_distance_mm": 4.000000002630499,
+          "u": 3.926990816987241,
+          "v": 16.034175059459624
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.6946209590609876,
+            -0.6946209590609869,
+            -0.1870920801808257
+          ],
+          "point_xyz_mm": [
+            -13.706197821203851,
+            -13.706197821203835,
+            18.824701613023745
+          ],
+          "radial_normal_dot": 0.9823423810126546,
+          "ray_inner_hit_distance_mm": 4.000000000330911,
+          "u": 3.926990816987241,
+          "v": 19.597325072672874
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.6994727725296276,
+            -0.6994727725296268,
+            -0.14654583235094956
+          ],
+          "point_xyz_mm": [
+            -14.12800686524208,
+            -14.128006865242064,
+            22.313943195896837
+          ],
+          "radial_normal_dot": 0.9892038814221096,
+          "ray_inner_hit_distance_mm": 4.000000000197553,
+          "u": 3.926990816987241,
+          "v": 23.160475085886123
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.7049441472598489,
+            -0.7049441472598481,
+            -0.0781504861672018
+          ],
+          "point_xyz_mm": [
+            -14.417132773571392,
+            -14.417132773571376,
+            25.85290064835268
+          ],
+          "radial_normal_dot": 0.996941573770414,
+          "ray_inner_hit_distance_mm": 4.0000000002024985,
+          "u": 3.926990816987241,
+          "v": 26.723625099099372
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.7070422801401498,
+            -0.707042280140149,
+            0.013506597959412763
+          ],
+          "point_xyz_mm": [
+            -14.50045758754212,
+            -14.500457587542105,
+            29.461698017828116
+          ],
+          "radial_normal_dot": 0.9999087817453965,
+          "ray_inner_hit_distance_mm": 4.000000000086939,
+          "u": 3.926990816987241,
+          "v": 30.286775112312625
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.7045016366511782,
+            -0.7045016366511774,
+            0.085760643139051
+          ],
+          "point_xyz_mm": [
+            -14.368384010208178,
+            -14.368384010208162,
+            33.0729337600097
+          ],
+          "radial_normal_dot": 0.996315769266138,
+          "ray_inner_hit_distance_mm": 4.000000000126622,
+          "u": 3.926990816987241,
+          "v": 33.84992512552587
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.7005250008092094,
+            -0.7005250008092087,
+            0.13612290946977143
+          ],
+          "point_xyz_mm": [
+            -14.094045845198021,
+            -14.094045845198007,
+            36.50693382353099
+          ],
+          "radial_normal_dot": 0.9906919569258068,
+          "ray_inner_hit_distance_mm": 4.000000000113002,
+          "u": 3.926990816987241,
+          "v": 37.413075138739124
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.698389894627916,
+            -0.6983898946279153,
+            0.1565346931616689
+          ],
+          "point_xyz_mm": [
+            -13.742232715064635,
+            -13.742232715064619,
+            39.79202586636383
+          ],
+          "radial_normal_dot": 0.9876724608071151,
+          "ray_inner_hit_distance_mm": 4.000000000134509,
+          "u": 3.926990816987241,
+          "v": 40.97622515195237
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.7001155250186956,
+            -0.7001155250186947,
+            0.14027295981618804
+          ],
+          "point_xyz_mm": [
+            -13.342517461419114,
+            -13.342517461419098,
+            43.505653849831
+          ],
+          "radial_normal_dot": 0.9901128707093986,
+          "ray_inner_hit_distance_mm": 4.000000000133007,
+          "u": 3.926990816987241,
+          "v": 44.53937516516562
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.701380976625143,
+            -0.7013809766251422,
+            0.12700177658884254
+          ],
+          "point_xyz_mm": [
+            -12.940774382610394,
+            -12.94077438261038,
+            47.819826632514044
+          ],
+          "radial_normal_dot": 0.9919024895337634,
+          "ray_inner_hit_distance_mm": 3.999928834406973,
+          "u": 3.926990816987241,
+          "v": 48.102525178378876
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 2,
+          "outward_normal": [
+            -0.6697482974098151,
+            -0.6697482974098142,
+            0.32074044994872203
+          ],
+          "point_xyz_mm": [
+            -12.70683084890962,
+            -12.706830848909606,
+            50.12133973442941
+          ],
+          "radial_normal_dot": 0.9471671255732491,
+          "ray_inner_hit_distance_mm": 4.0015236065606965,
+          "u": 3.926990816987241,
+          "v": 51.66567519159212
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.7070453052883381,
+            -0.7070453052883372,
+            -0.013186073693207071
+          ],
+          "point_xyz_mm": [
+            -12.712835655663234,
+            -12.71283565566322,
+            51.668740507076876
+          ],
+          "radial_normal_dot": 0.9999130599509924,
+          "ray_inner_hit_distance_mm": 3.9999560299563237,
+          "u": 3.926990816987241,
+          "v": 55.228825204805375
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.2587723870387926,
+            -0.9657516960246518,
+            0.018987188621639263
+          ],
+          "point_xyz_mm": [
+            -3.8328859293417725,
+            -14.30452502791935,
+            1.5187641003023946
+          ],
+          "radial_normal_dot": 0.9998197270849611,
+          "ray_inner_hit_distance_mm": 3.999999998313676,
+          "u": 4.4505895925855405,
+          "v": 1.781575006606625
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.24001807799218022,
+            -0.8957596618018461,
+            -0.374173690317187
+          ],
+          "point_xyz_mm": [
+            -4.003913995352549,
+            -14.94281045979181,
+            5.20214600780284
+          ],
+          "radial_normal_dot": 0.9273586412356429,
+          "ray_inner_hit_distance_mm": 3.9999999983549253,
+          "u": 4.4505895925855405,
+          "v": 5.344725019819875
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.24495329728031298,
+            -0.9141781509316514,
+            -0.32291824121701346
+          ],
+          "point_xyz_mm": [
+            -4.32099485260959,
+            -16.126172329182584,
+            8.398614240203004
+          ],
+          "radial_normal_dot": 0.9464268643108725,
+          "ray_inner_hit_distance_mm": 3.999999998189236,
+          "u": 4.4505895925855405,
+          "v": 8.907875033033125
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.2492813959253561,
+            -0.9303308349751223,
+            -0.26896714137603833
+          ],
+          "point_xyz_mm": [
+            -4.597715652303299,
+            -17.1589084131506,
+            11.87141166451797
+          ],
+          "radial_normal_dot": 0.963149353350768,
+          "ray_inner_hit_distance_mm": 3.999999998041664,
+          "u": 4.4505895925855405,
+          "v": 12.471025046246375
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.25213508074453644,
+            -0.9409809317090914,
+            -0.2257936828563555
+          ],
+          "point_xyz_mm": [
+            -4.8278324579706045,
+            -18.017716023576433,
+            15.35656170208267
+          ],
+          "radial_normal_dot": 0.9741751448185093,
+          "ray_inner_hit_distance_mm": 3.9999999987718273,
+          "u": 4.4505895925855405,
+          "v": 16.034175059459624
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.25424891701743185,
+            -0.9488698760784191,
+            -0.18709208018082574
+          ],
+          "point_xyz_mm": [
+            -5.016816591855529,
+            -18.723014413059374,
+            18.824701613023745
+          ],
+          "radial_normal_dot": 0.9823423810126546,
+          "ray_inner_hit_distance_mm": 3.999999999956932,
+          "u": 4.4505895925855405,
+          "v": 19.597325072672874
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.25602480400137756,
+            -0.9554975765310049,
+            -0.14654583235094956
+          ],
+          "point_xyz_mm": [
+            -5.171209417519551,
+            -19.299216282761623,
+            22.313943195896837
+          ],
+          "radial_normal_dot": 0.9892038814221097,
+          "ray_inner_hit_distance_mm": 4.0000000000301785,
+          "u": 4.4505895925855405,
+          "v": 23.160475085886123
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.2580274661462628,
+            -0.9629716134061113,
+            -0.0781504861672018
+          ],
+          "point_xyz_mm": [
+            -5.27703684486033,
+            -19.694169618431715,
+            25.85290064835268
+          ],
+          "radial_normal_dot": 0.996941573770414,
+          "ray_inner_hit_distance_mm": 4.000000000028058,
+          "u": 4.4505895925855405,
+          "v": 26.723625099099372
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.25879543608096833,
+            -0.9658377162211178,
+            0.013506597959412767
+          ],
+          "point_xyz_mm": [
+            -5.307535843539228,
+            -19.807993431081343,
+            29.461698017828116
+          ],
+          "radial_normal_dot": 0.9999087817453965,
+          "ray_inner_hit_distance_mm": 4.000000000092165,
+          "u": 4.4505895925855405,
+          "v": 30.286775112312625
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.25786549602204517,
+            -0.962367132673223,
+            0.085760643139051
+          ],
+          "point_xyz_mm": [
+            -5.259193559066317,
+            -19.62757756927449,
+            33.0729337600097
+          ],
+          "radial_normal_dot": 0.9963157692661379,
+          "ray_inner_hit_distance_mm": 4.0000000000706235,
+          "u": 4.4505895925855405,
+          "v": 33.84992512552587
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.25640994628228486,
+            -0.9569349470914938,
+            0.1361229094697714
+          ],
+          "point_xyz_mm": [
+            -5.158778821444993,
+            -19.252824666643008,
+            36.50693382353099
+          ],
+          "radial_normal_dot": 0.9906919569258067,
+          "ray_inner_hit_distance_mm": 4.000000000072316,
+          "u": 4.4505895925855405,
+          "v": 37.413075138739124
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.25562844318015443,
+            -0.95401833780807,
+            0.1565346931616689
+          ],
+          "point_xyz_mm": [
+            -5.0300062784312525,
+            -18.77223899349588,
+            39.79202586636383
+          ],
+          "radial_normal_dot": 0.9876724608071149,
+          "ray_inner_hit_distance_mm": 4.0000000000601945,
+          "u": 4.4505895925855405,
+          "v": 40.97622515195237
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.25626006774072213,
+            -0.9563755927594173,
+            0.14027295981618804
+          ],
+          "point_xyz_mm": [
+            -4.883700341316851,
+            -18.226217802735956,
+            43.505653849831
+          ],
+          "radial_normal_dot": 0.9901128707093986,
+          "ray_inner_hit_distance_mm": 4.000000000056818,
+          "u": 4.4505895925855405,
+          "v": 44.53937516516562
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.2567232551759417,
+            -0.9581042318010844,
+            0.12700177658884254
+          ],
+          "point_xyz_mm": [
+            -4.736652168678287,
+            -17.677426551288676,
+            47.819826632514044
+          ],
+          "radial_normal_dot": 0.9919024895337635,
+          "ray_inner_hit_distance_mm": 3.9999288344507553,
+          "u": 4.4505895925855405,
+          "v": 48.102525178378876
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 2,
+          "outward_normal": [
+            -0.24514489099336773,
+            -0.9148931884031825,
+            0.3207404499487221
+          ],
+          "point_xyz_mm": [
+            -4.651022892292702,
+            -17.357853741202316,
+            50.12133973442941
+          ],
+          "radial_normal_dot": 0.9471671255732492,
+          "ray_inner_hit_distance_mm": 4.001523606570833,
+          "u": 4.4505895925855405,
+          "v": 51.66567519159212
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            -0.2587965433620555,
+            -0.9658418486503932,
+            -0.013186073693207071
+          ],
+          "point_xyz_mm": [
+            -4.653220804109341,
+            -17.36605645977257,
+            51.668740507076876
+          ],
+          "radial_normal_dot": 0.9999130599509927,
+          "ray_inner_hit_distance_mm": 3.999956029911668,
+          "u": 4.4505895925855405,
+          "v": 55.228825204805375
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.25877238703879213,
+            -0.965751696024652,
+            0.018987188621639266
+          ],
+          "point_xyz_mm": [
+            3.832885929341766,
+            -14.304525027919352,
+            1.5187641003023946
+          ],
+          "radial_normal_dot": 0.9998197270849613,
+          "ray_inner_hit_distance_mm": 3.9999999983139736,
+          "u": 4.974188368183839,
+          "v": 1.781575006606625
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.2400180779921798,
+            -0.8957596618018462,
+            -0.374173690317187
+          ],
+          "point_xyz_mm": [
+            4.0039139953525416,
+            -14.942810459791811,
+            5.20214600780284
+          ],
+          "radial_normal_dot": 0.9273586412356429,
+          "ray_inner_hit_distance_mm": 3.99999999835487,
+          "u": 4.974188368183839,
+          "v": 5.344725019819875
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.24495329728031262,
+            -0.9141781509316516,
+            -0.32291824121701357
+          ],
+          "point_xyz_mm": [
+            4.320994852609583,
+            -16.126172329182584,
+            8.398614240203004
+          ],
+          "radial_normal_dot": 0.9464268643108724,
+          "ray_inner_hit_distance_mm": 3.9999999981889816,
+          "u": 4.974188368183839,
+          "v": 8.907875033033125
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.24928139592535564,
+            -0.9303308349751223,
+            -0.26896714137603833
+          ],
+          "point_xyz_mm": [
+            4.597715652303291,
+            -17.1589084131506,
+            11.87141166451797
+          ],
+          "radial_normal_dot": 0.9631493533507678,
+          "ray_inner_hit_distance_mm": 3.999999998040723,
+          "u": 4.974188368183839,
+          "v": 12.471025046246375
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.25213508074453594,
+            -0.9409809317090914,
+            -0.22579368285635548
+          ],
+          "point_xyz_mm": [
+            4.827832457970596,
+            -18.017716023576437,
+            15.35656170208267
+          ],
+          "radial_normal_dot": 0.9741751448185093,
+          "ray_inner_hit_distance_mm": 3.9999999987709187,
+          "u": 4.974188368183839,
+          "v": 16.034175059459624
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.2542489170174314,
+            -0.9488698760784191,
+            -0.18709208018082568
+          ],
+          "point_xyz_mm": [
+            5.016816591855521,
+            -18.723014413059378,
+            18.824701613023745
+          ],
+          "radial_normal_dot": 0.9823423810126544,
+          "ray_inner_hit_distance_mm": 3.9999999999564806,
+          "u": 4.974188368183839,
+          "v": 19.597325072672874
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.25602480400137717,
+            -0.955497576531005,
+            -0.1465458323509496
+          ],
+          "point_xyz_mm": [
+            5.171209417519542,
+            -19.299216282761627,
+            22.313943195896837
+          ],
+          "radial_normal_dot": 0.9892038814221098,
+          "ray_inner_hit_distance_mm": 4.000000000029683,
+          "u": 4.974188368183839,
+          "v": 23.160475085886123
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.2580274661462623,
+            -0.9629716134061115,
+            -0.07815048616720179
+          ],
+          "point_xyz_mm": [
+            5.27703684486032,
+            -19.69416961843172,
+            25.85290064835268
+          ],
+          "radial_normal_dot": 0.996941573770414,
+          "ray_inner_hit_distance_mm": 4.000000000027981,
+          "u": 4.974188368183839,
+          "v": 26.723625099099372
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.25879543608096783,
+            -0.9658377162211178,
+            0.013506597959412763
+          ],
+          "point_xyz_mm": [
+            5.3075358435392195,
+            -19.807993431081346,
+            29.461698017828116
+          ],
+          "radial_normal_dot": 0.9999087817453964,
+          "ray_inner_hit_distance_mm": 4.000000000091672,
+          "u": 4.974188368183839,
+          "v": 30.286775112312625
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.2578654960220448,
+            -0.9623671326732232,
+            0.08576064313905102
+          ],
+          "point_xyz_mm": [
+            5.259193559066308,
+            -19.62757756927449,
+            33.0729337600097
+          ],
+          "radial_normal_dot": 0.996315769266138,
+          "ray_inner_hit_distance_mm": 4.0000000000705995,
+          "u": 4.974188368183839,
+          "v": 33.84992512552587
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.2564099462822844,
+            -0.9569349470914941,
+            0.1361229094697714
+          ],
+          "point_xyz_mm": [
+            5.158778821444984,
+            -19.25282466664301,
+            36.50693382353099
+          ],
+          "radial_normal_dot": 0.9906919569258069,
+          "ray_inner_hit_distance_mm": 4.000000000072017,
+          "u": 4.974188368183839,
+          "v": 37.413075138739124
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.2556284431801539,
+            -0.95401833780807,
+            0.15653469316166893
+          ],
+          "point_xyz_mm": [
+            5.030006278431244,
+            -18.772238993495883,
+            39.79202586636383
+          ],
+          "radial_normal_dot": 0.9876724608071149,
+          "ray_inner_hit_distance_mm": 4.000000000059198,
+          "u": 4.974188368183839,
+          "v": 40.97622515195237
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.25626006774072163,
+            -0.9563755927594173,
+            0.14027295981618804
+          ],
+          "point_xyz_mm": [
+            4.8837003413168425,
+            -18.22621780273596,
+            43.505653849831
+          ],
+          "radial_normal_dot": 0.9901128707093985,
+          "ray_inner_hit_distance_mm": 4.000000000055544,
+          "u": 4.974188368183839,
+          "v": 44.53937516516562
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.25672325517594125,
+            -0.9581042318010845,
+            0.12700177658884254
+          ],
+          "point_xyz_mm": [
+            4.736652168678278,
+            -17.677426551288676,
+            47.819826632514044
+          ],
+          "radial_normal_dot": 0.9919024895337634,
+          "ray_inner_hit_distance_mm": 3.99992883444953,
+          "u": 4.974188368183839,
+          "v": 48.102525178378876
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 2,
+          "outward_normal": [
+            0.24514489099336725,
+            -0.9148931884031826,
+            0.3207404499487221
+          ],
+          "point_xyz_mm": [
+            4.651022892292694,
+            -17.35785374120232,
+            50.12133973442941
+          ],
+          "radial_normal_dot": 0.9471671255732493,
+          "ray_inner_hit_distance_mm": 4.001523606569737,
+          "u": 4.974188368183839,
+          "v": 51.66567519159212
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.258796543362055,
+            -0.9658418486503932,
+            -0.01318607369320707
+          ],
+          "point_xyz_mm": [
+            4.653220804109333,
+            -17.366056459772572,
+            51.668740507076876
+          ],
+          "radial_normal_dot": 0.9999130599509927,
+          "ray_inner_hit_distance_mm": 3.9999560299109227,
+          "u": 4.974188368183839,
+          "v": 55.228825204805375
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.7069793089858591,
+            -0.7069793089858595,
+            0.018987188621639263
+          ],
+          "point_xyz_mm": [
+            10.471639098577574,
+            -10.47163909857758,
+            1.5187641003023946
+          ],
+          "radial_normal_dot": 0.9998197270849611,
+          "ray_inner_hit_distance_mm": 4.000000003476622,
+          "u": 5.497787143782138,
+          "v": 1.781575006606625
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.6557415838096656,
+            -0.6557415838096659,
+            -0.374173690317187
+          ],
+          "point_xyz_mm": [
+            10.938896464439258,
+            -10.938896464439264,
+            5.20214600780284
+          ],
+          "radial_normal_dot": 0.9273586412356428,
+          "ray_inner_hit_distance_mm": 4.000000003390696,
+          "u": 5.497787143782138,
+          "v": 5.344725019819875
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.6692248536513382,
+            -0.6692248536513385,
+            -0.32291824121701346
+          ],
+          "point_xyz_mm": [
+            11.80517747657299,
+            -11.805177476572995,
+            8.398614240203004
+          ],
+          "radial_normal_dot": 0.9464268643108724,
+          "ray_inner_hit_distance_mm": 4.000000003731469,
+          "u": 5.497787143782138,
+          "v": 8.907875033033125
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.681049439049766,
+            -0.6810494390497663,
+            -0.2689671413760384
+          ],
+          "point_xyz_mm": [
+            12.561192760847295,
+            -12.5611927608473,
+            11.87141166451797
+          ],
+          "radial_normal_dot": 0.9631493533507679,
+          "ray_inner_hit_distance_mm": 4.0000000040419526,
+          "u": 5.497787143782138,
+          "v": 12.471025046246375
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.6888458509645548,
+            -0.6888458509645551,
+            -0.22579368285635548
+          ],
+          "point_xyz_mm": [
+            13.189883565605825,
+            -13.18988356560583,
+            15.35656170208267
+          ],
+          "radial_normal_dot": 0.9741751448185093,
+          "ray_inner_hit_distance_mm": 4.000000002627264,
+          "u": 5.497787143782138,
+          "v": 16.034175059459624
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.6946209590609871,
+            -0.6946209590609874,
+            -0.18709208018082568
+          ],
+          "point_xyz_mm": [
+            13.70619782120384,
+            -13.706197821203848,
+            18.824701613023745
+          ],
+          "radial_normal_dot": 0.9823423810126546,
+          "ray_inner_hit_distance_mm": 4.00000000032857,
+          "u": 5.497787143782138,
+          "v": 19.597325072672874
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.6994727725296273,
+            -0.6994727725296275,
+            -0.1465458323509496
+          ],
+          "point_xyz_mm": [
+            14.12800686524207,
+            -14.128006865242074,
+            22.313943195896837
+          ],
+          "radial_normal_dot": 0.9892038814221099,
+          "ray_inner_hit_distance_mm": 4.000000000194421,
+          "u": 5.497787143782138,
+          "v": 23.160475085886123
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.7049441472598484,
+            -0.7049441472598488,
+            -0.0781504861672018
+          ],
+          "point_xyz_mm": [
+            14.417132773571382,
+            -14.417132773571389,
+            25.85290064835268
+          ],
+          "radial_normal_dot": 0.9969415737704141,
+          "ray_inner_hit_distance_mm": 4.000000000201152,
+          "u": 5.497787143782138,
+          "v": 26.723625099099372
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.7070422801401491,
+            -0.7070422801401495,
+            0.013506597959412761
+          ],
+          "point_xyz_mm": [
+            14.50045758754211,
+            -14.500457587542117,
+            29.461698017828116
+          ],
+          "radial_normal_dot": 0.9999087817453963,
+          "ray_inner_hit_distance_mm": 4.000000000084991,
+          "u": 5.497787143782138,
+          "v": 30.286775112312625
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.7045016366511776,
+            -0.7045016366511779,
+            0.085760643139051
+          ],
+          "point_xyz_mm": [
+            14.368384010208166,
+            -14.368384010208173,
+            33.0729337600097
+          ],
+          "radial_normal_dot": 0.9963157692661379,
+          "ray_inner_hit_distance_mm": 4.000000000124407,
+          "u": 5.497787143782138,
+          "v": 33.84992512552587
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.7005250008092088,
+            -0.7005250008092092,
+            0.1361229094697714
+          ],
+          "point_xyz_mm": [
+            14.09404584519801,
+            -14.094045845198018,
+            36.50693382353099
+          ],
+          "radial_normal_dot": 0.9906919569258067,
+          "ray_inner_hit_distance_mm": 4.00000000011132,
+          "u": 5.497787143782138,
+          "v": 37.413075138739124
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.6983898946279155,
+            -0.6983898946279158,
+            0.1565346931616689
+          ],
+          "point_xyz_mm": [
+            13.742232715064624,
+            -13.742232715064631,
+            39.79202586636383
+          ],
+          "radial_normal_dot": 0.987672460807115,
+          "ray_inner_hit_distance_mm": 4.000000000131419,
+          "u": 5.497787143782138,
+          "v": 40.97622515195237
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.700115525018695,
+            -0.7001155250186952,
+            0.14027295981618804
+          ],
+          "point_xyz_mm": [
+            13.342517461419103,
+            -13.342517461419108,
+            43.505653849831
+          ],
+          "radial_normal_dot": 0.9901128707093986,
+          "ray_inner_hit_distance_mm": 4.0000000001293845,
+          "u": 5.497787143782138,
+          "v": 44.53937516516562
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.7013809766251424,
+            -0.7013809766251428,
+            0.12700177658884257
+          ],
+          "point_xyz_mm": [
+            12.940774382610384,
+            -12.94077438261039,
+            47.819826632514044
+          ],
+          "radial_normal_dot": 0.9919024895337634,
+          "ray_inner_hit_distance_mm": 3.9999288344036406,
+          "u": 5.497787143782138,
+          "v": 48.102525178378876
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 2,
+          "outward_normal": [
+            0.6697482974098147,
+            -0.6697482974098149,
+            0.32074044994872214
+          ],
+          "point_xyz_mm": [
+            12.706830848909611,
+            -12.706830848909616,
+            50.12133973442941
+          ],
+          "radial_normal_dot": 0.9471671255732493,
+          "ray_inner_hit_distance_mm": 4.001523606557667,
+          "u": 5.497787143782138,
+          "v": 51.66567519159212
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.7070453052883374,
+            -0.7070453052883379,
+            -0.01318607369320707
+          ],
+          "point_xyz_mm": [
+            12.712835655663223,
+            -12.71283565566323,
+            51.668740507076876
+          ],
+          "radial_normal_dot": 0.9999130599509926,
+          "ray_inner_hit_distance_mm": 3.9999560299532493,
+          "u": 5.497787143782138,
+          "v": 55.228825204805375
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 2,
+          "outward_normal": [
+            0.9657516960246517,
+            -0.2587723870387934,
+            0.018987188621639266
+          ],
+          "point_xyz_mm": [
+            14.304525027919347,
+            -3.832885929341785,
+            1.5187641003023946
+          ],
+          "radial_normal_dot": 0.9998197270849614,
+          "ray_inner_hit_distance_mm": 3.9721456495793874,
+          "u": 6.021385919380436,
+          "v": 1.781575006606625
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.8957596618018457,
+            -0.24001807799218094,
+            -0.374173690317187
+          ],
+          "point_xyz_mm": [
+            14.942810459791806,
+            -4.003913995352561,
+            5.20214600780284
+          ],
+          "radial_normal_dot": 0.9273586412356428,
+          "ray_inner_hit_distance_mm": 4.000000000483968,
+          "u": 6.021385919380436,
+          "v": 5.344725019819875
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.9141781509316512,
+            -0.2449532972803138,
+            -0.3229182412170135
+          ],
+          "point_xyz_mm": [
+            16.12617232918258,
+            -4.320994852609604,
+            8.398614240203004
+          ],
+          "radial_normal_dot": 0.9464268643108724,
+          "ray_inner_hit_distance_mm": 4.000000000527056,
+          "u": 6.021385919380436,
+          "v": 8.907875033033125
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.9303308349751219,
+            -0.2492813959253568,
+            -0.26896714137603833
+          ],
+          "point_xyz_mm": [
+            17.158908413150595,
+            -4.597715652303314,
+            11.87141166451797
+          ],
+          "radial_normal_dot": 0.9631493533507677,
+          "ray_inner_hit_distance_mm": 4.000000000571721,
+          "u": 6.021385919380436,
+          "v": 12.471025046246375
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.940980931709091,
+            -0.2521350807445372,
+            -0.22579368285635548
+          ],
+          "point_xyz_mm": [
+            18.01771602357643,
+            -4.8278324579706196,
+            15.35656170208267
+          ],
+          "radial_normal_dot": 0.9741751448185092,
+          "ray_inner_hit_distance_mm": 4.000000000337465,
+          "u": 6.021385919380436,
+          "v": 16.034175059459624
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.948869876078419,
+            -0.25424891701743263,
+            -0.1870920801808257
+          ],
+          "point_xyz_mm": [
+            18.72301441305937,
+            -5.016816591855545,
+            18.824701613023745
+          ],
+          "radial_normal_dot": 0.9823423810126547,
+          "ray_inner_hit_distance_mm": 3.9999999999617444,
+          "u": 6.021385919380436,
+          "v": 19.597325072672874
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.9554975765310046,
+            -0.2560248040013784,
+            -0.14654583235094956
+          ],
+          "point_xyz_mm": [
+            19.29921628276162,
+            -5.171209417519567,
+            22.313943195896837
+          ],
+          "radial_normal_dot": 0.9892038814221097,
+          "ray_inner_hit_distance_mm": 3.999999999991181,
+          "u": 6.021385919380436,
+          "v": 23.160475085886123
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.962971613406111,
+            -0.25802746614626365,
+            -0.07815048616720179
+          ],
+          "point_xyz_mm": [
+            19.69416961843171,
+            -5.277036844860347,
+            25.85290064835268
+          ],
+          "radial_normal_dot": 0.996941573770414,
+          "ray_inner_hit_distance_mm": 4.000000000065066,
+          "u": 6.021385919380436,
+          "v": 26.723625099099372
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.9658377162211175,
+            -0.25879543608096917,
+            0.013506597959412763
+          ],
+          "point_xyz_mm": [
+            19.80799343108134,
+            -5.307535843539246,
+            29.461698017828116
+          ],
+          "radial_normal_dot": 0.9999087817453964,
+          "ray_inner_hit_distance_mm": 3.9999999998051976,
+          "u": 6.021385919380436,
+          "v": 30.286775112312625
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.9623671326732228,
+            -0.25786549602204606,
+            0.08576064313905102
+          ],
+          "point_xyz_mm": [
+            19.627577569274482,
+            -5.2591935590663335,
+            33.0729337600097
+          ],
+          "radial_normal_dot": 0.9963157692661381,
+          "ray_inner_hit_distance_mm": 3.9999999998426987,
+          "u": 6.021385919380436,
+          "v": 33.84992512552587
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.9569349470914937,
+            -0.2564099462822857,
+            0.1361229094697714
+          ],
+          "point_xyz_mm": [
+            19.252824666643004,
+            -5.158778821445009,
+            36.50693382353099
+          ],
+          "radial_normal_dot": 0.9906919569258068,
+          "ray_inner_hit_distance_mm": 3.9999999999232583,
+          "u": 6.021385919380436,
+          "v": 37.413075138739124
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.9540183378080697,
+            -0.25562844318015515,
+            0.1565346931616689
+          ],
+          "point_xyz_mm": [
+            18.772238993495876,
+            -5.0300062784312685,
+            39.79202586636383
+          ],
+          "radial_normal_dot": 0.9876724608071149,
+          "ray_inner_hit_distance_mm": 3.9999999999292433,
+          "u": 6.021385919380436,
+          "v": 40.97622515195237
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.956375592759417,
+            -0.2562600677407229,
+            0.14027295981618804
+          ],
+          "point_xyz_mm": [
+            18.226217802735952,
+            -4.8837003413168665,
+            43.505653849831
+          ],
+          "radial_normal_dot": 0.9901128707093985,
+          "ray_inner_hit_distance_mm": 3.9999999999312097,
+          "u": 6.021385919380436,
+          "v": 44.53937516516562
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.9581042318010842,
+            -0.2567232551759426,
+            0.1270017765888426
+          ],
+          "point_xyz_mm": [
+            17.677426551288672,
+            -4.736652168678302,
+            47.819826632514044
+          ],
+          "radial_normal_dot": 0.9919024895337634,
+          "ray_inner_hit_distance_mm": 3.9999288342768127,
+          "u": 6.021385919380436,
+          "v": 48.102525178378876
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 3,
+          "outward_normal": [
+            0.9148931884031822,
+            -0.24514489099336847,
+            0.32074044994872203
+          ],
+          "point_xyz_mm": [
+            17.357853741202312,
+            -4.651022892292717,
+            50.12133973442941
+          ],
+          "radial_normal_dot": 0.9471671255732492,
+          "ray_inner_hit_distance_mm": 3.999629491548445,
+          "u": 6.021385919380436,
+          "v": 51.66567519159212
+        },
+        {
+          "face_index_zero_based": 1,
+          "hit_count": 1,
+          "outward_normal": [
+            0.9658418486503929,
+            -0.2587965433620563,
+            -0.013186073693207071
+          ],
+          "point_xyz_mm": [
+            17.366056459772565,
+            -4.653220804109356,
+            51.668740507076876
+          ],
+          "radial_normal_dot": 0.9999130599509926,
+          "ray_inner_hit_distance_mm": 3.9999560297872736,
+          "u": 6.021385919380436,
+          "v": 55.228825204805375
+        }
+      ],
+      "sampling_grid_per_revolution_face": {
+        "azimuth": 12,
+        "meridian": 16
+      },
+      "scope": "finite sampled sidewall-normal distances only; not a global minimum-wall proof",
+      "unknown_count": 0,
+      "unknown_first_50": []
+    },
+    "scope": "finite canonical STEP sidewall samples and planar floor separation; not a global minimum-wall proof"
+  }
+}

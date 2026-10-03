@@ -243,49 +243,24 @@ class ExportedRelationPool:
 
 def load_features(package: TrainingPackage, fragment_ids: Sequence[str], *,
                   token_budget: int | None = None) -> dict[str, dict[str, Any]]:
-    """Assemble the ``a12.obs.v1`` payload form from the packaged shards.
+    """Assemble real observed ``a12.obs.v1`` payloads from the strict v2 deploy shards.
 
-    A fragment the release models but does not observe (the unobserved mate of a shared-cut
-    event) is returned as an **absent** row: every validity mask is False, its token block is
-    empty and ``tokens_total`` is 0.  It must never be dressed up as a valid observation, and
-    the loader reports the split between observed and absent rows.
+    Missing observations are omitted from the forward roster; the reader never synthesizes a
+    zero-valued feature row for a truth-only fragment.
     """
     payloads: dict[str, dict[str, Any]] = {}
-    available = set(package.observation_index().get("rows", {}))
+    available = set(package.observed_ids())
+    missing = sorted(set(map(str, fragment_ids)) - available)
+    if missing:
+        raise SynLabError(ErrorCode.INPUT_UNAVAILABLE,
+                          "forward feature request includes fragments without a packaged "
+                          f"observation: {missing[:8]}",
+                          stage="qc.loader_probe.load_features",
+                          evidence_refs=missing[:32])
     for fragment_id in fragment_ids:
-        if fragment_id in available:
-            payloads[fragment_id] = _observed_payload(package, fragment_id,
-                                                      token_budget=token_budget)
-        else:
-            payloads[fragment_id] = _absent_payload()
+        payloads[str(fragment_id)] = _observed_payload(package, str(fragment_id),
+                                                       token_budget=token_budget)
     return payloads
-
-
-def _absent_payload() -> dict[str, Any]:
-    """A modelled-but-unobserved fragment: present for indexing, invalid by every mask."""
-    return {
-        "schema": FEATURE_SCHEMA,
-        "global_rgb": np.zeros((1, 3, 1, 1), dtype=np.float32),
-        "global_valid": np.zeros((1,), dtype=bool),
-        "pixel_valid": np.zeros((1, 1, 1), dtype=bool),
-        "points": np.zeros((0, 3), dtype=np.float32),
-        "point_valid": np.zeros((0,), dtype=bool),
-        "normals": np.zeros((0, 3), dtype=np.float32),
-        "normal_valid": np.zeros((0,), dtype=bool),
-        "local_tokens": np.zeros((0, TOKEN_DIM), dtype=np.float32),
-        "token_valid": np.zeros((0,), dtype=bool),
-        "token_view": np.zeros((0,), dtype=np.int32),
-        "token_modality": np.zeros((0,), dtype=np.int32),
-        "token_source": np.zeros((0,), dtype=np.int32),
-        "tokens_total": np.int32(0),
-        "quality": np.zeros((1, 1), dtype=np.float32),
-        "quality_valid": np.zeros((1, 1), dtype=bool),
-        "presence": np.zeros((1,), dtype=np.float32),
-        "presence_valid": np.zeros((1,), dtype=bool),
-        "scale_valid": False,
-        "obs_version": np.int32(0),
-        "token_budget": TOKEN_DIM,
-    }
 
 
 def _observed_payload(package: TrainingPackage, fragment_id: str, *,
@@ -300,12 +275,12 @@ def _observed_payload(package: TrainingPackage, fragment_id: str, *,
     else:
         rgb_f = rgb.astype(np.float32)
     n_tokens = int(np.asarray(tokens["tokens"]).shape[0])
-    # S7: the fragment's measured OBS_EST observation-quality channels, when the package carries
-    # them.  They used to be hard-coded to ``zeros((1, 1))`` here, so ``FeatureBundle.quality``
-    # (the tensor the model's quality head reads) was all-zero for every package.  A fragment with
-    # no measurement keeps a *masked* row -- validity False -- so "not measured" and "measured 0"
-    # stay distinguishable.
-    quality_row, quality_valid_row, quality_provenance = _quality_row(package, fragment_id)
+    # The measured quality block is research-only in v2 and is not a forward feature.
+    quality_row = np.zeros((1, 1), dtype=np.float32)
+    quality_valid_row = np.zeros((1, 1), dtype=bool)
+    quality_provenance = {"available": False,
+                          "reason": "v2 deployment schema does not expose research quality",
+                          "channels": []}
     payload = {
         "schema": FEATURE_SCHEMA,
         "global_rgb": np.transpose(rgb_f, (0, 3, 1, 2)),          # [V,3,H,W]
@@ -403,7 +378,8 @@ def probe_training_package(package_dir: str | Path, *, max_fragments: int = 16,
                 report["blocking_attempt"] = name
             return None
 
-    package = attempt("storage.export.TrainingPackage", lambda: TrainingPackage(package_dir))
+    package = attempt("storage.export.TrainingPackage", lambda: TrainingPackage(
+        package_dir, access="research"))
     if package is None:
         _finish(report, started, out_path)
         return report
@@ -430,10 +406,12 @@ def probe_training_package(package_dir: str | Path, *, max_fragments: int = 16,
                                    "kinds": pool.kind_histogram(),
                                    "r2_closure": pool.r2_closure()}
 
+    available = set(attempt("package.observed_ids", package.observed_ids) or [])
     fragment_ids = [str(row.get("fragment_id") or _query_fragment(row))
                     for row in queries]
-    fragment_ids = [f for f in dict.fromkeys(fragment_ids) if f][: int(max_fragments)]
-    candidates = sorted({str(r.get("candidate", "")) for r in relations if r.get("candidate")})
+    fragment_ids = [f for f in dict.fromkeys(fragment_ids) if f in available][: int(max_fragments)]
+    candidates = sorted({str(r.get("candidate", "")) for r in relations
+                         if r.get("candidate") and str(r.get("candidate")) in available})
     for candidate in candidates:
         if candidate not in fragment_ids:
             fragment_ids.append(candidate)

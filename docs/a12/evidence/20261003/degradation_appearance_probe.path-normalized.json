@@ -1,0 +1,1420 @@
+{
+  "case": "P05 paint removal + P06 dirt appearance + P02 edge rounding",
+  "source": {
+    "source_kind": "PHYSICAL",
+    "asset_id": null,
+    "role": "probe",
+    "unit": "mm",
+    "frame": "F_mm",
+    "fragment_id": "probe_fragment_small",
+    "payload_keys": [
+      "appearance",
+      "fragment",
+      "mesh"
+    ],
+    "content_hash": "sha256:2483b4b122add7682f60d99449040ed6d4551f655586c393efb3c91f10bfc8c1"
+  },
+  "source_meta": {
+    "material_id": "M03",
+    "master_seed": 20261003,
+    "provenance": "SYNTHETIC_SMALL_BOX_FIXTURE",
+    "fixture_vertices": 110,
+    "fixture_faces": 216,
+    "fixture_top_interface_faces": 64,
+    "appearance_texels": 216
+  },
+  "source_appearance_keys": [
+    "interface_region",
+    "pattern_region",
+    "texel_albedo",
+    "texel_area_mm2",
+    "texel_layer",
+    "texel_positions",
+    "texel_roughness",
+    "texel_substrate_albedo"
+  ],
+  "vertices": 110,
+  "faces": 216,
+  "top_interface_faces": 64,
+  "geometry_source_hash": "sha256:22064937bc826db37142d27ff674f6d2e6ec23d6aa25d41f1319185cf3ba5aa3",
+  "axes": {
+    "P05": [
+      {
+        "level": 0,
+        "status": "OK",
+        "axis": "P05",
+        "variant": "paint_removal",
+        "planned": {
+          "retained_fraction": 1.0,
+          "variant": "paint_removal"
+        },
+        "measured": {},
+        "units": {},
+        "identity": true,
+        "realized": true,
+        "source_hash": "sha256:2483b4b122add7682f60d99449040ed6d4551f655586c393efb3c91f10bfc8c1",
+        "result_hash": "sha256:2483b4b122add7682f60d99449040ed6d4551f655586c393efb3c91f10bfc8c1",
+        "result_appearance_keys": [
+          "interface_region",
+          "pattern_region",
+          "texel_albedo",
+          "texel_area_mm2",
+          "texel_layer",
+          "texel_positions",
+          "texel_roughness",
+          "texel_substrate_albedo"
+        ],
+        "missing_source_appearance_keys": [],
+        "extra": {
+          "basis_id": "628662aba7260b659242a6054970b9a2",
+          "basis_seed_ref": "[20261003,\"degradation_audit_small_probe_20261003\",\"probe_fragment_small\",\"P05\",\"paint_removal\"]",
+          "support": "IDENTITY_LEVEL0",
+          "source_kind": "PHYSICAL",
+          "identity_contract": "source asset reference/bytes returned unchanged",
+          "label_invalidations": [
+            "PhysicalTruth",
+            "VisibleLabels",
+            "FeatureAdapter"
+          ],
+          "label_status": "NOT_INVALIDATED_AT_LEVEL0"
+        },
+        "basis_id": "628662aba7260b659242a6054970b9a2",
+        "label_invalidations": [
+          "PhysicalTruth",
+          "VisibleLabels",
+          "FeatureAdapter"
+        ],
+        "label_status": "NOT_INVALIDATED_AT_LEVEL0",
+        "calibration_status": "UNCALIBRATED",
+        "albedo_mean": [
+          0.6118055441313319,
+          0.44027777837106474,
+          0.34226852317375167
+        ],
+        "albedo_std": [
+          0.08385380584336685,
+          0.11979116225497968,
+          0.11579812728153821
+        ],
+        "pattern_texel_count": 43,
+        "paint_layer_count": 43,
+        "roughness_mean": 0.6200000047683716,
+        "image_png": "p05_L0_top_albedo.png"
+      },
+      {
+        "level": 1,
+        "status": "OK",
+        "axis": "P05",
+        "variant": "paint_removal",
+        "planned": {
+          "retained_fraction": 0.75,
+          "variant": "paint_removal"
+        },
+        "measured": {
+          "retained_fraction": 0.75,
+          "paint_texels": 43.0,
+          "removed_texels": 11.0,
+          "paint_total_area_mm2": 43.0,
+          "paint_removed_area_mm2": 11.0,
+          "paint_residual_fraction": 0.7441860465116279,
+          "revealed_substrate_fraction": 0.2558139534883721,
+          "mean_albedo_delta": 0.013580246828496456,
+          "geometry_hash_unchanged": 1.0,
+          "paint_visible_residual_area_mm2": 32.0
+        },
+        "units": {
+          "paint_removed_area_mm2": "mm2",
+          "paint_total_area_mm2": "mm2"
+        },
+        "identity": false,
+        "realized": true,
+        "source_hash": "sha256:2483b4b122add7682f60d99449040ed6d4551f655586c393efb3c91f10bfc8c1",
+        "result_hash": "sha256:5fbff2f8f7dcf920eef569198e421662854542570fbf17d3020e92d476cdfa2d",
+        "result_appearance_keys": [
+          "paint_mask_removed",
+          "paint_mask_retained",
+          "texel_albedo"
+        ],
+        "missing_source_appearance_keys": [
+          "interface_region",
+          "pattern_region",
+          "texel_area_mm2",
+          "texel_layer",
+          "texel_positions",
+          "texel_roughness",
+          "texel_substrate_albedo"
+        ],
+        "extra": {
+          "basis_id": "628662aba7260b659242a6054970b9a2",
+          "basis_seed_ref": "[20261003,\"degradation_audit_small_probe_20261003\",\"probe_fragment_small\",\"P05\",\"paint_removal\"]",
+          "support": "MEASURED",
+          "source_kind": "PHYSICAL",
+          "label_invalidations": [
+            "PhysicalTruth",
+            "VisibleLabels",
+            "FeatureAdapter"
+          ],
+          "label_status": "FAILED",
+          "geometry_changed": false,
+          "ledger": {
+            "source_volume_mm3": 153.6,
+            "component_count": 1,
+            "raw_connected_bodies": 1,
+            "non_material_body_count": 0,
+            "non_material_body_faces": [],
+            "non_material_body_volume_mm3": 0.0,
+            "material_floor_mm3": 1e-09,
+            "material_floor_overridden": false,
+            "original_component_count": 1,
+            "contamination_component_count": 0,
+            "damaged_volume_mm3": 153.6,
+            "added_volume_mm3": 0.0,
+            "debris_volume_mm3": 0.0,
+            "support_threshold_mm3": 3.072,
+            "representative_component_id": "probe_fragment_small#c0",
+            "representative_available": true,
+            "representative_status": "PENDING",
+            "evidence_lost": false,
+            "lost_volume_mm3": 0.0,
+            "conservation_ok": true
+          },
+          "source_geometry_hash": "sha256:31f9bb32af943db8a472cb6229daf7f0a20ac7be80590590b854314a167e3285",
+          "result_geometry_hash": "sha256:31f9bb32af943db8a472cb6229daf7f0a20ac7be80590590b854314a167e3285",
+          "component_count": 1,
+          "invariants": {
+            "geometry_hash_before": "sha256:22064937bc826db37142d27ff674f6d2e6ec23d6aa25d41f1319185cf3ba5aa3",
+            "geometry_hash_after": "sha256:22064937bc826db37142d27ff674f6d2e6ec23d6aa25d41f1319185cf3ba5aa3",
+            "geometry_hash_unchanged": true,
+            "violated": false,
+            "code": "APPEARANCE_CHANGED_GEOMETRY"
+          }
+        },
+        "basis_id": "628662aba7260b659242a6054970b9a2",
+        "label_invalidations": [
+          "PhysicalTruth",
+          "VisibleLabels",
+          "FeatureAdapter"
+        ],
+        "label_status": "FAILED",
+        "calibration_status": "UNCALIBRATED",
+        "albedo_mean": [
+          0.6011111007796394,
+          0.4555555559970714,
+          0.35703704202616654
+        ],
+        "albedo_std": [
+          0.07460181607320664,
+          0.10657403279267585,
+          0.1030215683855268
+        ],
+        "pattern_texel_count": 0,
+        "paint_layer_count": 0,
+        "roughness_mean": null,
+        "image_png": "p05_L1_top_albedo.png"
+      },
+      {
+        "level": 4,
+        "status": "OK",
+        "axis": "P05",
+        "variant": "paint_removal",
+        "planned": {
+          "retained_fraction": 0.0,
+          "variant": "paint_removal"
+        },
+        "measured": {
+          "retained_fraction": 0.0,
+          "paint_texels": 43.0,
+          "removed_texels": 43.0,
+          "paint_total_area_mm2": 43.0,
+          "paint_removed_area_mm2": 43.0,
+          "paint_residual_fraction": 0.0,
+          "revealed_substrate_fraction": 1.0,
+          "mean_albedo_delta": 0.05308642238378525,
+          "geometry_hash_unchanged": 1.0,
+          "paint_visible_residual_area_mm2": 0.0
+        },
+        "units": {
+          "paint_removed_area_mm2": "mm2",
+          "paint_total_area_mm2": "mm2"
+        },
+        "identity": false,
+        "realized": true,
+        "source_hash": "sha256:2483b4b122add7682f60d99449040ed6d4551f655586c393efb3c91f10bfc8c1",
+        "result_hash": "sha256:a7d1ac67a2474bac03bf9c962f283b1dfaeaeca01d876e3a2af8c769492d63c7",
+        "result_appearance_keys": [
+          "paint_mask_removed",
+          "paint_mask_retained",
+          "texel_albedo"
+        ],
+        "missing_source_appearance_keys": [
+          "interface_region",
+          "pattern_region",
+          "texel_area_mm2",
+          "texel_layer",
+          "texel_positions",
+          "texel_roughness",
+          "texel_substrate_albedo"
+        ],
+        "extra": {
+          "basis_id": "628662aba7260b659242a6054970b9a2",
+          "basis_seed_ref": "[20261003,\"degradation_audit_small_probe_20261003\",\"probe_fragment_small\",\"P05\",\"paint_removal\"]",
+          "support": "MEASURED",
+          "source_kind": "PHYSICAL",
+          "label_invalidations": [
+            "PhysicalTruth",
+            "VisibleLabels",
+            "FeatureAdapter"
+          ],
+          "label_status": "FAILED",
+          "geometry_changed": false,
+          "ledger": {
+            "source_volume_mm3": 153.6,
+            "component_count": 1,
+            "raw_connected_bodies": 1,
+            "non_material_body_count": 0,
+            "non_material_body_faces": [],
+            "non_material_body_volume_mm3": 0.0,
+            "material_floor_mm3": 1e-09,
+            "material_floor_overridden": false,
+            "original_component_count": 1,
+            "contamination_component_count": 0,
+            "damaged_volume_mm3": 153.6,
+            "added_volume_mm3": 0.0,
+            "debris_volume_mm3": 0.0,
+            "support_threshold_mm3": 3.072,
+            "representative_component_id": "probe_fragment_small#c0",
+            "representative_available": true,
+            "representative_status": "PENDING",
+            "evidence_lost": false,
+            "lost_volume_mm3": 0.0,
+            "conservation_ok": true
+          },
+          "source_geometry_hash": "sha256:31f9bb32af943db8a472cb6229daf7f0a20ac7be80590590b854314a167e3285",
+          "result_geometry_hash": "sha256:31f9bb32af943db8a472cb6229daf7f0a20ac7be80590590b854314a167e3285",
+          "component_count": 1,
+          "invariants": {
+            "geometry_hash_before": "sha256:22064937bc826db37142d27ff674f6d2e6ec23d6aa25d41f1319185cf3ba5aa3",
+            "geometry_hash_after": "sha256:22064937bc826db37142d27ff674f6d2e6ec23d6aa25d41f1319185cf3ba5aa3",
+            "geometry_hash_unchanged": true,
+            "violated": false,
+            "code": "APPEARANCE_CHANGED_GEOMETRY"
+          }
+        },
+        "basis_id": "628662aba7260b659242a6054970b9a2",
+        "label_invalidations": [
+          "PhysicalTruth",
+          "VisibleLabels",
+          "FeatureAdapter"
+        ],
+        "label_status": "FAILED",
+        "calibration_status": "UNCALIBRATED",
+        "albedo_mean": [
+          0.5699999928474426,
+          0.5,
+          0.4000000059604645
+        ],
+        "albedo_std": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "pattern_texel_count": 0,
+        "paint_layer_count": 0,
+        "roughness_mean": null,
+        "image_png": "p05_L4_top_albedo.png"
+      }
+    ],
+    "P06": [
+      {
+        "level": 0,
+        "status": "OK",
+        "axis": "P06",
+        "variant": "dirt_appearance",
+        "planned": {
+          "coverage": 0.0,
+          "layer_thickness_mm": 0.3,
+          "variant": "dirt_appearance"
+        },
+        "measured": {},
+        "units": {},
+        "identity": true,
+        "realized": true,
+        "source_hash": "sha256:2483b4b122add7682f60d99449040ed6d4551f655586c393efb3c91f10bfc8c1",
+        "result_hash": "sha256:2483b4b122add7682f60d99449040ed6d4551f655586c393efb3c91f10bfc8c1",
+        "result_appearance_keys": [
+          "interface_region",
+          "pattern_region",
+          "texel_albedo",
+          "texel_area_mm2",
+          "texel_layer",
+          "texel_positions",
+          "texel_roughness",
+          "texel_substrate_albedo"
+        ],
+        "missing_source_appearance_keys": [],
+        "extra": {
+          "basis_id": "6ed54251dcb3daaa2c797163ae730a8e",
+          "basis_seed_ref": "[20261003,\"degradation_audit_small_probe_20261003\",\"probe_fragment_small\",\"P06\",\"dirt_appearance\"]",
+          "support": "IDENTITY_LEVEL0",
+          "source_kind": "PHYSICAL",
+          "identity_contract": "source asset reference/bytes returned unchanged",
+          "label_invalidations": [
+            "PhysicalTruth",
+            "VisibleLabels",
+            "FeatureAdapter"
+          ],
+          "label_status": "NOT_INVALIDATED_AT_LEVEL0"
+        },
+        "basis_id": "6ed54251dcb3daaa2c797163ae730a8e",
+        "label_invalidations": [
+          "PhysicalTruth",
+          "VisibleLabels",
+          "FeatureAdapter"
+        ],
+        "label_status": "NOT_INVALIDATED_AT_LEVEL0",
+        "calibration_status": "UNCALIBRATED",
+        "albedo_mean": [
+          0.6118055441313319,
+          0.44027777837106474,
+          0.34226852317375167
+        ],
+        "albedo_std": [
+          0.08385380584336685,
+          0.11979116225497968,
+          0.11579812728153821
+        ],
+        "pattern_texel_count": 43,
+        "paint_layer_count": 43,
+        "roughness_mean": 0.6200000047683716,
+        "image_png": "p06_L0_top_albedo.png"
+      },
+      {
+        "level": 1,
+        "status": "OK",
+        "axis": "P06",
+        "variant": "dirt_appearance",
+        "planned": {
+          "coverage": 0.2,
+          "layer_thickness_mm": 0.3,
+          "variant": "dirt_appearance"
+        },
+        "measured": {
+          "coverage": 0.2,
+          "realized_coverage": 0.7939453125,
+          "covered_area_mm2": 162.6,
+          "covered_texels": 173.0,
+          "pattern_visibility_reduction": 0.7441860465116279,
+          "interface_visibility_reduction": 0.75,
+          "mean_albedo_delta": 0.117083340883255,
+          "roughness_delta": 0.2643055319786072,
+          "geometry_hash_unchanged": 1.0,
+          "contamination_entity": 0.0
+        },
+        "units": {
+          "covered_area_mm2": "mm2",
+          "contamination_volume_mm3": "mm3"
+        },
+        "identity": false,
+        "realized": true,
+        "source_hash": "sha256:2483b4b122add7682f60d99449040ed6d4551f655586c393efb3c91f10bfc8c1",
+        "result_hash": "sha256:0f5715383a066efdda6b7968da36d436afe5591df299fbaf1ca4bf11277a097f",
+        "result_appearance_keys": [
+          "dirt_mask",
+          "texel_albedo",
+          "texel_roughness"
+        ],
+        "missing_source_appearance_keys": [
+          "interface_region",
+          "pattern_region",
+          "texel_area_mm2",
+          "texel_layer",
+          "texel_positions",
+          "texel_substrate_albedo"
+        ],
+        "extra": {
+          "basis_id": "6ed54251dcb3daaa2c797163ae730a8e",
+          "basis_seed_ref": "[20261003,\"degradation_audit_small_probe_20261003\",\"probe_fragment_small\",\"P06\",\"dirt_appearance\"]",
+          "support": "MEASURED",
+          "source_kind": "PHYSICAL",
+          "label_invalidations": [
+            "PhysicalTruth",
+            "VisibleLabels",
+            "FeatureAdapter"
+          ],
+          "label_status": "FAILED",
+          "geometry_changed": false,
+          "ledger": {
+            "source_volume_mm3": 153.6,
+            "component_count": 1,
+            "raw_connected_bodies": 1,
+            "non_material_body_count": 0,
+            "non_material_body_faces": [],
+            "non_material_body_volume_mm3": 0.0,
+            "material_floor_mm3": 1e-09,
+            "material_floor_overridden": false,
+            "original_component_count": 1,
+            "contamination_component_count": 0,
+            "damaged_volume_mm3": 153.6,
+            "added_volume_mm3": 0.0,
+            "debris_volume_mm3": 0.0,
+            "support_threshold_mm3": 3.072,
+            "representative_component_id": "probe_fragment_small#c0",
+            "representative_available": true,
+            "representative_status": "PENDING",
+            "evidence_lost": false,
+            "lost_volume_mm3": 0.0,
+            "conservation_ok": true
+          },
+          "source_geometry_hash": "sha256:31f9bb32af943db8a472cb6229daf7f0a20ac7be80590590b854314a167e3285",
+          "result_geometry_hash": "sha256:31f9bb32af943db8a472cb6229daf7f0a20ac7be80590590b854314a167e3285",
+          "component_count": 1,
+          "invariants": {
+            "geometry_hash_before": "sha256:22064937bc826db37142d27ff674f6d2e6ec23d6aa25d41f1319185cf3ba5aa3",
+            "geometry_hash_after": "sha256:22064937bc826db37142d27ff674f6d2e6ec23d6aa25d41f1319185cf3ba5aa3",
+            "geometry_hash_unchanged": true,
+            "violated": false,
+            "code": "APPEARANCE_CHANGED_GEOMETRY"
+          }
+        },
+        "basis_id": "6ed54251dcb3daaa2c797163ae730a8e",
+        "label_invalidations": [
+          "PhysicalTruth",
+          "VisibleLabels",
+          "FeatureAdapter"
+        ],
+        "label_status": "FAILED",
+        "calibration_status": "UNCALIBRATED",
+        "albedo_mean": [
+          0.4560879479955744,
+          0.3343518539849255,
+          0.25562499111725223
+        ],
+        "albedo_std": [
+          0.09993561356026098,
+          0.08995650384566095,
+          0.08336917749802833
+        ],
+        "pattern_texel_count": 0,
+        "paint_layer_count": 0,
+        "roughness_mean": 0.8843055469570337,
+        "image_png": "p06_L1_top_albedo.png"
+      },
+      {
+        "level": 4,
+        "status": "OK",
+        "axis": "P06",
+        "variant": "dirt_appearance",
+        "planned": {
+          "coverage": 0.8,
+          "layer_thickness_mm": 0.3,
+          "variant": "dirt_appearance"
+        },
+        "measured": {
+          "coverage": 0.8,
+          "realized_coverage": 0.2041015625,
+          "covered_area_mm2": 41.8,
+          "covered_texels": 44.0,
+          "pattern_visibility_reduction": 0.06976744186046512,
+          "interface_visibility_reduction": 0.09375,
+          "mean_albedo_delta": 0.03112654574215412,
+          "roughness_delta": 0.0672222152352333,
+          "geometry_hash_unchanged": 1.0,
+          "contamination_entity": 0.0
+        },
+        "units": {
+          "covered_area_mm2": "mm2",
+          "contamination_volume_mm3": "mm3"
+        },
+        "identity": false,
+        "realized": true,
+        "source_hash": "sha256:2483b4b122add7682f60d99449040ed6d4551f655586c393efb3c91f10bfc8c1",
+        "result_hash": "sha256:98e624f09b2f399da7277e590a189067f930c6b63f50d14520dc67173c56aa3a",
+        "result_appearance_keys": [
+          "dirt_mask",
+          "texel_albedo",
+          "texel_roughness"
+        ],
+        "missing_source_appearance_keys": [
+          "interface_region",
+          "pattern_region",
+          "texel_area_mm2",
+          "texel_layer",
+          "texel_positions",
+          "texel_substrate_albedo"
+        ],
+        "extra": {
+          "basis_id": "6ed54251dcb3daaa2c797163ae730a8e",
+          "basis_seed_ref": "[20261003,\"degradation_audit_small_probe_20261003\",\"probe_fragment_small\",\"P06\",\"dirt_appearance\"]",
+          "support": "MEASURED",
+          "source_kind": "PHYSICAL",
+          "label_invalidations": [
+            "PhysicalTruth",
+            "VisibleLabels",
+            "FeatureAdapter"
+          ],
+          "label_status": "FAILED",
+          "geometry_changed": false,
+          "ledger": {
+            "source_volume_mm3": 153.6,
+            "component_count": 1,
+            "raw_connected_bodies": 1,
+            "non_material_body_count": 0,
+            "non_material_body_faces": [],
+            "non_material_body_volume_mm3": 0.0,
+            "material_floor_mm3": 1e-09,
+            "material_floor_overridden": false,
+            "original_component_count": 1,
+            "contamination_component_count": 0,
+            "damaged_volume_mm3": 153.6,
+            "added_volume_mm3": 0.0,
+            "debris_volume_mm3": 0.0,
+            "support_threshold_mm3": 3.072,
+            "representative_component_id": "probe_fragment_small#c0",
+            "representative_available": true,
+            "representative_status": "PENDING",
+            "evidence_lost": false,
+            "lost_volume_mm3": 0.0,
+            "conservation_ok": true
+          },
+          "source_geometry_hash": "sha256:31f9bb32af943db8a472cb6229daf7f0a20ac7be80590590b854314a167e3285",
+          "result_geometry_hash": "sha256:31f9bb32af943db8a472cb6229daf7f0a20ac7be80590590b854314a167e3285",
+          "component_count": 1,
+          "invariants": {
+            "geometry_hash_before": "sha256:22064937bc826db37142d27ff674f6d2e6ec23d6aa25d41f1319185cf3ba5aa3",
+            "geometry_hash_after": "sha256:22064937bc826db37142d27ff674f6d2e6ec23d6aa25d41f1319185cf3ba5aa3",
+            "geometry_hash_unchanged": true,
+            "violated": false,
+            "code": "APPEARANCE_CHANGED_GEOMETRY"
+          }
+        },
+        "basis_id": "6ed54251dcb3daaa2c797163ae730a8e",
+        "label_invalidations": [
+          "PhysicalTruth",
+          "VisibleLabels",
+          "FeatureAdapter"
+        ],
+        "label_status": "FAILED",
+        "calibration_status": "UNCALIBRATED",
+        "albedo_mean": [
+          0.5746990607844459,
+          0.4097685197161304,
+          0.3167824081869589
+        ],
+        "albedo_std": [
+          0.11843022754170819,
+          0.1213215874694092,
+          0.11487894147240255
+        ],
+        "pattern_texel_count": 0,
+        "paint_layer_count": 0,
+        "roughness_mean": 0.6872222235909214,
+        "image_png": "p06_L4_top_albedo.png"
+      }
+    ],
+    "P02": [
+      {
+        "level": 0,
+        "status": "OK",
+        "axis": "P02",
+        "variant": "sdf_fillet",
+        "planned": {
+          "recession_strength": 0.0,
+          "edge_width_mm": 0.4,
+          "variant": "sdf_fillet"
+        },
+        "measured": {},
+        "units": {},
+        "identity": true,
+        "realized": true,
+        "source_hash": "sha256:2483b4b122add7682f60d99449040ed6d4551f655586c393efb3c91f10bfc8c1",
+        "result_hash": "sha256:2483b4b122add7682f60d99449040ed6d4551f655586c393efb3c91f10bfc8c1",
+        "basis_id": "ccbe467016745757eda05b5a138d36f2",
+        "label_invalidations": [
+          "PhysicalTruth",
+          "VisibleLabels",
+          "FeatureAdapter"
+        ],
+        "label_status": "NOT_INVALIDATED_AT_LEVEL0",
+        "calibration_status": "UNCALIBRATED",
+        "extra": {
+          "basis_id": "ccbe467016745757eda05b5a138d36f2",
+          "basis_seed_ref": "[20261003,\"degradation_audit_small_probe_20261003\",\"probe_fragment_small\",\"P02\",\"sdf_fillet\"]",
+          "support": "IDENTITY_LEVEL0",
+          "source_kind": "PHYSICAL",
+          "identity_contract": "source asset reference/bytes returned unchanged",
+          "label_invalidations": [
+            "PhysicalTruth",
+            "VisibleLabels",
+            "FeatureAdapter"
+          ],
+          "label_status": "NOT_INVALIDATED_AT_LEVEL0"
+        },
+        "geometry_hash_before": "sha256:22064937bc826db37142d27ff674f6d2e6ec23d6aa25d41f1319185cf3ba5aa3",
+        "geometry_hash_after": "sha256:22064937bc826db37142d27ff674f6d2e6ec23d6aa25d41f1319185cf3ba5aa3",
+        "vertices_after": 110,
+        "faces_after": 216,
+        "volume_after_mm3": 153.6,
+        "watertight_after": true
+      },
+      {
+        "level": 1,
+        "status": "OK",
+        "axis": "P02",
+        "variant": "sdf_fillet",
+        "planned": {
+          "recession_strength": 0.25,
+          "edge_width_mm": 0.4,
+          "variant": "sdf_fillet"
+        },
+        "measured": {
+          "recession_strength": 0.25,
+          "edge_width_mm": 0.4,
+          "effective_fillet_radius_mm": 0.1,
+          "boundary_edges": 16.0,
+          "edge_length_total_mm": 32.0,
+          "edge_dihedral_median_deg": 90.0,
+          "planned_max_recession_mm": 0.0414213562373095,
+          "planned_contact_width_mm": 0.10000000000000003,
+          "measured_max_recession_mm": 0.0414213562373095,
+          "measured_mean_recession_mm": 0.006366109217379157,
+          "measured_recession_p95_mm": 0.02636308595538139,
+          "moved_vertices": 16.0,
+          "moved_vertices_fraction": 0.14545454545454545,
+          "removed_samples": 1909.0,
+          "lost_volume_mm3": 0.9940444594261635,
+          "lost_volume_ratio": 0.006471643616055752,
+          "clipped_volume_mm3": 0.0,
+          "watertight": 1.0,
+          "min_thickness_mm": 2.363776922225952,
+          "roi_external_drift_mm": 0.01981237344443798,
+          "roi_external_drift_p50_mm": 1.4901161193847656e-08,
+          "roi_external_drift_p95_mm": 0.002872453536838298,
+          "roi_external_drift_p99_mm": 0.010507280360907317,
+          "roi_external_drift_samples": 1500.0,
+          "roi_external_drift_moved_samples": 679.0,
+          "max_outside_clean_mm": 4.805480102731963e-07,
+          "components": 1.0,
+          "grid_spacing_mm": 0.0,
+          "grid_spacing_requested_mm": 0.0,
+          "grid_nodes": 0.0
+        },
+        "units": {
+          "lost_volume_mm3": "mm3",
+          "measured_max_recession_mm": "mm",
+          "measured_mean_recession_mm": "mm",
+          "planned_max_recession_mm": "mm",
+          "edge_width_mm": "mm",
+          "effective_fillet_radius_mm": "mm",
+          "edge_length_total_mm": "mm",
+          "roi_external_drift_mm": "mm",
+          "roi_external_drift_p50_mm": "mm",
+          "roi_external_drift_p95_mm": "mm",
+          "roi_external_drift_p99_mm": "mm",
+          "min_thickness_mm": "mm",
+          "max_outside_clean_mm": "mm",
+          "planned_contact_width_mm": "mm"
+        },
+        "identity": false,
+        "realized": true,
+        "source_hash": "sha256:2483b4b122add7682f60d99449040ed6d4551f655586c393efb3c91f10bfc8c1",
+        "result_hash": "sha256:97961c14abc25755ad2a086ad388aebcec8c45a9a2f671ca2df16b2f6c78964e",
+        "basis_id": "ccbe467016745757eda05b5a138d36f2",
+        "label_invalidations": [
+          "PhysicalTruth",
+          "VisibleLabels",
+          "FeatureAdapter"
+        ],
+        "label_status": "UNKNOWN",
+        "calibration_status": "UNCALIBRATED",
+        "extra": {
+          "basis_id": "ccbe467016745757eda05b5a138d36f2",
+          "basis_seed_ref": "[20261003,\"degradation_audit_small_probe_20261003\",\"probe_fragment_small\",\"P02\",\"sdf_fillet\"]",
+          "support": "MEASURED",
+          "source_kind": "PHYSICAL",
+          "label_invalidations": [
+            "PhysicalTruth",
+            "VisibleLabels",
+            "FeatureAdapter"
+          ],
+          "label_status": "UNKNOWN",
+          "geometry_changed": true,
+          "ledger": {
+            "source_volume_mm3": 153.6,
+            "component_count": 1,
+            "raw_connected_bodies": 1,
+            "non_material_body_count": 0,
+            "non_material_body_faces": [],
+            "non_material_body_volume_mm3": 0.0,
+            "material_floor_mm3": 1e-09,
+            "material_floor_overridden": false,
+            "original_component_count": 1,
+            "contamination_component_count": 0,
+            "damaged_volume_mm3": 152.60595554057383,
+            "added_volume_mm3": 0.0,
+            "debris_volume_mm3": 0.0,
+            "support_threshold_mm3": 3.072,
+            "representative_component_id": "probe_fragment_small#c0",
+            "representative_available": true,
+            "representative_status": "PENDING",
+            "evidence_lost": false,
+            "lost_volume_mm3": 0.9940444594261635,
+            "conservation_ok": true
+          },
+          "source_geometry_hash": "sha256:31f9bb32af943db8a472cb6229daf7f0a20ac7be80590590b854314a167e3285",
+          "result_geometry_hash": "sha256:fdb3c142351678a8a54bd4d4b7fb517b21c58626c53d18caf3f7f8529335505b",
+          "component_count": 1,
+          "invariants": {
+            "physical_status": "PASS",
+            "violated": false,
+            "code": "OPERATOR_NOT_REALIZED",
+            "label_status": "UNKNOWN"
+          }
+        },
+        "geometry_hash_before": "sha256:22064937bc826db37142d27ff674f6d2e6ec23d6aa25d41f1319185cf3ba5aa3",
+        "geometry_hash_after": "sha256:9c4a3105959df198309486dad32784a3c3bc038af62a17e3c14d6af54884dc4f",
+        "vertices_after": 108,
+        "faces_after": 211,
+        "volume_after_mm3": 152.60595554057383,
+        "watertight_after": false
+      },
+      {
+        "level": 4,
+        "status": "OK",
+        "axis": "P02",
+        "variant": "sdf_fillet",
+        "planned": {
+          "recession_strength": 1.0,
+          "edge_width_mm": 0.4,
+          "variant": "sdf_fillet"
+        },
+        "measured": {
+          "recession_strength": 1.0,
+          "edge_width_mm": 0.4,
+          "effective_fillet_radius_mm": 0.4,
+          "boundary_edges": 16.0,
+          "edge_length_total_mm": 32.0,
+          "edge_dihedral_median_deg": 90.0,
+          "planned_max_recession_mm": 0.165685424949238,
+          "planned_contact_width_mm": 0.40000000000000013,
+          "measured_max_recession_mm": 0.165685424949238,
+          "measured_mean_recession_mm": 0.027557468100684233,
+          "measured_recession_p95_mm": 0.11852511614561077,
+          "moved_vertices": 16.0,
+          "moved_vertices_fraction": 0.14545454545454545,
+          "removed_samples": 1909.0,
+          "lost_volume_mm3": 3.9323770433340712,
+          "lost_volume_ratio": 0.025601413042539527,
+          "clipped_volume_mm3": 0.0,
+          "watertight": 1.0,
+          "min_thickness_mm": 2.0427026748657227,
+          "roi_external_drift_mm": 0.08752404898405075,
+          "roi_external_drift_p50_mm": 1.4901161193847656e-08,
+          "roi_external_drift_p95_mm": 0.01207503667101266,
+          "roi_external_drift_p99_mm": 0.04498132094740869,
+          "roi_external_drift_samples": 1500.0,
+          "roi_external_drift_moved_samples": 679.0,
+          "max_outside_clean_mm": 2.6656007889869215e-07,
+          "components": 1.0,
+          "grid_spacing_mm": 0.0,
+          "grid_spacing_requested_mm": 0.0,
+          "grid_nodes": 0.0
+        },
+        "units": {
+          "lost_volume_mm3": "mm3",
+          "measured_max_recession_mm": "mm",
+          "measured_mean_recession_mm": "mm",
+          "planned_max_recession_mm": "mm",
+          "edge_width_mm": "mm",
+          "effective_fillet_radius_mm": "mm",
+          "edge_length_total_mm": "mm",
+          "roi_external_drift_mm": "mm",
+          "roi_external_drift_p50_mm": "mm",
+          "roi_external_drift_p95_mm": "mm",
+          "roi_external_drift_p99_mm": "mm",
+          "min_thickness_mm": "mm",
+          "max_outside_clean_mm": "mm",
+          "planned_contact_width_mm": "mm"
+        },
+        "identity": false,
+        "realized": true,
+        "source_hash": "sha256:2483b4b122add7682f60d99449040ed6d4551f655586c393efb3c91f10bfc8c1",
+        "result_hash": "sha256:0db67ca24bfe673cb6cdac13ac49a4cff6e6d79d6306eda90a9acb4e1a903df2",
+        "basis_id": "ccbe467016745757eda05b5a138d36f2",
+        "label_invalidations": [
+          "PhysicalTruth",
+          "VisibleLabels",
+          "FeatureAdapter"
+        ],
+        "label_status": "UNKNOWN",
+        "calibration_status": "UNCALIBRATED",
+        "extra": {
+          "basis_id": "ccbe467016745757eda05b5a138d36f2",
+          "basis_seed_ref": "[20261003,\"degradation_audit_small_probe_20261003\",\"probe_fragment_small\",\"P02\",\"sdf_fillet\"]",
+          "support": "MEASURED",
+          "source_kind": "PHYSICAL",
+          "label_invalidations": [
+            "PhysicalTruth",
+            "VisibleLabels",
+            "FeatureAdapter"
+          ],
+          "label_status": "UNKNOWN",
+          "geometry_changed": true,
+          "ledger": {
+            "source_volume_mm3": 153.6,
+            "component_count": 1,
+            "raw_connected_bodies": 1,
+            "non_material_body_count": 0,
+            "non_material_body_faces": [],
+            "non_material_body_volume_mm3": 0.0,
+            "material_floor_mm3": 1e-09,
+            "material_floor_overridden": false,
+            "original_component_count": 1,
+            "contamination_component_count": 0,
+            "damaged_volume_mm3": 149.66762295666592,
+            "added_volume_mm3": 0.0,
+            "debris_volume_mm3": 0.0,
+            "support_threshold_mm3": 3.072,
+            "representative_component_id": "probe_fragment_small#c0",
+            "representative_available": true,
+            "representative_status": "PENDING",
+            "evidence_lost": false,
+            "lost_volume_mm3": 3.9323770433340712,
+            "conservation_ok": true
+          },
+          "source_geometry_hash": "sha256:31f9bb32af943db8a472cb6229daf7f0a20ac7be80590590b854314a167e3285",
+          "result_geometry_hash": "sha256:e551db8e47b20b39c50e19d32c53dd4cc88548f0d16ebe8ac1af9f7628e26798",
+          "component_count": 1,
+          "invariants": {
+            "physical_status": "PASS",
+            "violated": false,
+            "code": "OPERATOR_NOT_REALIZED",
+            "label_status": "UNKNOWN"
+          }
+        },
+        "geometry_hash_before": "sha256:22064937bc826db37142d27ff674f6d2e6ec23d6aa25d41f1319185cf3ba5aa3",
+        "geometry_hash_after": "sha256:1667ca3b9c4e725b82162dc4618cd9dbc6eb3b63e6c6ca6cf92cb78b5f95637b",
+        "vertices_after": 108,
+        "faces_after": 211,
+        "volume_after_mm3": 149.66762295666592,
+        "watertight_after": false
+      }
+    ]
+  },
+  "composition_checks": {
+    "P05_L1_to_P06_L1": {
+      "status": "FAIL",
+      "error_type": "SynLabError",
+      "error": "[ErrorCode.NA_NOT_APPLICABLE] (degrade.apply_axis) P06/dirt_appearance: P06 appearance payload misses ['texel_area_mm2', 'texel_positions']",
+      "traceback": "Traceback (most recent call last):\n  File \"tmp\\review_20261003\\implementation\\degradation_audit\\probe_degradation_axes.py\", line 170, in make_phys_outputs\n    next_ref,next_measurement=apply_axis(next_axis,1,first_bundle,None,\n                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"synlab\\degrade\\api.py\", line 215, in apply_axis\n    _, record, measurement = _apply_impl(axis_id, level, source, store, rng=rng, variant=variant,\n                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"synlab\\degrade\\api.py\", line 278, in _apply_impl\n    raise SynLabError(ErrorCode.NA_NOT_APPLICABLE,\nsynlab.errors.SynLabError: [ErrorCode.NA_NOT_APPLICABLE] (degrade.apply_axis) P06/dirt_appearance: P06 appearance payload misses ['texel_area_mm2', 'texel_positions']\n",
+      "first_output_payload_keys": [
+        "appearance",
+        "fragment",
+        "mesh",
+        "physical_result"
+      ],
+      "first_output_appearance_keys": [
+        "paint_mask_removed",
+        "paint_mask_retained",
+        "texel_albedo"
+      ]
+    },
+    "P06_L1_to_P05_L1": {
+      "status": "FAIL",
+      "error_type": "SynLabError",
+      "error": "[ErrorCode.NA_NOT_APPLICABLE] (degrade.apply_axis) P05/paint_removal: P05 appearance payload misses ['texel_substrate_albedo', 'texel_area_mm2', 'texel_positions']",
+      "traceback": "Traceback (most recent call last):\n  File \"tmp\\review_20261003\\implementation\\degradation_audit\\probe_degradation_axes.py\", line 170, in make_phys_outputs\n    next_ref,next_measurement=apply_axis(next_axis,1,first_bundle,None,\n                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"synlab\\degrade\\api.py\", line 215, in apply_axis\n    _, record, measurement = _apply_impl(axis_id, level, source, store, rng=rng, variant=variant,\n                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"synlab\\degrade\\api.py\", line 278, in _apply_impl\n    raise SynLabError(ErrorCode.NA_NOT_APPLICABLE,\nsynlab.errors.SynLabError: [ErrorCode.NA_NOT_APPLICABLE] (degrade.apply_axis) P05/paint_removal: P05 appearance payload misses ['texel_substrate_albedo', 'texel_area_mm2', 'texel_positions']\n",
+      "first_output_payload_keys": [
+        "appearance",
+        "fragment",
+        "mesh",
+        "physical_result"
+      ],
+      "first_output_appearance_keys": [
+        "dirt_mask",
+        "texel_albedo",
+        "texel_roughness"
+      ]
+    }
+  },
+  "p02_production_route": {
+    "status": "OK",
+    "route": "synlab.physical.api.apply_damage",
+    "backend": "degrade.physical_narrowband",
+    "backend_selection": {
+      "routing": "declared",
+      "backend": "narrowband",
+      "declared_narrowband": true,
+      "override": null
+    },
+    "routed_outcome_watertight": false,
+    "routed_outcome_volume_mm3": 149.66762295666592,
+    "measured": {
+      "recession_strength": 1.0,
+      "edge_width_mm": 0.4,
+      "effective_fillet_radius_mm": 0.4,
+      "boundary_edges": 16.0,
+      "edge_length_total_mm": 32.0,
+      "edge_dihedral_median_deg": 90.0,
+      "planned_max_recession_mm": 0.165685424949238,
+      "planned_contact_width_mm": 0.40000000000000013,
+      "measured_max_recession_mm": 0.165685424949238,
+      "measured_mean_recession_mm": 0.02648575051761766,
+      "measured_recession_p95_mm": 0.1084087498486041,
+      "moved_vertices": 16.0,
+      "moved_vertices_fraction": 0.14545454545454545,
+      "removed_samples": 1927.0,
+      "lost_volume_mm3": 3.9323770433340712,
+      "lost_volume_ratio": 0.025601413042539527,
+      "clipped_volume_mm3": 0.0,
+      "watertight": 1.0,
+      "min_thickness_mm": 2.0427026748657227,
+      "roi_external_drift_mm": 0.07574473321437836,
+      "roi_external_drift_p50_mm": 0.0,
+      "roi_external_drift_p95_mm": 0.007118492200970633,
+      "roi_external_drift_p99_mm": 0.03701220043003542,
+      "roi_external_drift_samples": 1500.0,
+      "roi_external_drift_moved_samples": 672.0,
+      "max_outside_clean_mm": 2.6656007889869215e-07,
+      "components": 1.0
+    },
+    "physical_result_qa": {
+      "status": "PASS",
+      "identity": false,
+      "level": 4,
+      "realized": true,
+      "geometry_changed": true,
+      "source_geometry_hash": "sha256:31f9bb32af943db8a472cb6229daf7f0a20ac7be80590590b854314a167e3285",
+      "result_geometry_hash": "sha256:e551db8e47b20b39c50e19d32c53dd4cc88548f0d16ebe8ac1af9f7628e26798",
+      "geometry_hash_unchanged": false,
+      "component_count": 1,
+      "ledger": {
+        "source_volume_mm3": 153.6,
+        "component_count": 1,
+        "raw_connected_bodies": 1,
+        "non_material_body_count": 0,
+        "non_material_body_faces": [],
+        "non_material_body_volume_mm3": 0.0,
+        "material_floor_mm3": 1e-09,
+        "material_floor_overridden": false,
+        "original_component_count": 1,
+        "contamination_component_count": 0,
+        "damaged_volume_mm3": 149.66762295666592,
+        "added_volume_mm3": 0.0,
+        "debris_volume_mm3": 0.0,
+        "support_threshold_mm3": 3.072,
+        "representative_component_id": "probe_fragment_small#c0",
+        "representative_available": true,
+        "representative_status": "PENDING",
+        "evidence_lost": false,
+        "lost_volume_mm3": 3.9323770433340712,
+        "conservation_ok": true,
+        "assembly": {
+          "connected_bodies": 1,
+          "material_bodies": 1,
+          "non_material_bodies": 0,
+          "non_material_faces": [],
+          "non_material_volume_mm3": 0.0,
+          "pinholes_filled": 0,
+          "watertight_bodies": 0
+        }
+      },
+      "damage_semantics": "subset_v2",
+      "assembly": {
+        "connected_bodies": 1,
+        "material_bodies": 1,
+        "non_material_bodies": 0,
+        "non_material_faces": [],
+        "non_material_volume_mm3": 0.0,
+        "material_floor_mm3": 1e-09,
+        "material_floor_overridden": false,
+        "pinhole_closures": [
+          {
+            "applied": false,
+            "watertight_before": false,
+            "faces_added": 0,
+            "volume_delta_mm3": 0.0,
+            "max_pinhole_diagonal_mm": 0.001,
+            "max_pinhole_area_mm2": 1e-06,
+            "boundary": {
+              "boundary_edges": 3,
+              "boundary_vertices": 3,
+              "loops": 1,
+              "loop_sizes": [
+                3
+              ]
+            },
+            "loops": [
+              {
+                "vertices": [
+                  25,
+                  26,
+                  31
+                ],
+                "diagonal_mm": 2.8284271247461903,
+                "area_mm2": 0.0,
+                "fillable": false
+              }
+            ],
+            "reason": "boundary loop larger than the declared pinhole scale"
+          }
+        ],
+        "pinholes_filled": 0,
+        "watertight_bodies": 0,
+        "bodies": 1
+      },
+      "pinhole_closure": {
+        "connected_bodies": 1,
+        "material_bodies": 1,
+        "non_material_bodies": 0,
+        "non_material_faces": [],
+        "non_material_volume_mm3": 0.0,
+        "material_floor_mm3": 1e-09,
+        "material_floor_overridden": false,
+        "pinhole_closures": [
+          {
+            "applied": false,
+            "watertight_before": false,
+            "faces_added": 0,
+            "volume_delta_mm3": 0.0,
+            "max_pinhole_diagonal_mm": 0.001,
+            "max_pinhole_area_mm2": 1e-06,
+            "boundary": {
+              "boundary_edges": 3,
+              "boundary_vertices": 3,
+              "loops": 1,
+              "loop_sizes": [
+                3
+              ]
+            },
+            "loops": [
+              {
+                "vertices": [
+                  25,
+                  26,
+                  31
+                ],
+                "diagonal_mm": 2.8284271247461903,
+                "area_mm2": 0.0,
+                "fillable": false
+              }
+            ],
+            "reason": "boundary loop larger than the declared pinhole scale"
+          }
+        ],
+        "pinholes_filled": 0,
+        "watertight_bodies": 0,
+        "bodies": 1
+      },
+      "sdf_pipeline": {
+        "spacing": {
+          "spacing_mm": null,
+          "basis": "SURFACE_OPERATOR"
+        },
+        "note": "no voxel grid is used; the recession is analytic"
+      },
+      "failure_code": null,
+      "face_provenance": {
+        "version": "origin_provenance_v1",
+        "attached": true,
+        "tol_mm": 0.05,
+        "tol_basis": {
+          "cell_fraction": 0.5,
+          "spacing_mm": null,
+          "realized_recession_mm": 0.0,
+          "min_wall_mm": 2.0427026748657227,
+          "bounds_mm": [
+            0.05,
+            1.0
+          ],
+          "rule": "clip(0.05 + 0.5*spacing + realized_recession, [0.05, 1.0]) capped at half the measured minimum wall thickness"
+        },
+        "cos_min": 0.5,
+        "roi_band_mm": 3.0,
+        "roi": {
+          "roi_kind": "interface",
+          "roi_source": "face_interface_id",
+          "n_faces": 64
+        },
+        "roi_faces": 64,
+        "source_channels": {
+          "origin_kind_source": "clean_fragment.origin_kind",
+          "interface_id_source": "clean_fragment.interface_id"
+        },
+        "components": {
+          "probe_fragment_small#c0": {
+            "version": "origin_provenance_v1",
+            "faces": 211,
+            "tol_mm": 0.05,
+            "cos_min": 0.5,
+            "roi_tol_mm": 3.0,
+            "instrument": "trimesh.proximity.closest_point (exact point-to-triangle, float64) + face-normal agreement",
+            "classes": {
+              "0": 135,
+              "1": 76,
+              "2": 0
+            },
+            "class_area_mm2": {
+              "0": 130.6249317006373,
+              "1": 67.07337563774031,
+              "2": 0.0
+            },
+            "class_area_fraction": {
+              "0": 0.6607286296946464,
+              "1": 0.33927137030535365,
+              "2": 0.0
+            },
+            "area_mm2": 197.6983073383776,
+            "mapped_to_clean_face": 167,
+            "mapped_fraction": 0.7914691943127962,
+            "born_in_declared_roi": 44,
+            "ambiguous_reasons": {
+              "new_face_outside_declared_roi_band": 0,
+              "new_face_in_declared_roi_band": 44
+            },
+            "distance_mm": {
+              "p50": 4.768371586472142e-08,
+              "p90": 0.05289923350016279,
+              "max": 0.09395026365915937,
+              "mapped_max": 0.04647231101989746
+            },
+            "inherited_origin_histogram": {
+              "0": 135,
+              "1": 32
+            },
+            "interface_id_histogram": {
+              "-1": 135,
+              "1": 76
+            },
+            "component_id": "probe_fragment_small#c0"
+          }
+        },
+        "totals": {
+          "0": 135,
+          "1": 76,
+          "2": 0
+        },
+        "totals_fraction": {
+          "0": 0.6398104265402843,
+          "1": 0.36018957345971564,
+          "2": 0.0
+        }
+      }
+    },
+    "physical_audit": {
+      "status": "FAIL",
+      "axis_id": "P02",
+      "variant": "sdf_fillet",
+      "level": 4,
+      "clean_source": "explicit",
+      "checks": {
+        "damaged_subset_clean": {
+          "tol_mm": 0.001,
+          "max_outside_mm": 4.768371586472143e-08,
+          "outside_fraction": 0.0,
+          "samples": 1200,
+          "outside_points": 0,
+          "p99_outside_mm": 4.768371586472143e-08,
+          "instrument": "trimesh.proximity.signed_distance (exact, float64; positive = inside)",
+          "approx_open3d_max_outside_mm": 2.5463114639023843e-07,
+          "pass": true
+        },
+        "watertight": {
+          "non_watertight": [
+            "probe_fragment_small#c0"
+          ],
+          "pass": false,
+          "per_component": {
+            "probe_fragment_small#c0": false
+          }
+        },
+        "positive_volume": {
+          "non_positive": [],
+          "pass": true
+        },
+        "min_thickness": {
+          "min_mm": 1.6270463466644287,
+          "guard_mm": null,
+          "pass": true,
+          "per_component": {
+            "probe_fragment_small#c0": 1.6270463466644287
+          }
+        },
+        "loss_accounting": {
+          "measured_lost_volume_mm3": 3.9323770433340712,
+          "declared_lost_volume_mm3": 3.9323770433340712,
+          "absolute_error_mm3": 0.0,
+          "relative_error": 0.0,
+          "passed = ledger_conservation": true,
+          "pass": true
+        },
+        "source_residue": {
+          "residual_fraction": 0.46325878594249204,
+          "residual_area_mm2": 29.64856230031949,
+          "lost_area_mm2": 34.35143769968051,
+          "measured": true
+        },
+        "roi_external_drift": {
+          "max_mm": 0.07574473321437836,
+          "pass": false,
+          "population": "non-ROI source-surface samples whose material is gone from the delivered body",
+          "p50_mm": 0.0,
+          "p95_mm": 0.007118492200970633,
+          "p99_mm": 0.03701220043003542,
+          "samples": 1500.0,
+          "moved_samples": 672.0
+        },
+        "declared_effect_measured": {
+          "effect_present": true,
+          "geometry_changed": true,
+          "declared_expectation": null,
+          "pass": true
+        }
+      },
+      "failure_codes": [
+        "NOT_WATERTIGHT"
+      ],
+      "warnings": [],
+      "measured": {
+        "source_volume_mm3": 153.6,
+        "damaged_volume_mm3": 149.66762295666592,
+        "added_volume_mm3": 0.0,
+        "lost_volume_mm3": 3.9323770433340712,
+        "lost_volume_ratio": 0.025601413042539527,
+        "component_count": 1.0,
+        "declared_level": 4.0,
+        "max_outside_mm": 4.768371586472143e-08,
+        "min_thickness_mm": 1.6270463466644287,
+        "measured_lost_volume_mm3": 3.9323770433340712,
+        "source_residue_fraction": 0.46325878594249204,
+        "roi_external_drift_mm": 0.07574473321437836,
+        "roi_external_drift_p50_mm": 0.0,
+        "roi_external_drift_p95_mm": 0.007118492200970633,
+        "roi_external_drift_p99_mm": 0.03701220043003542
+      },
+      "declared": {
+        "axis_id": "P02",
+        "variant": "sdf_fillet",
+        "level": 4,
+        "recipe_id": "P02:sdf_fillet:L4",
+        "params": {
+          "recession_strength": 1.0,
+          "edge_width_mm": 0.4
+        },
+        "roi": {
+          "kind": "interface"
+        },
+        "expected": {},
+        "touches_geometry": true,
+        "sdf_backend": null
+      },
+      "ledger": {
+        "source_volume_mm3": 153.6,
+        "component_count": 1,
+        "raw_connected_bodies": 1,
+        "non_material_body_count": 0,
+        "non_material_body_faces": [],
+        "non_material_body_volume_mm3": 0.0,
+        "material_floor_mm3": 1e-09,
+        "material_floor_overridden": false,
+        "original_component_count": 1,
+        "contamination_component_count": 0,
+        "damaged_volume_mm3": 149.66762295666592,
+        "added_volume_mm3": 0.0,
+        "debris_volume_mm3": 0.0,
+        "support_threshold_mm3": 3.072,
+        "representative_component_id": "probe_fragment_small#c0",
+        "representative_available": true,
+        "representative_status": "PENDING",
+        "evidence_lost": false,
+        "lost_volume_mm3": 3.9323770433340712,
+        "conservation_ok": true,
+        "assembly": {
+          "connected_bodies": 1,
+          "material_bodies": 1,
+          "non_material_bodies": 0,
+          "non_material_faces": [],
+          "non_material_volume_mm3": 0.0,
+          "pinholes_filled": 0,
+          "watertight_bodies": 0
+        }
+      },
+      "no_auto_repair": {
+        "geometry_hashes_unchanged": true,
+        "clean_hash_unchanged": true,
+        "repair_applied": false
+      },
+      "damage_semantics": "subset_v2",
+      "subset_instrument": "trimesh.proximity.signed_distance (exact, float64; positive = inside)",
+      "pinhole_closure": {
+        "connected_bodies": 1,
+        "material_bodies": 1,
+        "non_material_bodies": 0,
+        "non_material_faces": [],
+        "non_material_volume_mm3": 0.0,
+        "material_floor_mm3": 1e-09,
+        "material_floor_overridden": false,
+        "pinhole_closures": [
+          {
+            "applied": false,
+            "watertight_before": false,
+            "faces_added": 0,
+            "volume_delta_mm3": 0.0,
+            "max_pinhole_diagonal_mm": 0.001,
+            "max_pinhole_area_mm2": 1e-06,
+            "boundary": {
+              "boundary_edges": 3,
+              "boundary_vertices": 3,
+              "loops": 1,
+              "loop_sizes": [
+                3
+              ]
+            },
+            "loops": [
+              {
+                "vertices": [
+                  25,
+                  26,
+                  31
+                ],
+                "diagonal_mm": 2.8284271247461903,
+                "area_mm2": 0.0,
+                "fillable": false
+              }
+            ],
+            "reason": "boundary loop larger than the declared pinhole scale"
+          }
+        ],
+        "pinholes_filled": 0,
+        "watertight_bodies": 0,
+        "bodies": 1
+      },
+      "representative_map": {
+        "probe_fragment_small": "probe_fragment_small#c0"
+      },
+      "components": [
+        {
+          "component_id": "probe_fragment_small#c0",
+          "status": "CORE",
+          "volume_mm3": 149.66762295666592,
+          "is_representative": true,
+          "ancestor": "probe_fragment_small",
+          "same_ancestor_subfragment": false
+        }
+      ]
+    },
+    "component_stats": [
+      {
+        "component_id": "probe_fragment_small#c0",
+        "watertight": false,
+        "volume_mm3": 149.66762295666592,
+        "faces": 211,
+        "vertices": 108
+      }
+    ],
+    "watertight": false,
+    "basis_id": "ccbe467016745757eda05b5a138d36f2",
+    "source_fixture_vertices": 110,
+    "source_fixture_faces": 216
+  },
+  "p02_section_png": "p02_L0_L1_L4_geometry_sections.png"
+}

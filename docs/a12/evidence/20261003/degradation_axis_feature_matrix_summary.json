@@ -1,0 +1,105 @@
+{
+  "registry_axis_count_current": 31,
+  "axis_ids_current": [
+    "G01",
+    "G02",
+    "G03",
+    "G04",
+    "G05",
+    "G06",
+    "G07",
+    "G08",
+    "I01",
+    "I02",
+    "I03",
+    "I04",
+    "I05",
+    "I06",
+    "I07",
+    "I08",
+    "I09",
+    "I10",
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "X01",
+    "X02",
+    "X03",
+    "X04",
+    "X05"
+  ],
+  "next_experiment_physical_recipe_axes": [
+    "P01",
+    "P03"
+  ],
+  "next_experiment_degraded_recipe_ref_axes": [
+    "G08",
+    "I01",
+    "P02",
+    "P03"
+  ],
+  "next_experiment_degraded_recipe_ref_axis_count": 4,
+  "opt_in_diversity_config_enabled": true,
+  "opt_in_diversity_config_declared_axes": [
+    "P03",
+    "I01",
+    "I03",
+    "I05",
+    "I09",
+    "G05",
+    "G08",
+    "X01",
+    "X04"
+  ],
+  "opt_in_diversity_per_lineage": {
+    "max_axes": 9,
+    "selection": "declared"
+  },
+  "current_probe_axes": {
+    "P02": {
+      "levels": [
+        0,
+        1,
+        4
+      ],
+      "evidence": "probe_manifest.json / appearance_probe.json"
+    },
+    "P05": {
+      "levels": [
+        0,
+        1,
+        4
+      ],
+      "evidence": "appearance_probe.json"
+    },
+    "P06": {
+      "levels": [
+        0,
+        1,
+        4
+      ],
+      "evidence": "appearance_probe.json"
+    },
+    "I03": {
+      "levels": [
+        0,
+        1,
+        4
+      ],
+      "evidence": "phone_noise_probe.json"
+    }
+  },
+  "current_source_lines": {
+    "api_dispatch": "synlab/degrade/api.py:203-218",
+    "api_parameter_basis_and_apply": "synlab/degrade/api.py:222-303",
+    "physical_route": "synlab/degrade/axes.py:291-451",
+    "diversity_opt_in": "synlab/pipeline.py:759-781, 1889-1906",
+    "degraded_recipe_ref_parse_only": "synlab/config.py:142-148 (search all of synlab for consumers found only schema + config loader)"
+  },
+  "real_world_validation": "NONE in this audit; all live runs use small synthetic fixtures."
+}
