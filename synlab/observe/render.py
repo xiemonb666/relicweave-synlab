@@ -39,7 +39,7 @@ from typing import Any
 
 import numpy as np
 
-from ..cameras.projection import CAMERA_MODELS, distort_normalized
+from ..cameras.projection import CAMERA_MODELS, distort_normalized, undistort_normalized
 from ..errors import ErrorCode, SynLabError
 from ..schemas.runtime import RenderOutput, ViewFrame
 from ..roles import SOURCE_SENSOR_SIM
@@ -279,6 +279,27 @@ def _project_with_distortion(cam: np.ndarray, K: np.ndarray, dist: np.ndarray | 
     return np.stack([u, v], axis=1), z
 
 
+def _camera_sample_rays(frame: ViewFrame, width: int, height: int
+                        ) -> tuple[np.ndarray, np.ndarray]:
+    """Return exact double-precision camera rays for raster cell centres.
+
+    Raster sample coordinates are ``(x + .5, y + .5)``. ``_scaled_frame`` converts
+    OpenCV pixel-centre intrinsics to that cell-coordinate convention before this inverse
+    projection, so each ray is tied to the delivered pixel/subpixel it represents.
+    """
+    K = np.asarray(frame.K, dtype=np.float64)
+    inv_k = np.linalg.inv(K)
+    u = np.arange(width, dtype=np.float64)[None, :] + 0.5
+    v = np.arange(height, dtype=np.float64)[:, None] + 0.5
+    h0 = inv_k[0, 0] * u + inv_k[0, 1] * v + inv_k[0, 2]
+    h1 = inv_k[1, 0] * u + inv_k[1, 1] * v + inv_k[1, 2]
+    h2 = inv_k[2, 0] * u + inv_k[2, 1] * v + inv_k[2, 2]
+    xd, yd = h0 / h2, h1 / h2
+    x, y = undistort_normalized(xd, yd, frame.dist,
+                                frame.camera_model or "PINHOLE")
+    return np.asarray(x, dtype=np.float64), np.asarray(y, dtype=np.float64)
+
+
 def _rasterise_buffers(scene: Scene, frame: ViewFrame, width: int, height: int,
                        light: LightSpec, spec: RenderSpec) -> dict[str, np.ndarray]:
     """Z-buffered rasterisation at ``width x height`` (the supersampled grid)."""
@@ -322,6 +343,12 @@ def _rasterise_buffers(scene: Scene, frame: ViewFrame, width: int, height: int,
     # the render deterministic and is declared as such.  No specular claim is made.
     shaded = albedo * (light.ambient[None, :] + light.color[None, :] * lambert[:, None])
 
+    # The same cell centres used by the rasterizer are unprojected once in double precision.
+    # Linear screen-space z is not perspective-correct; intersecting each candidate camera ray
+    # with its triangle plane gives camera-frame z directly and also handles lens distortion.
+    ray_x, ray_y = _camera_sample_rays(frame, width, height)
+    has_distortion = (frame.dist is not None
+                      and np.any(np.asarray(frame.dist, dtype=np.float64) != 0.0))
     inv_area = 1.0 / area
     for fi in order:
         f = int(fi)
@@ -345,11 +372,43 @@ def _rasterise_buffers(scene: Scene, frame: ViewFrame, width: int, height: int,
         w1 = ((cx - px) * (ay - py) - (ax - px) * (cy - py)) * inv
         w2 = 1.0 - w0 - w1
         inside = (w0 >= -1e-9) & (w1 >= -1e-9) & (w2 >= -1e-9)
-        if not inside.any():
+        # Lens distortion maps triangle edges to curves. Use the projected vertex box as a
+        # broad phase in that case, then reject non-intersections with the exact 3D triangle test.
+        # Its silhouette boundary remains an approximation of the curved edge.
+        candidate = np.ones_like(inside) if has_distortion else inside
+        if not candidate.any():
             continue
-        zi = w0 * z0[f] + w1 * z1[f] + w2 * z2[f]
+        v0, v1, v2 = cam0[f], cam1[f], cam2[f]
+        edge0, edge1 = v1 - v0, v2 - v0
+        normal = normals[f]
+        ray_x_roi = ray_x[ymin:ymax + 1, xmin:xmax + 1]
+        ray_y_roi = ray_y[ymin:ymax + 1, xmin:xmax + 1]
+        ray_denom = normal[0] * ray_x_roi + normal[1] * ray_y_roi + normal[2]
+        ray_numer = float(np.dot(normal, v0))
+        zi = np.full(ray_denom.shape, np.nan, dtype=np.float64)
+        np.divide(ray_numer, ray_denom, out=zi,
+                  where=np.abs(ray_denom) > 1e-15)
+
+        # A ray may hit the triangle's plane outside this triangle. Resolve exact 3D
+        # barycentrics to keep the projected bounding box as a broad phase only.
+        rel_x = zi * ray_x_roi - v0[0]
+        rel_y = zi * ray_y_roi - v0[1]
+        rel_z = zi - v0[2]
+        d00 = float(np.dot(edge0, edge0))
+        d01 = float(np.dot(edge0, edge1))
+        d11 = float(np.dot(edge1, edge1))
+        d20 = rel_x * edge0[0] + rel_y * edge0[1] + rel_z * edge0[2]
+        d21 = rel_x * edge1[0] + rel_y * edge1[1] + rel_z * edge1[2]
+        bary_denom = d00 * d11 - d01 * d01
+        if bary_denom <= 1e-24:
+            continue
+        bary0 = (d11 * d20 - d01 * d21) / bary_denom
+        bary1 = (d00 * d21 - d01 * d20) / bary_denom
+        bary2 = 1.0 - bary0 - bary1
+        intersects = candidate & np.isfinite(zi) & (zi > spec.near_mm) & (zi < spec.far_mm) \
+            & (bary0 >= -1e-9) & (bary1 >= -1e-9) & (bary2 >= -1e-9)
         sub_depth = depth[ymin:ymax + 1, xmin:xmax + 1]
-        better = inside & (zi < sub_depth)
+        better = intersects & (zi < sub_depth)
         if not better.any():
             continue
         sub_depth[better] = zi[better]
@@ -631,10 +690,13 @@ def render_view(scene: Scene, frame: ViewFrame, *, light: LightSpec,
 
 
 def _scaled_frame(frame: ViewFrame, factor: int) -> ViewFrame:
-    """Supersampled frame: same optics and pose, ``factor`` times the pixel grid."""
-    if factor == 1:
-        return frame
+    """Supersampled frame in cell coordinates, derived from OpenCV pixel centres."""
+    factor = max(int(factor), 1)
     K = np.asarray(frame.K, dtype=np.float64).copy() * factor
+    # A raster sample at cell centre (x_hi + .5) maps to OpenCV centre
+    # x + (j + .5)/factor - .5. The half-cell translation is required at SS1 too.
+    K[0, 2] += factor / 2.0
+    K[1, 2] += factor / 2.0
     K[2, 2] = 1.0
     return ViewFrame(
         view_id=f"{frame.view_id}@{factor}x",
