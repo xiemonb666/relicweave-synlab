@@ -419,6 +419,23 @@ def test_i04_only_is_noise_free_but_i03_explicitly_activates_poisson_and_read_no
     assert noisy.stages[1]["op"] == "poisson_read_noise"
 
 
+@pytest.mark.parametrize("spec", [
+    ImagingSpec(version="999", sensor_noise_enabled=False),
+    ImagingSpec(version="2.0", sensor_noise_enabled="false"),
+    ImagingSpec(version="1.0", sensor_noise_enabled=0),
+])
+def test_noise_flag_rejects_unknown_versions_and_non_boolean_values(spec: ImagingSpec):
+    with pytest.raises(SynLabError) as excinfo:
+        spec.resolved_sensor_noise_enabled()
+    assert excinfo.value.code == ErrorCode.SCHEMA_INVALID
+
+
+def test_realism_noise_flag_rejects_string_boolean():
+    with pytest.raises(SynLabError) as excinfo:
+        imaging_spec_for(IDENTITY_LEVELS, sensor_noise_enabled="false")
+    assert excinfo.value.code == ErrorCode.SCHEMA_INVALID
+
+
 # --------------------------------------------------------------------------------------
 # 6. the quality estimator is complete for an empty cloud (photo_mvs STOP_SFM)
 # --------------------------------------------------------------------------------------

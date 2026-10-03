@@ -100,15 +100,22 @@ class ImagingSpec:
 
     def resolved_sensor_noise_enabled(self) -> bool:
         """Resolve the noise flag without inferring it from a default gain value."""
+        version = str(self.version)
+        if version not in ("1.0", "2.0"):
+            raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                              f"unsupported imaging semantic version {self.version!r}",
+                              stage="observe.imaging.ImagingSpec")
         if self.sensor_noise_enabled is not None:
+            if type(self.sensor_noise_enabled) is not bool:
+                raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                                  "sensor_noise_enabled must be bool or None",
+                                  stage="observe.imaging.ImagingSpec")
             return bool(self.sensor_noise_enabled)
-        if str(self.version) == "1.0":
+        if version == "1.0":
             return True
-        if str(self.version) == "2.0":
+        if version == "2.0":
             return False
-        raise SynLabError(ErrorCode.SCHEMA_INVALID,
-                          f"unsupported imaging semantic version {self.version!r}",
-                          stage="observe.imaging.ImagingSpec")
+        raise AssertionError("unreachable semantic version")
 
     def assert_scene_only(self) -> None:
         for knob in SCENE_ONLY_KNOBS:

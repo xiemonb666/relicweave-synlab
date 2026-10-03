@@ -223,8 +223,12 @@ def imaging_spec_for(levels: Mapping[str, int] | None = None, *,
     from ..degrade.ops_image import WB_DIRECTION
 
     resolved = normalise_levels(levels)
+    if sensor_noise_enabled is not None and type(sensor_noise_enabled) is not bool:
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          "sensor_noise_enabled must be bool or None",
+                          stage="observe.realism.imaging_spec_for")
     spec = ImagingSpec()
-    spec.sensor_noise_enabled = (bool(sensor_noise_enabled)
+    spec.sensor_noise_enabled = (sensor_noise_enabled
                                  if sensor_noise_enabled is not None else
                                  bool(resolved["I03"] != LEVEL_IDENTITY
                                       or photon_gain is not None))

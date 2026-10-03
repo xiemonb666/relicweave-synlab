@@ -169,7 +169,7 @@ def _apply_compiled(compiled: Any, spec: ObsSpec, route: str) -> None:
         stage = str(getattr(node, "stage", "") or "").upper()
         if stage in ("SENSOR", "ISP"):
             if "sensor_noise_enabled" in params:
-                compiled_noise_setting = bool(params["sensor_noise_enabled"])
+                compiled_noise_setting = params["sensor_noise_enabled"]
             if "effective_gain" in params:
                 spec.imaging.effective_gain = float(params["effective_gain"])
                 compiled_noise_params = True
@@ -189,7 +189,7 @@ def _apply_compiled(compiled: Any, spec: ObsSpec, route: str) -> None:
     # A caller's explicit boolean outranks a compiled recipe. Otherwise a recipe that
     # explicitly supplies either sensor scale or read sigma opts into the sensor model.
     if caller_noise_setting is not None:
-        spec.imaging.sensor_noise_enabled = bool(caller_noise_setting)
+        spec.imaging.sensor_noise_enabled = caller_noise_setting
     elif compiled_noise_setting is not None:
         spec.imaging.sensor_noise_enabled = compiled_noise_setting
     elif compiled_noise_params:

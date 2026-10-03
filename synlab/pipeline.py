@@ -581,13 +581,19 @@ def _div_observe_spec(rng: np.random.Generator, config: dict[str, Any], lineage:
     gain = _div_uniform(rng, obs_cfg.get("effective_gain"), default=(1.0, 1.0))
     configured_noise = obs_cfg.get("sensor_noise_enabled")
     if configured_noise is not None:
-        noise_enabled = bool(configured_noise)
+        if type(configured_noise) is not bool:
+            raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                              "sensor_noise_enabled must be bool or None",
+                              stage="pipeline._resolve_observe_spec")
+        noise_enabled = configured_noise
     elif base_spec.imaging.sensor_noise_enabled is not None:
-        noise_enabled = bool(base_spec.imaging.sensor_noise_enabled)
+        noise_enabled = base_spec.imaging.resolved_sensor_noise_enabled()
     else:
         # A numeric default gain of 1 is not a request to add Poisson noise. Only a
         # declared sensor parameter at this config boundary opts into the sensor model.
-        noise_enabled = ("effective_gain" in obs_cfg or "read_noise_sigma" in obs_cfg)
+        declared_sensor_values = ("effective_gain" in obs_cfg or "read_noise_sigma" in obs_cfg)
+        noise_enabled = (True if declared_sensor_values else
+                         base_spec.imaging.resolved_sensor_noise_enabled())
 
     imaging = dataclasses.replace(base_spec.imaging, exposure_ev=float(exposure_ev),
                                   read_noise_sigma=float(read_noise),

@@ -49,7 +49,6 @@ Honest boundaries
 
 from __future__ import annotations
 
-import copy
 import hashlib
 import json
 import math
@@ -70,6 +69,7 @@ from .render import (
     Scene,
     _block_reduce,
     _disagreement_i,
+    _scaled_frame as _render_scaled_frame,
     circle_of_confusion_px,
     resolve_declared_optics,
 )
@@ -1630,15 +1630,8 @@ def _lambert_report(lambert: Any, tag_map: np.ndarray) -> dict[str, Any]:
 
 
 def _scaled_frame(frame: ViewFrame, factor: int) -> ViewFrame:
-    scaled = copy.copy(frame)
-    K = np.asarray(frame.K, dtype=np.float64).copy()
-    K[0, 0] *= factor
-    K[1, 1] *= factor
-    K[0, 2] = (K[0, 2] + 0.5) * factor - 0.5
-    K[1, 2] = (K[1, 2] + 0.5) * factor - 0.5
-    scaled.K = K
-    scaled.image_size = (int(frame.image_size[0]) * factor, int(frame.image_size[1]) * factor)
-    return scaled
+    """Share the renderer's cell-centre/OpenCV-centre affine exactly."""
+    return _render_scaled_frame(frame, factor)
 
 
 def _rasterise_appearance(scene: Scene, frame: ViewFrame, width: int, height: int,
