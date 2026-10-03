@@ -14,6 +14,9 @@ from synlab.degrade.api import (_apply_impl, _label_dependency_status, _label_st
                                 _rows_from_axis_report, apply_axis, operator_audit_table)
 from synlab.degrade.registry import get_operator
 from synlab.degrade.sources import KIND_IMAGE, KIND_PHYSICAL, SourceBundle
+from synlab.physical.api import GEOMETRY_HASH_ALGORITHM, _geometry_hash
+from synlab.physical import sdf as S
+from synlab.canonical import hash_json
 from synlab.schemas.runtime import CleanTruth
 
 
@@ -28,8 +31,9 @@ def _image_source(*, claimed_status: str = "") -> SourceBundle:
     return SourceBundle(source_kind=KIND_IMAGE, payload={"frames": [frame]}, meta=meta)
 
 
-def _physical_source() -> SourceBundle:
-    mesh = trimesh.creation.box(extents=[20.0, 20.0, 10.0])
+def _physical_source(*, mesh_override=None) -> SourceBundle:
+    mesh = (mesh_override if mesh_override is not None
+            else trimesh.creation.box(extents=[20.0, 20.0, 10.0]))
     coords = np.linspace(-8.0, 8.0, 8)
     positions = np.asarray([[x, y, 5.0] for x in coords for y in coords], dtype=np.float64)
     count = len(positions)
@@ -260,8 +264,125 @@ def test_failed_physical_result_qa_rejects_attached_truth_as_valid() -> None:
     evidence = _label_dependency_status(get_operator("P06"), source, bad_result)
     assert evidence["PhysicalTruth"]["status"] == "FAILED"
     assert evidence["PhysicalTruth"]["validity"] == "FAILED_VALIDATION"
+    assert evidence["PhysicalTruth"]["reported_status"] == "UPDATED"
+    assert evidence["PhysicalTruth"]["physical_result_qa_status"] == "FAIL"
     assert _label_status(get_operator("P06"), source, bad_result,
                          dependency_status=evidence) == "FAILED"
+
+
+def test_multicomponent_truth_receipt_requires_a_hash_for_every_component() -> None:
+    source = _physical_source()
+    result, _record, _measurement = _apply_impl("P06", 1, source, None, commit=False)
+    physical = result.get("physical_result")
+    component = physical.components[0]
+    extra_component = replace(component, component_id=f"{component.component_id}:extra",
+                              is_representative=False)
+    bad_physical = replace(physical, components=[component, extra_component])
+    bad_result = replace(result, payload={**result.payload, "physical_result": bad_physical})
+
+    evidence = _label_dependency_status(get_operator("P06"), source, bad_result)
+
+    assert evidence["PhysicalTruth"]["status"] == "PENDING_RECOMPUTE"
+    assert evidence["PhysicalTruth"]["validity"] == "UNKNOWN_INVALIDATED"
+    assert "PhysicalTruth" in evidence["PhysicalTruth"]["reason"]
+
+
+def test_rotated_equal_measure_mesh_cannot_reuse_a_physical_truth_receipt() -> None:
+    original_mesh = trimesh.creation.box(extents=[20.0, 16.0, 10.0])
+    rotated_mesh = original_mesh.copy()
+    rotated_mesh.apply_transform(
+        trimesh.transformations.rotation_matrix(np.deg2rad(31.0), [0.0, 0.0, 1.0]))
+    assert np.allclose(original_mesh.centroid, rotated_mesh.centroid, atol=1e-12)
+    assert len(original_mesh.faces) == len(rotated_mesh.faces)
+    assert original_mesh.area == pytest.approx(rotated_mesh.area, abs=1e-12)
+    assert original_mesh.volume == pytest.approx(rotated_mesh.volume, abs=1e-12)
+    legacy_hash = lambda mesh: hash_json({
+        "vertices": S.geometry_key(mesh), "faces": int(len(mesh.faces)),
+        "area": round(float(mesh.area), 9), "volume": round(float(mesh.volume), 9)})
+    assert legacy_hash(original_mesh) == legacy_hash(rotated_mesh)
+    assert _geometry_hash(original_mesh) != _geometry_hash(rotated_mesh)
+
+    source = _physical_source(mesh_override=original_mesh)
+    result, _record, _measurement = _apply_impl("P06", 1, source, None, commit=False)
+    rotated_result = replace(result, payload={**result.payload, "mesh": rotated_mesh})
+    evidence = _label_dependency_status(get_operator("P06"), source, rotated_result)
+
+    assert evidence["PhysicalTruth"]["status"] == "PENDING_RECOMPUTE"
+    assert evidence["PhysicalTruth"]["validity"] == "UNKNOWN_INVALIDATED"
+
+
+def test_geometry_hash_covers_face_array_changes_and_declares_version() -> None:
+    mesh = trimesh.creation.box(extents=[4.0, 2.0, 1.0])
+    reordered = trimesh.Trimesh(vertices=mesh.vertices.copy(),
+                                faces=np.asarray(mesh.faces)[::-1].copy(), process=False)
+
+    assert mesh.centroid == pytest.approx(reordered.centroid)
+    assert mesh.area == pytest.approx(reordered.area)
+    assert mesh.volume == pytest.approx(reordered.volume)
+    assert _geometry_hash(mesh) != _geometry_hash(reordered)
+    assert GEOMETRY_HASH_ALGORITHM == "synlab.mesh-arrays.sha256.v2"
+
+
+def test_old_aggregate_geometry_hash_receipt_remains_pending() -> None:
+    source = _physical_source()
+    result, _record, _measurement = _apply_impl("P06", 1, source, None, commit=False)
+    physical = result.get("physical_result")
+    old_meta = dict(physical.meta)
+    old_meta.pop("geometry_hash_algorithm", None)
+    old_qa = dict(physical.qa)
+    old_qa.pop("geometry_hash_algorithm", None)
+    old_postassembly = dict(old_qa["postassembly"])
+    old_postassembly.pop("geometry_hash_algorithm", None)
+    old_qa["postassembly"] = old_postassembly
+    old_physical = replace(physical, meta=old_meta, qa=old_qa)
+    old_result = replace(result, payload={**result.payload, "physical_result": old_physical})
+
+    evidence = _label_dependency_status(get_operator("P06"), source, old_result)
+
+    assert evidence["PhysicalTruth"]["status"] == "PENDING_RECOMPUTE"
+    assert evidence["PhysicalTruth"]["validity"] == "UNKNOWN_INVALIDATED"
+
+
+def test_apply_axis_physical_qa_failure_never_validates_label_truth(monkeypatch) -> None:
+    source = _physical_source()
+    operator = get_operator("P06")
+    original_physical_result = operator.physical_result
+    original_validate = operator.validate
+    observed_measurements = []
+
+    def return_failed_qa(recipe, fragment, clean_truth):
+        physical = original_physical_result(recipe, fragment, clean_truth)
+        physical.qa["status"] = "FAIL"
+        physical.qa["failure_code"] = "NOT_WATERTIGHT"
+        physical.qa["failure_codes"] = ["NOT_WATERTIGHT"]
+        physical.qa["postassembly"] = {
+            **dict(physical.qa.get("postassembly") or {}),
+            "status": "FAIL", "failure_codes": ["NOT_WATERTIGHT"],
+        }
+        return physical
+
+    def capture_validate(source, result, measurement):
+        observed_measurements.append(measurement)
+        original_validate(source, result, measurement)
+
+    monkeypatch.setattr(operator, "physical_result", return_failed_qa)
+    monkeypatch.setattr(operator, "validate", capture_validate)
+    result, _record, returned_measurement = _apply_impl(
+        "P06", 1, source, None, commit=False)
+    assert len(observed_measurements) == 1
+    measurement = observed_measurements[0]
+    assert measurement is returned_measurement
+    # P06's axis invariant measures the appearance-only geometry contract; valid/realized here
+    # describe that measurement record. The separate physical QA still fails the PhysicalTruth
+    # dependency, so neither the aggregate status nor validity can be reported as clean.
+    assert result.get("physical_result").qa["status"] == "FAIL"
+    assert measurement.valid is True
+    assert measurement.realized is True
+    assert measurement.extra["label_status"] == "FAILED"
+    assert measurement.extra["label_validity"] == "FAILED"
+    assert measurement.extra["label_dependency_status"]["PhysicalTruth"]["status"] == "FAILED"
+    assert measurement.extra["label_dependency_status"]["PhysicalTruth"][
+        "validity"] == "FAILED_VALIDATION"
 
 
 def test_reported_physical_recompute_failure_stays_failed() -> None:

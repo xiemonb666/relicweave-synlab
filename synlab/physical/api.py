@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import weakref
 from typing import Any
 
@@ -32,6 +33,10 @@ from .recipe import APPEARANCE_AXES, P06_VARIANTS, P08_VARIANTS, DamageOutcome, 
 #: (which carries no mesh).  Keyed by the source geometry hash; never serialised.
 _SOURCE_MESHES: "weakref.WeakValueDictionary[str, Any]" = weakref.WeakValueDictionary()
 
+# ``S.geometry_key`` remains the plan-30.8 representative-selection tie-break. Content and
+# receipt verification use every vertex coordinate and oriented face index under this version.
+GEOMETRY_HASH_ALGORITHM = "synlab.mesh-arrays.sha256.v2"
+
 
 def _mesh_of(clean: Any) -> trimesh.Trimesh | None:
     if clean is None:
@@ -45,8 +50,33 @@ def _mesh_of(clean: Any) -> trimesh.Trimesh | None:
 
 
 def _geometry_hash(mesh: trimesh.Trimesh) -> str:
-    return hash_json({"vertices": S.geometry_key(mesh), "faces": int(len(mesh.faces)),
-                      "area": round(float(mesh.area), 9), "volume": round(float(mesh.volume), 9)})
+    """Hash the complete stored vertex and oriented-face arrays.
+
+    Coordinates are normalized to little-endian float64 and indices to little-endian int64;
+    array dimensions and a versioned domain separator are part of the digest. This preserves all
+    coordinate precision represented by the input dtype, plus face winding and connectivity,
+    without treating centroid, area, or volume as a geometry identity.
+    """
+    vertices = np.asarray(mesh.vertices, dtype=np.float64)
+    faces = np.asarray(mesh.faces)
+    if vertices.ndim != 2 or vertices.shape[1:] != (3,):
+        raise ValueError("geometry hash needs an (n, 3) vertex array")
+    if faces.ndim != 2 or faces.shape[1:] != (3,) or not np.issubdtype(faces.dtype, np.integer):
+        raise ValueError("geometry hash needs an integer (m, 3) face array")
+    if faces.size and (int(faces.min()) < np.iinfo(np.int64).min
+                       or int(faces.max()) > np.iinfo(np.int64).max):
+        raise ValueError("face index is outside the int64 hash representation")
+    vertex_bytes = np.array(vertices, dtype="<f8", order="C", copy=True)
+    # Normalize the two equivalent zero encodings while preserving every nonzero float64 bit.
+    vertex_bytes[vertex_bytes == 0.0] = 0.0
+    face_bytes = np.ascontiguousarray(faces, dtype="<i8")
+    digest = hashlib.sha256()
+    digest.update(GEOMETRY_HASH_ALGORITHM.encode("ascii") + b"\0")
+    digest.update(np.asarray(vertex_bytes.shape, dtype="<u8").tobytes())
+    digest.update(np.asarray(face_bytes.shape, dtype="<u8").tobytes())
+    digest.update(vertex_bytes.tobytes(order="C"))
+    digest.update(face_bytes.tobytes(order="C"))
+    return "sha256:" + digest.hexdigest()
 
 
 #: Semantic version of the physical-damage *result* contract (docs/a12/data_semantics_versions.md).
@@ -641,7 +671,12 @@ def _postassembly_physical_qa(source_mesh: trimesh.Trimesh,
     source = inspect_mesh(source_mesh)
     component_rows: list[dict[str, Any]] = []
     for component in components:
-        mesh_report = inspect_mesh(getattr(component, "mesh", None))
+        component_mesh = getattr(component, "mesh", None)
+        mesh_report = inspect_mesh(component_mesh)
+        try:
+            component_geometry_hash = _geometry_hash(component_mesh)
+        except Exception:  # noqa: BLE001 - hash absence keeps receipts unverified
+            component_geometry_hash = None
         component_volume = getattr(component, "volume_mm3", None)
         try:
             component_volume = float(component_volume)
@@ -657,6 +692,7 @@ def _postassembly_physical_qa(source_mesh: trimesh.Trimesh,
             "is_contamination": bool((getattr(component, "meta", {}) or {}).get(
                 "is_contamination", False)),
             "mesh": mesh_report,
+            "geometry_hash": component_geometry_hash,
             "recorded_volume_mm3": component_volume,
             "recorded_volume_finite": component_volume_finite,
             "recorded_positive_volume": component_positive,
@@ -847,9 +883,14 @@ def _postassembly_physical_qa(source_mesh: trimesh.Trimesh,
 
     return {
         "status": "PASS" if not failures else "FAIL",
+        "geometry_hash_algorithm": GEOMETRY_HASH_ALGORITHM,
         "checks": checks,
         "failure_codes": sorted(set(failures)),
         "unknown_checks": sorted(set(unknown)),
+        "component_geometry_hashes": [
+            {"component_id": row["component_id"], "geometry_hash": row["geometry_hash"]}
+            for row in component_rows
+        ],
         "components": component_rows,
     }
 
@@ -890,6 +931,7 @@ def apply_damage(clean_truth: Any, fragment: Any, recipe: DamageRecipe,
         qa = {
             "status": postassembly_qa["status"], "identity": True, "level": 0,
             "realized": True, "geometry_changed": False,
+            "geometry_hash_algorithm": GEOMETRY_HASH_ALGORITHM,
             "source_geometry_hash": _geometry_hash(mesh),
             "result_geometry_hash": _geometry_hash(ledger_components[0].mesh),
             "bytes_identical": True, "resampled": False,
@@ -915,6 +957,7 @@ def apply_damage(clean_truth: Any, fragment: Any, recipe: DamageRecipe,
             representative_map=representative_map, physical_truth=None, qa=qa,
             meta={"declared": declared, "identity": True, "ledger": ledger,
                   "source_geometry_hash": _geometry_hash(mesh), "axis_id": recipe.axis_id,
+                  "geometry_hash_algorithm": GEOMETRY_HASH_ALGORITHM,
                   "variant": recipe.variant, "level": int(recipe.level),
                   "damage_semantics": DAMAGE_SEMANTICS,
                   "face_provenance": identity_provenance,
@@ -958,6 +1001,7 @@ def apply_damage(clean_truth: Any, fragment: Any, recipe: DamageRecipe,
     qa = {
         "status": "PASS" if outcome.realized else "FAIL",
         "identity": False, "level": int(recipe.level), "realized": bool(outcome.realized),
+        "geometry_hash_algorithm": GEOMETRY_HASH_ALGORITHM,
         "geometry_changed": bool(geometry_changed),
         "source_geometry_hash": _geometry_hash(mesh),
         "result_geometry_hash": _geometry_hash(damaged_mesh),
@@ -984,6 +1028,7 @@ def apply_damage(clean_truth: Any, fragment: Any, recipe: DamageRecipe,
             "axis_id": recipe.axis_id, "variant": recipe.variant, "level": int(recipe.level),
             "geometry_changed": bool(geometry_changed), "frozen": recipe.frozen(),
             "source_geometry_hash": _geometry_hash(mesh),
+            "geometry_hash_algorithm": GEOMETRY_HASH_ALGORITHM,
             "damage_semantics": DAMAGE_SEMANTICS,
             "assembly": closure,
             "pinhole_closure": closure,

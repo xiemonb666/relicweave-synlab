@@ -1,0 +1,68 @@
+{
+  "body_wall_samples_by_z_mm": {
+    "16": {
+      "negative_x_wall_sampled": true,
+      "positive_x_wall_sampled": true,
+      "sample_count": 63
+    },
+    "24": {
+      "negative_x_wall_sampled": true,
+      "positive_x_wall_sampled": true,
+      "sample_count": 40
+    },
+    "32": {
+      "negative_x_wall_sampled": true,
+      "positive_x_wall_sampled": true,
+      "sample_count": 38
+    },
+    "40": {
+      "negative_x_wall_sampled": true,
+      "positive_x_wall_sampled": true,
+      "sample_count": 62
+    },
+    "48": {
+      "negative_x_wall_sampled": true,
+      "positive_x_wall_sampled": true,
+      "sample_count": 48
+    },
+    "52": {
+      "negative_x_wall_sampled": true,
+      "positive_x_wall_sampled": true,
+      "sample_count": 40
+    },
+    "8": {
+      "negative_x_wall_sampled": true,
+      "positive_x_wall_sampled": true,
+      "sample_count": 53
+    }
+  },
+  "clipped_component_section_curve_count": 53,
+  "corrected_section_coverage_gate": true,
+  "expected_source_bbox_xmin_xmax_zmin_zmax_mm": [
+    -20.5,
+    32.6000001,
+    0.0,
+    56.0
+  ],
+  "figure_png_sha256": "7f0e26809153e7f495f5feef46b99daf41e312428f9ff2d6c377e2deb215168f",
+  "left_and_right_body_wall_bands_passed": true,
+  "native_com_markers_are_xz_projections_not_y0_membership": true,
+  "plane_uv_world_axes": {
+    "normal": "-Y",
+    "u": "+X",
+    "v": "+Z"
+  },
+  "plane_world_y_mm": 0.0,
+  "source_bbox_section_extent_check_passed": true,
+  "source_cad_section_bounds_xmin_xmax_zmin_zmax_mm": [
+    -20.500000000000103,
+    32.6,
+    0.0,
+    56.0
+  ],
+  "source_cad_section_curve_count": 49,
+  "source_section_has_left_and_right_x": true,
+  "source_section_spans_z0_to_z56": true,
+  "superseded_previous_png": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cad_clipped_cells\\fixed8mm_singlethread_case03_native_empty_compound_policy\\cad_clipped_cells_y0_SUPERSEDED_wrong_plane_uv.png",
+  "superseded_previous_png_reason": "previous bounded gp_Pln face used world X/Z values as local U/V without aligning plane axes, clipping left-wall and upper source sections"
+}

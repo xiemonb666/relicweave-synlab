@@ -1,0 +1,35 @@
+{
+  "area_values": "0.5 + (index % 17) * 0.01 mm2",
+  "helper": "synlab.physical.fields.rank_mask_for_area_fraction",
+  "records": [
+    {
+      "median_seconds": 0.00846610008738935,
+      "score_group_count": 10000,
+      "selected_area_mm2": 2145.67,
+      "selected_texels": 3700,
+      "texel_count": 10000,
+      "timings_seconds": [
+        0.008650799980387092,
+        0.0073692998848855495,
+        0.00846610008738935
+      ],
+      "unique_score_count": 10000
+    },
+    {
+      "median_seconds": 0.08137440006248653,
+      "score_group_count": 100000,
+      "selected_area_mm2": 21459.64,
+      "selected_texels": 37000,
+      "texel_count": 100000,
+      "timings_seconds": [
+        0.07664430001750588,
+        0.08137440006248653,
+        0.08237949991598725
+      ],
+      "unique_score_count": 100000
+    }
+  ],
+  "repetitions": 3,
+  "requested_fraction": 0.37,
+  "score_values": "unique arange float64"
+}

@@ -453,6 +453,11 @@ def _label_dependency_status(operator: Any, source: SourceBundle,
     reported = str((result.meta or {}).get("label_status", "") or "").upper()
     physical_status = str(physical_meta.get("physical_truth_status", "") or "").upper()
     physical_qa_status = str(physical_qa.get("status", "") or "").upper()
+    postassembly = physical_qa.get("postassembly")
+    postassembly_status = (str(postassembly.get("status", "") or "").upper()
+                           if isinstance(postassembly, Mapping) else "")
+    if postassembly_status in ("FAIL", "FAILED", "QA_FAILED"):
+        physical_qa_status = postassembly_status
     physical_receipt = _physical_truth_recompute_receipt(operator, source, result)
     evidence: dict[str, dict[str, Any]] = {}
     for dependency in invalidations:
@@ -468,7 +473,8 @@ def _label_dependency_status(operator: Any, source: SourceBundle,
                 evidence[dependency] = {
                     "status": "FAILED", "validity": "FAILED_VALIDATION",
                     "reason": "physical result QA failed; attached truth is not accepted as valid",
-                    "reported_status": physical_qa_status,
+                    "reported_status": physical_status or reported or physical_qa_status,
+                    "physical_result_qa_status": physical_qa_status,
                 }
             elif physical_receipt is not None:
                 evidence[dependency] = {"status": "UPDATED", **physical_receipt}
@@ -572,6 +578,18 @@ def _physical_truth_recompute_receipt(operator: Any, source: SourceBundle,
         return None
     if str(physical_qa.get("status", "") or "").upper() != "PASS":
         return None
+    postassembly = physical_qa.get("postassembly")
+    if (not isinstance(postassembly, Mapping)
+            or str(postassembly.get("status", "") or "").upper() != "PASS"):
+        return None
+    from ..physical.api import GEOMETRY_HASH_ALGORITHM
+
+    # Older receipts only carried aggregate geometry summaries. They cannot prove the exact
+    # vertex coordinates and oriented faces needed for this PhysicalTruth link.
+    if (physical_meta.get("geometry_hash_algorithm") != GEOMETRY_HASH_ALGORITHM
+            or physical_qa.get("geometry_hash_algorithm") != GEOMETRY_HASH_ALGORITHM
+            or postassembly.get("geometry_hash_algorithm") != GEOMETRY_HASH_ALGORITHM):
+        return None
 
     components = list(getattr(physical_result, "components", []) or [])
     if not components:
@@ -589,6 +607,27 @@ def _physical_truth_recompute_receipt(operator: Any, source: SourceBundle,
             return None
         if len(components) == 1 and output_mesh_hash != result_geometry_hash:
             return None
+        component_hash_rows = postassembly.get("component_geometry_hashes")
+        if not isinstance(component_hash_rows, list) or len(component_hash_rows) != len(components):
+            return None
+        hashes_by_id: dict[str, str] = {}
+        for row in component_hash_rows:
+            if not isinstance(row, Mapping):
+                return None
+            component_id = str(row.get("component_id", "") or "")
+            geometry_hash = str(row.get("geometry_hash", "") or "")
+            if not component_id or not geometry_hash or component_id in hashes_by_id:
+                return None
+            hashes_by_id[component_id] = geometry_hash
+        if len(hashes_by_id) != len(components):
+            return None
+        for component in components:
+            component_id = str(getattr(component, "component_id", "") or "")
+            component_mesh = getattr(component, "mesh", None)
+            if not component_id or component_mesh is None:
+                return None
+            if hashes_by_id.get(component_id) != _physical_geometry_hash(component_mesh):
+                return None
     except Exception:  # noqa: BLE001 - absent output geometry evidence means no receipt
         return None
 
@@ -635,7 +674,7 @@ def _physical_truth_recompute_receipt(operator: Any, source: SourceBundle,
         "result_geometry_hash": result_geometry_hash,
         "output_geometry_verification": (
             "SINGLE_COMPONENT_HASH_REVERIFIED" if len(components) == 1
-            else "REPRESENTATIVE_COMPONENT_HASH_REVERIFIED_RESULT_AGGREGATE_FROM_PHYSICAL_QA"),
+            else "ALL_COMPONENT_HASHES_REVERIFIED_FROM_POSTASSEMBLY_QA"),
         "artifact_path": "payload.physical_result.physical_truth",
         "validity": "VALIDATED" if bool(truth_qa.get("pass")) else "FAILED_VALIDATION",
     }

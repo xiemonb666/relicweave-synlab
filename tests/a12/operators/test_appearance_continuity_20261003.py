@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import math
 import runpy
 from pathlib import Path
 
@@ -12,6 +13,8 @@ import pytest
 from synlab.degrade.api import apply_axis
 from synlab.degrade.sources import mesh_geometry_hash
 from synlab.physical import fields as F
+from synlab.physical.operators import crack_or_coat_loss, dirt_cover, remove_paint
+from synlab.physical.recipe import DamageRecipe
 from synlab.schemas.runtime import CleanTruth
 
 
@@ -84,7 +87,240 @@ def _run_chain(source, clean_truth, axes):
     return current, measurements
 
 
-def test_rank_masks_are_area_weighted_stable_nested_and_report_quantization() -> None:
+def _whole_group_oracle(scores, fraction, weights, tail):
+    """Exhaustively compare every whole-score-group prefix, independent of production code."""
+    groups = sorted(set(float(value) for value in scores), reverse=(tail == "upper"))
+    boundaries = [0.0]
+    selected_groups = []
+    for score in groups:
+        selected_groups.append(score)
+        selected_area = math.fsum(float(weight) for value, weight in zip(scores, weights)
+                                  if float(value) in selected_groups)
+        boundaries.append(selected_area)
+    total = math.fsum(float(weight) for weight in weights)
+    target = float(fraction) * total
+    # Enumerating every possible group boundary makes this an independent nearest-boundary oracle.
+    prefix = min(range(len(boundaries)), key=lambda index: (abs(boundaries[index] - target), index))
+    chosen = set(groups[:prefix])
+    return np.asarray([float(value) in chosen for value in scores], dtype=bool), boundaries[prefix]
+
+
+def test_rank_masks_choose_whole_equal_score_groups_and_ignore_input_order() -> None:
+    scores = np.array([0.1, 0.1, 0.8], dtype=np.float64)
+    areas = np.array([1.0, 1.0, 8.0], dtype=np.float64)
+    masks = []
+    details = []
+    for fraction in (0.0, 0.1, 0.2, 0.4, 0.6, 1.0):
+        mask, report = F.rank_mask_for_area_fraction(scores, fraction, areas, tail="lower")
+        expected, expected_area = _whole_group_oracle(scores, fraction, areas, "lower")
+        assert np.array_equal(mask, expected)
+        assert report["selected_area"] == pytest.approx(expected_area)
+        assert report["boundary_tie_split"] is False
+        masks.append(mask)
+        details.append(report)
+
+    assert not masks[0].any()
+    assert not masks[1].any()  # nearest-boundary tie chooses zero, never half of an equal-score group
+    assert masks[2].tolist() == [True, True, False]
+    assert np.all(~masks[0] | masks[1])
+    assert all(np.all(~before | after) for before, after in zip(masks, masks[1:]))
+    assert details[1]["realized_fraction"] == pytest.approx(0.0)
+    assert details[1]["quantized"] is True
+    assert details[1]["largest_score_group_area_fraction"] == pytest.approx(0.8)
+    assert details[4]["quantized"] is True
+
+    permutation = np.array([2, 0, 1])
+    inverse = np.argsort(permutation)
+    for tail in ("lower", "upper"):
+        for fraction in (0.0, 0.15, 0.5, 0.95, 1.0):
+            original, _ = F.rank_mask_for_area_fraction(scores, fraction, areas, tail=tail)
+            shuffled, report = F.rank_mask_for_area_fraction(
+                scores[permutation], fraction, areas[permutation], tail=tail)
+            expected, _ = _whole_group_oracle(scores, fraction, areas, tail)
+            assert np.array_equal(original, expected)
+            assert np.array_equal(shuffled[inverse], original)
+            assert report["boundary_tie_split"] is False
+
+
+def test_rank_mask_reports_large_constant_score_quantization() -> None:
+    scores = np.full(7, 0.5)
+    areas = np.array([1.0, 2.0, 1.0, 3.0, 1.0, 2.0, 1.0])
+    mask, report = F.rank_mask_for_area_fraction(scores, 0.5, areas)
+    assert not mask.any()  # equal-distance tie chooses the smaller whole-group boundary
+    assert report["score_group_count"] == 1
+    assert report["largest_score_group_area_fraction"] == pytest.approx(1.0)
+    assert report["absolute_fraction_error"] == pytest.approx(0.5)
+    assert report["quantized"] is True
+
+
+@pytest.mark.parametrize("tail", ["lower", "upper"])
+def test_rank_mask_is_nested_on_whole_groups_for_both_tails(tail) -> None:
+    scores = np.array([0.0, 0.0, 0.3, 0.3, 0.9, 0.9, 0.9])
+    areas = np.array([1.0, 5.0, 2.0, 1.0, 1.0, 2.0, 4.0])
+    fractions = np.linspace(0.0, 1.0, 51)
+    masks = [F.rank_mask_for_area_fraction(scores, fraction, areas, tail=tail)[0]
+             for fraction in fractions]
+    assert not masks[0].any()
+    assert masks[-1].all()
+    assert all(np.all(~before | after) for before, after in zip(masks, masks[1:]))
+
+
+def _appearance_payload(count=4):
+    return {
+        "texel_albedo": np.tile(np.array([[0.7, 0.4, 0.3]], dtype=np.float32), (count, 1)),
+        "texel_substrate_albedo": np.tile(
+            np.array([[0.5, 0.45, 0.4]], dtype=np.float32), (count, 1)),
+        "texel_area_mm2": np.ones(count, dtype=np.float64),
+        "texel_layer": np.array([1, 0, 1, 0][:count], dtype=np.int32),
+        "texel_roughness": np.full(count, 0.6, dtype=np.float32),
+        "texel_positions": np.column_stack((np.arange(count), np.zeros((count, 2)))),
+        "pattern_region": np.array([True, False, True, False][:count]),
+        "interface_region": np.array([True, True, False, False][:count]),
+    }
+
+
+def _operator_recipe(axis_id, appearance, *, seed=3, fraction=0.5, dirt_color=None,
+                    dirt_roughness=None):
+    field_name = "rank_field" if axis_id == "P05" else "dirt_field"
+    field = F.FourierField.sample_frozen(np.random.default_rng(seed), scale_mm=2.0,
+                                         n_components=3, field_id=f"{axis_id}_test").payload()
+    basis = {field_name: field, "appearance": appearance}
+    if dirt_color is not None:
+        basis["dirt_color"] = dirt_color
+    if dirt_roughness is not None:
+        basis["dirt_roughness"] = dirt_roughness
+    params = ({"retained_fraction": 1.0 - fraction} if axis_id == "P05"
+              else {"coverage": fraction})
+    return DamageRecipe(axis_id=axis_id, variant="paint_removal" if axis_id == "P05"
+                        else "dirt_appearance", params=params, basis=basis)
+
+
+@pytest.mark.parametrize("axis_id", ["P05", "P06"])
+@pytest.mark.parametrize("bad_area", [np.nan, 0.0, -1.0, np.inf])
+def test_appearance_operators_reject_invalid_area_on_any_texel(axis_id, bad_area) -> None:
+    import trimesh
+
+    appearance = _appearance_payload()
+    appearance["texel_area_mm2"][1] = bad_area  # texel 1 has no paint layer
+    recipe = _operator_recipe(axis_id, appearance)
+    operator = remove_paint if axis_id == "P05" else dirt_cover
+    with pytest.raises(ValueError, match="texel_area_mm2"):
+        operator(trimesh.creation.box(), recipe)
+
+
+@pytest.mark.parametrize(
+    ("axis_id", "key", "value", "message"),
+    [
+        ("P05", "texel_albedo", np.array(0.5), "shape"),
+        ("P05", "texel_albedo", np.zeros((4, 4)), "shape"),
+        ("P06", "texel_albedo", np.array(0.5), "shape"),
+        ("P06", "texel_albedo", np.zeros((4, 4)), "shape"),
+        ("P05", "texel_albedo", np.full((4, 3), np.nan), "finite"),
+        ("P06", "texel_albedo", np.full((4, 3), 1.01), "finite"),
+        ("P05", "texel_substrate_albedo", np.full((4, 2), 0.5), "substrate"),
+        ("P05", "texel_substrate_albedo", np.full((4, 3), 1.01), "substrate"),
+        ("P05", "texel_positions", np.full((4, 3), np.inf), "positions"),
+        ("P06", "texel_positions", np.full((4, 3), np.nan), "positions"),
+        ("P06", "texel_roughness", np.full(4, -0.01), "roughness"),
+    ],
+)
+def test_appearance_operators_reject_invalid_rgb_position_and_roughness(
+        axis_id, key, value, message) -> None:
+    import trimesh
+
+    appearance = _appearance_payload()
+    appearance[key] = value
+    operator = remove_paint if axis_id == "P05" else dirt_cover
+    with pytest.raises(ValueError, match=message):
+        operator(trimesh.creation.box(), _operator_recipe(axis_id, appearance))
+
+
+@pytest.mark.parametrize(
+    ("axis_id", "key", "value"),
+    [
+        ("P05", "paint_mask_removed", np.zeros(4, dtype=np.uint8)),
+        ("P06", "pattern_region", np.zeros(4, dtype=np.uint8)),
+        ("P06", "paint_mask_removed", np.zeros(3, dtype=bool)),
+    ],
+)
+def test_appearance_operators_require_well_shaped_boolean_masks(axis_id, key, value) -> None:
+    import trimesh
+
+    appearance = _appearance_payload()
+    appearance[key] = value
+    operator = remove_paint if axis_id == "P05" else dirt_cover
+    with pytest.raises(ValueError, match="boolean mask|masks must"):
+        operator(trimesh.creation.box(), _operator_recipe(axis_id, appearance))
+
+
+@pytest.mark.parametrize(
+    ("basis_update", "message"),
+    [
+        ({"dirt_color": [0.2, 0.3]}, "dirt_color"),
+        ({"dirt_color": [0.2, float("nan"), 0.3]}, "dirt_color"),
+        ({"dirt_color": [0.2, 1.01, 0.3]}, "dirt_color"),
+        ({"dirt_roughness": 1.1}, "dirt_roughness"),
+        ({"dirt_roughness": float("nan")}, "dirt_roughness"),
+    ],
+)
+def test_p06_rejects_invalid_dirt_material_values(basis_update, message) -> None:
+    import trimesh
+
+    appearance = _appearance_payload()
+    recipe = _operator_recipe("P06", appearance)
+    recipe.basis.update(basis_update)
+    with pytest.raises(ValueError, match=message):
+        dirt_cover(trimesh.creation.box(), recipe)
+
+
+def test_p05_cumulative_loss_mask_never_restores_removed_paint() -> None:
+    import trimesh
+
+    appearance = _appearance_payload()
+    mesh = trimesh.creation.box()
+    first = remove_paint(mesh, _operator_recipe("P05", appearance, seed=4, fraction=0.5))
+    first_mask = first.appearance["paint_mask_removed"].copy()
+    second = remove_paint(mesh, _operator_recipe("P05", first.appearance, seed=9,
+                                                fraction=0.5))
+    second_mask = second.appearance["paint_mask_removed"]
+    assert np.all(~first_mask | second_mask)
+    assert np.array_equal(second.appearance["texel_albedo"][first_mask],
+                          appearance["texel_substrate_albedo"][first_mask])
+
+
+def test_p06_reports_no_surviving_pattern_as_not_applicable(audit_source) -> None:
+    _mesh, source, clean_truth = audit_source
+    p05, _ = apply_axis("P05", 4, source, None,
+                        lineage_id="appearance_full_pattern_loss", commit=False)
+    p06, _ = apply_axis("P06", 1, p05.as_bundle(), None,
+                        lineage_id="appearance_full_pattern_loss", commit=False)
+    result = p06.as_bundle().get("physical_result")
+    measured = result.meta["measured"]
+    assert measured["visible_pattern_area_mm2"] == pytest.approx(0.0)
+    assert measured["cumulative_pattern_loss_area_mm2"] == pytest.approx(
+        measured["original_pattern_area_mm2"])
+    assert "pattern_visibility_reduction" not in measured
+    assert result.meta["details"]["pattern_visibility_status"] == (
+        "NOT_APPLICABLE_NO_SURVIVING_PATTERN")
+    assert p06.as_bundle().get("clean_truth") is clean_truth
+
+
+@pytest.mark.parametrize(("affected", "expected_removed"), [(0.0, 0), (1.0, 2)])
+def test_p08_paint_coat_loss_threshold_uses_lower_tail(affected, expected_removed) -> None:
+    import trimesh
+
+    appearance = _appearance_payload()
+    field = F.FourierField.sample_frozen(np.random.default_rng(30), scale_mm=2.0,
+                                         n_components=3, field_id="P08_test").payload()
+    recipe = DamageRecipe(axis_id="P08", variant="paint_coat_loss",
+                          params={"affected_area": affected},
+                          basis={"rank_field": field, "appearance": appearance,
+                                 "coat_layer_id": 1})
+    outcome = crack_or_coat_loss(trimesh.creation.box(), recipe)
+    assert int(outcome.appearance["coat_mask_removed"].sum()) == expected_removed
+
+
+def test_rank_masks_are_area_weighted_nested_and_report_quantization() -> None:
     scores = np.array([0.1, 0.1, 0.8], dtype=np.float64)
     areas = np.array([1.0, 1.0, 8.0], dtype=np.float64)
     masks = []
@@ -95,13 +331,13 @@ def test_rank_masks_are_area_weighted_stable_nested_and_report_quantization() ->
         details.append(report)
 
     assert not masks[0].any()
-    assert masks[1].tolist() == [True, False, False]  # exact 1 mm² target; stable tie order
+    assert not masks[1].any()
     assert masks[2].tolist() == [True, True, False]
     assert masks[-1].all()
     for before, after in zip(masks, masks[1:]):
         assert np.all(~before | after)
-    assert details[1]["realized_fraction"] == pytest.approx(0.1)
-    assert details[1]["boundary_tie_split"] is True
+    assert details[1]["realized_fraction"] == pytest.approx(0.0)
+    assert details[1]["boundary_tie_split"] is False
     assert details[3]["quantized"] is True
     assert details[3]["absolute_fraction_error"] == pytest.approx(
         abs(details[3]["realized_fraction"] - 0.6))
@@ -113,6 +349,7 @@ def test_rank_masks_are_area_weighted_stable_nested_and_report_quantization() ->
         ([0.1, 0.2], 0.5, [1.0], "lower"),
         ([0.1, float("nan")], 0.5, [1.0, 1.0], "lower"),
         ([0.1, 0.2], 0.5, [1.0, 0.0], "lower"),
+        ([0.1, 0.2], 0.5, [1e308, 1e308], "lower"),
         ([0.1], 1.1, [1.0], "lower"),
         ([0.1], 0.5, [1.0], "middle"),
     ],
@@ -189,6 +426,22 @@ def test_p05_p06_preserve_channels_truth_and_both_chain_orders(audit_source) -> 
         assert physical_truth is not clean_truth
         assert physical_truth.clean_truth_ref == clean_truth.meta["truth_hash"]
         assert physical_truth.version == clean_truth.version + 1
+        if axes[0][0] == "P05":
+            area = np.asarray(appearance["texel_area_mm2"], dtype=np.float64)
+            pattern = np.asarray(appearance["pattern_region"], dtype=bool)
+            paint_removed = np.asarray(appearance["paint_mask_removed"], dtype=bool)
+            dirt = np.asarray(appearance["dirt_mask"], dtype=bool)
+            visible_pattern = pattern & ~paint_removed
+            visible_area = float(area[visible_pattern].sum())
+            measured = output.get("physical_result").meta["measured"]
+            assert measured["original_pattern_area_mm2"] == pytest.approx(
+                float(area[pattern].sum()))
+            assert measured["cumulative_pattern_loss_area_mm2"] == pytest.approx(
+                float(area[pattern & paint_removed].sum()))
+            assert measured["visible_pattern_area_mm2"] == pytest.approx(visible_area)
+            if visible_area > 0.0:
+                assert measured["pattern_visibility_reduction"] == pytest.approx(
+                    float(area[dirt & visible_pattern].sum()) / visible_area)
 
     assert source.content_hash() == source_hash
     assert clean_truth.__dict__ == truth_snapshot

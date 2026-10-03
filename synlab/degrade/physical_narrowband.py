@@ -22,7 +22,6 @@ from typing import Any
 import numpy as np
 import trimesh
 
-from ..canonical import hash_json
 from ..errors import ErrorCode, SynLabError
 from ..physical import fields as F
 from ..physical import sdf as S
@@ -37,15 +36,17 @@ NARROWBAND_AXES = ("P02", "P03", "P04")
 
 
 def _geometry_hash(mesh: trimesh.Trimesh) -> str:
-    return hash_json({"vertices": S.geometry_key(mesh), "faces": int(len(mesh.faces)),
-                      "area": round(float(mesh.area), 9), "volume": round(float(mesh.volume), 9)})
+    from ..physical.api import _geometry_hash as physical_geometry_hash
+
+    return physical_geometry_hash(mesh)
 
 
 def _assemble(mesh: trimesh.Trimesh, source: trimesh.Trimesh, recipe: Any, *,
               measurements: dict[str, float], units: dict[str, str], details: dict[str, Any],
               realized: bool, fragment: Any) -> PhysicalResult:
     """Wrap a damaged body into a ``PhysicalResult`` with the plan-30.8 component ledger."""
-    from ..physical.api import (DAMAGE_SEMANTICS, _postassembly_physical_qa,
+    from ..physical.api import (DAMAGE_SEMANTICS, GEOMETRY_HASH_ALGORITHM,
+                                _postassembly_physical_qa,
                                 register_components)
 
     source_volume = float(abs(source.volume))
@@ -63,6 +64,7 @@ def _assemble(mesh: trimesh.Trimesh, source: trimesh.Trimesh, recipe: Any, *,
         "status": "PASS" if realized else "FAIL",
         "identity": False, "level": int(recipe.level), "realized": bool(realized),
         "geometry_changed": True,
+        "geometry_hash_algorithm": GEOMETRY_HASH_ALGORITHM,
         "source_geometry_hash": _geometry_hash(source),
         "result_geometry_hash": _geometry_hash(mesh),
         "geometry_hash_unchanged": bool(_geometry_hash(mesh) == _geometry_hash(source)),
@@ -76,6 +78,7 @@ def _assemble(mesh: trimesh.Trimesh, source: trimesh.Trimesh, recipe: Any, *,
         "declared": recipe.declared(), "identity": False, "ledger": ledger,
         "axis_id": recipe.axis_id, "variant": recipe.variant, "level": int(recipe.level),
         "geometry_changed": True, "frozen": recipe.frozen(),
+        "geometry_hash_algorithm": GEOMETRY_HASH_ALGORITHM,
         "source_geometry_hash": _geometry_hash(source),
         "damage_semantics": DAMAGE_SEMANTICS,
         "measured": dict(measurements), "measurement_units": dict(units),

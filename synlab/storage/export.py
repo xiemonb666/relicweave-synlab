@@ -37,6 +37,7 @@ import tarfile
 import uuid
 from collections import defaultdict
 from pathlib import Path
+from types import MappingProxyType
 from typing import Any, Iterable, Mapping, Sequence
 
 import numpy as np
@@ -85,6 +86,14 @@ ZARR_DIR_NAME = "zarr"
 VIEW_CHANNEL_POLICY_ENV = "SYNLAB_VIEW_CHANNEL_POLICY"
 #: Default policy document, relative to the repository root that holds this package.
 VIEW_CHANNEL_POLICY_PATH = Path(__file__).resolve().parents[1] / "schemas" / "view_channels.json"
+
+# The research manifest contains free-form provenance and caller-controlled strings.  A deploy
+# reader builds its display metadata from this closed contract instead of copying those values.
+DEPLOY_PUBLIC_PURPOSE = "opaque observations, geometry, token cache, and query roster"
+DEPLOY_PUBLIC_FORBIDDEN = (
+    "labels", "relation kinds", "lineage", "split", "source identities",
+    "research-only channels",
+)
 
 
 def _policy_path() -> Path:
@@ -228,7 +237,13 @@ def _resolve_capture_context(payload: Mapping[str, Any], target: Path,
                     f"{where} declaration {key!r} in {target} is inadmissible: "
                     + "; ".join(problems),
                     stage="export.load_channel_policy", evidence_refs=[key])
-            out.append({**dict(entry), "declared_in": block_name})
+            resolved_entry = dict(entry)
+            if "deploy_view" not in resolved_entry:
+                table = str(resolved_entry.get("table", "")).replace("\\", "/")
+                resolved_entry["deploy_view"] = (
+                    block_name == "table_columns" and table.startswith("deploy/")
+                )
+            out.append({**resolved_entry, "declared_in": block_name})
         return out
 
     return (_entries("capture_context_fields", "fields", "capture-context")
@@ -1480,13 +1495,12 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
         "views": {
             VIEW_DEPLOY: {
                 "role": "deployment",
-                "purpose": "features only: ObsPack RGB shards, geometry, token cache, query roster",
+                "purpose": DEPLOY_PUBLIC_PURPOSE,
                 # measured from the written content, not declared (see ``separation``)
                 "contains_truth": bool(deploy_truth_content),
                 "files": len(deploy_files),
                 "bytes": int(sum(f["bytes"] for f in deploy_files)),
-                "forbidden": ["labels", "relation kinds", "lineage", "split",
-                              "depth/id_map/surface_tag channels"],
+                "forbidden": list(DEPLOY_PUBLIC_FORBIDDEN),
             },
             VIEW_RESEARCH: {
                 "role": "research",
@@ -1530,6 +1544,7 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
                      "evidence_class": entry.get("evidence_class"),
                      "rig_obtainable": entry.get("rig_obtainable"),
                      "claim_allowed": entry.get("claim_allowed"),
+                     "deploy_view": entry.get("deploy_view"),
                      "table": entry.get("table")}
                     for entry in sorted(channel_policy.get("capture_context") or [],
                                         key=lambda item: str(item.get("key")))],
@@ -3035,6 +3050,7 @@ class TrainingPackage:
         self.deploy = self.root / VIEW_DEPLOY
         self.research = self.root / VIEW_RESEARCH
         self._deploy_validation: dict[str, Any] | None = None
+        self._deploy_file_hashes: Mapping[str, str] = MappingProxyType({})
         self._opaque_to_source: dict[str, str] | None = None
         if access == "deploy":
             self._ensure_strict_deploy()
@@ -3044,23 +3060,44 @@ class TrainingPackage:
             self.manifest = self._manifest
 
     def _deployment_manifest(self) -> dict[str, Any]:
-        files = [dict(row) for row in self._manifest.get("files", [])
-                 if str(row.get("path", "")).startswith("deploy/")]
-        raw_deploy_view = (self._manifest.get("views") or {}).get("deploy") or {}
-        safe_view_fields = {"role", "purpose", "contains_truth", "files", "bytes", "forbidden"}
-        safe_deploy_view = {key: value for key, value in raw_deploy_view.items()
-                            if key in safe_view_fields}
-        return {
-            "schema": self._manifest.get("schema"),
-            "package_schema": self._manifest.get("package_schema"),
-            "deploy_schema": self._manifest.get("deploy_schema"),
-            "package_id": self._manifest.get("package_id"),
-            "manifest_hash": self._manifest.get("manifest_hash"),
+        files: list[dict[str, Any]] = []
+        for relative_path, expected_hash in sorted(self._deploy_file_hashes.items()):
+            path = self.root / relative_path
+            try:
+                byte_count = path.stat().st_size
+            except OSError as exc:
+                raise SynLabError(ErrorCode.ASSET_HASH_MISMATCH,
+                                  f"deployment file disappeared while projecting metadata: "
+                                  f"{relative_path}",
+                                  stage="export.TrainingPackage.deploy_integrity") from exc
+            files.append({"path": relative_path, "hash": expected_hash,
+                          "bytes": int(byte_count)})
+
+        safe_deploy_view = {
+            "role": "deployment",
+            "purpose": DEPLOY_PUBLIC_PURPOSE,
+            "contains_truth": False,
+            "files": len(files),
+            "bytes": int(sum(row["bytes"] for row in files)),
+            "forbidden": list(DEPLOY_PUBLIC_FORBIDDEN),
+        }
+        deploy_content_hash = hash_json({"deploy_schema": DEPLOY_SCHEMA, "files": files})
+        public_manifest: dict[str, Any] = {
+            "schema": PACKAGE_MANIFEST_SCHEMA,
+            "package_schema": PACKAGE_SCHEMA,
+            "deploy_schema": DEPLOY_SCHEMA,
+            # This is a stable handle for the public deployment content, not the caller-supplied
+            # root package_id, which may contain release or source identity text.
+            "package_id": f"pkg_{deploy_content_hash.split(':', 1)[1][:32]}",
             "views": {"deploy": safe_deploy_view},
             "deploy_boundary": dict(self._deploy_validation or {}),
             "files": files,
-            "bytes_total": int(sum(int(row.get("bytes", 0)) for row in files)),
+            "bytes_total": int(sum(row["bytes"] for row in files)),
         }
+        # Public manifest hashes cover only the sanitized deployment projection.  The full root
+        # hash commits to research labels and provenance and therefore is not exposed here.
+        public_manifest["manifest_hash"] = hash_json(public_manifest)
+        return public_manifest
 
     def _require_research(self, operation: str) -> None:
         if self.access != "research":
@@ -3071,17 +3108,28 @@ class TrainingPackage:
     def _ensure_strict_deploy(self) -> dict[str, Any]:
         if self._deploy_validation is None:
             validation = validate_deploy_package(self.root, self._manifest)
-            declared = {str(row.get("path", "")): str(row.get("hash", ""))
-                        for row in self._manifest.get("files", [])
-                        if str(row.get("path", "")).startswith("deploy/")}
-            problems = [rel for rel, expected in declared.items()
-                        if not (self.root / rel).is_file()
-                        or hash_file(self.root / rel) != expected]
+            declared: dict[str, str] = {}
+            declared_bytes: dict[str, int] = {}
+            for row in self._manifest["files"]:
+                path = str(row["path"])
+                if path.startswith("deploy/"):
+                    declared[path] = str(row["hash"])
+                    declared_bytes[path] = int(row["bytes"])
+            problems: list[str] = []
+            for relative_path, expected_hash in declared.items():
+                path = self.root / relative_path
+                try:
+                    if (not path.is_file() or hash_file(path) != expected_hash or
+                            path.stat().st_size != declared_bytes[relative_path]):
+                        problems.append(relative_path)
+                except OSError:
+                    problems.append(relative_path)
             if problems:
                 raise SynLabError(ErrorCode.ASSET_HASH_MISMATCH,
                                   "deployment files do not match the hashed manifest inventory",
                                   stage="export.TrainingPackage.deploy_integrity",
                                   evidence_refs=problems)
+            self._deploy_file_hashes = MappingProxyType(dict(declared))
             self._deploy_validation = validation
         return self._deploy_validation
 
@@ -3090,8 +3138,7 @@ class TrainingPackage:
         self._ensure_strict_deploy()
         rel = str(relative_path).replace("\\", "/").removeprefix("deploy/")
         package_rel = f"deploy/{rel}"
-        expected = next((str(row.get("hash", "")) for row in self._manifest.get("files", [])
-                         if str(row.get("path", "")) == package_rel), "")
+        expected = self._deploy_file_hashes.get(package_rel, "")
         if not expected:
             raise SynLabError(ErrorCode.LEAKAGE_DETECTED,
                               f"INVALID_DEPLOY_TRUTH_LEAK: {package_rel} is not a declared v2 file",
@@ -3115,15 +3162,16 @@ class TrainingPackage:
     def verify_files(self) -> dict[str, Any]:
         problems: list[str] = []
         checked = 0
-        entries = (self.manifest.get("files", []) if self.access == "deploy"
-                   else self._manifest.get("files", []))
-        for entry in entries:
-            path = self.root / entry["path"]
+        entries = (list(self._deploy_file_hashes.items()) if self.access == "deploy" else
+                   [(str(entry["path"]), str(entry["hash"]))
+                    for entry in self._manifest.get("files", [])])
+        for relative_path, expected_hash in entries:
+            path = self.root / relative_path
             if not path.exists():
-                problems.append(f"{entry['path']} missing")
+                problems.append(f"{relative_path} missing")
                 continue
-            if hash_file(path) != entry["hash"]:
-                problems.append(f"{entry['path']} hash mismatch")
+            if hash_file(path) != expected_hash:
+                problems.append(f"{relative_path} hash mismatch")
             checked += 1
         return {"ok": not problems, "problems": problems, "files_checked": checked}
 
@@ -3155,10 +3203,8 @@ class TrainingPackage:
                                       "INVALID_DEPLOY_TRUTH_LEAK: query roster is malformed",
                                       stage="export.TrainingPackage.queries")
                 columns = set().union(*(row.keys() for row in rows)) if rows else set()
-            capture_scan = (self._manifest.get("separation") or {}).get(
-                "capture_context_scan") or {}
             allowed = {"opaque_id"}
-            if "bag_id" in set(capture_scan.get("declared_fields") or []):
+            if bool((self._deploy_validation or {}).get("bag_id_capture_context")):
                 allowed.add("bag_id")
             if (not rows or not columns <= allowed or "opaque_id" not in columns or
                     any(set(row) != columns or not is_opaque_id(row.get("opaque_id"))

@@ -1,0 +1,427 @@
+{
+  "schema": "a12.evidence_index.v1",
+  "date": "2026-10-04",
+  "workspace": "relicweave-synlab",
+  "cap_bytes": 1200000,
+  "payload_bytes": 871179,
+  "payload_cap_pass": true,
+  "scope_note": "Evidence copies are byte-exact unless method says structured extraction. Source paths and hashes identify original reports; source bytes and copy bytes are recorded independently. Large meshes, runtime trees, full GT rows, and secret/environment dumps are excluded.",
+  "evidence": [
+    {
+      "source_path": "tmp/review_20261004/implementation/appearance_finish/benchmark_argv.txt",
+      "source_sha256": "12160b55aeb4e0cb0a6fce8a7261e13b7262dfcf90b90cbfb5ee6af45503f39f",
+      "source_bytes": 104,
+      "copy_path": "copies/appearance/benchmark_argv.txt",
+      "copy_sha256": "12160b55aeb4e0cb0a6fce8a7261e13b7262dfcf90b90cbfb5ee6af45503f39f",
+      "copy_bytes": 104,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/appearance_finish/benchmark_exit_code.txt",
+      "source_sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354",
+      "source_bytes": 3,
+      "copy_path": "copies/appearance/benchmark_exit_code.txt",
+      "copy_sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354",
+      "copy_bytes": 3,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/appearance_finish/benchmark_source_sha256.json",
+      "source_sha256": "768e1b422e486020126a116ce9571f34dd2f9ee42d9a3a6e2fab69ab7640af50",
+      "source_bytes": 259,
+      "copy_path": "copies/appearance/benchmark_source_sha256.json",
+      "copy_sha256": "768e1b422e486020126a116ce9571f34dd2f9ee42d9a3a6e2fab69ab7640af50",
+      "copy_bytes": 259,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/appearance_finish/pytest_argv.txt",
+      "source_sha256": "46608784f7a172a8d87c1d452e53188efec7c678c8a8f8f23c1e90c3d6db30ab",
+      "source_bytes": 100,
+      "copy_path": "copies/appearance/pytest_argv.txt",
+      "copy_sha256": "46608784f7a172a8d87c1d452e53188efec7c678c8a8f8f23c1e90c3d6db30ab",
+      "copy_bytes": 100,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/appearance_finish/pytest_exit_code.txt",
+      "source_sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354",
+      "source_bytes": 3,
+      "copy_path": "copies/appearance/pytest_exit_code.txt",
+      "copy_sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354",
+      "copy_bytes": 3,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/appearance_finish/pytest_stdout.txt",
+      "source_sha256": "2c91283aa8beed85011506e4fae2d7a750df8428affa0bda3d2ab5775e8fe85a",
+      "source_bytes": 81,
+      "copy_path": "copies/appearance/pytest_stdout.txt",
+      "copy_sha256": "2c91283aa8beed85011506e4fae2d7a750df8428affa0bda3d2ab5775e8fe85a",
+      "copy_bytes": 81,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/appearance_finish/rank_benchmark.json",
+      "source_sha256": "c52f865ae72979715e06643bc5c0e710379e7b4cc9b0add80ae8c913b05a4275",
+      "source_bytes": 958,
+      "copy_path": "copies/appearance/rank_benchmark.json",
+      "copy_sha256": "c52f865ae72979715e06643bc5c0e710379e7b4cc9b0add80ae8c913b05a4275",
+      "copy_bytes": 958,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/appearance_finish/review_notes.md",
+      "source_sha256": "6a56ca080268d25e54bf516fbbd96c6d7ea736d588b9b815be9f64615fd64ae7",
+      "source_bytes": 3029,
+      "copy_path": "copies/appearance/review_notes.md",
+      "copy_sha256": "6a56ca080268d25e54bf516fbbd96c6d7ea736d588b9b815be9f64615fd64ae7",
+      "copy_bytes": 3029,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/appearance_finish/source_sha256.json",
+      "source_sha256": "267c16fbad5c46d0f4c363e7aead50ae5af77e9945c8e1e39ca6b1f918255f9d",
+      "source_bytes": 760,
+      "copy_path": "copies/appearance/source_sha256.json",
+      "copy_sha256": "267c16fbad5c46d0f4c363e7aead50ae5af77e9945c8e1e39ca6b1f918255f9d",
+      "copy_bytes": 760,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cad_clipped_cells/fixed8mm_singlethread_case03_native_empty_compound_policy/cad_clipped_cells_y0_SUPERSEDED_wrong_plane_uv.png",
+      "source_sha256": "084f0187c413dcdfdc558e15f359db99c13155051d528ba79f06999b42d144b0",
+      "source_bytes": 79669,
+      "copy_path": "copies/cad_clipped_cells/cad_clipped_cells_y0_SUPERSEDED_wrong_plane_uv.png",
+      "copy_sha256": "084f0187c413dcdfdc558e15f359db99c13155051d528ba79f06999b42d144b0",
+      "copy_bytes": 79669,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cad_clipped_cells/fixed8mm_singlethread_case03_native_empty_compound_policy/cad_clipped_cells_y0_ax3_corrected.png",
+      "source_sha256": "7f0e26809153e7f495f5feef46b99daf41e312428f9ff2d6c377e2deb215168f",
+      "source_bytes": 109361,
+      "copy_path": "copies/cad_clipped_cells/cad_clipped_cells_y0_ax3_corrected.png",
+      "copy_sha256": "7f0e26809153e7f495f5feef46b99daf41e312428f9ff2d6c377e2deb215168f",
+      "copy_bytes": 109361,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cad_clipped_cells/fixed8mm_singlethread_case03_native_empty_compound_policy/figure_diagnostics.json",
+      "source_sha256": "57ebc58c1abfc4f00ab0dbbd0ce42da1582bb63d4a0e298affcec08eb883158b",
+      "source_bytes": 2195,
+      "copy_path": "copies/cad_clipped_cells/figure_diagnostics.json",
+      "copy_sha256": "57ebc58c1abfc4f00ab0dbbd0ce42da1582bb63d4a0e298affcec08eb883158b",
+      "copy_bytes": 2195,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cad_clipped_cells/fixed8mm_singlethread_case03_native_empty_compound_policy/report.json",
+      "source_sha256": "3b238f471fb5047264cf17f7c0e64ebaa718feb1dc6e37c8d30dc274ad39dcf5",
+      "source_bytes": 16277,
+      "copy_path": "copies/cad_clipped_cells/report.json",
+      "copy_sha256": "3b238f471fb5047264cf17f7c0e64ebaa718feb1dc6e37c8d30dc274ad39dcf5",
+      "copy_bytes": 16277,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/deploy_finish/checks.json",
+      "source_sha256": "9f6883a6c43e48afd88040336deb9b9ef1257a7381b226af9556916833edc11c",
+      "source_bytes": 1382,
+      "copy_path": "copies/deploy/checks.json",
+      "copy_sha256": "9f6883a6c43e48afd88040336deb9b9ef1257a7381b226af9556916833edc11c",
+      "copy_bytes": 1382,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/native_contact_minimal/contact_baseline/execution.toml",
+      "source_sha256": "df0e4322d5944047e4943ba1ab25b1a2e3a447c18ac110f8e0c2e34ec15d7f7e",
+      "source_bytes": 1520,
+      "copy_path": "copies/native_contact/contact_baseline_execution.toml",
+      "copy_sha256": "df0e4322d5944047e4943ba1ab25b1a2e3a447c18ac110f8e0c2e34ec15d7f7e",
+      "copy_bytes": 1520,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/native_contact_minimal/contact_baseline/summary.toml",
+      "source_sha256": "6adf778991828a35aee38483424f46572f4eeed61f31df278a310663211cc47f",
+      "source_bytes": 2366,
+      "copy_path": "copies/native_contact/contact_baseline_summary.toml",
+      "copy_sha256": "6adf778991828a35aee38483424f46572f4eeed61f31df278a310663211cc47f",
+      "copy_bytes": 2366,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/native_contact_minimal/contact_halfdt/execution.toml",
+      "source_sha256": "a72baec6208324aaf7c374de37d921635c9064d995710093ce7f1a11a10e86c4",
+      "source_bytes": 1506,
+      "copy_path": "copies/native_contact/contact_halfdt_execution.toml",
+      "copy_sha256": "a72baec6208324aaf7c374de37d921635c9064d995710093ce7f1a11a10e86c4",
+      "copy_bytes": 1506,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/native_contact_minimal/contact_halfdt/summary.toml",
+      "source_sha256": "7b3638adb7ebc0ba7bc80c6ce2552e9d65b84391b573a2b0cac731256dd8f058",
+      "source_bytes": 2356,
+      "copy_path": "copies/native_contact/contact_halfdt_summary.toml",
+      "copy_sha256": "7b3638adb7ebc0ba7bc80c6ce2552e9d65b84391b573a2b0cac731256dd8f058",
+      "copy_bytes": 2356,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/native_contact_minimal/execution_attempts.md",
+      "source_sha256": "c27e43aea3ad6cfddd468e2974ddef1235aa30be4243350854837aee1be1f832",
+      "source_bytes": 2283,
+      "copy_path": "copies/native_contact/execution_attempts.md",
+      "copy_sha256": "c27e43aea3ad6cfddd468e2974ddef1235aa30be4243350854837aee1be1f832",
+      "copy_bytes": 2283,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/native_contact_minimal/independent_analysis.json",
+      "source_sha256": "24e7e16013dfe6963776d94c5fa90205d14fa511eb4dc9d7fd79ba2ff625539b",
+      "source_bytes": 17880,
+      "copy_path": "copies/native_contact/independent_analysis.json",
+      "copy_sha256": "24e7e16013dfe6963776d94c5fa90205d14fa511eb4dc9d7fd79ba2ff625539b",
+      "copy_bytes": 17880,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/native_contact_minimal/nocontact_control/execution.toml",
+      "source_sha256": "9b74f8ee39b9939ffa8eb45b41fc13a0bbbf51571dc88c0c7b36975f92152488",
+      "source_bytes": 1527,
+      "copy_path": "copies/native_contact/nocontact_control_execution.toml",
+      "copy_sha256": "9b74f8ee39b9939ffa8eb45b41fc13a0bbbf51571dc88c0c7b36975f92152488",
+      "copy_bytes": 1527,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/native_contact_minimal/nocontact_control/summary.toml",
+      "source_sha256": "70765bfb2b5c5050f976d810a94282f16fced16fd13c8d2a7064e240cd18c5a5",
+      "source_bytes": 2368,
+      "copy_path": "copies/native_contact/nocontact_control_summary.toml",
+      "copy_sha256": "70765bfb2b5c5050f976d810a94282f16fced16fd13c8d2a7064e240cd18c5a5",
+      "copy_bytes": 2368,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/native_contact_minimal/path_migration.toml",
+      "source_sha256": "d64d7b8216bd1f37cb1193fe3720b077f2eb4a496adc34655219315a71dd6703",
+      "source_bytes": 4386,
+      "copy_path": "copies/native_contact/path_migration.toml",
+      "copy_sha256": "d64d7b8216bd1f37cb1193fe3720b077f2eb4a496adc34655219315a71dd6703",
+      "copy_bytes": 4386,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/native_contact_minimal/preflight/execution.toml",
+      "source_sha256": "6d6735b9bacabd62ebde4e5fde8b56c0e635c3e26bf31a29575c6dc6f8b28657",
+      "source_bytes": 1471,
+      "copy_path": "copies/native_contact/preflight_execution.toml",
+      "copy_sha256": "6d6735b9bacabd62ebde4e5fde8b56c0e635c3e26bf31a29575c6dc6f8b28657",
+      "copy_bytes": 1471,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/native_contact_minimal/preflight/summary.toml",
+      "source_sha256": "99cafa27bf175ced7412e48644772ed8b5155d8c12978d883c72d5b32a9525a7",
+      "source_bytes": 2329,
+      "copy_path": "copies/native_contact/preflight_summary.toml",
+      "copy_sha256": "99cafa27bf175ced7412e48644772ed8b5155d8c12978d883c72d5b32a9525a7",
+      "copy_bytes": 2329,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/validity_finish/actualJSON.json",
+      "source_sha256": "771075044acbb9993812c10d19663890e0047ac13d5488320dc1c67bcc37b0e4",
+      "source_bytes": 20341,
+      "copy_path": "copies/validity/actualJSON.json",
+      "copy_sha256": "771075044acbb9993812c10d19663890e0047ac13d5488320dc1c67bcc37b0e4",
+      "copy_bytes": 20341,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/validity_finish/capture_actual-run.json",
+      "source_sha256": "c2e083d93cc9f86668ff184dc42a76ec1d482c86826722c0626887ad37326601",
+      "source_bytes": 226,
+      "copy_path": "copies/validity/capture_actual-run.json",
+      "copy_sha256": "c2e083d93cc9f86668ff184dc42a76ec1d482c86826722c0626887ad37326601",
+      "copy_bytes": 226,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/validity_finish/manifest.json",
+      "source_sha256": "97d6b17b083f8b90773a92a5116b72dfbb663af0dd14d5ee5362afe0b4ec131c",
+      "source_bytes": 3376,
+      "copy_path": "copies/validity/manifest.json",
+      "copy_sha256": "97d6b17b083f8b90773a92a5116b72dfbb663af0dd14d5ee5362afe0b4ec131c",
+      "copy_bytes": 3376,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/validity_finish/pytest-physical-impact-final.json",
+      "source_sha256": "c1066e12b1278a7a9a9e28167bda13cdddb8fadc88cc308a1791b57e9aec38c4",
+      "source_bytes": 214,
+      "copy_path": "copies/validity/pytest-physical-impact-final.json",
+      "copy_sha256": "c1066e12b1278a7a9a9e28167bda13cdddb8fadc88cc308a1791b57e9aec38c4",
+      "copy_bytes": 214,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/validity_finish/pytest-physical-impact-final.log",
+      "source_sha256": "d7063fb40ccf7a7f8ab91eb8eafa0df7b42244d20b31bb2d282fcc372d1f7abd",
+      "source_bytes": 668,
+      "copy_path": "copies/validity/pytest-physical-impact-final.log",
+      "copy_sha256": "d7063fb40ccf7a7f8ab91eb8eafa0df7b42244d20b31bb2d282fcc372d1f7abd",
+      "copy_bytes": 668,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/validity_finish/pytest-routing-v2.json",
+      "source_sha256": "2037294d6147f143dd72de0ec59401561c93ce317f28c038f974117f8782da61",
+      "source_bytes": 200,
+      "copy_path": "copies/validity/pytest-routing-v2.json",
+      "copy_sha256": "2037294d6147f143dd72de0ec59401561c93ce317f28c038f974117f8782da61",
+      "copy_bytes": 200,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/validity_finish/pytest-routing-v2.log",
+      "source_sha256": "9ac39834492c346b862f7e1e711e63c2804a3b2741d380fdccbd497f9cd08529",
+      "source_bytes": 30030,
+      "copy_path": "copies/validity/pytest-routing-v2.log",
+      "copy_sha256": "9ac39834492c346b862f7e1e711e63c2804a3b2741d380fdccbd497f9cd08529",
+      "copy_bytes": 30030,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/validity_finish/pytest-targeted-final.json",
+      "source_sha256": "329ecb1cec19d03c009e310c87382e3f8cc496d73bd9c5b585f744f9cd7f348a",
+      "source_bytes": 230,
+      "copy_path": "copies/validity/pytest-targeted-final.json",
+      "copy_sha256": "329ecb1cec19d03c009e310c87382e3f8cc496d73bd9c5b585f744f9cd7f348a",
+      "copy_bytes": 230,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/validity_finish/pytest-targeted-final.log",
+      "source_sha256": "19932ebea0a183b7da572b238fb5973469697826509e41c17ad341f8d17bc318",
+      "source_bytes": 81,
+      "copy_path": "copies/validity/pytest-targeted-final.log",
+      "copy_sha256": "19932ebea0a183b7da572b238fb5973469697826509e41c17ad341f8d17bc318",
+      "copy_bytes": 81,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/vf_brep_persistence/native_brep_persistence/README.md",
+      "source_sha256": "619ad023a846af606e832de75f47b29003c3d8331da9dda9c0627b1b4320f987",
+      "source_bytes": 4097,
+      "copy_path": "copies/vf_brep/README.md",
+      "copy_sha256": "619ad023a846af606e832de75f47b29003c3d8331da9dda9c0627b1b4320f987",
+      "copy_bytes": 4097,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/vf_brep_persistence/native_brep_persistence/brep_candidate_report.json",
+      "source_sha256": "6549b15e71382818f7c2c310dfc845c722e99ba72f689a5bb9c7afcf442956f4",
+      "source_bytes": 244975,
+      "copy_path": "copies/vf_brep/brep_candidate_report.json",
+      "copy_sha256": "6549b15e71382818f7c2c310dfc845c722e99ba72f689a5bb9c7afcf442956f4",
+      "copy_bytes": 244975,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/vf_brep_persistence/native_brep_persistence/finalize_report_receipt.json",
+      "source_sha256": "a260c7d1bd574cee8bf06f5240141c9275db37870bc90ed425f15e65e4f9e824",
+      "source_bytes": 635,
+      "copy_path": "copies/vf_brep/finalize_report_receipt.json",
+      "copy_sha256": "a260c7d1bd574cee8bf06f5240141c9275db37870bc90ed425f15e65e4f9e824",
+      "copy_bytes": 635,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/vf_brep_persistence/native_brep_persistence/mesh_refinement_receipt.json",
+      "source_sha256": "675b30fea5b11da4b7e3751fd91cc0e4b1ecac193b20a860afeba0e629f4cebe",
+      "source_bytes": 714,
+      "copy_path": "copies/vf_brep/mesh_refinement_receipt.json",
+      "copy_sha256": "675b30fea5b11da4b7e3751fd91cc0e4b1ecac193b20a860afeba0e629f4cebe",
+      "copy_bytes": 714,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/vf_brep_persistence/native_brep_persistence/run_receipt.json",
+      "source_sha256": "fd9255c932b3f2dd26ab148aab870ab7e446deefdf4639f497786faeb3526f47",
+      "source_bytes": 612,
+      "copy_path": "copies/vf_brep/run_receipt.json",
+      "copy_sha256": "fd9255c932b3f2dd26ab148aab870ab7e446deefdf4639f497786faeb3526f47",
+      "copy_bytes": 612,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/vf_brep_persistence/native_brep_persistence/source_and_artifact_sha256.json",
+      "source_sha256": "034110b85203086cbefbd0778e1acafb2bf01b3a80e42646894a958caa13facd",
+      "source_bytes": 7586,
+      "copy_path": "copies/vf_brep/source_and_artifact_sha256.json",
+      "copy_sha256": "034110b85203086cbefbd0778e1acafb2bf01b3a80e42646894a958caa13facd",
+      "copy_bytes": 7586,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/wall_resolution/actual_sections_h1mm_vs_h0p5mm.png",
+      "source_sha256": "e14aa92b9320d3ac14d35eb70152c6772958de64d048351b00aca49b381c5b1c",
+      "source_bytes": 267247,
+      "copy_path": "copies/wall_resolution/actual_sections_h1mm_vs_h0p5mm.png",
+      "copy_sha256": "e14aa92b9320d3ac14d35eb70152c6772958de64d048351b00aca49b381c5b1c",
+      "copy_bytes": 267247,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/wall_resolution/preflight.json",
+      "source_sha256": "a1d2742843e3dc00fed16f9e5c2904370b7f805e91e8bf1f60da2500e8933b3c",
+      "source_bytes": 1680,
+      "copy_path": "copies/wall_resolution/preflight.json",
+      "copy_sha256": "a1d2742843e3dc00fed16f9e5c2904370b7f805e91e8bf1f60da2500e8933b3c",
+      "copy_bytes": 1680,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "multiple; see sources",
+      "sources": [
+        {
+          "path": "tmp/review_20261004/implementation/wall_resolution/h1mm/report.json",
+          "sha256": "a1b3dc9406c8a3c5ce308351e2b557b1e6c2314ce94276a3ae267e6b773919a5",
+          "bytes": 294573
+        },
+        {
+          "path": "tmp/review_20261004/implementation/wall_resolution/h0.5mm/report.json",
+          "sha256": "987a489c7d8c2881f4e70d92271bf65739038f14f332de52483c0a4cedd4ecb0",
+          "bytes": 1242051
+        },
+        {
+          "path": "tmp/review_20261004/implementation/wall_resolution/run_index.json",
+          "sha256": "d566d42bcb32b4df8524008f52adfa41b3964e57a8315b2175e431dc02ae1210",
+          "bytes": 24751
+        },
+        {
+          "path": "tmp/review_20261004/implementation/wall_resolution/h1mm/pointin_exception_audit.json",
+          "sha256": "c50ec4db398c3479fc54349d110ead5135b1409147e77f59bba038d0413734a8",
+          "bytes": 1922
+        }
+      ],
+      "copy_path": "copies/wall_resolution/roi_h1_h0p5_summary.json",
+      "copy_sha256": "2a0b56b0ab094eaca30c1a472ef774ee09125b73cddd8249f12254178651c549",
+      "copy_bytes": 9343,
+      "method": "structured_field_extract; not byte-exact; full h0.5 source report omitted to meet bundle cap"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/wall_resolution/run_index.json",
+      "source_sha256": "d566d42bcb32b4df8524008f52adfa41b3964e57a8315b2175e431dc02ae1210",
+      "source_bytes": 24751,
+      "copy_path": "copies/wall_resolution/run_index.json",
+      "copy_sha256": "d566d42bcb32b4df8524008f52adfa41b3964e57a8315b2175e431dc02ae1210",
+      "copy_bytes": 24751,
+      "method": "byte_exact"
+    }
+  ]
+}

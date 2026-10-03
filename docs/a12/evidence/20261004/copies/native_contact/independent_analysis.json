@@ -1,0 +1,502 @@
+{
+  "analysis_method": "Independent Python CSV/TOML parsing; exact sums and Euclidean distances; no simulator re-execution.",
+  "artifact_migration": {
+    "case_names": [
+      "preflight",
+      "contact_baseline",
+      "contact_halfdt",
+      "nocontact_control"
+    ],
+    "destination_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\native_contact_minimal",
+    "execution_argv_exit_runtime_unchanged": true,
+    "source_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\SynLab\\tmp\\review_20261004\\implementation\\native_contact_minimal"
+  },
+  "case_results": {
+    "contact_baseline": {
+      "active_bond_counts_by_body": {
+        "a": {
+          "active": 48,
+          "broken": 0,
+          "directed_total": 48
+        },
+        "b": {
+          "active": 48,
+          "broken": 0,
+          "directed_total": 48
+        }
+      },
+      "actual_solver_dt_over_native_material_bound": 0.5,
+      "all_exported_points_included": true,
+      "contact_enabled": true,
+      "cube_cell_envelope_edge_m": 0.004,
+      "current_archive_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\native_contact_minimal\\contact_baseline",
+      "delta_momentum_by_body_kg_m_per_s": {
+        "a": [
+          0.0,
+          0.0,
+          2.0729983363928722e-05
+        ],
+        "b": [
+          0.0,
+          0.0,
+          -2.0729983363928722e-05
+        ]
+      },
+      "delta_momentum_opposition_residual_kg_m_per_s": 0.0,
+      "end_time_s": 0.005460118897802846,
+      "final_center_a_z_minus_center_b_z_m": 0.003409562759474988,
+      "final_center_relative_velocity_a_minus_b_z_m_per_s": 0.2478119801227724,
+      "final_contact_state_classification": "separating_at_final_state_but_points_within_contact_radius",
+      "final_min_cross_body_point_distance_m": 0.0014098370022796027,
+      "final_min_distance_point_labels": [
+        "a1",
+        "b5"
+      ],
+      "final_nominal_cell_envelope_gap_m": -0.0005904372405250119,
+      "final_nominal_cell_envelope_overlap_m": 0.0005904372405250119,
+      "final_total_momentum_kg_m_per_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "initial_min_cross_body_point_distance_m": 0.0024999999999999996,
+      "initial_total_momentum_kg_m_per_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "masses_by_body_kg": {
+        "a": 6.400000000000001e-05,
+        "b": 6.400000000000001e-05
+      },
+      "max_abs_external_b_N_per_m3": 0.0,
+      "max_abs_final_native_b_int_N_per_m3": 84510.19015277074,
+      "native_bound_safety_multiplier": 1.0,
+      "native_material_stability_bound_s": 4.550099081502372e-05,
+      "native_source_sha256": "bb5a3de1f3e87335032f7eb07cbbb9f57f91c59e32ba4fd72fd35a3adbd9b202",
+      "original_runtime_output_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\SynLab\\tmp\\review_20261004\\implementation\\native_contact_minimal\\contact_baseline",
+      "point_count": 16,
+      "point_ids_by_body": {
+        "a": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "b": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "process_argv": [
+        "--project=pgfrag/src/pgfrag/resources/julia",
+        "--compiled-modules=no",
+        "--startup-file=no",
+        "--history-file=no",
+        "-t1",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\native_contact_minimal\\run_native_contact_minimal.jl",
+        "contact_baseline",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\SynLab\\tmp\\review_20261004\\implementation\\native_contact_minimal\\contact_baseline"
+      ],
+      "runner_exit_code": 0,
+      "runner_runtime_seconds": 26.982588,
+      "solver_dt_s": 2.275049540751186e-05,
+      "step_count": 240,
+      "total_delta_momentum_kg_m_per_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "unique_point_labels": 16
+    },
+    "contact_halfdt": {
+      "active_bond_counts_by_body": {
+        "a": {
+          "active": 48,
+          "broken": 0,
+          "directed_total": 48
+        },
+        "b": {
+          "active": 48,
+          "broken": 0,
+          "directed_total": 48
+        }
+      },
+      "actual_solver_dt_over_native_material_bound": 0.25,
+      "all_exported_points_included": true,
+      "contact_enabled": true,
+      "cube_cell_envelope_edge_m": 0.004,
+      "current_archive_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\native_contact_minimal\\contact_halfdt",
+      "delta_momentum_by_body_kg_m_per_s": {
+        "a": [
+          1.3958672836832342e-24,
+          -7.237830359838992e-25,
+          2.0729894721577515e-05
+        ],
+        "b": [
+          1.809457589959748e-24,
+          -4.652890945610781e-25,
+          -2.0729894721577515e-05
+        ]
+      },
+      "delta_momentum_opposition_residual_kg_m_per_s": 3.418771720550112e-24,
+      "end_time_s": 0.005460118897802846,
+      "final_center_a_z_minus_center_b_z_m": 0.003409564881009867,
+      "final_center_relative_velocity_a_minus_b_z_m_per_s": 0.2478092100492972,
+      "final_contact_state_classification": "separating_at_final_state_but_points_within_contact_radius",
+      "final_min_cross_body_point_distance_m": 0.0014098368688269317,
+      "final_min_distance_point_labels": [
+        "a1",
+        "b5"
+      ],
+      "final_nominal_cell_envelope_gap_m": -0.0005904351189901331,
+      "final_nominal_cell_envelope_overlap_m": 0.0005904351189901331,
+      "final_total_momentum_kg_m_per_s": [
+        3.2053248736429822e-24,
+        -1.1890721305449773e-24,
+        0.0
+      ],
+      "initial_min_cross_body_point_distance_m": 0.0024999999999999996,
+      "initial_total_momentum_kg_m_per_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "masses_by_body_kg": {
+        "a": 6.400000000000001e-05,
+        "b": 6.400000000000001e-05
+      },
+      "max_abs_external_b_N_per_m3": 0.0,
+      "max_abs_final_native_b_int_N_per_m3": 85559.55592267172,
+      "native_bound_safety_multiplier": 1.0,
+      "native_material_stability_bound_s": 4.550099081502372e-05,
+      "native_source_sha256": "bb5a3de1f3e87335032f7eb07cbbb9f57f91c59e32ba4fd72fd35a3adbd9b202",
+      "original_runtime_output_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\SynLab\\tmp\\review_20261004\\implementation\\native_contact_minimal\\contact_halfdt",
+      "point_count": 16,
+      "point_ids_by_body": {
+        "a": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "b": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "process_argv": [
+        "--project=pgfrag/src/pgfrag/resources/julia",
+        "--compiled-modules=no",
+        "--startup-file=no",
+        "--history-file=no",
+        "-t1",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\native_contact_minimal\\run_native_contact_minimal.jl",
+        "contact_halfdt",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\SynLab\\tmp\\review_20261004\\implementation\\native_contact_minimal\\contact_halfdt"
+      ],
+      "runner_exit_code": 0,
+      "runner_runtime_seconds": 31.736337,
+      "solver_dt_s": 1.137524770375593e-05,
+      "step_count": 480,
+      "total_delta_momentum_kg_m_per_s": [
+        3.2053248736429822e-24,
+        -1.1890721305449773e-24,
+        0.0
+      ],
+      "unique_point_labels": 16
+    },
+    "nocontact_control": {
+      "active_bond_counts_by_body": {
+        "a": {
+          "active": 48,
+          "broken": 0,
+          "directed_total": 48
+        },
+        "b": {
+          "active": 48,
+          "broken": 0,
+          "directed_total": 48
+        }
+      },
+      "actual_solver_dt_over_native_material_bound": 0.5,
+      "all_exported_points_included": true,
+      "contact_enabled": false,
+      "cube_cell_envelope_edge_m": 0.004,
+      "current_archive_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\native_contact_minimal\\nocontact_control",
+      "delta_momentum_by_body_kg_m_per_s": {
+        "a": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "b": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "delta_momentum_opposition_residual_kg_m_per_s": 0.0,
+      "end_time_s": 0.005460118897802846,
+      "final_center_a_z_minus_center_b_z_m": 0.002315952440878839,
+      "final_center_relative_velocity_a_minus_b_z_m_per_s": -0.4,
+      "final_contact_state_classification": "no_contact_control",
+      "final_min_cross_body_point_distance_m": 0.00031595244087883907,
+      "final_min_distance_point_labels": [
+        "a1",
+        "b5"
+      ],
+      "final_nominal_cell_envelope_gap_m": -0.001684047559121161,
+      "final_nominal_cell_envelope_overlap_m": 0.001684047559121161,
+      "final_total_momentum_kg_m_per_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "initial_min_cross_body_point_distance_m": 0.0024999999999999996,
+      "initial_total_momentum_kg_m_per_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "masses_by_body_kg": {
+        "a": 6.400000000000001e-05,
+        "b": 6.400000000000001e-05
+      },
+      "max_abs_external_b_N_per_m3": 0.0,
+      "max_abs_final_native_b_int_N_per_m3": 0.0,
+      "native_bound_safety_multiplier": 1.0,
+      "native_material_stability_bound_s": 4.550099081502372e-05,
+      "native_source_sha256": "bb5a3de1f3e87335032f7eb07cbbb9f57f91c59e32ba4fd72fd35a3adbd9b202",
+      "original_runtime_output_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\SynLab\\tmp\\review_20261004\\implementation\\native_contact_minimal\\nocontact_control",
+      "point_count": 16,
+      "point_ids_by_body": {
+        "a": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "b": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "process_argv": [
+        "--project=pgfrag/src/pgfrag/resources/julia",
+        "--compiled-modules=no",
+        "--startup-file=no",
+        "--history-file=no",
+        "-t1",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\native_contact_minimal\\run_native_contact_minimal.jl",
+        "nocontact_control",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\SynLab\\tmp\\review_20261004\\implementation\\native_contact_minimal\\nocontact_control"
+      ],
+      "runner_exit_code": 0,
+      "runner_runtime_seconds": 31.529369,
+      "solver_dt_s": 2.275049540751186e-05,
+      "step_count": 240,
+      "total_delta_momentum_kg_m_per_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "unique_point_labels": 16
+    },
+    "preflight": {
+      "active_bond_counts_by_body": {
+        "a": {
+          "active": 48,
+          "broken": 0,
+          "directed_total": 48
+        },
+        "b": {
+          "active": 48,
+          "broken": 0,
+          "directed_total": 48
+        }
+      },
+      "actual_solver_dt_over_native_material_bound": 0.5,
+      "all_exported_points_included": true,
+      "contact_enabled": true,
+      "cube_cell_envelope_edge_m": 0.004,
+      "current_archive_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\native_contact_minimal\\preflight",
+      "delta_momentum_by_body_kg_m_per_s": {
+        "a": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "b": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "delta_momentum_opposition_residual_kg_m_per_s": 0.0,
+      "end_time_s": 2.275049540751186e-05,
+      "final_center_a_z_minus_center_b_z_m": 0.004490899801836995,
+      "final_center_relative_velocity_a_minus_b_z_m_per_s": -0.4,
+      "final_contact_state_classification": "not_rebounded_by_final_state",
+      "final_min_cross_body_point_distance_m": 0.0024908998018369948,
+      "final_min_distance_point_labels": [
+        "a1",
+        "b5"
+      ],
+      "final_nominal_cell_envelope_gap_m": 0.0004908998018369947,
+      "final_nominal_cell_envelope_overlap_m": 0.0,
+      "final_total_momentum_kg_m_per_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "initial_min_cross_body_point_distance_m": 0.0024999999999999996,
+      "initial_total_momentum_kg_m_per_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "masses_by_body_kg": {
+        "a": 6.400000000000001e-05,
+        "b": 6.400000000000001e-05
+      },
+      "max_abs_external_b_N_per_m3": 0.0,
+      "max_abs_final_native_b_int_N_per_m3": 0.0,
+      "native_bound_safety_multiplier": 1.0,
+      "native_material_stability_bound_s": 4.550099081502372e-05,
+      "native_source_sha256": "bb5a3de1f3e87335032f7eb07cbbb9f57f91c59e32ba4fd72fd35a3adbd9b202",
+      "original_runtime_output_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\SynLab\\tmp\\review_20261004\\implementation\\native_contact_minimal\\preflight",
+      "point_count": 16,
+      "point_ids_by_body": {
+        "a": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "b": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "process_argv": [
+        "--project=pgfrag/src/pgfrag/resources/julia",
+        "--compiled-modules=no",
+        "--startup-file=no",
+        "--history-file=no",
+        "-t1",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\native_contact_minimal\\run_native_contact_minimal.jl",
+        "preflight",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\SynLab\\tmp\\review_20261004\\implementation\\native_contact_minimal\\preflight"
+      ],
+      "runner_exit_code": 0,
+      "runner_runtime_seconds": 25.851199,
+      "solver_dt_s": 2.275049540751186e-05,
+      "step_count": 1,
+      "total_delta_momentum_kg_m_per_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "unique_point_labels": 16
+    }
+  },
+  "checks": {
+    "all_five_source_hashes_match_read_only_inputs": true,
+    "all_peridynamic_bonds_active_and_unbroken": true,
+    "all_three_case_processes_exit_zero_within_120s": true,
+    "all_three_cases_same_final_time": true,
+    "archived_summaries_match_migration_paths_and_original_argv": true,
+    "baseline_contact_differs_from_control": true,
+    "baseline_dt_equals_half_native_bound": true,
+    "contact_radius_and_penalty_match_request": true,
+    "fixed_geometry_material_and_initial_conditions_match_request": true,
+    "free_control_max_position_error_vs_uniform_motion_m": 1.1058862159352145e-17,
+    "free_control_max_velocity_error_vs_initial_m_per_s": 3.945203159194486e-15,
+    "halfdt_is_half_baseline_dt": true,
+    "maximum_opposite_body_delta_p_residual_kg_m_per_s": 3.418771720550112e-24,
+    "maximum_total_delta_momentum_norm_kg_m_per_s": 3.418771720550112e-24,
+    "no_external_force_in_all_cases": true,
+    "nocontact_control_final_pair_distance_positive": true,
+    "path_migration_manifest_parses_and_lists_all_four_runs": true,
+    "preflight_one_step_submit_exit_zero": true,
+    "source_hash_checks": {
+      "julia_manifest": true,
+      "julia_project": true,
+      "native_contact_script": true,
+      "upstream_contact_unit_test": true,
+      "vendored_contact_physics": true
+    },
+    "time_integrated_contact_impulse_and_energy": "UNKNOWN (not exported; delta-P is not a direct contact impulse integral)",
+    "total_momentum_conserved_to_1e-18_kg_m_per_s": true,
+    "two_body_delta_momentum_equal_and_opposite_to_1e-18_kg_m_per_s": true
+  },
+  "history_limits": {
+    "contact_energy_J": null,
+    "reason": "Only initial/final point states and final b_int were exported; there is no per-step contact-force or contact-energy history. Body delta-P is not a direct contact impulse integral.",
+    "time_integrated_contact_impulse_Ns": null
+  },
+  "pairwise_baseline_vs_halfdt": {
+    "interpretation": "Reported as a timestep sensitivity comparison only; no convergence claim is made.",
+    "max_final_point_position_difference_m": 2.7794276432757523e-09,
+    "max_final_point_velocity_difference_m_per_s": 7.287788721288572e-05,
+    "mean_final_point_position_difference_m": 2.2472077404962695e-09,
+    "mean_final_point_velocity_difference_m_per_s": 7.168143850639059e-05
+  },
+  "pairwise_contact_vs_control": {
+    "contact_baseline": {
+      "max_final_point_position_difference_m": 0.0005469422815744224,
+      "max_final_point_velocity_difference_m_per_s": 0.32392243205783844,
+      "mean_final_point_position_difference_m": 0.0005468051601723342,
+      "mean_final_point_velocity_difference_m_per_s": 0.32390599026783756
+    },
+    "contact_halfdt": {
+      "max_final_point_position_difference_m": 0.0005469422149476549,
+      "max_final_point_velocity_difference_m_per_s": 0.32398297154077926,
+      "mean_final_point_position_difference_m": 0.0005468062210393634,
+      "mean_final_point_velocity_difference_m_per_s": 0.3239046085323325
+    }
+  },
+  "schema": "native_contact_minimal.independent_analysis.v1",
+  "unit_note": "Momentum in kg m/s; point position and distance in m; speed in m/s; native b_int in N/m^3."
+}

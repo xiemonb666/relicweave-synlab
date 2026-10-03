@@ -1,0 +1,39 @@
+{
+  "experiment_id": "pg.wall-resolution-local-native-cad-static-mesh/0.1.0",
+  "status": "PREFLIGHT_WITHIN_BOTH_FIXED_TET_BUDGETS",
+  "source_step": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261003\\implementation\\vf\\artifacts\\four_bands_brep_semantics1_final\\geometry\\solid.step",
+  "source_step_sha256": "4623bd373aeed0acfacfbf6cc0dda65952339561779b43429c59d61b8b5a1c30",
+  "python_executable": "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+  "argv": [
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\wall_resolution\\run_roi_trial.py",
+    "--preflight-only",
+    "--output-dir",
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_resolution"
+  ],
+  "roi_box_mm": {
+    "xmin": -23.0,
+    "xmax": -14.0,
+    "ymin": -1.4,
+    "ymax": 1.4,
+    "zmin": 23.1,
+    "zmax": 25.9
+  },
+  "roi_construction": "native OpenCASCADE CAD common of the canonical STEP solid and the fixed box; no triangulated clipping or changed ROI",
+  "roi_exact_occ_volume_mm3": 31.589800899924974,
+  "roi_occ_bbox_mm": [
+    -20.263750100000077,
+    -1.4276949865993114,
+    23.09999989999993,
+    -15.861853399367291,
+    1.4276949865993296,
+    25.900000100000035
+  ],
+  "max_tetra_cells_per_trial": 10000,
+  "forecast_margin_fraction": 1.15,
+  "preflight_forecast_tetra_count_by_fixed_h_mm": {
+    "1.0": 960.7696831032204,
+    "0.5": 7686.157464825763
+  },
+  "preflight_gate": "both forecasts must be strictly below 10000; otherwise neither 3D mesh trial is launched",
+  "meshing_started": false
+}

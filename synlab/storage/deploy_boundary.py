@@ -56,15 +56,20 @@ def _bag_id_is_authorized(manifest: Mapping[str, Any]) -> bool:
     except (KeyError, TypeError, AttributeError):
         return False
     if ("bag_id" not in declared_fields or
-            not policy_hash.startswith("sha256:") or
+            not re.fullmatch(r"sha256:[0-9a-f]{64}", policy_hash) or
             not {"capture_context_fields", "table_columns"} <= blocks or
+            source.get("evidence_class") != "capture_context" or
+            source.get("rig_obtainable") is not True or
+            source.get("claim_allowed") is not True or
             not isinstance(declarations, list)):
         return False
     matching = [row for row in declarations
                 if isinstance(row, Mapping) and str(row.get("key", "")) == "bag_id"]
-    return bool(matching) and all(
+    declared_in = {str(row.get("declared_in", "")) for row in matching}
+    return {"capture_context_fields", "table_columns"} <= declared_in and all(
         row.get("evidence_class") == "capture_context" and
         row.get("rig_obtainable") is True and row.get("claim_allowed") is True
+        and row.get("deploy_view") is True
         for row in matching
     )
 
@@ -105,12 +110,32 @@ def validate_deploy_package(root: str | Path, manifest: Mapping[str, Any]) -> di
     if unknown:
         raise _invalid("unrecognized deployment file(s)", evidence=unknown)
 
-    declared = {str(row.get("path", "")).removeprefix("deploy/")
-                for row in manifest.get("files", [])
-                if str(row.get("path", "")).startswith("deploy/")}
-    if declared != files:
+    manifest_rows = manifest.get("files")
+    if not isinstance(manifest_rows, list):
+        raise _invalid("manifest file inventory must be a list")
+    declared: dict[str, str] = {}
+    for row in manifest_rows:
+        if not isinstance(row, Mapping) or not isinstance(row.get("path"), str):
+            raise _invalid("manifest file inventory contains a malformed row")
+        path = row["path"]
+        if not path.startswith("deploy/"):
+            continue
+        if path in declared:
+            raise _invalid("manifest deploy file inventory contains a duplicate path",
+                           evidence=[path])
+        expected_hash = row.get("hash")
+        if not isinstance(expected_hash, str) or not re.fullmatch(
+                r"sha256:[0-9a-f]{64}", expected_hash):
+            raise _invalid("manifest deploy file inventory has an invalid hash", evidence=[path])
+        byte_count = row.get("bytes")
+        if isinstance(byte_count, bool) or not isinstance(byte_count, int) or byte_count < 0:
+            raise _invalid("manifest deploy file inventory has an invalid byte count",
+                           evidence=[path])
+        declared[path] = expected_hash
+    declared_paths = {path.removeprefix("deploy/") for path in declared}
+    if declared_paths != files:
         raise _invalid("actual deploy files do not match manifest file inventory",
-                       evidence=sorted(files ^ declared))
+                       evidence=sorted(files ^ declared_paths))
 
     query_path = deploy_root / next(iter(query_files))
     query_rows, query_columns = _read_table(query_path)
@@ -232,7 +257,9 @@ def validate_deploy_package(root: str | Path, manifest: Mapping[str, Any]) -> di
             with tarfile.open(path, "r") as tar:
                 for member in tar.getmembers():
                     _scan_raw_ids(member.name, f"{rel} member")
-    return {"schema": DEPLOY_SCHEMA, "ok": True, "opaque_queries": len(opaque_ids),
+    return {"schema": DEPLOY_SCHEMA, "ok": True,
+            "bag_id_capture_context": bag_id_allowed,
+            "opaque_queries": len(opaque_ids),
             "deploy_files": len(files), "channels": sorted(declared_channels)}
 
 

@@ -1,0 +1,36 @@
+{
+  "recorded_at_utc": "2026-10-03 18:20:47 UTC",
+  "scope": "deployment boundary v2 implementation and regression checks; no physical qualification claim",
+  "checks": [
+    {
+      "argv": [
+        ".venv/Scripts/python.exe",
+        "-m",
+        "pytest",
+        "tests/a12/storage/test_deploy_boundary_v2.py",
+        "tests/a12/storage/test_experiment_ready_export.py",
+        "tests/a12/api/test_deployment_asset_boundary.py",
+        "tests/a12/integration/test_capture_context_declaration.py",
+        "tests/a12/storage/test_context_and_channel_policy.py"
+      ],
+      "exit_code": 0,
+      "result": "81 passed in 3.91s"
+    },
+    {
+      "argv": [
+        ".venv/Scripts/python.exe",
+        "-m",
+        "pytest",
+        "tests/a12/qc/test_s7_observation_quality.py"
+      ],
+      "exit_code": 0,
+      "result": "4 passed in 3.16s"
+    }
+  ],
+  "sha256": {
+    "synlab/storage/export.py": "sha256:475a5a2703c393d9988698ed9778a148beaf22dbaaffe6ff19569d2252f1235d",
+    "synlab/storage/deploy_boundary.py": "sha256:b62d5ff547e280a7e9b44f559ff967d876f06bf681b53cf69b37fcf62b2f9358",
+    "tests/a12/storage/test_deploy_boundary_v2.py": "sha256:5e67b631481b72cdbb37e56ee32087bfa75801abe61ce1b6d309505103a0b0aa",
+    "docs/a12/deploy_boundary_v2.md": "sha256:450f03e992a0801d1282579032b7aa705aed114e10a9712156381c7dae399d16"
+  }
+}

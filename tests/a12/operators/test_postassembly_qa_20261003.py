@@ -12,9 +12,11 @@ from synlab.degrade.axes import _FragmentView
 from synlab.degrade.registry import AXIS_REGISTRY
 from synlab.degrade.sources import KIND_PHYSICAL, SourceBundle
 from synlab.physical.api import (_boundary_loops, _postassembly_physical_qa,
+                                GEOMETRY_HASH_ALGORITHM, _geometry_hash,
                                 apply_damage, audit_physical)
 from synlab.physical.recipe import DamageRecipe
-from synlab.schemas.runtime import ORIGIN_INTERFACE, ORIGIN_MOTHER_SURFACE
+from synlab.schemas.runtime import (ORIGIN_INTERFACE, ORIGIN_MOTHER_SURFACE,
+                                    PhysicalComponent)
 from synlab.storage.mesh_io import with_face_attrs
 
 
@@ -223,3 +225,28 @@ def test_missing_ledger_conservation_remains_unknown_and_fails_closed():
     assert audit["checks"]["postassembly"]["checks"]["conservation"]["status"] == "UNKNOWN"
     assert audit["checks"]["postassembly"]["checks"]["conservation"]["pass"] is None
     assert "LEDGER_CONSERVATION_UNKNOWN" in audit["failure_codes"]
+
+
+def test_postassembly_qa_records_full_hashes_for_every_delivered_component():
+    parts = []
+    components = []
+    for index, x in enumerate((-3.0, 3.0)):
+        part = trimesh.creation.box(extents=(2.0, 2.0, 2.0))
+        part.apply_translation((x, 0.0, 0.0))
+        parts.append(part)
+        components.append(PhysicalComponent(
+            component_id=f"multi#{index}", clean_fragment_id="multi", mesh=part,
+            volume_mm3=float(part.volume), is_representative=(index == 0)))
+    source = trimesh.util.concatenate(parts)
+    total = float(sum(component.volume_mm3 for component in components))
+    ledger = {"source_volume_mm3": float(source.volume), "damaged_volume_mm3": total,
+              "lost_volume_mm3": float(source.volume - total), "conservation_ok": True}
+
+    qa = _postassembly_physical_qa(source, components, ledger, result_lost_volume_mm3=0.0)
+
+    assert qa["status"] == "PASS", qa["failure_codes"]
+    assert qa["geometry_hash_algorithm"] == GEOMETRY_HASH_ALGORITHM
+    hashes = qa["component_geometry_hashes"]
+    assert [row["component_id"] for row in hashes] == ["multi#0", "multi#1"]
+    assert [row["geometry_hash"] for row in hashes] == [
+        _geometry_hash(component.mesh) for component in components]

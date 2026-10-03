@@ -1,0 +1,51 @@
+schema = "native_contact_minimal.path_migration.v1"
+source_path = "C:\\Users\\xiemo\\Desktop\\ShardForge\\SynLab\\tmp\\review_20261004\\implementation\\native_contact_minimal"
+destination_path = "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\native_contact_minimal"
+reason = "Moved the actual run outputs from the mistaken SynLab alias directory into the relicweave-synlab review repository."
+move_action = "PowerShell Move-Item; destination was verified absent before the move"
+execution_toml_rewritten = true
+original_execution_argv_preserved = true
+execution_argv_exit_runtime_unchanged = true
+execution_toml_rewrite_reason = "Corrected the PowerShell boolean casing to valid TOML false and added current archived log paths."
+summary_toml_annotated_with_original_and_current_artifact_paths = true
+
+[[cases]]
+name = "preflight"
+original_runtime_output_path = "C:\\Users\\xiemo\\Desktop\\ShardForge\\SynLab\\tmp\\review_20261004\\implementation\\native_contact_minimal\\preflight"
+current_archive_path = "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\native_contact_minimal\\preflight"
+summary_sha256_before_path_annotation = "c37f052faea262025eceae1dde5015eb90606097f6451add7c274e99677ebba8"
+summary_sha256_after_path_annotation = "99cafa27bf175ced7412e48644772ed8b5155d8c12978d883c72d5b32a9525a7"
+execution_sha256_before_toml_normalization = "ae9810e4270026075bcdf33c95da18418e0866d212afea0d7bb2d7730374064a"
+execution_sha256_after_toml_normalization = "6d6735b9bacabd62ebde4e5fde8b56c0e635c3e26bf31a29575c6dc6f8b28657"
+points_sha256 = "fc8ba0872a9fc6777c76361a3e94c88fe31d7151628b60d7f87bd0659410a51c"
+
+[[cases]]
+name = "contact_baseline"
+original_runtime_output_path = "C:\\Users\\xiemo\\Desktop\\ShardForge\\SynLab\\tmp\\review_20261004\\implementation\\native_contact_minimal\\contact_baseline"
+current_archive_path = "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\native_contact_minimal\\contact_baseline"
+summary_sha256_before_path_annotation = "b4a39bcf2655a75e942e8fdb211817bed9002d269f4adcb114df6833f544db19"
+summary_sha256_after_path_annotation = "6adf778991828a35aee38483424f46572f4eeed61f31df278a310663211cc47f"
+execution_sha256_before_toml_normalization = "60814e9aaba5ae42e82faa9a3839a02b1535f873627aadb075bcdebf6a4c8348"
+execution_sha256_after_toml_normalization = "df0e4322d5944047e4943ba1ab25b1a2e3a447c18ac110f8e0c2e34ec15d7f7e"
+points_sha256 = "e93d8c9a38c57eaa5a4a2f4a6819bbec6575e3f4cd36533132d65c4feaa2228e"
+
+[[cases]]
+name = "contact_halfdt"
+original_runtime_output_path = "C:\\Users\\xiemo\\Desktop\\ShardForge\\SynLab\\tmp\\review_20261004\\implementation\\native_contact_minimal\\contact_halfdt"
+current_archive_path = "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\native_contact_minimal\\contact_halfdt"
+summary_sha256_before_path_annotation = "e73c4fb1b32f8224b615751e83d09b8dc5d667f32fc1c5665dd1f67a5a8625cf"
+summary_sha256_after_path_annotation = "7b3638adb7ebc0ba7bc80c6ce2552e9d65b84391b573a2b0cac731256dd8f058"
+execution_sha256_before_toml_normalization = "60852e469b97ad86b070fd7fffda84295c8cdb3de598da8b69ba6748a034e2bb"
+execution_sha256_after_toml_normalization = "a72baec6208324aaf7c374de37d921635c9064d995710093ce7f1a11a10e86c4"
+points_sha256 = "ce065d5131b73ae192d634f4e848e4237207aa012687f9d02c3ef5397b6d6e76"
+
+[[cases]]
+name = "nocontact_control"
+original_runtime_output_path = "C:\\Users\\xiemo\\Desktop\\ShardForge\\SynLab\\tmp\\review_20261004\\implementation\\native_contact_minimal\\nocontact_control"
+current_archive_path = "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\native_contact_minimal\\nocontact_control"
+summary_sha256_before_path_annotation = "ac2a8252548820c4c93521f8d008e7e7106e3c7c541cabed62bb8442ed7da1ac"
+summary_sha256_after_path_annotation = "70765bfb2b5c5050f976d810a94282f16fced16fd13c8d2a7064e240cd18c5a5"
+execution_sha256_before_toml_normalization = "95d74a461122f962cfa6aed9bab1083a9a5bf8e0ccd81c8498749bc00e240406"
+execution_sha256_after_toml_normalization = "9b74f8ee39b9939ffa8eb45b41fc13a0bbbf51571dc88c0c7b36975f92152488"
+points_sha256 = "35e33aa5a4b711d5f60f224481bfb0a457a7e04fd3a76e61b90b9ee9e4a2ce7e"
+

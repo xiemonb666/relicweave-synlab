@@ -1,0 +1,607 @@
+{
+  "label_qa_failure_route": {
+    "dependencies": {
+      "FeatureAdapter": {
+        "reason": "no matching recomputation artifact or receipt is recorded",
+        "status": "PENDING_RECOMPUTE",
+        "validity": "UNKNOWN_INVALIDATED"
+      },
+      "PhysicalTruth": {
+        "physical_result_qa_status": "FAIL",
+        "reason": "physical result QA failed; attached truth is not accepted as valid",
+        "reported_status": "UPDATED",
+        "status": "FAILED",
+        "validity": "FAILED_VALIDATION"
+      },
+      "VisibleLabels": {
+        "reason": "no matching recomputation artifact or receipt is recorded",
+        "status": "PENDING_RECOMPUTE",
+        "validity": "UNKNOWN_INVALIDATED"
+      }
+    },
+    "label_status": "FAILED",
+    "label_validity": "FAILED",
+    "measurement_realized": true,
+    "measurement_valid": true
+  },
+  "minimal_88_face_box": {
+    "P02": {
+      "boundary_edges": [
+        6
+      ],
+      "checks": {
+        "components_present": "PASS",
+        "conservation": "PASS",
+        "finite": "PASS",
+        "mesh_arrays_valid": "PASS",
+        "positive_volume": "PASS",
+        "watertight": "FAIL",
+        "winding_consistent": "PASS"
+      },
+      "component_count": 1,
+      "components": [
+        {
+          "component_id": "box_88_faces#c0",
+          "faces": 84,
+          "geometry_hash": "sha256:a8447fc23a88a0689895eb75705fc92c7b189feccc0f5a194703d6c302ae160b",
+          "recorded_volume_mm3": 147.7327123708291,
+          "signed_volume_mm3": 147.7327123708291,
+          "watertight": false,
+          "winding_consistent": true
+        }
+      ],
+      "conservation": {
+        "component_geometry_errors_mm3": {
+          "box_88_faces#c0": 0.0
+        },
+        "component_geometry_match_pass": true,
+        "delivered_balance_error_mm3": 0.0,
+        "delivered_balance_pass": true,
+        "ledger_damaged_geometry_error_mm3": 0.0,
+        "ledger_damaged_geometry_match_pass": true,
+        "ledger_flag": true,
+        "pass": true,
+        "recorded_balance_error_mm3": 0.0,
+        "recorded_balance_pass": true,
+        "source_geometry_error_mm3": 0.0,
+        "source_geometry_match_pass": true,
+        "status": "PASS",
+        "tolerance_mm3": 0.0001536
+      },
+      "failure_codes": [
+        "NOT_WATERTIGHT"
+      ],
+      "geometry_hash_algorithm": "synlab.mesh-arrays.sha256.v2",
+      "postassembly_status": "FAIL",
+      "realized": true,
+      "result_face_counts": [
+        84
+      ],
+      "source_face_count": 88,
+      "source_geometry": {
+        "signed_volume_mm3": 153.6,
+        "watertight": true,
+        "winding_consistent": true
+      },
+      "status": "FAIL"
+    },
+    "P03": {
+      "boundary_edges": [
+        6
+      ],
+      "checks": {
+        "components_present": "PASS",
+        "conservation": "PASS",
+        "finite": "PASS",
+        "mesh_arrays_valid": "PASS",
+        "positive_volume": "PASS",
+        "watertight": "FAIL",
+        "winding_consistent": "PASS"
+      },
+      "component_count": 1,
+      "components": [
+        {
+          "component_id": "box_88_faces#c0",
+          "faces": 84,
+          "geometry_hash": "sha256:235e51c36caf573e5e1607c586317bad3b395f50e786448e85236363a854c69a",
+          "recorded_volume_mm3": 152.58527819315592,
+          "signed_volume_mm3": 152.58527819315592,
+          "watertight": false,
+          "winding_consistent": true
+        }
+      ],
+      "conservation": {
+        "component_geometry_errors_mm3": {
+          "box_88_faces#c0": 0.0
+        },
+        "component_geometry_match_pass": true,
+        "delivered_balance_error_mm3": 0.0,
+        "delivered_balance_pass": true,
+        "ledger_damaged_geometry_error_mm3": 0.0,
+        "ledger_damaged_geometry_match_pass": true,
+        "ledger_flag": true,
+        "pass": true,
+        "recorded_balance_error_mm3": 0.0,
+        "recorded_balance_pass": true,
+        "source_geometry_error_mm3": 0.0,
+        "source_geometry_match_pass": true,
+        "status": "PASS",
+        "tolerance_mm3": 0.0001536
+      },
+      "failure_codes": [
+        "NOT_WATERTIGHT"
+      ],
+      "geometry_hash_algorithm": "synlab.mesh-arrays.sha256.v2",
+      "postassembly_status": "FAIL",
+      "realized": true,
+      "result_face_counts": [
+        84
+      ],
+      "source_face_count": 88,
+      "source_geometry": {
+        "signed_volume_mm3": 153.6,
+        "watertight": true,
+        "winding_consistent": true
+      },
+      "status": "FAIL"
+    },
+    "P04": {
+      "boundary_edges": [
+        0
+      ],
+      "checks": {
+        "components_present": "PASS",
+        "conservation": "PASS",
+        "finite": "PASS",
+        "mesh_arrays_valid": "PASS",
+        "positive_volume": "PASS",
+        "watertight": "PASS",
+        "winding_consistent": "PASS"
+      },
+      "component_count": 1,
+      "components": [
+        {
+          "component_id": "box_88_faces#c0",
+          "faces": 282,
+          "geometry_hash": "sha256:1be7d70b63d0445b2b17daecced12d1493a8b1775eabfb4f4f1d1496bda8048b",
+          "recorded_volume_mm3": 152.48930505609704,
+          "signed_volume_mm3": 152.48930505609704,
+          "watertight": true,
+          "winding_consistent": true
+        }
+      ],
+      "conservation": {
+        "component_geometry_errors_mm3": {
+          "box_88_faces#c0": 0.0
+        },
+        "component_geometry_match_pass": true,
+        "delivered_balance_error_mm3": 0.0,
+        "delivered_balance_pass": true,
+        "ledger_damaged_geometry_error_mm3": 0.0,
+        "ledger_damaged_geometry_match_pass": true,
+        "ledger_flag": true,
+        "pass": true,
+        "recorded_balance_error_mm3": 0.0,
+        "recorded_balance_pass": true,
+        "source_geometry_error_mm3": 0.0,
+        "source_geometry_match_pass": true,
+        "status": "PASS",
+        "tolerance_mm3": 0.0001536
+      },
+      "failure_codes": [],
+      "geometry_hash_algorithm": "synlab.mesh-arrays.sha256.v2",
+      "postassembly_status": "PASS",
+      "realized": true,
+      "result_face_counts": [
+        282
+      ],
+      "source_face_count": 88,
+      "source_geometry": {
+        "signed_volume_mm3": 153.6,
+        "watertight": true,
+        "winding_consistent": true
+      },
+      "status": "PASS"
+    }
+  },
+  "narrowband_small_box": {
+    "P02": {
+      "checks": {
+        "components_present": "PASS",
+        "conservation": "PASS",
+        "finite": "PASS",
+        "mesh_arrays_valid": "PASS",
+        "positive_volume": "PASS",
+        "watertight": "FAIL",
+        "winding_consistent": "PASS"
+      },
+      "component_count": 1,
+      "component_geometry_hashes": [
+        {
+          "component_id": "probe_fragment_small#c0",
+          "geometry_hash": "sha256:87f14a20b7962ca6d45580ddd4c3817dc9af98c1bb717b0366cfbf83050022a1"
+        }
+      ],
+      "failure_codes": [
+        "NOT_WATERTIGHT"
+      ],
+      "geometry_hash_algorithm": "synlab.mesh-arrays.sha256.v2",
+      "postassembly_status": "FAIL",
+      "realized": true,
+      "source_face_count": 216,
+      "source_watertight": true,
+      "status": "FAIL"
+    },
+    "P03": {
+      "checks": {
+        "components_present": "PASS",
+        "conservation": "PASS",
+        "finite": "PASS",
+        "mesh_arrays_valid": "PASS",
+        "positive_volume": "PASS",
+        "watertight": "FAIL",
+        "winding_consistent": "PASS"
+      },
+      "component_count": 1,
+      "component_geometry_hashes": [
+        {
+          "component_id": "probe_fragment_small#c0",
+          "geometry_hash": "sha256:5589ddd14f26964e12f07d47b32a0e9cbdb029a580f952593395b953ff9004fe"
+        }
+      ],
+      "failure_codes": [
+        "NOT_WATERTIGHT"
+      ],
+      "geometry_hash_algorithm": "synlab.mesh-arrays.sha256.v2",
+      "postassembly_status": "FAIL",
+      "realized": true,
+      "source_face_count": 216,
+      "source_watertight": true,
+      "status": "FAIL"
+    },
+    "P04": {
+      "checks": {
+        "components_present": "PASS",
+        "conservation": "PASS",
+        "finite": "PASS",
+        "mesh_arrays_valid": "PASS",
+        "positive_volume": "PASS",
+        "watertight": "PASS",
+        "winding_consistent": "PASS"
+      },
+      "component_count": 1,
+      "component_geometry_hashes": [
+        {
+          "component_id": "probe_fragment_small#c0",
+          "geometry_hash": "sha256:9802dd9de1fe93840cb5386e3c0453ccd503b26005ddd7f1cc98ccbdd88e9471"
+        }
+      ],
+      "failure_codes": [],
+      "geometry_hash_algorithm": "synlab.mesh-arrays.sha256.v2",
+      "postassembly_status": "PASS",
+      "realized": true,
+      "source_face_count": 216,
+      "source_watertight": true,
+      "status": "PASS"
+    }
+  },
+  "probe_apply_axis": {
+    "P02": {
+      "checks": {
+        "components_present": "PASS",
+        "conservation": "PASS",
+        "finite": "PASS",
+        "mesh_arrays_valid": "PASS",
+        "positive_volume": "PASS",
+        "watertight": "FAIL",
+        "winding_consistent": "PASS"
+      },
+      "failure_codes": [
+        "NOT_WATERTIGHT"
+      ],
+      "measured": {
+        "boundary_edges": 96.0,
+        "clipped_volume_mm3": 0.0,
+        "components": 1.0,
+        "edge_dihedral_median_deg": 91.26952814450883,
+        "edge_length_total_mm": 84.17205420046693,
+        "edge_width_mm": 0.4,
+        "effective_fillet_radius_mm": 0.1,
+        "grid_nodes": 0.0,
+        "grid_spacing_mm": 0.0,
+        "grid_spacing_requested_mm": 0.0,
+        "lost_volume_mm3": 1.3820769030626252,
+        "lost_volume_ratio": 0.0009998513703743986,
+        "max_outside_clean_mm": 9.5367431640625e-07,
+        "measured_max_recession_mm": 0.05327554098594056,
+        "measured_mean_recession_mm": 0.0017503987460092798,
+        "measured_recession_p95_mm": 0.015990716870874132,
+        "min_thickness_mm": 3.0958497524261475,
+        "moved_vertices": 102.0,
+        "moved_vertices_fraction": 0.037037037037037035,
+        "planned_contact_width_mm": 0.11616105829637034,
+        "planned_max_recession_mm": 0.05327554098594056,
+        "recession_strength": 0.25,
+        "removed_samples": 1864.0,
+        "roi_external_drift_mm": 9.830249609876773e-07,
+        "roi_external_drift_moved_samples": 699.0,
+        "roi_external_drift_p50_mm": 0.0,
+        "roi_external_drift_p95_mm": 4.76837158203125e-07,
+        "roi_external_drift_p99_mm": 4.771143358084373e-07,
+        "roi_external_drift_samples": 1500.0,
+        "watertight": 1.0
+      },
+      "measurement_realized": false,
+      "measurement_valid": true,
+      "physical_realized": true,
+      "physical_status": "FAIL",
+      "postassembly_status": "FAIL"
+    },
+    "P03": {
+      "checks": {
+        "components_present": "PASS",
+        "conservation": "PASS",
+        "finite": "PASS",
+        "mesh_arrays_valid": "PASS",
+        "positive_volume": "PASS",
+        "watertight": "FAIL",
+        "winding_consistent": "PASS"
+      },
+      "failure_codes": [
+        "NOT_WATERTIGHT"
+      ],
+      "measured": {
+        "applied_depth_mm": 0.05,
+        "clipped_volume_mm3": 0.0,
+        "components": 1.0,
+        "corr_length_mm": 6.0,
+        "depth_mm": 0.05,
+        "field_normalizer": 0.7075121179826619,
+        "grid_nodes": 0.0,
+        "grid_spacing_mm": 0.0,
+        "grid_spacing_requested_mm": 0.0,
+        "linearised_predicted_loss_mm3": 15.48001131474948,
+        "lost_volume_mm3": 14.378062786669034,
+        "lost_volume_ratio": 0.010401682966211013,
+        "lost_volume_vs_linear_ratio": 0.9288147465996682,
+        "max_local_thickness_drop_mm": -0.0015132003463804722,
+        "max_outside_clean_mm": 9.610960205463925e-07,
+        "measured_max_recession_mm": 0.05,
+        "measured_max_vertex_shift_mm": 0.04999980330467224,
+        "measured_mean_vertex_shift_mm": 0.03569405716579103,
+        "min_thickness_mm": 0.0035131932236254215,
+        "narrowband_vertices": 817.0,
+        "planned_max_recession_mm": 0.05,
+        "planned_mean_recession_mm": 0.03565924986949838,
+        "rim_vertices_pinned": 96.0,
+        "roi_external_drift_mm": 9.5367431640625e-07,
+        "roi_external_drift_moved_samples": 696.0,
+        "roi_external_drift_p50_mm": 0.0,
+        "roi_external_drift_p95_mm": 4.76837158203125e-07,
+        "roi_external_drift_p99_mm": 4.780103353141383e-07,
+        "roi_external_drift_samples": 1500.0,
+        "roi_faces": 1536.0,
+        "thickness_guard_mm": 0.6,
+        "thickness_guard_satisfied": 1.0,
+        "thickness_guard_scale": 1.0,
+        "thickness_violation_budget": 0.01,
+        "thickness_violation_fraction": 0.0,
+        "undamaged_min_thickness_mm": 0.0019998913630843163,
+        "watertight": 1.0
+      },
+      "measurement_realized": false,
+      "measurement_valid": true,
+      "physical_realized": true,
+      "physical_status": "FAIL",
+      "postassembly_status": "FAIL"
+    }
+  },
+  "probe_narrowband": {
+    "P02": {
+      "checks": {
+        "components_present": "PASS",
+        "conservation": "PASS",
+        "finite": "PASS",
+        "mesh_arrays_valid": "PASS",
+        "positive_volume": "PASS",
+        "watertight": "FAIL",
+        "winding_consistent": "PASS"
+      },
+      "failure_codes": [
+        "NOT_WATERTIGHT"
+      ],
+      "measured": {
+        "boundary_edges": 96.0,
+        "clipped_volume_mm3": 0.0,
+        "components": 1.0,
+        "edge_dihedral_median_deg": 91.26952814450883,
+        "edge_length_total_mm": 84.17205420046693,
+        "edge_width_mm": 0.4,
+        "effective_fillet_radius_mm": 0.1,
+        "lost_volume_mm3": 1.3820769030626252,
+        "lost_volume_ratio": 0.0009998513703743986,
+        "max_outside_clean_mm": 9.5367431640625e-07,
+        "measured_max_recession_mm": 0.05327554098594056,
+        "measured_mean_recession_mm": 0.0017709013288089023,
+        "measured_recession_p95_mm": 0.01431969576515257,
+        "min_thickness_mm": 3.0958497524261475,
+        "moved_vertices": 102.0,
+        "moved_vertices_fraction": 0.037037037037037035,
+        "planned_contact_width_mm": 0.11616105829637034,
+        "planned_max_recession_mm": 0.05327554098594056,
+        "recession_strength": 0.25,
+        "removed_samples": 1824.0,
+        "roi_external_drift_mm": 9.830249609876773e-07,
+        "roi_external_drift_moved_samples": 699.0,
+        "roi_external_drift_p50_mm": 0.0,
+        "roi_external_drift_p95_mm": 4.76837158203125e-07,
+        "roi_external_drift_p99_mm": 4.778231800628418e-07,
+        "roi_external_drift_samples": 1500.0,
+        "watertight": 1.0
+      },
+      "narrowband_detail_keys": [
+        "backend",
+        "clip",
+        "edge_info",
+        "field",
+        "method",
+        "new_edges",
+        "radius_rule",
+        "roi",
+        "variant"
+      ],
+      "narrowband_spacing": null,
+      "postassembly_status": "FAIL",
+      "realized": true,
+      "result_face_counts": [
+        5467
+      ],
+      "result_status": "FAIL",
+      "sdf_spacing": {
+        "basis": "SURFACE_OPERATOR",
+        "spacing_mm": null
+      },
+      "source_face_count": 5504
+    },
+    "P03": {
+      "checks": {
+        "components_present": "PASS",
+        "conservation": "PASS",
+        "finite": "PASS",
+        "mesh_arrays_valid": "PASS",
+        "positive_volume": "PASS",
+        "watertight": "FAIL",
+        "winding_consistent": "PASS"
+      },
+      "failure_codes": [
+        "NOT_WATERTIGHT"
+      ],
+      "measured": {
+        "applied_depth_mm": 0.05,
+        "clipped_volume_mm3": 0.0,
+        "components": 1.0,
+        "corr_length_mm": 6.0,
+        "depth_mm": 0.05,
+        "field_id": "P03_recession_field",
+        "field_normalizer": 0.8070206071026929,
+        "linearised_predicted_loss_mm3": 13.506663103416352,
+        "lost_volume_mm3": 12.510976583816273,
+        "lost_volume_ratio": 0.00905095588699227,
+        "lost_volume_vs_linear_ratio": 0.9262818275708504,
+        "max_local_thickness_drop_mm": -0.0014397124759852886,
+        "max_outside_clean_mm": 9.5367431640625e-07,
+        "measured_max_recession_mm": 0.05,
+        "measured_max_vertex_shift_mm": 0.04995666816830635,
+        "measured_mean_vertex_shift_mm": 0.031045960345087203,
+        "min_thickness_mm": 0.003439744468778372,
+        "narrowband_vertices": 817.0,
+        "planned_max_recession_mm": 0.05,
+        "planned_mean_recession_mm": 0.031118747703488627,
+        "rim_vertices_pinned": 96.0,
+        "roi_external_drift_mm": 9.830249609876773e-07,
+        "roi_external_drift_moved_samples": 699.0,
+        "roi_external_drift_p50_mm": 0.0,
+        "roi_external_drift_p95_mm": 4.76837158203125e-07,
+        "roi_external_drift_p99_mm": 4.778231800628418e-07,
+        "roi_external_drift_samples": 1500.0,
+        "roi_faces": 1536.0,
+        "thickness_guard_mm": 0.6,
+        "thickness_guard_satisfied": 1.0,
+        "thickness_guard_scale": 1.0,
+        "thickness_violation_budget": 0.01,
+        "thickness_violation_fraction": 0.0,
+        "undamaged_min_thickness_mm": 0.0019998913630843163,
+        "watertight": 1.0
+      },
+      "narrowband_detail_keys": [
+        "backend",
+        "clip",
+        "field",
+        "grid",
+        "method",
+        "paired_thickness",
+        "roi",
+        "spacing",
+        "thickness_guard"
+      ],
+      "narrowband_spacing": {
+        "basis": "SURFACE_OPERATOR",
+        "note": "the declared depth is applied directly, so no grid spacing has to resolve it",
+        "spacing_mm": 0.0
+      },
+      "postassembly_status": "FAIL",
+      "realized": true,
+      "result_face_counts": [
+        5449
+      ],
+      "result_status": "FAIL",
+      "sdf_spacing": {
+        "basis": "SURFACE_OPERATOR",
+        "spacing_mm": 0.0
+      },
+      "source_face_count": 5504
+    },
+    "P04": {
+      "checks": {
+        "components_present": "PASS",
+        "conservation": "PASS",
+        "finite": "PASS",
+        "mesh_arrays_valid": "PASS",
+        "positive_volume": "PASS",
+        "watertight": "PASS",
+        "winding_consistent": "PASS"
+      },
+      "failure_codes": [],
+      "measured": {
+        "achieved_contact_loss": 0.10003155569580313,
+        "components": 1.0,
+        "contact_area_total_mm2": 434.061999822634,
+        "contact_loss_target": 0.1,
+        "contact_lost_area_mm2": 43.419897110689504,
+        "contact_residual_area_mm2": 390.6421027119445,
+        "cutter_center_mm_x": -9.0,
+        "cutter_center_mm_y": -0.5625,
+        "cutter_center_mm_z": 1.610006037,
+        "cutter_radius_mm": 3.1379296765544673,
+        "cutter_scale": 7.824531555175781,
+        "largest_component_ratio": 0.9546922920974946,
+        "lost_volume_mm3": 62.62804500564198,
+        "measured_max_displacement_mm": 9.610960205463925e-07,
+        "min_thickness_mm": 0.026969032362103462,
+        "roi_external_drift_mm": 9.610960205463925e-07,
+        "roi_external_drift_moved_samples": 0.0,
+        "roi_external_drift_p50_mm": 0.0,
+        "roi_external_drift_p95_mm": 0.0,
+        "roi_external_drift_p99_mm": 0.0,
+        "roi_external_drift_samples": 3000.0,
+        "search_bisect_started": 1.0,
+        "search_bracket_high_scale": 0.0,
+        "search_bracket_low_scale": 7.82452392578125,
+        "search_evaluations": 23.0,
+        "search_feasible_scale_max": 7.824531555175781,
+        "target_abs_error": 3.1555695803126005e-05,
+        "target_tolerance": 0.01
+      },
+      "narrowband_detail_keys": [
+        "backend",
+        "cutter",
+        "method",
+        "roi",
+        "search",
+        "variant"
+      ],
+      "narrowband_spacing": null,
+      "postassembly_status": "PASS",
+      "realized": true,
+      "result_face_counts": [
+        5754
+      ],
+      "result_status": "PASS",
+      "sdf_spacing": {
+        "basis": "ANALYTIC_CUTTER",
+        "spacing_mm": 0.0
+      },
+      "source_face_count": 5504
+    }
+  }
+}

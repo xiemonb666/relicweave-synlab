@@ -778,39 +778,61 @@ def remove_paint(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any =
     albedo = np.asarray(appearance["texel_albedo"], dtype=np.float32)
     substrate = np.asarray(appearance["texel_substrate_albedo"], dtype=np.float32)
     area = np.asarray(appearance["texel_area_mm2"], dtype=np.float64)
-    layer = np.asarray(appearance.get("texel_layer", np.zeros(len(albedo), dtype=np.int32)))
+    n_texels = int(albedo.shape[0]) if albedo.ndim else 0
+    layer = np.asarray(appearance.get("texel_layer", np.zeros(n_texels, dtype=np.int32)))
     if "texel_positions" not in appearance:
         raise ValueError("P05 appearance payload requires texel_positions")
-    if albedo.ndim != 2 or substrate.shape != albedo.shape:
-        raise ValueError("P05 albedo and substrate channels must have matching (N, C) shapes")
+    if albedo.ndim != 2 or albedo.shape[1:] != (3,):
+        raise ValueError("P05 texel_albedo must have shape (N, 3)")
+    if substrate.shape != albedo.shape:
+        raise ValueError("P05 texel_substrate_albedo must have shape (N, 3)")
+    if (not np.all(np.isfinite(albedo)) or np.any(albedo < 0.0) or np.any(albedo > 1.0)):
+        raise ValueError("P05 texel_albedo values must be finite and in [0, 1]")
+    if (not np.all(np.isfinite(substrate)) or np.any(substrate < 0.0) or
+            np.any(substrate > 1.0)):
+        raise ValueError("P05 texel_substrate_albedo values must be finite and in [0, 1]")
     if area.shape != (len(albedo),) or layer.shape != (len(albedo),):
         raise ValueError("P05 texel area and layer channels must match texel_albedo")
+    if not np.all(np.isfinite(area)) or np.any(area <= 0.0):
+        raise ValueError("P05 texel_area_mm2 values must be finite and strictly positive")
     positions = np.asarray(appearance["texel_positions"], dtype=np.float64)
     if positions.shape != (len(albedo), 3):
         raise ValueError("P05 texel_positions must have shape (N, 3)")
+    if not np.all(np.isfinite(positions)):
+        raise ValueError("P05 texel_positions values must be finite")
     field = F.FourierField.from_payload(recipe.basis["rank_field"])
     rank = np.clip(field(positions), 0.0, 1.0)
     paint_texels = layer > 0
-    removed_mask = np.zeros(len(rank), dtype=bool)
+    prior_removed = np.asarray(appearance.get("paint_mask_removed",
+                                               np.zeros(len(rank), dtype=bool)))
+    if prior_removed.shape != (len(rank),) or prior_removed.dtype.kind != "b":
+        raise ValueError("P05 paint_mask_removed must be a boolean mask matching texel_albedo")
+    prior_removed = prior_removed & paint_texels
+    selected_mask = np.zeros(len(rank), dtype=bool)
     if paint_texels.any():
         paint_ids = np.flatnonzero(paint_texels)
         local_removed, selection = F.rank_mask_for_area_fraction(
             rank[paint_texels], 1.0 - retained, area[paint_texels], tail="lower")
-        removed_mask[paint_ids[local_removed]] = True
+        selected_mask[paint_ids[local_removed]] = True
     else:
         _, selection = F.rank_mask_for_area_fraction(
             rank[paint_texels], 0.0, area[paint_texels], tail="lower")
+    removed_mask = prior_removed | selected_mask
+    newly_removed_mask = removed_mask & ~prior_removed
     new_albedo = np.array(albedo, copy=True)
     new_albedo[removed_mask] = substrate[removed_mask]
     removed_area = float(area[removed_mask].sum())
+    newly_removed_area = float(area[newly_removed_mask].sum())
     total_paint_area = float(area[paint_texels].sum())
     residual = 1.0 - (removed_area / max(total_paint_area, 1e-12))
     measurements = {
         "retained_fraction": retained,
         "paint_texels": float(int(paint_texels.sum())),
         "removed_texels": float(int(removed_mask.sum())),
+        "newly_removed_texels": float(int(newly_removed_mask.sum())),
         "paint_total_area_mm2": total_paint_area,
         "paint_removed_area_mm2": removed_area,
+        "paint_newly_removed_area_mm2": newly_removed_area,
         "paint_residual_fraction": float(residual),
         "revealed_substrate_fraction": float(removed_area / max(total_paint_area, 1e-12)),
         "paint_removed_area_target_fraction": float(1.0 - retained),
@@ -825,7 +847,6 @@ def remove_paint(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any =
                "mask_nested": True,
                "removed_area_selection": {"weight_unit": "mm2", **selection},
                "geometry": S.mesh_summary(mesh)}
-    realized = bool(removed_area > 0)
     output_appearance = _copy_appearance_channels(appearance)
     output_appearance.update({"texel_albedo": new_albedo,
                               "paint_mask_retained": paint_texels & ~removed_mask,
@@ -833,9 +854,13 @@ def remove_paint(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any =
     return DamageOutcome(mesh=mesh, appearance=output_appearance,
                          measurements=measurements,
                          units={"paint_removed_area_mm2": "mm2", "paint_total_area_mm2": "mm2",
+                                "paint_newly_removed_area_mm2": "mm2",
                                 "paint_removed_area_target_fraction": "1",
                                 "paint_removed_area_fraction_error": "1"},
-                         details=details, realized=realized)
+                         details={**details,
+                                  "newly_removed_area_mm2": newly_removed_area,
+                                  "cumulative_removed_area_mm2": removed_area},
+                         realized=bool(newly_removed_area > 0.0))
 
 
 def dirt_cover(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any = None) -> DamageOutcome:
@@ -846,18 +871,35 @@ def dirt_cover(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any = N
         raise ValueError("P06 coverage must be finite and in [0, 1]")
     field = F.FourierField.from_payload(recipe.basis["dirt_field"])
     albedo = np.asarray(appearance["texel_albedo"], dtype=np.float32)
-    roughness = np.asarray(appearance.get("texel_roughness", np.full(len(albedo), 0.6)),
+    n_texels = int(albedo.shape[0]) if albedo.ndim else 0
+    roughness = np.asarray(appearance.get("texel_roughness", np.full(n_texels, 0.6)),
                            dtype=np.float32)
     area = np.asarray(appearance["texel_area_mm2"], dtype=np.float64)
-    if albedo.ndim != 2 or area.shape != (len(albedo),) or roughness.shape != (len(albedo),):
+    if albedo.ndim != 2 or albedo.shape[1:] != (3,):
+        raise ValueError("P06 texel_albedo must have shape (N, 3)")
+    if area.shape != (len(albedo),) or roughness.shape != (len(albedo),):
         raise ValueError("P06 albedo, roughness and area channels must share the same texel count")
+    if not np.all(np.isfinite(albedo)) or np.any(albedo < 0.0) or np.any(albedo > 1.0):
+        raise ValueError("P06 texel_albedo values must be finite and in [0, 1]")
+    if not np.all(np.isfinite(area)) or np.any(area <= 0.0):
+        raise ValueError("P06 texel_area_mm2 values must be finite and strictly positive")
+    if (not np.all(np.isfinite(roughness)) or np.any(roughness < 0.0) or
+            np.any(roughness > 1.0)):
+        raise ValueError("P06 texel_roughness values must be finite and in [0, 1]")
     if "texel_positions" not in appearance:
         raise ValueError("P06 appearance payload requires texel_positions")
     positions = np.asarray(appearance["texel_positions"], dtype=np.float64)
     if positions.shape != (len(albedo), 3):
         raise ValueError("P06 texel_positions must have shape (N, 3)")
+    if not np.all(np.isfinite(positions)):
+        raise ValueError("P06 texel_positions values must be finite")
     dirt_color = np.asarray(recipe.basis.get("dirt_color", [0.22, 0.18, 0.13]), dtype=np.float32)
     dirt_roughness = float(recipe.basis.get("dirt_roughness", 0.95))
+    if dirt_color.shape != (3,) or not np.all(np.isfinite(dirt_color)) or np.any(
+            dirt_color < 0.0) or np.any(dirt_color > 1.0):
+        raise ValueError("P06 dirt_color must have shape (3,) with finite values in [0, 1]")
+    if not np.isfinite(dirt_roughness) or not 0.0 <= dirt_roughness <= 1.0:
+        raise ValueError("P06 dirt_roughness must be finite and in [0, 1]")
     values = np.clip(field(positions), 0.0, 1.0)
     covered, selection = F.rank_mask_for_area_fraction(values, coverage, area, tail="lower")
     new_albedo = np.array(albedo, copy=True)
@@ -868,11 +910,15 @@ def dirt_cover(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any = N
     total_area = float(area.sum())
     pattern = np.asarray(appearance.get("pattern_region", np.zeros(len(albedo), dtype=bool)))
     interface = np.asarray(appearance.get("interface_region", np.zeros(len(albedo), dtype=bool)))
-    if pattern.shape != (len(albedo),) or interface.shape != (len(albedo),):
+    paint_removed = np.asarray(appearance.get("paint_mask_removed",
+                                               np.zeros(len(albedo), dtype=bool)))
+    if any(mask.shape != (len(albedo),) or mask.dtype.kind != "b"
+           for mask in (pattern, interface, paint_removed)):
         raise ValueError("P06 pattern and interface masks must match texel_albedo")
-    pattern = pattern.astype(bool, copy=False)
-    interface = interface.astype(bool, copy=False)
-    pattern_area = float(area[pattern].sum())
+    visible_pattern = pattern & ~paint_removed
+    original_pattern_area = float(area[pattern].sum())
+    cumulative_pattern_loss_area = float(area[pattern & paint_removed].sum())
+    visible_pattern_area = float(area[visible_pattern].sum())
     interface_area = float(area[interface].sum())
     variant = recipe.variant or "dirt_appearance"
     measurements = {
@@ -883,8 +929,9 @@ def dirt_cover(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any = N
         "coverage_area_error_mm2": float(covered_area - selection["target_area"]),
         "coverage_fraction_error": float(covered_area / max(total_area, 1e-12) - coverage),
         "covered_texels": float(int(covered.sum())),
-        "pattern_visibility_reduction": float(area[covered & pattern].sum() / pattern_area)
-        if pattern_area > 0 else 0.0,
+        "original_pattern_area_mm2": original_pattern_area,
+        "cumulative_pattern_loss_area_mm2": cumulative_pattern_loss_area,
+        "visible_pattern_area_mm2": visible_pattern_area,
         "interface_visibility_reduction": float(area[covered & interface].sum() / interface_area)
         if interface_area > 0 else 0.0,
         "mean_albedo_delta": float(np.abs(new_albedo - albedo).mean()),
@@ -893,7 +940,12 @@ def dirt_cover(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any = N
         "contamination_entity": 1.0 if variant == "dirt_geometry" else 0.0,
     }
     details = {"field_id": field.field_id,
-               "selection": {"weight_unit": "mm2", **selection}, "variant": variant}
+               "selection": {"weight_unit": "mm2", **selection}, "variant": variant,
+               "pattern_visibility_status": ("APPLICABLE" if visible_pattern_area > 0.0 else
+                                              "NOT_APPLICABLE_NO_SURVIVING_PATTERN")}
+    if visible_pattern_area > 0.0:
+        measurements["pattern_visibility_reduction"] = float(
+            area[covered & visible_pattern].sum() / visible_pattern_area)
     added_bodies: list[Any] = []
     outcome_mesh = mesh
     if variant == "dirt_geometry":
@@ -914,6 +966,10 @@ def dirt_cover(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any = N
                          units={"coverage": "1", "realized_coverage": "1",
                                 "covered_area_mm2": "mm2", "covered_area_target_mm2": "mm2",
                                 "coverage_area_error_mm2": "mm2", "coverage_fraction_error": "1",
+                                "original_pattern_area_mm2": "mm2",
+                                "cumulative_pattern_loss_area_mm2": "mm2",
+                                "visible_pattern_area_mm2": "mm2",
+                                "pattern_visibility_reduction": "1",
                                 "contamination_volume_mm3": "mm3"},
                          details=details, realized=bool(covered.any()), added_bodies=added_bodies)
 
@@ -964,7 +1020,7 @@ def crack_or_coat_loss(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment:
         area = np.asarray(appearance["texel_area_mm2"], dtype=np.float64)
         field = F.FourierField.from_payload(recipe.basis["rank_field"])
         rank = np.clip(field(np.asarray(appearance["texel_positions"], dtype=np.float64)), 0.0, 1.0)
-        threshold = float(np.quantile(rank[coat], 1.0 - affected)) if coat.any() else 0.0
+        threshold = F.threshold_for_fraction(rank[coat], affected, tail="lower")
         removed = coat & (rank <= threshold)
         substrate = np.asarray(appearance["texel_substrate_albedo"], dtype=np.float32)
         albedo = np.array(appearance["texel_albedo"], copy=True)

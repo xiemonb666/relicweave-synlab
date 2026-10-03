@@ -1,0 +1,359 @@
+{
+  "abort_reason": "native center of mass for component 48 classified OUT; no resampling attempted",
+  "artifacts": {
+    "candidate_npz": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cad_clipped_cells\\fixed8mm_singlethread_case03_native_empty_compound_policy\\cad_clipped_cells_candidate.npz",
+    "candidate_npz_sha256": "35a0920ad025c2683ebed95faf8bb6977e25ff078968e8dc9b92790c4b876e72",
+    "cavity_probes_json": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cad_clipped_cells\\fixed8mm_singlethread_case03_native_empty_compound_policy\\cavity_probe_results.json",
+    "cell_records_json": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cad_clipped_cells\\fixed8mm_singlethread_case03_native_empty_compound_policy\\cell_records.json",
+    "cell_records_jsonl": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cad_clipped_cells\\fixed8mm_singlethread_case03_native_empty_compound_policy\\cell_records.jsonl",
+    "component_brep_dir": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cad_clipped_cells\\fixed8mm_singlethread_case03_native_empty_compound_policy\\components",
+    "component_records_json": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cad_clipped_cells\\fixed8mm_singlethread_case03_native_empty_compound_policy\\component_records.json",
+    "figure_diagnostics_json": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cad_clipped_cells\\fixed8mm_singlethread_case03_native_empty_compound_policy\\figure_diagnostics.json",
+    "figure_png": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cad_clipped_cells\\fixed8mm_singlethread_case03_native_empty_compound_policy\\cad_clipped_cells_y0_ax3_corrected.png",
+    "figure_png_sha256": "7f0e26809153e7f495f5feef46b99daf41e312428f9ff2d6c377e2deb215168f",
+    "nonvolume_common_dir": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cad_clipped_cells\\fixed8mm_singlethread_case03_native_empty_compound_policy\\nonvolume_nonempty",
+    "report_json": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cad_clipped_cells\\fixed8mm_singlethread_case03_native_empty_compound_policy\\report.json",
+    "report_md": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cad_clipped_cells\\fixed8mm_singlethread_case03_native_empty_compound_policy\\report.md",
+    "run_log": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cad_clipped_cells\\fixed8mm_singlethread_case03_native_empty_compound_policy\\run.log",
+    "superseded_figure_png": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cad_clipped_cells\\fixed8mm_singlethread_case03_native_empty_compound_policy\\cad_clipped_cells_y0_SUPERSEDED_wrong_plane_uv.png",
+    "superseded_figure_png_sha256": "084f0187c413dcdfdc558e15f359db99c13155051d528ba79f06999b42d144b0"
+  },
+  "checks": {
+    "all_boxes_processed": false,
+    "all_cavity_probes_out": true,
+    "all_centroids_inside": false,
+    "all_component_shapes_valid": true,
+    "cavity_probe_count": 63,
+    "cavity_probe_scope": "axis-centered points at radii 0, 4, 8 mm (four azimuths for nonzero radii), z=8,16,24,32,40,48,52 mm",
+    "cavity_probe_state_counts": {
+      "OUT": 63
+    },
+    "centroid_state_counts": {
+      "IN": 48,
+      "OUT": 1
+    },
+    "finite_positive_components": 49,
+    "full_partition_volume_accuracy": "NOT_EVALUATED_INCOMPLETE_PARTITION",
+    "native_com_markers_are_xz_projections_not_y0_membership": true,
+    "source_cad_section_bounds_xmin_xmax_zmin_zmax_mm": [
+      -20.500000000000103,
+      32.6,
+      0.0,
+      56.0
+    ],
+    "source_section_has_left_and_right_x": true,
+    "source_section_spans_z0_to_z56": true,
+    "unique_centroid_count": 49
+  },
+  "counts": {
+    "box_records": 294,
+    "candidate_boxes": 294,
+    "component_brep_files": 49,
+    "empty_3d_material_results": 9,
+    "exact_null_common": 0,
+    "exceptions": 1,
+    "kernel_error_results": 0,
+    "kernel_warning_results": 0,
+    "native_empty_compound": 9,
+    "nonvolume_nonempty_commons": 0,
+    "operation_gate_failures": 1,
+    "positive_components": 49,
+    "processed_boxes": 58
+  },
+  "created_utc": "2026-10-03T18:10:55+00:00",
+  "exceptions_detail": [],
+  "execution": {
+    "argv": [
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+      "pgfrag\\experiments\\cad_clipped_cells_spike.py"
+    ],
+    "exit_code": 1,
+    "finished_utc": "2026-10-03T18:10:56.187+00:00",
+    "python_executable": "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+    "raw_sys_argv": [
+      "pgfrag\\experiments\\cad_clipped_cells_spike.py"
+    ],
+    "run_state": "INCOMPLETE_COM_OUT",
+    "runtime_scope": "reported experiment runtime through source-section preparation; excludes interpreter startup and final report serialization",
+    "runtime_seconds": 1.1870000001508743,
+    "shell_command": "& '.\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe' 'pgfrag\\experiments\\cad_clipped_cells_spike.py'",
+    "started_utc": "2026-10-03T18:10:55+00:00",
+    "working_directory": "C:\\Users\\xiemo\\Desktop\\ShardForge"
+  },
+  "failures": [
+    {
+      "gate": "all_component_coms_natively_inside",
+      "reason": "native center of mass for component 48 classified OUT; no resampling attempted"
+    },
+    {
+      "gate": "every_box_common_processed",
+      "reason": "processed=58/294; stopped on native COM OUT"
+    },
+    {
+      "gate": "manifest_rho_mass_conservation_arithmetic",
+      "reason": "NOT_EVALUATED_INCOMPLETE_PARTITION"
+    },
+    {
+      "gate": "native_volume_error_at_most_1_percent",
+      "reason": "NOT_EVALUATED_INCOMPLETE_PARTITION"
+    },
+    {
+      "gate": "physics_and_pg_acceptance",
+      "reason": "false by design: static geometry candidate only; no solver/job/physical qualification"
+    }
+  ],
+  "figure_diagnostics": {
+    "body_wall_samples_by_z_mm": {
+      "16": {
+        "negative_x_wall_sampled": true,
+        "positive_x_wall_sampled": true,
+        "sample_count": 63
+      },
+      "24": {
+        "negative_x_wall_sampled": true,
+        "positive_x_wall_sampled": true,
+        "sample_count": 40
+      },
+      "32": {
+        "negative_x_wall_sampled": true,
+        "positive_x_wall_sampled": true,
+        "sample_count": 38
+      },
+      "40": {
+        "negative_x_wall_sampled": true,
+        "positive_x_wall_sampled": true,
+        "sample_count": 62
+      },
+      "48": {
+        "negative_x_wall_sampled": true,
+        "positive_x_wall_sampled": true,
+        "sample_count": 48
+      },
+      "52": {
+        "negative_x_wall_sampled": true,
+        "positive_x_wall_sampled": true,
+        "sample_count": 40
+      },
+      "8": {
+        "negative_x_wall_sampled": true,
+        "positive_x_wall_sampled": true,
+        "sample_count": 53
+      }
+    },
+    "clipped_component_section_curve_count": 53,
+    "corrected_section_coverage_gate": true,
+    "expected_source_bbox_xmin_xmax_zmin_zmax_mm": [
+      -20.5,
+      32.6000001,
+      0.0,
+      56.0
+    ],
+    "figure_png_sha256": "7f0e26809153e7f495f5feef46b99daf41e312428f9ff2d6c377e2deb215168f",
+    "left_and_right_body_wall_bands_passed": true,
+    "native_com_markers_are_xz_projections_not_y0_membership": true,
+    "plane_uv_world_axes": {
+      "normal": "-Y",
+      "u": "+X",
+      "v": "+Z"
+    },
+    "plane_world_y_mm": 0.0,
+    "source_bbox_section_extent_check_passed": true,
+    "source_cad_section_bounds_xmin_xmax_zmin_zmax_mm": [
+      -20.500000000000103,
+      32.6,
+      0.0,
+      56.0
+    ],
+    "source_cad_section_curve_count": 49,
+    "source_section_has_left_and_right_x": true,
+    "source_section_spans_z0_to_z56": true,
+    "superseded_previous_png": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cad_clipped_cells\\fixed8mm_singlethread_case03_native_empty_compound_policy\\cad_clipped_cells_y0_SUPERSEDED_wrong_plane_uv.png",
+    "superseded_previous_png_reason": "previous bounded gp_Pln face used world X/Z values as local U/V without aligning plane axes, clipping left-wall and upper source sections"
+  },
+  "figure_render_execution": {
+    "argv": [
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\cad_clipped_cells_spike.py",
+      "--render-saved-diagnostic"
+    ],
+    "exit_code": 0,
+    "finished_utc": "2026-10-03T18:24:32+00:00",
+    "performed_common_boolean": false,
+    "reloaded_component_brep_count": 49,
+    "runtime_seconds": 0.31299999984912574,
+    "source_step_sha256": "4623bd373aeed0acfacfbf6cc0dda65952339561779b43429c59d61b8b5a1c30",
+    "started_utc": "2026-10-03T18:24:32+00:00"
+  },
+  "gate_failure_reasons": {
+    "all_component_coms_natively_inside": "native center of mass for component 48 classified OUT; no resampling attempted",
+    "every_box_common_processed": "processed=58/294; stopped on native COM OUT",
+    "manifest_rho_mass_conservation_arithmetic": "NOT_EVALUATED_INCOMPLETE_PARTITION",
+    "native_volume_error_at_most_1_percent": "NOT_EVALUATED_INCOMPLETE_PARTITION",
+    "physics_and_pg_acceptance": "false by design: static geometry candidate only; no solver/job/physical qualification"
+  },
+  "gates": {
+    "actual_occ_sections_png_created": true,
+    "all_component_coms_natively_inside": false,
+    "all_retained_components_valid_finite_positive": true,
+    "all_weights_and_units_finite_positive": true,
+    "boolean_wall_time_at_most_300_seconds": true,
+    "candidate_box_count_at_most_512": true,
+    "canonical_manifest_and_step_hash_match": true,
+    "canonical_one_valid_solid": true,
+    "cavity_probes_classify_out": true,
+    "corrected_section_covers_left_right_walls_and_full_z_bbox": true,
+    "every_box_common_processed": false,
+    "fixed_cartesian_grid_covers_exact_bbox": true,
+    "manifest_rho_mass_conservation_arithmetic": false,
+    "native_boolean_reports_no_errors_or_warnings": true,
+    "native_boolean_single_thread": true,
+    "native_volume_error_at_most_1_percent": false,
+    "only_exact_or_native_valid_empty_3d_material_omitted": true,
+    "physics_and_pg_acceptance": false,
+    "whole_run_wall_time_at_most_300_seconds": true
+  },
+  "geometry": {
+    "aabb_partition_relative_error": 0.0,
+    "aabb_partition_volume_mm3": 121917.60022960001,
+    "absolute_volume_error_mm3": null,
+    "axis_edges_exact_cover": true,
+    "axis_edges_mm": [
+      [
+        -20.5,
+        -12.5,
+        -4.5,
+        3.5,
+        11.5,
+        19.5,
+        27.5,
+        32.6000001
+      ],
+      [
+        -20.5,
+        -12.5,
+        -4.5,
+        3.5,
+        11.5,
+        19.5,
+        20.5
+      ],
+      [
+        0.0,
+        8.0,
+        16.0,
+        24.0,
+        32.0,
+        40.0,
+        48.0,
+        56.0
+      ]
+    ],
+    "bbox_mm": [
+      -20.5,
+      32.6000001,
+      -20.5,
+      20.5,
+      0.0,
+      56.0
+    ],
+    "bbox_volume_mm3": 121917.60022960001,
+    "cad_centroid_mm": [
+      1.1445864696558867,
+      2.0786262811907363e-09,
+      27.228483195790737
+    ],
+    "cad_solid_count": 1,
+    "cad_volume_mm3": 25946.947770950002,
+    "candidate_volume_mm3": null,
+    "manifest_expected_volume_mm3": null,
+    "processed_component_volume_fraction_of_cad": 0.2967438823838826,
+    "processed_component_volume_mm3": 7699.598017563533,
+    "relative_volume_error": null,
+    "relative_volume_error_pct": null,
+    "run_state": "INCOMPLETE_COM_OUT",
+    "source_shape_valid": true,
+    "volume_accuracy_status": "NOT_EVALUATED_INCOMPLETE_PARTITION"
+  },
+  "limitations": {
+    "curvature_aware_refinement": "PENDING",
+    "directional_quadrature_bias": "PENDING",
+    "fracture_crack_paths_and_bonds": "NOT_IMPLEMENTED",
+    "free_surface_correction": "PENDING",
+    "full_partition_volume_accuracy": "NOT_EVALUATED_INCOMPLETE_PARTITION",
+    "global_minimum_wall_guarantee": false,
+    "grid_spacing_exceeds_nominal_wall": true,
+    "nominal_source_wall_mm": 4.0,
+    "physical_resolution": "NOT_VALIDATED",
+    "r2": "NOT_IMPLEMENTED",
+    "solver_or_pg_job_support": "NOT_IMPLEMENTED",
+    "training_eligibility": "INELIGIBLE"
+  },
+  "material": {
+    "cad_mass_kg": 0.05448859031899501,
+    "calibration_status": "UNVALIDATED_PROTOTYPE",
+    "candidate_mass_kg": null,
+    "density_is_unvalidated_placeholder": true,
+    "mass_accuracy_status": "NOT_EVALUATED_INCOMPLETE_PARTITION",
+    "processed_partial_mass_kg": 0.01616915583688342,
+    "relative_mass_error": null,
+    "relative_mass_error_pct": null,
+    "rho_kg_m3": 2100.0
+  },
+  "normalization_execution": {
+    "argv": [
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\cad_clipped_cells_spike.py",
+      "--normalize-saved-incomplete"
+    ],
+    "exit_code": 0,
+    "finished_utc": "2026-10-03T18:22:12+00:00",
+    "performed_common_boolean": false
+  },
+  "policy": {
+    "boolean_wall_limit_seconds": 300.0,
+    "centroid_out_policy": "FAIL immediately; no random resampling",
+    "classifier": "OCP.BRepClass3d_SolidClassifier",
+    "empty_3d_material_policy": "native result may be omitted only when null, or when it is a valid TopAbs_COMPOUND zero-volume shape with no solids, shells, faces, wires, edges, or vertices",
+    "max_candidate_boxes": 512,
+    "max_relative_volume_error_pct": 1.0,
+    "native_operation_errors_and_warnings_reported": true,
+    "occ_boolean": "OCP.BOPAlgo_BOP / BOPAlgo_COMMON",
+    "pg_job_solver_bond_graph": "NOT_CREATED",
+    "quadrature": "one exact OCC center of mass + exact native volume per connected common solid",
+    "run_parallel": false,
+    "spacing_mm": 8.0,
+    "training_eligibility": "INELIGIBLE",
+    "volume_integral": "OCP.BRepGProp.VolumeProperties_s with UseTriangulation=False"
+  },
+  "run_state": "INCOMPLETE_COM_OUT",
+  "schema": "pgfrag.cad_clipped_cells_candidate_spike/1.0",
+  "source": {
+    "backend": "CadQuery/OpenCascade",
+    "backend_version": "2.8.0",
+    "frame": "right_handed_z_up",
+    "length_unit": "mm",
+    "manifest_hash_verified": true,
+    "manifest_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261003\\implementation\\vf\\artifacts\\four_bands_brep_semantics1_final\\manifest.json",
+    "manifest_sha256": "4623bd373aeed0acfacfbf6cc0dda65952339561779b43429c59d61b8b5a1c30",
+    "mass_unit": "kg",
+    "step_bytes": 126052,
+    "step_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261003\\implementation\\vf\\artifacts\\four_bands_brep_semantics1_final\\geometry\\solid.step",
+    "step_sha256": "4623bd373aeed0acfacfbf6cc0dda65952339561779b43429c59d61b8b5a1c30"
+  },
+  "status": "FAIL_STATIC_NATIVE_GEOMETRY_CANDIDATE",
+  "timing": {
+    "boolean_seconds": 0.6560000004246831,
+    "boolean_wall_limit_seconds": 300.0,
+    "whole_run_seconds": 1.1870000001508743
+  },
+  "volume_evaluation": {
+    "candidate_boxes": 294,
+    "full_partition_relative_volume_error_pct": null,
+    "partial_subtotal_difference_is_not_a_partition_error": true,
+    "partition_complete": false,
+    "processed_boxes": 58,
+    "processed_component_volume_fraction_of_full_cad": 0.2967438823838826,
+    "processed_component_volume_subtotal_mm3": 7699.598017563533,
+    "status": "NOT_EVALUATED_INCOMPLETE_PARTITION"
+  }
+}

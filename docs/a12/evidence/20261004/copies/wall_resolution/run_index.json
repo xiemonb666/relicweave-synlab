@@ -1,0 +1,217 @@
+{
+  "experiment_id": "pg.wall-resolution-local-native-cad-static-mesh/0.1.0",
+  "overall_status": "BOTH_FIXED_TRIALS_COMPLETED_WITH_ONE_OR_MORE_CHECKS_FAILED",
+  "started_at_utc": "2026-10-03T18:22:07.396916+00:00",
+  "finished_at_utc": "2026-10-03T18:22:34.210493+00:00",
+  "python_executable": "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+  "argv": [
+    "pgfrag/experiments/wall_resolution/execute_predeclared_study.py"
+  ],
+  "runner_script": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\wall_resolution\\run_roi_trial.py",
+  "runner_script_sha256": "6eb28bad5ec77f6cd75b12380d83132476815d25b0375176ae07aca3a66a4d13",
+  "source_step": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261003\\implementation\\vf\\artifacts\\four_bands_brep_semantics1_final\\geometry\\solid.step",
+  "source_step_sha256": "4623bd373aeed0acfacfbf6cc0dda65952339561779b43429c59d61b8b5a1c30",
+  "expected_source_step_sha256": "4623bd373aeed0acfacfbf6cc0dda65952339561779b43429c59d61b8b5a1c30",
+  "fixed_scope": {
+    "roi_box_mm": {
+      "xmin": -23.0,
+      "xmax": -14.0,
+      "ymin": -1.4,
+      "ymax": 1.4,
+      "zmin": 23.1,
+      "zmax": 25.9
+    },
+    "target_h_mm": [
+      1.0,
+      0.5
+    ],
+    "maximum_volume_tets_per_trial": 10000,
+    "maximum_wall_seconds_per_trial": 180.0,
+    "single_thread": true,
+    "stop_when_either_exact_v_forecast_reaches_budget": true,
+    "no_roi_h_budget_or_threshold_adaptation": true
+  },
+  "preflight": {
+    "label": "preflight",
+    "argv": [
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\wall_resolution\\run_roi_trial.py",
+      "--preflight-only",
+      "--output-dir",
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_resolution"
+    ],
+    "started_at_utc": "2026-10-03T18:22:07.397916+00:00",
+    "timeout_seconds": 180.0,
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1"
+    },
+    "exit_code": 0,
+    "timed_out": false,
+    "stdout_tail": "{\n  \"experiment_id\": \"pg.wall-resolution-local-native-cad-static-mesh/0.1.0\",\n  \"status\": \"PREFLIGHT_WITHIN_BOTH_FIXED_TET_BUDGETS\",\n  \"source_step\": \"C:\\\\Users\\\\xiemo\\\\Desktop\\\\ShardForge\\\\relicweave-synlab\\\\tmp\\\\review_20261003\\\\implementation\\\\vf\\\\artifacts\\\\four_bands_brep_semantics1_final\\\\geometry\\\\solid.step\",\n  \"source_step_sha256\": \"4623bd373aeed0acfacfbf6cc0dda65952339561779b43429c59d61b8b5a1c30\",\n  \"python_executable\": \"C:\\\\Users\\\\xiemo\\\\Desktop\\\\ShardForge\\\\third_party\\\\vesselforge-runtime\\\\venv\\\\Scripts\\\\python.exe\",\n  \"argv\": [\n    \"C:\\\\Users\\\\xiemo\\\\Desktop\\\\ShardForge\\\\pgfrag\\\\experiments\\\\wall_resolution\\\\run_roi_trial.py\",\n    \"--preflight-only\",\n    \"--output-dir\",\n    \"C:\\\\Users\\\\xiemo\\\\Desktop\\\\ShardForge\\\\relicweave-synlab\\\\tmp\\\\review_20261004\\\\implementation\\\\wall_resolution\"\n  ],\n  \"roi_box_mm\": {\n    \"xmin\": -23.0,\n    \"xmax\": -14.0,\n    \"ymin\": -1.4,\n    \"ymax\": 1.4,\n    \"zmin\": 23.1,\n    \"zmax\": 25.9\n  },\n  \"roi_construction\": \"native OpenCASCADE CAD common of the canonical STEP solid and the fixed box; no triangulated clipping or changed ROI\",\n  \"roi_exact_occ_volume_mm3\": 31.589800899924974,\n  \"roi_occ_bbox_mm\": [\n    -20.263750100000077,\n    -1.4276949865993114,\n    23.09999989999993,\n    -15.861853399367291,\n    1.4276949865993296,\n    25.900000100000035\n  ],\n  \"max_tetra_cells_per_trial\": 10000,\n  \"forecast_margin_fraction\": 1.15,\n  \"preflight_forecast_tetra_count_by_fixed_h_mm\": {\n    \"1.0\": 960.7696831032204,\n    \"0.5\": 7686.157464825763\n  },\n  \"preflight_gate\": \"both forecasts must be strictly below 10000; otherwise neither 3D mesh trial is launched\",\n  \"meshing_started\": false\n}\n",
+    "stderr_tail": "",
+    "elapsed_wall_seconds": 2.5736714000813663,
+    "finished_at_utc": "2026-10-03T18:22:09.971496+00:00",
+    "report_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_resolution\\preflight.json",
+    "report_sha256": "a1d2742843e3dc00fed16f9e5c2904370b7f805e91e8bf1f60da2500e8933b3c",
+    "report_status": "PREFLIGHT_WITHIN_BOTH_FIXED_TET_BUDGETS"
+  },
+  "trials": [
+    {
+      "label": "h1mm",
+      "argv": [
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\wall_resolution\\run_roi_trial.py",
+        "--mesh-size-mm",
+        "1",
+        "--output-dir",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_resolution\\h1mm"
+      ],
+      "started_at_utc": "2026-10-03T18:22:09.972021+00:00",
+      "timeout_seconds": 180.0,
+      "thread_environment": {
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1"
+      },
+      "exit_code": 2,
+      "timed_out": false,
+      "stdout_tail": "Info    : [  0%] Intersection                                                                                  \nInfo    : [ 10%] Intersection                                                                                  \nInfo    : [ 20%] Intersection                                                                                  \nInfo    : [ 30%] Intersection                                                                                  \nInfo    : [ 40%] Intersection                                                                                  \nInfo    : [ 50%] Intersection                                                                                  \nInfo    : [ 60%] Intersection                                                                                  \nInfo    : [ 70%] Intersection - Filling splits of edges                                                                                \nInfo    : [ 80%] Intersection                                                                                  \nInfo    : [ 90%] Intersection                                                                                  \n                                                                                \nInfo    : Cannot bind existing OpenCASCADE volume 1 to second tag 2\nInfo    : Could not preserve tag of 3D object 2 (->1)\nInfo    : Meshing 1D...\nInfo    : [  0%] Meshing curve 1 (Hyperbola)\nInfo    : [ 10%] Meshing curve 2 (Circle)\nInfo    : [ 20%] Meshing curve 3 (Hyperbola)\nInfo    : [ 30%] Meshing curve 4 (Circle)\nInfo    : [ 40%] Meshing curve 5 (Line)\nInfo    : [ 50%] Meshing curve 6 (Hyperbola)\nInfo    : [ 60%] Meshing curve 7 (Line)\nInfo    : [ 60%] Meshing curve 8 (Line)\nInfo    : [ 70%] Meshing curve 9 (Circle)\nInfo    : [ 80%] Meshing curve 10 (Hyperbola)\nInfo    : [ 90%] Meshing curve 11 (Line)\nInfo    : [100%] Meshing curve 12 (Circle)\nInfo    : Done meshing 1D (Wall 0.00231385s, CPU 0s)\nInfo    : Meshing 2D...\nInfo    : [  0%] Meshing surface 1 (Cone, Frontal-Delaunay)\nInfo    : [ 20%] Meshing surface 2 (Plane, Frontal-Delaunay)\nInfo    : [ 40%] Meshing surface 3 (Plane, Frontal-Delaunay)\nInfo    : [ 60%] Meshing surface 4 (Plane, Frontal-Delaunay)\nInfo    : [ 70%] Meshing surface 5 (Plane, Frontal-Delaunay)\nInfo    : [ 90%] Meshing surface 6 (Cone, Frontal-Delaunay)\nInfo    : Done meshing 2D (Wall 0.00908804s, CPU 0s)\nInfo    : Meshing 3D...\nInfo    : 3D Meshing 1 volume with 1 connected component\nInfo    : Tetrahedrizing 102 nodes...\nInfo    : Done tetrahedrizing 110 nodes (Wall 0.000855207s, CPU 0s)\nInfo    : Reconstructing mesh...\nInfo    :  - Creating surface mesh\nInfo    :  - Identifying boundary edges\nInfo    :  - Recovering boundary\nInfo    : Done reconstructing mesh (Wall 0.00245786s, CPU 0s)\nInfo    : Found volume 1\nInfo    : It. 0 - 0 nodes created - worst tet radius 1.62986 (nodes removed 0 0)\nInfo    : 3D refinement terminated (110 nodes total):\nInfo    :  - 0 Delaunay cavities modified for star shapeness\nInfo    :  - 0 nodes could not be inserted\nInfo    :  - 292 tetrahedra created in 0.000319004 sec. (915348 tets/s)\nInfo    : 0 node relocations\nInfo    : Done meshing 3D (Wall 0.00446796s, CPU 0s)\nInfo    : Optimizing mesh...\nInfo    : Optimizing volume 1\nInfo    : Optimization starts (volume = 31.5972) with worst = 0.340708 / average = 0.779652:\nInfo    : 0.00 < quality < 0.10 :         0 elements\nInfo    : 0.10 < quality < 0.20 :         0 elements\nInfo    : 0.20 < quality < 0.30 :         0 elements\nInfo    : 0.30 < quality < 0.40 :         3 elements\nInfo    : 0.40 < quality < 0.50 :         4 elements\nInfo    : 0.50 < quality < 0.60 :         9 elements\nInfo    : 0.60 < quality < 0.70 :        47 elements\nInfo    : 0.70 < quality < 0.80 :        98 elements\nInfo    : 0.80 < quality < 0.90 :        90 elements\nInfo    : 0.90 < quality < 1.00 :        41 elements\nInfo    : No ill-shaped tets in the mesh :-)\nInfo    : 0.00 < quality < 0.10 :         0 elements\nInfo    : 0.10 < quality < 0.20 :         0 elements\nInfo    : 0.20 < quality < 0.30 :         0 elements\nInfo    : 0.30 < quality < 0.40 :         3 elements\nInfo    : 0.40 < quality < 0.50 :         4 elements\nInfo    : 0.50 < quality < 0.60 :         9 elements\nInfo    : 0.60 < quality < 0.70 :        47 elements\nInfo    : 0.70 < quality < 0.80 :        98 elements\nInfo    : 0.80 < quality < 0.90 :        90 elements\nInfo    : 0.90 < quality < 1.00 :        41 elements\nInfo    : Done optimizing mesh (Wall 0.000205994s, CPU 0s)\nInfo    : 110 nodes 544 elements\nInfo    : Writing 'C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_resolution\\h1mm\\roi_gmsh_h1mm.msh'...\nInfo    : Done writing 'C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_resolution\\h1mm\\roi_gmsh_h1mm.msh'\nWALL_RESOLUTION_PREFLIGHT roi_volume_mm3=31.589800899925 mesh_size_mm=1 forecast_tets_with_margin=960.8 cap=10000\n{\n  \"status\": \"FAIL_LOCAL_GEOMETRY_AND_MESH_CHECKS\",\n  \"mesh_size_mm\": 1.0,\n  \"tetra_count\": 292,\n  \"volume_error_pct\": 0.023319867763671794,\n  \"native_centroid_states\": {\n    \"IN\": 292,\n    \"OUT\": 0,\n    \"UNKNOWN\": 0\n  },\n  \"sample_states\": {\n    \"IN\": 291,\n    \"OUT\": 1,\n    \"UNKNOWN\": 0\n  },\n  \"wall_normal_thickness\": {\n    \"count\": 49,\n    \"min\": 4.000000000000413,\n    \"p01\": 4.000000000000413,\n    \"p05\": 4.000000000000415,\n    \"median\": 4.000000000000419,\n    \"p95\": 4.000000000000421,\n    \"p99\": 4.000000000000423,\n    \"max\": 4.000000000000423\n  },\n  \"mesh_seconds\": 0.01976869977079332,\n  \"report_json\": \"C:\\\\Users\\\\xiemo\\\\Desktop\\\\ShardForge\\\\relicweave-synlab\\\\tmp\\\\review_20261004\\\\implementation\\\\wall_resolution\\\\h1mm\\\\report.json\"\n}\n",
+      "stderr_tail": "",
+      "elapsed_wall_seconds": 5.580633699893951,
+      "finished_at_utc": "2026-10-03T18:22:15.552791+00:00",
+      "report_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_resolution\\h1mm\\report.json",
+      "report_sha256": "a1b3dc9406c8a3c5ce308351e2b557b1e6c2314ce94276a3ae267e6b773919a5",
+      "report_status": "FAIL_LOCAL_GEOMETRY_AND_MESH_CHECKS",
+      "mesh_size_mm": 1.0
+    },
+    {
+      "label": "h0.5mm",
+      "argv": [
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\wall_resolution\\run_roi_trial.py",
+        "--mesh-size-mm",
+        "0.5",
+        "--output-dir",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_resolution\\h0.5mm"
+      ],
+      "started_at_utc": "2026-10-03T18:22:15.555347+00:00",
+      "timeout_seconds": 180.0,
+      "thread_environment": {
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1"
+      },
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout_tail": "Info    : [  0%] Intersection                                                                                  \nInfo    : [ 10%] Intersection                                                                                  \nInfo    : [ 20%] Intersection                                                                                  \nInfo    : [ 30%] Intersection                                                                                  \nInfo    : [ 40%] Intersection                                                                                  \nInfo    : [ 50%] Intersection                                                                                  \nInfo    : [ 60%] Intersection                                                                                  \nInfo    : [ 70%] Intersection - Filling splits of edges                                                                                \nInfo    : [ 80%] Intersection                                                                                  \nInfo    : [ 90%] Intersection                                                                                  \n                                                                                \nInfo    : Cannot bind existing OpenCASCADE volume 1 to second tag 2\nInfo    : Could not preserve tag of 3D object 2 (->1)\nInfo    : Meshing 1D...\nInfo    : [  0%] Meshing curve 1 (Hyperbola)\nInfo    : [ 10%] Meshing curve 2 (Circle)\nInfo    : [ 20%] Meshing curve 3 (Hyperbola)\nInfo    : [ 30%] Meshing curve 4 (Circle)\nInfo    : [ 40%] Meshing curve 5 (Line)\nInfo    : [ 50%] Meshing curve 6 (Hyperbola)\nInfo    : [ 60%] Meshing curve 7 (Line)\nInfo    : [ 60%] Meshing curve 8 (Line)\nInfo    : [ 70%] Meshing curve 9 (Circle)\nInfo    : [ 80%] Meshing curve 10 (Hyperbola)\nInfo    : [ 90%] Meshing curve 11 (Line)\nInfo    : [100%] Meshing curve 12 (Circle)\nInfo    : Done meshing 1D (Wall 0.000638962s, CPU 0s)\nInfo    : Meshing 2D...\nInfo    : [  0%] Meshing surface 1 (Cone, Frontal-Delaunay)\nInfo    : [ 20%] Meshing surface 2 (Plane, Frontal-Delaunay)\nInfo    : [ 40%] Meshing surface 3 (Plane, Frontal-Delaunay)\nInfo    : [ 60%] Meshing surface 4 (Plane, Frontal-Delaunay)\nInfo    : [ 70%] Meshing surface 5 (Plane, Frontal-Delaunay)\nInfo    : [ 90%] Meshing surface 6 (Cone, Frontal-Delaunay)\nInfo    : Done meshing 2D (Wall 0.00829816s, CPU 0s)\nInfo    : Meshing 3D...\nInfo    : 3D Meshing 1 volume with 1 connected component\nInfo    : Tetrahedrizing 338 nodes...\nInfo    : Done tetrahedrizing 346 nodes (Wall 0.00183225s, CPU 0s)\nInfo    : Reconstructing mesh...\nInfo    :  - Creating surface mesh\nInfo    :  - Identifying boundary edges\nInfo    :  - Recovering boundary\nInfo    : Done reconstructing mesh (Wall 0.00382495s, CPU 0s)\nInfo    : Found volume 1\nInfo    : It. 0 - 0 nodes created - worst tet radius 2.64355 (nodes removed 0 0)\nInfo    : 3D refinement terminated (436 nodes total):\nInfo    :  - 0 Delaunay cavities modified for star shapeness\nInfo    :  - 0 nodes could not be inserted\nInfo    :  - 1540 tetrahedra created in 0.00276113 sec. (557743 tets/s)\nInfo    : 0 node relocations\nInfo    : Done meshing 3D (Wall 0.00978875s, CPU 0.015625s)\nInfo    : Optimizing mesh...\nInfo    : Optimizing volume 1\nInfo    : Optimization starts (volume = 31.5912) with worst = 0.0134603 / average = 0.756531:\nInfo    : 0.00 < quality < 0.10 :        12 elements\nInfo    : 0.10 < quality < 0.20 :         8 elements\nInfo    : 0.20 < quality < 0.30 :        17 elements\nInfo    : 0.30 < quality < 0.40 :        27 elements\nInfo    : 0.40 < quality < 0.50 :        29 elements\nInfo    : 0.50 < quality < 0.60 :        90 elements\nInfo    : 0.60 < quality < 0.70 :       239 elements\nInfo    : 0.70 < quality < 0.80 :       435 elements\nInfo    : 0.80 < quality < 0.90 :       439 elements\nInfo    : 0.90 < quality < 1.00 :       244 elements\nInfo    : 37 edge swaps, 0 node relocations (volume = 31.5912): worst = 0.30253 / average = 0.77155 (Wall 0.00127316s, CPU 0s)\nInfo    : No ill-shaped tets in the mesh :-)\nInfo    : 0.00 < quality < 0.10 :         0 elements\nInfo    : 0.10 < quality < 0.20 :         0 elements\nInfo    : 0.20 < quality < 0.30 :         0 elements\nInfo    : 0.30 < quality < 0.40 :        28 elements\nInfo    : 0.40 < quality < 0.50 :        28 elements\nInfo    : 0.50 < quality < 0.60 :        93 elements\nInfo    : 0.60 < quality < 0.70 :       233 elements\nInfo    : 0.70 < quality < 0.80 :       440 elements\nInfo    : 0.80 < quality < 0.90 :       439 elements\nInfo    : 0.90 < quality < 1.00 :       245 elements\nInfo    : Done optimizing mesh (Wall 0.00212312s, CPU 0s)\nInfo    : 436 nodes 2270 elements\nInfo    : Writing 'C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_resolution\\h0.5mm\\roi_gmsh_h0.5mm.msh'...\nInfo    : Done writing 'C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_resolution\\h0.5mm\\roi_gmsh_h0.5mm.msh'\nWALL_RESOLUTION_PREFLIGHT roi_volume_mm3=31.589800899925 mesh_size_mm=0.5 forecast_tets_with_margin=7686.2 cap=10000\n{\n  \"status\": \"PASS_LOCAL_GEOMETRY_AND_MESH_CHECKS\",\n  \"mesh_size_mm\": 0.5,\n  \"tetra_count\": 1506,\n  \"volume_error_pct\": 0.004379242794970684,\n  \"native_centroid_states\": {\n    \"IN\": 1506,\n    \"OUT\": 0,\n    \"UNKNOWN\": 0\n  },\n  \"sample_states\": {\n    \"IN\": 512,\n    \"OUT\": 0,\n    \"UNKNOWN\": 0\n  },\n  \"wall_normal_thickness\": {\n    \"count\": 49,\n    \"min\": 4.000000000000413,\n    \"p01\": 4.000000000000413,\n    \"p05\": 4.000000000000415,\n    \"median\": 4.000000000000419,\n    \"p95\": 4.000000000000421,\n    \"p99\": 4.000000000000423,\n    \"max\": 4.000000000000423\n  },\n  \"mesh_seconds\": 0.021363000152632594,\n  \"report_json\": \"C:\\\\Users\\\\xiemo\\\\Desktop\\\\ShardForge\\\\relicweave-synlab\\\\tmp\\\\review_20261004\\\\implementation\\\\wall_resolution\\\\h0.5mm\\\\report.json\"\n}\n",
+      "stderr_tail": "",
+      "elapsed_wall_seconds": 18.434499299852178,
+      "finished_at_utc": "2026-10-03T18:22:33.989737+00:00",
+      "report_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_resolution\\h0.5mm\\report.json",
+      "report_sha256": "987a489c7d8c2881f4e70d92271bf65739038f14f332de52483c0a4cedd4ecb0",
+      "report_status": "PASS_LOCAL_GEOMETRY_AND_MESH_CHECKS",
+      "mesh_size_mm": 0.5
+    }
+  ],
+  "comparison_section_png": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_resolution\\actual_sections_h1mm_vs_h0p5mm.png",
+  "artifacts_hashed_before_run_index_write": [
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_resolution\\actual_sections_h1mm_vs_h0p5mm.png",
+      "sha256": "e14aa92b9320d3ac14d35eb70152c6772958de64d048351b00aca49b381c5b1c",
+      "bytes": 267247
+    },
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_resolution\\h0.5mm\\actual_section_y0_h0.5mm.png",
+      "sha256": "802e0d29de3a3ee3aefc2dc7f399e92c0f7866757597ef8988b172fbdfc7968d",
+      "bytes": 202174
+    },
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_resolution\\h0.5mm\\report.json",
+      "sha256": "987a489c7d8c2881f4e70d92271bf65739038f14f332de52483c0a4cedd4ecb0",
+      "bytes": 1242051
+    },
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_resolution\\h0.5mm\\roi_gmsh_h0.5mm.msh",
+      "sha256": "d9809f389a0410b0af2110854f0aca010a638a3f0f00e26ced7dfa3aed49f1e4",
+      "bytes": 71920
+    },
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_resolution\\h0.5mm\\roi_mesh_arrays.npz",
+      "sha256": "f5029c8be5c7ee540685fcfb08bac6bf5e1dc2986e6c383a7a1edc6639daee46",
+      "bytes": 99147
+    },
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_resolution\\h1mm\\actual_section_y0_h1mm.png",
+      "sha256": "c0c35530a99aa53f9b3d390cb98b3ef3a8ea9d68650c06f71645ad3a74759d33",
+      "bytes": 153527
+    },
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_resolution\\h1mm\\pointin_exception_audit.json",
+      "sha256": "c50ec4db398c3479fc54349d110ead5135b1409147e77f59bba038d0413734a8",
+      "bytes": 1922
+    },
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_resolution\\h1mm\\report.json",
+      "sha256": "a1b3dc9406c8a3c5ce308351e2b557b1e6c2314ce94276a3ae267e6b773919a5",
+      "bytes": 294573
+    },
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_resolution\\h1mm\\roi_gmsh_h1mm.msh",
+      "sha256": "1f139d006585163887040b440f45c90c461203e29e8675310ba250ba92de9b5f",
+      "bytes": 17184
+    },
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_resolution\\h1mm\\roi_mesh_arrays.npz",
+      "sha256": "9af2f2680f478081ab6a1d48aecd8f674dcf96bd1b79103a5cf79e6bc917ded4",
+      "bytes": 22005
+    },
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_resolution\\preflight.json",
+      "sha256": "a1d2742843e3dc00fed16f9e5c2904370b7f805e91e8bf1f60da2500e8933b3c",
+      "bytes": 1680
+    },
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_resolution\\study.md",
+      "sha256": "d659bbb06a332d6c92f527939a39ff07a0dce0dacff446095558b79d039b7cc0",
+      "bytes": 6580
+    }
+  ],
+  "source_experiment_code_hashes": {
+    "run_roi_trial.py": "6eb28bad5ec77f6cd75b12380d83132476815d25b0375176ae07aca3a66a4d13",
+    "mesh_audit.py": "14e499b9b52d13344e2f11c687fb8bbac378895b521e3a4f6f75b9e89eb7d09d",
+    "execute_predeclared_study.py": "06f7da7909f3bf51466b7ddac3596e83ce8d0701fee4ca6827acd5c3dceff89c",
+    "audit_pointin_samples.py": "9b04c35cb40eb56e5b118c48017579a9b364584d015b74bed877b33f169054bf"
+  },
+  "supplemental_read_only_audits": [
+    {
+      "name": "h1 deterministic point-IN exception audit",
+      "script_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\wall_resolution\\audit_pointin_samples.py",
+      "script_sha256": "9b04c35cb40eb56e5b118c48017579a9b364584d015b74bed877b33f169054bf",
+      "python_executable": "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+      "argv": [
+        "pgfrag/experiments/wall_resolution/audit_pointin_samples.py",
+        "--mesh",
+        "relicweave-synlab/tmp/review_20261004/implementation/wall_resolution/h1mm/roi_gmsh_h1mm.msh",
+        "--output",
+        "relicweave-synlab/tmp/review_20261004/implementation/wall_resolution/h1mm/pointin_exception_audit.json"
+      ],
+      "exit_code": 1,
+      "reason_for_nonzero_exit": "the preserved h=1.0mm sample set has one OUT sample; the script returns 1 when any sample is not IN",
+      "output_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_resolution\\h1mm\\pointin_exception_audit.json",
+      "output_sha256": "c50ec4db398c3479fc54349d110ead5135b1409147e77f59bba038d0413734a8",
+      "mesh_msh_sha256": "1f139d006585163887040b440f45c90c461203e29e8675310ba250ba92de9b5f",
+      "state_counts": {
+        "IN": 291,
+        "OUT": 1,
+        "UNKNOWN": 0
+      },
+      "mesh_generation_performed": false
+    }
+  ],
+  "finalized_at_utc": "2026-10-03T18:30:15.129907+00:00"
+}

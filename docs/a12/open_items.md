@@ -1,27 +1,13 @@
-# 状态补充（截至 2026-10-03 晚间）
+# 最新状态（截至 2026-10-04）
 
-当前任务状态见 [接续与验收矩阵](CONTINUATION_20261003.md)，源/副本 SHA 和可复核材料见 [证据索引](evidence/20261003/index.md)。现实性边界见 [REALISM_ACCEPTANCE_20261003.md](REALISM_ACCEPTANCE_20261003.md)。
+A12 继续作为 RelicWeave synthetic / observation / degradation / retrieval diagnostics 服务；主仓 A3/A4 集成待完成。本轮仅在本机做小规模验证，未运行 RTX5090 批量合成或训练。Astra 单次咨询已结束；仅保留 Akantu extrinsic cohesive 小型 capability spike，PD baseline 冻结，不全面迁移。当前范围和证据见 [接续矩阵](CONTINUATION_20261004.md) 与 [证据索引](evidence/20261004/index.md)。
 
-VF canonical STEP BRep 语义原型：26 面 / 38,486 三角形、UNKNOWN=0、handle-root 两类误标 0/0、canonical3 geometry/lineage 逐位相同、whole/lower-root depth parity 0 mismatch；16 tests PASS，四带/三带 generate 与 validate exit 0。602 个 trimmed-face 样本最大偏差 0.0196136578 mm ≤0.10 mm；不是全局 Hausdorff 或全局最小壁厚证明。smooth-CAD 3D shell candidate 因 0.118432 mm sampled deviation 与 invalid/empty native halfsection FAIL；第二 2D 表示和新的 CAD-native clippedcells volume candidate PENDING。h8/h6 tetra volume candidates 分别 2.03434% / 1.61417% 误差，均未过不变的 1% 门槛。
+- **已接受的窄结果：** appearance 46 PASS、100k 排序中位数 81.37 ms（toy only）；deploy 85 PASS 仅覆盖 schema/runtime，旧 5 GB 包未迁移；native contact 真实调用 1/240/480/240 steps、momentum residual 3.42e-24、nominal envelope overlap 0.5904 mm，energy history UNKNOWN；C2 BREP 单次持久化和 half-cut 成功、单次 remesh 602 samples 最大偏差 0.0400846 mm，但 production STEP 仍 FAIL / NOT_PROMOTED；ROI h1 292 个内部样本中 1 个 OUT（距 CAD 0.000407 mm）FAIL，h0.5 1506 tets 有限几何 QA PASS、不是 physics；clipped COM OUT 在 58/294 个盒后停止，完整分区体积误差未评估，70.3% 不代表体积误差。
+- **QA 当前边界：** 最终哈希下 QA/label 30 PASS、damage legality + face provenance 16 PASS；appearance 最终哈希重跑仍是 46 PASS（不得累计成 92 个不同测试）。9 个 broader routing/narrowband FAIL 保留；P02/P03 actual 结果 not watertight、各 6 boundary edges。Measurement.valid 不代表 physical QA 有效。
+- **绝对体积问题更正：** abs(volume) QA bug 位于 synlab/physical/api.py 的物理结果 QA 路径，不是 h8/h6 signed-tet quality 缺陷；旧 h8/h6 signed tet orientation/quality 检查均为 positive。物理 QA 与六门准入仍须按各自证据判定。
+- **仍待完成：** 六门物理准入、材料校准、contact energy history、完整 clippedcells partition、P02/P03 broader 功能失败、production STEP 晋级及主仓 A3/A4 集成。
 
-A12 adapter/camera 32 PASS；此前归档的 depth/noise 71 与 frozen parity 2 PASS 保留，但旧 71 日志本轮未按相同 argv 重放。私有 continuous sampler 的 SS=1/2、nonzero distortion 40-PASS target 与 24-PASS default regression（15 projective + 7 noise + 2 flat-frozen）已由 root 窄范围接受；这不修复独立的 legacy appearance 29 PASS / 4 FAIL。首轮 3 FAIL / 27 PASS 和被拒的 38 PASS 均保留，后者的问题是原始 K 上重复添加 half-pixel 导致 ray 偏半像素。
-
-退化行为 audit 已由 root 接受，范围是 synthetic small fixture：P06 coverage 0.2 实现为 0.793945、coverage 0.8 实现为 0.204102；P05/P06 双向链因 payload channel/key 缺失失败；P02 physical_result_qa 报 PASS 但 physical_audit 报 FAIL。四项修复任务已分配，代码修复尚未验收。
-
-实际旧 deploy package 为 INVALID_DEPLOY_TRUTH_LEAK / PENDING：queries 含 lineage、mother、fragment、historical_N_G 等字段，deploy_index 使用 raw lineage/M-style IDs，manifest 的 features_carry_answer_fields=false 是 alias-blind scan 结果。strict-v2 replacement 等待验收。native-contact attempt03 在 Julia load syntax 失败，未执行 preflight 或 step，runner 已停止；新的 minimal-native submit endpoint 仍待真实三例检查。jobs DAG enqueue 非原子、旧 store event revision、GPU NOT_IMPLEMENTED、真实材料校准 UNKNOWN，以及完整 VF→PG→ageing→capture chain 继续开放。A12 不替代主 A3/A4 真实邻接检索、证据拒绝、补采或 STOP。
-## 新增未完成项：物理级断裂与数据准入
-
-用户已审 h8 实际图并判定其 physical-grade/high-quality fracture 不足。当前 clippedcells h8 仅是 native geometry-accuracy candidate，必须标记 NOT_PHYSICAL_READY。按 [CONTINUATION_20261003.md](CONTINUATION_20261003.md) 和 [工程政策](engineering_policy.md) 分开追踪以下六道门槛，不得用一个 PASS 代替：
-
-- **Geometry：** 单位、拓扑、边界误差、厚度覆盖；有限采样不冒充全局证明。
-- **NativeRun：** 成功 preflight 与非零 solver steps、原始输入/输出。旧 contact attempt03 是 Julia load syntax FAIL，零 preflight/step；新 minimal-native-contact agent 接手，三例仍 PENDING。
-- **NumericPhysical：** 已有 whole-mesh 只读质量审计：h8 有 9 个 tet 的最小二面角 <10°、1 个 <5°、max R/rmax 113.1；h6 有 10 个 <10°、max R/rmax 112.6。方向相关偏差为 HIGH RISK / NOT QUANTIFIED，无实际裂纹跨网格比较。old h8/h6 element quality/orientation 审计与 actual ROI static h=1 mm、0.5 mm 仍由 luna_wall_resolution 检查；结果待验。还需检查 PD δ/h、horizon×wall、surface correction、fixed-δ spatial convergence、fixed-mesh dt time convergence；同一物理 case 对不同 remesh orientation/seed、固定 rest-material field 比较 crack energy/response/mass distribution。旋转原 mesh 只测 covariance，不等于 remesh-bias PASS；禁止由 max-edge/t 推断精确 through-wall layers。
-- **CalibratedMaterial：** E/Gc 与其他材料量保留候选值和来源状态；实际校准 UNKNOWN / UNVALIDATED。
-- **CrackSurface：** 真事件产生的 positive-area 配对裂面与 lineage；不得固定 fractureN、求解后追加 roughness 或沿 tet face 赋真实裂纹标签。
-- **RelicWeaveData：** all point mass/isolates；contact penetration、momentum、energy 目前 UNKNOWN；truth leakage、annotation 错误和 QA failure 必须 fail closed。
-
-h8 actual image 不构成物理级裂纹证据；tet-volume h8/h6 均未通过 1% volume gate。root 已读的 whole-mesh 只读审计记录 h8 有 9 tets 的最小二面角 <10°、1 个 <5°、max R/rmax=113.1；h6 有 10 个 <10°、max R/rmax=112.6。方向相关偏差为 HIGH RISK / NOT QUANTIFIED，尚无实际裂纹的独立 remesh 比较。h8/h6 分别有 21/512 与 12/512 finite interior probes OUT，CAD-reference signed volume delta 约 −2.0343% / −1.6142%；它们是 quadrature candidates 而非 PG solver input，h8 自身 tet-volume weights 一致也不代表对 CAD 的质量正确。另有 abs(volume) 可掩盖 tet 反向的 QA 回归，signed-volume+winding 修复待测。所有六项分开验收后才能升级；native clippedcells h8 的几何准确性不改变 NOT_PHYSICAL_READY。其余 strict-v2 deploy scanner、四项 degradation/QA 修复与 read-only fracture-surface bridge 均待实际结果和 root 复核。
-## 早期状态快照（以下细项保留历史状态；当前进度以接续矩阵为准）
+## 早期状态快照（截至 2026-10-03；以下细项保留历史状态）
 
 VF 当前 prototype 已窄验收 canonical STEP BRep face 分类、连续 rest-coordinate 四带绘制及几何-only 深度 parity；器身 C0 折角、接头真实度、材料/历史样式仍 `PENDING`。A12 生产 appearance 仍未全闭环（4 项 appearance 测试失败）；A12 adapter/camera32 为 `PASS`，但 per-face 近似仍漏掉窄红带。GPU 路径未实现，完整物理断裂链未完成。PG owner 报告 physics/time SHA 20/20 和 OSB/BB 独立 API fixture 的真实 CLI 验证通过，最终 wheel 检查进行中；jobs 修复 19 项测试通过，仍在审查中。A12 既有 ageing、capture 和 reconstruction 能力为部分实现，新 VF/PG 接入与真实效果综合验证待完成。
 

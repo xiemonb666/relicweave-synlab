@@ -1,0 +1,176 @@
+{
+  "schema": "a12.roi_wall_resolution_evidence_extract.v1",
+  "scope": "bounded local static geometry/mesh QA only; no solver or fracture surfaces",
+  "run_index_status": "BOTH_FIXED_TRIALS_COMPLETED_WITH_ONE_OR_MORE_CHECKS_FAILED",
+  "run_index_argv": [
+    "pgfrag/experiments/wall_resolution/execute_predeclared_study.py"
+  ],
+  "runner_script_sha256": "6eb28bad5ec77f6cd75b12380d83132476815d25b0375176ae07aca3a66a4d13",
+  "source_code_hashes": {
+    "run_roi_trial.py": "6eb28bad5ec77f6cd75b12380d83132476815d25b0375176ae07aca3a66a4d13",
+    "mesh_audit.py": "14e499b9b52d13344e2f11c687fb8bbac378895b521e3a4f6f75b9e89eb7d09d",
+    "execute_predeclared_study.py": "06f7da7909f3bf51466b7ddac3596e83ce8d0701fee4ca6827acd5c3dceff89c",
+    "audit_pointin_samples.py": "9b04c35cb40eb56e5b118c48017579a9b364584d015b74bed877b33f169054bf"
+  },
+  "source_step_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261003\\implementation\\vf\\artifacts\\four_bands_brep_semantics1_final\\geometry\\solid.step",
+  "source_step_sha256": "4623bd373aeed0acfacfbf6cc0dda65952339561779b43429c59d61b8b5a1c30",
+  "trials": {
+    "h1mm": {
+      "report_source_path": "tmp/review_20261004/implementation/wall_resolution/h1mm/report.json",
+      "report_source_sha256": "a1b3dc9406c8a3c5ce308351e2b557b1e6c2314ce94276a3ae267e6b773919a5",
+      "report_source_bytes": 294573,
+      "report_status": "FAIL_LOCAL_GEOMETRY_AND_MESH_CHECKS",
+      "argv": [
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\wall_resolution\\run_roi_trial.py",
+        "--mesh-size-mm",
+        "1",
+        "--output-dir",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_resolution\\h1mm"
+      ],
+      "source_step_sha256": "4623bd373aeed0acfacfbf6cc0dda65952339561779b43429c59d61b8b5a1c30",
+      "mesh_size_target_mm": 1.0,
+      "tetra_count": 292,
+      "node_count": 110,
+      "signed_relative_volume_error": 0.00023319867763671795,
+      "absolute_volume_error_pct": 0.023319867763671794,
+      "mesh_msh_sha256": "1f139d006585163887040b440f45c90c461203e29e8675310ba250ba92de9b5f",
+      "mesh_npz_sha256": "9af2f2680f478081ab6a1d48aecd8f674dcf96bd1b79103a5cf79e6bc917ded4",
+      "centroid_state_counts": {
+        "IN": 292,
+        "OUT": 0,
+        "UNKNOWN": 0
+      },
+      "finite_stratified_sample_count": 292,
+      "finite_stratified_sample_state_counts": {
+        "IN": 291,
+        "OUT": 1,
+        "UNKNOWN": 0
+      },
+      "checks": {
+        "within_10000_tetra_budget": true,
+        "all_tetra_signed_orientations_positive": true,
+        "all_cell_volumes_finite_positive": true,
+        "absolute_mesh_volume_error_at_most_1pct_unchanged_gate": true,
+        "all_centroids_native_source_IN": true,
+        "all_finite_stratified_samples_native_source_IN": false,
+        "all_delta_core_centers_at_least_1p1mm_from_each_roi_cut_plane": true,
+        "actual_y0_mesh_section_png_written": true,
+        "no_solver_or_fracture_surface_created": true
+      },
+      "physics_boundary": "0.5mm vs 1.0mm geometry sampling is not spatial or temporal physical convergence. The local native normal thickness divided by h is a candidate sampling ratio only; t/h≈8 at h=0.5mm is not a universal physical sufficiency condition. Follow-up must hold material parameters and nonlocal horizon δ fixed while refining spatial h, then separately hold mesh fixed and halve dt for time convergence; also assess δ/h neighborhood support, surface correction, thin-wall bending response, and mesh-direction/remeshing dependence.",
+      "no_fracture_claim": "No bonds, solver, crack, fracture plane, or R2 fragments were generated. Box cut surfaces are artificial ROI boundaries.",
+      "pointin_exception_audit": {
+        "source_path": "tmp/review_20261004/implementation/wall_resolution/h1mm/pointin_exception_audit.json",
+        "source_sha256": "c50ec4db398c3479fc54349d110ead5135b1409147e77f59bba038d0413734a8",
+        "argv": [
+          "pgfrag/experiments/wall_resolution/audit_pointin_samples.py",
+          "--mesh",
+          "relicweave-synlab/tmp/review_20261004/implementation/wall_resolution/h1mm/roi_gmsh_h1mm.msh",
+          "--output",
+          "relicweave-synlab/tmp/review_20261004/implementation/wall_resolution/h1mm/pointin_exception_audit.json"
+        ],
+        "sample_count": 292,
+        "state_counts": {
+          "IN": 291,
+          "OUT": 1,
+          "UNKNOWN": 0
+        },
+        "non_IN_samples": [
+          {
+            "sample_ordinal": 226,
+            "tetra_cell_id": 479,
+            "tetra_centroid_xyz_mm": [
+              -16.305192548211018,
+              -0.9979362418053405,
+              25.58839540864895
+            ],
+            "barycentric_weights": [
+              0.24605106847580063,
+              0.009004562175133693,
+              0.3910734791753166,
+              0.3538708901737491
+            ],
+            "sample_xyz_mm": [
+              -16.19361930746673,
+              -0.9037108881094739,
+              25.728524384159616
+            ],
+            "source_state": "OUT",
+            "distance_to_native_solid_mm": 0.00040728938322205513
+          }
+        ]
+      },
+      "runner_argv": [
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\wall_resolution\\run_roi_trial.py",
+        "--mesh-size-mm",
+        "1",
+        "--output-dir",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_resolution\\h1mm"
+      ],
+      "runner_exit_code": 2,
+      "runner_timed_out": false,
+      "runner_elapsed_wall_seconds": 5.580633699893951,
+      "runner_report_sha256": "a1b3dc9406c8a3c5ce308351e2b557b1e6c2314ce94276a3ae267e6b773919a5",
+      "runner_report_status": "FAIL_LOCAL_GEOMETRY_AND_MESH_CHECKS"
+    },
+    "h0.5mm": {
+      "report_source_path": "tmp/review_20261004/implementation/wall_resolution/h0.5mm/report.json",
+      "report_source_sha256": "987a489c7d8c2881f4e70d92271bf65739038f14f332de52483c0a4cedd4ecb0",
+      "report_source_bytes": 1242051,
+      "report_status": "PASS_LOCAL_GEOMETRY_AND_MESH_CHECKS",
+      "argv": [
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\wall_resolution\\run_roi_trial.py",
+        "--mesh-size-mm",
+        "0.5",
+        "--output-dir",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_resolution\\h0.5mm"
+      ],
+      "source_step_sha256": "4623bd373aeed0acfacfbf6cc0dda65952339561779b43429c59d61b8b5a1c30",
+      "mesh_size_target_mm": 0.5,
+      "tetra_count": 1506,
+      "node_count": 436,
+      "signed_relative_volume_error": 4.3792427949706844e-05,
+      "absolute_volume_error_pct": 0.004379242794970684,
+      "mesh_msh_sha256": "d9809f389a0410b0af2110854f0aca010a638a3f0f00e26ced7dfa3aed49f1e4",
+      "mesh_npz_sha256": "f5029c8be5c7ee540685fcfb08bac6bf5e1dc2986e6c383a7a1edc6639daee46",
+      "centroid_state_counts": {
+        "IN": 1506,
+        "OUT": 0,
+        "UNKNOWN": 0
+      },
+      "finite_stratified_sample_count": 512,
+      "finite_stratified_sample_state_counts": {
+        "IN": 512,
+        "OUT": 0,
+        "UNKNOWN": 0
+      },
+      "checks": {
+        "within_10000_tetra_budget": true,
+        "all_tetra_signed_orientations_positive": true,
+        "all_cell_volumes_finite_positive": true,
+        "absolute_mesh_volume_error_at_most_1pct_unchanged_gate": true,
+        "all_centroids_native_source_IN": true,
+        "all_finite_stratified_samples_native_source_IN": true,
+        "all_delta_core_centers_at_least_1p1mm_from_each_roi_cut_plane": true,
+        "actual_y0_mesh_section_png_written": true,
+        "no_solver_or_fracture_surface_created": true
+      },
+      "physics_boundary": "0.5mm vs 1.0mm geometry sampling is not spatial or temporal physical convergence. The local native normal thickness divided by h is a candidate sampling ratio only; t/h≈8 at h=0.5mm is not a universal physical sufficiency condition. Follow-up must hold material parameters and nonlocal horizon δ fixed while refining spatial h, then separately hold mesh fixed and halve dt for time convergence; also assess δ/h neighborhood support, surface correction, thin-wall bending response, and mesh-direction/remeshing dependence.",
+      "no_fracture_claim": "No bonds, solver, crack, fracture plane, or R2 fragments were generated. Box cut surfaces are artificial ROI boundaries.",
+      "runner_argv": [
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\wall_resolution\\run_roi_trial.py",
+        "--mesh-size-mm",
+        "0.5",
+        "--output-dir",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_resolution\\h0.5mm"
+      ],
+      "runner_exit_code": 0,
+      "runner_timed_out": false,
+      "runner_elapsed_wall_seconds": 18.434499299852178,
+      "runner_report_sha256": "987a489c7d8c2881f4e70d92271bf65739038f14f332de52483c0a4cedd4ecb0",
+      "runner_report_status": "PASS_LOCAL_GEOMETRY_AND_MESH_CHECKS"
+    }
+  }
+}

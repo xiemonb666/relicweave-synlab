@@ -12,6 +12,7 @@ never used as an input feature (plan 30.7 for P02).
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from math import fsum
 from typing import Any
 
 import numpy as np
@@ -446,11 +447,13 @@ def threshold_for_fraction(values: np.ndarray, fraction: float, *, tail: str = "
 
 def rank_mask_for_area_fraction(values: np.ndarray, fraction: float, area_weights: np.ndarray,
                                 *, tail: str = "lower") -> tuple[np.ndarray, dict[str, Any]]:
-    """Select a nested stable rank prefix closest to a requested physical-area fraction.
+    """Select whole exact-score groups closest to a requested physical-area fraction.
 
-    Ties are resolved by original texel order.  Since a texel cannot be split, the selected area
-    can differ from the target; both realized area fraction and signed/absolute quantization error
-    are returned instead of claiming an exact coverage.  ``tail`` makes score direction explicit.
+    Equal scores are indivisible, so selection is invariant to input ordering.  The nearest
+    cumulative group-area boundary is chosen, with an exact boundary-distance tie going to the
+    smaller prefix.  Since a score group cannot be split, intermediate targets may be
+    unachievable; the report exposes both realized quantization error and the largest score-group
+    area fraction.  ``tail`` makes score direction explicit.
     """
     raw_values = np.asarray(values)
     scores = np.asarray(values, dtype=np.float64).ravel()
@@ -473,7 +476,7 @@ def rank_mask_for_area_fraction(values: np.ndarray, fraction: float, area_weight
         if requested != 0.0:
             raise ValueError("a nonzero fraction cannot be selected from an empty rank field")
         return np.zeros(raw_values.shape, dtype=bool), {
-            "selection": "stable_area_rank_prefix_nearest_target",
+            "selection": "whole_score_groups_nearest_target",
             "tail": tail,
             "requested_fraction": requested,
             "total_area": 0.0,
@@ -483,42 +486,72 @@ def rank_mask_for_area_fraction(values: np.ndarray, fraction: float, area_weight
             "signed_fraction_error": 0.0,
             "absolute_fraction_error": 0.0,
             "quantized": False,
+            "quantization_mode": "indivisible_exact_score_groups",
+            "score_group_count": 0,
+            "largest_score_group_area": 0.0,
+            "largest_score_group_area_fraction": 0.0,
             "boundary_score": None,
             "boundary_tie_split": False,
         }
 
-    total = float(np.sum(weights, dtype=np.float64))
+    # Sort once by score and then area.  The secondary area sort gives each exact-score group a
+    # canonical summation order, while fsum preserves accuracy; neither the mask nor group area
+    # depends on the source texel order.  Group slicing keeps aggregation O(N) after the sort.
+    try:
+        total = float(fsum(float(weight) for weight in weights))
+    except OverflowError as exc:
+        raise ValueError("total area weight must be finite and positive") from exc
     if not np.isfinite(total) or total <= 0.0:
         raise ValueError("total area weight must be finite and positive")
     target = requested * total
+    order = np.lexsort((weights, scores))
+    sorted_scores = scores[order]
+    sorted_weights = weights[order]
+    group_starts = np.concatenate(
+        ([0], np.flatnonzero(sorted_scores[1:] != sorted_scores[:-1]) + 1))
+    group_ends = np.concatenate((group_starts[1:], [scores.size]))
+    score_groups = sorted_scores[group_starts]
+    group_areas = np.asarray([
+        fsum(float(weight) for weight in sorted_weights[start:end])
+        for start, end in zip(group_starts, group_ends)
+    ], dtype=np.float64)
+    if tail == "upper":
+        score_groups = score_groups[::-1]
+        group_areas = group_areas[::-1]
+    cumulative = np.concatenate(([0.0], np.cumsum(group_areas, dtype=np.float64)))
+    cumulative[-1] = total
     if requested <= 0.0:
-        selected_count = 0
+        selected_groups = 0
     elif requested >= 1.0:
-        selected_count = int(scores.size)
+        selected_groups = int(score_groups.size)
     else:
-        order = np.argsort(scores if tail == "lower" else -scores, kind="stable")
-        cumulative = np.concatenate(([0.0], np.cumsum(weights[order], dtype=np.float64)))
-        upper_prefix = min(int(np.searchsorted(cumulative, target, side="left")),
-                           int(scores.size))
-        lower_prefix = max(0, upper_prefix - 1)
-        lower_error = abs(float(cumulative[lower_prefix]) - target)
-        upper_error = abs(float(cumulative[upper_prefix]) - target)
-        # On an exact tie prefer the smaller prefix.  Prefix choice remains monotone as the
-        # requested target grows, which makes level masks nested on one frozen rank field.
-        selected_count = lower_prefix if lower_error <= upper_error else upper_prefix
+        upper_boundary = min(int(np.searchsorted(cumulative, target, side="left")),
+                             int(score_groups.size))
+        lower_boundary = max(0, upper_boundary - 1)
+        lower_error = abs(float(cumulative[lower_boundary]) - target)
+        upper_error = abs(float(cumulative[upper_boundary]) - target)
+        # On an exact distance tie, prefer the smaller prefix.  This also makes level masks
+        # nested as the requested area grows.
+        selected_groups = (lower_boundary if lower_error <= upper_error else upper_boundary)
 
-    order = np.argsort(scores if tail == "lower" else -scores, kind="stable")
-    mask_flat = np.zeros(scores.size, dtype=bool)
-    mask_flat[order[:selected_count]] = True
-    selected = float(np.sum(weights[mask_flat], dtype=np.float64))
+    if selected_groups == 0:
+        mask_flat = np.zeros(scores.size, dtype=bool)
+    elif selected_groups == score_groups.size:
+        mask_flat = np.ones(scores.size, dtype=bool)
+    else:
+        boundary_score_for_mask = score_groups[selected_groups - 1]
+        mask_flat = (scores <= boundary_score_for_mask if tail == "lower" else
+                     scores >= boundary_score_for_mask)
+    selected = float(fsum(float(weight) for weight in weights[mask_flat]))
     realized = selected / total
     signed_error = realized - requested
-    boundary_score = (float(scores[order[selected_count - 1]]) if selected_count else
-                      (float(scores[order[0]]) if scores.size else None))
-    next_score = (float(scores[order[selected_count]])
-                  if 0 < selected_count < scores.size else None)
+    boundary_score = (float(score_groups[selected_groups - 1]) if selected_groups else
+                      float(score_groups[0]))
+    next_score = (float(score_groups[selected_groups])
+                  if 0 < selected_groups < score_groups.size else None)
+    largest_group_area = float(group_areas.max(initial=0.0))
     return mask_flat.reshape(raw_values.shape), {
-        "selection": "stable_area_rank_prefix_nearest_target",
+        "selection": "whole_score_groups_nearest_target",
         "tail": tail,
         "requested_fraction": requested,
         "total_area": total,
@@ -528,8 +561,12 @@ def rank_mask_for_area_fraction(values: np.ndarray, fraction: float, area_weight
         "signed_fraction_error": signed_error,
         "absolute_fraction_error": abs(signed_error),
         "quantized": bool(selected != target),
+        "quantization_mode": "indivisible_exact_score_groups",
+        "score_group_count": int(score_groups.size),
+        "largest_score_group_area": largest_group_area,
+        "largest_score_group_area_fraction": largest_group_area / total,
         "boundary_score": boundary_score,
-        "boundary_tie_split": bool(next_score is not None and boundary_score == next_score),
+        "boundary_tie_split": False,
     }
 
 

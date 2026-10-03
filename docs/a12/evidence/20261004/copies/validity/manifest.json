@@ -1,0 +1,57 @@
+{
+  "runs": {
+    "pytest-targeted-final.json": {
+      "argv": ".\\.venv\\Scripts\\python.exe -m pytest -q tests/a12/operators/test_postassembly_qa_20261003.py tests/a12/degrade/test_label_status_evidence_20261003.py",
+      "exit_code": 0,
+      "log": "pytest-targeted-final.log",
+      "log_sha256": "19932ebea0a183b7da572b238fb5973469697826509e41c17ad341f8d17bc318",
+      "actual_json": null
+    },
+    "pytest-physical-impact-final.json": {
+      "argv": ".\\.venv\\Scripts\\python.exe -m pytest -q tests/a12/operators/test_damage_legality.py tests/a12/physical/test_face_provenance.py",
+      "exit_code": 0,
+      "log": "pytest-physical-impact-final.log",
+      "log_sha256": "d7063fb40ccf7a7f8ab91eb8eafa0df7b42244d20b31bb2d282fcc372d1f7abd",
+      "actual_json": null
+    },
+    "pytest-routing-v2.json": {
+      "argv": ".\\.venv\\Scripts\\python.exe -m pytest -q tests/a12/operators/test_narrowband.py tests/a12/degrade/test_axis_routing_audit.py",
+      "exit_code": 1,
+      "log": "pytest-routing-v2.log",
+      "log_sha256": "9ac39834492c346b862f7e1e711e63c2804a3b2741d380fdccbd497f9cd08529",
+      "actual_json": null
+    },
+    "capture_actual-run.json": {
+      "argv": [
+        ".\\.venv\\Scripts\\python.exe",
+        "tmp/review_20261004/implementation/validity_finish/capture_actual.py"
+      ],
+      "exit_code": 0,
+      "log": "capture_actual.log",
+      "log_sha256": "d869de628dcb9eec81c5275ef5177ad886204168db42a29bdf5f8a28047a4c33",
+      "actual_json": "actualJSON.json"
+    },
+    "pytest-appearance-continuity-final.json": {
+      "argv": ".\\.venv\\Scripts\\python.exe -m pytest -q tests/a12/operators/test_appearance_continuity_20261003.py",
+      "exit_code": 0,
+      "log": "pytest-appearance-continuity-final.log",
+      "log_sha256": "2c91283aa8beed85011506e4fae2d7a750df8428affa0bda3d2ab5775e8fe85a",
+      "source_sha256": {
+        "synlab/physical/api.py": "6f12a995ea689077e7ba8592d51b5c85be2044cb1cffc1a9256cb90949401661",
+        "synlab/degrade/physical_narrowband.py": "88844f78af2366b2bdabdf2ab6b5dcc12df7579c91f5cc0a38873bd021d6a19d",
+        "synlab/degrade/api.py": "b6a4962165868dd66fe38b8a088357bf10ea405d93a6dd09b7f45e0a442e4f8f"
+      }
+    }
+  },
+  "file_sha256": {
+    "synlab/physical/api.py": "6f12a995ea689077e7ba8592d51b5c85be2044cb1cffc1a9256cb90949401661",
+    "synlab/degrade/physical_narrowband.py": "88844f78af2366b2bdabdf2ab6b5dcc12df7579c91f5cc0a38873bd021d6a19d",
+    "synlab/degrade/api.py": "b6a4962165868dd66fe38b8a088357bf10ea405d93a6dd09b7f45e0a442e4f8f",
+    "tests/a12/operators/test_postassembly_qa_20261003.py": "ef52701a14bf55602bccd6df678f73b8a01e558f7f6c629b167ed4d457fde349",
+    "tests/a12/degrade/test_label_status_evidence_20261003.py": "f5f89fd64ab7fb15f1ad0b1694bb79a1bb85cdb05f451ca3b35de49faac108c6",
+    "tests/a12/operators/test_appearance_continuity_20261003.py": "602eac29279ea8d8cfc746f457bbad28bed8b77eab322baca6ef42fb11dd842f",
+    "tmp\\review_20261004\\implementation\\validity_finish\\capture_actual.py": "cd99cc44a7f5409d1cd5002f80efba7c2b7c84db94915df3b186ca25eb76327b",
+    "tmp\\review_20261004\\implementation\\validity_finish\\actualJSON.json": "771075044acbb9993812c10d19663890e0047ac13d5488320dc1c67bcc37b0e4"
+  },
+  "actualJSON": "tmp\\review_20261004\\implementation\\validity_finish\\actualJSON.json"
+}
