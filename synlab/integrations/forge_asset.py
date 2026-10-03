@@ -11,9 +11,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 import hashlib
 import json
+import math
 from pathlib import Path, PurePosixPath
 import re
 from typing import Any
+import zipfile
 
 import numpy as np
 
@@ -36,6 +38,10 @@ INPUT_KIND = "forge_mother_asset"
 SUPPORTED_FORGE_SCHEMA = "forge.asset.v1"
 _MOTHER_REGION_CODES = frozenset((1, 2, 3, 4, 5))
 _MAX_PROTOTYPE_PREVIEW_SAMPLES = 1_000_000
+_MAX_PACKAGE_NPZ_UNCOMPRESSED_BYTES = 96 * 1024 * 1024
+_MAX_PACKAGE_NPZ_MEMBER_BYTES = 64 * 1024 * 1024
+_MAX_PACKAGE_VERTICES = 500_000
+_MAX_PACKAGE_FACES = 500_000
 
 
 @dataclass(frozen=True, slots=True)
@@ -92,7 +98,18 @@ def _safe_relative_path(value: Any, *, stage: str) -> PurePosixPath:
 def _contained_file(root: Path, rel_value: Any, *, stage: str) -> Path:
     rel = _safe_relative_path(rel_value, stage=stage)
     root_resolved = root.resolve(strict=True)
-    path = root.joinpath(*rel.parts).resolve(strict=True)
+    cursor = root
+    for part in rel.parts:
+        cursor = cursor / part
+        if cursor.is_symlink():
+            raise _error(ErrorCode.SCHEMA_INVALID,
+                         "symlink payload paths are not permitted in Forge packages",
+                         stage=stage, measurements={"path": str(rel)})
+    try:
+        path = root.joinpath(*rel.parts).resolve(strict=True)
+    except (OSError, RuntimeError) as exc:
+        raise _error(ErrorCode.SCHEMA_INVALID, "declared package file is missing or unresolvable",
+                     stage=stage, measurements={"path": str(rel), "error": str(exc)}) from exc
     try:
         path.relative_to(root_resolved)
     except ValueError as exc:
@@ -150,6 +167,71 @@ def _load_npz(path: Path, *, stage: str) -> dict[str, np.ndarray]:
                      stage=stage, measurements={"path": str(path), "error": str(exc)}) from exc
 
 
+def _preflight_npz(path: Path, *, stage: str) -> dict[str, tuple[tuple[int, ...], np.dtype[Any]]]:
+    """Inspect compressed archive sizes and NPY headers before array materialization."""
+    headers: dict[str, tuple[tuple[int, ...], np.dtype[Any]]] = {}
+    try:
+        with zipfile.ZipFile(path, "r") as archive:
+            members = archive.infolist()
+            if not members or len(members) > 64:
+                raise _error(ErrorCode.BUDGET_EXCEEDED,
+                             "NPZ entry count exceeds the A12 adapter budget",
+                             stage=stage, measurements={"member_count": len(members),
+                                                        "limit": 64})
+            total_uncompressed = sum(int(member.file_size) for member in members)
+            if total_uncompressed > _MAX_PACKAGE_NPZ_UNCOMPRESSED_BYTES:
+                raise _error(ErrorCode.BUDGET_EXCEEDED,
+                             "NPZ uncompressed size exceeds the A12 adapter budget",
+                             stage=stage,
+                             measurements={"uncompressed_bytes": total_uncompressed,
+                                           "limit": _MAX_PACKAGE_NPZ_UNCOMPRESSED_BYTES})
+            for member in members:
+                name = member.filename
+                if member.is_dir() or "/" in name or "\\" in name \
+                        or not name.endswith(".npy") or name.count("/") or name.startswith("."):
+                    raise _error(ErrorCode.SCHEMA_INVALID,
+                                 "NPZ arrays must be named flat .npy members",
+                                 stage=stage, measurements={"member": name})
+                key = name[:-4]
+                if not key or key in headers:
+                    raise _error(ErrorCode.SCHEMA_INVALID, "duplicate/empty NPZ array name",
+                                 stage=stage, measurements={"member": name})
+                if int(member.file_size) > _MAX_PACKAGE_NPZ_MEMBER_BYTES:
+                    raise _error(ErrorCode.BUDGET_EXCEEDED,
+                                 "NPZ array member exceeds the A12 adapter budget",
+                                 stage=stage, measurements={"member": name,
+                                                           "uncompressed_bytes": member.file_size,
+                                                           "limit": _MAX_PACKAGE_NPZ_MEMBER_BYTES})
+                with archive.open(member, "r") as stream:
+                    version = np.lib.format.read_magic(stream)
+                    if version == (1, 0):
+                        shape, _fortran_order, dtype = np.lib.format.read_array_header_1_0(stream)
+                    elif version in ((2, 0), (3, 0)):
+                        shape, _fortran_order, dtype = np.lib.format.read_array_header_2_0(stream)
+                    else:
+                        raise _error(ErrorCode.SCHEMA_INVALID, "unsupported NPY header version",
+                                     stage=stage, measurements={"member": name,
+                                                                "version": version})
+                    if dtype.hasobject or any(int(dimension) < 0 for dimension in shape):
+                        raise _error(ErrorCode.SCHEMA_INVALID,
+                                     "object or negative-shape NPZ array is not accepted",
+                                     stage=stage, measurements={"member": name})
+                    expected_data_bytes = math.prod(shape) * int(dtype.itemsize)
+                    if stream.tell() + expected_data_bytes > int(member.file_size):
+                        raise _error(ErrorCode.SCHEMA_INVALID,
+                                     "NPZ member header size exceeds its declared payload",
+                                     stage=stage, measurements={"member": name,
+                                                                "shape": shape,
+                                                                "dtype": str(dtype)})
+                    headers[key] = (tuple(int(value) for value in shape), dtype)
+    except SynLabError:
+        raise
+    except (OSError, ValueError, zipfile.BadZipFile, EOFError) as exc:
+        raise _error(ErrorCode.SCHEMA_INVALID, "invalid or unreadable NPZ container",
+                     stage=stage, measurements={"path": str(path), "error": str(exc)}) from exc
+    return headers
+
+
 def load_forge_asset(package_dir: str | Path) -> ForgeAsset:
     """Verify and load a ``forge.asset.v1`` mother package; never repair it in place."""
     stage = "integrations.forge_asset.load"
@@ -176,10 +258,14 @@ def load_forge_asset(package_dir: str | Path) -> ForgeAsset:
         raise _error(ErrorCode.SCHEMA_INVALID, "unsupported Forge package schema",
                      stage=stage, measurements={"schema": manifest.get("schema")})
     units = manifest.get("units")
-    if not isinstance(units, dict) or units.get("length") != "mm" \
-            or units.get("mass") != "kg" or units.get("time") != "s":
+    if units != {"length": "mm", "time": "s", "mass": "kg"}:
         raise _error(ErrorCode.SCHEMA_INVALID, "Forge package units must be mm/kg/s",
                      stage=stage, measurements={"units": units})
+    for required in ("geometry", "fields", "material", "ornament", "files", "provenance",
+                     "validation"):
+        if not isinstance(manifest.get(required), dict):
+            raise _error(ErrorCode.SCHEMA_INVALID,
+                         f"manifest.{required} must be an object", stage=stage)
     frame = manifest.get("frame")
     if frame != "right_handed_z_up":
         raise _error(ErrorCode.SCHEMA_INVALID, "unsupported Forge coordinate frame",
@@ -188,6 +274,10 @@ def load_forge_asset(package_dir: str | Path) -> ForgeAsset:
     file_table = manifest.get("files")
     if not isinstance(file_table, dict) or not file_table:
         raise _error(ErrorCode.SCHEMA_INVALID, "Forge manifest needs a non-empty file table",
+                     stage=stage)
+    if "manifest.json" in file_table:
+        raise _error(ErrorCode.SCHEMA_INVALID,
+                     "manifest.json is the package index and must not list/hash itself",
                      stage=stage)
     verified: dict[str, Path] = {}
     for rel_value, record in file_table.items():
@@ -203,8 +293,13 @@ def load_forge_asset(package_dir: str | Path) -> ForgeAsset:
             raise _error(ErrorCode.SCHEMA_INVALID, "invalid file byte-count/hash record",
                          stage=stage, measurements={"path": str(rel)})
         path = _contained_file(root, str(rel), stage=stage)
-        actual_bytes = path.stat().st_size
-        digest = _sha256_file(path)
+        try:
+            actual_bytes = path.stat().st_size
+            digest = _sha256_file(path)
+        except OSError as exc:
+            raise _error(ErrorCode.INPUT_UNAVAILABLE, "cannot read declared payload",
+                         stage=stage,
+                         measurements={"path": str(rel), "error": str(exc)}) from exc
         if actual_bytes != expected_bytes or digest.lower() != expected_hash.lower():
             raise _error(
                 ErrorCode.ASSET_HASH_MISMATCH,
@@ -229,7 +324,10 @@ def load_forge_asset(package_dir: str | Path) -> ForgeAsset:
                                  "surface geometry")
     # The adapter does not parse CAD or lineage payloads, but verifies their existence/reference
     # as part of the package contract when the manifest declares them.
-    require_declared(_get_path(manifest, "geometry", "solid_step", stage=stage), "solid model")
+    solid_step = _get_path(manifest, "geometry", "solid_step", stage=stage) \
+        if "solid_step" in manifest.get("geometry", {}) else None
+    if solid_step is not None:
+        require_declared(solid_step, "solid model")
     field_path = require_declared(
         _get_path(manifest, "fields", "surface_fields_npz", stage=stage), "surface fields")
     validation = manifest.get("validation")
@@ -251,7 +349,17 @@ def load_forge_asset(package_dir: str | Path) -> ForgeAsset:
     checks = report.get("checks")
     checks_ok = isinstance(checks, dict) and bool(checks) and all(value is True
                                                                     for value in checks.values())
-    if manifest_status != "PASS" or report_status != "PASS" or not checks_ok:
+    valid_statuses = {"PASS", "FAIL", "PENDING"}
+    if manifest_status not in valid_statuses or report_status not in valid_statuses:
+        raise _error(ErrorCode.SCHEMA_INVALID, "geometry validation status is invalid",
+                     stage=stage, measurements={"manifest_status": manifest_status,
+                                                "report_status": report_status})
+    if report_status != manifest_status:
+        raise _error(ErrorCode.SCHEMA_INVALID,
+                     "manifest validation status disagrees with the hashed producer report",
+                     stage=stage, measurements={"manifest_status": manifest_status,
+                                                "report_status": report_status})
+    if manifest_status != "PASS" or not checks_ok:
         raise _error(
             ErrorCode.STOP_QA,
             "Forge geometry is not a fully passing asset; FAIL/PENDING is rejected",
@@ -273,10 +381,31 @@ def load_forge_asset(package_dir: str | Path) -> ForgeAsset:
     material_id = material.get("id")
     calibration = material.get("calibration_status")
     if not isinstance(material_id, str) or not material_id.strip() \
-            or calibration not in ("UNVALIDATED_PROTOTYPE", "VALIDATED"):
+            or calibration != "UNVALIDATED_PROTOTYPE":
         raise _error(ErrorCode.SCHEMA_INVALID, "unsupported material identity/calibration status",
                      stage=stage, measurements={"material_id": material_id,
                                                 "calibration_status": calibration})
+    mechanics = material.get("mechanics")
+    if not isinstance(mechanics, dict) or any(
+            name not in mechanics for name in ("rho_kg_m3", "E_pa", "nu", "Gc_j_m2")):
+        raise _error(ErrorCode.SCHEMA_INVALID,
+                     "material.mechanics must declare canonical SI parameters",
+                     stage=stage)
+    for name in ("rho_kg_m3", "E_pa", "Gc_j_m2"):
+        value = mechanics[name]
+        if isinstance(value, bool) or not isinstance(value, (int, float)) \
+                or not math.isfinite(value) or value <= 0.0:
+            raise _error(ErrorCode.SCHEMA_INVALID,
+                         f"material.mechanics.{name} must be finite and positive",
+                         stage=stage)
+    poisson = mechanics["nu"]
+    if isinstance(poisson, bool) or not isinstance(poisson, (int, float)) \
+            or not math.isfinite(poisson) or not -1.0 < poisson < 0.5:
+        raise _error(ErrorCode.SCHEMA_INVALID,
+                     "material.mechanics.nu must be finite and in (-1,0.5)", stage=stage)
+    if ornament.get("kind") != "painted":
+        raise _error(ErrorCode.SCHEMA_INVALID,
+                     "forge.asset.v1 prototype ornament kind must be painted", stage=stage)
     recipe = ornament.get("recipe")
     if not isinstance(recipe, dict) or recipe.get("material_binding_id") != material_id:
         raise _error(ErrorCode.SCHEMA_INVALID,
@@ -286,10 +415,70 @@ def load_forge_asset(package_dir: str | Path) -> ForgeAsset:
                                                                    if isinstance(recipe, dict)
                                                                    else None)})
     style_status = recipe.get("historical_style_validation")
-    if not isinstance(style_status, str) or not style_status:
+    if style_status != "NOT_VALIDATED":
         raise _error(ErrorCode.SCHEMA_INVALID,
-                     "ornament recipe must declare historical style validation status",
+                     "prototype historical style status must remain NOT_VALIDATED",
+                     stage=stage, measurements={"historical_style_validation": style_status})
+    relief = recipe.get("geometry_relief_mm")
+    if isinstance(relief, bool) or not isinstance(relief, (int, float)) \
+            or not math.isfinite(relief) or relief != 0.0:
+        raise _error(ErrorCode.SCHEMA_INVALID,
+                     "painted prototype ornament must declare zero geometry relief",
+                     stage=stage, measurements={"geometry_relief_mm": relief})
+    target_regions = recipe.get("target_region_codes", [])
+    allowed_regions = _MOTHER_REGION_CODES | {255}
+    if not isinstance(target_regions, list) or any(
+            isinstance(code, bool) or not isinstance(code, int) or code not in allowed_regions
+            for code in target_regions):
+        raise _error(ErrorCode.SCHEMA_INVALID,
+                     "ornament target_region_codes contains an unknown semantic code",
                      stage=stage)
+    if 255 in target_regions:
+        raise _error(ErrorCode.LABEL_MAPPING_UNKNOWN,
+                     "reserved VF region 255 cannot be used as a mother preview target",
+                     stage=stage)
+
+    geometry_headers = _preflight_npz(geom_path, stage=stage)
+    fields_headers = _preflight_npz(field_path, stage=stage)
+
+    def header(archive: dict[str, tuple[tuple[int, ...], np.dtype[Any]]], name: str,
+               label: str) -> tuple[tuple[int, ...], np.dtype[Any]]:
+        if name not in archive:
+            raise _error(ErrorCode.SCHEMA_INVALID, f"{label} NPZ lacks {name}", stage=stage)
+        return archive[name]
+
+    vertices_shape, vertices_dtype = header(geometry_headers, "vertices_mm", "geometry")
+    faces_shape, faces_dtype = header(geometry_headers, "faces", "geometry")
+    if len(vertices_shape) != 2 or vertices_shape[1:] != (3,) \
+            or not 4 <= vertices_shape[0] <= _MAX_PACKAGE_VERTICES \
+            or vertices_dtype.kind != "f":
+        raise _error(ErrorCode.BUDGET_EXCEEDED if vertices_shape and
+                     vertices_shape[0] > _MAX_PACKAGE_VERTICES else ErrorCode.SCHEMA_INVALID,
+                     "vertices_mm must be floating N×3 with 4..500000 vertices",
+                     stage=stage, measurements={"shape": vertices_shape,
+                                                "dtype": str(vertices_dtype)})
+    if len(faces_shape) != 2 or faces_shape[1:] != (3,) \
+            or not 4 <= faces_shape[0] <= _MAX_PACKAGE_FACES \
+            or faces_dtype.kind not in "iu":
+        raise _error(ErrorCode.BUDGET_EXCEEDED if faces_shape and
+                     faces_shape[0] > _MAX_PACKAGE_FACES else ErrorCode.SCHEMA_INVALID,
+                     "faces must be integer F×3 with 4..500000 faces",
+                     stage=stage, measurements={"shape": faces_shape,
+                                                "dtype": str(faces_dtype)})
+    face_count, vertex_count = faces_shape[0], vertices_shape[0]
+    for name, expected_shape, kind, label in (
+            ("face_region", (face_count,), "iu", "face_region"),
+            ("albedo_linear_rgb", (face_count, 3), "f", "albedo_linear_rgb"),
+            ("roughness", (face_count,), "f", "roughness"),
+            ("vertices_material_xyz_mm", (vertex_count, 3), "f",
+             "vertices_material_xyz_mm")):
+        actual_shape, actual_dtype = header(fields_headers, name, "surface fields")
+        if actual_shape != expected_shape or actual_dtype.kind not in kind:
+            raise _error(ErrorCode.SCHEMA_INVALID,
+                         f"{label} has the wrong shape or dtype before array loading",
+                         stage=stage, measurements={"shape": actual_shape,
+                                                    "expected_shape": expected_shape,
+                                                    "dtype": str(actual_dtype)})
 
     geometry = _load_npz(geom_path, stage=stage)
     fields = _load_npz(field_path, stage=stage)
@@ -304,14 +493,15 @@ def load_forge_asset(package_dir: str | Path) -> ForgeAsset:
 
     vertices = np.asarray(geometry["vertices_mm"])
     faces_raw = np.asarray(geometry["faces"])
-    if vertices.dtype.kind not in "fiu" or vertices.ndim != 2 or vertices.shape[1] != 3 \
-            or not vertices.shape[0] or not np.isfinite(vertices).all():
-        raise _error(ErrorCode.SCHEMA_INVALID, "vertices_mm must be a non-empty finite (V,3) array",
+    if vertices.dtype.kind != "f" or vertices.ndim != 2 or vertices.shape[1] != 3 \
+            or vertices.shape[0] < 4 or vertices.shape[0] > _MAX_PACKAGE_VERTICES \
+            or not np.isfinite(vertices).all():
+        raise _error(ErrorCode.SCHEMA_INVALID, "vertices_mm must be finite float (V,3), V>=4",
                      stage=stage, measurements={"shape": vertices.shape,
                                                 "dtype": str(vertices.dtype)})
     if faces_raw.dtype.kind not in "iu" or faces_raw.ndim != 2 or faces_raw.shape[1] != 3 \
-            or not faces_raw.shape[0]:
-        raise _error(ErrorCode.SCHEMA_INVALID, "faces must be a non-empty integer (F,3) array",
+            or faces_raw.shape[0] < 4 or faces_raw.shape[0] > _MAX_PACKAGE_FACES:
+        raise _error(ErrorCode.SCHEMA_INVALID, "faces must be integer (F,3), F>=4",
                      stage=stage, measurements={"shape": faces_raw.shape,
                                                 "dtype": str(faces_raw.dtype)})
     if int(faces_raw.min()) < 0 or int(faces_raw.max()) >= vertices.shape[0]:
@@ -349,26 +539,30 @@ def load_forge_asset(package_dir: str | Path) -> ForgeAsset:
         raise _error(ErrorCode.LABEL_MAPPING_UNKNOWN,
                      "VF face_region contains an unknown or unsupported code",
                      stage=stage, measurements={"codes": sorted(unique_regions)})
-    if albedo.dtype.kind not in "fiu" or albedo.shape != (faces.shape[0], 3) \
+    if albedo.dtype.kind != "f" or albedo.shape != (faces.shape[0], 3) \
             or not np.isfinite(albedo).all() or bool(np.any(albedo < 0.0)) \
             or bool(np.any(albedo > 1.0)):
         raise _error(ErrorCode.SCHEMA_INVALID,
                      "albedo_linear_rgb must be finite (F,3) values within [0,1]",
                      stage=stage, measurements={"shape": albedo.shape,
                                                 "dtype": str(albedo.dtype)})
-    if roughness.dtype.kind not in "fiu" or roughness.shape != (faces.shape[0],) \
+    if roughness.dtype.kind != "f" or roughness.shape != (faces.shape[0],) \
             or not np.isfinite(roughness).all() or bool(np.any(roughness < 0.0)) \
             or bool(np.any(roughness > 1.0)):
         raise _error(ErrorCode.SCHEMA_INVALID, "roughness must be finite (F,) values in [0,1]",
                      stage=stage, measurements={"shape": roughness.shape,
                                                 "dtype": str(roughness.dtype)})
-    if material_xyz.dtype.kind not in "fiu" or material_xyz.shape != vertices.shape \
+    if material_xyz.dtype.kind != "f" or material_xyz.shape != vertices.shape \
             or not np.isfinite(material_xyz).all():
         raise _error(ErrorCode.SCHEMA_INVALID,
                      "vertices_material_xyz_mm must be a finite (V,3) array",
                      stage=stage, measurements={"shape": material_xyz.shape,
                                                 "expected_shape": vertices.shape,
                                                 "dtype": str(material_xyz.dtype)})
+    if not np.array_equal(material_xyz, vertices):
+        raise _error(ErrorCode.SCHEMA_INVALID,
+                     "initial asset material coordinates must exactly equal canonical vertices",
+                     stage=stage)
 
     return ForgeAsset(
         manifest_sha256=hashlib.sha256(manifest_bytes).hexdigest(),
@@ -406,7 +600,12 @@ def scene_from_forge_asset(
                      stage="integrations.forge_asset.scene",
                      measurements={"status": asset.geometry_status,
                                    "scope": asset.validation_scope})
-    if asset.material_calibration_status != "VALIDATED" and not allow_prototype_preview:
+    if asset.material_calibration_status != "UNVALIDATED_PROTOTYPE":
+        raise _error(ErrorCode.SCHEMA_INVALID,
+                     "forge.asset.v1 adapter requires UNVALIDATED_PROTOTYPE calibration status",
+                     stage="integrations.forge_asset.scene",
+                     measurements={"calibration_status": asset.material_calibration_status})
+    if not allow_prototype_preview:
         raise _error(
             ErrorCode.INTEGRATION_PENDING,
             "UNVALIDATED_PROTOTYPE material is available only for explicit temporary preview",
@@ -434,7 +633,7 @@ def scene_from_forge_asset(
                      stage="integrations.forge_asset.scene",
                      measurements={"shape": roughness.shape})
 
-    preview_only = asset.material_calibration_status != "VALIDATED"
+    preview_only = True
     variant = appearance_variant or "forge_bound_face_fields"
     metadata = {
         "adapter_schema": ADAPTER_SCHEMA,
@@ -451,6 +650,7 @@ def scene_from_forge_asset(
         "prototype_preview_requires_opt_in": preview_only,
         "geometry_validation_status": asset.geometry_status,
         "geometry_validation_scope": asset.validation_scope,
+        "geometry_validation_basis": "HASHED_PRODUCER_REPORT_VERIFIED_NOT_INDEPENDENTLY_REMEASURED",
         "material_calibration_status": asset.material_calibration_status,
         "historical_style_validation": asset.historical_style_validation,
         "appearance_binding": ("forge_face_fields" if albedo_override is None
@@ -499,8 +699,7 @@ def render_forge_asset_preview(
     render_spec = spec or RenderSpec(supersample=1)
     width, height = map(int, frame.image_size)
     sample_count = width * height * max(int(render_spec.supersample), 1) ** 2
-    if asset.material_calibration_status != "VALIDATED" \
-            and sample_count > _MAX_PROTOTYPE_PREVIEW_SAMPLES:
+    if sample_count > _MAX_PROTOTYPE_PREVIEW_SAMPLES:
         raise _error(
             ErrorCode.BUDGET_EXCEEDED,
             "UNVALIDATED_PROTOTYPE renders are limited to small temporary previews",

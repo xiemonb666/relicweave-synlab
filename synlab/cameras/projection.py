@@ -394,20 +394,52 @@ def _quaternion_to_rotation(q: np.ndarray) -> np.ndarray:
 
 
 def look_at_T_WC(eye: np.ndarray, target: np.ndarray, up: np.ndarray | None = None) -> np.ndarray:
-    """OpenCV camera looking at ``target`` (+z forward, +y down, +x right)."""
-    eye = np.asarray(eye, dtype=np.float64).reshape(3)
-    target = np.asarray(target, dtype=np.float64).reshape(3)
-    up = np.array([0.0, 1.0, 0.0]) if up is None else np.asarray(up, dtype=np.float64).reshape(3)
+    """Build an OpenCV camera frame from an eye, target, and world-up vector.
+
+    The camera basis is ``(+x right, +y down, +z forward)``.  ``up`` is a world-space
+    up direction (default +Z for this repository's Z-up assets), not a desired camera +Y
+    direction.  A parallel world-up uses the least-parallel world basis axis deterministically.
+    """
+    stage = "cameras.look_at"
+
+    def vector3(name: str, value: np.ndarray) -> np.ndarray:
+        try:
+            result = np.asarray(value, dtype=np.float64)
+        except (TypeError, ValueError) as exc:
+            raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                              f"{name} must be a finite 3-vector", stage=stage) from exc
+        if result.shape != (3,) or not np.isfinite(result).all():
+            raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                              f"{name} must be a finite 3-vector", stage=stage,
+                              measurements={"shape": result.shape})
+        return result
+
+    eye = vector3("eye", eye)
+    target = vector3("target", target)
+    world_up = vector3("up", np.array([0.0, 0.0, 1.0]) if up is None else up)
+    up_norm = float(np.linalg.norm(world_up))
+    if not np.isfinite(up_norm) or up_norm <= 1e-12:
+        raise SynLabError(ErrorCode.SCHEMA_INVALID, "up direction must be non-zero",
+                          stage=stage)
     forward = target - eye
-    n = np.linalg.norm(forward)
-    if n < 1e-12:
+    forward_norm = float(np.linalg.norm(forward))
+    if not np.isfinite(forward_norm) or forward_norm <= 1e-12:
         raise SynLabError(ErrorCode.SCHEMA_INVALID, "camera centre coincides with target",
-                          stage="cameras.look_at")
-    z_c = forward / n
-    if abs(float(np.dot(z_c, up))) > 0.999:
-        up = np.array([1.0, 0.0, 0.0])
-    x_c = np.cross(up, z_c)
-    x_c /= np.linalg.norm(x_c)
+                          stage=stage)
+    z_c = forward / forward_norm
+    up_normed = world_up / up_norm
+
+    # With +Z forward, x = forward x world-up points right and y = forward x x points down.
+    # Cross products preserve a right-handed rotation matrix (determinant +1).
+    x_c = np.cross(z_c, up_normed)
+    x_norm = float(np.linalg.norm(x_c))
+    if x_norm <= 1e-12:
+        # Choose the world axis least parallel to the viewing direction.  This is stable even
+        # when the supplied up vector has a very different magnitude from a unit vector.
+        fallback_up = np.eye(3, dtype=np.float64)[int(np.argmin(np.abs(z_c)))]
+        x_c = np.cross(z_c, fallback_up)
+        x_norm = float(np.linalg.norm(x_c))
+    x_c /= x_norm
     y_c = np.cross(z_c, x_c)
     T = np.eye(4, dtype=np.float64)
     T[:3, 0] = x_c
