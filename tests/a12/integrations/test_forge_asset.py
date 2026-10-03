@@ -422,6 +422,15 @@ def test_face_material_binding_changes_rgb_without_changing_geometry_depth_or_la
     spec = RenderSpec(supersample=1, near_mm=1.0, far_mm=100.0, max_pixels=64 * 64)
     bound = render_forge_asset_preview(asset, _frame(), light=_light(), spec=spec,
                                        allow_prototype_preview=True)
+    legacy_default = render_forge_asset_preview(
+        asset, _frame(), light=_light(), spec=spec, allow_prototype_preview=True,
+        appearance_sampling="FACE_SAMPLE_APPROXIMATION")
+    assert np.array_equal(bound.rgb_linear, legacy_default.rgb_linear)
+    assert np.array_equal(bound.depth_z, legacy_default.depth_z, equal_nan=True)
+    assert np.array_equal(bound.id_map, legacy_default.id_map)
+    assert np.array_equal(bound.surface_tag, legacy_default.surface_tag)
+    assert np.array_equal(bound.visibility, legacy_default.visibility)
+    assert np.array_equal(bound.uncertain_mask, legacy_default.uncertain_mask)
     counterfactual_albedo = np.tile(np.asarray([0.05, 0.65, 0.95], dtype=np.float32),
                                     (asset.n_faces, 1))
     counterfactual = render_forge_asset_preview(
@@ -567,9 +576,52 @@ def _ray_barycentric_world(origin: np.ndarray, direction: np.ndarray,
     return distance, np.asarray([b0, b1, b2], dtype=np.float64)
 
 
+def _nearest_fixture_hit(origin: np.ndarray, direction: np.ndarray,
+                         vertices: np.ndarray, faces: np.ndarray
+                         ) -> tuple[int, float, np.ndarray] | None:
+    nearest: tuple[int, float, np.ndarray] | None = None
+    for face_index, face in enumerate(faces):
+        hit = _ray_barycentric_world(origin, direction, vertices[face])
+        if hit is not None and (nearest is None or hit[0] < nearest[1]):
+            nearest = (face_index, hit[0], hit[1])
+    return nearest
+
+
+def _independent_subpixel_world_ray(frame: ViewFrame, row: int, col: int,
+                                    supersample: int, subrow: int,
+                                    subcol: int) -> tuple[np.ndarray, np.ndarray]:
+    # The software renderer scales K by the supersample factor and shifts its principal point by
+    # factor/2. Use that declared high-grid cell center, then independently undo OPENCV distortion.
+    factor = int(supersample)
+    K_hi = np.asarray(frame.K, dtype=np.float64) * factor
+    K_hi[0, 2] += factor / 2.0
+    K_hi[1, 2] += factor / 2.0
+    K_hi[2, 2] = 1.0
+    pixel = np.asarray([[[factor * col + subcol + 0.5,
+                          factor * row + subrow + 0.5]]], dtype=np.float64)
+    if (frame.camera_model or "PINHOLE").upper() == "OPENCV" \
+            and frame.dist is not None and np.any(np.asarray(frame.dist) != 0.0):
+        import cv2
+
+        xy = cv2.undistortPoints(pixel, K_hi, np.asarray(frame.dist, dtype=np.float64)).reshape(2)
+    else:
+        xy1 = np.linalg.solve(K_hi, np.asarray([pixel[0, 0, 0], pixel[0, 0, 1], 1.0]))
+        xy = xy1[:2] / xy1[2]
+    ray_camera = np.asarray([xy[0], xy[1], 1.0], dtype=np.float64)
+    return frame.T_WC[:3, 3], frame.T_WC[:3, :3] @ ray_camera
+
+
+@pytest.mark.parametrize(("supersample", "camera_model", "dist"), [
+    (1, "PINHOLE", None),
+    (2, "PINHOLE", None),
+    (1, "OPENCV", np.asarray([0.08, -0.01, 0.001, -0.001, 0.0])),
+])
 def test_continuous_appearance_follows_rest_coordinates_after_object_pose(
-    tmp_path: Path,
+    tmp_path: Path, supersample: int, camera_model: str,
+    dist: np.ndarray | None,
 ) -> None:
+    if camera_model != "PINHOLE":
+        pytest.importorskip("open3d")
     asset = load_forge_asset(_write_package(tmp_path / "fixture", continuous_recipe=True,
                                             sloped_region_1=True))
     angle = np.deg2rad(-24.0)
@@ -578,40 +630,72 @@ def test_continuous_appearance_follows_rest_coordinates_after_object_pose(
                        [0.0, np.sin(angle), np.cos(angle), 0.0],
                        [0.0, 0.0, 0.0, 1.0]], dtype=np.float64)
     frame = _frame()
+    frame.camera_model = camera_model
+    frame.dist = dist
+    # Keep the coarse tilted triangle large enough to include several interior painted samples.
+    frame.K[0, 0] = frame.K[1, 1] = 160.0
+    spec = RenderSpec(supersample=supersample, near_mm=1.0, far_mm=100.0,
+                      max_pixels=64 * 64 * supersample * supersample)
     output = render_forge_asset_preview(
-        asset, frame, light=_light(), spec=RenderSpec(supersample=1, near_mm=1.0,
-                                                       far_mm=100.0, max_pixels=64 * 64),
+        asset, frame, light=_light(), spec=spec,
         allow_prototype_preview=True, object_pose=pose)
     face = asset.faces[0]
-    posed_triangle = asset.vertices_mm[face] @ pose[:3, :3].T + pose[:3, 3]
+    posed_vertices = asset.vertices_mm @ pose[:3, :3].T + pose[:3, 3]
+    posed_triangle = posed_vertices[face]
     world_normals = np.cross(posed_triangle[1] - posed_triangle[0],
                              posed_triangle[2] - posed_triangle[0])
     world_normals /= np.linalg.norm(world_normals)
     lambert = np.clip(-float(np.dot(world_normals, _light().direction)), 0.0, 1.0)
     lighting = _light().ambient + _light().color * lambert
-    origin = frame.T_WC[:3, 3]
-    checked = 0
+    recipe = json.loads(asset.ornament_recipe_json)
+    base_albedo = np.asarray(recipe["palette_linear_rgb"]["base"], dtype=np.float64)
+    band_albedo = {str(name): np.asarray(rgb, dtype=np.float64)
+                   for name, rgb in recipe["palette_linear_rgb"].items()}
+    color_samples = {"base": 0, **{str(item["color"]): 0 for item in recipe["bands"]}}
+    checked_pixels = 0
     for row, col in zip(*np.nonzero(output.id_map == 0)):
-        ray_cam = np.asarray([(col + 0.5 - frame.K[0, 2]) / frame.K[0, 0],
-                              (row + 0.5 - frame.K[1, 2]) / frame.K[1, 1], 1.0])
-        direction = frame.T_WC[:3, :3] @ ray_cam
-        hit = _ray_barycentric_world(origin, direction, posed_triangle)
-        if hit is None:
+        sample_rgb: list[np.ndarray] = []
+        sample_kinds: list[str] = []
+        samples_valid = True
+        for subrow in range(supersample):
+            for subcol in range(supersample):
+                origin, direction = _independent_subpixel_world_ray(
+                    frame, int(row), int(col), supersample, subrow, subcol)
+                hit = _nearest_fixture_hit(origin, direction, posed_vertices, asset.faces)
+                if hit is None or hit[0] != 0:
+                    samples_valid = False
+                    break
+                _, _, bary = hit
+                if float(np.min(bary)) < 0.12:
+                    samples_valid = False
+                    break
+                rest_z = float(np.dot(bary, asset.vertices_material_xyz_mm[face, 2]))
+                if any(abs(abs(rest_z - float(item["center_z_mm"]))
+                           - float(item["width_mm"]) / 2.0) < 0.08
+                       for item in recipe["bands"]):
+                    samples_valid = False
+                    break
+                color_name = "base"
+                albedo = base_albedo
+                for item in recipe["bands"]:
+                    if abs(rest_z - float(item["center_z_mm"])) <= float(item["width_mm"]) / 2.0:
+                        color_name = str(item["color"])
+                        albedo = band_albedo[color_name]
+                        break
+                sample_kinds.append(color_name)
+                sample_rgb.append(albedo * lighting)
+            if not samples_valid:
+                break
+        if not samples_valid:
             continue
-        _, bary = hit
-        if float(np.min(bary)) < 0.12:
-            continue
-        rest_z = float(np.dot(bary, asset.vertices_material_xyz_mm[face, 2]))
-        if abs(abs(rest_z) - 0.25) < 0.08:
-            continue  # exclude the band boundary where finite pixel area is expected to vary
-        expected_albedo = (np.asarray([0.9, 0.025, 0.015])
-                           if abs(rest_z) <= 0.25 else np.asarray([0.4, 0.58, 0.2]))
-        expected = expected_albedo * lighting
+        expected = np.mean(np.asarray(sample_rgb), axis=0)
         assert np.allclose(output.rgb_linear[row, col], expected, rtol=0.0, atol=2e-6)
-        checked += 1
-        if checked == 12:
-            break
-    assert checked >= 3
+        for color_name in sample_kinds:
+            color_samples[color_name] += 1
+        checked_pixels += 1
+    assert checked_pixels >= 3
+    assert color_samples["base"] >= 3
+    assert sum(count for color, count in color_samples.items() if color != "base") >= 3
 
 
 def test_explicit_albedo_counterfactual_disables_continuous_sampler(tmp_path: Path) -> None:

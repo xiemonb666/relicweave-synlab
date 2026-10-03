@@ -1,0 +1,295 @@
+{
+  "absent_fields": {
+    "GPU_state": "UNSUPPORTED/NOT_IMPLEMENTED",
+    "contact_state_and_fragment_pose": "UNKNOWN: no contact fixture was run",
+    "crack_surface_mesh": "UNSUPPORTED: no geometric surface reconstruction",
+    "paired_fracture_surface_lineage_or_historical_surface_adjacency": "UNKNOWN: endpoint horizon bonds do not provide positive-area paired surfaces",
+    "per_step_fracture_event_timeline": "UNKNOWN: only endpoint bond state is emitted"
+  },
+  "frame": {
+    "name": "right_handed_z_up",
+    "origin": "center of the requested uniform-box bar fixture",
+    "reference_current_relation": "x_current = x_reference + displacement in the same local frame"
+  },
+  "schema": "pgfrag.output_dictionary.v1",
+  "tables": {
+    "bond_states.csv": {
+      "columns": {
+        "active": {
+          "dtype": "bool",
+          "frame": null,
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "common state of the two reciprocal native directed bonds",
+          "unit": "1"
+        },
+        "current_length_m": {
+          "dtype": "float64",
+          "frame": null,
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "endpoint pair length",
+          "unit": "m"
+        },
+        "point_i_global": {
+          "dtype": "int",
+          "frame": null,
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "lower global endpoint ID",
+          "unit": "1"
+        },
+        "point_j_global": {
+          "dtype": "int",
+          "frame": null,
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "higher global endpoint ID",
+          "unit": "1"
+        },
+        "reference_length_m": {
+          "dtype": "float64",
+          "frame": null,
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "initial native horizon-bond length",
+          "unit": "m"
+        }
+      },
+      "meaning": "one canonical undirected pair for each initial native horizon bond, with its final activity state"
+    },
+    "broken_bonds.csv": {
+      "columns": {
+        "current_length_m": {
+          "dtype": "float64",
+          "frame": null,
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "endpoint pair length",
+          "unit": "m"
+        },
+        "point_i_global": {
+          "dtype": "int",
+          "frame": null,
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "lower global endpoint ID",
+          "unit": "1"
+        },
+        "point_j_global": {
+          "dtype": "int",
+          "frame": null,
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "higher global endpoint ID",
+          "unit": "1"
+        },
+        "reference_length_m": {
+          "dtype": "float64",
+          "frame": null,
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "reference pair length",
+          "unit": "m"
+        }
+      },
+      "meaning": "exact inactive-pair subset of bond_states.csv at the endpoint; no event time or surface is inferred"
+    },
+    "components.csv": {
+      "columns": {
+        "component_id": {
+          "dtype": "int",
+          "frame": null,
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "endpoint intact-bond graph component label",
+          "unit": "1"
+        },
+        "damage": {
+          "dtype": "float64",
+          "frame": null,
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "upstream endpoint point damage",
+          "unit": "1"
+        },
+        "point_id": {
+          "dtype": "int",
+          "frame": null,
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "global point key",
+          "unit": "1"
+        },
+        "point_mass_kg": {
+          "dtype": "float64",
+          "frame": null,
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "point mass",
+          "unit": "kg"
+        }
+      },
+      "meaning": "per-point endpoint connected-component assignment in the intact native bond graph"
+    },
+    "isolated_points.csv": {
+      "columns": {
+        "mass_kg": {
+          "dtype": "float64",
+          "frame": null,
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "point mass",
+          "unit": "kg"
+        },
+        "point_id": {
+          "dtype": "int",
+          "frame": null,
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "global point key",
+          "unit": "1"
+        },
+        "x_ref_m": {
+          "dtype": "float64",
+          "frame": "right_handed_z_up",
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "immutable reference/material x coordinate",
+          "unit": "m"
+        },
+        "y_ref_m": {
+          "dtype": "float64",
+          "frame": "right_handed_z_up",
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "immutable reference/material y coordinate",
+          "unit": "m"
+        },
+        "z_ref_m": {
+          "dtype": "float64",
+          "frame": "right_handed_z_up",
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "immutable reference/material z coordinate",
+          "unit": "m"
+        }
+      },
+      "meaning": "points of degree zero in the endpoint intact bond graph"
+    },
+    "points.csv": {
+      "columns": {
+        "damage": {
+          "dtype": "float64",
+          "frame": null,
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "upstream material-model point damage in [0,1]",
+          "unit": "1"
+        },
+        "intact_bond_component_id": {
+          "dtype": "int",
+          "frame": null,
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "endpoint intact horizon-bond graph component; not a verified rigid fragment",
+          "unit": "1"
+        },
+        "mass_kg": {
+          "dtype": "float64",
+          "frame": null,
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "rho times solver point volume",
+          "unit": "kg"
+        },
+        "n_active_bonds": {
+          "dtype": "int",
+          "frame": null,
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "upstream active neighbor count for this point",
+          "unit": "1"
+        },
+        "point_id": {
+          "dtype": "int",
+          "frame": null,
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "global point key",
+          "unit": "1"
+        },
+        "strain_energy_density_J_m3": {
+          "dtype": "float64",
+          "frame": null,
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "computed by upstream Peridynamics export_field",
+          "unit": "J/m^3"
+        },
+        "volume_m3": {
+          "dtype": "float64",
+          "frame": null,
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "solver point volume",
+          "unit": "m^3"
+        },
+        "vx_mps": {
+          "dtype": "float64",
+          "frame": "right_handed_z_up",
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "endpoint x velocity",
+          "unit": "m/s"
+        },
+        "vy_mps": {
+          "dtype": "float64",
+          "frame": "right_handed_z_up",
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "endpoint y velocity",
+          "unit": "m/s"
+        },
+        "vz_mps": {
+          "dtype": "float64",
+          "frame": "right_handed_z_up",
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "endpoint z velocity",
+          "unit": "m/s"
+        },
+        "x_current_m": {
+          "dtype": "float64",
+          "frame": "right_handed_z_up",
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "endpoint x coordinate in the same frame",
+          "unit": "m"
+        },
+        "x_ref_m": {
+          "dtype": "float64",
+          "frame": "right_handed_z_up",
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "immutable reference/material x coordinate",
+          "unit": "m"
+        },
+        "y_current_m": {
+          "dtype": "float64",
+          "frame": "right_handed_z_up",
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "endpoint y coordinate in the same frame",
+          "unit": "m"
+        },
+        "y_ref_m": {
+          "dtype": "float64",
+          "frame": "right_handed_z_up",
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "immutable reference/material y coordinate",
+          "unit": "m"
+        },
+        "z_current_m": {
+          "dtype": "float64",
+          "frame": "right_handed_z_up",
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "endpoint z coordinate in the same frame",
+          "unit": "m"
+        },
+        "z_ref_m": {
+          "dtype": "float64",
+          "frame": "right_handed_z_up",
+          "missing": "not emitted as null; incomplete rows fail result validation",
+          "role": "immutable reference/material z coordinate",
+          "unit": "m"
+        }
+      },
+      "meaning": "one solver material point at the final requested time step"
+    },
+    "summary.toml": {
+      "meaning": "solver provenance, actual requested/delivered discretization, endpoint metrics, and capability UNKNOWNs",
+      "units": {
+        "E_pa": "Pa",
+        "Gc_j_m2": "J/m^2",
+        "dt_s|accepted_dt_s|native_stability_bound_dt_s|time_s": "s",
+        "dx_m|horizon_m": "m",
+        "kinetic_energy_j|strain_energy_j": "J",
+        "point_center_span_mm|implied_full_point_cell_support_mm": "mm",
+        "point_volume_sum_mm3": "mm^3",
+        "position": "m",
+        "rho_kg_m3": "kg/m^3",
+        "wall_time_s": "s"
+      }
+    }
+  }
+}

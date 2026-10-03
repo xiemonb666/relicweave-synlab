@@ -181,7 +181,7 @@ class RestCoordinateAppearanceSampler:
             raise _invalid("appearance sample face/barycentric inputs are inconsistent")
         bary_sum = bary.sum(axis=1)
         if not np.isfinite(bary).all() or np.any(bary < -1e-8) \
-                or np.any(bary > 1.0) \
+                or np.any(bary > 1.0 + 1e-8) \
                 or not np.allclose(bary_sum, 1.0, rtol=0.0, atol=1e-8) \
                 or not np.isfinite(fallback).all():
             raise _invalid("appearance sample contains invalid barycentrics or face albedo")

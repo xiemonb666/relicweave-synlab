@@ -1,4 +1,14 @@
-# 当前状态补充（2026-10-03）
+# 当前状态补充（截至 2026-10-03 晚间）
+
+VF 首件通过了狭义 BRep 语义验收：26 个 STEP 面全部分类、38,486 个三角形完整映射，UNKNOWN=0；handle-root 两类误标均为 0；canonical3 网格和 lineage 逐位相同；whole/lower-root Blender EXR depth mismatch=0、最大差值=0.0 mm；16 项测试通过，四带/三带 CLI generate 与 validate 均退出 0。602 个 trimmed-face 样本最大偏差 0.0196136578 mm，目标 0.10 mm。全局最小壁厚、C0 折角、把手根部过渡、材料标定和历史样式仍为 `PENDING`。
+
+A12 camera/forge adapter 为 32 PASS，depth/noise 为 71 PASS，冻结 parity 为 2 PASS；既有 appearance 套件仍是 29 PASS / 4 FAIL，不得从状态摘要中抹去。GPU 为 `NOT_IMPLEMENTED`。jobs targeted guard/scheduler/cancel 为 22 PASS，既有 jobs API 为 12 PASS / 1 conditional SKIP；DAG enqueue 非原子与旧 store event revision 仍开放。PG-Frag 为 19 unit tests PASS，17 physics + 3 time source SHA 为 20/20、5 个 headless I/O 文件有变化、63 个 normalized source 文件一致。wheel 解包到 non-editable install layout 后 CLI smoke 通过，wheel SHA256 为 `0bdd3077aa79f69111d3df13a78dd2627b472e17f2db458683d4d2e15295e634`；未证明 pip install、clean-machine 或 remote CI。
+
+PG 的 OSB branch 只有 uniform-box bar fixture：576 点、20,780 native bond pairs、5,236 broken pairs、432/144 两个 endpoint graph components、质量守恒。参数为 `UNVALIDATED_PROTOTYPE`，不是陶瓷/冲击/接触/器皿体积验收。native double-body 三例、只读 C2 shell 候选和连续 paint sampler 都保持 `PENDING`，以主代理复核后的新结果为准。A12 仍不替代主流程 A3/A4 的真实邻接检索、证据拒绝、补采和 STOP。
+
+详细任务与验收条件见 [2026-10-03 接续矩阵](CONTINUATION_20261003.md)；窄范围审阅文件及 SHA 见 [证据索引](evidence/20261003/index.md)。
+
+## 早期状态快照（保留为历史记录，当前状态以上述接续摘要为准）
 
 VF 首件的 canonical STEP 面分类、连续 rest-coordinate 绘制和 BRep face 语义映射已完成狭义原型验收；器身 C0 折角、把手根部几何过渡、材料标定和历史样式仍为 `PENDING`。这不代表 A12 生产 appearance 链路已闭环：当前有 4 项 appearance 测试失败，GPU 路径未实现，完整物理断裂→遗存退化→低成本观测链尚未完成。A12 adapter/camera32 检查为 `PASS`，但近似 per-face 字段仍漏掉窄红带。PG owner 报告 physics/time SHA 为 20/20，OSB/BB 独立 API fixture 已通过真实 CLI；最终 wheel 仍由 PG owner 检查。jobs 修复测试为 19 项通过，仍在审查中。
 

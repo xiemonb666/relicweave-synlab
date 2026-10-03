@@ -1,4 +1,14 @@
-# 状态补充（2026-10-03）
+# 状态补充（截至 2026-10-03 晚间）
+
+接续验收矩阵见 [CONTINUATION_20261003.md](CONTINUATION_20261003.md)，保留的少量来源文件、原始 SHA、路径规范化说明与重算范围见 [evidence/20261003/index.md](evidence/20261003/index.md)。
+
+最新窄范围状态：VF BRep 面语义通过 26 面 / 38,486 三角形分类映射，UNKNOWN=0，handle-root 误标=0/0，canonical3 geometry/lineage 逐位相同，whole/lower-root depth parity=0 mismatch；16 测试通过，四带/三带 generate+validate 均退出 0。602 个 trimmed-face 样本最大偏差为 0.0196136578 mm，目标 0.10 mm；这不是全局 Hausdorff 或全局最小壁厚证明。C0 折角、把手根部几何、机械标定和历史样式仍 `PENDING`。
+
+A12 adapter/camera32、depth/noise71、冻结 parity2 为 `PASS`；legacy appearance 保留 `29 PASS / 4 FAIL`。jobs guard/scheduler/cancel 为 22 PASS，既有 jobs API 为 12 PASS / 1 conditional SKIP；DAG enqueue 非原子和旧 store event revision 仍开放。PG 19 unit PASS，source SHA 20/20，wheel 的解包 non-editable layout CLI smoke PASS；不扩展为 pip install、clean-machine 或 remote-CI 结论。PG OSB run 是玩具 uniform-box bar fixture，GPU `NOT_IMPLEMENTED`，不是材料标定或陶瓷断裂验收。
+
+当前 replacement runs：native double-body no-failure 三例、production read-only C2 shell 候选仍 `PENDING`。连续 paint sampler 的 38 PASS 因 half-pixel oracle 不独立而被主代理拒绝；修正 oracle 后的 SS=1/2/distance rerun 尚待接受。首轮 3 FAIL / 27 PASS 和 legacy appearance 的 4 FAIL 都按原样保留。A12 不替换主 A3/A4 的真实邻接检索、证据拒绝、补采、STOP。
+
+## 早期状态快照（以下细项保留历史状态；当前进度以接续矩阵为准）
 
 VF 当前 prototype 已窄验收 canonical STEP BRep face 分类、连续 rest-coordinate 四带绘制及几何-only 深度 parity；器身 C0 折角、接头真实度、材料/历史样式仍 `PENDING`。A12 生产 appearance 仍未全闭环（4 项 appearance 测试失败）；A12 adapter/camera32 为 `PASS`，但 per-face 近似仍漏掉窄红带。GPU 路径未实现，完整物理断裂链未完成。PG owner 报告 physics/time SHA 20/20 和 OSB/BB 独立 API fixture 的真实 CLI 验证通过，最终 wheel 检查进行中；jobs 修复 19 项测试通过，仍在审查中。A12 既有 ageing、capture 和 reconstruction 能力为部分实现，新 VF/PG 接入与真实效果综合验证待完成。
 
