@@ -23,6 +23,7 @@ from ...canonical import hash_json
 from ...errors import ErrorCode, SynLabError
 from ...jobs.scheduler import MAX_ATTEMPTS
 from ...jobs.state import TERMINAL, JobState, can_transition
+from ...storage.store import _dumps
 from ..capabilities import probe_capability
 from ..deps import ControlEnvelope, JobCreateEnvelope, PreviewEnvelope, RetryEnvelope, SessionDep
 from ..handlers import estimate_for
@@ -46,6 +47,7 @@ PREVIEW_STAGES = ("mother", "pattern", "fracture", "degrade", "display_lod")
 #: the event log is shared by every run, so a small client limit must not stop the cursor
 #: from walking past other runs' events (it would silently truncate this run's history).
 MAX_EVENT_PAGE = 2000
+RETRYABLE_RUN_STATUSES = frozenset({"PENDING", "ACCEPTED", "RUNNING", "PAUSED"})
 
 
 # --------------------------------------------------------------------------- helpers
@@ -124,6 +126,7 @@ def _admission_precheck(session: SessionDep, stage: str, planned_jobs: int) -> d
 # --------------------------------------------------------------------------- create
 @router.post("/jobs", status_code=202, summary="frozen spec + idempotency key → run/job refs")
 def post_jobs(session: SessionDep, body: JobCreateEnvelope) -> dict[str, Any]:
+    require_job_control(session.policy, stage="jobs.create", action="enqueue a job")
     if body.stage not in STAGES:
         raise ApiProblem(422, "BAD_REQUEST",
                          f"unknown stage {body.stage!r}; known: {sorted(STAGES)}", stage="jobs.stage")
@@ -254,10 +257,7 @@ def get_jobs(
 
 @router.get("/jobs/{job_id}", summary="当前权威状态/阶段/资源/error refs")
 def get_job(session: SessionDep, job_id: str) -> dict[str, Any]:
-    try:
-        job = session.scheduler.get_job(job_id)
-    except SynLabError as exc:
-        raise from_synlab(exc) from exc
+    job = _job_or_404(session, job_id)
     run_meta: dict[str, Any] = {}
     try:
         run_meta = session.store.get_run(job.run_id)
@@ -287,35 +287,77 @@ def get_job(session: SessionDep, job_id: str) -> dict[str, Any]:
 
 
 # --------------------------------------------------------------------------- control
-def _run_revision(session: SessionDep, run_id: str) -> int:
-    return int(session.store.get_run(run_id)["revision"])
+def _transition_run_status(session: SessionDep, run_id: str, dst: str, *,
+                           allowed_current: set[str], expected_revision: int | None,
+                           meta: dict[str, Any], stage: str) -> tuple[int, int]:
+    """Compare and transition a run under the same SQLite writer transaction.
+
+    ``BEGIN IMMEDIATE`` serializes this change with scheduler claims and other control
+    requests, so a stale request cannot replace a later CANCELLED state. The event carries
+    the revision committed by this transaction.
+    """
+    conn = session.store.connect()
+    try:
+        conn.execute("BEGIN IMMEDIATE")
+        row = conn.execute("SELECT status, revision FROM runs WHERE run_id = ?",
+                           (run_id,)).fetchone()
+        if row is None:
+            raise ApiProblem(404, API_CODE_NOT_FOUND, f"unknown run {run_id}", stage=stage)
+        status = str(row["status"])
+        current_revision = int(row["revision"])
+        if expected_revision is not None and int(expected_revision) != current_revision:
+            raise ApiProblem(409, API_CODE_REVISION_CONFLICT,
+                             f"run revision is {current_revision}, expected {expected_revision}",
+                             stage=stage, details={"current_revision": current_revision})
+        if status not in allowed_current:
+            raise ApiProblem(409, API_CODE_STATE_CONFLICT,
+                             f"run {run_id} is {status!r}; action is allowed only for statuses "
+                             f"{sorted(allowed_current)}", stage=stage,
+                             details={"run_status": status,
+                                      "allowed_statuses": sorted(allowed_current)})
+        next_revision = current_revision + 1
+        updated = conn.execute(
+            """UPDATE runs SET status=?, revision=?, meta_json=?
+               WHERE run_id=? AND status=? AND revision=?""",
+            (dst, next_revision, _dumps(meta), run_id, status, current_revision),
+        )
+        if updated.rowcount != 1:
+            raise ApiProblem(409, API_CODE_STATE_CONFLICT,
+                             f"run {run_id} changed while applying {dst}", stage=stage)
+        conn.execute(
+            """INSERT INTO events(run_id, job_id, type, state, revision, message,
+               payload_json, created_at) VALUES (?,?,?,?,?,?,?,?)""",
+            (run_id, None, "run.status", dst, next_revision, dst, "{}", time.time()),
+        )
+        conn.execute("COMMIT")
+        return current_revision, next_revision
+    except Exception:
+        if conn.in_transaction:
+            conn.execute("ROLLBACK")
+        raise
+    finally:
+        conn.close()
 
 
 def _run_jobs(session: SessionDep, run_id: str) -> list[Any]:
     return session.scheduler.list_jobs(run_id=run_id, limit=1000)
 
 
-def _check_revision(session: SessionDep, run_id: str, expected: int | None, *, stage: str) -> int:
-    current = _run_revision(session, run_id)
-    if expected is not None and int(expected) != current:
-        raise ApiProblem(409, API_CODE_REVISION_CONFLICT,
-                         f"run revision is {current}, expected {expected}",
-                         stage=stage, details={"current_revision": current})
-    return current
-
-
 @router.post("/jobs/{job_id}/pause", summary="安全点暂停：停止开始新步骤")
 def post_pause(session: SessionDep, job_id: str, body: ControlEnvelope) -> dict[str, Any]:
+    require_job_control(session.policy, stage="jobs.pause", action="pause a job run")
     job = _job_or_404(session, job_id)
-    revision = _check_revision(session, job.run_id, body.revision, stage="jobs.pause")
-    session.store.set_run_status(job.run_id, "PAUSED",
-                                 meta={"workspace": session.workspace, "paused_by": session.session_id,
-                                       "reason": body.reason})
+    revision, new_revision = _transition_run_status(
+        session, job.run_id, "PAUSED",
+        allowed_current={"PENDING", "ACCEPTED", "RUNNING", "PAUSED"},
+        expected_revision=body.revision,
+        meta={"workspace": session.workspace, "paused_by": session.session_id,
+              "reason": body.reason}, stage="jobs.pause")
     pending = [j.job_id for j in _run_jobs(session, job.run_id)
                if j.state in (JobState.PENDING.value, JobState.RETRYABLE.value)]
     return {
         "ok": True, "action": "pause", "run_id": job.run_id, "run_status": "PAUSED",
-        "previous_revision": revision, "revision": _run_revision(session, job.run_id),
+        "previous_revision": revision, "revision": new_revision,
         "jobs_not_started": pending,
         "running_jobs": [j.job_id for j in _run_jobs(session, job.run_id)
                          if j.state == JobState.RUNNING.value],
@@ -325,13 +367,8 @@ def post_pause(session: SessionDep, job_id: str, body: ControlEnvelope) -> dict[
 
 @router.post("/jobs/{job_id}/resume", summary="恢复：核验依赖与 lease")
 def post_resume(session: SessionDep, job_id: str, body: ControlEnvelope) -> dict[str, Any]:
+    require_job_control(session.policy, stage="jobs.resume", action="resume a job run")
     job = _job_or_404(session, job_id)
-    run = session.store.get_run(job.run_id)
-    revision = _check_revision(session, job.run_id, body.revision, stage="jobs.resume")
-    if run["status"] != "PAUSED":
-        raise ApiProblem(409, API_CODE_STATE_CONFLICT,
-                         f"run {job.run_id} is {run['status']!r}, not PAUSED",
-                         stage="jobs.resume")
     dependencies: dict[str, Any] = {}
     blocked: list[str] = []
     for item in _run_jobs(session, job.run_id):
@@ -347,11 +384,14 @@ def post_resume(session: SessionDep, job_id: str, body: ControlEnvelope) -> dict
                 any(s != JobState.COMMITTED.value for s in states.values()):
             blocked.append(item.job_id)
     leases = [row for row in _lease_rows(session) if row.get("state") != "DRAINED"]
-    session.store.set_run_status(job.run_id, "RUNNING",
-                                 meta={"workspace": session.workspace, "resumed_by": session.session_id})
+    revision, new_revision = _transition_run_status(
+        session, job.run_id, "RUNNING", allowed_current={"PAUSED"},
+        expected_revision=body.revision,
+        meta={"workspace": session.workspace, "resumed_by": session.session_id},
+        stage="jobs.resume")
     return {
         "ok": True, "action": "resume", "run_id": job.run_id, "run_status": "RUNNING",
-        "previous_revision": revision, "revision": _run_revision(session, job.run_id),
+        "previous_revision": revision, "revision": new_revision,
         "dependencies": dependencies, "still_blocked": blocked, "active_leases": leases,
         "note": "恢复只解除暂停；依赖未 COMMITTED 或 lease 未清空的 job 仍然不会开始",
     }
@@ -359,8 +399,17 @@ def post_resume(session: SessionDep, job_id: str, body: ControlEnvelope) -> dict
 
 @router.post("/jobs/{job_id}/cancel", summary="停新步骤，保留已提交")
 def post_cancel(session: SessionDep, job_id: str, body: ControlEnvelope) -> dict[str, Any]:
+    require_job_control(session.policy, stage="jobs.cancel", action="cancel a job run")
     job = _job_or_404(session, job_id)
-    revision = _check_revision(session, job.run_id, body.revision, stage="jobs.cancel")
+    # Publish the run-level stop before touching individual jobs. ``claim`` takes the
+    # SQLite write lock and rechecks this status in the same transaction, so ordering is
+    # deterministic: a claim committed first is allowed to drain; later claims are closed.
+    revision, new_revision = _transition_run_status(
+        session, job.run_id, "CANCELLED",
+        allowed_current={"PENDING", "ACCEPTED", "RUNNING", "PAUSED", "CANCELLED"},
+        expected_revision=body.revision,
+        meta={"workspace": session.workspace, "cancelled_by": session.session_id,
+              "reason": body.reason}, stage="jobs.cancel")
     cancelled: list[str] = []
     kept_running: list[str] = []
     committed: list[str] = []
@@ -375,12 +424,9 @@ def post_cancel(session: SessionDep, job_id: str, body: ControlEnvelope) -> dict
                 cancelled.append(item.job_id)
         elif item.state == JobState.RUNNING.value:
             kept_running.append(item.job_id)
-    session.store.set_run_status(job.run_id, "CANCELLED",
-                                 meta={"workspace": session.workspace, "cancelled_by": session.session_id,
-                                       "reason": body.reason})
     return {
         "ok": True, "action": "cancel", "run_id": job.run_id, "run_status": "CANCELLED",
-        "previous_revision": revision, "revision": _run_revision(session, job.run_id),
+        "previous_revision": revision, "revision": new_revision,
         "cancelled_jobs": cancelled, "committed_jobs_kept": committed,
         "running_jobs_draining": kept_running,
         "note": "取消不删除已提交数据；正在运行的 job 跑完当前 attempt 后不再进入后续阶段",
@@ -389,22 +435,31 @@ def post_cancel(session: SessionDep, job_id: str, body: ControlEnvelope) -> dict
 
 @router.post("/jobs/{job_id}/retry", status_code=202, summary="只允许明确可重试错误，产生新 attempt")
 def post_retry(session: SessionDep, job_id: str, body: RetryEnvelope) -> dict[str, Any]:
+    require_job_control(session.policy, stage="jobs.retry", action="retry a job")
     job = _job_or_404(session, job_id)
+    run_status = str(session.store.get_run(job.run_id)["status"])
+    if run_status not in RETRYABLE_RUN_STATUSES:
+        raise ApiProblem(409, API_CODE_STATE_CONFLICT,
+                         f"run {job.run_id} is {run_status!r}; retry is not allowed",
+                         stage="jobs.retry", details={"run_status": run_status})
     error = job.error or {}
     retryable_error = bool(error.get("retryable"))
     if job.state == JobState.RETRYABLE.value and can_transition(JobState.RETRYABLE, JobState.PENDING):
-        requeued = session.scheduler.requeue(job_id, message=body.reason)
+        requeued = session.scheduler.requeue(
+            job_id, message=body.reason, allowed_run_statuses=RETRYABLE_RUN_STATUSES)
         return {"ok": True, "action": "retry", "mode": "requeue", "job_id": job_id,
                 "attempt": requeued.attempt, "state": requeued.state,
                 "reason": body.reason, "error": error,
-                "note": "RETRYABLE 直接回到 PENDING；内容种子不变"}
+                "note": ("RETRYABLE 直接回到 PENDING；内容种子不变；run 暂停时需先恢复才能领取"
+                         if run_status == "PAUSED" else
+                         "RETRYABLE 直接回到 PENDING；内容种子不变")}
     if job.state == JobState.FAILED.value and retryable_error and job.attempt < MAX_ATTEMPTS - 1:
         new_id = "job_" + hash_json({"retry_of": job_id, "attempt": job.attempt + 1,
                                      "t": time.time()}).split(":", 1)[-1][:20]
         created = session.scheduler.create_job(
             job_id=new_id, run_id=job.run_id, stage=job.stage,
             spec={**(job.spec or {}), "retry_of": job_id, "retry_reason": body.reason},
-            inputs=job.inputs,
+            inputs=job.inputs, allowed_run_statuses=RETRYABLE_RUN_STATUSES,
         )
         return {"ok": True, "action": "retry", "mode": "new_attempt", "job_id": new_id,
                 "previous_job_id": job_id, "attempt": created.attempt, "state": created.state,

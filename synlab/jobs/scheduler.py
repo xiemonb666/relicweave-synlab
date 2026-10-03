@@ -22,6 +22,10 @@ from .state import JobState, require_transition
 
 DEFAULT_LEASE_SECONDS = 900.0
 MAX_ATTEMPTS = 3
+# Run states produced by the job API that may start or resume scheduled work.  Keep this
+# allow-list narrow: the runs table intentionally has no status CHECK constraint, and a
+# missing/unknown/final run must never make an orphaned or stale job claimable.
+CLAIMABLE_RUN_STATUSES = ("PENDING", "ACCEPTED", "RUNNING")
 
 
 @dataclass
@@ -60,10 +64,14 @@ class Scheduler:
 
     # ------------------------------------------------------------------ creation
     def create_job(self, *, job_id: str, run_id: str, stage: str, spec: dict[str, Any],
-                   inputs: Sequence[str] = (), depends_on: Sequence[str] = ()) -> JobRecord:
+                   inputs: Sequence[str] = (), depends_on: Sequence[str] = (),
+                   allowed_run_statuses: Iterable[str] | None = None) -> JobRecord:
         with self.store.connect() as conn:
             conn.execute("BEGIN IMMEDIATE")
             try:
+                if allowed_run_statuses is not None:
+                    self._require_run_status(conn, run_id, allowed_run_statuses,
+                                             stage="scheduler.create_job")
                 conn.execute(
                     """INSERT INTO jobs(job_id, run_id, stage, inputs_json, state, attempt,
                        spec_json, created_at, updated_at)
@@ -107,6 +115,22 @@ class Scheduler:
         for node in list(graph):
             visit(node, set())
 
+    @staticmethod
+    def _require_run_status(conn: Any, run_id: str,
+                            allowed_statuses: Iterable[str], *, stage: str) -> str:
+        row = conn.execute("SELECT status FROM runs WHERE run_id = ?", (run_id,)).fetchone()
+        status = row["status"] if row is not None else None
+        allowed = tuple(allowed_statuses)
+        if status not in allowed:
+            reason = "missing" if row is None else repr(status)
+            raise SynLabError(
+                ErrorCode.LEASE_STALE,
+                f"run {run_id} has non-eligible status {reason}", stage=stage,
+                measurements={"run_id": run_id, "run_status": status,
+                              "allowed_run_statuses": list(allowed)},
+            )
+        return str(status)
+
     # ------------------------------------------------------------------ queries
     def get_job(self, job_id: str) -> JobRecord:
         with self.store.connect() as conn:
@@ -147,11 +171,14 @@ class Scheduler:
         return [r["depends_on"] for r in rows]
 
     def ready(self, limit: int = 16) -> list[JobRecord]:
-        """PENDING jobs whose dependencies are all COMMITTED."""
+        """PENDING jobs in an active run whose dependencies are all COMMITTED."""
         with self.store.connect() as conn:
             rows = conn.execute(
-                "SELECT * FROM jobs WHERE state = ? ORDER BY created_at ASC LIMIT ?",
-                (JobState.PENDING.value, int(limit * 4)),
+                """SELECT j.* FROM jobs AS j
+                   INNER JOIN runs AS r ON r.run_id = j.run_id
+                   WHERE j.state = ? AND r.status IN (?, ?, ?)
+                   ORDER BY j.created_at ASC LIMIT ?""",
+                (JobState.PENDING.value, *CLAIMABLE_RUN_STATUSES, int(limit * 4)),
             ).fetchall()
             out = []
             for row in rows:
@@ -187,6 +214,18 @@ class Scheduler:
                 raise SynLabError(ErrorCode.LEASE_STALE,
                                   f"job {job_id} not claimable in state {state.value}",
                                   stage="scheduler.claim")
+            run = conn.execute("SELECT status FROM runs WHERE run_id = ?",
+                               (row["run_id"],)).fetchone()
+            run_status = run["status"] if run is not None else None
+            if run_status not in CLAIMABLE_RUN_STATUSES:
+                conn.execute("ROLLBACK")
+                reason = "missing" if run is None else repr(run_status)
+                raise SynLabError(
+                    ErrorCode.LEASE_STALE,
+                    f"job {job_id} belongs to run {row['run_id']} with non-claimable status {reason}",
+                    stage="scheduler.claim",
+                    measurements={"run_id": row["run_id"], "run_status": run_status},
+                )
             for dep in conn.execute("SELECT depends_on FROM dependencies WHERE job_id = ?", (job_id,)).fetchall():
                 dep_row = conn.execute("SELECT state FROM jobs WHERE job_id = ?", (dep["depends_on"],)).fetchone()
                 if dep_row is None or dep_row["state"] != JobState.COMMITTED.value:
@@ -240,12 +279,16 @@ class Scheduler:
     def transition(self, job_id: str, dst: JobState | str, *, token: str | None = None,
                    fence: int | None = None, message: str = "",
                    payload: dict[str, Any] | None = None,
-                   error: dict[str, Any] | None = None) -> JobRecord:
+                   error: dict[str, Any] | None = None,
+                   allowed_run_statuses: Iterable[str] | None = None) -> JobRecord:
         dst = JobState(dst)
         now = time.time()
         with self.store.connect() as conn:
             conn.execute("BEGIN IMMEDIATE")
             row = self._check_fence(conn, job_id, token, fence)
+            if allowed_run_statuses is not None:
+                self._require_run_status(conn, row["run_id"], allowed_run_statuses,
+                                         stage="scheduler.transition")
             require_transition(row["state"], dst)
             conn.execute("UPDATE jobs SET state=?, updated_at=?, error_json=? WHERE job_id=?",
                          (dst.value, now, _dumps(error) if error else row["error_json"], job_id))
@@ -289,10 +332,12 @@ class Scheduler:
                                    message=exc.message, error=exc.to_dict())
         return record
 
-    def requeue(self, job_id: str, *, token: str | None = None, fence: int | None = None) -> JobRecord:
+    def requeue(self, job_id: str, *, token: str | None = None, fence: int | None = None,
+                message: str = "retry scheduled",
+                allowed_run_statuses: Iterable[str] | None = None) -> JobRecord:
         """RETRYABLE -> PENDING with a new execution attempt (content seed unchanged)."""
         return self.transition(job_id, JobState.PENDING, token=token, fence=fence,
-                               message="retry scheduled")
+                               message=message, allowed_run_statuses=allowed_run_statuses)
 
     def block_dependents(self, job_id: str, reason: str) -> list[str]:
         """Move PENDING dependents of a failed job to BLOCKED (plan 6.1)."""
