@@ -195,7 +195,8 @@ def normalise_levels(levels: Mapping[str, int] | None = None, *,
 
 
 def imaging_spec_for(levels: Mapping[str, int] | None = None, *,
-                     photon_gain: float | None = None) -> ImagingSpec:
+                     photon_gain: float | None = None,
+                     sensor_noise_enabled: bool | None = None) -> ImagingSpec:
     """The ordered imaging chain for one level assignment (level 0 == true identity).
 
     The mapping is one-to-one with the declared axes::
@@ -216,14 +217,17 @@ def imaging_spec_for(levels: Mapping[str, int] | None = None, *,
     reference* variant (:data:`IDEAL_REFERENCE_GAIN`): the chain's own default
     ``effective_gain = 1.0`` photon-starves the render (measured: 8 grey levels in the
     delivered 1024x768 frames), and such frames cannot be called an "ideal" observation.
-    Note that ``ImagingSpec.is_identity()`` does **not** test ``effective_gain``, so a
-    photon-gain override is reported explicitly by :func:`degradation_report` instead of
-    being left to that flag.
+    Sensor noise is enabled when I03 is nonzero or an explicit photon-gain override is
+    requested. ``sensor_noise_enabled`` is an explicit override and takes precedence.
     """
     from ..degrade.ops_image import WB_DIRECTION
 
     resolved = normalise_levels(levels)
     spec = ImagingSpec()
+    spec.sensor_noise_enabled = (bool(sensor_noise_enabled)
+                                 if sensor_noise_enabled is not None else
+                                 bool(resolved["I03"] != LEVEL_IDENTITY
+                                      or photon_gain is not None))
     spec.defocus_sigma_px = float(level_parameters("I01", resolved["I01"])["psf_sigma_px"])
     spec.defocus_depth_dependent = True
     i03 = level_parameters("I03", resolved["I03"])
@@ -280,6 +284,8 @@ def degradation_report(levels: Mapping[str, int] | None = None, *,
         "jpeg_quality": int(spec.jpeg_quality),
         "photon_gain": float(spec.effective_gain),
         "photon_gain_overridden": photon_gain is not None,
+        "sensor_noise_enabled": spec.resolved_sensor_noise_enabled(),
+        "imaging_semantics_version": str(spec.version),
         "imaging_identity": bool(spec.is_identity()),
         "mask_policy": mask_policy,
         "mask_policy_note": (

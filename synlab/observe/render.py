@@ -279,7 +279,7 @@ def _project_with_distortion(cam: np.ndarray, K: np.ndarray, dist: np.ndarray | 
     return np.stack([u, v], axis=1), z
 
 
-def _camera_sample_rays(frame: ViewFrame, width: int, height: int
+def _camera_sample_rays(frame: ViewFrame, width: int, height: int, *, row_start: int = 0
                         ) -> tuple[np.ndarray, np.ndarray]:
     """Return exact double-precision camera rays for raster cell centres.
 
@@ -290,7 +290,7 @@ def _camera_sample_rays(frame: ViewFrame, width: int, height: int
     K = np.asarray(frame.K, dtype=np.float64)
     inv_k = np.linalg.inv(K)
     u = np.arange(width, dtype=np.float64)[None, :] + 0.5
-    v = np.arange(height, dtype=np.float64)[:, None] + 0.5
+    v = np.arange(row_start, row_start + height, dtype=np.float64)[:, None] + 0.5
     h0 = inv_k[0, 0] * u + inv_k[0, 1] * v + inv_k[0, 2]
     h1 = inv_k[1, 0] * u + inv_k[1, 1] * v + inv_k[1, 2]
     h2 = inv_k[2, 0] * u + inv_k[2, 1] * v + inv_k[2, 2]
@@ -300,6 +300,168 @@ def _camera_sample_rays(frame: ViewFrame, width: int, height: int
     return np.asarray(x, dtype=np.float64), np.asarray(y, dtype=np.float64)
 
 
+def _refine_ray_candidates(vertices: np.ndarray, faces: np.ndarray, face_map: np.ndarray,
+                           directions: np.ndarray, primitive_ids: np.ndarray,
+                           near_mm: float, far_mm: float
+                           ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Refine Open3D Float32 primitive candidates with exact double ray/triangle hits."""
+    count = int(directions.shape[0])
+    t_exact = np.full(count, np.inf, dtype=np.float64)
+    hit_exact = np.zeros(count, dtype=bool)
+    original_face = np.full(count, -1, dtype=np.int32)
+    candidate_ids = np.asarray(primitive_ids, dtype=np.int64).reshape(-1)
+    if candidate_ids.size != count:
+        raise ValueError("one primitive id is required for each ray")
+    rows = np.flatnonzero((candidate_ids >= 0) & (candidate_ids < len(face_map)))
+    if not rows.size:
+        return t_exact, hit_exact, original_face
+    face_ids = np.asarray(face_map, dtype=np.int64)[candidate_ids[rows]]
+    tri = np.asarray(vertices, dtype=np.float64)[np.asarray(faces, dtype=np.int64)[face_ids]]
+    v0, v1, v2 = tri[:, 0], tri[:, 1], tri[:, 2]
+    edge0, edge1 = v1 - v0, v2 - v0
+    ray = np.asarray(directions, dtype=np.float64)[rows]
+    pvec = np.cross(ray, edge1)
+    det = np.einsum("ij,ij->i", edge0, pvec)
+    good_det = np.abs(det) > 1e-14
+    inv_det = np.zeros_like(det)
+    inv_det[good_det] = 1.0 / det[good_det]
+    tvec = -v0
+    bary1 = np.einsum("ij,ij->i", pvec, tvec) * inv_det
+    qvec = np.cross(tvec, edge0)
+    bary2 = np.einsum("ij,ij->i", ray, qvec) * inv_det
+    distance = np.einsum("ij,ij->i", edge1, qvec) * inv_det
+    bary0 = 1.0 - bary1 - bary2
+    valid = good_det & (bary0 >= -1e-9) & (bary1 >= -1e-9) & (bary2 >= -1e-9) \
+        & (distance > float(near_mm)) & (distance < float(far_mm))
+    accepted = rows[valid]
+    t_exact[accepted] = distance[valid]
+    hit_exact[accepted] = True
+    original_face[accepted] = face_ids[valid].astype(np.int32)
+    return t_exact, hit_exact, original_face
+
+
+def _edge_uncertainty_band(hit: np.ndarray) -> np.ndarray:
+    """One-sample band around a raster support boundary, on both sides of the edge."""
+    mask = np.asarray(hit, dtype=bool)
+    if mask.ndim != 2 or not mask.size:
+        return np.zeros(mask.shape, dtype=bool)
+    padded = np.pad(mask, ((1, 1), (1, 1)), constant_values=False)
+    centre = padded[1:-1, 1:-1]
+    edge = np.zeros_like(mask)
+    for dy, dx in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+        edge |= centre != padded[1 + dy:1 + dy + mask.shape[0],
+                                 1 + dx:1 + dx + mask.shape[1]]
+    return edge
+
+
+def _raycast_distorted_buffers(scene: Scene, frame: ViewFrame, verts: np.ndarray,
+                               normals: np.ndarray, shaded: np.ndarray,
+                               front_faces: np.ndarray, width: int, height: int,
+                               spec: RenderSpec) -> dict[str, np.ndarray]:
+    """Distortion-aware ray casting with Open3D candidates and double hit refinement.
+
+    Open3D's accelerated candidate API is Float32 on supported builds. Its hit distance is
+    never delivered as depth: each candidate primitive is re-intersected using the original
+    Float64 camera geometry and ray, and the resulting camera-z is the stored value.
+    """
+    depth = np.full((height, width), np.inf, dtype=np.float64)
+    id_buf = np.full((height, width), -1, dtype=np.int32)
+    tag_buf = np.full((height, width), -1, dtype=np.int16)
+    rgba = np.zeros((height, width, 3), dtype=np.float32)
+    if not front_faces.size:
+        return {"depth": depth, "id": id_buf, "tag": tag_buf, "rgb": rgba,
+                "ray_edge_uncertain": np.zeros((height, width), dtype=bool)}
+    try:
+        import open3d as o3d
+    except Exception as exc:  # optional, explicit capability boundary for distorted software renders
+        raise SynLabError(
+            ErrorCode.ENV_CAPABILITY_MISSING,
+            "nonzero lens distortion in the software renderer requires the optional Open3D "
+            "ray-candidate backend; no screen-linear fallback was used",
+            stage="observe.render._raycast_distorted_buffers",
+            evidence_refs=[f"{type(exc).__name__}: {exc}"],
+        ) from exc
+
+    try:
+        mesh = o3d.t.geometry.TriangleMesh(
+            o3d.core.Tensor(np.ascontiguousarray(verts, dtype=np.float32)),
+            o3d.core.Tensor(np.ascontiguousarray(scene.faces[front_faces], dtype=np.int32)),
+        )
+        ray_scene = o3d.t.geometry.RaycastingScene()
+        ray_scene.add_triangles(mesh)
+    except Exception as exc:  # explicit instead of silently switching rendering semantics
+        raise SynLabError(
+            ErrorCode.OPERATOR_NOT_REALIZED,
+            f"Open3D could not build the distorted-camera ray candidate scene: {exc}",
+            stage="observe.render._raycast_distorted_buffers",
+        ) from exc
+
+    rows_per_chunk = 64
+    invalid_id = int(ray_scene.INVALID_ID)
+    for row0 in range(0, height, rows_per_chunk):
+        row1 = min(row0 + rows_per_chunk, height)
+        ray_x, ray_y = _camera_sample_rays(frame, width, row1 - row0, row_start=row0)
+        directions = np.column_stack([ray_x.ravel(), ray_y.ravel(),
+                                      np.ones(ray_x.size, dtype=np.float64)])
+        rays = np.zeros((directions.shape[0], 6), dtype=np.float32)
+        rays[:, 3:] = directions.astype(np.float32)
+        candidate = ray_scene.cast_rays(o3d.core.Tensor(rays))
+        primitive = candidate["primitive_ids"].numpy().astype(np.int64)
+        candidate_t = candidate["t_hit"].numpy().astype(np.float64)
+        has_candidate = (primitive != invalid_id) & np.isfinite(candidate_t)
+        primitive[~has_candidate] = -1
+        exact_t, exact_hit, exact_face = _refine_ray_candidates(
+            verts, scene.faces, front_faces, directions, primitive,
+            spec.near_mm, spec.far_mm,
+        )
+
+        # Near clipping may hide a farther in-range face behind the first candidate. A failed
+        # exact refinement can also be a Float32 boundary candidate; query all intersections for
+        # only those rays and select the closest exact in-range triangle.
+        fallback = has_candidate & (~exact_hit) & (candidate_t < float(spec.far_mm))
+        if fallback.any():
+            fallback_rows = np.flatnonzero(fallback)
+            listed = ray_scene.list_intersections(
+                o3d.core.Tensor(np.ascontiguousarray(rays[fallback_rows]))
+            )
+            ray_ids = listed["ray_ids"].numpy().astype(np.int64)
+            listed_primitive = listed["primitive_ids"].numpy().astype(np.int64)
+            listed_primitive[(listed_primitive < 0)
+                             | (listed_primitive >= len(front_faces))] = -1
+            all_dirs = directions[fallback_rows[ray_ids]]
+            listed_t, listed_hit, listed_face = _refine_ray_candidates(
+                verts, scene.faces, front_faces, all_dirs, listed_primitive,
+                spec.near_mm, spec.far_mm,
+            )
+            exact_by_local = np.full(len(fallback_rows), np.inf, dtype=np.float64)
+            face_by_local = np.full(len(fallback_rows), -1, dtype=np.int32)
+            for hit_index in np.flatnonzero(listed_hit):
+                local_ray = int(ray_ids[hit_index])
+                if listed_t[hit_index] < exact_by_local[local_ray]:
+                    exact_by_local[local_ray] = listed_t[hit_index]
+                    face_by_local[local_ray] = listed_face[hit_index]
+            rows_with_valid = np.flatnonzero(face_by_local >= 0)
+            global_rows = fallback_rows[rows_with_valid]
+            exact_t[global_rows] = exact_by_local[rows_with_valid]
+            exact_face[global_rows] = face_by_local[rows_with_valid]
+            exact_hit[global_rows] = True
+
+        local_depth = depth[row0:row1].reshape(-1)
+        local_id = id_buf[row0:row1].reshape(-1)
+        local_tag = tag_buf[row0:row1].reshape(-1)
+        local_rgb = rgba[row0:row1].reshape(-1, 3)
+        rows = np.flatnonzero(exact_hit)
+        local_depth[rows] = exact_t[rows]
+        face_ids = exact_face[rows]
+        local_id[rows] = scene.face_id[face_ids]
+        local_tag[rows] = scene.surface_tag[face_ids]
+        local_rgb[rows] = shaded[face_ids].astype(np.float32)
+
+    hit = np.isfinite(depth)
+    return {"depth": depth, "id": id_buf, "tag": tag_buf, "rgb": rgba,
+            "ray_edge_uncertain": _edge_uncertainty_band(hit)}
+
+
 def _rasterise_buffers(scene: Scene, frame: ViewFrame, width: int, height: int,
                        light: LightSpec, spec: RenderSpec) -> dict[str, np.ndarray]:
     """Z-buffered rasterisation at ``width x height`` (the supersampled grid)."""
@@ -307,9 +469,6 @@ def _rasterise_buffers(scene: Scene, frame: ViewFrame, width: int, height: int,
     R = T_CW[:3, :3]
     t = T_CW[:3, 3]
     verts = scene.vertices @ R.T + t[None, :]
-    uv, z = _project_with_distortion(verts, frame.K, frame.dist,
-                                     frame.camera_model or "PINHOLE")
-
     depth = np.full((height, width), np.inf, dtype=np.float64)
     id_buf = np.full((height, width), -1, dtype=np.int32)
     tag_buf = np.full((height, width), -1, dtype=np.int16)
@@ -318,103 +477,101 @@ def _rasterise_buffers(scene: Scene, frame: ViewFrame, width: int, height: int,
     faces = scene.faces
     if faces.shape[0] == 0:
         return {"depth": depth, "id": id_buf, "tag": tag_buf, "rgb": rgba}
-    p0, p1, p2 = uv[faces[:, 0]], uv[faces[:, 1]], uv[faces[:, 2]]
-    z0, z1, z2 = z[faces[:, 0]], z[faces[:, 1]], z[faces[:, 2]]
-    area = (p1[:, 0] - p0[:, 0]) * (p2[:, 1] - p0[:, 1]) \
-        - (p2[:, 0] - p0[:, 0]) * (p1[:, 1] - p0[:, 1])
 
-    # Back-face culling in camera space (counter-clockwise winding is front-facing).
-    cam0, cam1, cam2 = verts[faces[:, 0]], verts[faces[:, 1]], verts[faces[:, 2]]
+    cam0, cam1, cam2 = (verts[faces[:, 0]], verts[faces[:, 1]], verts[faces[:, 2]])
     normals = np.cross(cam1 - cam0, cam2 - cam0)
-    front = normals[:, 2] < 0.0
-    visible = (z0 > spec.near_mm) & (z1 > spec.near_mm) & (z2 > spec.near_mm) \
-        & (z0 < spec.far_mm) & (z1 < spec.far_mm) & (z2 < spec.far_mm) \
-        & front & np.isfinite(area) & (np.abs(area) > 1e-12)
-    order = np.nonzero(visible)[0]
-    if order.size == 0:
-        return {"depth": depth, "id": id_buf, "tag": tag_buf, "rgb": rgba}
+    # A perspective-facing triangle is determined relative to the camera origin. Testing
+    # only N.z fails for eccentric triangles whose plane normal tilts across the view ray.
+    front = (np.einsum("ij,ij->i", normals, cam0) < 0.0)
+    lengths = np.linalg.norm(normals, axis=1)
+    usable = front & np.isfinite(lengths) & (lengths > 1e-15)
 
-    # Shading inputs (frozen light, flat shading per face).
-    world_normals = normals / np.maximum(np.linalg.norm(normals, axis=1, keepdims=True), 1e-15)
+    world_normals = normals / np.maximum(lengths[:, None], 1e-15)
     scene_normals = world_normals @ frame.T_WC[:3, :3]
     lambert = np.clip(-(scene_normals @ light.direction), 0.0, 1.0)
-    albedo = scene.material.albedo
-    # View-dependent term is omitted on purpose: a frozen Lambert + ambient model keeps
-    # the render deterministic and is declared as such.  No specular claim is made.
-    shaded = albedo * (light.ambient[None, :] + light.color[None, :] * lambert[:, None])
+    shaded = scene.material.albedo * (light.ambient[None, :]
+                                      + light.color[None, :] * lambert[:, None])
 
-    # The same cell centres used by the rasterizer are unprojected once in double precision.
-    # Linear screen-space z is not perspective-correct; intersecting each candidate camera ray
-    # with its triangle plane gives camera-frame z directly and also handles lens distortion.
-    ray_x, ray_y = _camera_sample_rays(frame, width, height)
-    has_distortion = (frame.dist is not None
-                      and np.any(np.asarray(frame.dist, dtype=np.float64) != 0.0))
-    inv_area = 1.0 / area
-    for fi in order:
-        f = int(fi)
-        xs = (p0[f, 0], p1[f, 0], p2[f, 0])
-        ys = (p0[f, 1], p1[f, 1], p2[f, 1])
-        xmin = max(int(np.floor(min(xs))), 0)
-        xmax = min(int(np.ceil(max(xs))), width - 1)
-        ymin = max(int(np.floor(min(ys))), 0)
-        ymax = min(int(np.ceil(max(ys))), height - 1)
-        if xmax < xmin or ymax < ymin:
-            continue
-        gx = np.arange(xmin, xmax + 1, dtype=np.float64) + 0.5
-        gy = np.arange(ymin, ymax + 1, dtype=np.float64) + 0.5
-        px = gx[None, :]
-        py = gy[:, None]
-        ax, ay = p0[f, 0], p0[f, 1]
-        bx, by = p1[f, 0], p1[f, 1]
-        cx, cy = p2[f, 0], p2[f, 1]
-        inv = inv_area[f]
-        w0 = ((bx - px) * (cy - py) - (cx - px) * (by - py)) * inv
-        w1 = ((cx - px) * (ay - py) - (ax - px) * (cy - py)) * inv
-        w2 = 1.0 - w0 - w1
-        inside = (w0 >= -1e-9) & (w1 >= -1e-9) & (w2 >= -1e-9)
-        # Lens distortion maps triangle edges to curves. Use the projected vertex box as a
-        # broad phase in that case, then reject non-intersections with the exact 3D triangle test.
-        # Its silhouette boundary remains an approximation of the curved edge.
-        candidate = np.ones_like(inside) if has_distortion else inside
-        if not candidate.any():
-            continue
-        v0, v1, v2 = cam0[f], cam1[f], cam2[f]
-        edge0, edge1 = v1 - v0, v2 - v0
-        normal = normals[f]
-        ray_x_roi = ray_x[ymin:ymax + 1, xmin:xmax + 1]
-        ray_y_roi = ray_y[ymin:ymax + 1, xmin:xmax + 1]
-        ray_denom = normal[0] * ray_x_roi + normal[1] * ray_y_roi + normal[2]
-        ray_numer = float(np.dot(normal, v0))
-        zi = np.full(ray_denom.shape, np.nan, dtype=np.float64)
-        np.divide(ray_numer, ray_denom, out=zi,
-                  where=np.abs(ray_denom) > 1e-15)
+    model = (frame.camera_model or "PINHOLE").upper()
+    dist = None if frame.dist is None else np.asarray(frame.dist, dtype=np.float64)
+    has_distortion = (model != "PINHOLE" and dist is not None and dist.size > 0
+                      and np.any(dist != 0.0))
+    if has_distortion:
+        z_values = verts[:, 2]
+        # Slab culling retains triangles that cross near/far; range is tested at each hit.
+        face_z = z_values[faces]
+        slab = (np.max(face_z, axis=1) > float(spec.near_mm)) \
+            & (np.min(face_z, axis=1) < float(spec.far_mm))
+        candidate_faces = np.flatnonzero(usable & slab & np.isfinite(face_z).all(axis=1))
+        return _raycast_distorted_buffers(scene, frame, verts, normals, shaded,
+                                          candidate_faces, width, height, spec)
 
-        # A ray may hit the triangle's plane outside this triangle. Resolve exact 3D
-        # barycentrics to keep the projected bounding box as a broad phase only.
-        rel_x = zi * ray_x_roi - v0[0]
-        rel_y = zi * ray_y_roi - v0[1]
-        rel_z = zi - v0[2]
-        d00 = float(np.dot(edge0, edge0))
-        d01 = float(np.dot(edge0, edge1))
-        d11 = float(np.dot(edge1, edge1))
-        d20 = rel_x * edge0[0] + rel_y * edge0[1] + rel_z * edge0[2]
-        d21 = rel_x * edge1[0] + rel_y * edge1[1] + rel_z * edge1[2]
-        bary_denom = d00 * d11 - d01 * d01
-        if bary_denom <= 1e-24:
+    # Pinhole path: clip each front-facing triangle against the near plane before projection.
+    # This preserves the visible portion of a face that crosses the clip plane.
+    K = np.asarray(frame.K, dtype=np.float64)
+    near = float(spec.near_mm)
+    for face_id in np.flatnonzero(usable):
+        original = verts[faces[face_id]]
+        if not np.isfinite(original).all() or float(np.max(original[:, 2])) <= near:
             continue
-        bary0 = (d11 * d20 - d01 * d21) / bary_denom
-        bary1 = (d00 * d21 - d01 * d20) / bary_denom
-        bary2 = 1.0 - bary0 - bary1
-        intersects = candidate & np.isfinite(zi) & (zi > spec.near_mm) & (zi < spec.far_mm) \
-            & (bary0 >= -1e-9) & (bary1 >= -1e-9) & (bary2 >= -1e-9)
-        sub_depth = depth[ymin:ymax + 1, xmin:xmax + 1]
-        better = intersects & (zi < sub_depth)
-        if not better.any():
+        polygon = [p.copy() for p in original]
+        clipped: list[np.ndarray] = []
+        for idx, current in enumerate(polygon):
+            previous = polygon[idx - 1]
+            current_in = current[2] >= near
+            previous_in = previous[2] >= near
+            if current_in != previous_in:
+                t = (near - previous[2]) / (current[2] - previous[2])
+                clipped.append(previous + t * (current - previous))
+            if current_in:
+                clipped.append(current)
+        if len(clipped) < 3:
             continue
-        sub_depth[better] = zi[better]
-        id_buf[ymin:ymax + 1, xmin:xmax + 1][better] = scene.face_id[f]
-        tag_buf[ymin:ymax + 1, xmin:xmax + 1][better] = scene.surface_tag[f]
-        rgba[ymin:ymax + 1, xmin:xmax + 1][better] = shaded[f].astype(np.float32)
+        for tri_idx in range(1, len(clipped) - 1):
+            tri = np.asarray([clipped[0], clipped[tri_idx], clipped[tri_idx + 1]],
+                             dtype=np.float64)
+            if np.min(tri[:, 2]) >= float(spec.far_mm):
+                continue
+            uv = np.column_stack((K[0, 0] * tri[:, 0] / tri[:, 2]
+                                  + K[0, 1] * tri[:, 1] / tri[:, 2] + K[0, 2],
+                                  K[1, 0] * tri[:, 0] / tri[:, 2]
+                                  + K[1, 1] * tri[:, 1] / tri[:, 2] + K[1, 2]))
+            p0, p1, p2 = uv
+            area = ((p1[0] - p0[0]) * (p2[1] - p0[1])
+                    - (p2[0] - p0[0]) * (p1[1] - p0[1]))
+            if not np.isfinite(area) or abs(area) <= 1e-12:
+                continue
+            xmin = max(int(np.floor(np.min(uv[:, 0]) - 0.5)), 0)
+            xmax = min(int(np.ceil(np.max(uv[:, 0]) - 0.5)), width - 1)
+            ymin = max(int(np.floor(np.min(uv[:, 1]) - 0.5)), 0)
+            ymax = min(int(np.ceil(np.max(uv[:, 1]) - 0.5)), height - 1)
+            if xmax < xmin or ymax < ymin:
+                continue
+            gx = np.arange(xmin, xmax + 1, dtype=np.float64)[None, :] + 0.5
+            gy = np.arange(ymin, ymax + 1, dtype=np.float64)[:, None] + 0.5
+            ax, ay = p0
+            bx, by = p1
+            cx, cy = p2
+            inv_area = 1.0 / area
+            w0 = ((bx - gx) * (cy - gy) - (cx - gx) * (by - gy)) * inv_area
+            w1 = ((cx - gx) * (ay - gy) - (ax - gx) * (cy - gy)) * inv_area
+            w2 = 1.0 - w0 - w1
+            inside = (w0 >= -1e-10) & (w1 >= -1e-10) & (w2 >= -1e-10)
+            inv_z = w0 / tri[0, 2] + w1 / tri[1, 2] + w2 / tri[2, 2]
+            zi = np.full(inv_z.shape, np.inf, dtype=np.float64)
+            np.divide(1.0, inv_z, out=zi, where=inv_z > 0.0)
+            intersects = inside & (zi > near) & (zi < float(spec.far_mm))
+            depth_roi = depth[ymin:ymax + 1, xmin:xmax + 1]
+            better = intersects & (zi < depth_roi)
+            if not better.any():
+                continue
+            depth_roi[better] = zi[better]
+            id_roi = id_buf[ymin:ymax + 1, xmin:xmax + 1]
+            tag_roi = tag_buf[ymin:ymax + 1, xmin:xmax + 1]
+            rgb_roi = rgba[ymin:ymax + 1, xmin:xmax + 1]
+            id_roi[better] = scene.face_id[face_id]
+            tag_roi[better] = scene.surface_tag[face_id]
+            rgb_roi[better] = shaded[face_id].astype(np.float32)
     return {"depth": depth, "id": id_buf, "tag": tag_buf, "rgb": rgba}
 
 
@@ -622,6 +779,14 @@ def render_view(scene: Scene, frame: ViewFrame, *, light: LightSpec,
     mixed_id = _disagreement_i(buffers["id"], factor)
     mixed_tag = _disagreement_i(buffers["tag"].astype(np.int32), factor)
     visibility = (~mixed_id).astype(np.uint8) * (id_map >= 0).astype(np.uint8)
+    ray_edge_hi = buffers.get("ray_edge_uncertain")
+    if ray_edge_hi is None:
+        ray_edge = np.zeros((height, width), dtype=bool)
+    elif factor == 1:
+        ray_edge = np.asarray(ray_edge_hi, dtype=bool)
+    else:
+        ray_edge = np.asarray(ray_edge_hi, dtype=bool).reshape(
+            height, factor, width, factor).any(axis=(1, 3))
 
     focus = float(frame.working_distance_mm if focus_distance_mm is None
                   else focus_distance_mm)
@@ -631,7 +796,7 @@ def render_view(scene: Scene, frame: ViewFrame, *, light: LightSpec,
         coc = circle_of_confusion_px(depth.astype(np.float64), focus, optics["f_number"],
                                      f_px,
                                      sampling_px_per_mm=optics["sampling_px_per_mm"])
-    uncertain = (mixed_id | mixed_tag | (coc > spec.coc_px_threshold)) \
+    uncertain = (mixed_id | mixed_tag | ray_edge | (coc > spec.coc_px_threshold)) \
         & (id_map >= 0)
     uncertain |= (~np.isfinite(depth)) & (id_map >= 0)
 
@@ -650,6 +815,14 @@ def render_view(scene: Scene, frame: ViewFrame, *, light: LightSpec,
         "background_linear": list(spec.background_linear),
         "bg_linear_present": True,
         "depth_semantics": "camera_frame_z_mm",
+        "depth_semantics_version": "camera_z_projective_v2",
+        "depth_method": ("opencv_ray_candidate_double_refine"
+                         if ((hi_frame.camera_model or "PINHOLE").upper() != "PINHOLE"
+                             and hi_frame.dist is not None
+                             and np.asarray(hi_frame.dist).size > 0
+                             and np.any(np.asarray(hi_frame.dist, dtype=np.float64) != 0.0))
+                         else "pinhole_reciprocal_z"),
+        "distorted_edge_uncertainty": "one_supersample_transition_band; float32 candidate support",
         "id_map_semantics": "integer face label, -1 = background, never interpolated",
         "mm_per_pixel": float(frame.working_distance_mm / frame.K[0, 0]),
         "object_pose_T_WO": (np.asarray(object_pose).tolist()

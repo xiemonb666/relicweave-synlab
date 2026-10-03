@@ -55,7 +55,11 @@ LABEL_JPEG_PROXY = "JPEG_PROXY"
 
 @dataclass
 class ImagingSpec:
-    """Frozen imaging parameters.  Defaults are a **true identity** pipeline."""
+    """Frozen imaging parameters with explicit, versioned sensor-noise semantics.
+
+    Version 2.0 defaults sensor noise off.  Version 1.0 retains the historical always-on
+    Poisson stage when ``sensor_noise_enabled`` is omitted, for byte/seed replay only.
+    """
 
     # -- exposure / optics (before photon counting)
     exposure_ev: float = 0.0
@@ -90,8 +94,21 @@ class ImagingSpec:
     letterbox_pad: tuple[int, int] = (0, 0)
     exif_orientation: int = 1
     # -- bookkeeping
-    version: str = "1.0"
+    version: str = "2.0"
+    sensor_noise_enabled: bool | None = None
     extra: dict[str, Any] = field(default_factory=dict)
+
+    def resolved_sensor_noise_enabled(self) -> bool:
+        """Resolve the noise flag without inferring it from a default gain value."""
+        if self.sensor_noise_enabled is not None:
+            return bool(self.sensor_noise_enabled)
+        if str(self.version) == "1.0":
+            return True
+        if str(self.version) == "2.0":
+            return False
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          f"unsupported imaging semantic version {self.version!r}",
+                          stage="observe.imaging.ImagingSpec")
 
     def assert_scene_only(self) -> None:
         for knob in SCENE_ONLY_KNOBS:
@@ -107,11 +124,16 @@ class ImagingSpec:
         return list(STAGE_ORDER)
 
     def is_identity(self) -> bool:
-        """True when nothing at all is changed (used for level-0 identity checks)."""
+        """True for an unmodified, noise-free linear control.
+
+        Quantization/encoding still changes arbitrary float inputs and therefore is not
+        described here as bitwise identity; the flag characterises the sensor-linear path.
+        """
         return (
             self.exposure_ev == 0.0 and self.defocus_sigma_px == 0.0
             and self.motion_samples == 1 and self.motion_amplitude_px == 0.0
             and self.digital_gain == 1.0 and self.read_noise_sigma == 0.0
+            and not self.resolved_sensor_noise_enabled()
             and tuple(self.white_balance) == (1.0, 1.0, 1.0)
             and self.color_matrix is None and self.response == "LINEAR"
             and self.response_gamma == 1.0 and self.sharpening == 0.0 and self.denoise == 0.0
@@ -282,10 +304,19 @@ def apply_imaging_chain(scene_linear: np.ndarray, *, K: np.ndarray, dist: np.nda
     # ------------------------------------------------------------------ 3. sensor
     x = np.maximum(exposed, 0.0).astype(np.float64)
     g = float(spec.effective_gain)
-    photons = rng.poisson(x * g) / g
-    noisy = photons
-    if spec.read_noise_sigma > 0:
-        noisy = noisy + rng.normal(scale=float(spec.read_noise_sigma), size=noisy.shape)
+    noise_enabled = spec.resolved_sensor_noise_enabled()
+    if noise_enabled:
+        photons = rng.poisson(x * g) / g
+        noisy = photons
+        if spec.read_noise_sigma > 0:
+            noisy = noisy + rng.normal(scale=float(spec.read_noise_sigma), size=noisy.shape)
+        noise_op = "poisson_read_noise"
+        noise_formula = "y = Poisson(g*x)/g + N(0, sigma_read^2)"
+    else:
+        # An identity control must not consume any samples from the named sensor substream.
+        noisy = x
+        noise_op = "sensor_noise_disabled"
+        noise_formula = "y = max(exposed, 0); no sensor RNG draw"
     noisy = noisy - float(spec.sensor_black_level)
     saturated = None
     if spec.sensor_saturation > 0:
@@ -293,11 +324,12 @@ def apply_imaging_chain(scene_linear: np.ndarray, *, K: np.ndarray, dist: np.nda
         noisy = np.clip(noisy, 0.0, float(spec.sensor_saturation))
     linear = noisy.astype(np.float32)
     stages.append({
-        "stage": "SENSOR_NOISE", "op": "poisson_read_noise",
+        "stage": "SENSOR_NOISE", "op": noise_op,
+        "enabled": bool(noise_enabled), "version": str(spec.version),
         "effective_gain": g, "read_noise_sigma": float(spec.read_noise_sigma),
         "black_level": float(spec.sensor_black_level),
         "saturation": float(spec.sensor_saturation),
-        "formula": "y = Poisson(g*x)/g + N(0, sigma_read^2)",
+        "formula": noise_formula,
         "saturated_fraction": float(np.mean(saturated)) if saturated is not None else 0.0,
     })
 
@@ -500,6 +532,7 @@ def apply_imaging_chain(scene_linear: np.ndarray, *, K: np.ndarray, dist: np.nda
                 "motion_amplitude_px": spec.motion_amplitude_px,
                 "effective_gain": spec.effective_gain,
                 "read_noise_sigma": spec.read_noise_sigma,
+                "sensor_noise_enabled": bool(noise_enabled),
                 "digital_gain": spec.digital_gain,
                 "white_balance": list(spec.white_balance),
                 "response": spec.response, "bit_depth": spec.bit_depth,
