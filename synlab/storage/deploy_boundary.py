@@ -44,6 +44,31 @@ def is_opaque_id(value: Any) -> bool:
     return bool(OPAQUE_ID_RE.fullmatch(str(value)))
 
 
+def _bag_id_is_authorized(manifest: Mapping[str, Any]) -> bool:
+    """Accept the one capture-context field only when the exported policy proves its scope."""
+    try:
+        scan = manifest["separation"]["capture_context_scan"]
+        source = scan["declaration_source"]
+        declarations = scan["declarations"]
+        declared_fields = set(map(str, scan["declared_fields"]))
+        blocks = set(map(str, source["blocks"]))
+        policy_hash = str(source["hash"])
+    except (KeyError, TypeError, AttributeError):
+        return False
+    if ("bag_id" not in declared_fields or
+            not policy_hash.startswith("sha256:") or
+            not {"capture_context_fields", "table_columns"} <= blocks or
+            not isinstance(declarations, list)):
+        return False
+    matching = [row for row in declarations
+                if isinstance(row, Mapping) and str(row.get("key", "")) == "bag_id"]
+    return bool(matching) and all(
+        row.get("evidence_class") == "capture_context" and
+        row.get("rig_obtainable") is True and row.get("claim_allowed") is True
+        for row in matching
+    )
+
+
 def validate_deploy_package(root: str | Path, manifest: Mapping[str, Any]) -> dict[str, Any]:
     """Validate all deployment files, identities, array schemas and raw-id side channels.
 
@@ -89,7 +114,8 @@ def validate_deploy_package(root: str | Path, manifest: Mapping[str, Any]) -> di
 
     query_path = deploy_root / next(iter(query_files))
     query_rows, query_columns = _read_table(query_path)
-    allowed_query_columns = {"opaque_id", "bag_id"}
+    bag_id_allowed = _bag_id_is_authorized(manifest)
+    allowed_query_columns = {"opaque_id"} | ({"bag_id"} if bag_id_allowed else set())
     if not query_columns or not query_columns <= allowed_query_columns or "opaque_id" not in query_columns:
         raise _invalid("query roster has unsupported columns", evidence=sorted(query_columns))
     opaque_ids: set[str] = set()
@@ -283,12 +309,33 @@ def _validate_index_rows(kind: str, rows: Mapping[str, Any], opaque_ids: set[str
 
 def _validate_npz_shards(deploy_root: Path, kind: str, shards: set[str],
                          rows: Mapping[str, Any]) -> None:
-    array_allowlist = GEOMETRY_ARRAYS if kind == "geometry" else TOKEN_ARRAYS
-    seen: set[str] = set()
     for rel in sorted(shards):
-        path = deploy_root / rel
-        with np.load(path, allow_pickle=False) as data:
-            for name in data.files:
+        validate_npz_shard_bytes(kind, (deploy_root / rel).read_bytes(), rel, rows)
+
+
+def validate_npz_shard_bytes(kind: str, payload: bytes, rel: str,
+                             rows: Mapping[str, Any]) -> dict[str, np.ndarray]:
+    """Parse and validate the exact NPZ bytes that a reader will consume.
+
+    Validation is shard-scoped, so a reader can re-hash and re-check only the requested shard
+    after construction instead of rescanning every deployment byte on each feature read.
+    """
+    if kind not in {"geometry", "tokens"}:
+        raise _invalid(f"unsupported NPZ container kind {kind!r}")
+    array_allowlist = GEOMETRY_ARRAYS if kind == "geometry" else TOKEN_ARRAYS
+    shard_rows = {str(opaque): row for opaque, row in rows.items()
+                  if isinstance(row, Mapping) and str(row.get("shard", "")) == rel}
+    expected = {f"{opaque}__{name}" for opaque in shard_rows for name in array_allowlist}
+    arrays: dict[str, np.ndarray] = {}
+    try:
+        with np.load(io.BytesIO(payload), allow_pickle=False) as data:
+            names = list(data.files)
+            if len(names) != len(set(names)):
+                raise _invalid(f"{kind} NPZ has duplicate array names", evidence=[rel])
+            if set(names) != expected:
+                raise _invalid(f"{kind} NPZ keys do not match the v2 row allowlist",
+                               evidence=sorted(set(names) ^ expected))
+            for name in names:
                 if "__" not in name:
                     raise _invalid(f"{kind} NPZ key has no opaque identity prefix",
                                    evidence=[f"{rel}:{name}"])
@@ -296,18 +343,18 @@ def _validate_npz_shards(deploy_root: Path, kind: str, shards: set[str],
                 if not is_opaque_id(opaque) or array_name not in array_allowlist:
                     raise _invalid(f"{kind} NPZ key is outside the v2 allowlist",
                                    evidence=[f"{rel}:{name}"])
-                if rows.get(opaque, {}).get("shard") != rel:
+                row = shard_rows.get(opaque)
+                if row is None:
                     raise _invalid(f"{kind} NPZ key is absent from its index",
                                    evidence=[f"{rel}:{name}"])
-                _validate_array(kind, array_name, data[name], rows[opaque])
-                seen.add(f"{opaque}__{array_name}")
-    for opaque, row in rows.items():
-        expected = array_allowlist
-        # v2 emits the six geometry arrays and all five token arrays as fixed groups.
-        absent = sorted(f"{opaque}__{name}" for name in expected
-                        if f"{opaque}__{name}" not in seen)
-        if absent:
-            raise _invalid(f"{kind} NPZ is missing allowlisted arrays", evidence=absent)
+                array = data[name]
+                _validate_array(kind, array_name, array, row)
+                arrays[name] = array
+    except SynLabError:
+        raise
+    except Exception as exc:  # noqa: BLE001 - malformed ZIP/NPZ is a boundary failure
+        raise _invalid(f"{kind} NPZ cannot be decoded: {exc}", evidence=[rel]) from exc
+    return arrays
 
 
 def _validate_array(kind: str, name: str, array: np.ndarray, row: Mapping[str, Any]) -> None:
@@ -333,10 +380,22 @@ def _validate_array(kind: str, name: str, array: np.ndarray, row: Mapping[str, A
 
 def _validate_obs_shards(deploy_root: Path, shards: set[str], rows: Mapping[str, Any],
                          declared_channels: set[str]) -> None:
-    seen: set[tuple[str, str]] = set()
     for rel in sorted(shards):
-        path = deploy_root / rel
-        with tarfile.open(path, "r") as tar:
+        validate_obs_shard_bytes(rel, (deploy_root / rel).read_bytes(), rows,
+                                 declared_channels)
+
+
+def validate_obs_shard_bytes(rel: str, payload: bytes, rows: Mapping[str, Any],
+                             declared_channels: set[str]
+                             ) -> dict[tuple[str, str], np.ndarray]:
+    """Parse and validate one exact observation TAR shard and all of its member arrays."""
+    seen: set[tuple[str, str]] = set()
+    arrays: dict[tuple[str, str], np.ndarray] = {}
+    expected = {(str(opaque), str(name)) for opaque, row in rows.items()
+                if isinstance(row, Mapping) and row.get("shard") == rel
+                for name in row.get("channels", [])}
+    try:
+        with tarfile.open(fileobj=io.BytesIO(payload), mode="r:") as tar:
             for member in tar.getmembers():
                 if not member.isfile():
                     raise _invalid("observation TAR may contain files only", evidence=[member.name])
@@ -345,10 +404,15 @@ def _validate_obs_shards(deploy_root: Path, shards: set[str], rows: Mapping[str,
                     raise _invalid("observation TAR member path is outside the v2 allowlist",
                                    evidence=[member.name])
                 opaque, array_name = parts[0], parts[1][:-4]
+                key = (opaque, array_name)
+                if key in seen:
+                    raise _invalid("observation TAR contains duplicate member names",
+                                   evidence=[member.name])
                 if array_name not in declared_channels or array_name not in DEPLOY_OBS_ARRAYS:
                     raise _invalid("observation TAR carries an undeclared channel",
                                    evidence=[member.name])
-                if rows.get(opaque, {}).get("shard") != rel:
+                row = rows.get(opaque)
+                if not isinstance(row, Mapping) or row.get("shard") != rel:
                     raise _invalid("observation TAR member is absent from its index",
                                    evidence=[member.name])
                 stream = tar.extractfile(member)
@@ -359,17 +423,23 @@ def _validate_obs_shards(deploy_root: Path, shards: set[str], rows: Mapping[str,
                 except Exception as exc:  # noqa: BLE001 - invalid container is a boundary failure
                     raise _invalid(f"observation TAR array cannot be decoded: {exc}",
                                    evidence=[member.name]) from exc
-                _validate_obs_array(array_name, array, rows[opaque])
-                seen.add((opaque, array_name))
+                _validate_obs_array(array_name, array, row)
+                seen.add(key)
+                arrays[key] = array
+    except SynLabError:
+        raise
+    except Exception as exc:  # noqa: BLE001 - malformed TAR is a boundary failure
+        raise _invalid(f"observation TAR cannot be decoded: {exc}", evidence=[rel]) from exc
+    if seen != expected:
+        raise _invalid("observation TAR members do not match the v2 row allowlist",
+                       evidence=sorted(seen ^ expected))
     for opaque, row in rows.items():
+        if not isinstance(row, Mapping) or row.get("shard") != rel:
+            continue
         channels = set(map(str, row["channels"]))
         if not channels <= declared_channels:
             raise _invalid(f"obs row {opaque} declares a channel absent from top-level index")
-        absent = sorted(name for name in channels if (opaque, name) not in seen)
-        extra = sorted(name for key, name in seen if key == opaque and name not in channels)
-        if absent or extra:
-            raise _invalid(f"observation TAR/index channels disagree for {opaque}",
-                           evidence=[*absent, *extra])
+    return arrays
 
 
 def _validate_obs_array(name: str, array: np.ndarray, row: Mapping[str, Any]) -> None:
@@ -411,4 +481,5 @@ def _scan_array_strings(array: np.ndarray, where: str) -> None:
 
 
 __all__ = ["DEPLOY_SCHEMA", "DEPLOY_OBS_ARRAYS", "GEOMETRY_ARRAYS", "TOKEN_ARRAYS",
-           "is_opaque_id", "validate_deploy_package"]
+           "is_opaque_id", "validate_deploy_package", "validate_npz_shard_bytes",
+           "validate_obs_shard_bytes"]

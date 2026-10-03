@@ -397,9 +397,16 @@ class _PhysicalAxis(_BaseAxis):
                               f"{self.AXIS_ID}: physical result carries no component",
                               stage="degrade.axes.P")
         appearance = dict(result.meta.get("appearance") or {}) or None
+        face_attrs = {}
+        for source_name, output_name in (("face_origin_kind", "origin_kind"),
+                                         ("face_interface_id", "interface_id")):
+            value = getattr(fragment, source_name, None)
+            if value is not None and np.asarray(value).shape == (len(representative.mesh.faces),):
+                face_attrs[output_name] = np.array(value, copy=True)
         fragment_out = _FragmentView(representative.mesh, str(getattr(fragment, "fragment_id", "")),
                                      meta={**dict(getattr(fragment, "meta", None) or {}),
-                                           **({"appearance": appearance} if appearance else {})})
+                                           **({"appearance": appearance} if appearance else {})},
+                                     face_attrs=face_attrs)
         measured = {str(k): float(v) for k, v in (result.meta.get("measured") or {}).items()
                     if isinstance(v, (int, float, np.integer, np.floating))}
         measured.update(self.extra_measurements(source, representative.mesh, result))

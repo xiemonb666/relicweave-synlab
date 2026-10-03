@@ -822,7 +822,8 @@ def remove_paint(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any =
     }
     details = {"rank_field_id": field.field_id,
                "rank_boundary_score": selection.get("boundary_score"),
-               "mask_nested": True, "removed_area_selection": selection,
+               "mask_nested": True,
+               "removed_area_selection": {"weight_unit": "mm2", **selection},
                "geometry": S.mesh_summary(mesh)}
     realized = bool(removed_area > 0)
     output_appearance = _copy_appearance_channels(appearance)
@@ -831,7 +832,9 @@ def remove_paint(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any =
                               "paint_mask_removed": removed_mask})
     return DamageOutcome(mesh=mesh, appearance=output_appearance,
                          measurements=measurements,
-                         units={"paint_removed_area_mm2": "mm2", "paint_total_area_mm2": "mm2"},
+                         units={"paint_removed_area_mm2": "mm2", "paint_total_area_mm2": "mm2",
+                                "paint_removed_area_target_fraction": "1",
+                                "paint_removed_area_fraction_error": "1"},
                          details=details, realized=realized)
 
 
@@ -889,7 +892,8 @@ def dirt_cover(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any = N
         "geometry_hash_unchanged": 1.0 if variant == "dirt_appearance" else 0.0,
         "contamination_entity": 1.0 if variant == "dirt_geometry" else 0.0,
     }
-    details = {"field_id": field.field_id, "selection": selection, "variant": variant}
+    details = {"field_id": field.field_id,
+               "selection": {"weight_unit": "mm2", **selection}, "variant": variant}
     added_bodies: list[Any] = []
     outcome_mesh = mesh
     if variant == "dirt_geometry":
@@ -907,7 +911,10 @@ def dirt_cover(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any = N
                               "dirt_mask": covered})
     return DamageOutcome(mesh=outcome_mesh, appearance=output_appearance,
                          measurements=measurements,
-                         units={"covered_area_mm2": "mm2", "contamination_volume_mm3": "mm3"},
+                         units={"coverage": "1", "realized_coverage": "1",
+                                "covered_area_mm2": "mm2", "covered_area_target_mm2": "mm2",
+                                "coverage_area_error_mm2": "mm2", "coverage_fraction_error": "1",
+                                "contamination_volume_mm3": "mm3"},
                          details=details, realized=bool(covered.any()), added_bodies=added_bodies)
 
 
@@ -982,7 +989,9 @@ def crack_or_coat_loss(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment:
         field = F.FourierField.from_payload(recipe.basis["rank_field"])
         anchors = np.asarray(np.asarray(mesh.triangles_center, dtype=np.float64)[ctx.roi_ids])
         values = np.clip(field(anchors), 0.0, 1.0)
-        threshold = F.threshold_for_fraction(values, affected)
+        threshold = F.threshold_for_fraction(values, affected, tail="lower")
+        anchor_selected = values <= threshold
+        sampled_fraction = float(anchor_selected.mean()) if anchor_selected.size else 0.0
         normals = np.asarray(mesh.face_normals, dtype=np.float64)[ctx.roi_ids]
         anchor_tree = cKDTree(anchors)
 
@@ -1010,7 +1019,15 @@ def crack_or_coat_loss(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment:
             "min_thickness_mm": S.ray_thickness(body, n_samples=160, seed=12)["min_mm"],
         }
         details = {"sdf_pipeline": detail, "variant": variant, "threshold": threshold,
-                   "anchor_faces": int(len(removed_uv))}
+                   "anchor_faces": int(len(removed_uv)),
+                   "affected_rank_selection": {
+                       "tail": "lower", "requested_fraction": affected,
+                       "anchor_samples": int(anchor_selected.size),
+                       "selected_anchor_samples": int(anchor_selected.sum()),
+                       "sampled_fraction": sampled_fraction,
+                       "sampled_fraction_error": float(sampled_fraction - affected),
+                       "sampling_basis": "unweighted ROI face-centre anchors; finite approximation, "
+                                        "not area-weighted or exact"}}
         return DamageOutcome(mesh=body, measurements=measurements,
                              units={"lost_volume_mm3": "mm3", "layer_thickness_mm": "mm"},
                              details=details,

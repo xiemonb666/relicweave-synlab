@@ -582,9 +582,9 @@ def _postassembly_physical_qa(source_mesh: trimesh.Trimesh,
     def inspect_mesh(mesh: Any) -> dict[str, Any]:
         row: dict[str, Any] = {
             "arrays_finite": None, "face_indices_valid": None,
-            "volume_mm3": None, "area_mm2": None,
+            "signed_volume_mm3": None, "volume_mm3": None, "area_mm2": None,
             "volume_finite": None, "area_finite": None,
-            "watertight": None, "error": None,
+            "watertight": None, "winding_consistent": None, "error": None,
         }
         try:
             vertices = np.asarray(mesh.vertices)
@@ -593,19 +593,25 @@ def _postassembly_physical_qa(source_mesh: trimesh.Trimesh,
             faces_finite = bool(np.isfinite(faces).all())
             row["arrays_finite"] = bool(vertices_finite and faces_finite)
             face_shape_ok = faces.ndim == 2 and faces.shape[1:] == (3,)
-            if face_shape_ok and faces.size and vertices.ndim == 2 and vertices.shape[1:] == (3,):
+            face_integer = bool(np.issubdtype(faces.dtype, np.integer))
+            if (face_shape_ok and faces.size and face_integer
+                    and vertices.ndim == 2 and vertices.shape[1:] == (3,)):
                 face_indices_valid = bool(
                     faces_finite and int(faces.min()) >= 0 and int(faces.max()) < len(vertices))
             else:
-                face_indices_valid = bool(face_shape_ok and faces.size == 0)
+                # An empty mesh or floating-point face index array is not evidence for a valid
+                # complete entity, even when no out-of-range index can be observed.
+                face_indices_valid = False
             row["face_indices_valid"] = face_indices_valid
             if not row["arrays_finite"] or not face_indices_valid:
                 row["error"] = ("non-finite vertices/faces" if not row["arrays_finite"]
                                 else "face array has an invalid shape or vertex index")
                 return row
             try:
-                volume = float(abs(mesh.volume))
+                signed_volume = float(mesh.volume)
+                volume = float(abs(signed_volume))
                 area = float(mesh.area)
+                row["signed_volume_mm3"] = signed_volume
                 row["volume_mm3"] = volume
                 row["area_mm2"] = area
                 row["volume_finite"] = bool(np.isfinite(volume))
@@ -615,6 +621,7 @@ def _postassembly_physical_qa(source_mesh: trimesh.Trimesh,
                 return row
             try:
                 row["watertight"] = bool(mesh.is_watertight)
+                row["winding_consistent"] = bool(mesh.is_winding_consistent)
             except Exception as exc:  # noqa: BLE001 - retain a diagnostic instead of raising
                 row["error"] = f"{type(exc).__name__}: {exc}"
         except Exception as exc:  # noqa: BLE001 - malformed meshes remain inspectable results
@@ -664,14 +671,16 @@ def _postassembly_physical_qa(source_mesh: trimesh.Trimesh,
     source_arrays_valid = source["face_indices_valid"]
     result_arrays_valid = aggregate([row["mesh"]["face_indices_valid"]
                                      for row in component_rows])
-    source_positive = (None if source["volume_mm3"] is None else
-                       bool(source["volume_finite"] and source["volume_mm3"] > 0.0))
+    source_positive = (None if source["signed_volume_mm3"] is None else
+                       bool(source["volume_finite"] and source["signed_volume_mm3"] > 0.0))
     result_positive = aggregate([
-        (None if row["mesh"]["volume_mm3"] is None else bool(
-            row["mesh"]["volume_finite"] and row["mesh"]["volume_mm3"] > 0.0))
+        (None if row["mesh"]["signed_volume_mm3"] is None else bool(
+            row["mesh"]["volume_finite"] and row["mesh"]["signed_volume_mm3"] > 0.0))
         for row in component_rows] + [row["recorded_positive_volume"] for row in component_rows])
     source_watertight = source["watertight"]
     result_watertight = aggregate([row["mesh"]["watertight"] for row in component_rows])
+    source_winding = source["winding_consistent"]
+    result_winding = aggregate([row["mesh"]["winding_consistent"] for row in component_rows])
 
     ledger = dict(ledger or {})
     conservation_parts: dict[str, Any] = {
@@ -679,9 +688,15 @@ def _postassembly_physical_qa(source_mesh: trimesh.Trimesh,
             ledger.get("conservation_ok"), (bool, np.bool_)) else None,
         "recorded_balance_pass": None,
         "delivered_balance_pass": None,
+        "source_geometry_match_pass": None,
+        "ledger_damaged_geometry_match_pass": None,
+        "component_geometry_match_pass": None,
         "tolerance_mm3": None,
         "recorded_balance_error_mm3": None,
         "delivered_balance_error_mm3": None,
+        "source_geometry_error_mm3": None,
+        "ledger_damaged_geometry_error_mm3": None,
+        "component_geometry_errors_mm3": {},
     }
     required_numbers = (ledger.get("source_volume_mm3"), ledger.get("damaged_volume_mm3"),
                         ledger.get("lost_volume_mm3"))
@@ -694,13 +709,44 @@ def _postassembly_physical_qa(source_mesh: trimesh.Trimesh,
                 conservation_parts["tolerance_mm3"] = float(tolerance)
                 conservation_parts["recorded_balance_error_mm3"] = float(error)
                 conservation_parts["recorded_balance_pass"] = bool(error <= tolerance)
-                if result_lost_volume_mm3 is not None:
-                    actual_damaged = float(sum(
-                        row["mesh"]["volume_mm3"] for row in component_rows
-                        if not row["is_contamination"] and row["mesh"]["volume_mm3"] is not None))
+                source_signed = source.get("signed_volume_mm3")
+                if source_signed is not None and np.isfinite(source_signed):
+                    source_error = abs(source_volume - float(source_signed))
+                    conservation_parts["source_geometry_error_mm3"] = float(source_error)
+                    conservation_parts["source_geometry_match_pass"] = bool(
+                        source_error <= tolerance and float(source_signed) > 0.0)
+                delivered_original = [row for row in component_rows if not row["is_contamination"]]
+                actual_damage_values = [row["mesh"]["signed_volume_mm3"]
+                                        for row in delivered_original]
+                actual_damaged = (float(sum(actual_damage_values))
+                                  if all(value is not None for value in actual_damage_values)
+                                  else None)
+                if actual_damaged is not None and np.isfinite(actual_damaged):
+                    damage_error = abs(damaged_volume - actual_damaged)
+                    conservation_parts["ledger_damaged_geometry_error_mm3"] = float(damage_error)
+                    conservation_parts["ledger_damaged_geometry_match_pass"] = bool(
+                        damage_error <= tolerance)
+                component_errors: dict[str, float | None] = {}
+                component_checks: list[bool | None] = []
+                for row in component_rows:
+                    actual = row["mesh"]["signed_volume_mm3"]
+                    recorded = row["recorded_volume_mm3"]
+                    if actual is None or recorded is None or not np.isfinite(actual) \
+                            or not np.isfinite(recorded):
+                        component_errors[row["component_id"]] = None
+                        component_checks.append(None)
+                    else:
+                        mismatch = abs(float(recorded) - float(actual))
+                        component_errors[row["component_id"]] = float(mismatch)
+                        component_checks.append(bool(mismatch <= tolerance and actual > 0.0))
+                conservation_parts["component_geometry_errors_mm3"] = component_errors
+                conservation_parts["component_geometry_match_pass"] = aggregate(component_checks)
+                if (result_lost_volume_mm3 is not None and actual_damaged is not None
+                        and source_signed is not None and np.isfinite(source_signed)):
                     actual_lost = float(result_lost_volume_mm3)
                     if np.isfinite(actual_damaged) and np.isfinite(actual_lost):
-                        delivered_error = abs(source_volume - actual_damaged - actual_lost)
+                        delivered_error = abs(float(source_signed or 0.0)
+                                               - actual_damaged - actual_lost)
                         conservation_parts["delivered_balance_error_mm3"] = float(delivered_error)
                         conservation_parts["delivered_balance_pass"] = bool(
                             delivered_error <= tolerance)
@@ -708,7 +754,10 @@ def _postassembly_physical_qa(source_mesh: trimesh.Trimesh,
         pass
     conservation = aggregate([conservation_parts["ledger_flag"],
                               conservation_parts["recorded_balance_pass"],
-                              conservation_parts["delivered_balance_pass"]])
+                              conservation_parts["delivered_balance_pass"],
+                              conservation_parts["source_geometry_match_pass"],
+                              conservation_parts["ledger_damaged_geometry_match_pass"],
+                              conservation_parts["component_geometry_match_pass"]])
 
     checks: dict[str, Any] = {
         "components_present": {"status": "PASS" if components else "FAIL",
@@ -729,11 +778,19 @@ def _postassembly_physical_qa(source_mesh: trimesh.Trimesh,
         "positive_volume": {
             "status": status(aggregate([source_positive, result_positive])),
             "pass": aggregate([source_positive, result_positive]),
-            "source_volume_mm3": source["volume_mm3"],
+            "source_volume_mm3": source["signed_volume_mm3"],
             "components": {row["component_id"]: {
+                "signed_mesh_volume_mm3": row["mesh"]["signed_volume_mm3"],
                 "mesh_volume_mm3": row["mesh"]["volume_mm3"],
                 "recorded_volume_mm3": row["recorded_volume_mm3"],
             } for row in component_rows},
+        },
+        "winding_consistent": {
+            "status": status(aggregate([source_winding, result_winding])),
+            "pass": aggregate([source_winding, result_winding]),
+            "source": source_winding,
+            "components": {row["component_id"]: row["mesh"]["winding_consistent"]
+                           for row in component_rows},
         },
         "watertight": {
             "status": status(aggregate([source_watertight, result_watertight])),
@@ -779,6 +836,8 @@ def _postassembly_physical_qa(source_mesh: trimesh.Trimesh,
                 fail_code="NON_FINITE_GEOMETRY", source_fail_code="SOURCE_NON_FINITE_GEOMETRY")
     record_gate("positive_volume", aggregate([source_positive, result_positive]),
                 fail_code="NON_POSITIVE_VOLUME", source_fail_code="SOURCE_NON_POSITIVE_VOLUME")
+    record_gate("winding_consistent", aggregate([source_winding, result_winding]),
+                fail_code="WINDING_INCONSISTENT", source_fail_code="SOURCE_WINDING_INCONSISTENT")
     record_gate("watertight", aggregate([source_watertight, result_watertight]),
                 fail_code="NOT_WATERTIGHT", source_fail_code="SOURCE_NOT_WATERTIGHT")
     record_gate("conservation", conservation,
@@ -913,6 +972,7 @@ def apply_damage(clean_truth: Any, fragment: Any, recipe: DamageRecipe,
     }
     if not outcome.realized:
         qa["failure_code"] = qa.get("failure_code") or ErrorCode.OPERATOR_NOT_REALIZED.value
+        qa["failure_codes"] = [qa["failure_code"]]
     result = PhysicalResult(
         mother_id=mother_id, clean_ref=clean_ref, event_id=event_id,
         recipe_id=recipe.recipe_id or f"{recipe.axis_id}:{recipe.variant}:L{recipe.level}",
@@ -937,8 +997,11 @@ def apply_damage(clean_truth: Any, fragment: Any, recipe: DamageRecipe,
     postassembly_qa = _postassembly_physical_qa(
         mesh, components, ledger, result_lost_volume_mm3=lost_volume)
     result.qa["postassembly"] = postassembly_qa
-    result.qa["failure_codes"] = sorted(set(
-        list(result.qa.get("failure_codes") or []) + list(postassembly_qa["failure_codes"])))
+    result_qa_failures = (list(result.qa.get("failure_codes") or [])
+                          + list(postassembly_qa["failure_codes"]))
+    if result.qa.get("failure_code"):
+        result_qa_failures.append(str(result.qa["failure_code"]))
+    result.qa["failure_codes"] = sorted(set(result_qa_failures))
     if postassembly_qa["status"] != "PASS":
         result.qa["status"] = "FAIL"
         result.qa["reason"] = "postassembly entity QA failed; see postassembly.checks"
@@ -1227,8 +1290,8 @@ def audit_physical(result: PhysicalResult, clean: Any = None) -> dict[str, Any]:
     non_watertight = [cid for cid, value in health["watertight"]["components"].items()
                       if value is False]
     non_positive = [cid for cid, row in health["positive_volume"]["components"].items()
-                    if ((row.get("mesh_volume_mm3") is not None
-                         and float(row["mesh_volume_mm3"]) <= 0.0)
+                    if ((row.get("signed_mesh_volume_mm3") is not None
+                         and float(row["signed_mesh_volume_mm3"]) <= 0.0)
                         or (row.get("recorded_volume_mm3") is not None
                             and float(row["recorded_volume_mm3"]) <= 0.0))]
     checks["watertight"] = {
@@ -1245,6 +1308,7 @@ def audit_physical(result: PhysicalResult, clean: Any = None) -> dict[str, Any]:
         "pass": health["positive_volume"]["pass"],
         "per_component": dict(health["positive_volume"]["components"]),
     }
+    checks["winding_consistent"] = dict(health["winding_consistent"])
     if checks["watertight"]["pass"] is not True:
         if "NOT_WATERTIGHT" not in postassembly_qa["failure_codes"]:
             failures.append("NOT_WATERTIGHT_UNKNOWN")
@@ -1253,6 +1317,9 @@ def audit_physical(result: PhysicalResult, clean: Any = None) -> dict[str, Any]:
             failures.append("POSITIVE_VOLUME_UNKNOWN")
     if non_positive or "NON_POSITIVE_VOLUME" in postassembly_qa["failure_codes"]:
         failures.append("NON_POSITIVE_VOLUME")
+    if checks["winding_consistent"]["pass"] is not True \
+            and "WINDING_INCONSISTENT" not in postassembly_qa["failure_codes"]:
+        failures.append("WINDING_UNKNOWN")
 
     # ---- thickness
     thickness_rows = []

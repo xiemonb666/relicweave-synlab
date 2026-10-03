@@ -268,7 +268,12 @@ def _apply_impl(axis_id: str, level: int, source: SourceBundle, store: Any = Non
                    "support": "IDENTITY_LEVEL0", "source_kind": source.source_kind,
                    "identity_contract": "source asset reference/bytes returned unchanged",
                    "label_invalidations": list(operator.LABEL_INVALIDATIONS),
-                   "label_status": "NOT_INVALIDATED_AT_LEVEL0"},
+                   "label_status": "NOT_INVALIDATED_AT_LEVEL0",
+                   "label_dependency_status": {
+                       name: {"status": "NOT_INVALIDATED_AT_LEVEL0",
+                              "reason": "level 0 returns the source unchanged"}
+                       for name in operator.LABEL_INVALIDATIONS},
+                   "label_receipt_refs": {}},
             calibration_status=_calibration_status(operator))
         return source, _identity_record(source, store, operator), measurement
 
@@ -290,6 +295,12 @@ def _apply_impl(axis_id: str, level: int, source: SourceBundle, store: Any = Non
         exc.seed_ref = exc.seed_ref or basis.seed_ref
         raise
     metrics = operator.measure(source, result, context)
+    label_dependency_status = _label_dependency_status(operator, source, result)
+    label_receipt_refs = {
+        name: evidence["receipt_ref"]
+        for name, evidence in label_dependency_status.items()
+        if evidence.get("receipt_ref")
+    }
     measurement = measurement_from(
         operator, level=level, variant=variant_name, planned=planned,
         measured=metrics.get("measured", {}), units=metrics.get("units", {}),
@@ -299,7 +310,10 @@ def _apply_impl(axis_id: str, level: int, source: SourceBundle, store: Any = Non
         extra={"basis_id": basis.basis_id, "basis_seed_ref": basis.seed_ref,
                "support": "MEASURED", "source_kind": source.source_kind,
                "label_invalidations": list(operator.LABEL_INVALIDATIONS),
-               "label_status": _label_status(operator, source, result),
+               "label_status": _label_status(
+                   operator, source, result, dependency_status=label_dependency_status),
+               "label_dependency_status": label_dependency_status,
+               "label_receipt_refs": label_receipt_refs,
                **(metrics.get("extra") or {})},
         calibration_status=_calibration_status(operator))
     operator.validate(source, result, measurement)
@@ -317,7 +331,9 @@ def _apply_impl(axis_id: str, level: int, source: SourceBundle, store: Any = Non
             "realized": bool(measurement.realized), "basis_id": basis.basis_id,
             "source_hash": measurement.source_hash, "result_hash": measurement.result_hash,
             "label_invalidations": list(operator.LABEL_INVALIDATIONS),
-            "label_status": measurement.extra.get("label_status")},
+            "label_status": measurement.extra.get("label_status"),
+            "label_dependency_status": measurement.extra.get("label_dependency_status"),
+            "label_receipt_refs": measurement.extra.get("label_receipt_refs")},
         meta={"origin_role": source.role or "degradation_source", "axis_id": axis_id,
               "variant": variant_name, "level": level, "factor_kind": measurement.factor_kind,
               "basis_id": basis.basis_id, "basis_seed_ref": basis.seed_ref,
@@ -378,94 +394,162 @@ def _calibration_status(operator: Any) -> str:
     return "UNCALIBRATED"
 
 
-def _label_status(operator: Any, source: SourceBundle, result: SourceBundle) -> str:
-    """Return a label status supported by this result's evidence.
-
-    Importability and status strings are declarations, not proof that label work ran.  The
-    physical route has one machine-checkable receipt today: ``apply_damage`` attaches the
-    ``PhysicalTruth`` returned by ``truth.api.update_residual_truth`` to its ``PhysicalResult``.
-    Every other invalidated label remains pending until its own result artifact is recorded.
-    """
+def _label_status(operator: Any, source: SourceBundle, result: SourceBundle, *,
+                  dependency_status: Mapping[str, Mapping[str, Any]] | None = None) -> str:
+    """Aggregate label status from evidence for every declared invalidation dependency."""
     invalidations = tuple(getattr(operator, "LABEL_INVALIDATIONS", ()) or ())
     if not invalidations:
         return "NO_LABEL_DEPENDENCY"
-
-    reported = str((result.meta or {}).get("label_status", "") or "").upper()
-    physical_result = result.get("physical_result")
-    physical_meta = getattr(physical_result, "meta", None) or {}
-    if reported == "FAILED" or str(physical_meta.get("physical_truth_status", "")).upper() == "FAILED":
+    statuses = dependency_status or _label_dependency_status(operator, source, result)
+    values = [str(statuses.get(name, {}).get("status", "PENDING_RECOMPUTE"))
+              for name in invalidations]
+    if any(status == "FAILED" for status in values):
         return "FAILED"
-
-    if _has_physical_truth_recompute_receipt(operator, source, result):
+    if all(status in ("UPDATED", "RECOMPUTED") for status in values):
         return "RECOMPUTED"
     return "PENDING_RECOMPUTE"
 
 
-def _has_physical_truth_recompute_receipt(operator: Any, source: SourceBundle,
-                                          result: SourceBundle) -> bool:
-    """Validate an attached physical-truth artifact against its clean and damaged inputs.
+def _label_dependency_status(operator: Any, source: SourceBundle,
+                              result: SourceBundle) -> dict[str, dict[str, Any]]:
+    """Return one evidence record per declared invalidation, retaining partial work.
 
-    ``PhysicalTruth`` is only accepted when it carries the source truth hash and next version,
-    and its embedded damage receipt names this exact operator, result level, and physical-result
-    recipe.  This is deliberately structural so importing ``synlab.truth`` alone cannot satisfy
-    the check.
+    ``physical.api.apply_damage`` calls ``truth.api.update_residual_truth`` and attaches the
+    resulting ``PhysicalTruth``.  That work is reported as ``UPDATED`` only when the attached
+    artifact agrees with its clean-truth reference, version, event, recipe and geometry
+    provenance.  No current degrade route records a ``VisibleLabels`` or ``FeatureAdapter``
+    recomputation receipt, so those dependencies remain pending even when physical truth updated.
     """
+    invalidations = tuple(getattr(operator, "LABEL_INVALIDATIONS", ()) or ())
+    if not invalidations:
+        return {}
+
+    physical_result = result.get("physical_result")
+    physical_meta = getattr(physical_result, "meta", None) or {}
+    reported = str((result.meta or {}).get("label_status", "") or "").upper()
+    physical_status = str(physical_meta.get("physical_truth_status", "") or "").upper()
+    physical_receipt = _physical_truth_recompute_receipt(operator, source, result)
+    evidence: dict[str, dict[str, Any]] = {}
+    for dependency in invalidations:
+        if dependency == "PhysicalTruth":
+            if physical_status == "FAILED" or (reported == "FAILED" and physical_result is not None):
+                evidence[dependency] = {
+                    "status": "FAILED",
+                    "reason": "physical truth recomputation reported failure",
+                    "reported_status": physical_status or reported,
+                }
+            elif physical_receipt is not None:
+                evidence[dependency] = {"status": "UPDATED", **physical_receipt}
+            else:
+                reason = ("reported recompute status had no matching PhysicalTruth artifact"
+                          if reported in ("UPDATED", "RECOMPUTED") or physical_status == "UPDATED"
+                          else "no machine-verifiable PhysicalTruth artifact is attached")
+                evidence[dependency] = {"status": "PENDING_RECOMPUTE", "reason": reason}
+        else:
+            evidence[dependency] = {
+                "status": "PENDING_RECOMPUTE",
+                "reason": "no matching recomputation artifact or receipt is recorded",
+            }
+
+    # Preserve an explicit failure as the aggregate status without treating a bare success
+    # string as evidence.  The corresponding dependency record remains pending unless a
+    # physical API failure can be tied to PhysicalTruth above.
+    if reported == "FAILED" and not any(
+            item.get("status") == "FAILED" for item in evidence.values()):
+        evidence[invalidations[0]] = {
+            "status": "FAILED", "reason": "result reports label recomputation failure",
+            "reported_status": reported,
+        }
+    return evidence
+
+
+def _physical_truth_recompute_receipt(operator: Any, source: SourceBundle,
+                                      result: SourceBundle) -> dict[str, Any] | None:
+    """Validate and describe the runtime PhysicalTruth artifact attached by the physical API."""
     if "PhysicalTruth" not in tuple(getattr(operator, "LABEL_INVALIDATIONS", ()) or ()):
-        return False
+        return None
     clean_truth = source.get("clean_truth")
     physical_result = result.get("physical_result")
     if clean_truth is None or physical_result is None:
-        return False
+        return None
 
     clean_meta = getattr(clean_truth, "meta", None) or {}
     clean_ref = str(clean_meta.get("truth_hash", "") or "")
-    if not clean_ref:
-        return False
+    clean_mother = str(getattr(clean_truth, "mother_id", "") or "")
+    clean_event = str(getattr(clean_truth, "event_id", "") or "")
+    if not clean_ref or not clean_mother or not clean_event:
+        return None
     try:
         clean_version = int(getattr(clean_truth, "version"))
         expected_version = clean_version + 1
     except (TypeError, ValueError, AttributeError):
-        return False
+        return None
 
     physical_truth = getattr(physical_result, "physical_truth", None)
     if physical_truth is None:
-        return False
+        return None
     truth_meta = getattr(physical_truth, "meta", None) or {}
     truth_qa = getattr(physical_truth, "qa", None) or {}
     physical_meta = getattr(physical_result, "meta", None) or {}
+    physical_qa = getattr(physical_result, "qa", None) or {}
     result_meta = result.meta or {}
+    result_extra = result_meta.get("extra") or {}
     damage = truth_meta.get("damage")
     if not isinstance(damage, Mapping):
-        return False
+        return None
 
     axis_id = str(getattr(operator, "AXIS_ID", "") or "")
     recipe_id = str(getattr(physical_result, "recipe_id", "") or "")
-    expected_level = result_meta.get("level")
+    result_variant = str(result_meta.get("variant", "") or "")
+    physical_variant = str(physical_meta.get("variant", "") or "")
+    damage_variant = str(damage.get("variant", "") or "")
     try:
-        expected_level = int(expected_level)
         truth_version = int(getattr(physical_truth, "version"))
-    except (TypeError, ValueError):
-        return False
-
-    clean_mother = str(getattr(clean_truth, "mother_id", "") or "")
-    clean_event = str(getattr(clean_truth, "event_id", "") or "")
-    clean_identity = f"{clean_mother}:{clean_event}:v{clean_version}"
-    artifact_identity = f"{clean_mother}:{clean_event}"
-    damage_level = damage.get("level")
-    try:
-        damage_level = int(damage_level)
-        physical_level = int(physical_meta.get("level"))
         result_level = int(result_meta.get("level"))
+        physical_level = int(physical_meta.get("level"))
+        damage_level = int(damage.get("level"))
     except (TypeError, ValueError):
-        return False
+        return None
 
-    return bool(
+    # apply_damage records these geometry identities on the result, and _PhysicalAxis carries
+    # both into the SourceBundle receipt envelope.  Re-hash the actual input mesh before accepting
+    # that envelope so unrelated or stale clean geometry cannot vouch for the truth artifact.
+    source_mesh = source.get("mesh")
+    if source_mesh is None:
+        source_fragment = source.get("fragment")
+        source_mesh = getattr(source_fragment, "mesh", None)
+    if source_mesh is None:
+        return None
+    try:
+        from ..physical.api import _geometry_hash as _physical_geometry_hash
+
+        source_geometry_hash = _physical_geometry_hash(source_mesh)
+    except Exception:  # noqa: BLE001 - absent geometry evidence means no receipt
+        return None
+    reported_source_hash = str(physical_meta.get("source_geometry_hash", "") or "")
+    qa_source_hash = str(physical_qa.get("source_geometry_hash", "") or "")
+    result_geometry_hash = str(physical_qa.get("result_geometry_hash", "") or "")
+    if not result_geometry_hash or not source_geometry_hash:
+        return None
+
+    components = list(getattr(physical_result, "components", []) or [])
+    if len(components) == 1:
+        output_mesh = result.get("mesh")
+        if output_mesh is None:
+            return None
+        try:
+            if _physical_geometry_hash(output_mesh) != result_geometry_hash:
+                return None
+        except Exception:  # noqa: BLE001 - absent output geometry evidence means no receipt
+            return None
+
+    clean_identity = f"{clean_mother}:{clean_event}:v{clean_version}"
+    if not (
         truth_version == expected_version
         and str(getattr(physical_truth, "clean_truth_ref", "") or "") == clean_ref
         and str(truth_meta.get("clean_truth_ref", "") or "") == clean_ref
         and truth_meta.get("layer") == "physical"
         and truth_qa.get("layer") == "physical"
-        and clean_mother and clean_event
         and str(getattr(physical_result, "mother_id", "") or "") == clean_mother
         and str(getattr(physical_result, "event_id", "") or "") == clean_event
         and str(getattr(physical_result, "clean_ref", "") or "") == clean_identity
@@ -476,12 +560,32 @@ def _has_physical_truth_recompute_receipt(operator: Any, source: SourceBundle,
         and str(damage.get("axis_id", "") or "") == axis_id
         and str(physical_meta.get("axis_id", "") or "") == axis_id
         and str(result_meta.get("axis_id", "") or "") == axis_id
-        and damage_level == expected_level == physical_level == result_level
+        and result_variant == physical_variant == damage_variant
+        and damage_level == result_level == physical_level
+        and source_geometry_hash == reported_source_hash == qa_source_hash
+        and str(result_extra.get("source_geometry_hash", "") or "") == source_geometry_hash
+        and str(result_extra.get("result_geometry_hash", "") or "") == result_geometry_hash
+        and bool(damage.get("geometry_changed"))
+        == bool(physical_meta.get("geometry_changed"))
         and isinstance(getattr(physical_truth, "residual", None), Mapping)
         and isinstance(getattr(physical_truth, "survivor_patches", None), Mapping)
         and isinstance(getattr(physical_truth, "current_fit_valid", None), Mapping)
         and isinstance(getattr(physical_truth, "association_counts", None), Mapping)
-    )
+    ):
+        return None
+
+    return {
+        "receipt_ref": f"PhysicalResult.physical_truth:{recipe_id}:v{truth_version}",
+        "clean_truth_ref": clean_ref,
+        "clean_truth_version": clean_version,
+        "physical_truth_version": truth_version,
+        "recipe_id": recipe_id,
+        "axis_id": axis_id,
+        "level": result_level,
+        "source_geometry_hash": source_geometry_hash,
+        "result_geometry_hash": result_geometry_hash,
+        "artifact_path": "payload.physical_result.physical_truth",
+    }
 
 
 # ======================================================================================
@@ -1092,6 +1196,10 @@ def audit_axis(axis_id: str, levels: Iterable[int] = (0, 1, 2, 3, 4), store: Any
                 "factor_kind": measurement.factor_kind,
                 "invariants": _jsonable(measurement.extra.get("invariants", {})),
                 "label_status": measurement.extra.get("label_status"),
+                "label_dependency_status": _jsonable(
+                    measurement.extra.get("label_dependency_status", {})),
+                "label_receipt_refs": _jsonable(
+                    measurement.extra.get("label_receipt_refs", {})),
             })
             if level == 0:
                 original = getattr(record, "asset_id", None)
@@ -1243,6 +1351,8 @@ def _rows_from_axis_report(report: Mapping[str, Any]) -> list[dict[str, Any]]:
             "calibration_status": "UNCALIBRATED",
             "independent_mothers": report.get("independent_mothers", 0),
             "label_status": entry.get("label_status"),
+            "label_dependency_status": entry.get("label_dependency_status", {}),
+            "label_receipt_refs": entry.get("label_receipt_refs", {}),
             "label_invalidations": ",".join(report.get("label_invalidations", [])),
         }
         for name, value in dict(entry.get("planned") or {}).items():
@@ -1264,7 +1374,7 @@ BASE_COLUMNS = ("axis_id", "variant", "level", "factor_kind", "stage", "substage
                 "status", "identity", "realized", "valid", "na_reason", "failure_code",
                 "source_hash", "result_hash", "source_provenance", "source_asset_id",
                 "result_asset_id", "calibration_status", "label_status", "label_invalidations",
-                "independent_mothers")
+                "label_dependency_status", "label_receipt_refs", "independent_mothers")
 
 
 def operator_audit_table(rows: Sequence[Mapping[str, Any]]) -> Any:

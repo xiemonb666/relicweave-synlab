@@ -9,6 +9,18 @@ A12 adapter/camera 32 PASS；此前归档的 depth/noise 71 与 frozen parity 2 
 退化行为 audit 已由 root 接受，范围是 synthetic small fixture：P06 coverage 0.2 实现为 0.793945、coverage 0.8 实现为 0.204102；P05/P06 双向链因 payload channel/key 缺失失败；P02 physical_result_qa 报 PASS 但 physical_audit 报 FAIL。四项修复任务已分配，代码修复尚未验收。
 
 实际旧 deploy package 为 INVALID_DEPLOY_TRUTH_LEAK / PENDING：queries 含 lineage、mother、fragment、historical_N_G 等字段，deploy_index 使用 raw lineage/M-style IDs，manifest 的 features_carry_answer_fields=false 是 alias-blind scan 结果。strict-v2 replacement 等待验收。native-contact attempt03 在 Julia load syntax 失败，未执行 preflight 或 step，runner 已停止；新的 minimal-native submit endpoint 仍待真实三例检查。jobs DAG enqueue 非原子、旧 store event revision、GPU NOT_IMPLEMENTED、真实材料校准 UNKNOWN，以及完整 VF→PG→ageing→capture chain 继续开放。A12 不替代主 A3/A4 真实邻接检索、证据拒绝、补采或 STOP。
+## 新增未完成项：物理级断裂与数据准入
+
+用户已审 h8 实际图并判定其 physical-grade/high-quality fracture 不足。当前 clippedcells h8 仅是 native geometry-accuracy candidate，必须标记 NOT_PHYSICAL_READY。按 [CONTINUATION_20261003.md](CONTINUATION_20261003.md) 和 [工程政策](engineering_policy.md) 分开追踪以下六道门槛，不得用一个 PASS 代替：
+
+- **Geometry：** 单位、拓扑、边界误差、厚度覆盖；有限采样不冒充全局证明。
+- **NativeRun：** 成功 preflight 与非零 solver steps、原始输入/输出。旧 contact attempt03 是 Julia load syntax FAIL，零 preflight/step；新 minimal-native-contact agent 接手，三例仍 PENDING。
+- **NumericPhysical：** old h8/h6 element quality/orientation 审计，actual ROI static h=1 mm 与 0.5 mm；检查 PD δ/h、horizon×wall、surface correction、fixed-δ spatial convergence、fixed-mesh dt time convergence；同一物理 case 对不同 remesh orientation/seed、固定 rest-material field 做 crack energy/response/mass distribution 对照。旋转原 mesh 只测 covariance，不等于 remesh-bias PASS；禁止由 max-edge/t 推断精确 through-wall layers。owner: luna_wall_resolution，结果待验。
+- **CalibratedMaterial：** E/Gc 与其他材料量保留候选值和来源状态；实际校准 UNKNOWN / UNVALIDATED。
+- **CrackSurface：** 真事件产生的 positive-area 配对裂面与 lineage；不得固定 fractureN、求解后追加 roughness 或沿 tet face 赋真实裂纹标签。
+- **RelicWeaveData：** all point mass/isolates；contact penetration、momentum、energy 目前 UNKNOWN；truth leakage、annotation 错误和 QA failure 必须 fail closed。
+
+h8 actual image 不构成物理级裂纹证据；tet-volume h8/h6 均未通过 1% volume gate。所有六项分开验收后才能升级。native clippedcells h8 的几何准确性不改变 NOT_PHYSICAL_READY 状态。其余当前负责人包括 strict-v2 deploy scanner、四项 degradation/QA 修复与 read-only fracture-surface bridge，均待实际结果和 root 复核。
 ## 早期状态快照（以下细项保留历史状态；当前进度以接续矩阵为准）
 
 VF 当前 prototype 已窄验收 canonical STEP BRep face 分类、连续 rest-coordinate 四带绘制及几何-only 深度 parity；器身 C0 折角、接头真实度、材料/历史样式仍 `PENDING`。A12 生产 appearance 仍未全闭环（4 项 appearance 测试失败）；A12 adapter/camera32 为 `PASS`，但 per-face 近似仍漏掉窄红带。GPU 路径未实现，完整物理断裂链未完成。PG owner 报告 physics/time SHA 20/20 和 OSB/BB 独立 API fixture 的真实 CLI 验证通过，最终 wheel 检查进行中；jobs 修复 19 项测试通过，仍在审查中。A12 既有 ageing、capture 和 reconstruction 能力为部分实现，新 VF/PG 接入与真实效果综合验证待完成。
