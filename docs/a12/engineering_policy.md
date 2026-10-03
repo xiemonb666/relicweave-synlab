@@ -2,9 +2,13 @@
 
 本节优先于下方 2026-10-03 历史快照。详见 [2026-10-04 接续矩阵](CONTINUATION_20261004.md) 与 [证据索引](evidence/20261004/index.md)。
 
-A12 仍服务于 RelicWeave synthetic / observation / degradation / retrieval diagnostics；主仓 A3/A4 集成仍待完成。本轮仅在本机做小规模验证，未运行 RTX5090 批量合成或训练。Astra 单次顾问已结束；当前仅保留 Akantu extrinsic cohesive tiny capability spike，PD baseline 冻结，不做全面迁移。
+A12 仍服务于 RelicWeave synthetic / observation / degradation / retrieval diagnostics；主仓 A3/A4 集成仍待完成。本轮仅在本机做小规模验证，未运行 RTX5090 批量合成或训练。Astra 单次顾问已结束；Akantu 5.0.7.post1 extrinsic cohesive tiny capability spike 已完成但未晋级为物理结果，PD baseline 冻结，不做全面迁移。
 
 已接受的窄范围：appearance 46 PASS、100k 排序中位数 81.37 ms（O(N log N)，toy only）；deploy 85 PASS（schema/runtime only，旧 5 GB 包未迁移）；native contact 1/240/480/240 steps 成功，momentum residual 3.42e-24、nominal envelope overlap 0.5904 mm，energy history UNKNOWN；C2 BREP 单次持久化与 half-cut 局部检查通过，单次 remesh 602 samples 最大偏差 0.0400846 mm，但 production STEP 仍 FAIL / NOT_PROMOTED；ROI h1 因 292 个 inside 样本中 1 个 OUT（0.000407 mm）FAIL，h0.5 以 1506 tets 通过有限几何 QA、不是 physics；clipped COM OUT 在 58/294 处中止，整分区体积准确度未评估。9 项 broader routing/narrowband FAIL 仍保留；P02/P03 actual 输出各有 6 boundary edges、not watertight。QA/label 30 PASS 与 damage legality/face provenance 16 PASS 为最终哈希下的窄测试；appearance 46 PASS 重跑仍只计 46 项。Measurement.valid 不等于 physical QA 有效。
+
+Akantu 5.0.7.post1 cohesive 小型能力验证已运行：zero 1707 steps 为 0 interface insertion / 0 drift；mode-I 1707 与 half-dt 3414 steps，两组加载均有 8 个 native interfaces。原始耗散 −5.572968137645039e-5 J 与 −9.726359554870569e-6 J 均未达到 GcA=3.04e-5 J，coarse 绝对值归一差 82.55%，不晋级为物理结果；full-debond、damage、native-energy 语义仍 UNKNOWN。runner 查询 `getEnergy('contact')`，reviewed native API 只确认 `cohesive contact` key；未知 key 的返回语义未验证，故该能量通道和派生 ledger 均 UNKNOWN。物理 contact 仍为 NOT_RUN。基准仅固定中央界面 API，无自由裂纹或真实器物；界面插入不自动代表断裂事件。
+
+**Native-run 快照纪律：** 每次运行前，将准确执行脚本、输入和 manifest 保存为不可覆盖快照，并记录每个文件的 byte count 与 SHA-256；运行后诊断、标签或解释性修正另存，不覆盖原始脚本、输入、manifest 或 receipt。只记录 hash 而未保存对应 source bytes，不足以精确复现。Akantu 本轮执行源码由 current `run_contract` 保留：29,542 B、SHA-256 前缀 `67dd1eb98…`，与冻结 canonical manifest 的 `source_sha256` 及三份原始 status/receipt 哈希一致；manifest SHA-256 前缀 `21b563…`。此前 24,567 B 是较早未冻结代码尺寸，不是本轮执行脚本。此为执行源保真与哈希闭合，不表示全实验精确复现已验收；未声明另机重放或完整环境封装。
 
 ## 历史快照（截至 2026-10-03 晚间；当前状态以本文件顶部 2026-10-04 补充为准）
 
@@ -22,10 +26,10 @@ A12 adapter/camera 32 PASS。depth/noise 71 与 frozen parity 2 是此前归档�
 验收必须分开记录 Geometry、NativeRun、NumericPhysical、CalibratedMaterial、CrackSurface、RelicWeaveData 六道门槛；一个阶段 PASS 不自动传播到后续阶段：
 
 1. **Geometry：** 声明单位、边界误差、拓扑与实测厚度范围。区分有限采样和全局证明；不能把解析/轮廓壁厚说成全局最小壁厚。
-2. **NativeRun：** 要有真实 preflight 与非零 solver steps、版本化输入和原始结果。Julia load syntax error、未执行 preflight 的旧 wrapper 或 zero-step 调用都不是 native run。minimal-native-contact 的三例 contact/control 均已完成并通过窄数值检查，但仅为 toy；不构成校准器物的物理验收，energy history 仍为 UNKNOWN。
-3. **NumericPhysical：** 报告 element quality/orientation、PD δ/h 与 horizon×wall 关系及 surface correction；做 fixed-δ spatial convergence 与 fixed-mesh dt temporal convergence。相同物理 case 应在独立 remesh orientation 和 mesh seed 下比较，固定 rest-material field，并比较 crack energy、response、mass distribution。只旋转原网格只能证明 covariance，不能证明 remesh bias 已控制。不得从 max-edge/t 推断精确 through-wall layers。
+2. **NativeRun：** 要有真实 preflight 与非零 solver steps、版本化输入和原始结果。Julia load syntax error、未执行 preflight 的旧 wrapper 或 zero-step 调用都不是 native run。minimal-native-contact 的三例 contact/control 均已完成并通过窄数值检查，但仅为 toy；Akantu cohesive 也只完成固定中央界面 API 基准，均不构成校准器物的物理验收。Contact energy history UNKNOWN；Akantu 执行脚本及 manifest 的本轮 source hash 与 status 闭合并保留于 `run_contract`。
+3. **NumericPhysical：** 报告 element quality/orientation、PD δ/h 与 horizon×wall 关系及 surface correction；做 fixed-δ spatial convergence 与 fixed-mesh dt temporal convergence。Akantu 两加载原始耗散未达到 GcA 目标且相差 82.55%；full-debond、damage、native-energy 语义 UNKNOWN。相同物理 case 应在独立 remesh orientation 和 mesh seed 下比较，固定 rest-material field，并比较 crack energy、response、mass distribution。只旋转原网格只能证明 covariance，不能证明 remesh bias 已控制。不得从 max-edge/t 推断精确 through-wall layers。
 4. **CalibratedMaterial：** E/Gc、密度及相关材料属性须有来源、测量方法、不确定度与状态。保留候选原值，但实际 E/Gc/material calibration 目前 UNKNOWN / UNVALIDATED。
-5. **CrackSurface：** 需要由裂纹事件生成且具有 positive-area 的配对裂面与 lineage。不得固定 fractureN，也不得把未经验证的 tet facets 当作 physical truth。cohesive/tet-facet 路径经本构与收敛验证后可列为 candidate；已校准的形貌 surrogate 必须单独标注，不能替代断裂 physics。
+5. **CrackSurface：** 需要由裂纹事件生成且具有 positive-area 的配对裂面与 lineage。当前固定界面插入不等同于断裂事件；不得固定 fractureN，也不得把未经验证的 tet facets 当作 physical truth。cohesive/tet-facet 路径经本构与收敛验证后可列为 candidate；已校准的形貌 surrogate 必须单独标注，不能替代断裂 physics。
 6. **RelicWeaveData：** 覆盖 all point mass 和 isolated points；报告 contact penetration、momentum 与 energy。annotation 必须来自受验事件真值；truth leakage、错误标签和 QA failure 必须 fail closed，不能将错误 manifest flag 或 summary PASS 当成无泄漏证据。
 
 luna_wall_resolution 负责审计 old h8/h6 element quality 并检查 actual ROI static h=1 mm / h=0.5 mm。h1 trial FAIL（292 tets、292 个 centroid IN，但 292 个有限内部样本有 1 个 OUT，距 CAD 0.000407289 mm）；h0.5 通过有限几何 QA（1,506 tets、512 个有限样本全 IN），两者均不构成 physics PASS。真实裂纹 mesh-direction bias 仍未量化，尚无真实裂纹跨网格对照。现有 whole-mesh 只读质量审计记录 h8 有 9 个 tet 的最小二面角 <10°、1 个 <5°、max R/rmax=113.1；h6 有 10 个 <10°、max R/rmax=112.6。h8/h6 体积候选分别有 21/512 与 12/512 个 finite interior probes OUT；CAD-reference signed volume delta 分别约 −2.0343% 与 −1.6142%。这些 tet 是 quadrature candidates，不是 PG solver input；h8 权重和匹配自身 mesh volume 不代表 CAD 体积/质量正确。max-edge 与名义 t 不能代替壁内分辨率。当前 clippedcells h8 仍仅有几何精度范围。全量只读质量审计的小型副本和 SHA 见 evidence index。物理准入矩阵与负责项见 [CONTINUATION_20261003.md](CONTINUATION_20261003.md)。

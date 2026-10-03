@@ -1,11 +1,13 @@
 # 最新状态（截至 2026-10-04）
 
-A12 继续作为 RelicWeave synthetic / observation / degradation / retrieval diagnostics 服务；主仓 A3/A4 集成待完成。本轮仅在本机做小规模验证，未运行 RTX5090 批量合成或训练。Astra 单次咨询已结束；仅保留 Akantu extrinsic cohesive 小型 capability spike，PD baseline 冻结，不全面迁移。当前范围和证据见 [接续矩阵](CONTINUATION_20261004.md) 与 [证据索引](evidence/20261004/index.md)。
+A12 继续作为 RelicWeave synthetic / observation / degradation / retrieval diagnostics 服务；主仓 A3/A4 集成待完成。本轮仅在本机做小规模验证，未运行 RTX5090 批量合成或训练。Astra 单次咨询已结束；Akantu 5.0.7.post1 extrinsic cohesive 小型 capability spike 已完成但未晋级为物理结果，PD baseline 冻结，不全面迁移。当前范围和证据见 [接续矩阵](CONTINUATION_20261004.md) 与 [证据索引](evidence/20261004/index.md)。
 
 - **已接受的窄结果：** appearance 46 PASS、100k 排序中位数 81.37 ms（toy only）；deploy 85 PASS 仅覆盖 schema/runtime，旧 5 GB 包未迁移；native contact 真实调用 1/240/480/240 steps、momentum residual 3.42e-24、nominal envelope overlap 0.5904 mm，energy history UNKNOWN；C2 BREP 单次持久化和 half-cut 成功、单次 remesh 602 samples 最大偏差 0.0400846 mm，但 production STEP 仍 FAIL / NOT_PROMOTED；ROI h1 292 个内部样本中 1 个 OUT（距 CAD 0.000407 mm）FAIL，h0.5 1506 tets 有限几何 QA PASS、不是 physics；clipped COM OUT 在 58/294 个盒后停止，完整分区体积误差未评估，70.3% 不代表体积误差。
 - **QA 当前边界：** 最终哈希下 QA/label 30 PASS、damage legality + face provenance 16 PASS；appearance 最终哈希重跑仍是 46 PASS（不得累计成 92 个不同测试）。9 个 broader routing/narrowband FAIL 保留；P02/P03 actual 结果 not watertight、各 6 boundary edges。Measurement.valid 不代表 physical QA 有效。
 - **绝对体积问题更正：** abs(volume) QA bug 位于 synlab/physical/api.py 的物理结果 QA 路径，不是 h8/h6 signed-tet quality 缺陷；旧 h8/h6 signed tet orientation/quality 检查均为 positive。物理 QA 与六门准入仍须按各自证据判定。
-- **仍待完成：** 六门物理准入、材料校准、contact energy history、完整 clippedcells partition、P02/P03 broader 功能失败、production STEP 晋级及主仓 A3/A4 集成。
+- **Akantu cohesive 能力验证：** zero 1707 steps 为 0 insertion / 0 drift；mode-I 1707 与 half-dt 3414 steps，两加载均 8 native interfaces。耗散 −5.572968137645039e-5 J / −9.726359554870569e-6 J，未达到 GcA=3.04e-5 J，差 82.55%（按 coarse 绝对值归一）；仅固定中央界面 API 基准，无自由裂纹或真实器物，未晋级物理结果。full-debond、damage、native-energy 语义 UNKNOWN；runner 的 `getEnergy('contact')` key 未经验证（reviewed key 为 `cohesive contact`），该能量通道及派生 ledger UNKNOWN。物理 contact 保持 NOT_RUN，界面插入不等于断裂事件。
+- **执行源与复现纪律：** Akantu canonical manifest SHA 前缀 `21b563…`；current `run_contract` 保留的执行脚本为 29,542 B / SHA 前缀 `67dd1eb98…`，与冻结 manifest `source_sha256` 和三份原始 status/receipt 哈希一致。此前 24,567 B 是更早代码尺寸，不是本轮执行源。此项只确认执行源码保留与哈希闭合，不代表全实验精确复现已验收；未声明另机重放或完整环境封装。后续 native run 必须在执行前不可覆盖地快照准确 script/input/manifest 并记录 bytes/SHA；post-run 诊断或标签修正另存。仅有 hash、缺对应 source bytes 不足以精确复现。
+- **仍待完成：** Akantu full-debond、damage 与 native-energy 语义验证及物理 R2；其余六门物理准入、材料校准、contact energy history、完整 clippedcells partition、P02/P03 broader 功能失败、production STEP 晋级及主仓 A3/A4 集成。
 
 ## 早期状态快照（截至 2026-10-03；以下细项保留历史状态）
 

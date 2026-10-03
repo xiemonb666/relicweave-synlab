@@ -3,7 +3,7 @@
   "date": "2026-10-04",
   "workspace": "relicweave-synlab",
   "cap_bytes": 1200000,
-  "payload_bytes": 871179,
+  "payload_bytes": 1132690,
   "payload_cap_pass": true,
   "scope_note": "Evidence copies are byte-exact unless method says structured extraction. Source paths and hashes identify original reports; source bytes and copy bytes are recorded independently. Large meshes, runtime trees, full GT rows, and secret/environment dumps are excluded.",
   "evidence": [
@@ -422,6 +422,186 @@
       "copy_sha256": "d566d42bcb32b4df8524008f52adfa41b3964e57a8315b2175e431dc02ae1210",
       "copy_bytes": 24751,
       "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/manifest.json",
+      "source_sha256": "21b563069550e2091474fe94877bd3ceaae094ac4c92aed3900ecdd94702dd68",
+      "source_bytes": 4757,
+      "copy_path": "copies/cohesive/manifest.json",
+      "copy_sha256": "21b563069550e2091474fe94877bd3ceaae094ac4c92aed3900ecdd94702dd68",
+      "copy_bytes": 4757,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "../pgfrag/experiments/cohesive_capability/run_contract.py",
+      "source_sha256": "67dd1eb98acc5f5369b9cbf1a9bfbd7f6681068172e537768e788274cb10652d",
+      "source_bytes": 29542,
+      "copy_path": "copies/cohesive/run_contract.py",
+      "copy_sha256": "67dd1eb98acc5f5369b9cbf1a9bfbd7f6681068172e537768e788274cb10652d",
+      "copy_bytes": 29542,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "../pgfrag/experiments/cohesive_capability/input/block_2x2x4mm.msh",
+      "source_sha256": "b98402c5a7b7af36b8e5e8a2a90c7db689cb1af86a089c8e1b9a0dbf07ba2638",
+      "source_bytes": 3605,
+      "copy_path": "copies/cohesive/input/block_2x2x4mm.msh",
+      "copy_sha256": "b98402c5a7b7af36b8e5e8a2a90c7db689cb1af86a089c8e1b9a0dbf07ba2638",
+      "copy_bytes": 3605,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "../pgfrag/experiments/cohesive_capability/input/material.dat",
+      "source_sha256": "c300c3091ac323eba756f2d7bfbf55e888c68d6b10f5fcb9763c0e6b6194305f",
+      "source_bytes": 291,
+      "copy_path": "copies/cohesive/input/material.dat",
+      "copy_sha256": "c300c3091ac323eba756f2d7bfbf55e888c68d6b10f5fcb9763c0e6b6194305f",
+      "copy_bytes": 291,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "../pgfrag/experiments/cohesive_capability/input/generated_geometry.json",
+      "source_sha256": "eec01312e181581c1d433b2619b6fd8a4a42677769c4dbc25053d0a2c355188b",
+      "source_bytes": 488,
+      "copy_path": "copies/cohesive/input/generated_geometry.json",
+      "copy_sha256": "eec01312e181581c1d433b2619b6fd8a4a42677769c4dbc25053d0a2c355188b",
+      "copy_bytes": 488,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/zero_load/status.json",
+      "source_sha256": "dc497526371134d38753eeea15723f29378d79a823f95397ee0209b124c1e987",
+      "source_bytes": 2992,
+      "copy_path": "copies/cohesive/cases/zero_load_status.json",
+      "copy_sha256": "dc497526371134d38753eeea15723f29378d79a823f95397ee0209b124c1e987",
+      "copy_bytes": 2992,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/modeI_dt/status.json",
+      "source_sha256": "4616bd48c93ddb35e546867022ede1b152ce75f1d40ca0309c12764ac18c0a84",
+      "source_bytes": 3167,
+      "copy_path": "copies/cohesive/cases/modeI_dt_status.json",
+      "copy_sha256": "4616bd48c93ddb35e546867022ede1b152ce75f1d40ca0309c12764ac18c0a84",
+      "copy_bytes": 3167,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/modeI_dt2/status.json",
+      "source_sha256": "123ffcedbcc8f01abe0bf5df5ab97e128ff9d42a036adba63adab20ed6195ef0",
+      "source_bytes": 3175,
+      "copy_path": "copies/cohesive/cases/modeI_dt2_status.json",
+      "copy_sha256": "123ffcedbcc8f01abe0bf5df5ab97e128ff9d42a036adba63adab20ed6195ef0",
+      "copy_bytes": 3175,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/api_semantics_review.json",
+      "source_sha256": "6d244139fe1afc7682dacab465ccdb0f0ef570121efa69545bf00ac7b6687e6c",
+      "source_bytes": 4874,
+      "copy_path": "copies/cohesive/api_semantics_review.json",
+      "copy_sha256": "6d244139fe1afc7682dacab465ccdb0f0ef570121efa69545bf00ac7b6687e6c",
+      "copy_bytes": 4874,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/runtime_install_evidence.json",
+      "source_sha256": "b27d123772c8426a24457dfa62b3e61d1b3308e5a87c293cc50f454b82e52fbf",
+      "source_bytes": 2255,
+      "copy_path": "copies/cohesive/runtime_install_evidence.json",
+      "copy_sha256": "b27d123772c8426a24457dfa62b3e61d1b3308e5a87c293cc50f454b82e52fbf",
+      "copy_bytes": 2255,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/cohesive_capability_preview.png",
+      "source_sha256": "b5bee415ee9916c4b2a98c0029fe8f6f788e009d32f57ba6bd46152169fc3638",
+      "source_bytes": 143793,
+      "copy_path": "copies/cohesive/cohesive_capability_preview.png",
+      "copy_sha256": "b5bee415ee9916c4b2a98c0029fe8f6f788e009d32f57ba6bd46152169fc3638",
+      "copy_bytes": 143793,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/modeI_dt_command.log",
+      "source_sha256": "935451edc81ffcb3ef30d4660ecbf4d8d0c051380e066fb0c00991f516c45aa0",
+      "source_bytes": 237,
+      "copy_path": "copies/cohesive/commands/modeI_dt_command.log",
+      "copy_sha256": "935451edc81ffcb3ef30d4660ecbf4d8d0c051380e066fb0c00991f516c45aa0",
+      "copy_bytes": 237,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/modeI_dt2_command.log",
+      "source_sha256": "f5c2f1b925caf31f3876fe147a9056c8fa6c311ae3b8e1241a32483ceadca558",
+      "source_bytes": 238,
+      "copy_path": "copies/cohesive/commands/modeI_dt2_command.log",
+      "copy_sha256": "f5c2f1b925caf31f3876fe147a9056c8fa6c311ae3b8e1241a32483ceadca558",
+      "copy_bytes": 238,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/zero_load_retry1_command.log",
+      "source_sha256": "4a626bedecd72589e78d4aa98502a03ff2b2612354405d31841d3f7b62108983",
+      "source_bytes": 238,
+      "copy_path": "copies/cohesive/commands/zero_load_retry1_command.log",
+      "copy_sha256": "4a626bedecd72589e78d4aa98502a03ff2b2612354405d31841d3f7b62108983",
+      "copy_bytes": 238,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/zero_load_command.log",
+      "source_sha256": "013d65bb578e9c0f49a85c4f1f2206cd8807fb42de885e41f187cbabcad8724c",
+      "source_bytes": 762,
+      "copy_path": "copies/cohesive/commands/zero_load_initial_metadata_fail.log",
+      "copy_sha256": "013d65bb578e9c0f49a85c4f1f2206cd8807fb42de885e41f187cbabcad8724c",
+      "copy_bytes": 762,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/manifest_revision_event.json",
+      "source_sha256": "4f1715bee03131778a4be8989026d80bbb5ccd60c873788ed168cbba0819901e",
+      "source_bytes": 675,
+      "copy_path": "copies/cohesive/manifest_revision_event.json",
+      "copy_sha256": "4f1715bee03131778a4be8989026d80bbb5ccd60c873788ed168cbba0819901e",
+      "copy_bytes": 675,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/native_visualization_data.json",
+      "source_sha256": "e77bbc91d721cdde65d42df3a94224e641702eac21874a998e03553364df0068",
+      "source_bytes": 49042,
+      "copy_path": "copies/cohesive/native_visualization_data.json",
+      "copy_sha256": "e77bbc91d721cdde65d42df3a94224e641702eac21874a998e03553364df0068",
+      "copy_bytes": 49042,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/preflight.json",
+      "source_sha256": "ef74e00ca3122ad75985c47cdeb09b57535f70a9f8ba5e1488fc16b1ee517fbd",
+      "source_bytes": 4322,
+      "copy_path": "copies/cohesive/preflight.json",
+      "copy_sha256": "ef74e00ca3122ad75985c47cdeb09b57535f70a9f8ba5e1488fc16b1ee517fbd",
+      "copy_bytes": 4322,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/api_probe.json",
+      "source_sha256": "8c40d5f0b14d7a0e94cdc459f6ae76e7edbe0280777cdc51082aabe97e1b0261",
+      "source_bytes": 1145,
+      "copy_path": "copies/cohesive/api_probe.json",
+      "copy_sha256": "8c40d5f0b14d7a0e94cdc459f6ae76e7edbe0280777cdc51082aabe97e1b0261",
+      "copy_bytes": 1145,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/contract_review.json",
+      "source_sha256": "8990a6738c27feaf2a7001562dcd8a892a5f87866b1ef32f5e0d86f37d141eac",
+      "source_bytes": 66846,
+      "copy_path": "copies/cohesive/contract_review_extract.json",
+      "copy_sha256": "67c5bedea912328bc9e18f668c2970af758c6bc838026e82bfdcd02c00a19b7b",
+      "copy_bytes": 5913,
+      "method": "structured_extract"
     }
   ]
 }

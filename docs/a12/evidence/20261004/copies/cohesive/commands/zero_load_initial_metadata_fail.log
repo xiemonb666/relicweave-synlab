@@ -1,0 +1,10 @@
+argv=wsl -d Ubuntu -- bash -lc cd '/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_capability' && '/mnt/c/Users/xiemo/Desktop/ShardForge/third_party/akantu-runtime/venv/bin/python' 'run_contract.py' 'zero_load'
+exit=1
+Traceback (most recent call last):
+  File "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_capability/run_contract.py", line 634, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_capability/run_contract.py", line 332, in main
+    if eligible != manifest["expected_insertion_facets"] or already_inserted != 0:
+                   ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'expected_insertion_facets'

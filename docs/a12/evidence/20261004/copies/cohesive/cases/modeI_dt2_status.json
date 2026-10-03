@@ -1,0 +1,99 @@
+{
+  "case": "modeI_dt2",
+  "start_utc": "2026-10-03T18:49:14.037523+00:00",
+  "argv": [
+    "run_contract.py",
+    "modeI_dt2"
+  ],
+  "cwd": "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_capability",
+  "python": "/mnt/c/Users/xiemo/Desktop/ShardForge/third_party/akantu-runtime/venv/bin/python",
+  "python_version": "3.12.15",
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+  "manifest_sha256": "21b563069550e2091474fe94877bd3ceaae094ac4c92aed3900ecdd94702dd68",
+  "input_hashes_valid": true,
+  "status": "COMPLETED",
+  "end_utc": "2026-10-03T18:49:14.528486+00:00",
+  "elapsed_s": 0.4907350060000226,
+  "stable_time_step_s": 7.325410602007945e-08,
+  "time_step_s": 2.9291154071470417e-08,
+  "steps_requested": 3414,
+  "steps_completed": 3414,
+  "endtime_target_s": 0.0001,
+  "endtime_reached_s": 0.0001,
+  "endtime_reached": true,
+  "inserted_interface_facets_expected": 8,
+  "eligible_facets_checked": 8,
+  "eligible_facet_slots_total": 232,
+  "dynamic_insertions_native_connectivity": 8,
+  "dynamic_insertions_api_returned": 8,
+  "cohesive_elements_final": 8,
+  "mesh_nodes_before_after": [
+    45,
+    54
+  ],
+  "bulk_tetrahedra_before_after": [
+    96,
+    96
+  ],
+  "first_insertion_step": 1297,
+  "first_insertion_time_s": 3.799062683069713e-05,
+  "complete_debond_step_by_dissipation_target": null,
+  "complete_debond_time_s_by_dissipation_target": null,
+  "dissipated_energy_target_J": 3.0399999999999997e-05,
+  "dissipated_energy_final_J": -9.726359554870569e-06,
+  "dissipated_energy_relative_error": 1.3199460379891634,
+  "mass_component_sums_before_kg": [
+    4e-05,
+    4e-05,
+    4e-05
+  ],
+  "mass_component_sums_after_kg": [
+    4e-05,
+    4e-05,
+    4e-05
+  ],
+  "mass_component_sum_deltas_kg": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "mass_conserved_by_component": true,
+  "initial_energies_J": {
+    "kinetic": 0.0,
+    "potential": 0.0,
+    "dissipated": 0.0,
+    "reversible": 0.0,
+    "contact": 0.0
+  },
+  "final_energies_J": {
+    "kinetic": 0.00039400027168873345,
+    "potential": 0.00011823012955104869,
+    "dissipated": -9.726359554870569e-06,
+    "reversible": 0.0,
+    "contact": 0.0
+  },
+  "external_work_final_J": 0.0005013039202350114,
+  "energy_ledger_residual_final_J": -1.2001214499001876e-06,
+  "energy_ledger_relative_residual": -0.0023939997304181673,
+  "lineage_status": "EXACT_FOR_CONTRACT_MESH_FROM_NATIVE_CONNECTIVITY",
+  "native_connectivity_shape": [
+    8,
+    6
+  ],
+  "native_parent_mapping_method": "native bulk element IDs + local vertex ordinals + cohesive connectivity only; no coordinate-nearest matching",
+  "fragment_summary": {
+    "api_present": true,
+    "status": "READ",
+    "fragment_count": 2,
+    "fragment_group_names": [
+      "fragment_0",
+      "fragment_1"
+    ]
+  },
+  "contact_status": "NOT_RUN",
+  "roughness_status": "NOT_VALIDATED",
+  "material_status": "UNVALIDATED_TOY",
+  "source_file_sha256": "67dd1eb98acc5f5369b9cbf1a9bfbd7f6681068172e537768e788274cb10652d",
+  "trace_csv_sha256": "9ea52d4e2e81abcd93d4aede112e494713775d83a50535441c3f2f296b5cd65f",
+  "native_topology_sha256": "b49d07e60df92a21e6bf605e2e368b54130628d9413e074a28f748b07c1adc0b"
+}

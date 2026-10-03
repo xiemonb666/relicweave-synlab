@@ -1,0 +1,59 @@
+{
+  "review_scope": "read-only source/API review after the three solver cases; no solver reruns",
+  "installed_wheel": {
+    "version": "5.0.7.post1",
+    "wheel_sha256": "f618c31bb4cdf23d86e74a10f7e94dac3dae7b0ae2cfd057d352c1b156c0654b"
+  },
+  "source_review": {
+    "upstream": "https://gitlab.com/akantu/akantu",
+    "tag": "v5.0.7",
+    "commit": "5a4215a100dc3e73eb031b1358740147178563e2",
+    "exact_binary_source_correspondence": "UNKNOWN: reviewed v5.0.7 source tag, while installed wheel is 5.0.7.post1; wheel build/source identity was not proven",
+    "download_manifest": "third_party/akantu-runtime/source-v5.0.7/source_manifest.json"
+  },
+  "findings": {
+    "getEnergy_potential": {
+      "finding": "SolidMechanicsModel sums material.getEnergy(energy_id); MaterialCohesive::getEnergy returns values only for dissipated, reversible, and cohesive contact. Therefore cohesive reversible/contact are not also included under potential in reviewed v5.0.7 source.",
+      "source": "src/model/solid_mechanics/solid_mechanics_model.cc",
+      "source_sha256": "fc7873c73f830381fd73b24bf80ad5fb07ca02258ba24d30241632835fcf0465",
+      "lines": "601-619",
+      "cohesive_source": "src/model/solid_mechanics/solid_mechanics_model_cohesive/materials/material_cohesive.cc",
+      "cohesive_source_sha256": "46bbb9639a975c04e1ca136bb2ecd26efccb80b21294ea98ade9aae9ac849b13",
+      "cohesive_lines": "466-480",
+      "wheel_correspondence": "UNKNOWN"
+    },
+    "getEnergy_external_work": {
+      "finding": "The reviewed getExternalWork computes constrained internal-force times nodal velocity and multiplies by dt for dynamic analysis; getEnergy('external work') calls it directly. No cumulative state is accumulated in this method, so the API result is per-call work increment, not the cumulative external work trace used in this experiment.",
+      "source": "src/model/solid_mechanics/solid_mechanics_model.cc",
+      "source_sha256": "fc7873c73f830381fd73b24bf80ad5fb07ca02258ba24d30241632835fcf0465",
+      "lines": "556-619",
+      "experiment_accounting": "external_work_J in trace.csv is the independent imposed-boundary reaction/displacement estimator; native getEnergy('external work') was not sampled as the trace",
+      "wheel_correspondence": "UNKNOWN"
+    },
+    "insertion_traction_and_energy": {
+      "finding": "Reviewed v5.0.7 insertion check stores insertion_stress and current facet traction as tractions.previous; cohesive element insertion then propagates nodal state from old-node indices using CohesiveNewNodesEvent. MaterialCohesive energy is integrated from traction/opening history. This establishes source-level traction/history handling for that tag, but exact initial cohesive energy treatment and exact wheel behavior remain UNKNOWN for installed 5.0.7.post1.",
+      "insertion_source": "src/model/solid_mechanics/solid_mechanics_model_cohesive/materials/constitutive_laws/material_cohesive_linear.cc",
+      "insertion_source_sha256": "90dcef30fc1f60ad668f33a3756875d0bdeb87f4a354d157674051eb8494fda2",
+      "insertion_lines": "170-210",
+      "model_source": "src/model/solid_mechanics/solid_mechanics_model_cohesive/solid_mechanics_model_cohesive.cc",
+      "model_source_sha256": "b9a3b89ef9b1f17f82fb3d80c99666d292cd5e8615d56d4fa9ced648030f3d64",
+      "model_lines": "463-520",
+      "energy_source": "src/model/solid_mechanics/solid_mechanics_model_cohesive/materials/material_cohesive.cc",
+      "energy_source_sha256": "46bbb9639a975c04e1ca136bb2ecd26efccb80b21294ea98ade9aae9ac849b13",
+      "energy_lines": "359-420",
+      "installed_python_event_api": "NOT_EXPORTED by api_probe.py; no public new-node parent/event/lineage symbol found"
+    },
+    "dissipated_energy_sign": {
+      "finding": "The experiment's raw native getEnergy('dissipated') ended negative in both loaded cases. No abs correction was made. The reviewed source/docs do not prove a root cause; this remains a native energy-contract failure for this run, not a validated negative-dissipation behavior.",
+      "docs": "https://akantu.readthedocs.io/en/latest/examples.html",
+      "wheel_correspondence": "Official example semantics are reference only; exact runtime/source correspondence UNKNOWN"
+    },
+    "full_debond_or_damage_state": {
+      "finding": "UNKNOWN. Actual cohesive damage/traction/full-failure state was not exported by the installed Python API or runner. The recorded complete_debond_step_by_dissipation_target is only an energy-target proxy and is null in both loaded cases. Insertion of eight cohesive facets does not imply fully failed or physically exposed fracture surfaces."
+    }
+  },
+  "official_docs": {
+    "insertion_and_energy": "https://akantu.readthedocs.io/en/stable/manual/solidmechanicsmodel.html#insertion-of-cohesive-elements",
+    "cohesive_examples": "https://akantu.readthedocs.io/en/latest/examples.html"
+  }
+}

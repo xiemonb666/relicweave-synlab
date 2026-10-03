@@ -1,8 +1,8 @@
 # 2026-10-04 evidence index
 
-This bundle records narrow synthetic/geometry/runtime evidence only. It does not establish physical qualification, calibration, or production readiness. The copied evidence payload is **871,179 bytes** against the **1,200,000-byte** cap (PASS). The total sums the entries below; the index files and pre-existing <code>pg_cad_clipped_cells_case03.md</code> are separate documentation.
+This bundle records narrow synthetic/geometry/runtime evidence only. It does not establish physical qualification, calibration, or production readiness. The copied evidence payload is **1,132,690 bytes** against the **1,200,000-byte** cap (PASS). The total sums the entries below; the index files and pre-existing <code>pg_cad_clipped_cells_case03.md</code> are separate documentation.
 
-Byte-exact copies have identical source and copy SHA-256. The ROI h1/h0.5 file is a structured extraction; its input report paths, sizes and SHA-256 are recorded in <code>index.json</code>. The full 1,242,051-byte h0.5 report, meshes, runtime trees, raw GT and large package were not copied.
+Byte-exact copies have identical source and copy SHA-256. The ROI h1/h0.5 file and cohesive contract review are structured extractions; original paths, byte counts and SHA-256 hashes are recorded in <code>index.json</code>. The full 1,242,051-byte h0.5 report, meshes, runtime trees, raw GT and large package were not copied.
 
 ## Scope notes
 
@@ -14,8 +14,11 @@ Byte-exact copies have identical source and copy SHA-256. The ROI h1/h0.5 file i
 - Clippedcells: <code>INCOMPLETE_COM_OUT</code> after 58/294 boxes. The former 70.3% subtotal difference is not a partition volume error. Superseded and corrected diagnostic PNGs are kept side by side.
 - QA: final narrow suites 30 + 16 PASS and appearance 46 PASS; 9 broader routing/narrowband failures and P02/P03 non-watertight outputs remain visible.
 - Cohesive/tet facets are candidates only after constitutive and convergence validation. A calibrated morphology surrogate is separately labeled and cannot replace fracture physics.
+- Akantu cohesive: narrow fixed-interface capability only; the signed dissipation target fails, the contact energy selector remains unverified, and physical contact stays NOT_RUN. No physical qualification is claimed.
 
 ## Source/copy manifest
+
+The machine-readable <code>index.json</code> is the complete per-file source/copy manifest. The Markdown table below lists the original evidence entries; the cohesive supplement adds 20 copies (261,511 bytes), with each source and copy byte count/full SHA-256 recorded in <code>index.json</code>.
 
 | Evidence copy | Bytes | Copy SHA-256 | Source path(s) and SHA-256 |
 |---|---:|---|---|
