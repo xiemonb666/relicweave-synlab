@@ -1,0 +1,288 @@
+{
+  "canonical3_geometry_parity": {
+    "counts": {
+      "triangles": 38486,
+      "vertices": 19243
+    },
+    "faces_bitwise_equal": true,
+    "faces_sha256": "843d73fb21c161c0825e019c947b991ea3bdfe7f759ae37e69ec4e48955e30bb",
+    "lineage_sha256": "82c36473071954241277bc97ed39ff147a36cd480025b6329d40ce3bf00815a9",
+    "triangle_to_brep_lineage_bitwise_equal": true,
+    "vertices_bitwise_equal": true,
+    "vertices_sha256": "75017213d49c15a670a1fd27acb0fb02429b61d95a09ad64ee225aaafda02acf"
+  },
+  "checks": {
+    "all_canonical_faces_classified_and_auditable": true,
+    "canonical3_mesh_and_lineage_unchanged": true,
+    "four_bands_visible": true,
+    "four_three_band_counterfactual_same_geometry": true,
+    "geometry_only_whole_and_lower_root_depth_equal": true,
+    "handle_root_paint_mislabel_removed": true,
+    "three_band_counterfactual_visible": true
+  },
+  "classification": {
+    "all_faces_have_basis_version_hash_and_trimmed_sample": true,
+    "backend": {
+      "cadquery_version": "2.8.0",
+      "ocp_distribution_version": "7.9.3.1.1",
+      "ocp_module_version": "7.9.3.1"
+    },
+    "canonical_step_sha256": "4623bd373aeed0acfacfbf6cc0dda65952339561779b43429c59d61b8b5a1c30",
+    "classifier": "vf.canonical-step-face-semantics/1.0.0",
+    "face_count": 26,
+    "face_counts": {
+      "base": 2,
+      "body_inner": 8,
+      "body_outer": 9,
+      "handle": 6,
+      "natural_rim": 1
+    },
+    "reserved_fracture_code": 255,
+    "status": "PASS",
+    "triangle_lineage_covers": 38486,
+    "triangle_region_counts": {
+      "base": 312,
+      "body_inner": 5372,
+      "body_outer": 6155,
+      "handle": 26331,
+      "natural_rim": 316
+    },
+    "unknown_face_indices": []
+  },
+  "cli": {
+    "generation_exit_codes": [
+      0,
+      0
+    ],
+    "logs": [
+      "repo\\tmp\\review_20261003\\implementation\\vf\\cli_generate_four_bands_brep_semantics1_final.log",
+      "repo\\tmp\\review_20261003\\implementation\\vf\\cli_generate_three_bands_brep_semantics1_final.log",
+      "repo\\tmp\\review_20261003\\implementation\\vf\\cli_validate_four_bands_brep_semantics1_final.log",
+      "repo\\tmp\\review_20261003\\implementation\\vf\\cli_validate_three_bands_brep_semantics1_final.log"
+    ],
+    "validation_exit_codes": [
+      0,
+      0
+    ]
+  },
+  "continuous_pattern_render_checks": {
+    "four_band": {
+      "dark_band_runs": [
+        {
+          "pixel_count": 20,
+          "y_end": 420,
+          "y_start": 401
+        },
+        {
+          "pixel_count": 15,
+          "y_end": 669,
+          "y_start": 655
+        },
+        {
+          "pixel_count": 20,
+          "y_end": 801,
+          "y_start": 782
+        }
+      ],
+      "note": "display-space check of the actual Blender mesh render; style remains NOT_VALIDATED",
+      "path": "repo\\tmp\\review_20261003\\implementation\\vf\\artifacts\\preview_brep_semantics1_final\\exterior_four_bands_brep_semantics1_final.png",
+      "red_band_runs": [
+        {
+          "pixel_count": 16,
+          "y_end": 546,
+          "y_start": 531
+        }
+      ],
+      "roi_y_px": [
+        250,
+        850
+      ],
+      "scanline_x_px": 450,
+      "sha256": "4d2a3e75ea8b8401425611cbc79adf7422e87ca4cf34b10032ae03e2051acba9",
+      "size_px": [
+        1100,
+        1100
+      ],
+      "thresholds": {
+        "dark": "R<75,G<60,B<50",
+        "red": "R-G>30,R<160,G<80"
+      }
+    },
+    "three_band_counterfactual": {
+      "dark_band_runs": [
+        {
+          "pixel_count": 14,
+          "y_end": 615,
+          "y_start": 602
+        }
+      ],
+      "note": "display-space check of the actual Blender mesh render; style remains NOT_VALIDATED",
+      "path": "repo\\tmp\\review_20261003\\implementation\\vf\\artifacts\\preview_three_bands_brep_semantics1_final\\exterior_three_bands_brep_semantics1_final.png",
+      "red_band_runs": [
+        {
+          "pixel_count": 28,
+          "y_end": 467,
+          "y_start": 440
+        },
+        {
+          "pixel_count": 26,
+          "y_end": 766,
+          "y_start": 741
+        }
+      ],
+      "roi_y_px": [
+        250,
+        850
+      ],
+      "scanline_x_px": 450,
+      "sha256": "1f35992852af62801e1dbf9e71d733d0d51068cf38ef4435e347b914510529a2",
+      "size_px": [
+        1100,
+        1100
+      ],
+      "thresholds": {
+        "dark": "R<75,G<60,B<50",
+        "red": "R-G>30,R<160,G<80"
+      }
+    }
+  },
+  "four_vs_three_band_counterfactual_geometry": {
+    "faces_bitwise_equal": true,
+    "lineage_bitwise_equal": true,
+    "recipe_ids": [
+      "four_bands",
+      "three_bands"
+    ],
+    "style_validation": [
+      "NOT_VALIDATED",
+      "NOT_VALIDATED"
+    ],
+    "vertices_bitwise_equal": true
+  },
+  "geometry_only_render_parity": [
+    {
+      "all_depth_pixels_bitwise_equal_including_background": true,
+      "camera_and_projection": "same saved renderer camera transform/orthographic scale and 1100x1100 target for each pair",
+      "depth_channel": "OpenEXR multi-layer compositor Depth.V, float32, world-unit camera depth",
+      "depth_map_shape": [
+        1100,
+        1100
+      ],
+      "depth_max_abs_delta_mm": 0.0,
+      "depth_mismatched_geometry_pixels": 0,
+      "depth_values_bitwise_equal_on_geometry": true,
+      "geometry_only_png_bitwise_equal": true,
+      "new_depth_exr": {
+        "path": "repo\\tmp\\review_20261003\\implementation\\vf\\artifacts\\geometry_depth_parity_brep_semantics1_final\\brep_semantics1_whole_depth_.exr",
+        "sha256": "453aba40eadfcf89ce77a7e96fe9c9bee8be8713fa34d0db43b3d4e323a42612"
+      },
+      "new_png": {
+        "path": "repo\\tmp\\review_20261003\\implementation\\vf\\artifacts\\geometry_depth_parity_brep_semantics1_final\\brep_semantics1_whole.png",
+        "sha256": "c72271ed6e7c9afe0d69ba570776978dd1f4218bfc03be5d7c88ab4f548dd331"
+      },
+      "old_depth_exr": {
+        "path": "repo\\tmp\\review_20261003\\implementation\\vf\\artifacts\\geometry_depth_parity_brep_semantics1_final\\canonical3_whole_depth_.exr",
+        "sha256": "c3d9ef57291e77dd49378d19b78ff58671badde3424f1552b72f90d000bfaf14"
+      },
+      "old_png": {
+        "path": "repo\\tmp\\review_20261003\\implementation\\vf\\artifacts\\geometry_depth_parity_brep_semantics1_final\\canonical3_whole.png",
+        "sha256": "0db95b2bc066c32e5e148af58c879b69a6cb1eaac9d32db0d32c0bd3e9e6fca9"
+      },
+      "silhouette_mask_equal": true,
+      "uniform_material": "same neutral emission shader; ornament/semantic material fields are not loaded",
+      "valid_geometry_pixels_old_new": [
+        498318,
+        498318
+      ],
+      "view": "whole"
+    },
+    {
+      "all_depth_pixels_bitwise_equal_including_background": true,
+      "camera_and_projection": "same saved renderer camera transform/orthographic scale and 1100x1100 target for each pair",
+      "depth_channel": "OpenEXR multi-layer compositor Depth.V, float32, world-unit camera depth",
+      "depth_map_shape": [
+        1100,
+        1100
+      ],
+      "depth_max_abs_delta_mm": 0.0,
+      "depth_mismatched_geometry_pixels": 0,
+      "depth_values_bitwise_equal_on_geometry": true,
+      "geometry_only_png_bitwise_equal": true,
+      "new_depth_exr": {
+        "path": "repo\\tmp\\review_20261003\\implementation\\vf\\artifacts\\geometry_depth_parity_brep_semantics1_final\\brep_semantics1_lower_root_depth_.exr",
+        "sha256": "45f7ac357674810b2ce10445f00af04819797405e9f2b41257ab85e0e3f900a9"
+      },
+      "new_png": {
+        "path": "repo\\tmp\\review_20261003\\implementation\\vf\\artifacts\\geometry_depth_parity_brep_semantics1_final\\brep_semantics1_lower_root.png",
+        "sha256": "0497d38c5d704780ab67d87299489da15ef865b9ab4487e021726faf25fa183e"
+      },
+      "old_depth_exr": {
+        "path": "repo\\tmp\\review_20261003\\implementation\\vf\\artifacts\\geometry_depth_parity_brep_semantics1_final\\canonical3_lower_root_depth_.exr",
+        "sha256": "1828b523479cb01601ca0f9b42a28621f94da033240d6a9ddf004af62ccad02f"
+      },
+      "old_png": {
+        "path": "repo\\tmp\\review_20261003\\implementation\\vf\\artifacts\\geometry_depth_parity_brep_semantics1_final\\canonical3_lower_root.png",
+        "sha256": "f6c51dc47a1bc06eef139d142e83da497970045759546171efbc4fbb28b8833f"
+      },
+      "silhouette_mask_equal": true,
+      "uniform_material": "same neutral emission shader; ornament/semantic material fields are not loaded",
+      "valid_geometry_pixels_old_new": [
+        611177,
+        611177
+      ],
+      "view": "lower_root"
+    }
+  ],
+  "geometry_qa": {
+    "contract_status": "PASS",
+    "geometry_status": "PASS",
+    "historical_style": "NOT_VALIDATED",
+    "mesh": {
+      "boundary_edges": 0,
+      "minimum_double_area_mm2": 0.005819375804806841,
+      "nonmanifold_edges": 0,
+      "signed_volume_mm3": 25928.999532364232,
+      "triangles": 38486,
+      "vertices": 19243,
+      "watertight": true
+    },
+    "mesh_step_sampled_max_deviation_mm": 0.01961365777587544,
+    "physical_calibration": "UNVALIDATED_PROTOTYPE",
+    "profile_realism_status": "REALISM_PENDING: piecewise-linear meridian corners are not filleted; tessellation does not smooth them",
+    "wall_scope": "side profile and flat floor only; not a global minimum-wall proof over the fused CAD solid"
+  },
+  "limitations": [
+    "Face rules are specifically validated for this prototype CAD construction; other forms/surfaces remain UNKNOWN and block asset generation until explicitly classified.",
+    "The finite sampled mesh-to-STEP QA is not a global Hausdorff proof; wall QA is side-profile plus floor only, not a global fused-solid minimum wall.",
+    "C0 meridian corners, abrupt handle-root transition, actual ceramic appearance/style, physical mechanics, and high-fidelity fracture remain pending."
+  ],
+  "old_to_new_handle_root_labeling": {
+    "canonical3_handle_triangles_with_nonbase_albedo": 23,
+    "canonical3_mislabelled_handle_triangles_as_paint": 198,
+    "handle_face_indices": [
+      4,
+      5,
+      7,
+      9,
+      11,
+      13
+    ],
+    "handle_triangle_count": 26331,
+    "new_geometry_report_check": true,
+    "new_handle_triangles_with_nonbase_albedo": 0,
+    "new_mislabelled_handle_triangles_as_paint": 0
+  },
+  "producer_version": "0.1.1",
+  "render_logs": [
+    "repo\\tmp\\review_20261003\\implementation\\vf\\render_blender_brep_semantics1_final.log",
+    "repo\\tmp\\review_20261003\\implementation\\vf\\render_blender_three_bands_brep_semantics1_final.log",
+    "repo\\tmp\\review_20261003\\implementation\\vf\\geometry_depth_parity_brep_semantics1_final.log"
+  ],
+  "stage": "canonical B-rep semantic face classification and paint-root correction",
+  "test": {
+    "command": "python -m pytest -q tests -p no:cacheprovider --basetemp <dedicated pytest_brep_semantics1_final>",
+    "fixture_isolation": "tests/conftest.py creates both packages in pytest tmp_path_factory output; no checked-in sample manifest is modified",
+    "log": "repo\\tmp\\review_20261003\\implementation\\vf\\pytest_brep_semantics1_final.log",
+    "result": "16 passed in 5.01s"
+  }
+}

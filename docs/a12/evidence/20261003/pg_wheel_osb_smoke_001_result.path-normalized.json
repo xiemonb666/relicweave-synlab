@@ -1,0 +1,222 @@
+{
+  "backend_id": "peridynamics_jl_headless_0_5_4",
+  "backend_provenance": {
+    "adapter_runner_sha256": "2468586567a2a777de155febd8b1ad9829016f682ede7b69c5f2f7a5c9952534",
+    "backend_version": "0.5.4+pgfrag.1",
+    "headless_io_source_files_verified": 5,
+    "headless_patch_sha256": "33dd180a5d388eb9e6a281e3fefcbe4838b8e1a1b96bb92c52aebefb7529078d",
+    "mechanics_source_files_verified": 20,
+    "source_tree": "physics/** and time_solvers/** match the recorded upstream 0.5.4 source-file hashes",
+    "upstream_source_archive_sha256": "1b089cd3ab945b34f31458c0533f2d9d3b90eb69fd51b5d546746c55f30c68df",
+    "upstream_tag": "v0.5.4",
+    "vendored_license_sha256": "0dc42bc9160a936d5fa5ec6f622e94d2baa1e02d13a675e9080795c156da483e"
+  },
+  "backend_version": "0.5.4+pgfrag.1",
+  "capabilities": {
+    "calibration_status": "UNVALIDATED_PROTOTYPE",
+    "cpu": "USED",
+    "gpu": "UNSUPPORTED/NOT_IMPLEMENTED",
+    "material_model": "OSB"
+  },
+  "core_version": "0.1.0",
+  "data_dictionary_path": "data_dictionary.json",
+  "frame": {
+    "name": "right_handed_z_up",
+    "origin": "center of requested uniform-box bar fixture",
+    "reference_and_current_coordinates_share_frame": true
+  },
+  "initial_condition": {
+    "discrete_center_span_mm": [
+      4.0,
+      4.0,
+      14.0
+    ],
+    "horizon_mm": 6.0,
+    "implied_full_point_cell_support_mm": [
+      6.0,
+      6.0,
+      16.0
+    ],
+    "kind": "uniform_box_bar_fixture",
+    "point_volume_sum_mm3": 575.9999999999999,
+    "requested_dimensions_mm": [
+      6.0,
+      6.0,
+      16.0
+    ],
+    "solver_model": "Peridynamics.jl 0.5.4+pgfrag.1 OSBMaterial / CriticalStretch",
+    "spacing_mm": 2.0
+  },
+  "input": {
+    "job_path": "repo\\tmp\\review_20261003\\implementation\\pg\\wheel_test\\jobs\\wheel_osb_smoke_001\\job.json",
+    "job_sha256": "db3887cedd87a9e57192f2570b81f3048e22c1f592ac078e841ab6e89a2087b3"
+  },
+  "job_id": "wheel-osb-smoke-001",
+  "loading": {
+    "kind": "symmetric_axial_velocity",
+    "speed_m_s": 0.0001
+  },
+  "material": {
+    "E_pa": 5000000000.0,
+    "Gc_j_m2": 45.0,
+    "calibration_status": "UNVALIDATED_PROTOTYPE",
+    "nu": 0.24,
+    "provenance": "illustrative API/solver exercise values; no specimen measurement or calibration",
+    "rho_kg_m3": 2100.0
+  },
+  "missing_capabilities": [
+    {
+      "capability": "surface_geometry_and_crack_faces",
+      "reason": "uniform_box bar fixture emits material points only; no geometry surface reconstruction",
+      "status": "UNKNOWN"
+    },
+    {
+      "capability": "forge_asset_discretization",
+      "reason": "surface-to-volume discretization and void/topology checks are not implemented",
+      "status": "UNSUPPORTED"
+    },
+    {
+      "capability": "contact",
+      "reason": "no contact fixture was run",
+      "status": "UNKNOWN"
+    },
+    {
+      "capability": "paired_fracture_surface_lineage_or_historical_surface_adjacency",
+      "reason": "endpoint broken horizon bonds do not provide positive-area paired-surface mapping or historical adjacency; this neutral core does not derive upper-layer relation labels",
+      "status": "UNKNOWN"
+    },
+    {
+      "capability": "fracture_event_timeline",
+      "reason": "this result stores an endpoint bond state, not per-step event chronology",
+      "status": "UNKNOWN"
+    },
+    {
+      "capability": "energy_conservation",
+      "reason": "prescribed velocity boundaries do external work; no complete energy ledger is emitted",
+      "status": "UNKNOWN"
+    }
+  ],
+  "output_hash_scope": "solver artifacts and logs, excluding result.json itself to avoid a recursive hash",
+  "outputs": [
+    {
+      "bytes": 67149,
+      "path": "bond_states.csv",
+      "sha256": "b0d5914aa12071bf30dfe59d2f3aac8334c9eac39dea086e69cd340e5026a3ac"
+    },
+    {
+      "bytes": 66,
+      "path": "broken_bonds.csv",
+      "sha256": "692ab7f7dd8c4dbb99a481aafac3073e325baa22152c0460cec858776b01ad75"
+    },
+    {
+      "bytes": 2266,
+      "path": "components.csv",
+      "sha256": "40c08965b1ec84d3190adf3aa567401571ad5925ea3a8a13914b4235bc0b8102"
+    },
+    {
+      "bytes": 11063,
+      "path": "data_dictionary.json",
+      "sha256": "0e0a2d1d39986fa2e676deb182c529237c9c72e86d99ff85e18f06ccd50d73e0"
+    },
+    {
+      "bytes": 41,
+      "path": "isolated_points.csv",
+      "sha256": "d0bb697a4412b470be2d5ff0fdafeef8de814f94847f0ad4569de9dfe52cd0a7"
+    },
+    {
+      "bytes": 15447,
+      "path": "points.csv",
+      "sha256": "ffa71e6bd5b34969f72c5fe8ae09127b8c9afb7adb7d1463fb999f8bf2efa7b7"
+    },
+    {
+      "bytes": 0,
+      "path": "solver.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 96,
+      "path": "solver.stdout.log",
+      "sha256": "a37212ea3761c435388378f02928d8cb14c9fcd574a318c3f6c171936f391eb1"
+    },
+    {
+      "bytes": 1713,
+      "path": "summary.toml",
+      "sha256": "e7e0d7bd6e285a125df681e799331ba0918cddca36106ac768caf7418eec4758"
+    }
+  ],
+  "process": {
+    "cancel_supported": true,
+    "command_executable": "ShardForge\\third_party\\pgfrag-runtime\\extract\\julia-1.10.12\\bin\\julia.exe",
+    "julia_depot_path": "ShardForge\\third_party\\pgfrag-runtime\\depot",
+    "julia_version": "1.10.12",
+    "project_path": "repo\\tmp\\review_20261003\\implementation\\pg\\wheel_test\\install\\pgfrag\\resources\\julia",
+    "returncode": 0,
+    "timeout_seconds": 120,
+    "wall_time_s": 29.54699999978766
+  },
+  "result_path": "repo\\tmp\\review_20261003\\implementation\\pg\\wheel_test\\jobs\\wheel_osb_smoke_001\\output\\result.json",
+  "schema": "pgfrag.result.v1",
+  "solver": {
+    "accepted_dt_s": 1.3104937568427167e-06,
+    "dt_s": 1.3104937568427167e-06,
+    "kinetic_energy_j": 1.2110854808958777e-12,
+    "max_damage": 0.0,
+    "mean_damage": 0.0,
+    "native_stability_bound_dt_s": 1.3104937568427167e-06,
+    "native_stability_check": "PASS_NATIVE_AUTO_DT",
+    "native_stability_scope": "single-body fixture only; not a general OSB/contact stability guarantee",
+    "requested_dt_mode": "AUTO",
+    "steps": 5,
+    "strain_energy_j": 1.806984138847336e-11,
+    "time_s": 6.552468784213583e-06,
+    "total_energy_conservation": "UNKNOWN"
+  },
+  "state": {
+    "broken_bond_pairs_at_endpoint": 0,
+    "broken_state_consistent": true,
+    "canonical_initial_bond_pairs": 1362,
+    "intact_bond_graph_component_count": 1,
+    "point_count": 72,
+    "point_ids_complete_unique": true
+  },
+  "status": "COMPLETED",
+  "units": {
+    "current_coordinates": "m",
+    "energy": "J",
+    "point_mass": "kg",
+    "point_volume": "m^3",
+    "reference_coordinates": "m",
+    "time": "s",
+    "velocity": "m/s"
+  },
+  "validation": {
+    "checks": {
+      "bond_pair_count": 1362,
+      "broken_bond_pair_count": 0,
+      "broken_edges_equal_inactive_subset": true,
+      "component_count": 1,
+      "component_partition_matches_graph": true,
+      "energy_integrals_match_point_state": true,
+      "isolated_points_match_graph": true,
+      "native_edges_unique_valid": true,
+      "native_time_step_bound_validated": true,
+      "point_count": 72,
+      "point_ids_complete_unique": true,
+      "point_mass_volume_consistent": true,
+      "point_state_finite_ranges": true,
+      "steps_and_duration_consistent": true
+    },
+    "contact_or_fragment_surface_validity": "NOT_TESTED",
+    "mesh_or_surface_validity": "NOT_APPLICABLE_FIXTURE",
+    "physical_material_calibration": "PENDING",
+    "scope": "bounded endpoint serialization and solver process completion only",
+    "status": "PASS",
+    "time_step_stability": {
+      "accepted_dt_s": 1.3104937568427167e-06,
+      "method": "upstream Peridynamics.calc_stable_timestep",
+      "native_stability_bound_dt_s": 1.3104937568427167e-06,
+      "scope": "single-body fixture only; not a general OSB/contact stability guarantee",
+      "status": "PASS"
+    }
+  }
+}

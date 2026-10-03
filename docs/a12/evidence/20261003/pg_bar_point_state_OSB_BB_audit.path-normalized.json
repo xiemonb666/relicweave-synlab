@@ -1,0 +1,196 @@
+{
+  "schema": "pgfrag.point_state_contact_sheet_audit.v2",
+  "image_path": "repo\\tmp\\review_20261003\\implementation\\pg\\visuals\\bar_point_state_OSB_BB.png",
+  "image_sha256": "17426b2b71da657d77a5e5d9b160e5a33efc87d5b02e6f251b04e2d5a570ca4c",
+  "source_sha256": {
+    "osb-smoke-004": {
+      "points.csv": "ffa71e6bd5b34969f72c5fe8ae09127b8c9afb7adb7d1463fb999f8bf2efa7b7",
+      "result.json": "e178a01e6f29ab0f8b15da2b76047f9593c5b8526c3a73b90462298e1b3b7994"
+    },
+    "bb-smoke-002": {
+      "points.csv": "3bcad470b67d04d0792c6fab253dcc7ce16aa6ada1137206eed9c111468f5989",
+      "result.json": "c58edd1dd27946c11c4df3e05ffb9cd4de7cafd2b32f2cd172c46988a977afeb"
+    }
+  },
+  "panels": [
+    {
+      "job_id": "osb-smoke-004",
+      "panel": "signed axial displacement",
+      "variable": "u_z",
+      "formula": "(z_current_m - z_ref_m) * 1e9",
+      "source_columns": [
+        "z_current_m",
+        "z_ref_m"
+      ],
+      "source_unit": "m",
+      "output_unit": "nm",
+      "multiplier": 1000000000.0,
+      "actual_minmax": {
+        "min": -0.6552468767226372,
+        "max": 0.6552468767226372
+      },
+      "colorscale": {
+        "type": "diverging",
+        "min": -0.6552468767226372,
+        "center": 0.0,
+        "max": 0.6552468767226372
+      },
+      "source_sha256": {
+        "points.csv": "ffa71e6bd5b34969f72c5fe8ae09127b8c9afb7adb7d1463fb999f8bf2efa7b7",
+        "result.json": "e178a01e6f29ab0f8b15da2b76047f9593c5b8526c3a73b90462298e1b3b7994"
+      }
+    },
+    {
+      "job_id": "osb-smoke-004",
+      "panel": "upstream point damage",
+      "variable": "damage",
+      "formula": "damage",
+      "source_columns": [
+        "damage"
+      ],
+      "source_unit": "1",
+      "output_unit": "1",
+      "multiplier": 1.0,
+      "actual_minmax": {
+        "min": 0.0,
+        "max": 0.0
+      },
+      "colorscale": {
+        "type": "sequential",
+        "min": 0.0,
+        "max": 1.0
+      },
+      "source_sha256": {
+        "points.csv": "ffa71e6bd5b34969f72c5fe8ae09127b8c9afb7adb7d1463fb999f8bf2efa7b7",
+        "result.json": "e178a01e6f29ab0f8b15da2b76047f9593c5b8526c3a73b90462298e1b3b7994"
+      }
+    },
+    {
+      "job_id": "bb-smoke-002",
+      "panel": "signed axial displacement",
+      "variable": "u_z",
+      "formula": "(z_current_m - z_ref_m) * 1e9",
+      "source_columns": [
+        "z_current_m",
+        "z_ref_m"
+      ],
+      "source_unit": "m",
+      "output_unit": "nm",
+      "multiplier": 1000000000.0,
+      "actual_minmax": {
+        "min": -0.6425224284914433,
+        "max": 0.6425224284914433
+      },
+      "colorscale": {
+        "type": "diverging",
+        "min": -0.6425224284914433,
+        "center": 0.0,
+        "max": 0.6425224284914433
+      },
+      "source_sha256": {
+        "points.csv": "3bcad470b67d04d0792c6fab253dcc7ce16aa6ada1137206eed9c111468f5989",
+        "result.json": "c58edd1dd27946c11c4df3e05ffb9cd4de7cafd2b32f2cd172c46988a977afeb"
+      }
+    },
+    {
+      "job_id": "bb-smoke-002",
+      "panel": "upstream point damage",
+      "variable": "damage",
+      "formula": "damage",
+      "source_columns": [
+        "damage"
+      ],
+      "source_unit": "1",
+      "output_unit": "1",
+      "multiplier": 1.0,
+      "actual_minmax": {
+        "min": 0.0,
+        "max": 0.0
+      },
+      "colorscale": {
+        "type": "sequential",
+        "min": 0.0,
+        "max": 1.0
+      },
+      "source_sha256": {
+        "points.csv": "3bcad470b67d04d0792c6fab253dcc7ce16aa6ada1137206eed9c111468f5989",
+        "result.json": "c58edd1dd27946c11c4df3e05ffb9cd4de7cafd2b32f2cd172c46988a977afeb"
+      }
+    }
+  ],
+  "known_vector_checks": {
+    "status": "PASS",
+    "conversions": [
+      {
+        "input": 1.0,
+        "input_unit": "m",
+        "multiplier": 1000.0,
+        "output": 1000.0,
+        "expected": 1000.0,
+        "output_unit": "mm",
+        "pass": true
+      },
+      {
+        "input": 1.0,
+        "input_unit": "mm",
+        "multiplier": 1000.0,
+        "output": 1000.0,
+        "expected": 1000.0,
+        "output_unit": "um",
+        "pass": true
+      },
+      {
+        "input": -1.0,
+        "input_unit": "mm",
+        "multiplier": 1000.0,
+        "output": -1000.0,
+        "expected": -1000.0,
+        "output_unit": "um",
+        "pass": true
+      },
+      {
+        "input": 1.0,
+        "input_unit": "m",
+        "multiplier": 1000000000.0,
+        "output": 1000000000.0,
+        "expected": 1000000000.0,
+        "output_unit": "nm",
+        "pass": true
+      }
+    ],
+    "diverging_sign_color_check": {
+      "negative": [
+        58,
+        112,
+        184
+      ],
+      "zero": [
+        248,
+        248,
+        248
+      ],
+      "positive": [
+        196,
+        45,
+        49
+      ],
+      "negative_is_blue": true,
+      "positive_is_red": true,
+      "zero_is_neutral": true
+    }
+  },
+  "geometry_coordinates": {
+    "source_columns": [
+      "x_ref_m",
+      "z_ref_m",
+      "x_current_m",
+      "z_current_m"
+    ],
+    "source_unit": "m",
+    "output_unit": "mm",
+    "multiplier": 1000.0,
+    "formula": "coordinate_m * 1000",
+    "axes_equal_scale": true
+  },
+  "scope": "actual CSV point-state diagnostics for low-load OSB/BB fixtures; no crack surface is reconstructed"
+}

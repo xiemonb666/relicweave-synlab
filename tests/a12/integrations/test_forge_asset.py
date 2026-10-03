@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import asdict
 import hashlib
 import json
 from pathlib import Path
@@ -26,6 +27,9 @@ from synlab.integrations.forge_asset import (  # noqa: E402
 )
 from synlab.observe.fracture_roi import FractureRoiConfig, fracture_rois  # noqa: E402
 from synlab.observe.render import LightSpec, RenderSpec  # noqa: E402
+from synlab.observe.continuous_appearance import (  # noqa: E402
+    RestCoordinateAppearanceSampler,
+)
 from synlab.cameras.projection import look_at_T_WC  # noqa: E402
 from synlab.roles import SOURCE_SENSOR_SIM  # noqa: E402
 from synlab.schemas.runtime import ViewFrame  # noqa: E402
@@ -139,6 +143,67 @@ def _light() -> LightSpec:
     return LightSpec(direction=np.asarray([0.0, 0.0, -1.0]),
                      color=np.asarray([1.0, 1.0, 1.0]),
                      ambient=np.asarray([0.2, 0.2, 0.2]))
+
+
+def _truth_sampler() -> RestCoordinateAppearanceSampler:
+    recipe = {
+        "coordinate_map": "cylindrical_z_up_mm",
+        "material_binding_id": "fixture_matte",
+        "geometry_relief_mm": 0.0,
+        "historical_style_validation": "NOT_VALIDATED",
+        "target_region_codes": [1],
+        "palette_linear_rgb": {"base": [0.4, 0.58, 0.2], "red": [0.9, 0.025, 0.015]},
+        "bands": [{"center_z_mm": 0.0, "width_mm": 0.5, "color": "red"}],
+    }
+    return RestCoordinateAppearanceSampler.from_asset_truth(
+        faces=np.asarray([[0, 1, 2]], dtype=np.int32),
+        face_regions=np.asarray([1], dtype=np.uint8),
+        vertices_material_xyz_mm=np.asarray([[0.0, 0.0, -1.0], [1.0, 0.0, 0.0],
+                                             [0.0, 1.0, 1.0]], dtype=np.float64),
+        recipe=recipe, material_binding_id="fixture_matte")
+
+
+@pytest.mark.parametrize(("field", "bad_dtype"), [
+    ("faces", np.float64), ("faces", np.bool_),
+    ("face_regions", np.float64), ("face_regions", np.bool_),
+])
+def test_truth_sampler_rejects_noninteger_face_and_region_arrays(
+    field: str, bad_dtype: type,
+) -> None:
+    sampler_inputs = {
+        "faces": np.asarray([[0, 1, 2]], dtype=np.int32),
+        "face_regions": np.asarray([1], dtype=np.uint8),
+        "vertices_material_xyz_mm": np.asarray([[0.0, 0.0, -1.0], [1.0, 0.0, 0.0],
+                                                 [0.0, 1.0, 1.0]], dtype=np.float64),
+    }
+    sampler_inputs[field] = sampler_inputs[field].astype(bad_dtype)
+    recipe = {
+        "coordinate_map": "cylindrical_z_up_mm",
+        "material_binding_id": "fixture_matte",
+        "geometry_relief_mm": 0.0,
+        "historical_style_validation": "NOT_VALIDATED",
+        "target_region_codes": [1],
+        "palette_linear_rgb": {"base": [0.4, 0.58, 0.2], "red": [0.9, 0.025, 0.015]},
+        "bands": [{"center_z_mm": 0.0, "width_mm": 0.5, "color": "red"}],
+    }
+    with pytest.raises(SynLabError) as excinfo:
+        RestCoordinateAppearanceSampler.from_asset_truth(
+            **sampler_inputs, recipe=recipe, material_binding_id="fixture_matte")
+    assert excinfo.value.code == ErrorCode.SCHEMA_INVALID
+
+
+@pytest.mark.parametrize("barycentric", [
+    [0.2, 0.2, 0.2],       # finite, individually bounded, but sum is not one
+    [1.000001, 0.0, 0.0],  # never silently clamp or renormalize an invalid hit
+    [np.nan, 0.5, 0.5],
+    [0.4, 0.4, 0.4],
+])
+def test_truth_sampler_rejects_invalid_hit_barycentrics(barycentric: list[float]) -> None:
+    sampler = _truth_sampler()
+    with pytest.raises(SynLabError) as excinfo:
+        sampler.sample_albedo(np.asarray([0]), np.asarray([barycentric]),
+                              np.asarray([[0.3, 0.4, 0.5]], dtype=np.float32))
+    assert excinfo.value.code == ErrorCode.SCHEMA_INVALID
 
 
 def test_forge_mother_regions_map_to_legacy_surface_without_creating_fracture_roi(
@@ -384,6 +449,16 @@ def test_scene_and_render_metadata_do_not_export_producer_seed_or_rest_coordinat
     output = render_forge_asset_preview(asset, _frame(), light=_light(),
                                         spec=RenderSpec(supersample=1, max_pixels=64 * 64),
                                         allow_prototype_preview=True)
+    serialized_render = asdict(output)
+    assert set(serialized_render) == {
+        "rgb_linear", "depth_z", "id_map", "surface_tag", "visibility",
+        "uncertain_mask", "backend", "meta",
+    }
+    assert not {"appearance_sampler", "face_region", "vertices_material_xyz_mm",
+                "ornament_recipe_json"}.intersection(serialized_render)
+    assert set(np.unique(output.surface_tag)).issubset({-1, 0})
+    assert not hasattr(output, "face_region")
+    assert not hasattr(output, "vertices_material_xyz_mm")
     forbidden = {"seed", "producer", "vertices_material_xyz_mm", "face_region",
                  "r2_label", "fracture_label", "provenance"}
     assert not forbidden.intersection(scene.meta)
@@ -423,6 +498,9 @@ def test_continuous_bands_sample_hit_barycentrics_without_changing_geometry(
     frame = _frame()
     frame.camera_model = camera_model
     frame.dist = dist
+    if supersample == 2:
+        # Resolve the narrow band across more of the output grid while retaining SS2 filtering.
+        frame.K[0, 0] = frame.K[1, 1] = 160.0
     spec = RenderSpec(supersample=supersample, near_mm=1.0, far_mm=100.0,
                       max_pixels=64 * 64 * supersample * supersample)
     continuous = render_forge_asset_preview(asset, frame, light=_light(), spec=spec,
@@ -436,8 +514,23 @@ def test_continuous_bands_sample_hit_barycentrics_without_changing_geometry(
     face_pixels = continuous.id_map == 0
     rgb = continuous.rgb_linear[face_pixels]
     assert rgb.shape[0] >= 3
-    assert np.count_nonzero((rgb[:, 0] > rgb[:, 1] * 1.5)) >= 1
-    assert np.count_nonzero((rgb[:, 1] > rgb[:, 0] * 0.7)) >= 1
+    tri = asset.vertices_mm[asset.faces[0]]
+    normal = np.cross(tri[1] - tri[0], tri[2] - tri[0])
+    normal /= np.linalg.norm(normal)
+    lambert = np.clip(-float(np.dot(normal, _light().direction)), 0.0, 1.0)
+    lighting = _light().ambient + _light().color * lambert
+    expected_base = np.asarray([0.4, 0.58, 0.2]) * lighting
+    expected_band = np.asarray([0.9, 0.025, 0.015]) * lighting
+    if supersample == 1:
+        assert np.any(np.all(np.isclose(rgb, expected_base, rtol=0.0, atol=2e-6), axis=1))
+        assert np.any(np.all(np.isclose(rgb, expected_band, rtol=0.0, atol=2e-6), axis=1))
+    else:
+        # The final RGB is a 2×2 sample average. Require a fully visible face pixel whose
+        # color differs from the base-only value, proving that a painted sub-sample contributes.
+        interior_face = face_pixels & (continuous.visibility > 0)
+        assert interior_face.any()
+        assert np.any(np.linalg.norm(continuous.rgb_linear[interior_face] - expected_base,
+                                     axis=1) > 1e-4)
     assert not np.array_equal(continuous.rgb_linear, legacy.rgb_linear)
 
     assert np.array_equal(continuous.id_map, legacy.id_map)
@@ -499,8 +592,8 @@ def test_continuous_appearance_follows_rest_coordinates_after_object_pose(
     origin = frame.T_WC[:3, 3]
     checked = 0
     for row, col in zip(*np.nonzero(output.id_map == 0)):
-        ray_cam = np.asarray([(col - frame.K[0, 2]) / frame.K[0, 0],
-                              (row - frame.K[1, 2]) / frame.K[1, 1], 1.0])
+        ray_cam = np.asarray([(col + 0.5 - frame.K[0, 2]) / frame.K[0, 0],
+                              (row + 0.5 - frame.K[1, 2]) / frame.K[1, 1], 1.0])
         direction = frame.T_WC[:3, :3] @ ray_cam
         hit = _ray_barycentric_world(origin, direction, posed_triangle)
         if hit is None:

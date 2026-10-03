@@ -1,0 +1,196 @@
+{
+  "schema": "pgfrag.point_state_visual_audit.v2",
+  "result_path": "repo\\tmp\\review_20261003\\implementation\\pg\\jobs\\osb_fracture_branch_001\\output\\result.json",
+  "result_sha256": "b3fb84f20d409f4a4dca0b34ffd8b95a07b7c7944b8b6ecd70100b0b5b17dc20",
+  "image_path": "repo\\tmp\\review_20261003\\implementation\\pg\\visuals\\osb_fracture_point_state.png",
+  "image_sha256": "20d85bf466ad4e27bf2ba301cc2c991985424949fb3381894ea399c0297e4205",
+  "source_sha256": {
+    "points.csv": "f78180800aa39702b31d60f2e523cb5a3fc13339644d86826c39bb9acd250edf",
+    "result.json": "b3fb84f20d409f4a4dca0b34ffd8b95a07b7c7944b8b6ecd70100b0b5b17dc20"
+  },
+  "panels": [
+    {
+      "variable": "axial displacement u_z",
+      "formula": "(z_current_m - z_ref_m) * 1000",
+      "source_columns": [
+        "z_current_m",
+        "z_ref_m"
+      ],
+      "source_unit": "m",
+      "output_unit": "mm",
+      "multiplier": 1000.0,
+      "actual_minmax": {
+        "min": -0.701052529180436,
+        "max": 0.5723624270927534
+      },
+      "colorscale": {
+        "type": "diverging",
+        "min": -0.701052529180436,
+        "center": 0.0,
+        "max": 0.701052529180436
+      },
+      "source_sha256": "f78180800aa39702b31d60f2e523cb5a3fc13339644d86826c39bb9acd250edf"
+    },
+    {
+      "variable": "damage",
+      "formula": "damage",
+      "source_columns": [
+        "damage"
+      ],
+      "source_unit": "1",
+      "output_unit": "1",
+      "multiplier": 1.0,
+      "actual_minmax": {
+        "min": 0.010309278350515427,
+        "max": 0.7391304347826086
+      },
+      "colorscale": {
+        "type": "sequential",
+        "min": 0.0,
+        "max": 1.0
+      },
+      "source_sha256": "f78180800aa39702b31d60f2e523cb5a3fc13339644d86826c39bb9acd250edf"
+    },
+    {
+      "variable": "intact-bond graph component ID",
+      "formula": "intact_bond_component_id",
+      "source_columns": [
+        "intact_bond_component_id"
+      ],
+      "source_unit": "1",
+      "output_unit": "categorical ID",
+      "multiplier": 1.0,
+      "actual_minmax": {
+        "min": 1,
+        "max": 2
+      },
+      "colorscale": {
+        "type": "categorical",
+        "categories": [
+          1,
+          2
+        ]
+      },
+      "source_sha256": "f78180800aa39702b31d60f2e523cb5a3fc13339644d86826c39bb9acd250edf"
+    },
+    {
+      "variable": "active bond degree",
+      "formula": "n_active_bonds",
+      "source_columns": [
+        "n_active_bonds"
+      ],
+      "source_unit": "1",
+      "output_unit": "count",
+      "multiplier": 1.0,
+      "actual_minmax": {
+        "min": 12,
+        "max": 107
+      },
+      "colorscale": {
+        "type": "sequential_actual_range",
+        "min": 12,
+        "max": 107
+      },
+      "source_sha256": "f78180800aa39702b31d60f2e523cb5a3fc13339644d86826c39bb9acd250edf"
+    }
+  ],
+  "known_vector_checks": {
+    "status": "PASS",
+    "conversions": [
+      {
+        "input": 1.0,
+        "input_unit": "m",
+        "multiplier": 1000.0,
+        "output": 1000.0,
+        "expected": 1000.0,
+        "output_unit": "mm",
+        "pass": true
+      },
+      {
+        "input": 1.0,
+        "input_unit": "mm",
+        "multiplier": 1000.0,
+        "output": 1000.0,
+        "expected": 1000.0,
+        "output_unit": "um",
+        "pass": true
+      },
+      {
+        "input": -1.0,
+        "input_unit": "mm",
+        "multiplier": 1000.0,
+        "output": -1000.0,
+        "expected": -1000.0,
+        "output_unit": "um",
+        "pass": true
+      }
+    ],
+    "diverging_sign_color_check": {
+      "negative": [
+        58,
+        112,
+        184
+      ],
+      "zero": [
+        248,
+        248,
+        248
+      ],
+      "positive": [
+        196,
+        45,
+        49
+      ],
+      "negative_is_blue": true,
+      "positive_is_red": true,
+      "zero_is_neutral": true
+    }
+  },
+  "job_id": "osb-fracture-branch-001",
+  "status": "COMPLETED",
+  "point_count": 576,
+  "initial_bond_pairs": 20780,
+  "broken_bond_pairs": 5236,
+  "initial_graph_component_count": 1,
+  "endpoint_components": 2,
+  "damage_min": 0.010309278350515427,
+  "damage_max": 0.7391304347826086,
+  "component_point_counts": {
+    "1": 432,
+    "2": 144
+  },
+  "active_bond_degree_min": 12,
+  "active_bond_degree_max": 107,
+  "total_endpoint_mass_kg": 0.0005759999999999993,
+  "strain_energy_j": 3.963513433250991e-05,
+  "kinetic_energy_j": 0.0001173710512865846,
+  "csv_sha256": {
+    "bond_states.csv": "2ba477c6c915f9eefdb141eb6f203b30b50fc99f6d93df0145a096771e143d3d",
+    "broken_bonds.csv": "4d9d79764b3e228ab63b5ebb250c92643e7df5951e91fb6d01442ba83724a870",
+    "components.csv": "b3ac06b6d86a44465650f9528fd0e1064fd7b76008f19ea3740fdae4ec7a1fa6",
+    "data_dictionary.json": "0e0a2d1d39986fa2e676deb182c529237c9c72e86d99ff85e18f06ccd50d73e0",
+    "isolated_points.csv": "d0bb697a4412b470be2d5ff0fdafeef8de814f94847f0ad4569de9dfe52cd0a7",
+    "points.csv": "f78180800aa39702b31d60f2e523cb5a3fc13339644d86826c39bb9acd250edf",
+    "solver.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "solver.stdout.log": "1a0884a22e1fa4f29ec378599d63682393a50e00c29fc21c914228d53dd6d695",
+    "summary.toml": "337cd21c83446c0099207efdf51754ae89303baae2f883c21c2674e1c921d0bb"
+  },
+  "integrity_checks": {
+    "bond_pair_count": 20780,
+    "broken_bond_pair_count": 5236,
+    "broken_edges_equal_inactive_subset": true,
+    "component_count": 2,
+    "component_partition_matches_graph": true,
+    "energy_integrals_match_point_state": true,
+    "isolated_points_match_graph": true,
+    "native_edges_unique_valid": true,
+    "native_time_step_bound_validated": true,
+    "point_count": 576,
+    "point_ids_complete_unique": true,
+    "point_mass_volume_consistent": true,
+    "point_state_finite_ranges": true,
+    "steps_and_duration_consistent": true
+  },
+  "scope": "actual solver point/bond CSV visualization only; no crack surface or ceramic realism claim",
+  "projection": "isometric orthographic; x/y/z coordinate axes share the same mm-per-pixel scale"
+}

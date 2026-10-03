@@ -138,8 +138,12 @@ class RestCoordinateAppearanceSampler:
         cls, *, faces: np.ndarray, face_regions: np.ndarray,
         vertices_material_xyz_mm: np.ndarray, recipe: Any, material_binding_id: str,
     ) -> "RestCoordinateAppearanceSampler":
-        f = np.array(faces, dtype=np.int64, copy=True, order="C")
-        regions = np.array(face_regions, dtype=np.int64, copy=True, order="C").reshape(-1)
+        faces_raw = np.asarray(faces)
+        regions_raw = np.asarray(face_regions)
+        if faces_raw.dtype.kind not in "iu" or regions_raw.dtype.kind not in "iu":
+            raise _invalid("truth-side faces and region codes must use integer arrays")
+        f = np.array(faces_raw, dtype=np.int64, copy=True, order="C")
+        regions = np.array(regions_raw, dtype=np.int64, copy=True, order="C").reshape(-1)
         xyz = np.array(vertices_material_xyz_mm, dtype=np.float64, copy=True, order="C")
         if f.ndim != 2 or f.shape[1] != 3 or not f.size \
                 or regions.shape != (f.shape[0],):
@@ -159,13 +163,26 @@ class RestCoordinateAppearanceSampler:
     def sample_albedo(self, face_indices: np.ndarray, barycentric: np.ndarray,
                       fallback_linear_rgb: np.ndarray) -> np.ndarray:
         """Evaluate linear albedo at perspective-correct hit barycentrics."""
-        face_ids = np.asarray(face_indices, dtype=np.int64).reshape(-1)
-        bary = np.asarray(barycentric, dtype=np.float64).reshape(-1, 3)
-        fallback = np.asarray(fallback_linear_rgb, dtype=np.float64).reshape(-1, 3)
+        face_ids_raw = np.asarray(face_indices)
+        if face_ids_raw.dtype.kind not in "iu":
+            raise _invalid("appearance sample face indices must be integers")
+        face_ids = face_ids_raw.astype(np.int64, copy=False).reshape(-1)
+        bary_raw = np.asarray(barycentric)
+        fallback_raw = np.asarray(fallback_linear_rgb)
+        if bary_raw.dtype.kind not in "fiu" or fallback_raw.dtype.kind not in "fiu":
+            raise _invalid("appearance sample barycentrics and face albedo must be numeric")
+        try:
+            bary = np.asarray(bary_raw, dtype=np.float64).reshape(-1, 3)
+            fallback = np.asarray(fallback_raw, dtype=np.float64).reshape(-1, 3)
+        except (TypeError, ValueError) as exc:
+            raise _invalid("appearance sample inputs must have numeric triangle/RGB shapes") from exc
         if bary.shape[0] != face_ids.size or fallback.shape[0] != face_ids.size \
                 or np.any(face_ids < 0) or np.any(face_ids >= self.faces.shape[0]):
             raise _invalid("appearance sample face/barycentric inputs are inconsistent")
+        bary_sum = bary.sum(axis=1)
         if not np.isfinite(bary).all() or np.any(bary < -1e-8) \
+                or np.any(bary > 1.0) \
+                or not np.allclose(bary_sum, 1.0, rtol=0.0, atol=1e-8) \
                 or not np.isfinite(fallback).all():
             raise _invalid("appearance sample contains invalid barycentrics or face albedo")
         output = fallback.copy()
