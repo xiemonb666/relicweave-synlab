@@ -45,7 +45,8 @@ def _assemble(mesh: trimesh.Trimesh, source: trimesh.Trimesh, recipe: Any, *,
               measurements: dict[str, float], units: dict[str, str], details: dict[str, Any],
               realized: bool, fragment: Any) -> PhysicalResult:
     """Wrap a damaged body into a ``PhysicalResult`` with the plan-30.8 component ledger."""
-    from ..physical.api import DAMAGE_SEMANTICS, register_components
+    from ..physical.api import (DAMAGE_SEMANTICS, _postassembly_physical_qa,
+                                register_components)
 
     source_volume = float(abs(source.volume))
     min_ratio = float(recipe.meta.get("min_representative_ratio", 0.005))
@@ -89,6 +90,20 @@ def _assemble(mesh: trimesh.Trimesh, source: trimesh.Trimesh, recipe: Any, *,
         version=1, components=components, lost_volume_mm3=lost_volume,
         lost_volume_ratio=float(lost_volume / max(source_volume, 1e-12)),
         representative_map=representative_map, physical_truth=None, qa=qa, meta=meta)
+    postassembly_qa = _postassembly_physical_qa(
+        source, components, ledger, result_lost_volume_mm3=lost_volume)
+    result.qa["postassembly"] = postassembly_qa
+    failure_codes = list(result.qa.get("failure_codes") or [])
+    failure_codes.extend(postassembly_qa["failure_codes"])
+    if result.qa.get("failure_code"):
+        failure_codes.append(str(result.qa["failure_code"]))
+    result.qa["failure_codes"] = sorted(set(failure_codes))
+    if postassembly_qa["status"] != "PASS":
+        result.qa["status"] = "FAIL"
+        result.qa["reason"] = "postassembly entity QA failed; see postassembly.checks"
+        result.qa["failure_code"] = (result.qa.get("failure_code")
+                                      or next(iter(postassembly_qa["failure_codes"]),
+                                              "POSTASSEMBLY_QA_FAILED"))
     return result
 
 

@@ -269,8 +269,10 @@ def _apply_impl(axis_id: str, level: int, source: SourceBundle, store: Any = Non
                    "identity_contract": "source asset reference/bytes returned unchanged",
                    "label_invalidations": list(operator.LABEL_INVALIDATIONS),
                    "label_status": "NOT_INVALIDATED_AT_LEVEL0",
+                   "label_validity": "NOT_INVALIDATED_AT_LEVEL0",
                    "label_dependency_status": {
                        name: {"status": "NOT_INVALIDATED_AT_LEVEL0",
+                              "validity": "NOT_INVALIDATED_AT_LEVEL0",
                               "reason": "level 0 returns the source unchanged"}
                        for name in operator.LABEL_INVALIDATIONS},
                    "label_receipt_refs": {}},
@@ -301,6 +303,9 @@ def _apply_impl(axis_id: str, level: int, source: SourceBundle, store: Any = Non
         for name, evidence in label_dependency_status.items()
         if evidence.get("receipt_ref")
     }
+    label_status = _label_status(
+        operator, source, result, dependency_status=label_dependency_status)
+    label_validity = _label_validity(label_status, label_dependency_status)
     measurement = measurement_from(
         operator, level=level, variant=variant_name, planned=planned,
         measured=metrics.get("measured", {}), units=metrics.get("units", {}),
@@ -309,12 +314,12 @@ def _apply_impl(axis_id: str, level: int, source: SourceBundle, store: Any = Non
         na_reason=metrics.get("na_reason"), failure_code=metrics.get("failure_code"),
         extra={"basis_id": basis.basis_id, "basis_seed_ref": basis.seed_ref,
                "support": "MEASURED", "source_kind": source.source_kind,
+               **(metrics.get("extra") or {}),
                "label_invalidations": list(operator.LABEL_INVALIDATIONS),
-               "label_status": _label_status(
-                   operator, source, result, dependency_status=label_dependency_status),
+               "label_status": label_status,
+               "label_validity": label_validity,
                "label_dependency_status": label_dependency_status,
-               "label_receipt_refs": label_receipt_refs,
-               **(metrics.get("extra") or {})},
+               "label_receipt_refs": label_receipt_refs},
         calibration_status=_calibration_status(operator))
     operator.validate(source, result, measurement)
 
@@ -332,6 +337,7 @@ def _apply_impl(axis_id: str, level: int, source: SourceBundle, store: Any = Non
             "source_hash": measurement.source_hash, "result_hash": measurement.result_hash,
             "label_invalidations": list(operator.LABEL_INVALIDATIONS),
             "label_status": measurement.extra.get("label_status"),
+            "label_validity": measurement.extra.get("label_validity"),
             "label_dependency_status": measurement.extra.get("label_dependency_status"),
             "label_receipt_refs": measurement.extra.get("label_receipt_refs")},
         meta={"origin_role": source.role or "degradation_source", "axis_id": axis_id,
@@ -401,13 +407,30 @@ def _label_status(operator: Any, source: SourceBundle, result: SourceBundle, *,
     if not invalidations:
         return "NO_LABEL_DEPENDENCY"
     statuses = dependency_status or _label_dependency_status(operator, source, result)
-    values = [str(statuses.get(name, {}).get("status", "PENDING_RECOMPUTE"))
-              for name in invalidations]
-    if any(status == "FAILED" for status in values):
+    rows = [statuses.get(name, {}) for name in invalidations]
+    values = [str(row.get("status", "PENDING_RECOMPUTE")) for row in rows]
+    if any(status == "FAILED" for status in values) or any(
+            row.get("validity") == "FAILED_VALIDATION" for row in rows):
         return "FAILED"
     if all(status in ("UPDATED", "RECOMPUTED") for status in values):
         return "RECOMPUTED"
     return "PENDING_RECOMPUTE"
+
+
+def _label_validity(label_status: str,
+                    dependency_status: Mapping[str, Mapping[str, Any]]) -> str:
+    """State explicitly whether pending work leaves label validity unresolved."""
+    if label_status in ("NOT_INVALIDATED_AT_LEVEL0", "NO_LABEL_DEPENDENCY"):
+        return label_status
+    if label_status == "FAILED":
+        return "FAILED"
+    values = [str(row.get("validity", "UNKNOWN_INVALIDATED"))
+              for row in dependency_status.values()]
+    if any(value in ("FAILED", "FAILED_VALIDATION") for value in values):
+        return "FAILED"
+    if values and all(value == "VALIDATED" for value in values):
+        return "VALIDATED"
+    return "UNKNOWN_INVALIDATED"
 
 
 def _label_dependency_status(operator: Any, source: SourceBundle,
@@ -426,8 +449,10 @@ def _label_dependency_status(operator: Any, source: SourceBundle,
 
     physical_result = result.get("physical_result")
     physical_meta = getattr(physical_result, "meta", None) or {}
+    physical_qa = getattr(physical_result, "qa", None) or {}
     reported = str((result.meta or {}).get("label_status", "") or "").upper()
     physical_status = str(physical_meta.get("physical_truth_status", "") or "").upper()
+    physical_qa_status = str(physical_qa.get("status", "") or "").upper()
     physical_receipt = _physical_truth_recompute_receipt(operator, source, result)
     evidence: dict[str, dict[str, Any]] = {}
     for dependency in invalidations:
@@ -435,8 +460,15 @@ def _label_dependency_status(operator: Any, source: SourceBundle,
             if physical_status == "FAILED" or (reported == "FAILED" and physical_result is not None):
                 evidence[dependency] = {
                     "status": "FAILED",
+                    "validity": "FAILED",
                     "reason": "physical truth recomputation reported failure",
                     "reported_status": physical_status or reported,
+                }
+            elif physical_qa_status in ("FAIL", "FAILED", "QA_FAILED"):
+                evidence[dependency] = {
+                    "status": "FAILED", "validity": "FAILED_VALIDATION",
+                    "reason": "physical result QA failed; attached truth is not accepted as valid",
+                    "reported_status": physical_qa_status,
                 }
             elif physical_receipt is not None:
                 evidence[dependency] = {"status": "UPDATED", **physical_receipt}
@@ -444,10 +476,16 @@ def _label_dependency_status(operator: Any, source: SourceBundle,
                 reason = ("reported recompute status had no matching PhysicalTruth artifact"
                           if reported in ("UPDATED", "RECOMPUTED") or physical_status == "UPDATED"
                           else "no machine-verifiable PhysicalTruth artifact is attached")
-                evidence[dependency] = {"status": "PENDING_RECOMPUTE", "reason": reason}
+                row = {"status": "PENDING_RECOMPUTE", "validity": "UNKNOWN_INVALIDATED",
+                       "reason": reason}
+                observed = physical_status or reported
+                if observed:
+                    row["reported_status"] = observed
+                evidence[dependency] = row
         else:
             evidence[dependency] = {
                 "status": "PENDING_RECOMPUTE",
+                "validity": "UNKNOWN_INVALIDATED",
                 "reason": "no matching recomputation artifact or receipt is recorded",
             }
 
@@ -457,7 +495,8 @@ def _label_dependency_status(operator: Any, source: SourceBundle,
     if reported == "FAILED" and not any(
             item.get("status") == "FAILED" for item in evidence.values()):
         evidence[invalidations[0]] = {
-            "status": "FAILED", "reason": "result reports label recomputation failure",
+            "status": "FAILED", "validity": "FAILED",
+            "reason": "result reports label recomputation failure",
             "reported_status": reported,
         }
     return evidence
@@ -531,17 +570,27 @@ def _physical_truth_recompute_receipt(operator: Any, source: SourceBundle,
     result_geometry_hash = str(physical_qa.get("result_geometry_hash", "") or "")
     if not result_geometry_hash or not source_geometry_hash:
         return None
+    if str(physical_qa.get("status", "") or "").upper() != "PASS":
+        return None
 
     components = list(getattr(physical_result, "components", []) or [])
-    if len(components) == 1:
-        output_mesh = result.get("mesh")
-        if output_mesh is None:
+    if not components:
+        return None
+    output_mesh = result.get("mesh")
+    representative = next((c for c in components if bool(getattr(c, "is_representative", False))),
+                          components[0])
+    representative_mesh = getattr(representative, "mesh", None)
+    if output_mesh is None or representative_mesh is None:
+        return None
+    try:
+        output_mesh_hash = _physical_geometry_hash(output_mesh)
+        representative_mesh_hash = _physical_geometry_hash(representative_mesh)
+        if output_mesh_hash != representative_mesh_hash:
             return None
-        try:
-            if _physical_geometry_hash(output_mesh) != result_geometry_hash:
-                return None
-        except Exception:  # noqa: BLE001 - absent output geometry evidence means no receipt
+        if len(components) == 1 and output_mesh_hash != result_geometry_hash:
             return None
+    except Exception:  # noqa: BLE001 - absent output geometry evidence means no receipt
+        return None
 
     clean_identity = f"{clean_mother}:{clean_event}:v{clean_version}"
     if not (
@@ -584,7 +633,11 @@ def _physical_truth_recompute_receipt(operator: Any, source: SourceBundle,
         "level": result_level,
         "source_geometry_hash": source_geometry_hash,
         "result_geometry_hash": result_geometry_hash,
+        "output_geometry_verification": (
+            "SINGLE_COMPONENT_HASH_REVERIFIED" if len(components) == 1
+            else "REPRESENTATIVE_COMPONENT_HASH_REVERIFIED_RESULT_AGGREGATE_FROM_PHYSICAL_QA"),
         "artifact_path": "payload.physical_result.physical_truth",
+        "validity": "VALIDATED" if bool(truth_qa.get("pass")) else "FAILED_VALIDATION",
     }
 
 
@@ -1196,6 +1249,7 @@ def audit_axis(axis_id: str, levels: Iterable[int] = (0, 1, 2, 3, 4), store: Any
                 "factor_kind": measurement.factor_kind,
                 "invariants": _jsonable(measurement.extra.get("invariants", {})),
                 "label_status": measurement.extra.get("label_status"),
+                "label_validity": measurement.extra.get("label_validity"),
                 "label_dependency_status": _jsonable(
                     measurement.extra.get("label_dependency_status", {})),
                 "label_receipt_refs": _jsonable(
@@ -1351,6 +1405,7 @@ def _rows_from_axis_report(report: Mapping[str, Any]) -> list[dict[str, Any]]:
             "calibration_status": "UNCALIBRATED",
             "independent_mothers": report.get("independent_mothers", 0),
             "label_status": entry.get("label_status"),
+            "label_validity": entry.get("label_validity"),
             "label_dependency_status": entry.get("label_dependency_status", {}),
             "label_receipt_refs": entry.get("label_receipt_refs", {}),
             "label_invalidations": ",".join(report.get("label_invalidations", [])),
@@ -1373,7 +1428,8 @@ def _rows_from_axis_report(report: Mapping[str, Any]) -> list[dict[str, Any]]:
 BASE_COLUMNS = ("axis_id", "variant", "level", "factor_kind", "stage", "substage", "basis_id",
                 "status", "identity", "realized", "valid", "na_reason", "failure_code",
                 "source_hash", "result_hash", "source_provenance", "source_asset_id",
-                "result_asset_id", "calibration_status", "label_status", "label_invalidations",
+                "result_asset_id", "calibration_status", "label_status", "label_validity",
+                "label_invalidations",
                 "label_dependency_status", "label_receipt_refs", "independent_mothers")
 
 

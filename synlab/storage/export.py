@@ -13,23 +13,19 @@ Two exports live here and they are deliberately different objects:
     the reference closure.  It is written as two views that must never be confused:
 
     ``deploy/``
-        What a deployment profile is allowed to obtain.  It contains the opaque RGB
-        observation shards, the geometry, the token cache and the *query* roster.  It
-        contains **no labels, no truth, no ground-truth channel and no lineage/split
-        information**: the observation shards carry ``rgb`` / ``valid`` / ``view_pos`` only,
-        and filenames are ``sha256`` digests of the asset ids so a filename cannot act as a
-        side channel.
+        The versioned v2 deployment view: a per-export UUID roster, policy-approved capture
+        context, and closed-schema observation, geometry and token containers.  Source-level
+        query truth, relations, lineage and quality measurements stay under ``research/``.
+        UUID identities are intentionally unlinkable across exports.
     ``research/``
         Supervision, kept beside (never inside) the deployment view: the relation table with
         its label columns, the layered labels and the query↔opaque-name mapping.  A caller
         that only ever ships ``deploy/`` cannot leak an answer, and the manifest records the
         separation explicitly.
 
-Nothing in the exported feature side is derived from clean/physical truth: geometry comes
-from the delivered observation payload and tokens come from the ObsPack RGB tiles.  The
-manifest's ``separation`` block is a *measurement of the package that was just written* (a
-field scan of the deployment view intersected with ``roles.FORBIDDEN_FEATURE_FIELDS``, plus
-content-based truth detection per view), never a declaration.
+    Geometry comes from the delivered observation payload and tokens come from the ObsPack RGB
+    tiles. The manifest's field scan is supporting evidence; deployment eligibility comes from
+    validating the serialized v2 containers against the closed field and array schema.
 """
 
 from __future__ import annotations
@@ -73,7 +69,7 @@ VIEW_RESEARCH = "research"
 VIEWS = (VIEW_DEPLOY, VIEW_RESEARCH)
 
 #: Formats :func:`export_training_package` can materialise.
-TRAINING_FORMATS = ("parquet", "npz", "tar")
+TRAINING_FORMATS = ("parquet", "json", "npz", "tar")
 
 #: Directory *inside a view* that holds the zarr replica of the geometry shards.  The writer
 #: and the manifest scanner both derive their path from :func:`_zarr_root`, so the replica can
@@ -1122,11 +1118,9 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
         feature_meta[fragment_id] = {"asset_id": record.asset_id, "meta": meta,
                                      "lineage_id": record.lineage_id, "split": record.split}
 
-    # The relation table is keyed by *fragment* identity, which is a superset of the fragments
-    # that carry a delivered observation: a shared-cut event splits one observed body into a
-    # modelled mate pair, and both sides are needed for the relation table to be interpretable.
-    # Fragments without an observation are still exported (their feature rows are marked
-    # invalid by the loader) and every row records which side carries the observation.
+    # The research relation table uses source fragment identity and may name unobserved members.
+    # Only identities with an actual delivered observation enter the deployment roster/indexes;
+    # including an unobserved neighbour there would leak the hidden truth-set size by existence.
     observed_fragments = sorted(obs_by_fragment)
     context_fragment_ids = {
         str(member.get("id", ""))
@@ -2881,9 +2875,13 @@ def observed_channels(view_root: str | Path) -> dict[str, Any]:
                     payload = json.loads(path.read_text(encoding="utf-8"))
                 except (OSError, ValueError):
                     continue
-                for name in ("channel_names", "arrays"):
-                    for key in payload.get(name) or []:
-                        note(str(key), rel)
+                nodes = ([payload] if isinstance(payload, Mapping) else
+                         [row for row in payload if isinstance(row, Mapping)]
+                         if isinstance(payload, list) else [])
+                for node in nodes:
+                    for name in ("channel_names", "arrays"):
+                        for key in node.get(name) or []:
+                            note(str(key), rel)
     return {
         "view": root.name,
         # ``files_by_channel`` holds the file lists and ``by_channel`` only the counts; reading
@@ -3048,13 +3046,17 @@ class TrainingPackage:
     def _deployment_manifest(self) -> dict[str, Any]:
         files = [dict(row) for row in self._manifest.get("files", [])
                  if str(row.get("path", "")).startswith("deploy/")]
+        raw_deploy_view = (self._manifest.get("views") or {}).get("deploy") or {}
+        safe_view_fields = {"role", "purpose", "contains_truth", "files", "bytes", "forbidden"}
+        safe_deploy_view = {key: value for key, value in raw_deploy_view.items()
+                            if key in safe_view_fields}
         return {
             "schema": self._manifest.get("schema"),
             "package_schema": self._manifest.get("package_schema"),
             "deploy_schema": self._manifest.get("deploy_schema"),
             "package_id": self._manifest.get("package_id"),
             "manifest_hash": self._manifest.get("manifest_hash"),
-            "views": {"deploy": dict((self._manifest.get("views") or {}).get("deploy") or {})},
+            "views": {"deploy": safe_deploy_view},
             "deploy_boundary": dict(self._deploy_validation or {}),
             "files": files,
             "bytes_total": int(sum(int(row.get("bytes", 0)) for row in files)),
@@ -3083,11 +3085,39 @@ class TrainingPackage:
             self._deploy_validation = validation
         return self._deploy_validation
 
+    def _verified_deploy_bytes(self, relative_path: str) -> bytes:
+        """Read the exact deployment bytes whose hash was validated in the root manifest."""
+        self._ensure_strict_deploy()
+        rel = str(relative_path).replace("\\", "/").removeprefix("deploy/")
+        package_rel = f"deploy/{rel}"
+        expected = next((str(row.get("hash", "")) for row in self._manifest.get("files", [])
+                         if str(row.get("path", "")) == package_rel), "")
+        if not expected:
+            raise SynLabError(ErrorCode.LEAKAGE_DETECTED,
+                              f"INVALID_DEPLOY_TRUTH_LEAK: {package_rel} is not a declared v2 file",
+                              stage="export.TrainingPackage.deploy_integrity",
+                              evidence_refs=[package_rel])
+        try:
+            payload = (self.root / package_rel).read_bytes()
+        except OSError as exc:
+            raise SynLabError(ErrorCode.LEAKAGE_DETECTED,
+                              f"INVALID_DEPLOY_TRUTH_LEAK: {package_rel} cannot be read: {exc}",
+                              stage="export.TrainingPackage.deploy_integrity",
+                              evidence_refs=[package_rel]) from exc
+        if hash_bytes(payload) != expected:
+            raise SynLabError(ErrorCode.LEAKAGE_DETECTED,
+                              f"INVALID_DEPLOY_TRUTH_LEAK: {package_rel} changed after validation",
+                              stage="export.TrainingPackage.deploy_integrity",
+                              evidence_refs=[package_rel])
+        return payload
+
     # ---------------------------------------------------------------- integrity
     def verify_files(self) -> dict[str, Any]:
         problems: list[str] = []
         checked = 0
-        for entry in self._manifest.get("files", []):
+        entries = (self.manifest.get("files", []) if self.access == "deploy"
+                   else self._manifest.get("files", []))
+        for entry in entries:
             path = self.root / entry["path"]
             if not path.exists():
                 problems.append(f"{entry['path']} missing")
@@ -3105,10 +3135,42 @@ class TrainingPackage:
     def queries(self) -> list[dict[str, Any]]:
         if self.access == "deploy":
             self._ensure_strict_deploy()
-            return self._table(self.deploy / "queries.parquet", self.deploy / "queries.json")
+            suffix = next((suffix for suffix in ("parquet", "json")
+                           if (self.deploy / f"queries.{suffix}").is_file()), "")
+            if not suffix:
+                raise SynLabError(ErrorCode.LEAKAGE_DETECTED,
+                                  "INVALID_DEPLOY_TRUTH_LEAK: query roster is missing",
+                                  stage="export.TrainingPackage.queries")
+            payload = self._verified_deploy_bytes(f"queries.{suffix}")
+            if suffix == "parquet":
+                import pyarrow.parquet as pq
+
+                table = pq.read_table(io.BytesIO(payload))
+                rows = table.to_pylist()
+                columns = set(map(str, table.schema.names))
+            else:
+                rows = json.loads(payload.decode("utf-8"))
+                if not isinstance(rows, list) or any(not isinstance(row, Mapping) for row in rows):
+                    raise SynLabError(ErrorCode.LEAKAGE_DETECTED,
+                                      "INVALID_DEPLOY_TRUTH_LEAK: query roster is malformed",
+                                      stage="export.TrainingPackage.queries")
+                columns = set().union(*(row.keys() for row in rows)) if rows else set()
+            capture_scan = (self._manifest.get("separation") or {}).get(
+                "capture_context_scan") or {}
+            allowed = {"opaque_id"}
+            if "bag_id" in set(capture_scan.get("declared_fields") or []):
+                allowed.add("bag_id")
+            if (not rows or not columns <= allowed or "opaque_id" not in columns or
+                    any(set(row) != columns or not is_opaque_id(row.get("opaque_id"))
+                        for row in rows)):
+                raise SynLabError(ErrorCode.LEAKAGE_DETECTED,
+                                  "INVALID_DEPLOY_TRUTH_LEAK: query roster violates v2 schema",
+                                  stage="export.TrainingPackage.queries")
+            return [dict(row) for row in rows]
         research_path = self.research / "queries.parquet"
-        if research_path.exists():
-            return self._table(research_path, self.research / "queries.json")
+        research_json = self.research / "queries.json"
+        if research_path.exists() or research_json.exists():
+            return self._table(research_path, research_json)
         # Historical v1 query metadata is research-only.  It is never a forward input.
         return self._table(self.deploy / "queries.parquet", self.deploy / "queries.json")
 
@@ -3133,9 +3195,8 @@ class TrainingPackage:
 
     # ---------------------------------------------------------------- observations
     def observation_index(self) -> dict[str, Any]:
-        self._ensure_strict_deploy()
-        path = self.deploy / "obs" / "index.json"
-        return json.loads(path.read_text(encoding="utf-8"))
+        payload = self._verified_deploy_bytes("obs/index.json")
+        return json.loads(payload.decode("utf-8"))
 
     def observed_ids(self) -> list[str]:
         """Observed identities in the caller's namespace (opaque for deploy, source for research)."""
@@ -3240,18 +3301,25 @@ class TrainingPackage:
             raise SynLabError(ErrorCode.INPUT_UNAVAILABLE,
                               f"opaque identity {opaque!r} is not in the observation index",
                               stage="export.TrainingPackage.read_observation")
-        shard = self.deploy / entry["shard"]
-        with tarfile.open(shard, "r") as tar:
-            out: dict[str, np.ndarray] = {}
-            for channel in entry["channels"]:
-                member = tar.extractfile(f"{opaque}/{channel}.npy")
-                if member is None:
-                    raise SynLabError(ErrorCode.INPUT_UNAVAILABLE,
-                                      f"{shard.name}:{opaque}/{channel}.npy missing",
-                                      stage="export.TrainingPackage.read_observation")
-                key = {"tiles": "rgb", "valid": "valid", "view_pos": "view_pos"}.get(channel,
-                                                                                           channel)
-                out[key] = np.load(io.BytesIO(member.read()), allow_pickle=False)
+        full_index_payload = self._verified_deploy_bytes("obs/index.json")
+        full_index = json.loads(full_index_payload.decode("utf-8"))
+        channels = set(map(str, full_index.get("channels", [])))
+        shard_name = str(entry["shard"])
+        shard_payload = self._verified_deploy_bytes(shard_name)
+        from .deploy_boundary import validate_obs_shard_bytes
+
+        arrays = validate_obs_shard_bytes(shard_name, shard_payload, rows, channels)
+        out: dict[str, np.ndarray] = {}
+        for channel in entry["channels"]:
+            array = arrays.get((opaque, str(channel)))
+            if array is None:
+                raise SynLabError(ErrorCode.LEAKAGE_DETECTED,
+                                  "INVALID_DEPLOY_TRUTH_LEAK: observation index member missing",
+                                  stage="export.TrainingPackage.read_observation",
+                                  evidence_refs=[shard_name, str(channel)])
+            key = {"tiles": "rgb", "valid": "valid", "view_pos": "view_pos"}.get(
+                str(channel), str(channel))
+            out[key] = array
         return out
 
     # ---------------------------------------------------------------- geometry/tokens
@@ -3263,19 +3331,32 @@ class TrainingPackage:
 
     def _read_shard(self, index_rel: str, root: Path, fragment_id: str) -> dict[str, np.ndarray]:
         opaque = self._feature_opaque(fragment_id)
-        path = root / index_rel
-        if not path.exists():
-            raise SynLabError(ErrorCode.INPUT_UNAVAILABLE, f"index missing: {path}",
-                              stage="export.TrainingPackage._read_shard")
-        index = json.loads(path.read_text(encoding="utf-8"))
+        payload = self._verified_deploy_bytes(index_rel)
+        index = json.loads(payload.decode("utf-8"))
         entry = (index.get("rows") or {}).get(opaque)
         if entry is None:
             raise SynLabError(ErrorCode.INPUT_UNAVAILABLE,
                               f"opaque identity {opaque!r} is not in {index_rel}",
                               stage="export.TrainingPackage._read_shard")
-        with np.load(root / entry["shard"], allow_pickle=False) as data:
-            prefix = f"{opaque}__"
-            return {k[len(prefix):]: data[k] for k in data.files if k.startswith(prefix)}
+        kind = "geometry" if index_rel.startswith("geometry/") else "tokens"
+        shard_name = str(entry["shard"])
+        shard_payload = self._verified_deploy_bytes(shard_name)
+        from .deploy_boundary import validate_npz_shard_bytes
+
+        arrays = validate_npz_shard_bytes(kind, shard_payload, shard_name,
+                                          index.get("rows") or {})
+        prefix = f"{opaque}__"
+        selected = {name[len(prefix):]: array for name, array in arrays.items()
+                    if name.startswith(prefix)}
+        expected = ({"points", "normals", "point_valid", "normal_valid", "scale_valid", "frame_id"}
+                    if kind == "geometry" else
+                    {"tokens", "token_valid", "token_view", "token_input", "tile_valid"})
+        if set(selected) != expected:
+            raise SynLabError(ErrorCode.LEAKAGE_DETECTED,
+                              f"INVALID_DEPLOY_TRUTH_LEAK: {kind} row is incomplete",
+                              stage="export.TrainingPackage._read_shard",
+                              evidence_refs=sorted(set(selected) ^ expected))
+        return selected
 
 
 __all__ = [

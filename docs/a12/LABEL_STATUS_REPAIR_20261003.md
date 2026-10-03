@@ -26,10 +26,14 @@ dependencies also remain pending even when its pixel effect is nonzero.
 ## API and report compatibility
 
 `Measurement.extra` now includes `label_dependency_status` and `label_receipt_refs`. The same
-fields are carried into the degradation commit QA record and operator audit level rows and
-Parquet measurements. Consumers that previously treated an imported truth module or a reported
-`RECOMPUTED` string as success should use the aggregate `label_status` and inspect the structured
-dependency records. A physical result's previous `UPDATED` value is retained at the
+fields, plus `label_validity`, are carried into the degradation commit QA record and operator
+audit level rows and Parquet measurements. `label_validity=UNKNOWN_INVALIDATED` means some
+declared label dependency remains unresolved; `PENDING_RECOMPUTE` does not imply those labels are
+valid. Raw states such as `UNKNOWN` remain visible as `reported_status` on the relevant dependency
+record, without being treated as completion evidence. Consumers that previously treated an
+imported truth module or a reported `RECOMPUTED` string as success should use the aggregate
+`label_status` and inspect the structured dependency records. A physical result's previous
+`UPDATED` value is retained at the
 `PhysicalTruth` dependency level; it does not imply that all invalidated labels were refreshed.
 Legacy `PENDING_DEPENDENCY` outputs are normalized to `PENDING_RECOMPUTE` when no dependency
 artifact is available.

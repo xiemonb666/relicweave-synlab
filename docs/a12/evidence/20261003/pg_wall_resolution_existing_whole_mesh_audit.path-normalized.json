@@ -1,0 +1,399 @@
+{
+  "experiment_id": "pg.wall-resolution-existing-whole-mesh-audit/0.1.0",
+  "source_step": "tmp/review_20261003/implementation/vf\\artifacts\\four_bands_brep_semantics1_final\\geometry\\solid.step",
+  "source_step_sha256": "4623bd373aeed0acfacfbf6cc0dda65952339561779b43429c59d61b8b5a1c30",
+  "scope": "read-only diagnosis of existing whole-CAD h8/h6 first-order tetra meshes; no solver, no re-meshing",
+  "candidate_delta_mm": [
+    4.0,
+    6.0
+  ],
+  "candidate_delta_note": "exploratory direction-support diagnostics only; neither value is a selected/validated material horizon and delta is not mesh edge length",
+  "meshes": [
+    {
+      "mesh_path": "tmp/review_20261003/implementation/pg\\volume_candidate\\gmsh_mesh_h8mm.msh",
+      "mesh_sha256": "50274d79469975f8af12a8d0722dfede3cdf14f2ac2fc261cd154a7c6f15cfc0",
+      "target_size_mm_from_report": 8.0,
+      "tetra_count": 1313,
+      "node_count": 447,
+      "signed_orientation": {
+        "positive": 1313,
+        "negative": 0,
+        "zero": 0
+      },
+      "tetra_volume_mm3": {
+        "sum": 25419.097419858103,
+        "mean": 19.35955629844486,
+        "cv": 0.6184219771628161,
+        "quantiles": {
+          "count": 1313,
+          "min": 0.0208969671691273,
+          "p01": 0.8877367177751321,
+          "p05": 2.6391377738517567,
+          "median": 17.28609732663231,
+          "p95": 41.21600018081462,
+          "p99": 45.95485883483074,
+          "max": 55.171919137876536
+        }
+      },
+      "edge_length_mm": {
+        "count": 7878,
+        "min": 0.24499999999999922,
+        "p01": 1.9407608052480023,
+        "p05": 3.1226514184859893,
+        "median": 5.619328271561386,
+        "p95": 9.000467832081869,
+        "p99": 10.072729025316928,
+        "max": 10.665883701748701
+      },
+      "tetra_max_edge_mm": {
+        "count": 1313,
+        "min": 1.9290611902525712,
+        "p01": 4.065523708833754,
+        "p05": 5.059668451289922,
+        "median": 7.78928310344092,
+        "p95": 10.065920484359442,
+        "p99": 10.553016433996932,
+        "max": 10.665883701748701
+      },
+      "max_edge_over_target_size": {
+        "count": 1313,
+        "min": 0.2411326487815714,
+        "p01": 0.5081904636042193,
+        "p05": 0.6324585564112403,
+        "median": 0.973660387930115,
+        "p95": 1.2582400605449302,
+        "p99": 1.3191270542496165,
+        "max": 1.3332354627185876
+      },
+      "tetra_min_edge_mm": {
+        "count": 1313,
+        "min": 0.24499999999999922,
+        "p01": 0.7174476975566899,
+        "p05": 2.014290513169592,
+        "median": 4.182513474985208,
+        "p95": 5.670672963052058,
+        "p99": 6.0069715709413725,
+        "max": 6.750928361189943
+      },
+      "radius_ratio_circumradius_over_inradius_regular_equals_3": {
+        "count": 1313,
+        "min": 3.023599232881714,
+        "p01": 3.1381038290332124,
+        "p05": 3.3112519060997596,
+        "median": 4.218745424192601,
+        "p95": 9.101728680367291,
+        "p99": 13.669197879971732,
+        "max": 113.10812862097224
+      },
+      "circumradius_over_min_edge_regular_0_612": {
+        "count": 1313,
+        "min": 0.63633802678251,
+        "p01": 0.6652844289718377,
+        "p05": 0.7207363649365237,
+        "median": 0.9874612798672525,
+        "p95": 1.6041774541799099,
+        "p99": 3.801148283383226,
+        "max": 9.760061694450313
+      },
+      "minimum_dihedral_angle_deg": {
+        "count": 1313,
+        "min": 4.346806515209996,
+        "p01": 11.181641590639122,
+        "p05": 17.902551731467035,
+        "median": 39.47454201130001,
+        "p95": 58.00632918020622,
+        "p99": 62.363805710793685,
+        "max": 67.83197464852529
+      },
+      "sliver_counts": {
+        "min_dihedral_lt_5deg": 1,
+        "min_dihedral_lt_10deg": 9,
+        "radius_ratio_gt_10": 44,
+        "radius_ratio_gt_100": 2
+      },
+      "face_adjacency": {
+        "internal_face_count": 2179,
+        "boundary_face_count": 894,
+        "nonmanifold_face_count": 0
+      },
+      "neighbor_spacing_mm_face_adjacent_centroid_to_centroid": {
+        "count": 2179,
+        "min": 0.35803628489896894,
+        "p01": 0.8317802653737661,
+        "p05": 1.1183895665278514,
+        "median": 2.224623436938209,
+        "p95": 3.1770062697813186,
+        "p99": 3.6526505593106546,
+        "max": 4.107230597119762
+      },
+      "neighbor_cell_volume_ratio": {
+        "count": 2179,
+        "min": 1.0000000000000002,
+        "p01": 1.0019744404437363,
+        "p05": 1.0112721164555312,
+        "median": 1.2404625793864443,
+        "p95": 3.0158904953134393,
+        "p99": 4.445545460149298,
+        "max": 18.63644860529777
+      },
+      "wall_roi_definition": "x < -14.5 mm, |y| <= 3 mm, z=22..27 mm, angular distance from -X <=12 deg; actual native radial solid intersections at each centroid determine through-wall position",
+      "wall_roi_centroid_count": 5,
+      "wall_coordinate_outer_to_inner_0_to_1": {
+        "count": 5,
+        "min": 0.29335793876683525,
+        "p01": 0.30263538468699774,
+        "p05": 0.3397451683676477,
+        "median": 0.5253394511770186,
+        "p95": 0.7696702174518303,
+        "p99": 0.7696817771084281,
+        "max": 0.7696846670225775
+      },
+      "wall_coordinate_approximate_distinct_layers_10pct_bins": 3,
+      "directional_fabric": {
+        "delta_4mm_candidate_only": {
+          "point_count": 1313,
+          "neighbor_count_including_no_self": {
+            "count": 1313,
+            "min": 2.0,
+            "p01": 3.0,
+            "p05": 4.0,
+            "median": 8.0,
+            "p95": 31.0,
+            "p99": 53.0,
+            "max": 57.0
+          },
+          "points_with_fewer_than_3_neighbors": 4,
+          "fabric_eigenvalue_max_over_min_for_centers_with_at_least_3_neighbors": {
+            "count": 1309,
+            "min": 1.3188355086196168,
+            "p01": 1.7396148488870327,
+            "p05": 2.2489414396827554,
+            "median": 4.969196015852197,
+            "p95": 15.221520990089427,
+            "p99": 31.173049717715127,
+            "max": 523501958650.8606
+          },
+          "definition": "cell-volume-weighted second moment of unit centroid-neighbor directions; diagnostic radius only, not a PG horizon selection"
+        },
+        "delta_6mm_candidate_only": {
+          "point_count": 1313,
+          "neighbor_count_including_no_self": {
+            "count": 1313,
+            "min": 5.0,
+            "p01": 10.0,
+            "p05": 12.0,
+            "median": 21.0,
+            "p95": 69.39999999999986,
+            "p99": 83.0,
+            "max": 88.0
+          },
+          "points_with_fewer_than_3_neighbors": 0,
+          "fabric_eigenvalue_max_over_min_for_centers_with_at_least_3_neighbors": {
+            "count": 1313,
+            "min": 1.1193774316101595,
+            "p01": 1.6576709684845266,
+            "p05": 2.143949392814039,
+            "median": 5.20894352686831,
+            "p95": 9.775297580732285,
+            "p99": 11.010096960788,
+            "max": 38.38395062451957
+          },
+          "definition": "cell-volume-weighted second moment of unit centroid-neighbor directions; diagnostic radius only, not a PG horizon selection"
+        }
+      }
+    },
+    {
+      "mesh_path": "tmp/review_20261003/implementation/pg\\volume_candidate\\budget10000_h6\\gmsh_mesh_h6mm.msh",
+      "mesh_sha256": "f249e02b6f7d0fb5b88350fcc11849df4877de766864e5113954a85fb658cfd2",
+      "target_size_mm_from_report": 6.0,
+      "tetra_count": 2030,
+      "node_count": 683,
+      "signed_orientation": {
+        "positive": 2030,
+        "negative": 0,
+        "zero": 0
+      },
+      "tetra_volume_mm3": {
+        "sum": 25528.120818621566,
+        "mean": 12.575428974690427,
+        "cv": 0.44948396543144564,
+        "quantiles": {
+          "count": 2030,
+          "min": 0.02397078516990293,
+          "p01": 0.9006654125208319,
+          "p05": 2.912553105333408,
+          "median": 12.935040249393502,
+          "p95": 23.26188963056716,
+          "p99": 26.219505827089954,
+          "max": 37.73528967566684
+        }
+      },
+      "edge_length_mm": {
+        "count": 12180,
+        "min": 0.24499999999999922,
+        "p01": 2.0265379627576645,
+        "p05": 3.2649110640670003,
+        "median": 5.008361764468773,
+        "p95": 7.030377624721669,
+        "p99": 7.890024666829404,
+        "max": 8.477508266283653
+      },
+      "tetra_max_edge_mm": {
+        "count": 2030,
+        "min": 1.929061213404746,
+        "p01": 4.092389759477573,
+        "p05": 4.817089572284815,
+        "median": 6.105596234321363,
+        "p95": 7.867333256971072,
+        "p99": 8.329682926090012,
+        "max": 8.477508266283653
+      },
+      "max_edge_over_target_size": {
+        "count": 2030,
+        "min": 0.32151020223412435,
+        "p01": 0.6820649599129288,
+        "p05": 0.8028482620474692,
+        "median": 1.0175993723868937,
+        "p95": 1.3112222094951786,
+        "p99": 1.3882804876816686,
+        "max": 1.4129180443806089
+      },
+      "tetra_min_edge_mm": {
+        "count": 2030,
+        "min": 0.24499999999999922,
+        "p01": 0.8900011374953911,
+        "p05": 2.1687870272716077,
+        "median": 4.11107042462538,
+        "p95": 4.703044761539041,
+        "p99": 5.161067483201432,
+        "max": 5.916966911814179
+      },
+      "radius_ratio_circumradius_over_inradius_regular_equals_3": {
+        "count": 2030,
+        "min": 3.0201503847640665,
+        "p01": 3.0983611655241314,
+        "p05": 3.1834834807803523,
+        "median": 3.6624548786855895,
+        "p95": 7.478494503989038,
+        "p99": 10.603223603286605,
+        "max": 112.61429648880882
+      },
+      "circumradius_over_min_edge_regular_0_612": {
+        "count": 2030,
+        "min": 0.6451975129671434,
+        "p01": 0.6734817762727824,
+        "p05": 0.6968718352019215,
+        "median": 0.8291678270870084,
+        "p95": 1.3047684171626908,
+        "p99": 2.493956137510618,
+        "max": 7.425464132995706
+      },
+      "minimum_dihedral_angle_deg": {
+        "count": 2030,
+        "min": 5.9210624967274885,
+        "p01": 13.498122476296725,
+        "p05": 21.83908560934654,
+        "median": 46.79094842340207,
+        "p95": 58.006097799731855,
+        "p99": 61.510470863778224,
+        "max": 68.6783690063931
+      },
+      "sliver_counts": {
+        "min_dihedral_lt_5deg": 0,
+        "min_dihedral_lt_10deg": 10,
+        "radius_ratio_gt_10": 28,
+        "radius_ratio_gt_100": 2
+      },
+      "face_adjacency": {
+        "internal_face_count": 3377,
+        "boundary_face_count": 1366,
+        "nonmanifold_face_count": 0
+      },
+      "neighbor_spacing_mm_face_adjacent_centroid_to_centroid": {
+        "count": 3377,
+        "min": 0.3579890916306937,
+        "p01": 0.8894860250457419,
+        "p05": 1.2183197916638586,
+        "median": 1.876227817946298,
+        "p95": 2.4273992356325453,
+        "p99": 2.6697322330720623,
+        "max": 3.0480660477871786
+      },
+      "neighbor_cell_volume_ratio": {
+        "count": 3377,
+        "min": 1.0,
+        "p01": 1.0005673657429337,
+        "p05": 1.0066608420537941,
+        "median": 1.1861370341067785,
+        "p95": 2.4330123150534115,
+        "p99": 4.187042886814203,
+        "max": 17.17207380275652
+      },
+      "wall_roi_definition": "x < -14.5 mm, |y| <= 3 mm, z=22..27 mm, angular distance from -X <=12 deg; actual native radial solid intersections at each centroid determine through-wall position",
+      "wall_roi_centroid_count": 10,
+      "wall_coordinate_outer_to_inner_0_to_1": {
+        "count": 10,
+        "min": 0.28623644830240375,
+        "p01": 0.28627915685201916,
+        "p05": 0.28644999105048075,
+        "median": 0.30087780356140315,
+        "p95": 0.8058401740745578,
+        "p99": 0.806086426396796,
+        "max": 0.8061479894773556
+      },
+      "wall_coordinate_approximate_distinct_layers_10pct_bins": 4,
+      "directional_fabric": {
+        "delta_4mm_candidate_only": {
+          "point_count": 2030,
+          "neighbor_count_including_no_self": {
+            "count": 2030,
+            "min": 6.0,
+            "p01": 7.0,
+            "p05": 8.0,
+            "median": 12.0,
+            "p95": 35.0,
+            "p99": 52.710000000000036,
+            "max": 65.0
+          },
+          "points_with_fewer_than_3_neighbors": 0,
+          "fabric_eigenvalue_max_over_min_for_centers_with_at_least_3_neighbors": {
+            "count": 2030,
+            "min": 1.2297681470553679,
+            "p01": 1.6982857439047183,
+            "p05": 1.9850867470227211,
+            "median": 3.261838855713341,
+            "p95": 6.004602001058545,
+            "p99": 7.678604786934555,
+            "max": 11.507724318363499
+          },
+          "definition": "cell-volume-weighted second moment of unit centroid-neighbor directions; diagnostic radius only, not a PG horizon selection"
+        },
+        "delta_6mm_candidate_only": {
+          "point_count": 2030,
+          "neighbor_count_including_no_self": {
+            "count": 2030,
+            "min": 10.0,
+            "p01": 20.29,
+            "p05": 24.0,
+            "median": 31.0,
+            "p95": 74.0,
+            "p99": 92.0,
+            "max": 98.0
+          },
+          "points_with_fewer_than_3_neighbors": 0,
+          "fabric_eigenvalue_max_over_min_for_centers_with_at_least_3_neighbors": {
+            "count": 2030,
+            "min": 1.2419683086967392,
+            "p01": 1.7303152263185326,
+            "p05": 2.0781407154821503,
+            "median": 4.610957082056974,
+            "p95": 7.747831380731667,
+            "p99": 8.786534173300495,
+            "max": 16.10235724768538
+          },
+          "definition": "cell-volume-weighted second moment of unit centroid-neighbor directions; diagnostic radius only, not a PG horizon selection"
+        }
+      }
+    }
+  ]
+}

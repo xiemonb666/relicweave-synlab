@@ -403,9 +403,13 @@ class _PhysicalAxis(_BaseAxis):
             value = getattr(fragment, source_name, None)
             if value is not None and np.asarray(value).shape == (len(representative.mesh.faces),):
                 face_attrs[output_name] = np.array(value, copy=True)
+        fragment_meta = dict(getattr(fragment, "meta", None) or {})
+        for stale_key in ("physical_truth", "visible_labels", "features"):
+            fragment_meta.pop(stale_key, None)
+        if appearance:
+            fragment_meta["appearance"] = appearance
         fragment_out = _FragmentView(representative.mesh, str(getattr(fragment, "fragment_id", "")),
-                                     meta={**dict(getattr(fragment, "meta", None) or {}),
-                                           **({"appearance": appearance} if appearance else {})},
+                                     meta=fragment_meta,
                                      face_attrs=face_attrs)
         measured = {str(k): float(v) for k, v in (result.meta.get("measured") or {}).items()
                     if isinstance(v, (int, float, np.integer, np.floating))}

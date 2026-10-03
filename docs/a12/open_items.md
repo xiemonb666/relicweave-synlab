@@ -15,12 +15,12 @@ A12 adapter/camera 32 PASS；此前归档的 depth/noise 71 与 frozen parity 2 
 
 - **Geometry：** 单位、拓扑、边界误差、厚度覆盖；有限采样不冒充全局证明。
 - **NativeRun：** 成功 preflight 与非零 solver steps、原始输入/输出。旧 contact attempt03 是 Julia load syntax FAIL，零 preflight/step；新 minimal-native-contact agent 接手，三例仍 PENDING。
-- **NumericPhysical：** old h8/h6 element quality/orientation 审计，actual ROI static h=1 mm 与 0.5 mm；检查 PD δ/h、horizon×wall、surface correction、fixed-δ spatial convergence、fixed-mesh dt time convergence；同一物理 case 对不同 remesh orientation/seed、固定 rest-material field 做 crack energy/response/mass distribution 对照。旋转原 mesh 只测 covariance，不等于 remesh-bias PASS；禁止由 max-edge/t 推断精确 through-wall layers。owner: luna_wall_resolution，结果待验。
+- **NumericPhysical：** 已有 whole-mesh 只读质量审计：h8 有 9 个 tet 的最小二面角 <10°、1 个 <5°、max R/rmax 113.1；h6 有 10 个 <10°、max R/rmax 112.6。方向相关偏差为 HIGH RISK / NOT QUANTIFIED，无实际裂纹跨网格比较。old h8/h6 element quality/orientation 审计与 actual ROI static h=1 mm、0.5 mm 仍由 luna_wall_resolution 检查；结果待验。还需检查 PD δ/h、horizon×wall、surface correction、fixed-δ spatial convergence、fixed-mesh dt time convergence；同一物理 case 对不同 remesh orientation/seed、固定 rest-material field 比较 crack energy/response/mass distribution。旋转原 mesh 只测 covariance，不等于 remesh-bias PASS；禁止由 max-edge/t 推断精确 through-wall layers。
 - **CalibratedMaterial：** E/Gc 与其他材料量保留候选值和来源状态；实际校准 UNKNOWN / UNVALIDATED。
 - **CrackSurface：** 真事件产生的 positive-area 配对裂面与 lineage；不得固定 fractureN、求解后追加 roughness 或沿 tet face 赋真实裂纹标签。
 - **RelicWeaveData：** all point mass/isolates；contact penetration、momentum、energy 目前 UNKNOWN；truth leakage、annotation 错误和 QA failure 必须 fail closed。
 
-h8 actual image 不构成物理级裂纹证据；tet-volume h8/h6 均未通过 1% volume gate。所有六项分开验收后才能升级。native clippedcells h8 的几何准确性不改变 NOT_PHYSICAL_READY 状态。其余当前负责人包括 strict-v2 deploy scanner、四项 degradation/QA 修复与 read-only fracture-surface bridge，均待实际结果和 root 复核。
+h8 actual image 不构成物理级裂纹证据；tet-volume h8/h6 均未通过 1% volume gate。root 已读的 whole-mesh 只读审计记录 h8 有 9 tets 的最小二面角 <10°、1 个 <5°、max R/rmax=113.1；h6 有 10 个 <10°、max R/rmax=112.6。方向相关偏差为 HIGH RISK / NOT QUANTIFIED，尚无实际裂纹的独立 remesh 比较。h8/h6 分别有 21/512 与 12/512 finite interior probes OUT，CAD-reference signed volume delta 约 −2.0343% / −1.6142%；它们是 quadrature candidates 而非 PG solver input，h8 自身 tet-volume weights 一致也不代表对 CAD 的质量正确。另有 abs(volume) 可掩盖 tet 反向的 QA 回归，signed-volume+winding 修复待测。所有六项分开验收后才能升级；native clippedcells h8 的几何准确性不改变 NOT_PHYSICAL_READY。其余 strict-v2 deploy scanner、四项 degradation/QA 修复与 read-only fracture-surface bridge 均待实际结果和 root 复核。
 ## 早期状态快照（以下细项保留历史状态；当前进度以接续矩阵为准）
 
 VF 当前 prototype 已窄验收 canonical STEP BRep face 分类、连续 rest-coordinate 四带绘制及几何-only 深度 parity；器身 C0 折角、接头真实度、材料/历史样式仍 `PENDING`。A12 生产 appearance 仍未全闭环（4 项 appearance 测试失败）；A12 adapter/camera32 为 `PASS`，但 per-face 近似仍漏掉窄红带。GPU 路径未实现，完整物理断裂链未完成。PG owner 报告 physics/time SHA 20/20 和 OSB/BB 独立 API fixture 的真实 CLI 验证通过，最终 wheel 检查进行中；jobs 修复 19 项测试通过，仍在审查中。A12 既有 ageing、capture 和 reconstruction 能力为部分实现，新 VF/PG 接入与真实效果综合验证待完成。

@@ -20,7 +20,7 @@ A12 adapter/camera 32 PASS。depth/noise 71 与 frozen parity 2 是此前归档�
 5. **CrackSurface：** 需要由裂纹事件生成且具有 positive-area 的配对裂面与 lineage。不得固定 fractureN、求解后添加 roughness，或沿 tetra faces 直接赋真实裂纹标签。
 6. **RelicWeaveData：** 覆盖 all point mass 和 isolated points；报告 contact penetration、momentum 与 energy。annotation 必须来自受验事件真值；truth leakage、错误标签和 QA failure 必须 fail closed，不能将错误 manifest flag 或 summary PASS 当成无泄漏证据。
 
-luna_wall_resolution 负责审计 old h8/h6 element quality 并检查 actual ROI static h=1 mm / h=0.5 mm；结果待验。max-edge 与名义 t 不能代替壁内分辨率。old h8/h6 tetra-volume candidates 均未过 1% gate，当前 clippedcells h8 仍仅有几何精度范围。物理准入矩阵与负责项见 [CONTINUATION_20261003.md](CONTINUATION_20261003.md)。
+luna_wall_resolution 负责审计 old h8/h6 element quality 并检查 actual ROI static h=1 mm / h=0.5 mm；ROI 与后续物理结果仍待验。现有 whole-mesh 只读质量审计记录 h8 有 9 个 tet 的最小二面角 <10°、1 个 <5°、max R/rmax=113.1；h6 有 10 个 <10°、max R/rmax=112.6。网格方向相关偏差为 HIGH RISK / NOT QUANTIFIED，尚无真实裂纹跨网格对照。h8/h6 体积候选分别有 21/512 与 12/512 个 finite interior probes OUT；CAD-reference signed volume delta 分别约 −2.0343% 与 −1.6142%。这些 tet 是 quadrature candidates，不是 PG solver input；h8 权重和匹配自身 mesh volume 不代表 CAD 体积/质量正确。max-edge 与名义 t 不能代替壁内分辨率。当前 clippedcells h8 仍仅有几何精度范围。全量只读质量审计的小型副本和 SHA 见 evidence index。物理准入矩阵与负责项见 [CONTINUATION_20261003.md](CONTINUATION_20261003.md)。
 ## 早期状态快照（保留为历史记录，当前状态以上述接续摘要为准）
 
 VF 首件的 canonical STEP 面分类、连续 rest-coordinate 绘制和 BRep face 语义映射已完成狭义原型验收；器身 C0 折角、把手根部几何过渡、材料标定和历史样式仍为 `PENDING`。这不代表 A12 生产 appearance 链路已闭环：当前有 4 项 appearance 测试失败，GPU 路径未实现，完整物理断裂→遗存退化→低成本观测链尚未完成。A12 adapter/camera32 检查为 `PASS`，但近似 per-face 字段仍漏掉窄红带。PG owner 报告 physics/time SHA 为 20/20，OSB/BB 独立 API fixture 已通过真实 CLI；最终 wheel 仍由 PG owner 检查。jobs 修复测试为 19 项通过，仍在审查中。
@@ -29,7 +29,7 @@ VF 首件的 canonical STEP 面分类、连续 rest-coordinate 绘制和 BRep fa
 
 ## 接续状态更正（2026-10-03）
 
-当前验收和剩余项见 [CONTINUATION_20261003.md](CONTINUATION_20261003.md)，小型、可复核证据见 [evidence/20261003/index.md](evidence/20261003/index.md)。连续绘制的 4-band preview 与独立像素中心 oracle 已获 root 窄范围接受：新 SS=1/2、nonzero distortion 目标 40 PASS；default/frozen 回归仍待完成。旧 38-PASS 被拒是原始 K 上的 half-pixel 射线偏移（未抵消 frame 已有 +0.5），不是复用 renderer。
+当前验收和剩余项见 [CONTINUATION_20261003.md](CONTINUATION_20261003.md)，小型、可复核证据见 [evidence/20261003/index.md](evidence/20261003/index.md)。连续绘制的 4-band preview 与独立像素中心 oracle 已获 root 窄范围接受：新 SS=1/2、nonzero distortion 目标 40 PASS；private default regression 已完成并获 root 窄范围接受，24 PASS（15 projective + 7 noise + 2 flat-frozen），这不修复 legacy appearance 29/4 FAIL。旧 38-PASS 被拒是原始 K 上的 half-pixel 射线偏移（未抵消 frame 已有 +0.5），不是复用 renderer。
 
 当前 smooth-CAD 3D shell candidate 的 sampled deviation 为 0.118432 mm，超过 0.10 mm 门槛，且 native halfsection 无效/为空；第二个 2D 表示仍 PENDING。实际旧 deploy package 已确认含 lineage/mother/fragment/historical_N_G 字段及 raw lineage/M-style index keys，状态为 INVALID_DEPLOY_TRUTH_LEAK / PENDING，等待 strict-v2 及 root 验收。现实校准与实物形貌结论见 [REALISM_ACCEPTANCE_20261003.md](REALISM_ACCEPTANCE_20261003.md)：视觉仅供展示，候选 E/Gc 数值保留而实际 calibration 为 UNKNOWN / UNVALIDATED。
 # A12 工程政策：算法选型与"停止死磕"规则

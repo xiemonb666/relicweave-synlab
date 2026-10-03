@@ -1,0 +1,274 @@
+"""Serialized v2 deployment boundary and research-only legacy compatibility tests."""
+
+from __future__ import annotations
+
+import json
+import shutil
+from pathlib import Path
+
+import numpy as np
+import pytest
+
+from _fixtures import REPO_ROOT
+from synlab.canonical import hash_file, hash_json
+from synlab.errors import ErrorCode, SynLabError
+from synlab.qc.loader_probe import load_features
+from synlab.storage.export import (
+    PACKAGE_MANIFEST_SCHEMA,
+    PACKAGE_SCHEMA,
+    TrainingPackage,
+    export_training_package,
+)
+from synlab.storage.release import PROFILE_GATES, ReleaseManager
+from synlab.storage.store import QA_PASS, AssetStore
+
+FRAGMENT_OBSERVED = "LIN9100_V01_M01_PAT01_E01-m"
+FRAGMENT_UNOBSERVED = "LIN9100_V01_M01_PAT01_E01-p"
+MOTHER = "LIN9100_V01_M01_PAT01"
+
+
+@pytest.fixture
+def tiny_export(tmp_path: Path) -> Path:
+    """Export a tiny real AssetStore release with one observed and one truth-only member."""
+    store = AssetStore(tmp_path / "store")
+    rng = np.random.default_rng(19)
+    h, w = 8, 8
+    obs_payload = {
+        "v000.rgb": rng.integers(0, 256, size=(h, w, 3), dtype=np.uint8),
+        "v000.deployment_mask": np.ones((h, w), dtype=bool),
+        "v000.depth_z": np.full((h, w), 25.0, dtype=np.float32),
+        "v000.uncertain_mask": np.zeros((h, w), dtype=bool),
+        "v000.roi": np.zeros((h, w), dtype=bool),
+        "v000.K": np.eye(3, dtype=np.float64),
+        "points": rng.normal(size=(5, 3)).astype(np.float32),
+        "normals": np.tile(np.asarray([[0, 0, 1]], dtype=np.float32), (5, 1)),
+        "point_valid": np.ones(5, dtype=bool),
+        "normal_valid": np.ones(5, dtype=bool),
+    }
+    observation = store.commit_asset(
+        role="obs_result", schema="synlab.obs.v1", unit="mm", frame="S_mm",
+        payload=obs_payload,
+        meta={"fragment_id": FRAGMENT_OBSERVED, "mother_id": MOTHER,
+              "views": [{"u_position_mm": 3.5}],
+              "context": {"bag_id": "BAG-42", "mother_id": MOTHER}},
+        qa_status=QA_PASS, lineage_id=MOTHER, split="train",
+    )
+    truth = store.commit_asset(
+        role="clean_truth", schema="synlab.truth.clean.v1", unit="1", frame="W_mm",
+        payload={"truth_marker": np.asarray([1], dtype=np.int8)},
+        meta={"mother_id": MOTHER, "fragment_ids": [FRAGMENT_OBSERVED, FRAGMENT_UNOBSERVED],
+              "relations": [{"a": FRAGMENT_OBSERVED, "b": FRAGMENT_UNOBSERVED,
+                             "kind": "R2", "area_mm2": 4.0,
+                             "valid": True, "loss_mask": True}]},
+        qa_status=QA_PASS, lineage_id=MOTHER, split="train",
+    )
+    gates = {name: "PASS" for name in PROFILE_GATES["RESEARCH_EVIDENCE"]}
+    ReleaseManager(store).freeze(
+        release_id="rel_deploy_boundary_fixture", profile="RESEARCH_EVIDENCE",
+        scope="tiny deploy-boundary fixture",
+        asset_ids=[observation.asset_id, truth.asset_id], gates=gates,
+        extra={"pool_id": "pool_fixture"},
+    )
+    out = tmp_path / "export"
+    export_training_package(store, "rel_deploy_boundary_fixture", out,
+                            formats=("json", "npz", "tar"), include_truth=True)
+    return out
+
+
+def test_tiny_export_keeps_truth_join_research_only_and_deploy_opaque(
+        tiny_export: Path, tmp_path: Path) -> None:
+    deploy = TrainingPackage(tiny_export)
+    assert deploy.manifest["deploy_schema"] == "synlab.training_package_deploy.v2"
+    assert set(deploy.manifest["views"]) == {"deploy"}
+    assert all(str(row["path"]).startswith("deploy/") for row in deploy.manifest["files"])
+    file_report = deploy.verify_files()
+    assert file_report["ok"] and file_report["files_checked"] == len(deploy.manifest["files"])
+
+    rows = deploy.queries()
+    assert len(rows) == 1, "an unobserved ground-truth neighbour must not enter public roster"
+    assert set(rows[0]) == {"opaque_id", "bag_id"}
+    opaque = rows[0]["opaque_id"]
+    assert len(opaque) == 32 and opaque == opaque.lower()
+    assert deploy.observed_ids() == [opaque]
+    payload = load_features(deploy, [opaque])
+    assert set(payload) == {opaque}
+    assert payload[opaque]["points"].shape == (5, 3)
+    with pytest.raises(SynLabError) as denied:
+        deploy.relations()
+    assert denied.value.code == ErrorCode.LEAKAGE_DETECTED
+    with pytest.raises(SynLabError):
+        deploy.source_id_for_opaque(opaque)
+
+    research = TrainingPackage(tiny_export, access="research")
+    queries = research.queries()
+    assert {row["fragment_id"] for row in queries} == {
+        FRAGMENT_OBSERVED, FRAGMENT_UNOBSERVED}
+    relations = research.relations()
+    assert len(relations) == 2
+    assert {row["query"] for row in relations} == {FRAGMENT_OBSERVED, FRAGMENT_UNOBSERVED}
+    assert research.observed_ids() == [FRAGMENT_OBSERVED]
+    mapping = {research.source_id_for_opaque(str(row["opaque_id"])): row["opaque_id"]
+               for row in deploy.queries()}
+    assert mapping == {FRAGMENT_OBSERVED: opaque}
+    assert FRAGMENT_UNOBSERVED not in mapping
+    assert research.opaque_id_for_source(FRAGMENT_OBSERVED) == opaque
+    assert load_features(research, [FRAGMENT_OBSERVED])[FRAGMENT_OBSERVED]["points"].shape == (5, 3)
+
+    second = tmp_path / "second_export"
+    from synlab.storage.export import export_training_package
+    from synlab.storage.store import AssetStore
+
+    # Exporting the same source release again creates a fresh UUID namespace.
+    export_training_package(AssetStore(tmp_path / "store"), "rel_deploy_boundary_fixture", second,
+                            formats=("json", "npz", "tar"), include_truth=True)
+    second_reader = TrainingPackage(second)
+    assert set(second_reader.observed_ids()).isdisjoint(deploy.observed_ids())
+
+
+def test_legacy_v1_is_research_readable_but_never_a_forward_source(tmp_path: Path) -> None:
+    root = tmp_path / "legacy_v1"
+    (root / "deploy").mkdir(parents=True)
+    (root / "research" / "labels").mkdir(parents=True)
+    (root / "deploy" / "queries.json").write_text(json.dumps([
+        {"fragment_id": FRAGMENT_OBSERVED, "query_id": f"q::{FRAGMENT_OBSERVED}",
+         "historical_N_G": 1},
+    ]), encoding="utf-8")
+    (root / "research" / "relations.json").write_text(json.dumps([
+        {"query": FRAGMENT_OBSERVED, "candidate": FRAGMENT_UNOBSERVED, "kind": "R2"},
+    ]), encoding="utf-8")
+    (root / "research" / "labels" / "clean.json").write_text(json.dumps([
+        {"fragment_id": FRAGMENT_OBSERVED, "label": "fixture"},
+    ]), encoding="utf-8")
+    manifest = {"schema": PACKAGE_MANIFEST_SCHEMA, "package_schema": PACKAGE_SCHEMA,
+                "package_id": "legacy-fixture", "files": []}
+    manifest["manifest_hash"] = hash_json(manifest)
+    (root / "export_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+
+    research = TrainingPackage(root, access="research")
+    assert research.queries()[0]["historical_N_G"] == 1
+    assert research.relations()[0]["kind"] == "R2"
+    assert research.labels("clean")[0]["label"] == "fixture"
+    with pytest.raises(SynLabError, match="INVALID_DEPLOY_TRUTH_LEAK"):
+        research.read_observation(FRAGMENT_OBSERVED)
+    with pytest.raises(SynLabError, match="INVALID_DEPLOY_TRUTH_LEAK"):
+        TrainingPackage(root)
+
+
+def _refresh_manifest(package_root: Path, relative_path: str) -> None:
+    manifest_path = package_root / "export_manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    target = package_root / relative_path
+    for row in manifest["files"]:
+        if row["path"] == relative_path:
+            row["hash"] = hash_file(target)
+            row["bytes"] = target.stat().st_size
+            break
+    else:
+        raise AssertionError(f"manifest lacks {relative_path}")
+    manifest["manifest_hash"] = hash_json(
+        {key: value for key, value in manifest.items() if key != "manifest_hash"})
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+
+def test_unknown_version_and_unapproved_roster_fields_fail_closed(
+        tiny_export: Path, tmp_path: Path) -> None:
+    unknown = tmp_path / "unknown"
+    shutil.copytree(tiny_export, unknown)
+    path = unknown / "export_manifest.json"
+    manifest = json.loads(path.read_text(encoding="utf-8"))
+    manifest["deploy_schema"] = "synlab.training_package_deploy.v999"
+    manifest["manifest_hash"] = hash_json(
+        {key: value for key, value in manifest.items() if key != "manifest_hash"})
+    path.write_text(json.dumps(manifest), encoding="utf-8")
+    with pytest.raises(SynLabError, match="unsupported deploy schema"):
+        TrainingPackage(unknown)
+
+    raw_query = tmp_path / "raw_query"
+    shutil.copytree(tiny_export, raw_query)
+    roster_path = raw_query / "deploy" / "queries.json"
+    roster = json.loads(roster_path.read_text(encoding="utf-8"))
+    roster[0]["historical_N_G"] = 1
+    roster_path.write_text(json.dumps(roster), encoding="utf-8")
+    with pytest.raises(SynLabError, match="query roster has unsupported columns"):
+        TrainingPackage(raw_query)
+
+    raw_bag = tmp_path / "raw_bag"
+    shutil.copytree(tiny_export, raw_bag)
+    roster_path = raw_bag / "deploy" / "queries.json"
+    roster = json.loads(roster_path.read_text(encoding="utf-8"))
+    roster[0]["bag_id"] = FRAGMENT_OBSERVED
+    roster_path.write_text(json.dumps(roster), encoding="utf-8")
+    with pytest.raises(SynLabError, match="source fragment identity"):
+        TrainingPackage(raw_bag)
+
+
+def test_raw_identity_index_key_and_deep_npz_alias_are_rejected(
+        tiny_export: Path, tmp_path: Path) -> None:
+    raw_index = tmp_path / "raw_index"
+    shutil.copytree(tiny_export, raw_index)
+    index_path = raw_index / "deploy" / "obs" / "index.json"
+    index = json.loads(index_path.read_text(encoding="utf-8"))
+    only_row = next(iter(index["rows"].values()))
+    index["rows"] = {FRAGMENT_OBSERVED: only_row}
+    index_path.write_text(json.dumps(index), encoding="utf-8")
+    with pytest.raises(SynLabError, match="index key is not an opaque id"):
+        TrainingPackage(raw_index)
+
+    alias = tmp_path / "deep_npz_alias"
+    shutil.copytree(tiny_export, alias)
+    token_index = json.loads((alias / "deploy" / "tokens" / "index.json")
+                             .read_text(encoding="utf-8"))
+    opaque, row = next(iter(token_index["rows"].items()))
+    shard = alias / "deploy" / row["shard"]
+    with np.load(shard, allow_pickle=False) as archive:
+        arrays = {key: archive[key] for key in archive.files}
+    arrays[f"{opaque}__historical_N_G"] = np.asarray([1], dtype=np.int32)
+    np.savez(shard, **arrays)
+    _refresh_manifest(alias, f"deploy/{row['shard']}")
+    with pytest.raises(SynLabError, match="NPZ keys do not match the v2 row allowlist"):
+        TrainingPackage(alias)
+
+
+def test_reader_rechecks_exact_index_and_shard_bytes_after_construction(
+        tiny_export: Path, tmp_path: Path) -> None:
+    mutated = tmp_path / "modified_shard"
+    shutil.copytree(tiny_export, mutated)
+    reader = TrainingPackage(mutated)
+    opaque = reader.observed_ids()[0]
+    token_index = reader.deploy / "tokens" / "index.json"
+    index = json.loads(token_index.read_text(encoding="utf-8"))
+    row = index["rows"][opaque]
+    shard = reader.deploy / row["shard"]
+    with np.load(shard, allow_pickle=False) as archive:
+        arrays = {key: archive[key] for key in archive.files}
+    arrays[f"{opaque}__rest_xyz"] = np.zeros((1, 3), dtype=np.float32)
+    np.savez(shard, **arrays)
+    with pytest.raises(SynLabError, match="changed after validation"):
+        reader.read_tokens(opaque)
+
+    second = tmp_path / "modified_index"
+    shutil.copytree(tiny_export, second)
+    reader2 = TrainingPackage(second)
+    roster_path = second / "deploy" / "queries.json"
+    roster = json.loads(roster_path.read_text(encoding="utf-8"))
+    roster[0]["mother"] = MOTHER
+    roster_path.write_text(json.dumps(roster), encoding="utf-8")
+    with pytest.raises(SynLabError, match="changed after validation"):
+        reader2.queries()
+
+
+def test_missing_research_mapping_fails_closed(tiny_export: Path, tmp_path: Path) -> None:
+    clone = tmp_path / "missing_map"
+    shutil.copytree(tiny_export, clone)
+    (clone / "research" / "opaque_map.json").unlink()
+    research = TrainingPackage(clone, access="research")
+    with pytest.raises(SynLabError):
+        research.opaque_id_for_source(FRAGMENT_OBSERVED)
+
+
+def test_existing_experiment_ready_v1_is_invalid_for_deploy() -> None:
+    legacy = REPO_ROOT / "data" / "a12_exports" / "experiment_ready" / "training_package"
+    if not (legacy / "export_manifest.json").is_file():
+        pytest.skip("this checkout has no stored experiment_ready v1 package")
+    with pytest.raises(SynLabError, match="INVALID_DEPLOY_TRUTH_LEAK"):
+        TrainingPackage(legacy)

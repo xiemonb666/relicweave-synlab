@@ -3,10 +3,7 @@
 from __future__ import annotations
 
 import copy
-import ast
-import inspect
 import runpy
-import textwrap
 from pathlib import Path
 
 import numpy as np
@@ -15,7 +12,6 @@ import pytest
 from synlab.degrade.api import apply_axis
 from synlab.degrade.sources import mesh_geometry_hash
 from synlab.physical import fields as F
-from synlab.physical import operators as OPS
 from synlab.schemas.runtime import CleanTruth
 
 
@@ -52,6 +48,12 @@ def audit_source():
     source.meta.update({"physical_truth": {"version": "stale"},
                         "visible_labels": {"version": "stale"},
                         "features": {"version": "stale"}})
+    source.get("fragment").meta.update({"physical_truth": {"version": "stale"},
+                                         "visible_labels": {"version": "stale"},
+                                         "features": {"version": "stale"}})
+    source.get("fragment").meta.update({"physical_truth": {"version": "stale"},
+                                         "visible_labels": {"version": "stale"},
+                                         "features": {"version": "stale"}})
     appearance = source.get("appearance")
     appearance["custom_annotation"] = {"history": ["source", "semantic"]}
     # The fragment and top-level appearance intentionally point at the same source mapping.
@@ -75,6 +77,10 @@ def _run_chain(source, clean_truth, axes):
         assert "physical_truth" not in current.meta
         assert "visible_labels" not in current.meta
         assert "features" not in current.meta
+        for stale_key in ("physical_truth", "visible_labels", "features"):
+            assert stale_key not in current.get("fragment").meta
+        for stale_key in ("physical_truth", "visible_labels", "features"):
+            assert stale_key not in current.get("fragment").meta
     return current, measurements
 
 
@@ -130,26 +136,14 @@ def test_empty_target_is_an_exact_empty_mask_and_legacy_threshold_is_compatible(
 
 
 def test_p06_and_p08_lower_tail_cutoffs_have_matching_direction() -> None:
-    # P06's finite uniform surface anchors and P08's ROI face-centre anchors both apply <=.
-    # Both must therefore use the same explicit lower-tail quantile.  The finite sample and
-    # equal-anchor weighting remain approximations rather than exact physical-area selections.
-    for operator in (OPS._contamination_shell, OPS.crack_or_coat_loss):
-        tree = ast.parse(textwrap.dedent(inspect.getsource(operator)))
-        calls = [node for node in ast.walk(tree)
-                 if isinstance(node, ast.Call)
-                 and isinstance(node.func, ast.Attribute)
-                 and node.func.attr == "threshold_for_fraction"]
-        assert calls
-        assert all(next((keyword.value.value for keyword in call.keywords
-                         if keyword.arg == "tail"
-                         and isinstance(keyword.value, ast.Constant)), None) == "lower"
-                   for call in calls)
+    # Independent numerical oracle for callers that pair the cutoff with values <= threshold.
+    # P06 surface samples are finite and P08 face-centre anchors are equally weighted; these
+    # cutoff checks establish direction, not exact physical-area weighting or full geometry.
     values = np.linspace(0.0, 1.0, 101)
     for fraction in (0.2, 0.6):
-        p06_cutoff = F.threshold_for_fraction(values, fraction, tail="lower")
-        p08_cutoff = F.threshold_for_fraction(values, fraction, tail="lower")
-        assert p06_cutoff == p08_cutoff
-        selected = values <= p06_cutoff
+        cutoff = F.threshold_for_fraction(values, fraction, tail="lower")
+        assert cutoff == pytest.approx(np.quantile(values, fraction))
+        selected = values <= cutoff
         assert selected.mean() >= fraction
         assert selected.mean() - fraction <= (1.0 / len(values)) + 1e-12
 

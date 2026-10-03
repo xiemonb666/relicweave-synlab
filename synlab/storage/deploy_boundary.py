@@ -215,7 +215,11 @@ def validate_deploy_package(root: str | Path, manifest: Mapping[str, Any]) -> di
     for rel in sorted(files):
         path = deploy_root / Path(rel)
         if path.suffix.lower() == ".json":
-            _scan_raw_ids(_read_json(path, rel), rel)
+            try:
+                value = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, ValueError) as exc:
+                raise _invalid(f"{rel} cannot be parsed: {exc}", evidence=[rel]) from exc
+            _scan_raw_ids(value, rel)
         elif path.suffix.lower() == ".parquet":
             for i, row in enumerate(query_rows):
                 _scan_raw_ids(row, f"{rel}[{i}]")

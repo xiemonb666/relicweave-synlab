@@ -74,13 +74,16 @@ def test_i03_nonzero_effect_does_not_accept_reported_recomputed() -> None:
     assert measurement.extra["label_dependency_status"] == {
         "VisibleLabels": {
             "status": "PENDING_RECOMPUTE",
+            "validity": "UNKNOWN_INVALIDATED",
             "reason": "no matching recomputation artifact or receipt is recorded",
         },
         "FeatureAdapter": {
             "status": "PENDING_RECOMPUTE",
+            "validity": "UNKNOWN_INVALIDATED",
             "reason": "no matching recomputation artifact or receipt is recorded",
         },
     }
+    assert measurement.extra["label_validity"] == "UNKNOWN_INVALIDATED"
     assert measurement.extra["label_receipt_refs"] == {}
 
     report = {
@@ -105,6 +108,7 @@ def test_level_zero_keeps_identity_label_status_and_no_dependency_is_explicit() 
     output, measurement = apply_axis("I03", 0, _image_source(), None, commit=False)
     assert output.identity is True
     assert measurement.extra["label_status"] == "NOT_INVALIDATED_AT_LEVEL0"
+    assert measurement.extra["label_validity"] == "NOT_INVALIDATED_AT_LEVEL0"
     assert set(measurement.extra["label_dependency_status"]) == {"VisibleLabels", "FeatureAdapter"}
     assert all(row["status"] == "NOT_INVALIDATED_AT_LEVEL0"
                for row in measurement.extra["label_dependency_status"].values())
@@ -127,6 +131,9 @@ def test_actual_physical_truth_update_is_retained_but_overall_status_stays_pendi
     assert dependencies["PhysicalTruth"]["physical_truth_version"] == 2
     assert dependencies["PhysicalTruth"]["axis_id"] == "P06"
     assert dependencies["PhysicalTruth"]["level"] == 1
+    assert dependencies["PhysicalTruth"]["validity"] == "VALIDATED"
+    assert dependencies["PhysicalTruth"]["output_geometry_verification"] == \
+        "SINGLE_COMPONENT_HASH_REVERIFIED"
     assert dependencies["PhysicalTruth"]["source_geometry_hash"]
     assert dependencies["PhysicalTruth"]["result_geometry_hash"]
     assert dependencies["PhysicalTruth"]["artifact_path"] == \
@@ -136,13 +143,16 @@ def test_actual_physical_truth_update_is_retained_but_overall_status_stays_pendi
     assert dependencies["VisibleLabels"]["status"] == "PENDING_RECOMPUTE"
     assert dependencies["FeatureAdapter"]["status"] == "PENDING_RECOMPUTE"
     assert measurement.extra["label_status"] == "PENDING_RECOMPUTE"
+    assert measurement.extra["label_validity"] == "UNKNOWN_INVALIDATED"
 
 
-@pytest.mark.parametrize("tamper", ["clean_ref", "version", "result_geometry"])
+@pytest.mark.parametrize("tamper", ["clean_ref", "version", "source_geometry",
+                                     "result_geometry", "output_mesh"])
 def test_mismatched_physical_truth_receipt_is_rejected(tamper: str) -> None:
     source = _physical_source()
     result, _record, _measurement = _apply_impl("P06", 1, source, None, commit=False)
     physical = result.get("physical_result")
+    bad_result = result
 
     if tamper == "clean_ref":
         bad_truth = replace(physical.physical_truth, clean_truth_ref="unrelated-clean-truth")
@@ -152,13 +162,28 @@ def test_mismatched_physical_truth_receipt_is_rejected(tamper: str) -> None:
         bad_truth = replace(physical.physical_truth, version=physical.physical_truth.version + 1)
         bad_physical = replace(physical, physical_truth=bad_truth)
         bad_meta = dict(result.meta)
+    elif tamper == "source_geometry":
+        bad_physical = physical
+        bad_meta = dict(result.meta)
+        source = replace(source, payload={**source.payload,
+                                         "mesh": trimesh.creation.box(extents=[21.0, 20.0, 10.0])})
+    elif tamper == "output_mesh":
+        bad_physical = physical
+        bad_meta = dict(result.meta)
+        bad_result = replace(result, payload={**result.payload,
+                                             "mesh": trimesh.creation.box(extents=[21.0, 20.0, 10.0])})
     else:
         bad_physical = physical
         bad_meta = {**dict(result.meta), "extra": {
             **dict(result.meta["extra"]), "result_geometry_hash": "sha256:stale"}}
 
-    bad_payload = {**result.payload, "physical_result": bad_physical}
-    bad_result = replace(result, payload=bad_payload, meta=bad_meta)
+    if bad_result is result:
+        bad_payload = {**result.payload, "physical_result": bad_physical}
+        bad_result = replace(result, payload=bad_payload, meta=bad_meta)
+    elif tamper == "output_mesh":
+        bad_result = replace(bad_result,
+                             payload={**bad_result.payload, "physical_result": bad_physical},
+                             meta=bad_meta)
     evidence = _label_dependency_status(get_operator("P06"), source, bad_result)
 
     assert evidence["PhysicalTruth"]["status"] == "PENDING_RECOMPUTE"
@@ -179,6 +204,64 @@ def test_missing_artifact_cannot_be_replaced_by_recomputed_status_string() -> No
     assert evidence["PhysicalTruth"]["status"] == "PENDING_RECOMPUTE"
     assert _label_status(operator, source, result, dependency_status=evidence) == \
         "PENDING_RECOMPUTE"
+
+
+def test_operator_measurement_extra_cannot_override_verified_label_fields(monkeypatch) -> None:
+    operator = get_operator("I03")
+    original_measure = operator.measure
+
+    def report_forged_success(source, result, context):
+        metrics = original_measure(source, result, context)
+        metrics["extra"] = {
+            "label_status": "RECOMPUTED", "label_validity": "VALIDATED",
+            "label_dependency_status": {
+                "VisibleLabels": {"status": "RECOMPUTED", "validity": "VALIDATED"},
+                "FeatureAdapter": {"status": "RECOMPUTED", "validity": "VALIDATED"},
+            },
+            "label_receipt_refs": {"VisibleLabels": "forged-receipt"},
+        }
+        return metrics
+
+    monkeypatch.setattr(operator, "measure", report_forged_success)
+    _output, measurement = apply_axis("I03", 1, _image_source(), None, commit=False)
+
+    assert measurement.extra["label_status"] == "PENDING_RECOMPUTE"
+    assert measurement.extra["label_validity"] == "UNKNOWN_INVALIDATED"
+    assert all(row["status"] == "PENDING_RECOMPUTE"
+               for row in measurement.extra["label_dependency_status"].values())
+    assert measurement.extra["label_receipt_refs"] == {}
+
+
+def test_unknown_source_status_is_retained_without_becoming_label_validity() -> None:
+    invalidations = ("PhysicalTruth", "VisibleLabels", "FeatureAdapter")
+    operator = SimpleNamespace(AXIS_ID="P02", LABEL_INVALIDATIONS=invalidations)
+    source = SourceBundle(source_kind=KIND_PHYSICAL, payload={})
+    physical_result = SimpleNamespace(meta={})
+    result = SourceBundle(source_kind=KIND_PHYSICAL,
+                          payload={"physical_result": physical_result},
+                          meta={"axis_id": "P02", "level": 1, "label_status": "UNKNOWN"})
+
+    evidence = _label_dependency_status(operator, source, result)
+    assert evidence["PhysicalTruth"]["status"] == "PENDING_RECOMPUTE"
+    assert evidence["PhysicalTruth"]["reported_status"] == "UNKNOWN"
+    assert evidence["PhysicalTruth"]["validity"] == "UNKNOWN_INVALIDATED"
+    assert _label_status(operator, source, result, dependency_status=evidence) == \
+        "PENDING_RECOMPUTE"
+    assert "label_status" not in evidence["VisibleLabels"]
+
+
+def test_failed_physical_result_qa_rejects_attached_truth_as_valid() -> None:
+    source = _physical_source()
+    result, _record, _measurement = _apply_impl("P06", 1, source, None, commit=False)
+    physical = result.get("physical_result")
+    bad_physical = replace(physical, qa={**dict(physical.qa), "status": "FAIL"})
+    bad_result = replace(result, payload={**result.payload, "physical_result": bad_physical})
+
+    evidence = _label_dependency_status(get_operator("P06"), source, bad_result)
+    assert evidence["PhysicalTruth"]["status"] == "FAILED"
+    assert evidence["PhysicalTruth"]["validity"] == "FAILED_VALIDATION"
+    assert _label_status(get_operator("P06"), source, bad_result,
+                         dependency_status=evidence) == "FAILED"
 
 
 def test_reported_physical_recompute_failure_stays_failed() -> None:

@@ -11,7 +11,8 @@ import trimesh
 from synlab.degrade.axes import _FragmentView
 from synlab.degrade.registry import AXIS_REGISTRY
 from synlab.degrade.sources import KIND_PHYSICAL, SourceBundle
-from synlab.physical.api import apply_damage, audit_physical
+from synlab.physical.api import (_boundary_loops, _postassembly_physical_qa,
+                                apply_damage, audit_physical)
 from synlab.physical.recipe import DamageRecipe
 from synlab.schemas.runtime import ORIGIN_INTERFACE, ORIGIN_MOTHER_SURFACE
 from synlab.storage.mesh_io import with_face_attrs
@@ -101,6 +102,26 @@ def test_p02_production_route_fails_closed_on_the_three_edge_boundary_loop():
     assert "NOT_WATERTIGHT" in audit["failure_codes"]
 
 
+def test_p02_direct_narrowband_physical_result_also_fails_closed():
+    from synlab.degrade.physical_narrowband import run_narrowband_damage
+
+    mesh, fragment, source, _clean_truth = _closed_box_source()
+    result = run_narrowband_damage(mesh, _recipe("P02", 4, fragment, source),
+                                   fragment=fragment)
+    component_mesh = result.components[0].mesh
+    loops, boundary = _boundary_loops(component_mesh)
+    points = np.asarray(component_mesh.vertices, dtype=np.float64)[
+        np.asarray(loops[0], dtype=np.int64)]
+    diagonal = float(np.linalg.norm(points.max(axis=0) - points.min(axis=0)))
+
+    assert result.qa["realized"] is True
+    assert result.qa["status"] == "FAIL"
+    assert result.qa["postassembly"]["status"] == "FAIL"
+    assert "NOT_WATERTIGHT" in result.qa["failure_codes"]
+    assert boundary["boundary_edges"] == 3
+    assert diagonal == pytest.approx(2.8284271247461903)
+
+
 @pytest.mark.parametrize("axis_id", ("P01", "P02"))
 def test_closed_identity_controls_pass_for_p01_and_p02(axis_id: str):
     mesh, fragment, source, clean_truth = _closed_box_source()
@@ -171,6 +192,24 @@ def test_closed_inverted_entity_is_not_rescued_by_absolute_recorded_volume():
     assert post["checks"]["conservation"]["component_geometry_match_pass"] is False
     assert audit["status"] == "FAIL"
     assert audit["checks"]["positive_volume"]["pass"] is False
+
+
+@pytest.mark.parametrize("vertices,faces", [
+    (np.eye(3, dtype=np.float64), np.array([[0.0, 1.0, 2.0]], dtype=np.float64)),
+    (np.empty((0, 3), dtype=np.float64), np.empty((0, 3), dtype=np.int64)),
+])
+def test_float_or_empty_face_arrays_are_not_valid_entity_meshes(vertices, faces):
+    mesh = SimpleNamespace(vertices=vertices, faces=faces, volume=1.0, area=1.0,
+                           is_watertight=True, is_winding_consistent=True)
+    component = SimpleNamespace(component_id="invalid_faces", mesh=mesh, volume_mm3=1.0, meta={})
+    ledger = {"source_volume_mm3": 1.0, "damaged_volume_mm3": 1.0,
+              "lost_volume_mm3": 0.0, "conservation_ok": True}
+
+    qa = _postassembly_physical_qa(mesh, [component], ledger, result_lost_volume_mm3=0.0)
+
+    assert qa["status"] == "FAIL"
+    assert qa["checks"]["mesh_arrays_valid"]["pass"] is False
+    assert "INVALID_MESH_ARRAYS" in qa["failure_codes"]
 
 
 def test_missing_ledger_conservation_remains_unknown_and_fails_closed():
