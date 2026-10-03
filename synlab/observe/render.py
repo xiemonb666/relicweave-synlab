@@ -507,6 +507,15 @@ def _rasterise_buffers(scene: Scene, frame: ViewFrame, width: int, height: int,
 
     model = (frame.camera_model or "PINHOLE").upper()
     dist = None if frame.dist is None else np.asarray(frame.dist, dtype=np.float64)
+    if model not in CAMERA_MODELS:
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          f"unsupported camera model {model!r}",
+                          stage="observe.render._rasterise_buffers")
+    if dist is not None and dist.size not in (0, len(CAMERA_MODELS[model])):
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          f"camera model {model} expects {len(CAMERA_MODELS[model])} "
+                          f"distortion coefficients, got {dist.size}",
+                          stage="observe.render._rasterise_buffers")
     # OpenCV fisheye's theta/r map is non-pinhole even with four zero coefficients.
     has_distortion = (model == "OPENCV_FISHEYE" or
                       (model != "PINHOLE" and dist is not None and dist.size > 0
