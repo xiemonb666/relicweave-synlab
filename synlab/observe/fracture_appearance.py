@@ -67,10 +67,12 @@ from .render import (
     LightSpec,
     RenderSpec,
     Scene,
+    MaterialSpec,
     _block_reduce,
     _disagreement_i,
     _scaled_frame as _render_scaled_frame,
     circle_of_confusion_px,
+    render_view as _render_frozen_view,
     resolve_declared_optics,
 )
 
@@ -1522,6 +1524,76 @@ def render_appearance_view(scene: Scene, frame: ViewFrame, *, light: LightSpec,
                           f"the pixel budget {spec.max_pixels}",
                           stage="observe.fracture_appearance.render_appearance_view")
     posed = scene.transformed(object_pose) if object_pose is not None else scene
+    if (appearance.normal_mode == "FLAT" and not appearance.relief
+            and appearance.interpolation == "FROZEN"
+            and appearance.albedo_texture is None):
+        # This frozen control has no per-pixel appearance work. Reuse the production rasterizer
+        # so geometry, clipping, pixel centers, visibility, and integer labels share one contract.
+        # Keep the appearance adapter identity in the returned value while recording the actual
+        # base renderer in metadata.
+        render_scene = posed
+        if albedo is not None:
+            override = np.asarray(albedo, dtype=np.float32)
+            if override.ndim != 2 or override.shape != (posed.n_faces, 3):
+                raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                                  "albedo must have one RGB row per face",
+                                  stage="observe.fracture_appearance.render_appearance_view")
+            if not np.isfinite(override).all():
+                raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                                  "albedo values must be finite",
+                                  stage="observe.fracture_appearance.render_appearance_view")
+            render_scene = Scene(
+                name=posed.name, vertices=posed.vertices, faces=posed.faces,
+                surface_tag=posed.surface_tag,
+                material=MaterialSpec(override * float(appearance.diffuse_weight),
+                                      posed.material.roughness,
+                                      source_kind=posed.material.source_kind),
+                face_id=posed.face_id, is_target=posed.is_target, meta=dict(posed.meta),
+            )
+        elif appearance.diffuse_weight != 1.0:
+            render_scene = Scene(
+                name=posed.name, vertices=posed.vertices, faces=posed.faces,
+                surface_tag=posed.surface_tag,
+                material=MaterialSpec(
+                    np.asarray(posed.material.albedo, dtype=np.float32)
+                    * float(appearance.diffuse_weight),
+                    posed.material.roughness, source_kind=posed.material.source_kind),
+                face_id=posed.face_id, is_target=posed.is_target, meta=dict(posed.meta),
+            )
+        base = _render_frozen_view(render_scene, frame, light=light, spec=spec,
+                                   focus_distance_mm=focus_distance_mm)
+        lambert_map, lambert_reason = _lambert_by_rendered_face_id(
+            render_scene, frame, light, np.asarray(base.id_map))
+        meta = dict(base.meta)
+        meta.update({
+            "backend": BACKEND_APPEARANCE,
+            "backend_class": "ADAPTER",
+            "base_renderer": str(base.backend),
+            "albedo_source_kind": render_scene.material.source_kind,
+            "appearance": {
+                "schema": APPEARANCE_SCHEMA, "spec": appearance.as_dict(),
+                "lambert": (_lambert_report(lambert_map, np.asarray(base.surface_tag))
+                            if lambert_map is not None else
+                            {"status": "UNKNOWN", "reason": lambert_reason}),
+                "normal_channel": "FROZEN_FACE_NORMAL",
+                "geometry_modified": False,
+                "relief_field": (None if relief_field is None else relief_field.as_dict()),
+                "geometry_hash": geometry_hash(posed.vertices, posed.faces),
+                "relief_active": False,
+                "albedo_channel": ("PER_FACE_OVERRIDE" if albedo is not None
+                                   else "PER_FACE_PALETTE_FROZEN"),
+                "albedo_texture": None,
+                "realized_ra_mm": (float(relief_field.realized_ra_mm
+                                          * float(appearance.amplitude_scale))
+                                   if relief_field is not None else None),
+            },
+        })
+        return RenderOutput(
+            rgb_linear=base.rgb_linear, depth_z=base.depth_z, id_map=base.id_map,
+            surface_tag=base.surface_tag, visibility=base.visibility,
+            uncertain_mask=base.uncertain_mask, backend=BACKEND_APPEARANCE, meta=meta,
+        )
+
     hi_w, hi_h = width * factor, height * factor
     buffers = _rasterise_appearance(posed, _scaled_frame(frame, factor), hi_w, hi_h, light,
                                     appearance, relief_field, spec, albedo=albedo)
@@ -1598,6 +1670,39 @@ def render_appearance_view(scene: Scene, frame: ViewFrame, *, light: LightSpec,
                         visibility=visibility.astype(np.uint8),
                         uncertain_mask=uncertain.astype(bool), backend=BACKEND_APPEARANCE,
                         meta=meta)
+
+
+def _lambert_by_rendered_face_id(scene: Scene, frame: ViewFrame, light: LightSpec,
+                                id_map: np.ndarray
+                                ) -> tuple[np.ndarray | None, str | None]:
+    """Recover the frozen raw Lambert term only when each visible ID maps to one primitive."""
+    labels = np.asarray(id_map, dtype=np.int64)
+    visible_labels = np.unique(labels[labels >= 0])
+    label_to_faces: dict[int, list[int]] = {}
+    for index, label in enumerate(np.asarray(scene.face_id, dtype=np.int64)):
+        if label >= 0:
+            label_to_faces.setdefault(int(label), []).append(index)
+    if any(len(label_to_faces.get(int(label), ())) != 1 for label in visible_labels):
+        return None, "visible rendered face IDs do not uniquely identify one source primitive"
+
+    T_CW = np.asarray(frame.T_CW, dtype=np.float64)
+    camera_vertices = (np.asarray(scene.vertices, dtype=np.float64)
+                       @ T_CW[:3, :3].T + T_CW[:3, 3][None, :])
+    tri = camera_vertices[np.asarray(scene.faces, dtype=np.int64)]
+    normals_camera = np.cross(tri[:, 1] - tri[:, 0], tri[:, 2] - tri[:, 0])
+    lengths = np.linalg.norm(normals_camera, axis=1)
+    valid = np.isfinite(normals_camera).all(axis=1) & np.isfinite(lengths) & (lengths > 1e-15)
+    normals_world = np.zeros_like(normals_camera)
+    normals_world[valid] = (normals_camera[valid] / lengths[valid, None]
+                            @ np.asarray(frame.T_WC, dtype=np.float64)[:3, :3])
+    raw = -(normals_world @ np.asarray(light.direction, dtype=np.float64))
+    out = np.full(labels.shape, np.nan, dtype=np.float64)
+    for label in visible_labels:
+        face_index = label_to_faces[int(label)][0]
+        if not valid[face_index]:
+            return None, f"visible face ID {int(label)} maps to a degenerate primitive"
+        out[labels == label] = raw[face_index]
+    return out, None
 
 
 def _lambert_report(lambert: Any, tag_map: np.ndarray) -> dict[str, Any]:

@@ -104,6 +104,36 @@ def test_flat_frozen_render_reproduces_the_software_rasteriser_bit_exactly():
                           np.nan_to_num(mine.depth_z, nan=-1.0))
 
 
+def test_flat_frozen_albedo_override_matches_base_material_and_records_adapter():
+    scene, frame, light = _plate()
+    spec = RenderSpec(supersample=1, max_pixels=4_000_000)
+    override = np.tile(np.array([0.31, 0.47, 0.59], dtype=np.float32),
+                       (scene.n_faces, 1))
+    appearance = fa.AppearanceSpec(normal_mode="FLAT", relief=False,
+                                   interpolation="FROZEN", diffuse_weight=0.75)
+    actual = fa.render_appearance_view(scene, frame, light=light, spec=spec,
+                                       appearance=appearance, albedo=override)
+    expected_scene = fa.Scene(
+        name=scene.name, vertices=scene.vertices, faces=scene.faces,
+        surface_tag=scene.surface_tag,
+        material=MaterialSpec(override * appearance.diffuse_weight,
+                              scene.material.roughness,
+                              source_kind=scene.material.source_kind),
+        face_id=scene.face_id, is_target=scene.is_target, meta=dict(scene.meta),
+    )
+    expected = render_view(expected_scene, frame, light=light, spec=spec,
+                           backend=BACKEND_SOFTWARE)
+    assert np.array_equal(actual.rgb_linear, expected.rgb_linear)
+    assert np.array_equal(actual.id_map, expected.id_map)
+    assert np.array_equal(actual.surface_tag, expected.surface_tag)
+    assert np.array_equal(np.nan_to_num(actual.depth_z, nan=-1.0),
+                          np.nan_to_num(expected.depth_z, nan=-1.0))
+    assert actual.backend == fa.BACKEND_APPEARANCE
+    assert actual.meta["base_renderer"] == BACKEND_SOFTWARE
+    assert actual.meta["appearance"]["albedo_channel"] == "PER_FACE_OVERRIDE"
+    assert actual.meta["appearance"]["lambert"]["status"] == "OK"
+
+
 def test_relief_off_and_relief_on_differ_only_by_the_normal():
     """With a constant gradient the image change equals the analytic shading change."""
     scene, frame, light = _plate()

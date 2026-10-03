@@ -31,6 +31,6 @@ CUDA 后端目前为 `NOT_IMPLEMENTED`。本机或未来 RTX 5090 的存在不�
 
 ## 支持依据
 
-- NVIDIA CUDA Programming Guide 建议优先使用成熟库与框架；CUDA 并不意味着只能用 C++：[CUDA platform](https://docs.nvidia.com/cuda/cuda-programming-guide/01-introduction/cuda-platform.html)。
+- NVIDIA CUDA Programming Guide 在 1.1.3 节指出，成熟库与框架通常能提高效率和产出；CUDA 也不限定为 C++：[Introduction, §1.1.3](https://docs.nvidia.com/cuda/cuda-programming-guide/01-introduction/introduction.html)。CUDA 平台页支持语言无关性与 PTX/硬件兼容说明：[CUDA platform](https://docs.nvidia.com/cuda/cuda-programming-guide/01-introduction/cuda-platform.html)。
 - pybind11 支持 NumPy/buffer 接口；零拷贝仍需管理生命周期、stride 与数据转换：[NumPy and buffer protocol](https://pybind11.readthedocs.io/en/stable/advanced/pycpp/numpy.html)。
 - Peridynamics.jl 文档与仓库展示 CPU 线程/MPI 路线；这不证明当前本地 GPU 支持：[Peridynamics.jl](https://github.com/kaipartmann/Peridynamics.jl)。
