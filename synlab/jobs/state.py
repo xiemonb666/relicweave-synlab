@@ -23,7 +23,7 @@ TRANSITIONS: dict[JobState, set[JobState]] = {
     JobState.RUNNING: {JobState.OUTPUT_READY, JobState.RETRYABLE, JobState.FAILED, JobState.CANCELLED},
     JobState.OUTPUT_READY: {JobState.QA_PASS, JobState.QUARANTINED, JobState.RETRYABLE, JobState.FAILED},
     JobState.QA_PASS: {JobState.COMMITTED, JobState.QUARANTINED},
-    JobState.RETRYABLE: {JobState.PENDING, JobState.FAILED},
+    JobState.RETRYABLE: {JobState.PENDING, JobState.FAILED, JobState.CANCELLED},
     JobState.BLOCKED: {JobState.PENDING, JobState.FAILED, JobState.CANCELLED},
     JobState.QUARANTINED: {JobState.PENDING, JobState.FAILED},
     JobState.COMMITTED: set(),

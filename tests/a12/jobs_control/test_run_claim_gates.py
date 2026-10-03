@@ -284,3 +284,92 @@ def test_cancel_keeps_an_in_flight_attempt_running_and_allows_its_safe_point(
         assert finished.state == "OUTPUT_READY"
     finally:
         client.close()
+
+
+def test_http_cancel_marks_retryable_terminal_and_preserves_existing_output_refs(
+        store_root: Path):
+    client = make_client(store_root, "researcher")
+    store = AssetStore(store_root)
+    scheduler = Scheduler(store, owner="cancel-retryable-worker")
+    try:
+        accepted = create_job(client, stage="freeze_spec", key="cancel-retryable-http")
+        assert accepted.status_code == 202, accepted.text
+        job_id = accepted.json()["job_id"]
+        run_id = accepted.json()["run_id"]
+        retained_outputs = ["asset_previously_committed"]
+        with store.connect() as conn:
+            conn.execute("UPDATE jobs SET state=?, attempt=1, error_json=?, output_json=? WHERE job_id=?",
+                         ("RETRYABLE", json.dumps({"retryable": True}),
+                          json.dumps(retained_outputs), job_id))
+
+        cancelled = client.post(f"/api/synlab/jobs/{job_id}/cancel", json={})
+        assert cancelled.status_code == 200, cancelled.text
+        assert cancelled.json()["cancelled_jobs"] == [job_id]
+        assert store.get_run(run_id)["status"] == "CANCELLED"
+        job = scheduler.get_job(job_id)
+        assert job.state == JobState.CANCELLED.value
+        assert job.outputs == retained_outputs
+
+        retry = client.post(f"/api/synlab/jobs/{job_id}/retry", json={"reason": "after cancel"})
+        assert retry.status_code == 409
+        assert retry.json()["error"]["code"] == "STATE_CONFLICT"
+        before_claim = _job_and_events(store, job_id)
+        with pytest.raises(SynLabError) as exc:
+            scheduler.claim(job_id)
+        assert exc.value.code == ErrorCode.LEASE_STALE
+        assert _job_and_events(store, job_id) == before_claim
+        assert scheduler.ready() == []
+    finally:
+        client.close()
+
+
+@pytest.mark.parametrize("initial_state", ["RETRYABLE", "FAILED"])
+def test_retry_cannot_mutate_a_run_cancelled_after_its_precheck(
+        store_root: Path, monkeypatch: pytest.MonkeyPatch, initial_state: str):
+    retry_client = make_client(store_root, "researcher")
+    cancel_client = make_client(store_root, "researcher")
+    store = AssetStore(store_root)
+    try:
+        accepted = create_job(retry_client, stage="freeze_spec", key=f"retry-cancel-{initial_state}")
+        assert accepted.status_code == 202, accepted.text
+        job_id = accepted.json()["job_id"]
+        run_id = accepted.json()["run_id"]
+        with store.connect() as conn:
+            conn.execute("UPDATE jobs SET state=?, error_json=? WHERE job_id=?",
+                         (initial_state, json.dumps({"retryable": True}), job_id))
+
+        def cancel_before_mutation(*args, **kwargs):
+            response = cancel_client.post(f"/api/synlab/jobs/{job_id}/cancel", json={})
+            assert response.status_code == 200, response.text
+
+        if initial_state == "RETRYABLE":
+            original = Scheduler.requeue
+
+            def interleaved_requeue(instance, *args, **kwargs):
+                cancel_before_mutation()
+                return original(instance, *args, **kwargs)
+
+            monkeypatch.setattr(Scheduler, "requeue", interleaved_requeue)
+        else:
+            original = Scheduler.create_job
+
+            def interleaved_create(instance, *args, **kwargs):
+                if kwargs.get("allowed_run_statuses") is not None:
+                    cancel_before_mutation()
+                return original(instance, *args, **kwargs)
+
+            monkeypatch.setattr(Scheduler, "create_job", interleaved_create)
+
+        response = retry_client.post(f"/api/synlab/jobs/{job_id}/retry",
+                                     json={"reason": "race with cancel"})
+        assert response.status_code == 409, response.text
+        assert store.get_run(run_id)["status"] == "CANCELLED"
+        jobs = Scheduler(store).list_jobs(run_id=run_id)
+        assert [job.job_id for job in jobs] == [job_id]
+        expected_state = "CANCELLED" if initial_state == "RETRYABLE" else "FAILED"
+        assert jobs[0].state == expected_state
+        assert jobs[0].attempt == 0
+        assert Scheduler(store).ready() == []
+    finally:
+        retry_client.close()
+        cancel_client.close()

@@ -1,3 +1,9 @@
+# 状态补充（2026-10-03）
+
+VF 当前 prototype 已窄验收 canonical STEP BRep face 分类、连续 rest-coordinate 四带绘制及几何-only 深度 parity；器身 C0 折角、接头真实度、材料/历史样式仍 `PENDING`。A12 生产 appearance 仍未全闭环（4 项 appearance 测试失败）；A12 adapter/camera32 为 `PASS`，但 per-face 近似仍漏掉窄红带。GPU 路径未实现，完整物理断裂链未完成。PG owner 报告 physics/time SHA 20/20 和 OSB/BB 独立 API fixture 的真实 CLI 验证通过，最终 wheel 检查进行中；jobs 修复 19 项测试通过，仍在审查中。A12 既有 ageing、capture 和 reconstruction 能力为部分实现，新 VF/PG 接入与真实效果综合验证待完成。
+
+详细文件路径、数值证据和责任边界见 [实现 ledger](INFRA_IMPLEMENTATION_20261003.md) 与 [PG-Frag v12 decisions](PGFRAG_V12_DECISIONS_20261003.md)。下方内容保留原 2026-10-02 历史快照，不以本补充覆盖旧记录。
+
 # A12 未完成项清单与在修追踪
 
 **文档目的**：把"还没修好的东西"变成**可追踪、可验收、可复算**的清单，避免口头记忆。

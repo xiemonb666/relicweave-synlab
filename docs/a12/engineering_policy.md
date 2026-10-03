@@ -1,3 +1,9 @@
+# 当前状态补充（2026-10-03）
+
+VF 首件的 canonical STEP 面分类、连续 rest-coordinate 绘制和 BRep face 语义映射已完成狭义原型验收；器身 C0 折角、把手根部几何过渡、材料标定和历史样式仍为 `PENDING`。这不代表 A12 生产 appearance 链路已闭环：当前有 4 项 appearance 测试失败，GPU 路径未实现，完整物理断裂→遗存退化→低成本观测链尚未完成。A12 adapter/camera32 检查为 `PASS`，但近似 per-face 字段仍漏掉窄红带。PG owner 报告 physics/time SHA 为 20/20，OSB/BB 独立 API fixture 已通过真实 CLI；最终 wheel 仍由 PG owner 检查。jobs 修复测试为 19 项通过，仍在审查中。
+
+细节、图像和状态边界见 [2026-10-03 implementation ledger](INFRA_IMPLEMENTATION_20261003.md)；PG 接口裁决见 [v12 decisions](PGFRAG_V12_DECISIONS_20261003.md)。以下既有政策条文和历史记录保持原样。
+
 # A12 工程政策：算法选型与"停止死磕"规则
 
 **状态**：生效（用户裁决，2026-10-02）。
