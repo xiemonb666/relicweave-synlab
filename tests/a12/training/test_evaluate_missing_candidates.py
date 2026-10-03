@@ -66,12 +66,13 @@ def _fake_feature_bundle(monkeypatch):
     monkeypatch.setattr(training_api, "FeatureBundle", _Bundle)
 
 
-def _evaluate(pool: _Pool, *, query: str = "q", invalid: set[str] | None = None):
+def _evaluate(pool: _Pool, *, query: str = "q", invalid: set[str] | None = None,
+              candidate_pool_size: int = 1):
     return training_api.evaluate(
         checkpoint_ref=None,
         pool_ref=pool,
         top_k=(1,),
-        candidate_pool_size=1,
+        candidate_pool_size=candidate_pool_size,
         queries=[query],
         model=_Model(invalid),
     )
@@ -96,6 +97,8 @@ def test_partial_missing_r2_remains_in_coverage_denominator():
     assert row["missing_feature_historical_neighbours"] == ["r2-missing"]
     assert row["cov@1"] == pytest.approx(0.5)
     assert row["pool_cov"] == pytest.approx(0.5)
+    assert row["conditional_cov@1"] == 1.0  # one in-pool R2 and Top1 retrieves it
+    assert row["pool_miss"] is False
 
 
 def test_all_r2_candidates_missing_produces_zero_coverage_not_na():
@@ -113,6 +116,9 @@ def test_all_r2_candidates_missing_produces_zero_coverage_not_na():
     assert row["cov@1"] == 0.0
     assert row["pool_cov"] == 0.0
     assert row["effective_cov@1"] == 0.0
+    assert row["conditional_cov@1"] is None
+    assert row["pool_miss"] is True
+    assert report["metrics"]["pool_miss_count"] == 1
 
 
 def test_unencodable_r2_candidate_is_reported_without_shrinking_denominator():
@@ -166,3 +172,42 @@ def test_open_set_query_with_zero_r2_preserves_na_metrics():
     assert row["n_historical_neighbours"] == 0
     assert row["hit@1"] is None
     assert row["cov@1"] is None
+
+
+def test_training_evaluate_conditional_cov_is_topk_coverage_within_candidate_pool():
+    pool = _Pool(
+        lineup=["q", "r2-a", "r2-b", "negative"],
+        features={"q": {}, "r2-a": {}, "r2-b": {}, "negative": {}},
+        neighbours={"q": ["r2-a", "r2-b"]},
+    )
+
+    report = _evaluate(pool, candidate_pool_size=3)
+    row = report["per_query"][0]
+
+    assert row["first_stage"] == ["r2-a", "r2-b", "negative"]
+    assert row["conditional_cov@1"] == pytest.approx(0.5)
+    assert row["conditional_cov@1"] == report["metrics"]["per_k"]["k=1"][
+        "conditional_cov_at_k"]
+    assert row["conditional_cov"] == pytest.approx(0.5)
+    assert row["conditional_cov_legacy_pool_census"] == 1.0
+    assert report["metrics"]["conditional_cov_legacy_status"] == \
+        "LEGACY_POOL_CENSUS_UNVALIDATED_FOR_RETRIEVAL"
+    assert report["evaluation_semantics"]["version"] == "historical_R2_denominator_v2"
+
+
+def test_entire_lineup_without_features_is_reported_as_input_failures():
+    pool = _Pool(
+        lineup=["q", "r2-missing", "negative"],
+        features={},
+        neighbours={"q": ["r2-missing"]},
+    )
+
+    report = _evaluate(pool)
+
+    assert report["metrics"]["gallery_size"] == 3
+    assert report["metrics"]["feature_available_gallery_size"] == 0
+    assert report["metrics"]["encoded_gallery_size"] == 0
+    assert report["metrics"]["feature_missing_gallery_ids"] == ["negative", "q", "r2-missing"]
+    assert [r["status"] for r in report["per_query"]] == [
+        "INPUT_UNAVAILABLE", "INPUT_UNAVAILABLE", "INPUT_UNAVAILABLE"]
+    assert report["metrics"]["per_k"]["k=1"]["effective_cov_at_k"] == 0.0

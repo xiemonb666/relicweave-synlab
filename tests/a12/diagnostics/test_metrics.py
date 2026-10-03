@@ -14,6 +14,7 @@ from synlab.diagnostics.metrics import (
     aggregate_metrics,
     any_at_m,
     conditional_cov,
+    conditional_cov_at_k,
     cov_recall_at_k,
     dedupe_candidates,
     effective_cov_at_k,
@@ -121,6 +122,33 @@ def test_conditional_cov_na_is_counted_as_pool_miss():
     assert summary["conditional_cov_na_count"] == 1
     assert summary["any_at_m"] == 0.0
     assert summary["pool_cov_at_m"] == 0.0
+
+
+def test_conditional_cov_at_k_measures_refined_coverage_inside_pool():
+    neighbours = ["B", "C"]
+    first_stage = ["B", "C", "X"]
+    assert conditional_cov_at_k(["B"], first_stage, neighbours) == 0.5
+    assert conditional_cov_at_k(["X"], first_stage, neighbours) == 0.0
+    assert conditional_cov_at_k(["B", "C"], ["B", "X"], neighbours) == 1.0
+    assert conditional_cov_at_k(["B"], ["X"], neighbours) is None
+    assert pool_miss(["X"], neighbours) is True
+    # The retained two-argument API is explicitly only a pool-presence census.
+    assert conditional_cov(first_stage, neighbours) == 1.0
+
+
+def test_query_metrics_and_aggregate_use_conditional_cov_at_each_k():
+    row = query_metrics(query_id="q", neighbours=["B", "C"], gallery_ids=["B", "C", "X"],
+                        first_stage=["B", "C", "X"], ranked=["B", "X"], top_k=(1, 2))
+    summary = aggregate_metrics([row], top_k=(1, 2))
+
+    assert row["conditional_cov@1"] == 0.5
+    assert row["conditional_cov@2"] == 0.5
+    assert row["conditional_cov"] == row["conditional_cov@2"]
+    assert row["conditional_cov_legacy_pool_census"] == 1.0
+    assert summary["k=1"]["conditional_cov_at_k"] == 0.5
+    assert summary["k=2"]["conditional_cov_at_k"] == 0.5
+    assert summary["conditional_cov"] == 0.5
+    assert summary["pool_miss"] == 0
 
 
 # ---------------------------------------------------------------------------- hygiene

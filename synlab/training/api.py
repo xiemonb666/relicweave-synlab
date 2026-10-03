@@ -429,15 +429,26 @@ def evaluate(checkpoint_ref: Any, pool_ref: Any = None, *, top_k: Sequence[int] 
 
     metrics: dict[str, Any] = {
         "split": split,
-        "gallery_size": len(ids),
+        "evaluation_semantics_version": "historical_R2_denominator_v2",
+        "gallery_size": len(lineup),
+        "frozen_gallery_size": len(lineup),
+        "feature_available_gallery_size": len(ids),
+        "encoded_gallery_size": sum(1 for v in encodable.values() if v),
+        "feature_missing_gallery_count": len(missing_feature_ids),
+        "feature_missing_gallery_ids": missing_feature_ids,
         "encodable": sum(1 for v in encodable.values() if v),
         "candidate_input_failure_count": len(input_failures),
         "candidate_input_failures": input_failures,
-        "candidate_missing_feature_count": len(missing_feature_ids),
-        "candidate_missing_features": missing_feature_ids,
         "pool_cov_at_m": _agg(pool_covs),
         "any_at_m": _agg(anys),
         "conditional_cov": _agg(conditionals),
+        "conditional_cov_legacy_pool_census": _agg(legacy_conditionals),
+        "conditional_cov_semantics_version": "conditional_cov_at_k_v2",
+        "conditional_cov_semantics": (
+            "max configured K; conditional_cov_at_k_v2; denominator is in-pool R2 count"),
+        "conditional_cov_legacy_status": "LEGACY_POOL_CENSUS_UNVALIDATED_FOR_RETRIEVAL",
+        "pool_miss_count": pool_miss_count,
+        "pool_miss_evaluable_queries": pool_miss_denominator,
         "na_counts": {
             "pool_cov": int(np.sum(~np.isfinite(np.asarray(pool_covs, dtype=np.float64)))),
             "hit": 0, "cov": 0,
@@ -455,12 +466,25 @@ def evaluate(checkpoint_ref: Any, pool_ref: Any = None, *, top_k: Sequence[int] 
         metrics["per_k"][f"k={k}"] = {
             "hit_at_k": _agg(buckets["hit"]),
             "cov_recall_at_k": _agg(buckets["cov"]),
+            "conditional_cov_at_k": _agg(buckets["conditional_cov"]),
+            "conditional_cov_at_k_na_count": int(np.sum(
+                ~np.isfinite(np.asarray(buckets["conditional_cov"], dtype=np.float64)))),
             "effective_hit_at_k": _agg(buckets["eff_hit"]),
             "effective_cov_at_k": _agg(buckets["eff_cov"]),
             "hit_na_count": int(np.sum(~np.isfinite(np.asarray(buckets["hit"], dtype=np.float64)))),
         }
     return {"status": "OK", "checkpoint_ref": str(checkpoint_ref), "pool_id": str(
-        getattr(pool, "pool_id", "")), "metrics": metrics, "per_query": rows,
+        getattr(pool, "pool_id", "")),
+        "evaluation_semantics": {
+            "version": "historical_R2_denominator_v2",
+            "conditional_cov_version": "conditional_cov_at_k_v2",
+            "gallery_denominator": "full frozen pool.lineup; missing feature rows remain inputs failures",
+            "historical_R2_denominator": "all unique non-self pool.neighbours IDs, regardless of feature availability",
+            "conditional_cov": "conditional_cov_at_k_v2 per K; conditional_cov summarizes maximum configured K",
+            "conditional_cov_legacy": "legacy pool-census value is separately named and unvalidated for retrieval success",
+            "older_reports": "reports using feature-only gallery or two-argument conditional_cov require recomputation",
+        },
+        "metrics": metrics, "per_query": rows,
         "index_identity": model.index_identity()}
 
 

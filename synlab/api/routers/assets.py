@@ -140,7 +140,7 @@ def _feature_bundle_arrays(store: Any, record: Any, *, ref: Any | None = None) -
         raise ApiProblem(403, "ROLE_FORBIDDEN",
                          "feature_bundle field names fail the recursive research-leakage check",
                          stage="assets.feature_bundle",
-                         details={"leakage_code": exc.code.value}) from exc
+                         details={"leakage_check": "failed"}) from exc
     return names
 
 
@@ -172,6 +172,32 @@ def _deployment_feature_view(record: Any, array_names: list[str]) -> dict[str, A
     }
 
 
+def _deployment_display_view(record: Any) -> dict[str, Any]:
+    """Expose the standalone display artifact without its source/parent provenance."""
+    from .. import display
+
+    expected = display.describe()
+    stored = (record.meta or {}).get("display_transform")
+    transform = expected if stored == expected else None
+    available = "glb" in record.files
+    return {
+        "asset_id": record.asset_id,
+        "role": record.role,
+        "schema": record.schema,
+        "unit": record.unit,
+        "frame": record.frame,
+        "metadata_view": {
+            "kind": "display_projection",
+            "available": available,
+            "display_transform": transform,
+        },
+        "files": {"glb": {"available": available}},
+        "file_urls": {
+            "glb": f"/api/synlab/assets/{record.asset_id}/files/{quote(record.role)}?key=glb",
+        } if available else {},
+    }
+
+
 @router.get("/assets", summary="分页资产列表（kind/split/lineage/QA），不暴露服务器任意路径")
 def get_assets(
     session: SessionDep,
@@ -185,6 +211,10 @@ def get_assets(
     include_research_roles: bool = Query(False, description="部署/运维会话会被拒绝"),
 ) -> dict[str, Any]:
     is_research = session.policy.can_read_truth
+    if session.role == ROLE_DEPLOYMENT and (lineage_id is not None or split is not None):
+        raise ApiProblem(403, "ROLE_FORBIDDEN",
+                         "deployment asset listings cannot be filtered by lineage or split",
+                         stage="assets.filters")
     requested_roles = list(role or [])
     if requested_roles:
         for requested_role in requested_roles:
@@ -215,6 +245,12 @@ def get_assets(
                                         object_kind="asset", object_id=record.asset_id)
                 array_names = _feature_bundle_arrays(session.store, record)
                 projected.append(_deployment_feature_view(record, array_names))
+            elif item.get("role") == ROLE_DISPLAY_LOD:
+                try:
+                    record = session.store.get_asset(str(item["asset_id"]))
+                except SynLabError as exc:
+                    raise from_synlab(exc) from exc
+                projected.append(_deployment_display_view(record))
             else:
                 projected.append(item)
         payload["items"] = projected
@@ -246,6 +282,9 @@ def get_asset(session: SessionDep, asset_id: str) -> dict[str, Any]:
         return {"ok": True, "asset": _deployment_feature_view(record, array_names),
                 "role": session.role, "metadata_view": "deployment_projection",
                 "interpretation_hash_note": "hash identifies the canonical stored record, not this projection"}
+    if session.role == ROLE_DEPLOYMENT and record.role == ROLE_DISPLAY_LOD:
+        return {"ok": True, "asset": _deployment_display_view(record), "role": session.role,
+                "metadata_view": "display_projection"}
     integrity = verify_all_files(session.store, resolved)
     payload = record.as_dict()
     payload.pop("path", None)
@@ -293,6 +332,7 @@ def get_asset_file(
 
     file_name = key
     deployment_feature = session.role == ROLE_DEPLOYMENT and record.role == ROLE_FEATURE_BUNDLE
+    deployment_display = session.role == ROLE_DEPLOYMENT and record.role == ROLE_DISPLAY_LOD
     if deployment_feature:
         if file_name not in (None, "arrays"):
             raise ApiProblem(403, "ROLE_FORBIDDEN",
@@ -300,6 +340,13 @@ def get_asset_file(
                              stage="assets.files",
                              details={"asset_role": record.role, "file_key": file_name})
         file_name = "arrays"
+    elif deployment_display:
+        if file_name not in (None, "glb"):
+            raise ApiProblem(403, "ROLE_FORBIDDEN",
+                             "deployment display downloads expose only the standalone GLB",
+                             stage="assets.files",
+                             details={"asset_role": record.role, "file_key": file_name})
+        file_name = "glb"
     elif file_name is None:
         for candidate in FILE_KEY_PRIORITY:
             if candidate in record.files:
