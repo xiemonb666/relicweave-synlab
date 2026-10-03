@@ -31,7 +31,8 @@ from synlab.roles import SOURCE_SENSOR_SIM  # noqa: E402
 from synlab.schemas.runtime import ViewFrame  # noqa: E402
 
 
-def _fixture_arrays(region_codes: list[int]) -> tuple[np.ndarray, np.ndarray, np.ndarray,
+def _fixture_arrays(region_codes: list[int], *, sloped_region_1: bool = False
+                   ) -> tuple[np.ndarray, np.ndarray, np.ndarray,
                                                        np.ndarray, np.ndarray]:
     # Independent, front-facing (normal -Z) triangles spaced across a small plane.
     vertices: list[list[float]] = []
@@ -43,6 +44,12 @@ def _fixture_arrays(region_codes: list[int]) -> tuple[np.ndarray, np.ndarray, np
                          [center_x, 0.5, 0.0],
                          [center_x + 0.45, -0.5, 0.0]])
         faces.append([offset, offset + 1, offset + 2])
+    if sloped_region_1 and vertices:
+        # One front-facing triangle whose immutable material z crosses a narrow painted band.
+        # Its face centroid is outside the band, so a per-face lookup cannot reproduce it.
+        vertices[0] = [-0.45, -0.5, -2.0]
+        vertices[1] = [0.0, 0.5, 5.0]
+        vertices[2] = [0.45, -0.5, -2.0]
     verts = np.asarray(vertices, dtype=np.float64)
     tris = np.asarray(faces, dtype=np.int32)
     albedo = np.asarray([[0.65 - i * 0.04, 0.4, 0.2] for i in range(len(faces))],
@@ -52,10 +59,13 @@ def _fixture_arrays(region_codes: list[int]) -> tuple[np.ndarray, np.ndarray, np
 
 
 def _write_package(root: Path, *, status: str = "PASS", report_status: str | None = None,
-                   region_codes: list[int] | None = None, solid_step: bool = True) -> Path:
+                   region_codes: list[int] | None = None, solid_step: bool = True,
+                   continuous_recipe: bool = False,
+                   sloped_region_1: bool = False) -> Path:
     root.mkdir(parents=True, exist_ok=True)
     region_codes = region_codes or [1, 2, 3, 4, 5]
-    vertices, faces, face_region, albedo, roughness = _fixture_arrays(region_codes)
+    vertices, faces, face_region, albedo, roughness = _fixture_arrays(
+        region_codes, sloped_region_1=sloped_region_1)
     for subdir in ("geometry", "fields", "validation"):
         (root / subdir).mkdir(exist_ok=True)
     np.savez(root / "geometry/surface.npz", vertices_mm=vertices, faces=faces)
@@ -77,6 +87,21 @@ def _write_package(root: Path, *, status: str = "PASS", report_status: str | Non
     for rel in declared:
         data = (root / rel).read_bytes()
         files[rel] = {"bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
+    recipe = {
+        "material_binding_id": "fixture_matte",
+        "historical_style_validation": "NOT_VALIDATED",
+        "geometry_relief_mm": 0.0,
+        "target_region_codes": [1],
+    }
+    if continuous_recipe:
+        recipe.update({
+            "coordinate_map": "cylindrical_z_up_mm",
+            "palette_linear_rgb": {
+                "base": [0.4, 0.58, 0.2], "red": [0.9, 0.025, 0.015],
+                "dark": [0.04, 0.02, 0.015],
+            },
+            "bands": [{"center_z_mm": 0.0, "width_mm": 0.5, "color": "red"}],
+        })
     manifest = {
         "schema": "forge.asset.v1",
         "frame": "right_handed_z_up",
@@ -90,9 +115,7 @@ def _write_package(root: Path, *, status: str = "PASS", report_status: str | Non
         "material": {"id": "fixture_matte", "calibration_status": "UNVALIDATED_PROTOTYPE",
                      "mechanics": {"rho_kg_m3": 2100.0, "E_pa": 5.0e9, "nu": 0.25,
                                    "Gc_j_m2": 45.0}},
-        "ornament": {"kind": "painted", "recipe": {
-            "material_binding_id": "fixture_matte", "historical_style_validation": "NOT_VALIDATED",
-            "geometry_relief_mm": 0.0, "target_region_codes": [1]}},
+        "ornament": {"kind": "painted", "recipe": recipe},
         "provenance": {"seed": 91},
     }
     (root / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
@@ -368,3 +391,165 @@ def test_scene_and_render_metadata_do_not_export_producer_seed_or_rest_coordinat
     assert scene.meta["feature_export_allowed"] is False
     assert asset.vertices_material_xyz_mm.flags.writeable is False
     assert asset.face_region.flags.writeable is False
+
+
+def _render_face_normal_map(asset, id_map: np.ndarray, object_pose: np.ndarray | None = None
+                            ) -> np.ndarray:
+    scene = scene_from_forge_asset(asset, allow_prototype_preview=True)
+    vertices = scene.vertices
+    if object_pose is not None:
+        vertices = vertices @ object_pose[:3, :3].T + object_pose[:3, 3]
+    tri = vertices[scene.faces]
+    normals = np.cross(tri[:, 1] - tri[:, 0], tri[:, 2] - tri[:, 0])
+    normals /= np.maximum(np.linalg.norm(normals, axis=1, keepdims=True), 1e-15)
+    normal_map = np.zeros((*id_map.shape, 3), dtype=np.float64)
+    hit = id_map >= 0
+    normal_map[hit] = normals[id_map[hit]]
+    return normal_map
+
+
+@pytest.mark.parametrize(("supersample", "camera_model", "dist"), [
+    (1, "PINHOLE", None),
+    (2, "PINHOLE", None),
+    (1, "OPENCV", np.asarray([0.08, -0.01, 0.001, -0.001, 0.0])),
+])
+def test_continuous_bands_sample_hit_barycentrics_without_changing_geometry(
+    tmp_path: Path, supersample: int, camera_model: str,
+    dist: np.ndarray | None,
+) -> None:
+    pytest.importorskip("open3d") if camera_model != "PINHOLE" else None
+    asset = load_forge_asset(_write_package(tmp_path / "fixture", continuous_recipe=True,
+                                            sloped_region_1=True))
+    frame = _frame()
+    frame.camera_model = camera_model
+    frame.dist = dist
+    spec = RenderSpec(supersample=supersample, near_mm=1.0, far_mm=100.0,
+                      max_pixels=64 * 64 * supersample * supersample)
+    continuous = render_forge_asset_preview(asset, frame, light=_light(), spec=spec,
+                                            allow_prototype_preview=True)
+    legacy = render_forge_asset_preview(
+        asset, frame, light=_light(), spec=spec, allow_prototype_preview=True,
+        appearance_sampling="FACE_SAMPLE_APPROXIMATION")
+
+    # One coarse triangle has a centroid outside the painted band. Continuous per-hit sampling
+    # must nevertheless put both base and red samples on that same face.
+    face_pixels = continuous.id_map == 0
+    rgb = continuous.rgb_linear[face_pixels]
+    assert rgb.shape[0] >= 3
+    assert np.count_nonzero((rgb[:, 0] > rgb[:, 1] * 1.5)) >= 1
+    assert np.count_nonzero((rgb[:, 1] > rgb[:, 0] * 0.7)) >= 1
+    assert not np.array_equal(continuous.rgb_linear, legacy.rgb_linear)
+
+    assert np.array_equal(continuous.id_map, legacy.id_map)
+    assert np.array_equal(continuous.surface_tag, legacy.surface_tag)
+    assert np.array_equal(continuous.visibility, legacy.visibility)
+    assert np.array_equal(continuous.depth_z, legacy.depth_z, equal_nan=True)
+    assert np.array_equal(_render_face_normal_map(asset, continuous.id_map),
+                          _render_face_normal_map(asset, legacy.id_map))
+    assert continuous.meta["appearance_sampling"] == "CONTINUOUS_REST_COORDINATE"
+    assert legacy.meta["appearance_sampling"] == "FACE_SAMPLE_APPROXIMATION"
+    forbidden = {"vertices_material_xyz_mm", "face_region", "bands", "palette_linear_rgb",
+                 "pattern_id", "ornament_recipe_json"}
+    assert not forbidden.intersection(continuous.meta)
+
+
+def _ray_barycentric_world(origin: np.ndarray, direction: np.ndarray,
+                           triangle: np.ndarray) -> tuple[float, np.ndarray] | None:
+    # Independent scalar Möller–Trumbore oracle used only for the posed pinhole fixture.
+    edge1 = triangle[1] - triangle[0]
+    edge2 = triangle[2] - triangle[0]
+    pvec = np.cross(direction, edge2)
+    det = float(np.dot(edge1, pvec))
+    if abs(det) < 1e-12:
+        return None
+    inv_det = 1.0 / det
+    tvec = origin - triangle[0]
+    b1 = float(np.dot(tvec, pvec) * inv_det)
+    qvec = np.cross(tvec, edge1)
+    b2 = float(np.dot(direction, qvec) * inv_det)
+    distance = float(np.dot(edge2, qvec) * inv_det)
+    b0 = 1.0 - b1 - b2
+    if distance <= 0 or min(b0, b1, b2) < 0:
+        return None
+    return distance, np.asarray([b0, b1, b2], dtype=np.float64)
+
+
+def test_continuous_appearance_follows_rest_coordinates_after_object_pose(
+    tmp_path: Path,
+) -> None:
+    asset = load_forge_asset(_write_package(tmp_path / "fixture", continuous_recipe=True,
+                                            sloped_region_1=True))
+    angle = np.deg2rad(-24.0)
+    pose = np.asarray([[1.0, 0.0, 0.0, 0.0],
+                       [0.0, np.cos(angle), -np.sin(angle), 0.0],
+                       [0.0, np.sin(angle), np.cos(angle), 0.0],
+                       [0.0, 0.0, 0.0, 1.0]], dtype=np.float64)
+    frame = _frame()
+    output = render_forge_asset_preview(
+        asset, frame, light=_light(), spec=RenderSpec(supersample=1, near_mm=1.0,
+                                                       far_mm=100.0, max_pixels=64 * 64),
+        allow_prototype_preview=True, object_pose=pose)
+    face = asset.faces[0]
+    posed_triangle = asset.vertices_mm[face] @ pose[:3, :3].T + pose[:3, 3]
+    world_normals = np.cross(posed_triangle[1] - posed_triangle[0],
+                             posed_triangle[2] - posed_triangle[0])
+    world_normals /= np.linalg.norm(world_normals)
+    lambert = np.clip(-float(np.dot(world_normals, _light().direction)), 0.0, 1.0)
+    lighting = _light().ambient + _light().color * lambert
+    origin = frame.T_WC[:3, 3]
+    checked = 0
+    for row, col in zip(*np.nonzero(output.id_map == 0)):
+        ray_cam = np.asarray([(col - frame.K[0, 2]) / frame.K[0, 0],
+                              (row - frame.K[1, 2]) / frame.K[1, 1], 1.0])
+        direction = frame.T_WC[:3, :3] @ ray_cam
+        hit = _ray_barycentric_world(origin, direction, posed_triangle)
+        if hit is None:
+            continue
+        _, bary = hit
+        if float(np.min(bary)) < 0.12:
+            continue
+        rest_z = float(np.dot(bary, asset.vertices_material_xyz_mm[face, 2]))
+        if abs(abs(rest_z) - 0.25) < 0.08:
+            continue  # exclude the band boundary where finite pixel area is expected to vary
+        expected_albedo = (np.asarray([0.9, 0.025, 0.015])
+                           if abs(rest_z) <= 0.25 else np.asarray([0.4, 0.58, 0.2]))
+        expected = expected_albedo * lighting
+        assert np.allclose(output.rgb_linear[row, col], expected, rtol=0.0, atol=2e-6)
+        checked += 1
+        if checked == 12:
+            break
+    assert checked >= 3
+
+
+def test_explicit_albedo_counterfactual_disables_continuous_sampler(tmp_path: Path) -> None:
+    asset = load_forge_asset(_write_package(tmp_path / "fixture", continuous_recipe=True,
+                                            sloped_region_1=True))
+    spec = RenderSpec(supersample=1, near_mm=1.0, far_mm=100.0, max_pixels=64 * 64)
+    continuous = render_forge_asset_preview(asset, _frame(), light=_light(), spec=spec,
+                                            allow_prototype_preview=True)
+    override = np.broadcast_to(np.asarray([0.25, 0.55, 0.35], dtype=np.float32),
+                               (asset.n_faces, 3)).copy()
+    counterfactual = render_forge_asset_preview(
+        asset, _frame(), light=_light(), spec=spec, allow_prototype_preview=True,
+        albedo_override=override, appearance_sampling="CONTINUOUS_REST_COORDINATE",
+        appearance_variant="explicit_unpatterned_test_counterfactual")
+    assert counterfactual.meta["appearance_sampling"] == "FACE_SAMPLE_APPROXIMATION"
+    assert np.array_equal(continuous.depth_z, counterfactual.depth_z, equal_nan=True)
+    assert np.array_equal(continuous.id_map, counterfactual.id_map)
+    assert np.array_equal(continuous.surface_tag, counterfactual.surface_tag)
+    assert not np.array_equal(continuous.rgb_linear, counterfactual.rgb_linear)
+
+
+def test_unsupported_declared_continuous_coordinate_map_fails_closed(tmp_path: Path) -> None:
+    root = _write_package(tmp_path / "fixture", continuous_recipe=True,
+                          sloped_region_1=True)
+    manifest_path = root / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["ornament"]["recipe"]["coordinate_map"] = "unsupported_uv_guess"
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    asset = load_forge_asset(root)
+    with pytest.raises(SynLabError) as excinfo:
+        render_forge_asset_preview(asset, _frame(), light=_light(),
+                                   spec=RenderSpec(supersample=1, max_pixels=64 * 64),
+                                   allow_prototype_preview=True)
+    assert excinfo.value.code == ErrorCode.SCHEMA_INVALID

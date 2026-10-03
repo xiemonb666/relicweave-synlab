@@ -28,6 +28,7 @@ from ..observe.render import (
     Scene,
     render_view,
 )
+from ..observe.continuous_appearance import RestCoordinateAppearanceSampler
 from ..roles import SOURCE_SENSOR_SIM
 from ..schemas.runtime import RenderOutput, ViewFrame
 
@@ -60,6 +61,7 @@ class ForgeAsset:
     material_calibration_status: str
     historical_style_validation: str
     material_binding_id: str
+    ornament_recipe_json: str
     vertices_mm: np.ndarray
     faces: np.ndarray
     face_region: np.ndarray
@@ -578,6 +580,7 @@ def load_forge_asset(package_dir: str | Path) -> ForgeAsset:
         material_calibration_status=str(calibration),
         historical_style_validation=style_status,
         material_binding_id=material_id,
+        ornament_recipe_json=json.dumps(recipe, separators=(",", ":"), allow_nan=True),
         vertices_mm=_freeze_array(vertices, np.float64),
         faces=_freeze_array(faces, np.int32),
         face_region=_freeze_array(face_region),
@@ -693,6 +696,8 @@ def render_forge_asset_preview(
     albedo_override: np.ndarray | None = None,
     roughness_override: np.ndarray | None = None,
     appearance_variant: str | None = None,
+    appearance_sampling: str | None = None,
+    object_pose: np.ndarray | None = None,
 ) -> RenderOutput:
     """Render a bounded software preview with explicit non-production semantics."""
     scene = scene_from_forge_asset(
@@ -713,11 +718,41 @@ def render_forge_asset_preview(
             measurements={"supersampled_pixel_count": sample_count,
                           "limit": _MAX_PROTOTYPE_PREVIEW_SAMPLES},
         )
+    if appearance_sampling not in (None, "FACE_SAMPLE_APPROXIMATION",
+                                   "CONTINUOUS_REST_COORDINATE"):
+        raise _error(ErrorCode.SCHEMA_INVALID, "unsupported Forge preview appearance mode",
+                     stage="integrations.forge_asset.render_preview",
+                     measurements={"appearance_sampling": appearance_sampling})
+    try:
+        recipe = json.loads(asset.ornament_recipe_json)
+    except (TypeError, json.JSONDecodeError) as exc:  # defensive for constructed records
+        raise _error(ErrorCode.SCHEMA_INVALID, "stored Forge ornament recipe is unreadable",
+                     stage="integrations.forge_asset.render_preview") from exc
+    recipe_declares_continuous = (isinstance(recipe, dict)
+                                  and ("coordinate_map" in recipe or "bands" in recipe))
+    requested_continuous = (appearance_sampling == "CONTINUOUS_REST_COORDINATE"
+                            or (appearance_sampling is None and recipe_declares_continuous))
+    # An explicit override is a true unpatterned counterfactual.  It always disables the
+    # private sampler, including when the caller selected continuous mode.
+    sampler = None
+    if requested_continuous and albedo_override is None:
+        sampler = RestCoordinateAppearanceSampler.from_asset_truth(
+            faces=asset.faces,
+            face_regions=asset.face_region,
+            vertices_material_xyz_mm=asset.vertices_material_xyz_mm,
+            recipe=recipe,
+            material_binding_id=asset.material_binding_id,
+        )
     output = render_view(scene, frame, light=light, spec=render_spec,
-                         backend=BACKEND_SOFTWARE)
+                         object_pose=object_pose, backend=BACKEND_SOFTWARE,
+                         _appearance_sampler=sampler)
     # RenderOutput does not copy Scene.meta itself.  Only the deliberately safe adapter
     # declaration is carried forward; it has no producer/seed/rest-coordinate values.
     output.meta.update(scene.meta)
+    output.meta["appearance_sampling"] = (
+        "CONTINUOUS_REST_COORDINATE" if sampler is not None
+        else "FACE_SAMPLE_APPROXIMATION")
+    output.meta["appearance_sampling_boundary"] = "PRIVATE_RENDER_CALL_ONLY"
     output.meta["base_renderer"] = output.backend
     return output
 
