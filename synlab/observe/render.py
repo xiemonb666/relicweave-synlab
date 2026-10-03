@@ -43,6 +43,7 @@ from ..cameras.projection import CAMERA_MODELS, distort_normalized, undistort_no
 from ..errors import ErrorCode, SynLabError
 from ..schemas.runtime import RenderOutput, ViewFrame
 from ..roles import SOURCE_SENSOR_SIM
+from .continuous_appearance import RestCoordinateAppearanceSampler
 
 BACKEND_SOFTWARE = "SOFTWARE_RASTERIZER"
 BACKEND_BLENDER = "BLENDER_CYCLES"
@@ -316,18 +317,19 @@ def _camera_sample_rays(frame: ViewFrame, width: int, height: int, *, row_start:
 def _refine_ray_candidates(vertices: np.ndarray, faces: np.ndarray, face_map: np.ndarray,
                            directions: np.ndarray, primitive_ids: np.ndarray,
                            near_mm: float, far_mm: float
-                           ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+                           ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """Refine Open3D Float32 primitive candidates with exact double ray/triangle hits."""
     count = int(directions.shape[0])
     t_exact = np.full(count, np.inf, dtype=np.float64)
     hit_exact = np.zeros(count, dtype=bool)
     original_face = np.full(count, -1, dtype=np.int32)
+    bary_exact = np.zeros((count, 3), dtype=np.float64)
     candidate_ids = np.asarray(primitive_ids, dtype=np.int64).reshape(-1)
     if candidate_ids.size != count:
         raise ValueError("one primitive id is required for each ray")
     rows = np.flatnonzero((candidate_ids >= 0) & (candidate_ids < len(face_map)))
     if not rows.size:
-        return t_exact, hit_exact, original_face
+        return t_exact, hit_exact, original_face, bary_exact
     face_ids = np.asarray(face_map, dtype=np.int64)[candidate_ids[rows]]
     tri = np.asarray(vertices, dtype=np.float64)[np.asarray(faces, dtype=np.int64)[face_ids]]
     v0, v1, v2 = tri[:, 0], tri[:, 1], tri[:, 2]
@@ -350,7 +352,8 @@ def _refine_ray_candidates(vertices: np.ndarray, faces: np.ndarray, face_map: np
     t_exact[accepted] = distance[valid]
     hit_exact[accepted] = True
     original_face[accepted] = face_ids[valid].astype(np.int32)
-    return t_exact, hit_exact, original_face
+    bary_exact[accepted] = np.column_stack((bary0[valid], bary1[valid], bary2[valid]))
+    return t_exact, hit_exact, original_face, bary_exact
 
 
 def _edge_uncertainty_band(hit: np.ndarray) -> np.ndarray:
@@ -369,8 +372,11 @@ def _edge_uncertainty_band(hit: np.ndarray) -> np.ndarray:
 
 def _raycast_distorted_buffers(scene: Scene, frame: ViewFrame, verts: np.ndarray,
                                normals: np.ndarray, shaded: np.ndarray,
+                               lighting_factor: np.ndarray,
                                front_faces: np.ndarray, width: int, height: int,
-                               spec: RenderSpec) -> dict[str, np.ndarray]:
+                               spec: RenderSpec,
+                               appearance_sampler: RestCoordinateAppearanceSampler | None,
+                               ) -> dict[str, np.ndarray]:
     """Distortion-aware ray casting with Open3D candidates and double hit refinement.
 
     Open3D's accelerated candidate API is Float32 on supported builds. Its hit distance is
@@ -381,9 +387,14 @@ def _raycast_distorted_buffers(scene: Scene, frame: ViewFrame, verts: np.ndarray
     id_buf = np.full((height, width), -1, dtype=np.int32)
     tag_buf = np.full((height, width), -1, dtype=np.int16)
     rgba = np.zeros((height, width, 3), dtype=np.float32)
+    bary_buf = (np.zeros((height, width, 3), dtype=np.float64)
+                if appearance_sampler is not None else None)
     if not front_faces.size:
-        return {"depth": depth, "id": id_buf, "tag": tag_buf, "rgb": rgba,
-                "ray_edge_uncertain": np.zeros((height, width), dtype=bool)}
+        result = {"depth": depth, "id": id_buf, "tag": tag_buf, "rgb": rgba,
+                  "ray_edge_uncertain": np.zeros((height, width), dtype=bool)}
+        if bary_buf is not None:
+            result["barycentric"] = bary_buf
+        return result
     try:
         import open3d as o3d
     except Exception as exc:  # optional, explicit capability boundary for distorted software renders
@@ -423,7 +434,7 @@ def _raycast_distorted_buffers(scene: Scene, frame: ViewFrame, verts: np.ndarray
         candidate_t = candidate["t_hit"].numpy().astype(np.float64)
         has_candidate = (primitive != invalid_id) & np.isfinite(candidate_t)
         primitive[~has_candidate] = -1
-        exact_t, exact_hit, exact_face = _refine_ray_candidates(
+        exact_t, exact_hit, exact_face, exact_bary = _refine_ray_candidates(
             verts, scene.faces, front_faces, directions, primitive,
             spec.near_mm, spec.far_mm,
         )
@@ -442,41 +453,59 @@ def _raycast_distorted_buffers(scene: Scene, frame: ViewFrame, verts: np.ndarray
             listed_primitive[(listed_primitive < 0)
                              | (listed_primitive >= len(front_faces))] = -1
             all_dirs = directions[fallback_rows[ray_ids]]
-            listed_t, listed_hit, listed_face = _refine_ray_candidates(
+            listed_t, listed_hit, listed_face, listed_bary = _refine_ray_candidates(
                 verts, scene.faces, front_faces, all_dirs, listed_primitive,
                 spec.near_mm, spec.far_mm,
             )
             exact_by_local = np.full(len(fallback_rows), np.inf, dtype=np.float64)
             face_by_local = np.full(len(fallback_rows), -1, dtype=np.int32)
+            bary_by_local = np.zeros((len(fallback_rows), 3), dtype=np.float64)
             for hit_index in np.flatnonzero(listed_hit):
                 local_ray = int(ray_ids[hit_index])
                 if listed_t[hit_index] < exact_by_local[local_ray]:
                     exact_by_local[local_ray] = listed_t[hit_index]
                     face_by_local[local_ray] = listed_face[hit_index]
+                    bary_by_local[local_ray] = listed_bary[hit_index]
             rows_with_valid = np.flatnonzero(face_by_local >= 0)
             global_rows = fallback_rows[rows_with_valid]
             exact_t[global_rows] = exact_by_local[rows_with_valid]
             exact_face[global_rows] = face_by_local[rows_with_valid]
+            exact_bary[global_rows] = bary_by_local[rows_with_valid]
             exact_hit[global_rows] = True
 
         local_depth = depth[row0:row1].reshape(-1)
         local_id = id_buf[row0:row1].reshape(-1)
         local_tag = tag_buf[row0:row1].reshape(-1)
         local_rgb = rgba[row0:row1].reshape(-1, 3)
+        local_bary = (None if bary_buf is None else
+                      bary_buf[row0:row1].reshape(-1, 3))
         rows = np.flatnonzero(exact_hit)
         local_depth[rows] = exact_t[rows]
         face_ids = exact_face[rows]
         local_id[rows] = scene.face_id[face_ids]
         local_tag[rows] = scene.surface_tag[face_ids]
-        local_rgb[rows] = shaded[face_ids].astype(np.float32)
+        if appearance_sampler is None:
+            local_rgb[rows] = shaded[face_ids].astype(np.float32)
+        else:
+            bary = exact_bary[rows]
+            albedo = appearance_sampler.sample_albedo(
+                face_ids, bary, scene.material.albedo[face_ids])
+            local_rgb[rows] = (albedo * lighting_factor[face_ids]).astype(np.float32)
+            assert local_bary is not None
+            local_bary[rows] = bary
 
     hit = np.isfinite(depth)
-    return {"depth": depth, "id": id_buf, "tag": tag_buf, "rgb": rgba,
-            "ray_edge_uncertain": _edge_uncertainty_band(hit)}
+    result = {"depth": depth, "id": id_buf, "tag": tag_buf, "rgb": rgba,
+              "ray_edge_uncertain": _edge_uncertainty_band(hit)}
+    if bary_buf is not None:
+        result["barycentric"] = bary_buf
+    return result
 
 
 def _rasterise_buffers(scene: Scene, frame: ViewFrame, width: int, height: int,
-                       light: LightSpec, spec: RenderSpec) -> dict[str, np.ndarray]:
+                       light: LightSpec, spec: RenderSpec,
+                       appearance_sampler: RestCoordinateAppearanceSampler | None = None,
+                       ) -> dict[str, np.ndarray]:
     """Z-buffered rasterisation at ``width x height`` (the supersampled grid)."""
     T_CW = frame.T_CW
     R = T_CW[:3, :3]
@@ -486,6 +515,8 @@ def _rasterise_buffers(scene: Scene, frame: ViewFrame, width: int, height: int,
     id_buf = np.full((height, width), -1, dtype=np.int32)
     tag_buf = np.full((height, width), -1, dtype=np.int16)
     rgba = np.zeros((height, width, 3), dtype=np.float32)
+    bary_buf = (np.zeros((height, width, 3), dtype=np.float64)
+                if appearance_sampler is not None else None)
 
     faces = scene.faces
     if faces.shape[0] == 0:
@@ -502,8 +533,8 @@ def _rasterise_buffers(scene: Scene, frame: ViewFrame, width: int, height: int,
     world_normals = normals / np.maximum(lengths[:, None], 1e-15)
     scene_normals = world_normals @ frame.T_WC[:3, :3]
     lambert = np.clip(-(scene_normals @ light.direction), 0.0, 1.0)
-    shaded = scene.material.albedo * (light.ambient[None, :]
-                                      + light.color[None, :] * lambert[:, None])
+    lighting_factor = light.ambient[None, :] + light.color[None, :] * lambert[:, None]
+    shaded = scene.material.albedo * lighting_factor
 
     model = (frame.camera_model or "PINHOLE").upper()
     dist = None if frame.dist is None else np.asarray(frame.dist, dtype=np.float64)
@@ -528,7 +559,8 @@ def _rasterise_buffers(scene: Scene, frame: ViewFrame, width: int, height: int,
             & (np.min(face_z, axis=1) < float(spec.far_mm))
         candidate_faces = np.flatnonzero(usable & slab & np.isfinite(face_z).all(axis=1))
         return _raycast_distorted_buffers(scene, frame, verts, normals, shaded,
-                                          candidate_faces, width, height, spec)
+                                          lighting_factor, candidate_faces, width, height,
+                                          spec, appearance_sampler)
 
     # Pinhole path: clip each front-facing triangle against the near plane before projection.
     # This preserves the visible portion of a face that crosses the clip plane.
@@ -538,22 +570,29 @@ def _rasterise_buffers(scene: Scene, frame: ViewFrame, width: int, height: int,
         original = verts[faces[face_id]]
         if not np.isfinite(original).all() or float(np.max(original[:, 2])) <= near:
             continue
-        polygon = [p.copy() for p in original]
-        clipped: list[np.ndarray] = []
+        # Track each clipped vertex's barycentrics in the source primitive.  Screen-space
+        # barycentrics below are perspective-corrected before this map is used for material
+        # coordinates, so pattern sampling remains attached to the original surface.
+        polygon = [(p.copy(), np.eye(3, dtype=np.float64)[i])
+                   for i, p in enumerate(original)]
+        clipped: list[tuple[np.ndarray, np.ndarray]] = []
         for idx, current in enumerate(polygon):
             previous = polygon[idx - 1]
-            current_in = current[2] >= near
-            previous_in = previous[2] >= near
+            current_in = current[0][2] >= near
+            previous_in = previous[0][2] >= near
             if current_in != previous_in:
-                t = (near - previous[2]) / (current[2] - previous[2])
-                clipped.append(previous + t * (current - previous))
+                t = (near - previous[0][2]) / (current[0][2] - previous[0][2])
+                clipped.append((previous[0] + t * (current[0] - previous[0]),
+                                previous[1] + t * (current[1] - previous[1])))
             if current_in:
                 clipped.append(current)
         if len(clipped) < 3:
             continue
         for tri_idx in range(1, len(clipped) - 1):
-            tri = np.asarray([clipped[0], clipped[tri_idx], clipped[tri_idx + 1]],
-                             dtype=np.float64)
+            tri_records = (clipped[0], clipped[tri_idx], clipped[tri_idx + 1])
+            tri = np.asarray([record[0] for record in tri_records], dtype=np.float64)
+            tri_source_bary = np.asarray([record[1] for record in tri_records],
+                                         dtype=np.float64)
             if np.min(tri[:, 2]) >= float(spec.far_mm):
                 continue
             uv = np.column_stack((K[0, 0] * tri[:, 0] / tri[:, 2]
@@ -589,14 +628,35 @@ def _rasterise_buffers(scene: Scene, frame: ViewFrame, width: int, height: int,
             better = intersects & (zi < depth_roi)
             if not better.any():
                 continue
+            if appearance_sampler is not None:
+                source_weights = np.stack((w0 / tri[0, 2], w1 / tri[1, 2],
+                                           w2 / tri[2, 2]), axis=-1)
+                source_weights /= np.maximum(inv_z[..., None], np.finfo(np.float64).tiny)
+                source_bary = np.einsum("...i,ij->...j", source_weights,
+                                        tri_source_bary)
+                bary_roi = bary_buf[ymin:ymax + 1, xmin:xmax + 1]
+                bary_roi[better] = source_bary[better]
             depth_roi[better] = zi[better]
             id_roi = id_buf[ymin:ymax + 1, xmin:xmax + 1]
             tag_roi = tag_buf[ymin:ymax + 1, xmin:xmax + 1]
             rgb_roi = rgba[ymin:ymax + 1, xmin:xmax + 1]
             id_roi[better] = scene.face_id[face_id]
             tag_roi[better] = scene.surface_tag[face_id]
-            rgb_roi[better] = shaded[face_id].astype(np.float32)
-    return {"depth": depth, "id": id_buf, "tag": tag_buf, "rgb": rgba}
+            if appearance_sampler is None:
+                rgb_roi[better] = shaded[face_id].astype(np.float32)
+            else:
+                bary_roi = bary_buf[ymin:ymax + 1, xmin:xmax + 1]
+                sampled = appearance_sampler.sample_albedo(
+                    np.full(int(np.count_nonzero(better)), face_id, dtype=np.int32),
+                    bary_roi[better],
+                    np.broadcast_to(scene.material.albedo[face_id],
+                                    (int(np.count_nonzero(better)), 3)),
+                )
+                rgb_roi[better] = (sampled * lighting_factor[face_id]).astype(np.float32)
+    result = {"depth": depth, "id": id_buf, "tag": tag_buf, "rgb": rgba}
+    if bary_buf is not None:
+        result["barycentric"] = bary_buf
+    return result
 
 
 def _block_reduce(buf: np.ndarray, factor: int, *, mode: str) -> np.ndarray:
@@ -739,7 +799,9 @@ def render_view(scene: Scene, frame: ViewFrame, *, light: LightSpec,
                 object_pose: np.ndarray | None = None,
                 focus_distance_mm: float | None = None,
                 backend: str = BACKEND_SOFTWARE,
-                blender_config: Any = None) -> RenderOutput:
+                blender_config: Any = None,
+                _appearance_sampler: RestCoordinateAppearanceSampler | None = None,
+                ) -> RenderOutput:
     """Render one view to a :class:`RenderOutput` (linear RGB + integer geometry passes).
 
     ``object_pose`` is the physical turntable pose ``T_WO`` for this view: the *object*
@@ -756,6 +818,13 @@ def render_view(scene: Scene, frame: ViewFrame, *, light: LightSpec,
     """
     spec = spec or RenderSpec()
     if backend in (BACKEND_BLENDER, BACKEND_BLENDER_EEVEE):
+        if _appearance_sampler is not None:
+            raise SynLabError(
+                ErrorCode.SCHEMA_INVALID,
+                "private rest-coordinate appearance sampling is supported only by the "
+                "software preview call path",
+                stage="observe.render.render_view",
+            )
         from .blender import render_view_blender
 
         return render_view_blender(scene, frame, light=light, spec=spec,
@@ -785,7 +854,8 @@ def render_view(scene: Scene, frame: ViewFrame, *, light: LightSpec,
     posed = scene.transformed(object_pose) if object_pose is not None else scene
     hi_w, hi_h = width * factor, height * factor
     hi_frame = _scaled_frame(frame, factor)
-    buffers = _rasterise_buffers(posed, hi_frame, hi_w, hi_h, light, spec)
+    buffers = _rasterise_buffers(posed, hi_frame, hi_w, hi_h, light, spec,
+                                 appearance_sampler=_appearance_sampler)
 
     hit_hi = np.isfinite(buffers["depth"])
     rgb_hi = buffers["rgb"].copy()
