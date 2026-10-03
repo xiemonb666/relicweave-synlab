@@ -149,6 +149,7 @@ def test_level_zero_is_a_true_identity_imaging_chain():
     assert realistic.defocus_sigma_px == pytest.approx(0.5)
     assert realistic.effective_gain == pytest.approx(16000.0)
     assert realistic.read_noise_sigma == pytest.approx(0.002)
+    assert realistic.sensor_noise_enabled is True
     assert realistic.exposure_ev == pytest.approx(0.5)
     assert realistic.encode == DELIVERY_ENCODE == "JPEG"
     assert realistic.jpeg_quality == 90
@@ -198,9 +199,9 @@ def test_photon_gain_override_is_reported_not_hidden():
     assert report["photon_gain"] == pytest.approx(IDEAL_REFERENCE_GAIN)
     assert report["photon_gain_overridden"] is True
     spec = imaging_spec_for(IDENTITY_LEVELS, photon_gain=IDEAL_REFERENCE_GAIN)
-    # documented frozen-code edge: ``is_identity()`` does not test effective_gain, which is
-    # exactly why the override is reported separately instead of trusting that flag
-    assert spec.is_identity() is True
+    # An explicit reference gain requests Poisson sampling even at level zero.
+    assert spec.sensor_noise_enabled is True
+    assert spec.is_identity() is False
     assert spec.effective_gain == pytest.approx(IDEAL_REFERENCE_GAIN)
 
 
@@ -333,7 +334,10 @@ def test_realistic_products_carry_noise_blur_and_jpeg():
         linear = np.asarray(bundle.imaging.linear, dtype=np.float64)
         return float(np.std((linear - scene)[mask]))
     assert sigma(bundle_re) > 1e-3
-    assert sigma(bundle_id) > 1e-3          # documented: gain 1.0 still shot-noise limits
+    scene_id = np.asarray(bundle_id.imaging.scene_linear, dtype=np.float64)
+    linear_id = np.asarray(bundle_id.imaging.linear, dtype=np.float64)
+    assert float(np.std((linear_id - np.clip(scene_id, 0.0, 1.0))[mask])) < 1e-7
+    assert any(s["op"] == "sensor_noise_disabled" for s in bundle_id.imaging.stages)
     stages = {s["op"]: s for s in bundle_re.imaging.stages}
     # the depth-dependent defocus variant records the near/far PSF pair; the flat variant a
     # single sigma.  Either way the declared level-1 value (0.5 px) must appear.
@@ -352,17 +356,67 @@ def test_realistic_products_carry_noise_blur_and_jpeg():
     assert realised_levels(obs_like)["identity"] is False
 
 
-def test_identity_chain_still_shot_noise_limits_the_render():
-    """Measured property of the frozen chain: level 0 is not photon-free at gain 1.0."""
+def test_v2_default_linear_chain_is_noise_free_and_does_not_consume_rng():
     rng = np.random.default_rng(2)
     scene = (rng.random((48, 64, 3)) * 0.4).astype(np.float32)
     K = np.array([[50.0, 0.0, 31.5], [0.0, 50.0, 23.5], [0.0, 0.0, 1.0]])
+    sensor_rng = np.random.default_rng(4)
+    before = sensor_rng.bit_generator.state
     identity = apply_imaging_chain(scene, K=K, dist=None, uncertain_mask=None, depth_z=None,
                                    focus_distance_mm=200.0,
-                                   rng=np.random.default_rng(4), spec=ImagingSpec())
+                                   rng=sensor_rng, spec=ImagingSpec())
     assert identity.labels == ["LINEAR_SENSOR_MODEL"]
-    residual = np.asarray(identity.linear, dtype=np.float64) - scene.astype(np.float64)
-    assert float(np.std(residual)) > 0.05        # ~Poisson(sqrt(x)) at x ~ 0.2
+    assert np.array_equal(identity.linear, scene)
+    assert sensor_rng.bit_generator.state == before
+    assert identity.stages[1]["op"] == "sensor_noise_disabled"
+    assert identity.meta["spec"]["version"] == "2.0"
+
+
+def test_v1_noise_replay_retains_the_historical_seeded_arrays():
+    import hashlib
+
+    scene = (np.random.default_rng(2).random((48, 64, 3)) * 0.4).astype(np.float32)
+    K = np.array([[50.0, 0.0, 31.5], [0.0, 50.0, 23.5], [0.0, 0.0, 1.0]])
+    replay = apply_imaging_chain(scene, K=K, dist=None, uncertain_mask=None, depth_z=None,
+                                 focus_distance_mm=200.0,
+                                 rng=np.random.default_rng(4),
+                                 spec=ImagingSpec(version="1.0"))
+    expected = {
+        "linear": "7d8eacf8e97d482ea114e7743d69e7257200c1820607fdc247009ea7a50bfc34",
+        "image": "f00f03ce7b9ee99ce8f20ed571e481920fa61936582a65d6486f9fa4e91373dd",
+        "scene_linear": "b88a4e2bf5a220da4ab1d80e11e95ebb0a8865d49cb627b89f921e9c638b9a33",
+    }
+    assert {name: hashlib.sha256(np.ascontiguousarray(getattr(replay, name)).tobytes()).hexdigest()
+            for name in expected} == expected
+    assert replay.stages[1]["op"] == "poisson_read_noise"
+
+
+def test_i04_only_is_noise_free_but_i03_explicitly_activates_poisson_and_read_noise():
+    from synlab.observe.realism import imaging_spec_for
+
+    scene = np.full((96, 96, 3), 0.25, dtype=np.float32)
+    K = np.array([[50.0, 0.0, 47.5], [0.0, 50.0, 47.5], [0.0, 0.0, 1.0]])
+    exposure_levels = dict(IDENTITY_LEVELS)
+    exposure_levels["I04"] = 1
+    exposure_only = imaging_spec_for(exposure_levels)
+    assert exposure_only.sensor_noise_enabled is False
+    clean = apply_imaging_chain(scene, K=K, dist=None, uncertain_mask=None, depth_z=None,
+                                focus_distance_mm=200.0,
+                                rng=np.random.default_rng(12), spec=exposure_only)
+    assert clean.stages[1]["op"] == "sensor_noise_disabled"
+    assert np.allclose(clean.linear, scene * (2.0 ** exposure_only.exposure_ev))
+
+    noisy_levels = dict(IDENTITY_LEVELS)
+    noisy_levels["I03"] = 1
+    noisy_spec = imaging_spec_for(noisy_levels)
+    assert noisy_spec.sensor_noise_enabled is True
+    noisy = apply_imaging_chain(scene, K=K, dist=None, uncertain_mask=None, depth_z=None,
+                                focus_distance_mm=200.0,
+                                rng=np.random.default_rng(12), spec=noisy_spec)
+    residual = noisy.linear.astype(np.float64) - scene.astype(np.float64)
+    expected_variance = 0.25 / noisy_spec.effective_gain + noisy_spec.read_noise_sigma ** 2
+    assert float(np.var(residual)) == pytest.approx(expected_variance, rel=0.12)
+    assert noisy.stages[1]["op"] == "poisson_read_noise"
 
 
 # --------------------------------------------------------------------------------------

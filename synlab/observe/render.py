@@ -295,8 +295,21 @@ def _camera_sample_rays(frame: ViewFrame, width: int, height: int, *, row_start:
     h1 = inv_k[1, 0] * u + inv_k[1, 1] * v + inv_k[1, 2]
     h2 = inv_k[2, 0] * u + inv_k[2, 1] * v + inv_k[2, 2]
     xd, yd = h0 / h2, h1 / h2
-    x, y = undistort_normalized(xd, yd, frame.dist,
-                                frame.camera_model or "PINHOLE")
+    model = frame.camera_model or "PINHOLE"
+    x, y = undistort_normalized(xd, yd, frame.dist, model,
+                                iterations=80, tol=1e-13)
+    check_xd, check_yd = distort_normalized(x, y, frame.dist, model)
+    residual = np.maximum(np.abs(check_xd - xd), np.abs(check_yd - yd))
+    if not np.isfinite(residual).all() or float(np.max(residual, initial=0.0)) > 1e-8:
+        raise SynLabError(
+            ErrorCode.OPERATOR_NOT_REALIZED,
+            "camera ray inverse-distortion did not meet the normalized-coordinate "
+            "round-trip tolerance",
+            stage="observe.render._camera_sample_rays",
+            measurements={"max_forward_roundtrip_error": float(
+                np.nanmax(residual) if np.isfinite(residual).any() else np.inf),
+                "tolerance": 1e-8, "camera_model": model},
+        )
     return np.asarray(x, dtype=np.float64), np.asarray(y, dtype=np.float64)
 
 
@@ -494,8 +507,10 @@ def _rasterise_buffers(scene: Scene, frame: ViewFrame, width: int, height: int,
 
     model = (frame.camera_model or "PINHOLE").upper()
     dist = None if frame.dist is None else np.asarray(frame.dist, dtype=np.float64)
-    has_distortion = (model != "PINHOLE" and dist is not None and dist.size > 0
-                      and np.any(dist != 0.0))
+    # OpenCV fisheye's theta/r map is non-pinhole even with four zero coefficients.
+    has_distortion = (model == "OPENCV_FISHEYE" or
+                      (model != "PINHOLE" and dist is not None and dist.size > 0
+                       and np.any(dist != 0.0)))
     if has_distortion:
         z_values = verts[:, 2]
         # Slab culling retains triangles that cross near/far; range is tested at each hit.
@@ -817,12 +832,16 @@ def render_view(scene: Scene, frame: ViewFrame, *, light: LightSpec,
         "depth_semantics": "camera_frame_z_mm",
         "depth_semantics_version": "camera_z_projective_v2",
         "depth_method": ("opencv_ray_candidate_double_refine"
-                         if ((hi_frame.camera_model or "PINHOLE").upper() != "PINHOLE"
-                             and hi_frame.dist is not None
-                             and np.asarray(hi_frame.dist).size > 0
-                             and np.any(np.asarray(hi_frame.dist, dtype=np.float64) != 0.0))
+                         if ((hi_frame.camera_model or "PINHOLE").upper()
+                             == "OPENCV_FISHEYE"
+                             or ((hi_frame.camera_model or "PINHOLE").upper() != "PINHOLE"
+                                 and hi_frame.dist is not None
+                                 and np.asarray(hi_frame.dist).size > 0
+                                 and np.any(np.asarray(hi_frame.dist, dtype=np.float64) != 0.0)))
                          else "pinhole_reciprocal_z"),
-        "distorted_edge_uncertainty": "one_supersample_transition_band; float32 candidate support",
+        "ray_candidate_edge_uncertainty": (
+            "one_supersample_transition_band; Open3D Float32 candidate support"
+            if (buffers.get("ray_edge_uncertain") is not None) else None),
         "id_map_semantics": "integer face label, -1 = background, never interpolated",
         "mm_per_pixel": float(frame.working_distance_mm / frame.K[0, 0]),
         "object_pose_T_WO": (np.asarray(object_pose).tolist()

@@ -481,7 +481,8 @@ def observe_probe(*, size: tuple[int, int] = (128, 96), views: int = 4,
                    max_render_pixels=int(size[0]) * int(size[1]), master_seed=int(seed),
                    lineage_id="probe_lineage",
                    imaging=ImagingSpec(effective_gain=20000.0, read_noise_sigma=0.002,
-                                       response="LINEAR", encode="PNG"),
+                                       response="LINEAR", encode="PNG",
+                                       sensor_noise_enabled=True),
                    route_params={"voxel_mm": 0.2, "sparse_keep": 1.0, "hole_count": 2,
                                  "depth_error_sigma_mm": 0.05, "stride": 2})
     rngs = derive_named_rngs(int(seed), "probe_lineage")

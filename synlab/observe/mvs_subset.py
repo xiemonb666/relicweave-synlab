@@ -90,6 +90,7 @@ class MvsConfig:
     #: render (mean photon count < 1 per pixel -> binary noise); 1e4 gives a real SNR.
     effective_gain: float = 1.0e4
     read_noise_sigma: float = 0.0
+    sensor_noise_enabled: bool | None = True
     camera_model: str = "SIMPLE_RADIAL"
     camera_mode: str = "SINGLE"
     max_num_features: int = 8192
@@ -426,7 +427,8 @@ def _render_frames(target: Any, profile: Any, cfg: MvsConfig, out_dir: Path,
         render_spec=RenderSpec(supersample=int(cfg.supersample),
                                coc_px_threshold=float(cfg.coc_px_threshold)),
         imaging=ImagingSpec(effective_gain=float(cfg.effective_gain),
-                            read_noise_sigma=float(cfg.read_noise_sigma)),
+                            read_noise_sigma=float(cfg.read_noise_sigma),
+                            sensor_noise_enabled=cfg.sensor_noise_enabled),
         master_seed=int(cfg.seed), lineage_id=cfg.lineage_id, workdir=str(out_dir),
     )
     rng = np.random.Generator(np.random.PCG64(np.uint64(cfg.seed + seed_offset)))

@@ -579,10 +579,20 @@ def _div_observe_spec(rng: np.random.Generator, config: dict[str, Any], lineage:
     exposure_ev = _div_uniform(rng, obs_cfg.get("exposure_ev"), default=(0.0, 0.0))
     read_noise = _div_uniform(rng, obs_cfg.get("read_noise_sigma"), default=(0.0, 0.0))
     gain = _div_uniform(rng, obs_cfg.get("effective_gain"), default=(1.0, 1.0))
+    configured_noise = obs_cfg.get("sensor_noise_enabled")
+    if configured_noise is not None:
+        noise_enabled = bool(configured_noise)
+    elif base_spec.imaging.sensor_noise_enabled is not None:
+        noise_enabled = bool(base_spec.imaging.sensor_noise_enabled)
+    else:
+        # A numeric default gain of 1 is not a request to add Poisson noise. Only a
+        # declared sensor parameter at this config boundary opts into the sensor model.
+        noise_enabled = ("effective_gain" in obs_cfg or "read_noise_sigma" in obs_cfg)
 
     imaging = dataclasses.replace(base_spec.imaging, exposure_ev=float(exposure_ev),
                                   read_noise_sigma=float(read_noise),
                                   effective_gain=float(gain),
+                                  sensor_noise_enabled=noise_enabled,
                                   defocus_sigma_px=float(sigma_px))
     declared = float(RenderSpec.coc_px_threshold)
     spec = dataclasses.replace(
@@ -611,6 +621,7 @@ def _div_observe_spec(rng: np.random.Generator, config: dict[str, Any], lineage:
         "exposure_ev": exposure_ev,
         "read_noise_sigma": read_noise,
         "effective_gain": gain,
+        "sensor_noise_enabled": bool(noise_enabled),
         "camera": {k: v for k, v in camera.items() if k != "profile"},
     }
     return spec, sampled

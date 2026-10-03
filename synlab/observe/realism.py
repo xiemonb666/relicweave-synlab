@@ -248,7 +248,8 @@ def imaging_spec_for(levels: Mapping[str, int] | None = None, *,
     if any(level != LEVEL_IDENTITY for level in resolved.values()):
         # a capture-style delivery is gamma-encoded (a real phone JFIF is sRGB, never linear)
         spec.response = DELIVERY_RESPONSE
-    if all(level == LEVEL_IDENTITY for level in resolved.values()):
+    if (all(level == LEVEL_IDENTITY for level in resolved.values())
+            and not spec.resolved_sensor_noise_enabled()):
         if not spec.is_identity():
             raise SynLabError(
                 ErrorCode.EXPERIMENT_PROTOCOL_VIOLATION,
@@ -262,10 +263,12 @@ def imaging_spec_for(levels: Mapping[str, int] | None = None, *,
 
 def degradation_report(levels: Mapping[str, int] | None = None, *,
                        mask_policy: str = MASK_POLICY_FOREGROUND,
-                       photon_gain: float | None = None) -> dict[str, Any]:
+                       photon_gain: float | None = None,
+                       sensor_noise_enabled: bool | None = None) -> dict[str, Any]:
     """Declared + realised description of one level assignment (for reports and run meta)."""
     resolved = normalise_levels(levels)
-    spec = imaging_spec_for(resolved, photon_gain=photon_gain)
+    spec = imaging_spec_for(resolved, photon_gain=photon_gain,
+                            sensor_noise_enabled=sensor_noise_enabled)
     if mask_policy not in MASK_POLICIES:
         raise SynLabError(ErrorCode.SCHEMA_INVALID,
                           f"unknown mask_policy {mask_policy!r}; expected {list(MASK_POLICIES)}",
@@ -471,6 +474,7 @@ def observe_spec_from_config(spec: Any, *, store_root: str | Path, lineage_id: s
                              view_count: int | None = None,
                              mask_policy: str = MASK_POLICY_FOREGROUND,
                              photon_gain: float | None = None,
+                             sensor_noise_enabled: bool | None = None,
                              blender_config: Any = None,
                              blender_samples: int = 32,
                              denoise: bool = False,
@@ -502,8 +506,10 @@ def observe_spec_from_config(spec: Any, *, store_root: str | Path, lineage_id: s
     backend = resolve_render_backend(renderer_name)
     chosen_profile = profile if profile is not None else camera_profiles()[1]
     distortion = resolve_distortion_policy(chosen_profile, backend, policy=distortion_policy)
-    degradation = degradation_report(levels, mask_policy=mask_policy, photon_gain=photon_gain)
-    imspec = imaging_spec_for(levels, photon_gain=photon_gain)
+    degradation = degradation_report(levels, mask_policy=mask_policy, photon_gain=photon_gain,
+                                     sensor_noise_enabled=sensor_noise_enabled)
+    imspec = imaging_spec_for(levels, photon_gain=photon_gain,
+                              sensor_noise_enabled=sensor_noise_enabled)
 
     edge = _declared_long_edge(spec)
     aspect = (float(chosen_profile.image_size[0]) / float(chosen_profile.image_size[1])
@@ -607,7 +613,11 @@ def realised_levels(observation: Any) -> dict[str, Any]:
         stages.extend(list((view.meta or {}).get("imaging_stages") or []))
     exposure = next((s for s in stages if s.get("op") == "exposure_gain_before_photons"), {})
     psf = next((s for s in stages if s.get("op") == "psf_applied"), {})
-    sensor = next((s for s in stages if s.get("op") == "poisson_read_noise"), {})
+    sensor = next((s for s in stages if s.get("stage") == "SENSOR_NOISE"), None)
+    if sensor is None:  # read frozen pre-v2 stage records without reinterpreting new outputs
+        sensor = next((s for s in stages if s.get("op") == "poisson_read_noise"), {})
+    sensor_noise_enabled = bool(sensor.get(
+        "enabled", sensor.get("op") == "poisson_read_noise"))
     wb = next((s for s in stages if s.get("op") == "white_balance"), {})
     response = next((s for s in stages if s.get("op") == "camera_response"), {})
     encode = next((s for s in stages if s.get("op") == "quantise_encode"), {})
@@ -635,7 +645,10 @@ def realised_levels(observation: Any) -> dict[str, Any]:
         "delivered_response": response.get("response"),
         "photon_gain": gain if abs(gain) > 0 else 1.0,
         "bit_depth": encode.get("bit_depth"),
-        "identity": all(level == LEVEL_IDENTITY for level in levels.values()),
+        "sensor_noise_enabled": sensor_noise_enabled,
+        "imaging_semantics_version": sensor.get("version"),
+        "identity": (all(level == LEVEL_IDENTITY for level in levels.values())
+                     and not sensor_noise_enabled),
         "stages_seen": len(stages),
     }
 

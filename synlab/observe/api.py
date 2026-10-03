@@ -161,14 +161,21 @@ def _apply_compiled(compiled: Any, spec: ObsSpec, route: str) -> None:
                 f"was requested",
                 stage="observe.observe._apply_compiled",
             )
+    caller_noise_setting = spec.imaging.sensor_noise_enabled
+    compiled_noise_setting: bool | None = None
+    compiled_noise_params = False
     for node in nodes if isinstance(nodes, (list, tuple)) else []:
         params = getattr(node, "parameters", None) or {}
         stage = str(getattr(node, "stage", "") or "").upper()
         if stage in ("SENSOR", "ISP"):
+            if "sensor_noise_enabled" in params:
+                compiled_noise_setting = bool(params["sensor_noise_enabled"])
             if "effective_gain" in params:
                 spec.imaging.effective_gain = float(params["effective_gain"])
+                compiled_noise_params = True
             if "read_noise_sigma" in params:
                 spec.imaging.read_noise_sigma = float(params["read_noise_sigma"])
+                compiled_noise_params = True
             if "bit_depth" in params:
                 spec.imaging.bit_depth = int(params["bit_depth"])
         elif stage == "OPTICS":
@@ -179,6 +186,14 @@ def _apply_compiled(compiled: Any, spec: ObsSpec, route: str) -> None:
         elif stage == "IMAGE_DERIVATION":
             if "resize_scale" in params:
                 spec.delivered_size = _scaled_size(spec.delivered_size, params["resize_scale"])
+    # A caller's explicit boolean outranks a compiled recipe. Otherwise a recipe that
+    # explicitly supplies either sensor scale or read sigma opts into the sensor model.
+    if caller_noise_setting is not None:
+        spec.imaging.sensor_noise_enabled = bool(caller_noise_setting)
+    elif compiled_noise_setting is not None:
+        spec.imaging.sensor_noise_enabled = compiled_noise_setting
+    elif compiled_noise_params:
+        spec.imaging.sensor_noise_enabled = True
 
 
 def _scaled_size(size: tuple[int, int], scale: Any) -> tuple[int, int]:
