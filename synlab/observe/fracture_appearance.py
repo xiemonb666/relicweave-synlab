@@ -1510,9 +1510,10 @@ def render_appearance_view(scene: Scene, frame: ViewFrame, *, light: LightSpec,
 
     where ``n_base`` is the face normal (``FLAT``), the interpolated vertex normal (``SMOOTH``) or
     the interpolated face-varying corner normal (``SMOOTH_CREASE``), and ``h`` is the audited
-    morphology height field of the ROI plane.  With ``normal_mode="FLAT"``, ``relief=False`` and
-    ``interpolation="FROZEN"`` this renderer reproduces
-    :func:`synlab.observe.render.render_view` (software backend) **bit-exactly** on the RGB buffer.
+    morphology height field of the ROI plane.  With ``normal_mode="FLAT"``, ``relief=False``,
+    ``interpolation="FROZEN"`` and no texture, this adapter delegates to
+    :func:`synlab.observe.render.render_view` so all geometry channels share its current
+    rasterization contract.
     """
     spec = spec or RenderSpec()
     appearance = appearance or AppearanceSpec()
@@ -1533,8 +1534,13 @@ def render_appearance_view(scene: Scene, frame: ViewFrame, *, light: LightSpec,
         # base renderer in metadata.
         render_scene = posed
         if albedo is not None:
-            override = np.asarray(albedo, dtype=np.float32)
-            if override.ndim != 2 or override.shape != (posed.n_faces, 3):
+            try:
+                override = np.asarray(albedo, dtype=np.float32).reshape(-1, 3)
+            except ValueError as exc:
+                raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                                  "albedo must contain one RGB row per face",
+                                  stage="observe.fracture_appearance.render_appearance_view") from exc
+            if override.shape != (posed.n_faces, 3):
                 raise SynLabError(ErrorCode.SCHEMA_INVALID,
                                   "albedo must have one RGB row per face",
                                   stage="observe.fracture_appearance.render_appearance_view")
@@ -1570,6 +1576,8 @@ def render_appearance_view(scene: Scene, frame: ViewFrame, *, light: LightSpec,
             "backend_class": "ADAPTER",
             "base_renderer": str(base.backend),
             "albedo_source_kind": render_scene.material.source_kind,
+            "object_pose_T_WO": (np.asarray(object_pose, dtype=np.float64).tolist()
+                                 if object_pose is not None else None),
             "appearance": {
                 "schema": APPEARANCE_SCHEMA, "spec": appearance.as_dict(),
                 "lambert": (_lambert_report(lambert_map, np.asarray(base.surface_tag))
