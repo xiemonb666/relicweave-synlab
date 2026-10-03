@@ -241,6 +241,7 @@ def query_metrics(*, query_id: str, neighbours: Sequence[str], gallery_ids: Sequ
                   unencodable_candidates: Sequence[str] = (),
                   input_hash: str = "", gallery_hash: str = "") -> dict[str, Any]:
     """One frozen-roster row: raw ranking, pool, NA flags, effective metrics and risk."""
+    top_k = tuple(sorted({int(k) for k in top_k}))
     neighbour_list = _as_ids(neighbours)
     query = str(query_id)
     candidate_source = ranked if ranked is not None else first_stage
@@ -284,6 +285,7 @@ def query_metrics(*, query_id: str, neighbours: Sequence[str], gallery_ids: Sequ
         "hit_na": not mate_present,
         "pool_cov_na": not mate_present,
         "conditional_cov_na": pool_miss(stage, neighbour_list),
+        "conditional_cov_semantics_version": "conditional_cov_at_k_v2",
     }
     row["pool_cov"] = pool_cov_at_m(stage, neighbour_list)
     row["any_at_m"] = any_at_m(stage, neighbour_list)
@@ -354,6 +356,7 @@ def aggregate_metrics(rows: Sequence[Mapping[str, Any]],
                       top_k: Sequence[int] = DEFAULT_TOP_K) -> dict[str, Any]:
     """Aggregate roster rows with the **frozen** denominators of plan 30.14."""
     rows = list(rows)
+    top_k = tuple(sorted({int(k) for k in top_k}))
     present = [r for r in rows if r.get("mate_present")]
     absent = [r for r in rows if not r.get("mate_present")]
     failures = [r for r in rows if r.get("status") in FAILURE_STATUSES]
@@ -411,7 +414,10 @@ def aggregate_metrics(rows: Sequence[Mapping[str, Any]],
     summary["any_at_m_na_count"] = _count_na(anys)
     summary["conditional_cov"] = _mean(conditionals)
     summary["conditional_cov_na_count"] = _count_na(conditionals)
+    summary["conditional_cov_legacy_pool_census"] = _mean(
+        [r.get("conditional_cov_legacy_pool_census") for r in rows])
     summary["conditional_cov_semantics"] = "max configured K; conditional_cov_at_k_v2"
+    summary["conditional_cov_semantics_version"] = "conditional_cov_at_k_v2"
     summary["conditional_cov_legacy_semantics"] = (
         "conditional_cov_legacy_pool_census is compatibility-only and is not retrieval success"
     )

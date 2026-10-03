@@ -32,7 +32,7 @@ class _Encoder:
         vectors = np.tile(np.array([[0.0, 1.0]], dtype=np.float32),
                           (len(bundle.fragment_ids), 1))
         for i, fragment_id in enumerate(bundle.fragment_ids):
-            if fragment_id == "q":
+            if fragment_id.startswith("q"):
                 vectors[i] = [1.0, 0.0]
             elif fragment_id.startswith("r2-"):
                 vectors[i] = [1.0, 0.0]
@@ -67,13 +67,13 @@ def _fake_feature_bundle(monkeypatch):
 
 
 def _evaluate(pool: _Pool, *, query: str = "q", invalid: set[str] | None = None,
-              candidate_pool_size: int = 1):
+              candidate_pool_size: int = 1, all_queries: bool = False):
     return training_api.evaluate(
         checkpoint_ref=None,
         pool_ref=pool,
         top_k=(1,),
         candidate_pool_size=candidate_pool_size,
-        queries=[query],
+        queries=None if all_queries else [query],
         model=_Model(invalid),
     )
 
@@ -108,7 +108,8 @@ def test_all_r2_candidates_missing_produces_zero_coverage_not_na():
         neighbours={"q": ["r2-missing-a", "r2-missing-b"]},
     )
 
-    row = _evaluate(pool)["per_query"][0]
+    report = _evaluate(pool)
+    row = report["per_query"][0]
 
     assert row["n_historical_neighbours"] == 2
     assert row["missing_feature_historical_neighbours"] == ["r2-missing-a", "r2-missing-b"]
@@ -202,7 +203,7 @@ def test_entire_lineup_without_features_is_reported_as_input_failures():
         neighbours={"q": ["r2-missing"]},
     )
 
-    report = _evaluate(pool)
+    report = _evaluate(pool, all_queries=True)
 
     assert report["metrics"]["gallery_size"] == 3
     assert report["metrics"]["feature_available_gallery_size"] == 0
@@ -211,3 +212,36 @@ def test_entire_lineup_without_features_is_reported_as_input_failures():
     assert [r["status"] for r in report["per_query"]] == [
         "INPUT_UNAVAILABLE", "INPUT_UNAVAILABLE", "INPUT_UNAVAILABLE"]
     assert report["metrics"]["per_k"]["k=1"]["effective_cov_at_k"] == 0.0
+
+
+def test_missing_absent_query_does_not_dilute_present_effective_denominator():
+    pool = _Pool(
+        lineup=["q-present-ok", "r2-present", "q-present-missing", "r2-missing",
+                "q-absent-missing", "negative"],
+        features={"q-present-ok": {}, "r2-present": {}, "negative": {}},
+        neighbours={
+            "q-present-ok": ["r2-present"],
+            "q-present-missing": ["r2-missing"],
+            "q-absent-missing": [],
+        },
+    )
+
+    report = training_api.evaluate(
+        checkpoint_ref=None,
+        pool_ref=pool,
+        top_k=(1,),
+        candidate_pool_size=1,
+        queries=["q-present-ok", "q-present-missing", "q-absent-missing"],
+        model=_Model(),
+    )
+    rows = {row["query_id"]: row for row in report["per_query"]}
+    metrics = report["metrics"]
+    at_one = metrics["per_k"]["k=1"]
+
+    assert rows["q-present-ok"]["effective_cov@1"] == 1.0
+    assert rows["q-present-missing"]["effective_cov@1"] == 0.0
+    assert rows["q-absent-missing"]["effective_cov@1"] is None
+    assert at_one["effective_cov_at_k"] == pytest.approx(0.5)
+    assert at_one["effective_cov_at_k_denominator"] == 2
+    assert metrics["risk"]["possible_absent"] == 1
+    assert metrics["risk"]["possible_present"] == 2

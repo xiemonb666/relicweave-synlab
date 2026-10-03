@@ -20,10 +20,10 @@ from ...roles import (
     ROLE_DISPLAY_LOD,
     ROLE_FRAGMENT_MESH,
     ROLE_MOTHER_MESH,
+    ROLE_FEATURE_BUNDLE,
     ROLE_OBS_RESULT,
     ROLE_OBS_VIEW,
     ROLE_OBS_FUSED,
-    ROLE_FEATURE_BUNDLE,
     ROLE_PHYSICAL_TRUTH,
     SCHEMA_FEATURE,
     ROLE_VISIBLE_LABELS,
@@ -55,7 +55,7 @@ router = APIRouter(tags=["assets"])
 SERVABLE_FILE_ROLES: frozenset[str] = frozenset({
     ROLE_MOTHER_MESH, ROLE_FRAGMENT_MESH, ROLE_DISPLAY_LOD, ROLE_OBS_VIEW, ROLE_OBS_RESULT,
     "mother_meta", "material_profile", "pattern_recipe", "pattern_channels", "pattern_audit",
-    "cutter_mesh", "physical_component", "physical_result", "obs_fused_geometry",
+    "cutter_mesh", "physical_component", "physical_result", ROLE_OBS_FUSED,
     "feature_bundle", "relation_pool", "query_roster", "episode_trace", "train_checkpoint",
     "train_metrics", "diagnostic_report", "operator_audit", "qa_report", "coverage",
     "run_spec", "mvs_result", "provenance",
@@ -360,7 +360,9 @@ def get_asset_file(
                          f"asset {resolved} has no payload key {file_name!r}",
                          stage="assets.files", details={"available": sorted(record.files)})
 
-    ref = resolve_file(session.store, resolved, file_name, verify=verify)
+    deployment_asset = session.role == ROLE_DEPLOYMENT and record.role in DEPLOYMENT_SAFE_ROLES
+    ref = resolve_file(session.store, resolved, file_name,
+                       verify=True if deployment_asset else verify)
     if deployment_feature:
         _feature_bundle_arrays(session.store, record, ref=ref)
     body = ref.path.read_bytes()

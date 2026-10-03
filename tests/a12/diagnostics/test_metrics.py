@@ -151,6 +151,18 @@ def test_query_metrics_and_aggregate_use_conditional_cov_at_each_k():
     assert summary["pool_miss"] == 0
 
 
+def test_generator_top_k_is_consumed_once_for_query_and_aggregate_metrics():
+    row = query_metrics(query_id="q", neighbours=["B"], gallery_ids=["B", "X"],
+                        first_stage=["B", "X"], ranked=["B", "X"],
+                        top_k=(k for k in (1, 2)))
+    summary = aggregate_metrics([row], top_k=(k for k in (1, 2)))
+
+    assert row["conditional_cov@1"] == 1.0
+    assert row["conditional_cov@2"] == 1.0
+    assert summary["k=1"]["conditional_cov_at_k"] == 1.0
+    assert summary["k=2"]["conditional_cov_at_k"] == 1.0
+
+
 # ---------------------------------------------------------------------------- hygiene
 def test_duplicate_candidates_collapse_and_self_is_never_a_candidate():
     row = query_metrics(query_id="q", neighbours=["B", "C"], gallery_ids=["q", "B", "C", "X1"],

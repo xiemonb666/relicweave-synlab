@@ -218,6 +218,7 @@ def evaluate(checkpoint_ref: Any, pool_ref: Any = None, *, top_k: Sequence[int] 
     refinement cover all mates" are different questions (plan 30.10).  The gallery is scored
     with the cacheable encoder tower only.
     """
+    top_k = tuple(sorted({int(k) for k in top_k}))
     from ..diagnostics.metrics import (
         accept_set,
         any_at_m,
@@ -313,9 +314,15 @@ def evaluate(checkpoint_ref: Any, pool_ref: Any = None, *, top_k: Sequence[int] 
         invalid_neighbours = [n for n in neighbours
                               if neighbour_availability[n] == "ENCODER_INPUT_UNAVAILABLE"]
         if not encodable.get(qid, False):
+            effective_failure = bool(neighbours)
+            unavailable_risk = risk_events(neighbours, [])
+            risk_absent.append(int(unavailable_risk["absent_false_accept"]))
+            risk_present.append(int(unavailable_risk["present_wrong_accept"]))
             row = {
                 "query_id": qid,
                 "status": "INPUT_UNAVAILABLE",
+                "frozen_gallery_size": len(lineup),
+                "gallery_size": len(lineup) - int(qid in lineup),
                 "historical_neighbours": neighbours,
                 "n_historical_neighbours": len(neighbours),
                 "historical_neighbour_availability": neighbour_availability,
@@ -329,22 +336,23 @@ def evaluate(checkpoint_ref: Any, pool_ref: Any = None, *, top_k: Sequence[int] 
                 "conditional_cov": None,
                 "conditional_cov_legacy_pool_census": None,
                 "conditional_cov_semantics": "conditional_cov_at_k_v2 at maximum configured K",
+                "conditional_cov_semantics_version": "conditional_cov_at_k_v2",
                 "pool_miss": None,
-                "effective_hit": 0.0,
-                "effective_cov": 0.0,
+                "effective_hit": 0.0 if effective_failure else None,
+                "effective_cov": 0.0 if effective_failure else None,
                 "failure_code": ErrorCode.INPUT_UNAVAILABLE.value,
             }
             for k in top_k:
                 row[f"hit@{int(k)}"] = None
                 row[f"cov@{int(k)}"] = None
                 row[f"conditional_cov@{int(k)}"] = None
-                row[f"effective_hit@{int(k)}"] = 0.0
-                row[f"effective_cov@{int(k)}"] = 0.0
+                row[f"effective_hit@{int(k)}"] = 0.0 if effective_failure else None
+                row[f"effective_cov@{int(k)}"] = 0.0 if effective_failure else None
                 per_k[int(k)]["hit"].append(np.nan)
                 per_k[int(k)]["cov"].append(np.nan)
                 per_k[int(k)]["conditional_cov"].append(np.nan)
-                per_k[int(k)]["eff_hit"].append(0.0)
-                per_k[int(k)]["eff_cov"].append(0.0)
+                per_k[int(k)]["eff_hit"].append(0.0 if effective_failure else np.nan)
+                per_k[int(k)]["eff_cov"].append(0.0 if effective_failure else np.nan)
             pool_covs.append(np.nan)
             anys.append(np.nan)
             conditionals.append(np.nan)
@@ -363,6 +371,8 @@ def evaluate(checkpoint_ref: Any, pool_ref: Any = None, *, top_k: Sequence[int] 
         row = {
             "query_id": qid,
             "status": "OK",
+            "frozen_gallery_size": len(lineup),
+            "gallery_size": len(lineup) - int(qid in lineup),
             "historical_neighbours": neighbours,
             "n_historical_neighbours": len(neighbours),
             "historical_neighbour_availability": neighbour_availability,
@@ -376,6 +386,7 @@ def evaluate(checkpoint_ref: Any, pool_ref: Any = None, *, top_k: Sequence[int] 
             "conditional_cov": None,
             "conditional_cov_legacy_pool_census": conditional_cov(first_stage, neighbours),
             "conditional_cov_semantics": "conditional_cov_at_k_v2 at maximum configured K",
+            "conditional_cov_semantics_version": "conditional_cov_at_k_v2",
             "pool_miss": bool(pool_miss(first_stage, neighbours)),
         }
         pool_miss_count += int(row["pool_miss"])
@@ -427,11 +438,14 @@ def evaluate(checkpoint_ref: Any, pool_ref: Any = None, *, top_k: Sequence[int] 
             return None
         return float(finite.mean())
 
+    max_configured_k = max((int(k) for k in top_k), default=None)
+    max_k_buckets = per_k.get(max_configured_k, {}) if max_configured_k is not None else {}
     metrics: dict[str, Any] = {
         "split": split,
         "evaluation_semantics_version": "historical_R2_denominator_v2",
         "gallery_size": len(lineup),
         "frozen_gallery_size": len(lineup),
+        "gallery_size_semantics": "full pool.lineup; each per_query.gallery_size excludes the query itself",
         "feature_available_gallery_size": len(ids),
         "encoded_gallery_size": sum(1 for v in encodable.values() if v),
         "feature_missing_gallery_count": len(missing_feature_ids),
@@ -451,13 +465,18 @@ def evaluate(checkpoint_ref: Any, pool_ref: Any = None, *, top_k: Sequence[int] 
         "pool_miss_evaluable_queries": pool_miss_denominator,
         "na_counts": {
             "pool_cov": int(np.sum(~np.isfinite(np.asarray(pool_covs, dtype=np.float64)))),
-            "hit": 0, "cov": 0,
+            "hit": int(np.sum(~np.isfinite(np.asarray(max_k_buckets.get("hit", []),
+                                                        dtype=np.float64)))),
+            "cov": int(np.sum(~np.isfinite(np.asarray(max_k_buckets.get("cov", []),
+                                                        dtype=np.float64)))),
+            "conditional_cov_at_max_k": int(np.sum(~np.isfinite(np.asarray(
+                max_k_buckets.get("conditional_cov", []), dtype=np.float64)))),
         },
         "risk": {
             "absent_false_accept_events": int(sum(risk_absent)) if risk_absent else 0,
-            "possible_absent": len(risk_absent),
+            "possible_absent": sum(1 for row in rows if not row["historical_neighbours"]),
             "present_wrong_accept_events": int(sum(risk_present)) if risk_present else 0,
-            "possible_present": len(risk_present),
+            "possible_present": sum(1 for row in rows if row["historical_neighbours"]),
         },
         "per_k": {},
         "scale": "CPU-only fixed-gallery evaluation; no GPU hours",
@@ -465,12 +484,20 @@ def evaluate(checkpoint_ref: Any, pool_ref: Any = None, *, top_k: Sequence[int] 
     for k, buckets in per_k.items():
         metrics["per_k"][f"k={k}"] = {
             "hit_at_k": _agg(buckets["hit"]),
+            "hit_na_count": int(np.sum(
+                ~np.isfinite(np.asarray(buckets["hit"], dtype=np.float64)))),
             "cov_recall_at_k": _agg(buckets["cov"]),
+            "cov_na_count": int(np.sum(
+                ~np.isfinite(np.asarray(buckets["cov"], dtype=np.float64)))),
             "conditional_cov_at_k": _agg(buckets["conditional_cov"]),
             "conditional_cov_at_k_na_count": int(np.sum(
                 ~np.isfinite(np.asarray(buckets["conditional_cov"], dtype=np.float64)))),
             "effective_hit_at_k": _agg(buckets["eff_hit"]),
+            "effective_hit_at_k_denominator": int(np.sum(
+                np.isfinite(np.asarray(buckets["eff_hit"], dtype=np.float64)))),
             "effective_cov_at_k": _agg(buckets["eff_cov"]),
+            "effective_cov_at_k_denominator": int(np.sum(
+                np.isfinite(np.asarray(buckets["eff_cov"], dtype=np.float64)))),
             "hit_na_count": int(np.sum(~np.isfinite(np.asarray(buckets["hit"], dtype=np.float64)))),
         }
     return {"status": "OK", "checkpoint_ref": str(checkpoint_ref), "pool_id": str(
