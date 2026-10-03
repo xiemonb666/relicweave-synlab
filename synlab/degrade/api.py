@@ -299,7 +299,7 @@ def _apply_impl(axis_id: str, level: int, source: SourceBundle, store: Any = Non
         extra={"basis_id": basis.basis_id, "basis_seed_ref": basis.seed_ref,
                "support": "MEASURED", "source_kind": source.source_kind,
                "label_invalidations": list(operator.LABEL_INVALIDATIONS),
-               "label_status": _label_status(operator, result),
+               "label_status": _label_status(operator, source, result),
                **(metrics.get("extra") or {})},
         calibration_status=_calibration_status(operator))
     operator.validate(source, result, measurement)
@@ -378,18 +378,110 @@ def _calibration_status(operator: Any) -> str:
     return "UNCALIBRATED"
 
 
-def _label_status(operator: Any, result: SourceBundle) -> str:
-    if not operator.LABEL_INVALIDATIONS:
-        return "NO_LABEL_DEPENDENCY"
-    reported = (result.meta or {}).get("label_status")
-    if reported:
-        return str(reported)
-    try:  # pragma: no cover - depends on the parallel truth module
-        import synlab.truth  # noqa: F401
+def _label_status(operator: Any, source: SourceBundle, result: SourceBundle) -> str:
+    """Return a label status supported by this result's evidence.
 
+    Importability and status strings are declarations, not proof that label work ran.  The
+    physical route has one machine-checkable receipt today: ``apply_damage`` attaches the
+    ``PhysicalTruth`` returned by ``truth.api.update_residual_truth`` to its ``PhysicalResult``.
+    Every other invalidated label remains pending until its own result artifact is recorded.
+    """
+    invalidations = tuple(getattr(operator, "LABEL_INVALIDATIONS", ()) or ())
+    if not invalidations:
+        return "NO_LABEL_DEPENDENCY"
+
+    reported = str((result.meta or {}).get("label_status", "") or "").upper()
+    physical_result = result.get("physical_result")
+    physical_meta = getattr(physical_result, "meta", None) or {}
+    if reported == "FAILED" or str(physical_meta.get("physical_truth_status", "")).upper() == "FAILED":
+        return "FAILED"
+
+    if _has_physical_truth_recompute_receipt(operator, source, result):
         return "RECOMPUTED"
-    except Exception:  # noqa: BLE001 - honest: the downstream module is not present yet
-        return "PENDING_DEPENDENCY"
+    return "PENDING_RECOMPUTE"
+
+
+def _has_physical_truth_recompute_receipt(operator: Any, source: SourceBundle,
+                                          result: SourceBundle) -> bool:
+    """Validate an attached physical-truth artifact against its clean and damaged inputs.
+
+    ``PhysicalTruth`` is only accepted when it carries the source truth hash and next version,
+    and its embedded damage receipt names this exact operator, result level, and physical-result
+    recipe.  This is deliberately structural so importing ``synlab.truth`` alone cannot satisfy
+    the check.
+    """
+    if "PhysicalTruth" not in tuple(getattr(operator, "LABEL_INVALIDATIONS", ()) or ()):
+        return False
+    clean_truth = source.get("clean_truth")
+    physical_result = result.get("physical_result")
+    if clean_truth is None or physical_result is None:
+        return False
+
+    clean_meta = getattr(clean_truth, "meta", None) or {}
+    clean_ref = str(clean_meta.get("truth_hash", "") or "")
+    if not clean_ref:
+        return False
+    try:
+        clean_version = int(getattr(clean_truth, "version"))
+        expected_version = clean_version + 1
+    except (TypeError, ValueError, AttributeError):
+        return False
+
+    physical_truth = getattr(physical_result, "physical_truth", None)
+    if physical_truth is None:
+        return False
+    truth_meta = getattr(physical_truth, "meta", None) or {}
+    truth_qa = getattr(physical_truth, "qa", None) or {}
+    physical_meta = getattr(physical_result, "meta", None) or {}
+    result_meta = result.meta or {}
+    damage = truth_meta.get("damage")
+    if not isinstance(damage, Mapping):
+        return False
+
+    axis_id = str(getattr(operator, "AXIS_ID", "") or "")
+    recipe_id = str(getattr(physical_result, "recipe_id", "") or "")
+    expected_level = result_meta.get("level")
+    try:
+        expected_level = int(expected_level)
+        truth_version = int(getattr(physical_truth, "version"))
+    except (TypeError, ValueError):
+        return False
+
+    clean_mother = str(getattr(clean_truth, "mother_id", "") or "")
+    clean_event = str(getattr(clean_truth, "event_id", "") or "")
+    clean_identity = f"{clean_mother}:{clean_event}:v{clean_version}"
+    artifact_identity = f"{clean_mother}:{clean_event}"
+    damage_level = damage.get("level")
+    try:
+        damage_level = int(damage_level)
+        physical_level = int(physical_meta.get("level"))
+        result_level = int(result_meta.get("level"))
+    except (TypeError, ValueError):
+        return False
+
+    return bool(
+        truth_version == expected_version
+        and str(getattr(physical_truth, "clean_truth_ref", "") or "") == clean_ref
+        and str(truth_meta.get("clean_truth_ref", "") or "") == clean_ref
+        and truth_meta.get("layer") == "physical"
+        and truth_qa.get("layer") == "physical"
+        and clean_mother and clean_event
+        and str(getattr(physical_result, "mother_id", "") or "") == clean_mother
+        and str(getattr(physical_result, "event_id", "") or "") == clean_event
+        and str(getattr(physical_result, "clean_ref", "") or "") == clean_identity
+        and str(truth_meta.get("mother_id", "") or "") == clean_mother
+        and str(truth_meta.get("event_id", "") or "") == clean_event
+        and recipe_id
+        and str(damage.get("recipe_id", "") or "") == recipe_id
+        and str(damage.get("axis_id", "") or "") == axis_id
+        and str(physical_meta.get("axis_id", "") or "") == axis_id
+        and str(result_meta.get("axis_id", "") or "") == axis_id
+        and damage_level == expected_level == physical_level == result_level
+        and isinstance(getattr(physical_truth, "residual", None), Mapping)
+        and isinstance(getattr(physical_truth, "survivor_patches", None), Mapping)
+        and isinstance(getattr(physical_truth, "current_fit_valid", None), Mapping)
+        and isinstance(getattr(physical_truth, "association_counts", None), Mapping)
+    )
 
 
 # ======================================================================================

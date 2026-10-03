@@ -40,7 +40,7 @@ def smoke(tmp_path_factory) -> dict:
 
 @pytest.fixture(scope="module")
 def package() -> TrainingPackage:
-    return TrainingPackage(PACKAGE)
+    return TrainingPackage(PACKAGE, access="research")
 
 
 # ------------------------------------------------------------------------------------

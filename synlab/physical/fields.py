@@ -411,17 +411,126 @@ class FourierField:
                    scale_mm=float(payload["scale_mm"]), field_id=str(payload.get("field_id", "")))
 
 
-def threshold_for_fraction(values: np.ndarray, fraction: float) -> float:
-    """Threshold whose level set keeps ``fraction`` of the samples (nested by construction)."""
+def threshold_for_fraction(values: np.ndarray, fraction: float, *, tail: str = "legacy") -> float:
+    """Return a scalar quantile cutoff while preserving the historical default semantics.
+
+    ``tail="legacy"`` preserves the original ``quantile(1 - fraction)`` behavior, including its
+    historical boundary cutoffs.  New callers should state ``lower`` or ``upper`` explicitly.
+    Ties can still make a threshold level set include more samples than requested; area-weighted
+    appearance masks should use :func:`rank_mask_for_area_fraction` instead.
+    """
     vals = np.asarray(values, dtype=np.float64).ravel()
     if vals.size == 0:
         return 0.0
+    if tail not in ("legacy", "lower", "upper"):
+        raise ValueError("tail must be 'legacy', 'lower' or 'upper'")
     fraction = float(np.clip(fraction, 0.0, 1.0))
+    if tail == "legacy":
+        if fraction <= 0:
+            return float(vals.min()) - 1e-9
+        if fraction >= 1:
+            return float(vals.max()) + 1e-9
+        return float(np.quantile(vals, 1.0 - fraction))
+    if tail == "lower":
+        if fraction <= 0:
+            return float(vals.min()) - 1e-9
+        if fraction >= 1:
+            return float(vals.max()) + 1e-9
+        return float(np.quantile(vals, fraction))
     if fraction <= 0:
-        return float(vals.min()) - 1e-9
-    if fraction >= 1:
         return float(vals.max()) + 1e-9
+    if fraction >= 1:
+        return float(vals.min()) - 1e-9
     return float(np.quantile(vals, 1.0 - fraction))
+
+
+def rank_mask_for_area_fraction(values: np.ndarray, fraction: float, area_weights: np.ndarray,
+                                *, tail: str = "lower") -> tuple[np.ndarray, dict[str, Any]]:
+    """Select a nested stable rank prefix closest to a requested physical-area fraction.
+
+    Ties are resolved by original texel order.  Since a texel cannot be split, the selected area
+    can differ from the target; both realized area fraction and signed/absolute quantization error
+    are returned instead of claiming an exact coverage.  ``tail`` makes score direction explicit.
+    """
+    raw_values = np.asarray(values)
+    scores = np.asarray(values, dtype=np.float64).ravel()
+    weights = np.asarray(area_weights, dtype=np.float64).ravel()
+    if scores.size != weights.size:
+        raise ValueError("rank values and area weights must have the same number of texels")
+    try:
+        requested = float(fraction)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("fraction must be a finite number in [0, 1]") from exc
+    if not np.isfinite(requested) or requested < 0.0 or requested > 1.0:
+        raise ValueError("fraction must be a finite number in [0, 1]")
+    if tail not in ("lower", "upper"):
+        raise ValueError("tail must be 'lower' or 'upper'")
+    if not np.all(np.isfinite(scores)):
+        raise ValueError("rank values must be finite")
+    if not np.all(np.isfinite(weights)) or np.any(weights <= 0.0):
+        raise ValueError("area weights must be finite and strictly positive")
+    if scores.size == 0:
+        if requested != 0.0:
+            raise ValueError("a nonzero fraction cannot be selected from an empty rank field")
+        return np.zeros(raw_values.shape, dtype=bool), {
+            "selection": "stable_area_rank_prefix_nearest_target",
+            "tail": tail,
+            "requested_fraction": requested,
+            "total_area": 0.0,
+            "target_area": 0.0,
+            "selected_area": 0.0,
+            "realized_fraction": 0.0,
+            "signed_fraction_error": 0.0,
+            "absolute_fraction_error": 0.0,
+            "quantized": False,
+            "boundary_score": None,
+            "boundary_tie_split": False,
+        }
+
+    total = float(np.sum(weights, dtype=np.float64))
+    if not np.isfinite(total) or total <= 0.0:
+        raise ValueError("total area weight must be finite and positive")
+    target = requested * total
+    if requested <= 0.0:
+        selected_count = 0
+    elif requested >= 1.0:
+        selected_count = int(scores.size)
+    else:
+        order = np.argsort(scores if tail == "lower" else -scores, kind="stable")
+        cumulative = np.concatenate(([0.0], np.cumsum(weights[order], dtype=np.float64)))
+        upper_prefix = min(int(np.searchsorted(cumulative, target, side="left")),
+                           int(scores.size))
+        lower_prefix = max(0, upper_prefix - 1)
+        lower_error = abs(float(cumulative[lower_prefix]) - target)
+        upper_error = abs(float(cumulative[upper_prefix]) - target)
+        # On an exact tie prefer the smaller prefix.  Prefix choice remains monotone as the
+        # requested target grows, which makes level masks nested on one frozen rank field.
+        selected_count = lower_prefix if lower_error <= upper_error else upper_prefix
+
+    order = np.argsort(scores if tail == "lower" else -scores, kind="stable")
+    mask_flat = np.zeros(scores.size, dtype=bool)
+    mask_flat[order[:selected_count]] = True
+    selected = float(np.sum(weights[mask_flat], dtype=np.float64))
+    realized = selected / total
+    signed_error = realized - requested
+    boundary_score = (float(scores[order[selected_count - 1]]) if selected_count else
+                      (float(scores[order[0]]) if scores.size else None))
+    next_score = (float(scores[order[selected_count]])
+                  if 0 < selected_count < scores.size else None)
+    return mask_flat.reshape(raw_values.shape), {
+        "selection": "stable_area_rank_prefix_nearest_target",
+        "tail": tail,
+        "requested_fraction": requested,
+        "total_area": total,
+        "target_area": target,
+        "selected_area": selected,
+        "realized_fraction": realized,
+        "signed_fraction_error": signed_error,
+        "absolute_fraction_error": abs(signed_error),
+        "quantized": bool(selected != target),
+        "boundary_score": boundary_score,
+        "boundary_tie_split": bool(next_score is not None and boundary_score == next_score),
+    }
 
 
 # ---------------------------------------------------------------------------- edge fields

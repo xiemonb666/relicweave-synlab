@@ -1,20 +1,14 @@
 # 状态补充（截至 2026-10-03 晚间）
 
-接续验收矩阵见 [CONTINUATION_20261003.md](CONTINUATION_20261003.md)，保留的少量来源文件、原始 SHA、路径规范化说明与重算范围见 [evidence/20261003/index.md](evidence/20261003/index.md)。
+当前任务状态见 [接续与验收矩阵](CONTINUATION_20261003.md)，源/副本 SHA 和可复核材料见 [证据索引](evidence/20261003/index.md)。现实性边界见 [REALISM_ACCEPTANCE_20261003.md](REALISM_ACCEPTANCE_20261003.md)。
 
-最新窄范围状态：VF BRep 面语义通过 26 面 / 38,486 三角形分类映射，UNKNOWN=0，handle-root 误标=0/0，canonical3 geometry/lineage 逐位相同，whole/lower-root depth parity=0 mismatch；16 测试通过，四带/三带 generate+validate 均退出 0。602 个 trimmed-face 样本最大偏差为 0.0196136578 mm，目标 0.10 mm；这不是全局 Hausdorff 或全局最小壁厚证明。C0 折角、把手根部几何、机械标定和历史样式仍 `PENDING`。
+VF canonical STEP BRep 语义原型：26 面 / 38,486 三角形、UNKNOWN=0、handle-root 两类误标 0/0、canonical3 geometry/lineage 逐位相同、whole/lower-root depth parity 0 mismatch；16 tests PASS，四带/三带 generate 与 validate exit 0。602 个 trimmed-face 样本最大偏差 0.0196136578 mm ≤0.10 mm；不是全局 Hausdorff 或全局最小壁厚证明。smooth-CAD 3D shell candidate 因 0.118432 mm sampled deviation 与 invalid/empty native halfsection FAIL；第二 2D 表示和新的 CAD-native clippedcells volume candidate PENDING。h8/h6 tetra volume candidates 分别 2.03434% / 1.61417% 误差，均未过不变的 1% 门槛。
 
-A12 adapter/camera32、depth/noise71、冻结 parity2 为 `PASS`；legacy appearance 保留 `29 PASS / 4 FAIL`。jobs guard/scheduler/cancel 为 22 PASS，既有 jobs API 为 12 PASS / 1 conditional SKIP；DAG enqueue 非原子和旧 store event revision 仍开放。PG 19 unit PASS，source SHA 20/20，wheel 的解包 non-editable layout CLI smoke PASS；不扩展为 pip install、clean-machine 或 remote-CI 结论。PG OSB run 是玩具 uniform-box bar fixture，GPU `NOT_IMPLEMENTED`，不是材料标定或陶瓷断裂验收。
+A12 adapter/camera 32 PASS；此前归档的 depth/noise 71 与 frozen parity 2 PASS 保留，但旧 71 日志本轮未按相同 argv 重放。私有 continuous sampler 的 SS=1/2、nonzero distortion 40-PASS target 与 24-PASS default regression（15 projective + 7 noise + 2 flat-frozen）已由 root 窄范围接受；这不修复独立的 legacy appearance 29 PASS / 4 FAIL。首轮 3 FAIL / 27 PASS 和被拒的 38 PASS 均保留，后者的问题是原始 K 上重复添加 half-pixel 导致 ray 偏半像素。
 
-当前 replacement runs：native double-body no-failure 三例、production read-only C2 shell 候选仍 `PENDING`。连续 paint sampler 的 38 PASS 因 half-pixel oracle 不独立而被主代理拒绝；修正 oracle 后的 SS=1/2/distance rerun 尚待接受。首轮 3 FAIL / 27 PASS 和 legacy appearance 的 4 FAIL 都按原样保留。A12 不替换主 A3/A4 的真实邻接检索、证据拒绝、补采、STOP。
+退化行为 audit 已由 root 接受，范围是 synthetic small fixture：P06 coverage 0.2 实现为 0.793945、coverage 0.8 实现为 0.204102；P05/P06 双向链因 payload channel/key 缺失失败；P02 physical_result_qa 报 PASS 但 physical_audit 报 FAIL。四项修复任务已分配，代码修复尚未验收。
 
-## 最新接续更正（2026-10-03）
-
-以 [接续矩阵](CONTINUATION_20261003.md) 为当前任务状态来源。root 接受了窄范围连续绘制 preview/oracle target：SS=1/2 与 nonzero distortion 的目标日志为 40 PASS；4-band 512/320 与 3-band 512 反事实图已实看。先前 38-PASS 的独立 oracle 将 half-pixel 加到未平移原始 K，未抵消 _scaled_frame 的 +0.5，导致错误射线；因此该次结果被拒，default/frozen 回归仍待补测。
-
-smooth-CAD 3D shell candidate 的 0.118432 mm 偏差超过 0.10 mm，native halfsection 无效/为空，不能将有限 192 wall-ray 或 C2 曲线报告当作 whole-geometry PASS；第二 2D 表示和 h8 cell-cap rerun 均 PENDING，精度门槛仍为 1%。旧 deploy 实包状态为 INVALID_DEPLOY_TRUTH_LEAK / PENDING：queries 实际含 lineage/mother/fragment/historical_N_G，deploy_index 用 raw lineage/M-style IDs，manifest 的 features_carry_answer_fields=false 不构成无泄漏证据。strict-v2 replacement 尚待验收。
-
-[现实效果验收依据](REALISM_ACCEPTANCE_20261003.md) 将数学几何、物理、材料来源/校准、实物形貌分开判定；当前视觉仅限展示，E/Gc 候选原值保留，实际材料 calibration UNKNOWN / UNVALIDATED。A12 不取代主流程 A3/A4 的真实邻接检索、拒绝、补采与 STOP。下文的 2026-10-02 项目状态保留为历史记录。
+实际旧 deploy package 为 INVALID_DEPLOY_TRUTH_LEAK / PENDING：queries 含 lineage、mother、fragment、historical_N_G 等字段，deploy_index 使用 raw lineage/M-style IDs，manifest 的 features_carry_answer_fields=false 是 alias-blind scan 结果。strict-v2 replacement 等待验收。native-contact attempt03 在 Julia load syntax 失败，未执行 preflight 或 step，runner 已停止；新的 minimal-native submit endpoint 仍待真实三例检查。jobs DAG enqueue 非原子、旧 store event revision、GPU NOT_IMPLEMENTED、真实材料校准 UNKNOWN，以及完整 VF→PG→ageing→capture chain 继续开放。A12 不替代主 A3/A4 真实邻接检索、证据拒绝、补采或 STOP。
 ## 早期状态快照（以下细项保留历史状态；当前进度以接续矩阵为准）
 
 VF 当前 prototype 已窄验收 canonical STEP BRep face 分类、连续 rest-coordinate 四带绘制及几何-only 深度 parity；器身 C0 折角、接头真实度、材料/历史样式仍 `PENDING`。A12 生产 appearance 仍未全闭环（4 项 appearance 测试失败）；A12 adapter/camera32 为 `PASS`，但 per-face 近似仍漏掉窄红带。GPU 路径未实现，完整物理断裂链未完成。PG owner 报告 physics/time SHA 20/20 和 OSB/BB 独立 API fixture 的真实 CLI 验证通过，最终 wheel 检查进行中；jobs 修复 19 项测试通过，仍在审查中。A12 既有 ageing、capture 和 reconstruction 能力为部分实现，新 VF/PG 接入与真实效果综合验证待完成。

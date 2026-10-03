@@ -65,7 +65,7 @@ def real():
     from synlab.qc.pool_contract import ProtocolContext
     from synlab.storage.export import TrainingPackage
 
-    package = TrainingPackage(PACKAGE)
+    package = TrainingPackage(PACKAGE, access="research")
     rows = [dict(row) for row in package.relations()]
     endpoints = sorted({str(r.get("query", "")) for r in rows}
                        | {str(r.get("candidate", "")) for r in rows})

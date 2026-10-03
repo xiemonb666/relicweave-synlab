@@ -90,7 +90,7 @@ def test_export_emits_reverse_role_rows(tmp_path: Path) -> None:
 
     out = tmp_path / "training_package"
     manifest = export_training_package(AssetStore(store), release, out,
-                                       formats=("parquet",), include_truth=True)
+                                       formats=("parquet", "npz", "tar"), include_truth=True)
     counts = manifest["counts"]
     assert counts["relation_pairs_direction_complete"] is True
     assert counts["relations"] == 2 * counts["unordered_relation_pairs"]

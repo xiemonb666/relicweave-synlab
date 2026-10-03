@@ -566,6 +566,235 @@ def register_components(
     return components, representative_map, ledger
 
 
+def _postassembly_physical_qa(source_mesh: trimesh.Trimesh,
+                              components: list[PhysicalComponent],
+                              ledger: dict[str, Any], *,
+                              result_lost_volume_mm3: float | None = None
+                              ) -> dict[str, Any]:
+    """Fail-closed gates for the complete entity and the bodies actually delivered.
+
+    ``DamageOutcome.realized`` only says that an operator produced its requested effect.  It
+    does not certify that the assembled result is a usable closed solid.  Keep those facts in
+    separate fields and record unavailable measurements as ``UNKNOWN`` so they cannot become a
+    pass by omission.
+    """
+
+    def inspect_mesh(mesh: Any) -> dict[str, Any]:
+        row: dict[str, Any] = {
+            "arrays_finite": None, "face_indices_valid": None,
+            "volume_mm3": None, "area_mm2": None,
+            "volume_finite": None, "area_finite": None,
+            "watertight": None, "error": None,
+        }
+        try:
+            vertices = np.asarray(mesh.vertices)
+            faces = np.asarray(mesh.faces)
+            vertices_finite = bool(np.isfinite(vertices).all())
+            faces_finite = bool(np.isfinite(faces).all())
+            row["arrays_finite"] = bool(vertices_finite and faces_finite)
+            face_shape_ok = faces.ndim == 2 and faces.shape[1:] == (3,)
+            if face_shape_ok and faces.size and vertices.ndim == 2 and vertices.shape[1:] == (3,):
+                face_indices_valid = bool(
+                    faces_finite and int(faces.min()) >= 0 and int(faces.max()) < len(vertices))
+            else:
+                face_indices_valid = bool(face_shape_ok and faces.size == 0)
+            row["face_indices_valid"] = face_indices_valid
+            if not row["arrays_finite"] or not face_indices_valid:
+                row["error"] = ("non-finite vertices/faces" if not row["arrays_finite"]
+                                else "face array has an invalid shape or vertex index")
+                return row
+            try:
+                volume = float(abs(mesh.volume))
+                area = float(mesh.area)
+                row["volume_mm3"] = volume
+                row["area_mm2"] = area
+                row["volume_finite"] = bool(np.isfinite(volume))
+                row["area_finite"] = bool(np.isfinite(area))
+            except Exception as exc:  # noqa: BLE001 - retain a diagnostic instead of raising
+                row["error"] = f"{type(exc).__name__}: {exc}"
+                return row
+            try:
+                row["watertight"] = bool(mesh.is_watertight)
+            except Exception as exc:  # noqa: BLE001 - retain a diagnostic instead of raising
+                row["error"] = f"{type(exc).__name__}: {exc}"
+        except Exception as exc:  # noqa: BLE001 - malformed meshes remain inspectable results
+            row["error"] = f"{type(exc).__name__}: {exc}"
+        return row
+
+    def aggregate(values: list[bool | None]) -> bool | None:
+        if any(value is False for value in values):
+            return False
+        if any(value is None for value in values):
+            return None
+        return True
+
+    def status(value: bool | None) -> str:
+        return "PASS" if value is True else "FAIL" if value is False else "UNKNOWN"
+
+    source = inspect_mesh(source_mesh)
+    component_rows: list[dict[str, Any]] = []
+    for component in components:
+        mesh_report = inspect_mesh(getattr(component, "mesh", None))
+        component_volume = getattr(component, "volume_mm3", None)
+        try:
+            component_volume = float(component_volume)
+            component_volume_finite: bool | None = bool(np.isfinite(component_volume))
+            component_positive: bool | None = bool(
+                component_volume_finite and component_volume > 0.0)
+        except (TypeError, ValueError, OverflowError):
+            component_volume = None
+            component_volume_finite = None
+            component_positive = None
+        component_rows.append({
+            "component_id": str(getattr(component, "component_id", "UNKNOWN")),
+            "is_contamination": bool((getattr(component, "meta", {}) or {}).get(
+                "is_contamination", False)),
+            "mesh": mesh_report,
+            "recorded_volume_mm3": component_volume,
+            "recorded_volume_finite": component_volume_finite,
+            "recorded_positive_volume": component_positive,
+        })
+
+    source_finite = aggregate([source["arrays_finite"], source["volume_finite"],
+                               source["area_finite"]])
+    result_finite_values = [value for row in component_rows for value in (
+        row["mesh"]["arrays_finite"], row["mesh"]["volume_finite"],
+        row["mesh"]["area_finite"], row["recorded_volume_finite"])]
+    result_finite = aggregate(result_finite_values)
+    source_arrays_valid = source["face_indices_valid"]
+    result_arrays_valid = aggregate([row["mesh"]["face_indices_valid"]
+                                     for row in component_rows])
+    source_positive = (None if source["volume_mm3"] is None else
+                       bool(source["volume_finite"] and source["volume_mm3"] > 0.0))
+    result_positive = aggregate([
+        (None if row["mesh"]["volume_mm3"] is None else bool(
+            row["mesh"]["volume_finite"] and row["mesh"]["volume_mm3"] > 0.0))
+        for row in component_rows] + [row["recorded_positive_volume"] for row in component_rows])
+    source_watertight = source["watertight"]
+    result_watertight = aggregate([row["mesh"]["watertight"] for row in component_rows])
+
+    ledger = dict(ledger or {})
+    conservation_parts: dict[str, Any] = {
+        "ledger_flag": ledger.get("conservation_ok") if isinstance(
+            ledger.get("conservation_ok"), (bool, np.bool_)) else None,
+        "recorded_balance_pass": None,
+        "delivered_balance_pass": None,
+        "tolerance_mm3": None,
+        "recorded_balance_error_mm3": None,
+        "delivered_balance_error_mm3": None,
+    }
+    required_numbers = (ledger.get("source_volume_mm3"), ledger.get("damaged_volume_mm3"),
+                        ledger.get("lost_volume_mm3"))
+    try:
+        if all(value is not None for value in required_numbers):
+            source_volume, damaged_volume, recorded_lost = (float(value) for value in required_numbers)
+            if all(np.isfinite(value) for value in (source_volume, damaged_volume, recorded_lost)):
+                tolerance = 1e-6 * max(source_volume, 1.0)
+                error = abs(source_volume - damaged_volume - recorded_lost)
+                conservation_parts["tolerance_mm3"] = float(tolerance)
+                conservation_parts["recorded_balance_error_mm3"] = float(error)
+                conservation_parts["recorded_balance_pass"] = bool(error <= tolerance)
+                if result_lost_volume_mm3 is not None:
+                    actual_damaged = float(sum(
+                        row["mesh"]["volume_mm3"] for row in component_rows
+                        if not row["is_contamination"] and row["mesh"]["volume_mm3"] is not None))
+                    actual_lost = float(result_lost_volume_mm3)
+                    if np.isfinite(actual_damaged) and np.isfinite(actual_lost):
+                        delivered_error = abs(source_volume - actual_damaged - actual_lost)
+                        conservation_parts["delivered_balance_error_mm3"] = float(delivered_error)
+                        conservation_parts["delivered_balance_pass"] = bool(
+                            delivered_error <= tolerance)
+    except (TypeError, ValueError, OverflowError):
+        pass
+    conservation = aggregate([conservation_parts["ledger_flag"],
+                              conservation_parts["recorded_balance_pass"],
+                              conservation_parts["delivered_balance_pass"]])
+
+    checks: dict[str, Any] = {
+        "components_present": {"status": "PASS" if components else "FAIL",
+                               "pass": bool(components), "component_count": len(components)},
+        "mesh_arrays_valid": {
+            "status": status(aggregate([source_arrays_valid, result_arrays_valid])),
+            "pass": aggregate([source_arrays_valid, result_arrays_valid]),
+            "source_face_indices_valid": source_arrays_valid,
+            "component_face_indices_valid": {row["component_id"]: row["mesh"][
+                "face_indices_valid"] for row in component_rows},
+        },
+        "finite": {
+            "status": status(aggregate([source_finite, result_finite])),
+            "pass": aggregate([source_finite, result_finite]),
+            "source": source,
+            "components": {row["component_id"]: row["mesh"] for row in component_rows},
+        },
+        "positive_volume": {
+            "status": status(aggregate([source_positive, result_positive])),
+            "pass": aggregate([source_positive, result_positive]),
+            "source_volume_mm3": source["volume_mm3"],
+            "components": {row["component_id"]: {
+                "mesh_volume_mm3": row["mesh"]["volume_mm3"],
+                "recorded_volume_mm3": row["recorded_volume_mm3"],
+            } for row in component_rows},
+        },
+        "watertight": {
+            "status": status(aggregate([source_watertight, result_watertight])),
+            "pass": aggregate([source_watertight, result_watertight]),
+            "source": source_watertight,
+            "components": {row["component_id"]: row["mesh"]["watertight"]
+                           for row in component_rows},
+            "source_contract": "complete entity input and every delivered body are closed meshes",
+            "open_mesh_reason": (
+                "an open observation scan needs a separate explicit source/contract; it cannot "
+                "pass through the complete-entity physical route"),
+        },
+        "conservation": {
+            "status": status(conservation), "pass": conservation,
+            **conservation_parts,
+        },
+    }
+    failures: list[str] = []
+    unknown: list[str] = []
+
+    def record_gate(name: str, value: bool | None, *, fail_code: str,
+                    source_fail_code: str | None = None) -> None:
+        if value is True:
+            return
+        if value is None:
+            unknown.append(name)
+            failures.append(f"{fail_code}_UNKNOWN")
+            return
+        failures.append(fail_code)
+        if source_fail_code:
+            if name == "finite" and source_finite is False:
+                failures.append(source_fail_code)
+            elif name == "positive_volume" and source_positive is False:
+                failures.append(source_fail_code)
+            elif name == "watertight" and source_watertight is False:
+                failures.append(source_fail_code)
+
+    if not components:
+        failures.append("NO_COMPONENTS")
+    record_gate("mesh_arrays_valid", aggregate([source_arrays_valid, result_arrays_valid]),
+                fail_code="INVALID_MESH_ARRAYS", source_fail_code="INVALID_SOURCE_MESH_ARRAYS")
+    record_gate("finite", aggregate([source_finite, result_finite]),
+                fail_code="NON_FINITE_GEOMETRY", source_fail_code="SOURCE_NON_FINITE_GEOMETRY")
+    record_gate("positive_volume", aggregate([source_positive, result_positive]),
+                fail_code="NON_POSITIVE_VOLUME", source_fail_code="SOURCE_NON_POSITIVE_VOLUME")
+    record_gate("watertight", aggregate([source_watertight, result_watertight]),
+                fail_code="NOT_WATERTIGHT", source_fail_code="SOURCE_NOT_WATERTIGHT")
+    record_gate("conservation", conservation,
+                fail_code="LEDGER_CONSERVATION_FAILED")
+    if conservation is None:
+        failures[-1] = "LEDGER_CONSERVATION_UNKNOWN"
+
+    return {
+        "status": "PASS" if not failures else "FAIL",
+        "checks": checks,
+        "failure_codes": sorted(set(failures)),
+        "unknown_checks": sorted(set(unknown)),
+        "components": component_rows,
+    }
+
+
 def apply_damage(clean_truth: Any, fragment: Any, recipe: DamageRecipe,
                  rng: np.random.Generator | None = None) -> PhysicalResult:
     """Apply one physical damage level to one clean fragment (plan 12.1, 30.7).
@@ -597,14 +826,22 @@ def apply_damage(clean_truth: Any, fragment: Any, recipe: DamageRecipe,
         for component in ledger_components:
             component.meta["identity"] = True
             component.meta["source_object_is_shared"] = True
+        postassembly_qa = _postassembly_physical_qa(
+            mesh, ledger_components, ledger, result_lost_volume_mm3=0.0)
         qa = {
-            "status": "PASS", "identity": True, "level": 0,
+            "status": postassembly_qa["status"], "identity": True, "level": 0,
+            "realized": True, "geometry_changed": False,
             "source_geometry_hash": _geometry_hash(mesh),
             "result_geometry_hash": _geometry_hash(ledger_components[0].mesh),
             "bytes_identical": True, "resampled": False,
             "damage_semantics": DAMAGE_SEMANTICS,
+            "postassembly": postassembly_qa,
+            "failure_codes": list(postassembly_qa["failure_codes"]),
             "note": "level 0 returns the source asset reference/bytes without resampling",
         }
+        if postassembly_qa["failure_codes"]:
+            qa["failure_code"] = postassembly_qa["failure_codes"][0]
+            qa["reason"] = "identity source/result failed the complete-entity postassembly QA"
         identity_provenance = {
             "version": ORIGIN_PROVENANCE_VERSION, "attached": False,
             "reason": ("identity level 0 returns the source object unchanged, so the source's own "
@@ -697,6 +934,19 @@ def apply_damage(clean_truth: Any, fragment: Any, recipe: DamageRecipe,
             "appearance_updated": bool(outcome.appearance),
         },
     )
+    postassembly_qa = _postassembly_physical_qa(
+        mesh, components, ledger, result_lost_volume_mm3=lost_volume)
+    result.qa["postassembly"] = postassembly_qa
+    result.qa["failure_codes"] = sorted(set(
+        list(result.qa.get("failure_codes") or []) + list(postassembly_qa["failure_codes"])))
+    if postassembly_qa["status"] != "PASS":
+        result.qa["status"] = "FAIL"
+        result.qa["reason"] = "postassembly entity QA failed; see postassembly.checks"
+        result.qa["failure_code"] = (result.qa.get("failure_code")
+                                      or next(iter(postassembly_qa["failure_codes"]),
+                                              "POSTASSEMBLY_QA_FAILED"))
+    elif not outcome.realized:
+        result.qa["status"] = "FAIL"
     if outcome.mesh is not None and geometry_changed:
         provenance = attach_face_provenance(
             result, clean_mesh=mesh, fragment=fragment,
@@ -936,6 +1186,13 @@ def audit_physical(result: PhysicalResult, clean: Any = None) -> dict[str, Any]:
         "component_count": float(len(result.components)),
         "declared_level": float(level),
     })
+    postassembly_qa = _postassembly_physical_qa(
+        clean_mesh, result.components, dict((result.meta or {}).get("ledger") or {}),
+        result_lost_volume_mm3=float(result.lost_volume_mm3))
+    checks["postassembly"] = postassembly_qa
+    checks["mesh_arrays_valid"] = dict(postassembly_qa["checks"]["mesh_arrays_valid"])
+    checks["finite"] = dict(postassembly_qa["checks"]["finite"])
+    failures.extend(postassembly_qa["failure_codes"])
 
     # ---- damaged ⊆ clean (measured on the damaged surface, tolerance disclosed)
     tol_mm = float((result.qa.get("ledger", {}) or {}).get("outside_tol_mm", 1e-3))
@@ -966,16 +1223,35 @@ def audit_physical(result: PhysicalResult, clean: Any = None) -> dict[str, Any]:
         failures.append("DAMAGED_NOT_SUBSET_OF_CLEAN")
 
     # ---- watertight / positive volume / winding
-    reports = [(c.component_id, S.watertight_report(c.mesh)) for c in result.components]
-    non_watertight = [cid for cid, report in reports if not report["watertight"]]
-    non_positive = [cid for cid, report in reports if not report["positive_volume"]]
-    checks["watertight"] = {"non_watertight": non_watertight,
-                            "pass": bool(not non_watertight or not touches_geometry),
-                            "per_component": {cid: report["watertight"] for cid, report in reports}}
-    checks["positive_volume"] = {"non_positive": non_positive, "pass": bool(not non_positive)}
-    if non_watertight and touches_geometry:
-        failures.append("NOT_WATERTIGHT")
-    if non_positive:
+    health = postassembly_qa["checks"]
+    non_watertight = [cid for cid, value in health["watertight"]["components"].items()
+                      if value is False]
+    non_positive = [cid for cid, row in health["positive_volume"]["components"].items()
+                    if ((row.get("mesh_volume_mm3") is not None
+                         and float(row["mesh_volume_mm3"]) <= 0.0)
+                        or (row.get("recorded_volume_mm3") is not None
+                            and float(row["recorded_volume_mm3"]) <= 0.0))]
+    checks["watertight"] = {
+        "non_watertight": non_watertight,
+        "source_watertight": health["watertight"]["source"],
+        "pass": health["watertight"]["pass"],
+        "per_component": dict(health["watertight"]["components"]),
+        "source_contract": health["watertight"]["source_contract"],
+        "open_mesh_reason": health["watertight"]["open_mesh_reason"],
+    }
+    checks["positive_volume"] = {
+        "non_positive": non_positive,
+        "source_volume_mm3": health["positive_volume"]["source_volume_mm3"],
+        "pass": health["positive_volume"]["pass"],
+        "per_component": dict(health["positive_volume"]["components"]),
+    }
+    if checks["watertight"]["pass"] is not True:
+        if "NOT_WATERTIGHT" not in postassembly_qa["failure_codes"]:
+            failures.append("NOT_WATERTIGHT_UNKNOWN")
+    if checks["positive_volume"]["pass"] is not True:
+        if "NON_POSITIVE_VOLUME" not in postassembly_qa["failure_codes"]:
+            failures.append("POSITIVE_VOLUME_UNKNOWN")
+    if non_positive or "NON_POSITIVE_VOLUME" in postassembly_qa["failure_codes"]:
         failures.append("NON_POSITIVE_VOLUME")
 
     # ---- thickness
@@ -999,17 +1275,29 @@ def audit_physical(result: PhysicalResult, clean: Any = None) -> dict[str, Any]:
     ledger = dict((result.meta or {}).get("ledger") or {})
     measured_lost = max(0.0, source_volume - damaged_volume)
     loss_error = abs(measured_lost - float(result.lost_volume_mm3))
+    ledger_conservation = ledger.get("conservation_ok")
+    ledger_conservation_pass = (bool(ledger_conservation)
+                                if isinstance(ledger_conservation, (bool, np.bool_))
+                                else None)
+    numeric_loss_pass = bool(loss_error <= max(1e-6 * source_volume, 1e-6))
     checks["loss_accounting"] = {
         "measured_lost_volume_mm3": measured_lost,
         "declared_lost_volume_mm3": float(result.lost_volume_mm3),
         "absolute_error_mm3": loss_error,
         "relative_error": float(loss_error / max(source_volume, 1e-12)),
-        "passed = ledger_conservation": bool(ledger.get("conservation_ok", True)),
-        "pass": bool(loss_error <= max(1e-6 * source_volume, 1e-6)),
+        "passed = ledger_conservation": ledger_conservation_pass,
+        "ledger_conservation_status": ("PASS" if ledger_conservation_pass is True else
+                                       "FAIL" if ledger_conservation_pass is False else "UNKNOWN"),
+        "numeric_loss_pass": numeric_loss_pass,
+        "pass": bool(numeric_loss_pass and ledger_conservation_pass is True),
     }
     metrics["measured_lost_volume_mm3"] = measured_lost
-    if not checks["loss_accounting"]["pass"]:
+    if not numeric_loss_pass:
         failures.append("LOSS_ACCOUNTING_MISMATCH")
+    if ledger_conservation_pass is False:
+        failures.append("LEDGER_CONSERVATION_FAILED")
+    elif ledger_conservation_pass is None:
+        failures.append("LEDGER_CONSERVATION_UNKNOWN")
 
     # ---- source residue and out-of-ROI drift (geometry axes with an interface ROI)
     residue = None

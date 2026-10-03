@@ -748,21 +748,58 @@ def _appearance_payload(recipe: DamageRecipe, fragment: Any) -> dict[str, Any]:
     return appearance
 
 
+def _copy_appearance_channels(appearance: dict[str, Any]) -> dict[str, Any]:
+    """Copy mutable appearance containers while retaining opaque reference-valued channels.
+
+    P05/P06 update only their result arrays and masks.  Array channels and nested containers are
+    copied so an operator cannot mutate its source; opaque values (including truth references)
+    pass through by identity and are never modified here.
+    """
+    def copy_channel(value: Any) -> Any:
+        if isinstance(value, np.ndarray):
+            return np.array(value, copy=True)
+        if isinstance(value, dict):
+            return {key: copy_channel(item) for key, item in value.items()}
+        if isinstance(value, list):
+            return [copy_channel(item) for item in value]
+        if isinstance(value, tuple):
+            return tuple(copy_channel(item) for item in value)
+        return value
+
+    return {key: copy_channel(value) for key, value in appearance.items()}
+
+
 def remove_paint(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any = None) -> DamageOutcome:
     """P05: nested paint masks from a frozen continuous rank field; glaze/body shows through."""
     appearance = _appearance_payload(recipe, fragment)
     retained = float(recipe.parameter("retained_fraction", 1.0))
+    if not np.isfinite(retained) or not 0.0 <= retained <= 1.0:
+        raise ValueError("P05 retained_fraction must be finite and in [0, 1]")
     albedo = np.asarray(appearance["texel_albedo"], dtype=np.float32)
     substrate = np.asarray(appearance["texel_substrate_albedo"], dtype=np.float32)
     area = np.asarray(appearance["texel_area_mm2"], dtype=np.float64)
     layer = np.asarray(appearance.get("texel_layer", np.zeros(len(albedo), dtype=np.int32)))
+    if "texel_positions" not in appearance:
+        raise ValueError("P05 appearance payload requires texel_positions")
+    if albedo.ndim != 2 or substrate.shape != albedo.shape:
+        raise ValueError("P05 albedo and substrate channels must have matching (N, C) shapes")
+    if area.shape != (len(albedo),) or layer.shape != (len(albedo),):
+        raise ValueError("P05 texel area and layer channels must match texel_albedo")
+    positions = np.asarray(appearance["texel_positions"], dtype=np.float64)
+    if positions.shape != (len(albedo), 3):
+        raise ValueError("P05 texel_positions must have shape (N, 3)")
     field = F.FourierField.from_payload(recipe.basis["rank_field"])
-    rank = np.clip(field(np.asarray(appearance["texel_positions"], dtype=np.float64)), 0.0, 1.0)
+    rank = np.clip(field(positions), 0.0, 1.0)
     paint_texels = layer > 0
-    threshold = float(np.quantile(rank[paint_texels], 1.0 - retained)) if paint_texels.any() else 0.0
-    removed_mask = paint_texels & (rank <= threshold) if retained < 1.0 else np.zeros(len(rank), dtype=bool)
-    if retained >= 1.0:
-        removed_mask[:] = False
+    removed_mask = np.zeros(len(rank), dtype=bool)
+    if paint_texels.any():
+        paint_ids = np.flatnonzero(paint_texels)
+        local_removed, selection = F.rank_mask_for_area_fraction(
+            rank[paint_texels], 1.0 - retained, area[paint_texels], tail="lower")
+        removed_mask[paint_ids[local_removed]] = True
+    else:
+        _, selection = F.rank_mask_for_area_fraction(
+            rank[paint_texels], 0.0, area[paint_texels], tail="lower")
     new_albedo = np.array(albedo, copy=True)
     new_albedo[removed_mask] = substrate[removed_mask]
     removed_area = float(area[removed_mask].sum())
@@ -776,16 +813,23 @@ def remove_paint(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any =
         "paint_removed_area_mm2": removed_area,
         "paint_residual_fraction": float(residual),
         "revealed_substrate_fraction": float(removed_area / max(total_paint_area, 1e-12)),
+        "paint_removed_area_target_fraction": float(1.0 - retained),
+        "paint_removed_area_fraction_error": float(
+            removed_area / max(total_paint_area, 1e-12) - (1.0 - retained)),
         "mean_albedo_delta": float(np.abs(new_albedo - albedo).mean()),
         "geometry_hash_unchanged": 1.0,
         "paint_visible_residual_area_mm2": float(residual * total_paint_area),
     }
-    details = {"rank_field_id": field.field_id, "rank_threshold": threshold,
-               "mask_nested": True, "geometry": S.mesh_summary(mesh)}
+    details = {"rank_field_id": field.field_id,
+               "rank_boundary_score": selection.get("boundary_score"),
+               "mask_nested": True, "removed_area_selection": selection,
+               "geometry": S.mesh_summary(mesh)}
     realized = bool(removed_area > 0)
-    return DamageOutcome(mesh=mesh, appearance={"texel_albedo": new_albedo,
-                                               "paint_mask_retained": paint_texels & ~removed_mask,
-                                               "paint_mask_removed": removed_mask},
+    output_appearance = _copy_appearance_channels(appearance)
+    output_appearance.update({"texel_albedo": new_albedo,
+                              "paint_mask_retained": paint_texels & ~removed_mask,
+                              "paint_mask_removed": removed_mask})
+    return DamageOutcome(mesh=mesh, appearance=output_appearance,
                          measurements=measurements,
                          units={"paint_removed_area_mm2": "mm2", "paint_total_area_mm2": "mm2"},
                          details=details, realized=realized)
@@ -795,16 +839,24 @@ def dirt_cover(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any = N
     """P06: smooth patch coverage; the core variant changes appearance only (plan 12.3)."""
     appearance = _appearance_payload(recipe, fragment)
     coverage = float(recipe.parameter("coverage", 0.0))
+    if not np.isfinite(coverage) or not 0.0 <= coverage <= 1.0:
+        raise ValueError("P06 coverage must be finite and in [0, 1]")
     field = F.FourierField.from_payload(recipe.basis["dirt_field"])
     albedo = np.asarray(appearance["texel_albedo"], dtype=np.float32)
     roughness = np.asarray(appearance.get("texel_roughness", np.full(len(albedo), 0.6)),
                            dtype=np.float32)
     area = np.asarray(appearance["texel_area_mm2"], dtype=np.float64)
+    if albedo.ndim != 2 or area.shape != (len(albedo),) or roughness.shape != (len(albedo),):
+        raise ValueError("P06 albedo, roughness and area channels must share the same texel count")
+    if "texel_positions" not in appearance:
+        raise ValueError("P06 appearance payload requires texel_positions")
+    positions = np.asarray(appearance["texel_positions"], dtype=np.float64)
+    if positions.shape != (len(albedo), 3):
+        raise ValueError("P06 texel_positions must have shape (N, 3)")
     dirt_color = np.asarray(recipe.basis.get("dirt_color", [0.22, 0.18, 0.13]), dtype=np.float32)
     dirt_roughness = float(recipe.basis.get("dirt_roughness", 0.95))
-    values = np.clip(field(np.asarray(appearance["texel_positions"], dtype=np.float64)), 0.0, 1.0)
-    threshold = F.threshold_for_fraction(values, coverage)
-    covered = values <= threshold if coverage > 0 else np.zeros(len(values), dtype=bool)
+    values = np.clip(field(positions), 0.0, 1.0)
+    covered, selection = F.rank_mask_for_area_fraction(values, coverage, area, tail="lower")
     new_albedo = np.array(albedo, copy=True)
     new_roughness = np.array(roughness, copy=True)
     new_albedo[covered] = 0.5 * new_albedo[covered] + 0.5 * dirt_color[None, :]
@@ -813,20 +865,31 @@ def dirt_cover(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any = N
     total_area = float(area.sum())
     pattern = np.asarray(appearance.get("pattern_region", np.zeros(len(albedo), dtype=bool)))
     interface = np.asarray(appearance.get("interface_region", np.zeros(len(albedo), dtype=bool)))
+    if pattern.shape != (len(albedo),) or interface.shape != (len(albedo),):
+        raise ValueError("P06 pattern and interface masks must match texel_albedo")
+    pattern = pattern.astype(bool, copy=False)
+    interface = interface.astype(bool, copy=False)
+    pattern_area = float(area[pattern].sum())
+    interface_area = float(area[interface].sum())
     variant = recipe.variant or "dirt_appearance"
     measurements = {
         "coverage": coverage,
         "realized_coverage": float(covered_area / max(total_area, 1e-12)),
         "covered_area_mm2": covered_area,
+        "covered_area_target_mm2": float(selection["target_area"]),
+        "coverage_area_error_mm2": float(covered_area - selection["target_area"]),
+        "coverage_fraction_error": float(covered_area / max(total_area, 1e-12) - coverage),
         "covered_texels": float(int(covered.sum())),
-        "pattern_visibility_reduction": float(pattern[covered].sum() / max(pattern.sum(), 1)) if pattern.any() else 0.0,
-        "interface_visibility_reduction": float(interface[covered].sum() / max(interface.sum(), 1)) if interface.any() else 0.0,
+        "pattern_visibility_reduction": float(area[covered & pattern].sum() / pattern_area)
+        if pattern_area > 0 else 0.0,
+        "interface_visibility_reduction": float(area[covered & interface].sum() / interface_area)
+        if interface_area > 0 else 0.0,
         "mean_albedo_delta": float(np.abs(new_albedo - albedo).mean()),
         "roughness_delta": float(np.abs(new_roughness - roughness).mean()),
         "geometry_hash_unchanged": 1.0 if variant == "dirt_appearance" else 0.0,
         "contamination_entity": 1.0 if variant == "dirt_geometry" else 0.0,
     }
-    details = {"field_id": field.field_id, "threshold": threshold, "variant": variant}
+    details = {"field_id": field.field_id, "selection": selection, "variant": variant}
     added_bodies: list[Any] = []
     outcome_mesh = mesh
     if variant == "dirt_geometry":
@@ -839,9 +902,10 @@ def dirt_cover(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any = N
             measurements["contamination_volume_mm3"] = float(abs(shell.volume))
             measurements["contamination_area_mm2"] = float(shell.area)
             measurements["geometry_hash_unchanged"] = 0.0
-    return DamageOutcome(mesh=outcome_mesh,
-                         appearance={"texel_albedo": new_albedo, "texel_roughness": new_roughness,
-                                     "dirt_mask": covered},
+    output_appearance = _copy_appearance_channels(appearance)
+    output_appearance.update({"texel_albedo": new_albedo, "texel_roughness": new_roughness,
+                              "dirt_mask": covered})
+    return DamageOutcome(mesh=outcome_mesh, appearance=output_appearance,
                          measurements=measurements,
                          units={"covered_area_mm2": "mm2", "contamination_volume_mm3": "mm3"},
                          details=details, realized=bool(covered.any()), added_bodies=added_bodies)
@@ -860,7 +924,7 @@ def _contamination_shell(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, covered
     field = F.FourierField.from_payload(recipe.basis["dirt_field"])
     anchors, _fid = trimesh.sample.sample_surface(mesh, 1200, seed=5)
     values = np.clip(field(np.asarray(anchors, dtype=np.float64)), 0.0, 1.0)
-    threshold = F.threshold_for_fraction(values, fraction)
+    threshold = F.threshold_for_fraction(values, fraction, tail="lower")
 
     def b_fn(points: np.ndarray) -> np.ndarray:
         vals = np.clip(field(points), 0.0, 1.0)

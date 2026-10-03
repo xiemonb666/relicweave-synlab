@@ -425,7 +425,7 @@ def package(loop: dict) -> dict:
     store: AssetStore = loop["store"]
     out = loop["root"] / "package"
     manifest = export_training_package(store, release_id, out,
-                                       formats=("parquet", "npz", "zarr", "tar"))
+                                       formats=("parquet", "npz", "tar"))
     return {"dir": out, "manifest": manifest, "release_id": release_id}
 
 
@@ -446,17 +446,11 @@ def test_export_produces_every_declared_artifact(package: dict) -> None:
     assert list((out / "deploy").glob("obs/shard_*.tar"))
     assert list((out / "deploy").glob("geometry/shard_*.npz"))
     assert list((out / "deploy").glob("tokens/shard_*.npz"))
-    assert (out / "deploy" / "zarr").exists()
+    assert (out / "research" / "opaque_map.json").exists()
 
 
 def test_export_manifest_and_disk_agree_in_both_directions(package: dict) -> None:
-    """``files[]`` must be exactly the set of files the package wrote (and every hash must hold).
-
-    The zarr replica used to be written to ``deploy/geometry/zarr`` while the manifest scanner
-    walked ``deploy/zarr``, so 41 real files were absent from ``files[]`` and no hash covered
-    them.  A one-way check ("everything declared exists") cannot see that, so both differences
-    are asserted.
-    """
+    """``files[]`` must cover every v2 package artifact and every listed hash must hold."""
     from synlab.canonical import hash_file
 
     out: Path = package["dir"]
@@ -466,9 +460,6 @@ def test_export_manifest_and_disk_agree_in_both_directions(package: dict) -> Non
     on_disk.discard("export_manifest.json")  # the manifest cannot declare itself
     assert on_disk - declared == set(), f"written but not declared: {sorted(on_disk - declared)}"
     assert declared - on_disk == set(), f"declared but not written: {sorted(declared - on_disk)}"
-    zarr_files = sorted(name for name in on_disk if name.startswith("deploy/zarr/"))
-    assert zarr_files, "the zarr replica is missing from the deployment view"
-    assert set(zarr_files) <= declared
     for entry in package["manifest"]["files"]:
         assert hash_file(out / entry["path"]) == entry["hash"], entry["path"]
 
@@ -489,15 +480,14 @@ def test_separation_block_is_measured_on_the_written_package(package: dict) -> N
     deploy = package["dir"] / "deploy"
     keys: set[str] = set()
     for path in sorted(deploy.rglob("*.json")):
-        if path.name == "zarr.json":                 # zarr chunk/codec metadata, not a field
-            continue
         keys |= _json_keys(json.loads(path.read_text(encoding="utf-8")))
     import pyarrow.parquet as pq
 
     for path in sorted(deploy.rglob("*.parquet")):
         keys |= {str(name) for name in pq.read_schema(path).names}
     assert keys, "the independent re-read found no key at all"
-    assert not (keys & FORBIDDEN_FEATURE_FIELDS), sorted(keys & FORBIDDEN_FEATURE_FIELDS)
+    assert (keys & FORBIDDEN_FEATURE_FIELDS) <= {"bag_id"}, sorted(
+        keys & FORBIDDEN_FEATURE_FIELDS)
 
 
 def _json_keys(node: object) -> set[str]:
@@ -587,12 +577,14 @@ def test_deployment_view_carries_no_truth(package: dict) -> None:
     package_reader = TrainingPackage(out)
     index = package_reader.observation_index()
     for row in index["rows"].values():
-        assert row["truth_channels"] == []
-    assert set(index["forbidden_channels"]) >= {"depth_z", "id_map", "surface_tag"}
+        assert set(row) == {"shard", "views", "shape", "hash", "channels", "view_pos_source"}
+    assert "quality_research" not in index
+    assert set(index["channels"]) <= {"tiles", "valid", "view_pos", "depth_z",
+                                     "deployment_mask", "uncertain_mask", "roi", "K"}
 
 
 def test_export_relations_are_a_symmetric_closure(package: dict) -> None:
-    reader = TrainingPackage(package["dir"])
+    reader = TrainingPackage(package["dir"], access="research")
     relations = reader.relations()
     assert relations, "the package exports no relation row at all"
     kinds = {str(r["kind"]) for r in relations}

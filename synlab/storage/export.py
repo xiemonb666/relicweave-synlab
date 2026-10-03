@@ -1205,7 +1205,6 @@ def export_training_package(store: AssetStore, release_id: str, out_dir: str | P
     counts["queries"] = len(all_fragments)
     counts["fragments_with_observation"] = len(observed_fragments)
     counts["fragments_without_observation"] = len(all_fragments) - len(observed_fragments)
-    observed_fragments = all_fragments
 
     deploy_queries_rows: list[dict[str, Any]] = []
     research_queries_rows: list[dict[str, Any]] = []
@@ -2912,7 +2911,8 @@ def declared_channels(view_root: str | Path) -> dict[str, Any]:
         return {"file": str(index_path), "channels": [], "policy": {}, "unreadable": True}
     return {
         "file": str(index_path),
-        "channels": sorted({str(name) for name in (payload.get("channel_names") or [])}),
+        "channels": sorted({str(name) for name in
+                             (payload.get("channels") or payload.get("channel_names") or [])}),
         "policy": dict(payload.get("channel_policy") or {}),
     }
 
@@ -3068,7 +3068,19 @@ class TrainingPackage:
 
     def _ensure_strict_deploy(self) -> dict[str, Any]:
         if self._deploy_validation is None:
-            self._deploy_validation = validate_deploy_package(self.root, self._manifest)
+            validation = validate_deploy_package(self.root, self._manifest)
+            declared = {str(row.get("path", "")): str(row.get("hash", ""))
+                        for row in self._manifest.get("files", [])
+                        if str(row.get("path", "")).startswith("deploy/")}
+            problems = [rel for rel, expected in declared.items()
+                        if not (self.root / rel).is_file()
+                        or hash_file(self.root / rel) != expected]
+            if problems:
+                raise SynLabError(ErrorCode.ASSET_HASH_MISMATCH,
+                                  "deployment files do not match the hashed manifest inventory",
+                                  stage="export.TrainingPackage.deploy_integrity",
+                                  evidence_refs=problems)
+            self._deploy_validation = validation
         return self._deploy_validation
 
     # ---------------------------------------------------------------- integrity
@@ -3141,6 +3153,13 @@ class TrainingPackage:
             raise SynLabError(ErrorCode.LEAKAGE_DETECTED,
                               "research opaque identity mapping is missing",
                               stage="export.TrainingPackage.opaque_map")
+        expected = next((str(row.get("hash", "")) for row in self._manifest.get("files", [])
+                         if str(row.get("path", "")) == "research/opaque_map.json"), "")
+        if not expected or hash_file(path) != expected:
+            raise SynLabError(ErrorCode.ASSET_HASH_MISMATCH,
+                              "research opaque identity mapping does not match manifest hash",
+                              stage="export.TrainingPackage.opaque_map",
+                              evidence_refs=["research/opaque_map.json"])
         payload = json.loads(path.read_text(encoding="utf-8"))
         rows = payload.get("rows") if isinstance(payload, Mapping) else None
         if payload.get("schema") != "synlab.research_opaque_map.v2" or not isinstance(rows, Mapping):

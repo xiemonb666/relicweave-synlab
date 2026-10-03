@@ -655,9 +655,8 @@ def build_training_batch_for_package(package_dir: str | Path, *,
                                      token_budget: int | None = None) -> dict[str, Any]:
     """Build a real ``TrainingBatch`` from an exported package, with negatives and provenance.
 
-    Features are read through the frozen ``qc.loader_probe.load_features`` (real ObsPack shards
-    when the package carries them, an explicit *absent* payload otherwise -- never a zero-filled
-    fake observation).  Labels go through the documented ``labels=`` form of
+    Features are read through the strict v2 deployment gate; relation rows without two packaged
+    observations remain research supervision and are excluded from this forward batch. Labels go through the documented ``labels=`` form of
     ``training.batch.build_training_batch`` so that ``neighbours`` is the real R2 mate set; see
     the module docstring for why the ``pool=`` form cannot be used unchanged.
     """
@@ -665,15 +664,18 @@ def build_training_batch_for_package(package_dir: str | Path, *,
     from ..training.adapter import FeatureBundle
     from ..training.batch import build_training_batch, negative_audit
 
-    package = TrainingPackage(package_dir)
+    package = TrainingPackage(package_dir, access="research")
     verify = package.verify_files()
     relations = list(package.relations())
     queries = list(package.queries())
-    fragment_ids = [str(row.get("query_id", "")).split("::", 1)[-1] for row in queries]
-    fragment_ids = [f for f in dict.fromkeys(fragment_ids) if f]
+    observed = set(package.observed_ids())
+    fragment_ids = [str(row.get("fragment_id") or
+                        str(row.get("query_id", "")).split("::", 1)[-1]) for row in queries]
+    fragment_ids = [f for f in dict.fromkeys(fragment_ids) if f in observed]
     if max_fragments:
         fragment_ids = fragment_ids[: int(max_fragments)]
-    for candidate in sorted({str(r.get("candidate", "")) for r in relations if r.get("candidate")}):
+    for candidate in sorted({str(r.get("candidate", "")) for r in relations
+                             if r.get("candidate") and str(r.get("candidate")) in observed}):
         if candidate not in fragment_ids:
             fragment_ids.append(candidate)
     if not fragment_ids:
@@ -682,13 +684,15 @@ def build_training_batch_for_package(package_dir: str | Path, *,
                           stage="relations.negatives.build_training_batch_for_package")
     payloads = load_features(package, fragment_ids, token_budget=token_budget)
     bundle = FeatureBundle.from_dict(payloads, token_budget=token_budget).check_shapes()
-    pool = ExportedRelationPool(relations, pool_id="exported_relation_library")
-    rows = batch_rows_from_relations(relations, fragment_ids)
-    lookup = _relation_lookup(relations)
-    mates = _r2_mates(relations)
+    forward_relations = [r for r in relations
+                         if str(r.get("query", "")) in observed
+                         and str(r.get("candidate", "")) in observed]
+    pool = ExportedRelationPool(forward_relations, pool_id="exported_relation_library")
+    rows = batch_rows_from_relations(forward_relations, fragment_ids)
+    mates = _r2_mates(forward_relations)
     labels = {"R2": {q: sorted(mates.get(q, set())) for q in fragment_ids},
               "R1": {}, "R0": {}, "TINY_CONTACT": {}, "UNKNOWN": {}, "confirmed": {}}
-    for row in relations:
+    for row in forward_relations:
         a, b = str(row.get("query", "")), str(row.get("candidate", ""))
         kind = str(row.get("kind", RELATION_UNKNOWN))
         if kind in (RELATION_R1, RELATION_R0, RELATION_TINY, RELATION_UNKNOWN):

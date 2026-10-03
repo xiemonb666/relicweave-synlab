@@ -108,7 +108,7 @@ def test_the_class_is_not_in_the_main_relation_table() -> None:
 
     if not (PACKAGE / "export_manifest.json").exists():
         pytest.skip("real package not present")
-    rows = TrainingPackage(PACKAGE).relations()
+    rows = TrainingPackage(PACKAGE, access="research").relations()
     assert rows, "the package carries no relation row"
     class_keys = {(str(r["query"]), str(r["candidate"]))
                   for r in load_hard_negatives(TABLE).rows}
@@ -133,7 +133,7 @@ def test_appending_the_class_to_the_main_table_adds_exactly_its_own_d10_violatio
     import pyarrow as pa
     import pyarrow.parquet as pq
 
-    package = TrainingPackage(PACKAGE)
+    package = TrainingPackage(PACKAGE, access="research")
     main = [dict(row) for row in package.relations()]
     records = load_hard_negatives(TABLE).rows
 

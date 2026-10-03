@@ -71,14 +71,14 @@ class PackageLabelSource:
         """Read ``package.labels('quality')`` / ``package.labels('correspondence')``."""
         return cls.from_tables(quality=package.labels(QUALITY_LAYER),
                                correspondence=package.labels(CORRESPONDENCE_LAYER),
-                               provenance=(package.manifest.get("supervision_labels") or {}),
+                               provenance=package.supervision_labels(),
                                package_dir=str(getattr(package, "root", "")))
 
     @classmethod
     def from_dir(cls, package_dir: str | Path) -> "PackageLabelSource":
         from ..storage.export import TrainingPackage
 
-        return cls.from_package(TrainingPackage(package_dir))
+        return cls.from_package(TrainingPackage(package_dir, access="research"))
 
     @classmethod
     def from_tables(cls, *, quality: Sequence[Mapping[str, Any]] = (),

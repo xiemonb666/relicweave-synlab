@@ -428,11 +428,18 @@ class _PhysicalAxis(_BaseAxis):
             measured["grid_request_honoured"] = 1.0 if budget.get("request_honoured") else 0.0
             measured["grid_budget_limited"] = 1.0 if budget.get("budget_limited") else 0.0
             measured["grid_relaxation_steps"] = float(budget.get("relaxation_steps", 0) or 0)
-        return _with(
+        output_payload = {"physical_result": result, "mesh": representative.mesh,
+                          "fragment": fragment_out,
+                          **({"appearance": appearance} if appearance else {})}
+        # Keep the original research truth as the immutable clean source reference.  Current
+        # truth belongs to this step's PhysicalResult; prior physical/visible labels and feature
+        # outputs must not be carried forward and mistaken for labels on the damaged appearance.
+        if clean_truth is not None:
+            output_payload["clean_truth"] = clean_truth
+        output = _with(
             source,
-            payload={"physical_result": result, "mesh": representative.mesh,
-                     "fragment": fragment_out,
-                     **({"appearance": appearance} if appearance else {})},
+            payload=output_payload,
+            remove=("physical_truth", "visible_labels", "features"),
             meta={"axis_id": self.AXIS_ID, "variant": variant, "level": int(level),
                   "measured": measured,
                   "units": {str(k): str(v) for k, v in (result.meta.get("measurement_units") or {}).items()},
@@ -449,6 +456,9 @@ class _PhysicalAxis(_BaseAxis):
                             "result_geometry_hash": result.qa.get("result_geometry_hash"),
                             "component_count": len(result.components)}},
         )
+        for stale_key in ("physical_truth", "visible_labels", "features"):
+            output.meta.pop(stale_key, None)
+        return output
 
     def extra_measurements(self, source: SourceBundle, mesh: Any, result: Any) -> dict[str, float]:
         return {}
