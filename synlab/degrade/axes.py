@@ -1562,12 +1562,15 @@ class G01(_GeometryAxis):
     factor_kind = "ONE_DIMENSIONAL_RECIPE"
     VARIANT_KINDS = {"correlated_depth_error": "ONE_DIMENSIONAL_RECIPE",
                      "outlier_only": "SINGLE_PARAMETER",
-                     "lowfreq_only": "SINGLE_PARAMETER"}
+                     "lowfreq_only": "SINGLE_PARAMETER",
+                     "conditioned_total_rms": "ONE_DIMENSIONAL_RECIPE"}
     ALIASES = {"depth_error": "correlated_depth_error"}
     LEVELS = tuple({"target_rms_mm": t} for t in (0.0, 0.05, 0.1, 0.5, 1.0))
     NOTES = ("low-frequency correlated field x distance/incidence variance x a fixed outlier "
              "probability; the deployment estimate is reported separately from the audit "
-             "reference RMS.")
+             "reference RMS. The opt-in conditioned_total_rms variant rescales the sampled "
+             "full field, including outliers, to a measured point-coordinate RMS; it does not "
+             "claim independent Gaussian noise or real-phone calibration.")
 
     def _sample_payload(self, context, rng, variant):
         source = self.source_of(context)
@@ -1580,6 +1583,52 @@ class G01(_GeometryAxis):
                 "outlier_probability": OG.DEPTH_OUTLIER_PROBABILITY}
 
     def _apply(self, source, level, params, basis, variant):
+        if variant == "conditioned_total_rms":
+            points = OG.points_of(source)
+            payload = dict(basis.payload or {})
+            coarse = payload["coarse_field"]
+            weight = payload["weight"]
+            probability = payload.get("outlier_probability", OG.DEPTH_OUTLIER_PROBABILITY)
+            perturbed, info = OG.conditioned_depth_error(
+                points, source.get("normals"), coarse, weight,
+                target_rms_mm=params["target_rms_mm"],
+                outlier_probability=probability,
+                rng=basis_rng(basis, level, "depth_error"),
+            )
+            target = float(info["target_rms_mm"])
+            actual_coordinate_rms = info["actual_delivered_point_coordinate_rms_mm"]
+            reference = source.get("reference_points")
+            audit = OG.rms_against_reference(perturbed, reference) if reference is not None else {
+                "available": 0.0}
+            measured = {"outlier_fraction": float(info["outlier_fraction"])}
+            if actual_coordinate_rms is not None:
+                measured["applied_rms_mm"] = float(actual_coordinate_rms)
+            realized = bool(info["status"] == "EXACT" and target > 0.0
+                            and actual_coordinate_rms is not None
+                            and float(actual_coordinate_rms) > 0.0)
+            if audit.get("available"):
+                measured["audit_reference_available"] = 1.0
+                measured["audit_rms_mm"] = float(audit["rms_mm"])
+                measured["audit_p95_mm"] = float(audit["p95_mm"])
+            else:
+                measured["audit_reference_available"] = 0.0
+            units = {"applied_rms_mm": "mm", "outlier_fraction": "1",
+                     "audit_rms_mm": "mm"}
+            return self._result(
+                source, payload={"points": perturbed, "depth_error_field": coarse},
+                measured=measured, units=units, realized=realized,
+                level=level, variant=variant,
+                extra={"field_info": payload.get("field_info"), "variant": variant,
+                       "conditioned_total_rms": dict(info.get("calibration") or {}),
+                       "depth_error_field_semantics": (
+                           "coarse correlated field before weighting, outliers, and total-RMS conditioning"),
+                       "actual_delivered_point_coordinate_rms_mm": actual_coordinate_rms,
+                       "realization_status": info["status"],
+                       "audit_reference": ("research_reference_points"
+                                           if audit.get("available")
+                                           else "PLANNED_DISPLACEMENT_ONLY")},
+            )
+
         points = OG.points_of(source)
         normals = OG.normals_of(source, len(points))
         payload = dict(basis.payload or {})

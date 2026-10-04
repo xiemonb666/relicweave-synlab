@@ -23,6 +23,7 @@ Two rules drive every function below:
 
 from __future__ import annotations
 
+import hashlib
 from typing import Any
 
 import numpy as np
@@ -31,6 +32,16 @@ from ..errors import ErrorCode, SynLabError
 
 #: Fixed outlier probability of the G01 depth model (frozen decision, not a free knob).
 DEPTH_OUTLIER_PROBABILITY = 0.02
+
+
+def _g01_outlier_mask_sha256(mask: np.ndarray) -> str:
+    """Hash the sampled outlier labels separately from the all-points RMS mask."""
+    values = np.ascontiguousarray(mask, dtype=np.uint8)
+    digest = hashlib.sha256()
+    digest.update(b"g01-outlier-mask-bool-v1\0")
+    digest.update(np.asarray(values.shape, dtype="<i8").tobytes())
+    digest.update(values.tobytes(order="C"))
+    return digest.hexdigest()
 
 
 # ---------------------------------------------------------------------------- accessors
@@ -205,6 +216,199 @@ def depth_error(points: np.ndarray, normals: np.ndarray, coarse: np.ndarray,
         "outlier_fraction": float(np.mean(outlier_mask)) if len(points) else 0.0,
         "outlier_probability_declared": float(outlier_probability),
         "outlier_mean_mm": float(np.mean(np.abs(delta[outlier_mask]))) if outlier_mask.any() else 0.0,
+    }
+    return perturbed.astype(np.float64), info
+
+
+def conditioned_depth_error(points: np.ndarray, normals: np.ndarray, coarse: np.ndarray,
+                             weight: np.ndarray, *, target_rms_mm: float,
+                             outlier_probability: float,
+                             rng: np.random.Generator) -> tuple[np.ndarray, dict[str, Any]]:
+    """Scale one frozen full G01 displacement field, then measure delivered coordinates.
+
+    This opt-in path uses the same field and outlier draw order as :func:`depth_error`. It
+    conditions the already-sampled total field (outliers included) with one scalar rescale;
+    it does not draw a replacement field or inspect a research reference. Inputs are checked
+    here rather than routed through ``normals_of`` so non-unit normals cannot be silently
+    normalized for this variant.
+    """
+    from .rms_fields import calibrate_rms_field
+
+    stage = "degrade.geometry.conditioned_depth_error"
+
+    def fail(message: str) -> None:
+        raise SynLabError(ErrorCode.OPERATOR_NOT_REALIZED, message, stage=stage)
+
+    def real_array(value: Any, name: str, shape: tuple[int, ...]) -> np.ndarray:
+        array = np.asarray(value)
+        if array.dtype.kind not in "iuf" or array.shape != shape:
+            fail(f"G01 conditioned_total_rms requires {name} to be real numeric with shape {shape}")
+        array = np.asarray(array, dtype=np.float64)
+        if not np.isfinite(array).all():
+            fail(f"G01 conditioned_total_rms requires finite {name}")
+        return array
+
+    raw_points = np.asarray(points)
+    if raw_points.dtype.kind not in "iuf" or raw_points.ndim != 2 or raw_points.shape[1:] != (3,):
+        fail("G01 conditioned_total_rms requires points with shape (N, 3)")
+    points_array = np.asarray(raw_points, dtype=np.float64)
+    if not np.isfinite(points_array).all() or len(points_array) == 0:
+        fail("G01 conditioned_total_rms requires a non-empty finite point array")
+    shape = points_array.shape
+    normals_array = real_array(normals, "normals", shape)
+    coarse_array = real_array(coarse, "coarse field", (len(points_array),))
+    weight_array = real_array(weight, "weight", (len(points_array),))
+
+    normal_lengths = np.hypot(np.hypot(normals_array[:, 0], normals_array[:, 1]),
+                              normals_array[:, 2])
+    if not np.isfinite(normal_lengths).all() or not np.allclose(
+            normal_lengths, 1.0, rtol=0.0, atol=1e-6):
+        fail("G01 conditioned_total_rms requires finite unit normals (absolute tolerance 1e-6)")
+
+    target_array = np.asarray(target_rms_mm)
+    if (target_array.ndim != 0 or target_array.dtype.kind not in "iuf"
+            or isinstance(target_rms_mm, (bool, np.bool_))):
+        fail("G01 conditioned_total_rms target_rms_mm must be a finite nonnegative non-bool scalar")
+    target = float(target_array)
+    if not np.isfinite(target) or target < 0.0:
+        fail("G01 conditioned_total_rms target_rms_mm must be a finite nonnegative non-bool scalar")
+
+    probability_array = np.asarray(outlier_probability)
+    if (probability_array.ndim != 0 or probability_array.dtype.kind not in "iuf"
+            or isinstance(outlier_probability, (bool, np.bool_))):
+        fail("G01 conditioned_total_rms outlier_probability must be a finite scalar in [0, 1]")
+    probability = float(probability_array)
+    if not np.isfinite(probability) or not 0.0 <= probability <= 1.0:
+        fail("G01 conditioned_total_rms outlier_probability must be a finite scalar in [0, 1]")
+
+    base = coarse_array * weight_array
+    base_rms = float(np.sqrt(np.mean(base ** 2)))
+    if not np.isfinite(base_rms):
+        fail("G01 conditioned_total_rms frozen field RMS is nonfinite")
+    if 0.0 < base_rms <= 1e-12 and target > 0.0:
+        fail("G01 conditioned_total_rms nonzero frozen field RMS is below 1e-12 mm")
+    delta = base * (target / base_rms) if base_rms > 0.0 else np.zeros_like(base)
+    outlier_mask = np.zeros(len(points_array), dtype=bool)
+    if probability > 0.0 and target > 0.0 and base_rms > 0.0 and len(points_array):
+        draw = rng.random(len(points_array)) < probability
+        if draw.any():
+            magnitude = target * rng.uniform(2.0, 5.0, size=int(draw.sum()))
+            sign = np.where(rng.random(int(draw.sum())) < 0.5, -1.0, 1.0)
+            delta = delta.copy()
+            delta[draw] += magnitude * sign
+            outlier_mask = draw
+
+    calibration = calibrate_rms_field(delta, np.ones(len(points_array), dtype=bool), target)
+    calibration_metadata = calibration.to_metadata()
+    if calibration.status != "EXACT":
+        outlier_count = int(np.count_nonzero(outlier_mask))
+        outlier_hash = _g01_outlier_mask_sha256(outlier_mask)
+        calibration_metadata.update({
+            "field_conditioning_status": calibration.status,
+            "delivery_status": "UNKNOWN_OPERATOR_NOT_REALIZED",
+            "conditioned_exact_rms": False,
+            "conditioned_field_rms_mm": None,
+            "actual_delivered_point_coordinate_rms_mm": 0.0,
+            "delivered_minus_target_rms_mm": float(-target),
+            "condition_mask_scope": "all_points",
+            "outlier_count": outlier_count,
+            "outlier_mask_sha256": outlier_hash,
+        })
+        info = {
+            "status": "UNKNOWN_OPERATOR_NOT_REALIZED",
+            "field_conditioning_status": calibration.status,
+            "target_rms_mm": target,
+            "raw_rms_mm": calibration.raw_rms_mm,
+            "conditioned_field_rms_mm": None,
+            "actual_delivered_point_coordinate_rms_mm": 0.0,
+            "delivered_minus_target_rms_mm": float(-target),
+            "raw_field_sha256": calibration.raw_field_sha256,
+            "mask_sha256": calibration.mask_sha256,
+            "condition_mask_scope": "all_points",
+            "scale_factor": calibration.scale_factor,
+            "outlier_fraction": float(np.mean(outlier_mask)),
+            "outlier_count": outlier_count,
+            "outlier_mask_sha256": outlier_hash,
+            "calibration": calibration_metadata,
+        }
+        return points_array.copy(), info
+
+    calibrated_delta = calibration.calibrated_field_mm
+    peak = 0.0
+    with np.errstate(over="ignore", invalid="ignore"):
+        perturbed = points_array + calibrated_delta[:, None] * normals_array
+        delivered_vectors = perturbed - points_array
+    if not np.isfinite(perturbed).all() or not np.isfinite(delivered_vectors).all():
+        delivered_rms = None
+        delivery_status = "UNKNOWN_OPERATOR_NOT_REALIZED"
+        perturbed = points_array.copy()
+    else:
+        magnitudes = np.hypot(np.hypot(delivered_vectors[:, 0], delivered_vectors[:, 1]),
+                              delivered_vectors[:, 2])
+        peak = float(np.max(magnitudes))
+        if not np.isfinite(peak):
+            delivered_rms = None
+            delivery_status = "UNKNOWN_OPERATOR_NOT_REALIZED"
+        elif peak == 0.0:
+            delivered_rms = 0.0
+            delivery_status = "EXACT" if target == 0.0 else "UNKNOWN_OPERATOR_NOT_REALIZED"
+        else:
+            unit_rms = float(np.sqrt(np.mean((magnitudes / peak) ** 2)))
+            delivered_rms = float(peak * unit_rms)
+            delivery_status = "UNKNOWN_OPERATOR_NOT_REALIZED"
+            if not np.isfinite(delivered_rms):
+                delivered_rms = None
+            elif target > 0.0:
+                coordinate_atol = min(1e-12, target * 1e-10)
+                if np.isclose(delivered_rms, target, rtol=1e-10, atol=coordinate_atol):
+                    delivery_status = "EXACT"
+
+    delivered_minus_target = (
+        None if delivered_rms is None else float(delivered_rms - target))
+
+    if delivery_status != "EXACT" and not np.isfinite(perturbed).all():
+        perturbed = points_array.copy()
+
+    inlier_values = calibrated_delta[~outlier_mask]
+    inlier_peak = float(np.max(np.abs(inlier_values))) if inlier_values.size else 0.0
+    inlier_rms = (float(inlier_peak * np.sqrt(np.mean((inlier_values / inlier_peak) ** 2)))
+                  if inlier_peak > 0.0 else 0.0)
+    max_abs_error = float(np.max(np.abs(calibrated_delta))) if calibrated_delta.size else 0.0
+    calibration_metadata.update({
+        "field_conditioning_status": calibration.status,
+        "delivery_status": delivery_status,
+        "conditioned_exact_rms": delivery_status == "EXACT",
+        "conditioned_field_rms_mm": calibration.actual_rms_mm,
+        "actual_delivered_point_coordinate_rms_mm": delivered_rms,
+        "delivered_minus_target_rms_mm": delivered_minus_target,
+        "condition_mask_scope": "all_points",
+        "coordinate_rms_relative_tolerance": 1e-10,
+        "coordinate_rms_absolute_tolerance_mm": (
+            min(1e-12, target * 1e-10) if target > 0.0 else 0.0),
+        "outlier_count": int(np.count_nonzero(outlier_mask)),
+        "outlier_mask_sha256": _g01_outlier_mask_sha256(outlier_mask),
+    })
+    info = {
+        "status": delivery_status,
+        "field_conditioning_status": calibration.status,
+        "target_rms_mm": target,
+        "raw_rms_mm": calibration.raw_rms_mm,
+        "conditioned_field_rms_mm": calibration.actual_rms_mm,
+        "actual_delivered_point_coordinate_rms_mm": delivered_rms,
+        "delivered_minus_target_rms_mm": delivered_minus_target,
+        "inlier_rms_mm": inlier_rms,
+        "max_abs_error_mm": max_abs_error,
+        "outlier_fraction": float(np.mean(outlier_mask)),
+        "outlier_count": int(np.count_nonzero(outlier_mask)),
+        "outlier_mask_sha256": _g01_outlier_mask_sha256(outlier_mask),
+        "raw_field_sha256": calibration.raw_field_sha256,
+        "mask_sha256": calibration.mask_sha256,
+        "condition_mask_scope": "all_points",
+        "scale_factor": calibration.scale_factor,
+        "coordinate_rms_relative_tolerance": 1e-10,
+        "coordinate_rms_absolute_tolerance_mm": (
+            min(1e-12, target * 1e-10) if target > 0.0 else 0.0),
+        "calibration": calibration_metadata,
     }
     return perturbed.astype(np.float64), info
 
@@ -784,7 +988,7 @@ __all__ = [
     "DEPTH_OUTLIER_PROBABILITY",
     "points_of", "normals_of", "valid_of", "order_of", "roi_of", "frames_of", "mesh_of",
     "depth_frames", "frozen_geometry_hash",
-    "depth_weight_field", "depth_error", "rms_against_reference",
+    "depth_weight_field", "depth_error", "conditioned_depth_error", "rms_against_reference",
     "nested_prefix_count", "sparsify", "point_density", "median_spacing",
     "surface_lattice", "label_regions", "freeze_hole_seeds", "hole_disk_mask", "measure_holes",
     "remove_holes_to_target",
