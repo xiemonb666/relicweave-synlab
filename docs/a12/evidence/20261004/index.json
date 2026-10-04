@@ -2,10 +2,9 @@
   "schema": "a12.evidence_index.v1",
   "date": "2026-10-04",
   "workspace": "relicweave-synlab",
-  "cap_bytes": 1200000,
-  "payload_bytes": 1132690,
+  "cap_bytes": 1800000,
+  "payload_bytes": 1263539,
   "payload_cap_pass": true,
-  "scope_note": "Evidence copies are byte-exact unless method says structured extraction. Source paths and hashes identify original reports; source bytes and copy bytes are recorded independently. Large meshes, runtime trees, full GT rows, and secret/environment dumps are excluded.",
   "evidence": [
     {
       "source_path": "tmp/review_20261004/implementation/appearance_finish/benchmark_argv.txt",
@@ -602,6 +601,115 @@
       "copy_sha256": "67c5bedea912328bc9e18f668c2970af758c6bc838026e82bfdcd02c00a19b7b",
       "copy_bytes": 5913,
       "method": "structured_extract"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_diagnostics_20261004/report.txt",
+      "source_sha256": "ca743c4d92665e2604f09366096e71d00f8c8429d265811613609c77ba12eea0",
+      "source_bytes": 1752,
+      "copy_path": "copies/cohesive_diagnostics/report.txt",
+      "copy_sha256": "ca743c4d92665e2604f09366096e71d00f8c8429d265811613609c77ba12eea0",
+      "copy_bytes": 1752,
+      "method": "byte_exact",
+      "evidence_kind": "readonly_diagnostic_report"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_diagnostics_20261004/cohesive_diagnostics.json",
+      "source_sha256": "155729813532452b49eb77d1ee6cb1bbc8e68502883473c8b791ce7e2a1cefca",
+      "source_bytes": 144879,
+      "copy_path": "copies/cohesive_diagnostics/analysis_receipt.json",
+      "copy_sha256": "9feda6e0fb86fffa7e4bdbb76cb088e847c07b55b7fff222b7fe74bfa9724309",
+      "copy_bytes": 9008,
+      "method": "structured_extract",
+      "evidence_kind": "analysis_receipt"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/pre_run_snapshot_integrity.json",
+      "source_sha256": "a160999a5a4ae9d073f71a648918530cccb999965d967a8075d07a07e89138f5",
+      "source_bytes": 7455,
+      "copy_path": "copies/cohesive_event_probe/pre_run_snapshot_integrity.json",
+      "copy_sha256": "a160999a5a4ae9d073f71a648918530cccb999965d967a8075d07a07e89138f5",
+      "copy_bytes": 7455,
+      "method": "byte_exact",
+      "evidence_kind": "pre_run_integrity"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/events.json",
+      "source_sha256": "25c1557c84cc0f6a6f7628db27c92afcd82522abc41c6598e569a53ff77a42e5",
+      "source_bytes": 262,
+      "copy_path": "copies/cohesive_event_probe/events.json",
+      "copy_sha256": "25c1557c84cc0f6a6f7628db27c92afcd82522abc41c6598e569a53ff77a42e5",
+      "copy_bytes": 262,
+      "method": "byte_exact",
+      "evidence_kind": "native_event_log"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/execution_receipt.json",
+      "source_sha256": "586cf75a2fcc1469f56498db8d1767e63e95054aa82783820691e549573c1f34",
+      "source_bytes": 1682,
+      "copy_path": "copies/cohesive_event_probe/execution_receipt.json",
+      "copy_sha256": "586cf75a2fcc1469f56498db8d1767e63e95054aa82783820691e549573c1f34",
+      "copy_bytes": 1682,
+      "method": "byte_exact",
+      "evidence_kind": "execution_receipt"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/probe_conclusion.json",
+      "source_sha256": "2f4550515aef69e19b368572ac15c9baa9cbdccba65fae7b823c02dac3058b2c",
+      "source_bytes": 1464,
+      "copy_path": "copies/cohesive_event_probe/probe_conclusion.json",
+      "copy_sha256": "2f4550515aef69e19b368572ac15c9baa9cbdccba65fae7b823c02dac3058b2c",
+      "copy_bytes": 1464,
+      "method": "byte_exact",
+      "evidence_kind": "derived_summary"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/driver_source_identity.json",
+      "source_sha256": "e6b866676e75fdebf6aa11892f42ac2d41aa46706a5f2a7261f2f9cbb257a3c2",
+      "source_bytes": 593,
+      "copy_path": "copies/cohesive_event_probe/driver_source_identity.json",
+      "copy_sha256": "e6b866676e75fdebf6aa11892f42ac2d41aa46706a5f2a7261f2f9cbb257a3c2",
+      "copy_bytes": 593,
+      "method": "byte_exact",
+      "evidence_kind": "source_identity"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/baseline_comparison.json",
+      "source_sha256": "4d19dc927b224ba552cf142fb0f3f2eff8de75157786ba8679832ded87a7c885",
+      "source_bytes": 1566,
+      "copy_path": "copies/cohesive_event_probe/baseline_comparison.json",
+      "copy_sha256": "4d19dc927b224ba552cf142fb0f3f2eff8de75157786ba8679832ded87a7c885",
+      "copy_bytes": 1566,
+      "method": "byte_exact",
+      "evidence_kind": "derived_baseline_comparison"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/phase_evidence.jsonl",
+      "source_sha256": "0b50927ea7b00ada21a3193eaac134d5a3742df95dfa60a94378787e7d7a8c57",
+      "source_bytes": 97463,
+      "copy_path": "copies/cohesive_event_probe/phase_evidence.jsonl",
+      "copy_sha256": "0b50927ea7b00ada21a3193eaac134d5a3742df95dfa60a94378787e7d7a8c57",
+      "copy_bytes": 97463,
+      "method": "byte_exact",
+      "evidence_kind": "native_phase_evidence"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/run_status.json",
+      "source_sha256": "06a52db10f3086e45034f8fb3745fc0ccb820f49a3b41fff03fad636ceb8fb37",
+      "source_bytes": 9604,
+      "copy_path": "copies/cohesive_event_probe/run_status.json",
+      "copy_sha256": "06a52db10f3086e45034f8fb3745fc0ccb820f49a3b41fff03fad636ceb8fb37",
+      "copy_bytes": 9604,
+      "method": "byte_exact",
+      "evidence_kind": "run_status"
     }
-  ]
+  ],
+  "cap_scope": "Full docs/a12/evidence/20261004 tree including index files and pre-existing case03 note",
+  "oct4_tree_cap_bytes": 1800000,
+  "oct3_tree_bytes": 3631822,
+  "combined_tree_cap_bytes": 5500000,
+  "combined_tree_bytes": 4938472,
+  "combined_tree_cap_pass": true,
+  "oct4_tree_bytes": 1306650,
+  "oct4_tree_cap_pass": true,
+  "scope_note": "Narrow diagnostic and native phase evidence only; event run is an early-stop diagnostic, not physics PASS. Large mesh/trace/NPZ/dense-state payloads, runtime trees and bulk raw data are excluded."
 }

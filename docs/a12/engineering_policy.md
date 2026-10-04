@@ -10,6 +10,12 @@ Akantu 5.0.7.post1 cohesive 小型能力验证已运行：zero 1707 steps 为 0 
 
 **Native-run 快照纪律：** 每次运行前，将准确执行脚本、输入和 manifest 保存为不可覆盖快照，并记录每个文件的 byte count 与 SHA-256；运行后诊断、标签或解释性修正另存，不覆盖原始脚本、输入、manifest 或 receipt。只记录 hash 而未保存对应 source bytes，不足以精确复现。Akantu 本轮执行源码由 current `run_contract` 保留：29,542 B、SHA-256 前缀 `67dd1eb98…`，与冻结 canonical manifest 的 `source_sha256` 及三份原始 status/receipt 哈希一致；manifest SHA-256 前缀 `21b563…`。此前 24,567 B 是较早未冻结代码尺寸，不是本轮执行脚本。此为执行源保真与哈希闭合，不表示全实验精确复现已验收；未声明另机重放或完整环境封装。
 
+**Cohesive 当前裁决（2026-10-04）：** 冻结当前自由演化 extrinsic tiny case 的晋级与反复调参，保留已得证据；后续候选是受控 native constitutive-patch benchmark（法向、剪切、混合、卸载/再加载的已知 separation history），由独立执行任务运行/初始化中，本次尚未接受结果。逐项确认原生 opening、traction、damage/history 与 GcA，再评价响应。Akantu intrinsic `cohesive_bilinear` 仅为候选；额外初始界面柔度、tet-face 方向性与 wheel 3D preflight 均待验证。不得全局锚定 x/y 或不断减小 dt 来包装为旧 case 修复。壁厚 t/h 只说明一类几何分辨率；另需验证本构 characteristic/process-zone/regularization 尺度和初始界面刚度对应的空间、时间分辨率。
+
+本轮窄观察强化以下判据：bulk CFL 稳定不等于 cohesive integration 收敛；API 字符串可调用不等于 energy selector 语义有效；整网格旋转不等于独立 remesh bias 已控制；界面插入不等于 full failure 或物理 R2；几何 QA 或 `Measurement.valid` 不等于 physics/data 准入。能量负值的相位顺序是观察，不能单独证明本构 defect 或 damage=1。原生 opening/traction、energy key 的已知/未知边界与路线计划见 [2026-10-04 cohesive diagnostics](COHESIVE_DIAGNOSTICS_20261004.md)。
+
+当前 tiny bulk 使用 `finite_deformation=false`，仅为小应变基准。真实撞击/碎片旋转另需验证刚体平移与大旋转客观性、接触/穿透，以及质量、动量和能量；该项目前待验证、未执行。整体网格与载荷共同旋转可测 objectivity，但仍不能证明独立 remesh 下的裂纹去偏。
+
 ## 历史快照（截至 2026-10-03 晚间；当前状态以本文件顶部 2026-10-04 补充为准）
 
 当前追踪见 [CONTINUATION_20261003.md](CONTINUATION_20261003.md)，小型审阅证据与 SHA 见 [evidence/20261003/index.md](evidence/20261003/index.md)。历史规则与失败记录不因当前摘要而覆盖。

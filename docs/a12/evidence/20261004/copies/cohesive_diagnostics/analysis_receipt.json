@@ -1,0 +1,191 @@
+{
+  "schema": "synlab.a12.cohesive_readonly_analysis_receipt.v1",
+  "analyzer": {
+    "path": "../pgfrag/experiments/cohesive_diagnostics_20261004/diagnose_cohesive.py",
+    "bytes": 33028,
+    "sha256": "5ddc66dfd7d8b585a35dda9a2b9f12c5ddafa11d08ccf6f1817eb4af1ab1aa7d"
+  },
+  "argv": [
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\.venv\\Scripts\\python.exe",
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\cohesive_diagnostics_20261004\\diagnose_cohesive.py"
+  ],
+  "exit_code": 0,
+  "execution_mode": "read-only; no solver",
+  "source_report": {
+    "path": "tmp/review_20261004/implementation/cohesive_diagnostics_20261004/report.txt",
+    "bytes": 1752,
+    "sha256": "ca743c4d92665e2604f09366096e71d00f8c8429d265811613609c77ba12eea0",
+    "copy_path": "copies/cohesive_diagnostics/report.txt",
+    "copy_bytes": 1752,
+    "copy_sha256": "ca743c4d92665e2604f09366096e71d00f8c8429d265811613609c77ba12eea0"
+  },
+  "derived_json": {
+    "path": "tmp/review_20261004/implementation/cohesive_diagnostics_20261004/cohesive_diagnostics.json",
+    "bytes": 144879,
+    "sha256": "155729813532452b49eb77d1ee6cb1bbc8e68502883473c8b791ce7e2a1cefca",
+    "copied": false
+  },
+  "read_only_inputs": [
+    {
+      "name": "api_semantics_review.json",
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_capability\\api_semantics_review.json",
+      "bytes": 4874,
+      "sha256": "6d244139fe1afc7682dacab465ccdb0f0ef570121efa69545bf00ac7b6687e6c",
+      "exists": true
+    },
+    {
+      "name": "block_2x2x4mm.msh",
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\cohesive_capability\\input\\block_2x2x4mm.msh",
+      "bytes": 3605,
+      "sha256": "b98402c5a7b7af36b8e5e8a2a90c7db689cb1af86a089c8e1b9a0dbf07ba2638",
+      "exists": true
+    },
+    {
+      "name": "contract_review.json",
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_capability\\contract_review.json",
+      "bytes": 66846,
+      "sha256": "8990a6738c27feaf2a7001562dcd8a892a5f87866b1ef32f5e0d86f37d141eac",
+      "exists": true
+    },
+    {
+      "name": "generated_geometry.json",
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\cohesive_capability\\input\\generated_geometry.json",
+      "bytes": 488,
+      "sha256": "eec01312e181581c1d433b2619b6fd8a4a42677769c4dbc25053d0a2c355188b",
+      "exists": true
+    },
+    {
+      "name": "manifest.json",
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_capability\\manifest.json",
+      "bytes": 4757,
+      "sha256": "21b563069550e2091474fe94877bd3ceaae094ac4c92aed3900ecdd94702dd68",
+      "exists": true
+    },
+    {
+      "name": "material.dat",
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\cohesive_capability\\input\\material.dat",
+      "bytes": 291,
+      "sha256": "c300c3091ac323eba756f2d7bfbf55e888c68d6b10f5fcb9763c0e6b6194305f",
+      "exists": true
+    },
+    {
+      "name": "modeI_dt/events.json",
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_capability\\modeI_dt\\events.json",
+      "bytes": 218,
+      "sha256": "e1389938c3e4bc8690d2ff826eff341769b7a3a899ed0b4e2a7aa721f45d03af",
+      "exists": true
+    },
+    {
+      "name": "modeI_dt/lineage.json",
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_capability\\modeI_dt\\lineage.json",
+      "bytes": 17101,
+      "sha256": "87d44db77bece9e8ce8f5719fc6972635cc80137f4759b05439d55411fae5d43",
+      "exists": true
+    },
+    {
+      "name": "modeI_dt/native_topology.npz",
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_capability\\modeI_dt\\native_topology.npz",
+      "bytes": 5438,
+      "sha256": "4e17917b16b9ed32b1b6b008363786d8e5c7f548ae3dfb8de162245632f561db",
+      "exists": true
+    },
+    {
+      "name": "modeI_dt/status.json",
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_capability\\modeI_dt\\status.json",
+      "bytes": 3167,
+      "sha256": "4616bd48c93ddb35e546867022ede1b152ce75f1d40ca0309c12764ac18c0a84",
+      "exists": true
+    },
+    {
+      "name": "modeI_dt/trace.csv",
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_capability\\modeI_dt\\trace.csv",
+      "bytes": 395637,
+      "sha256": "82fbd48e66aac6fce3a97d45dc6e50e819ef45b38fdfe75b6d00b62e483ad0d9",
+      "exists": true
+    },
+    {
+      "name": "modeI_dt2/events.json",
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_capability\\modeI_dt2\\events.json",
+      "bytes": 435,
+      "sha256": "c0b10294fead954c7f9677fe0360ac418b8da9518be3e461e5b665549c0853ec",
+      "exists": true
+    },
+    {
+      "name": "modeI_dt2/lineage.json",
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_capability\\modeI_dt2\\lineage.json",
+      "bytes": 17101,
+      "sha256": "fa9f000a383ac4d1da281b6f74b45372240bd14bb8f8329e5c84c35ea9d57e0a",
+      "exists": true
+    },
+    {
+      "name": "modeI_dt2/native_topology.npz",
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_capability\\modeI_dt2\\native_topology.npz",
+      "bytes": 5396,
+      "sha256": "b49d07e60df92a21e6bf605e2e368b54130628d9413e074a28f748b07c1adc0b",
+      "exists": true
+    },
+    {
+      "name": "modeI_dt2/status.json",
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_capability\\modeI_dt2\\status.json",
+      "bytes": 3175,
+      "sha256": "123ffcedbcc8f01abe0bf5df5ab97e128ff9d42a036adba63adab20ed6195ef0",
+      "exists": true
+    },
+    {
+      "name": "modeI_dt2/trace.csv",
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_capability\\modeI_dt2\\trace.csv",
+      "bytes": 793559,
+      "sha256": "9ea52d4e2e81abcd93d4aede112e494713775d83a50535441c3f2f296b5cd65f",
+      "exists": true
+    },
+    {
+      "name": "native_visualization_data.json",
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_capability\\native_visualization_data.json",
+      "bytes": 49042,
+      "sha256": "e77bbc91d721cdde65d42df3a94224e641702eac21874a998e03553364df0068",
+      "exists": true
+    },
+    {
+      "name": "run_contract.py",
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\cohesive_capability\\run_contract.py",
+      "bytes": 29542,
+      "sha256": "67dd1eb98acc5f5369b9cbf1a9bfbd7f6681068172e537768e788274cb10652d",
+      "exists": true
+    },
+    {
+      "name": "zero_load/events.json",
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_capability\\zero_load\\events.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "exists": true
+    },
+    {
+      "name": "zero_load/lineage.json",
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_capability\\zero_load\\lineage.json",
+      "bytes": 2586,
+      "sha256": "2a8408edbd0916598f3d5ba055adae63ee5afde1f75d0fcf4f8e4c1a3a9e1ee9",
+      "exists": true
+    },
+    {
+      "name": "zero_load/native_topology.npz",
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_capability\\zero_load\\native_topology.npz",
+      "bytes": 3435,
+      "sha256": "d97ae3c79ed0b58b90733b5915d06b6e2b8db273f81b925f9f4df6fcb846f94a",
+      "exists": true
+    },
+    {
+      "name": "zero_load/status.json",
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_capability\\zero_load\\status.json",
+      "bytes": 2992,
+      "sha256": "dc497526371134d38753eeea15723f29378d79a823f95397ee0209b124c1e987",
+      "exists": true
+    },
+    {
+      "name": "zero_load/trace.csv",
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_capability\\zero_load\\trace.csv",
+      "bytes": 168639,
+      "sha256": "5734d6c842401b7ebbb176d704b17d7c363cd1705a12aa1bb32e6d1610fffe6d",
+      "exists": true
+    }
+  ]
+}

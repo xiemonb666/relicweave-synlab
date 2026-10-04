@@ -23,6 +23,14 @@ Akantu 固定界面试验、energy-key UNKNOWN 边界与源证据见 [Cohesive c
 
 有效性核对的宽范围命令 .\\.venv\\Scripts\\python.exe -m pytest -q tests/a12/operators/test_narrowband.py tests/a12/degrade/test_axis_routing_audit.py exit 1；失败总数为 9，原始失败名见 evidence/20261004/copies/validity/pytest-routing-v2.log。最终源 SHA：synlab/physical/api.py 为 6f12a995ea689077e7ba8592d51b5c85be2044cb1cffc1a9256cb90949401661；synlab/degrade/physical_narrowband.py 为 88844f78af2366b2bdabdf2ab6b5dcc12df7579c91f5cc0a38873bd021d6a19d；synlab/degrade/api.py 为 b6a4962165868dd66fe38b8a088357bf10ea405d93a6dd09b7f45e0a442e4f8f。abs(volume) QA bug 在 physical.api 的 physical-result QA 路径；不是 h8/h6 signed-tet quality 问题，旧 h8/h6 signed tet orientation/quality 检查均为 positive。
 
+## Cohesive 只读事件诊断（2026-10-04）
+
+只读拓扑/能量诊断 exit 0、未运行 solver：96/96 tet signed volume 为正；输入拓扑 80 boundary / 152 internal，插入 8 个 coh6 后为 96 / 144，384 face slots 保持不变，局部 ordinal lineage 与 rest 坐标精确对应。名义 mode-I 实际为 mixed-mode；coarse 首次负耗散在 step 652 phase D，half-dt 在 1299，二者具体积分根因 UNKNOWN。原始只读报告、argv 与哈希见 [cohesive diagnostics note](COHESIVE_DIAGNOSTICS_20261004.md) 和 [证据索引](evidence/20261004/index.md)。
+
+后续单次事件 probe 于 654-step cap 提前停止（1 attempt、2.932817 s、external exit 0，状态 `DIAGNOSTIC_EARLY_STOP_NOT_COMPLETE`）。捕获 phase 647–654；baseline 对比 1–654 共 654 行，energy/mass/reaction/count 最大差异均为 0，positions 因无 baseline frames 为 UNKNOWN。这是观测等价诊断，不是物理 PASS。8 个界面在 step 650 插入；step 651 phase D 耗散为 +1.726262e-7 J，step 652 phase D 首次为 −5.572968137645039e-5 J，而同一步 A/B/C 为正，且未发生新插入。32 组 opening/traction 可读：651D→652D 的 mean xy opening 为 0.156→350.186 nm、|z| 为 1.298→20.391 nm、max traction norm 为 143.978 MPa→0；damage/history 及 material update phase UNKNOWN。负值出现在首插入后两步，但时间相关性不证明因果；position、solver clock 与完整 case 均未验收。执行回执、derived 短结论和逐相位证据按类型列在 evidence index；大的 trace、NPZ、dense states 未复制。
+
+暂停当前自由演化 extrinsic tiny case 的晋级和反复调参，保留其结果。下一门槛候选是受控原生本构 patch benchmark：pure opening、pure shear、mixed opening 与卸载/再加载，给定 separation history，核实原生 opening/traction/damage/history 的可读性与 GcA；它独立于自由动力学响应。该基准目前由另一执行任务运行/初始化中，本轮没有接受结果，也没有确认通过。优先评估内置 intrinsic `cohesive_bilinear`（有限初始弹性段 δ0），仅因 [Akantu 5.0.7-post1 模型文档](https://akantu.readthedocs.io/en/v5.0.7-post1/manual/models.html) 和 [v5.0.7 bilinear 源码](https://gitlab.com/akantu/akantu/-/raw/v5.0.7/src/model/solid_mechanics/solid_mechanics_model_cohesive/materials/constitutive_laws/material_cohesive_bilinear.cc) 可作候选依据；wheel 3D 能力须实际 preflight，也未采用为 production。新增界面柔度与 tet-face 方向影响都须实测。线性本构源码在近零开口处呈方向相关刚度；“bulk CFL 不保证 cohesive 积分收敛”是待检验推断，不是已证根因，也不把 tag 源等同于 post1 wheel。不得加全局 x/y 锚或仅靠减小 dt 宣称旧 case 已修复。壁厚 t/h 只覆盖几何分辨率；还需单独核对特定本构的 fracture/process-zone/regularization 尺度及初始界面刚度所需的时空分辨率，不能以 h0.5 有限几何 QA PASS 判定物理分辨率充分。
+
 ## 六道门槛
 
 1. **Geometry：** C2 BREP 与有限局部几何结果只通过各自窄检查；production STEP 未晋级，clippedcells partition 不完整。

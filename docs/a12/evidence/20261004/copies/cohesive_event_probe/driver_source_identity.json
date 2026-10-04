@@ -1,0 +1,12 @@
+{
+  "only_static_compile_repeated_after_adapting_accessor_count_name": true,
+  "preflight_api_docs_used_for_runtime_state_reads": [
+    "SolidMechanicsModel.getNbMaterials()",
+    "SolidMechanicsModel.getMaterial(material_id)",
+    "MaterialCohesive.getOpening(type, ghost_type)",
+    "MaterialCohesive.getTraction(type, ghost_type)"
+  ],
+  "preflight_driver_sha256": "27720b735f17ff4055b812568f3133d3dadc06fdb73667469bbd3493f0bcfc11",
+  "preflight_evidence_source_sha256_was_not_rewritten": true,
+  "solver_driver_sha256": "65fb7e4a4590d1cbb0a015a4ff35a0b5261528926394c5a2cac692cf76e42be6"
+}

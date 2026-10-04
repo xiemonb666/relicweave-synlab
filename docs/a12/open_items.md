@@ -17,6 +17,16 @@ VF 当前 prototype 已窄验收 canonical STEP BRep face 分类、连续 rest-c
 
 # A12 未完成项清单与在修追踪
 
+## 当前接续（2026-10-04）
+
+Akantu extrinsic cohesive tiny case 的自由演化晋级与反复调参已暂停；原始结果保留，未获物理资格。受控 intrinsic `cohesive_bilinear` patch benchmark 只是下一门槛候选，目前由单独执行任务运行/初始化中，本清单未接受其结果。后续需覆盖纯法向、纯剪切、混合、卸载/再加载的已知 separation history，确认原生 opening/traction/damage/history 和 GcA，并评估附加初始柔度、tet-face 方向、process-zone/regularization 与初始刚度的时空分辨率。不能以 bulk CFL、减 dt、全局 x/y 锚或 h0.5 有限几何 QA 替代这些验证。
+
+2026-10-04 只读诊断 exit 0；event probe 在 654-step cap 提前结束、观测 baseline energy/mass/reaction/count 1–654 行差异为零，但 positions UNKNOWN。这不是物理 PASS。step 650 插入 8 个界面；step 652 phase D 首次观察到 −5.572968137645039e-5 J，damage/history 与真实能量 selector 语义仍 UNKNOWN，因果未定。详细数值、argv/哈希、限定证据副本见 [cohesive diagnostics note](COHESIVE_DIAGNOSTICS_20261004.md) 和 [2026-10-04 evidence index](evidence/20261004/index.md)。
+
+当前 tiny bulk 的 `finite_deformation=false` 仅是小应变基准；真实撞击或碎片旋转下的刚体平移/大旋转客观性、接触/穿透及质量/动量/能量校核待验证，未执行。整体网格和载荷旋转只能检验 objectivity，不能代替独立 remesh 裂纹去偏。
+
+---
+
 **文档目的**：把"还没修好的东西"变成**可追踪、可验收、可复算**的清单，避免口头记忆。
 **快照时间**：2026-10-02 17:0x（本地）。
 **数据基线**：最新库 `data/a12_trainable/store`（463 资产）· 最新包 `data/a12_exports/negfix/next_experiment/training_package` · 旧代已归档 `data/_archive_pre_fix/`（36.3 GB）。

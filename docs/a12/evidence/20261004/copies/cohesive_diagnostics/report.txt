@@ -1,0 +1,12 @@
+只读诊断（2026-10-04）
+
+输入网格96/96个tet signed volume均为+1.666666666666668e-10 m³，signed总量1.6000000000000008e-8 m³；输入面为80边界/152内部/0非流形。native预/后参考体积均正且总量一致。插入后正确拓扑为96边界/144内部；8个界面各成两张不同边界面。zero_load未插入，保持80/152；其split检查为N/A。原false来自错误预期72个内部面，按384面slot核算应为144，修正后全部检查通过。
+
+modeI两case coh6的8/8面局部ordinal祖先逐位一致，rest坐标精确匹配，无nearest。末态dt的mean法向开口8.151µm、切向65.670µm；dt/2为8.591µm与25.662µm。响应明显混合模态；BC仅约束z，未锚定x/y，但不能据此断言漂移根因。
+
+首次插入采样行已在checkCohesiveStress后、solveStep后；dt step650 ΔD=0，step651 D=+1.726e-7J，step652首次负至−5.573e-5J。dt/2 step1297插2面、D=0；1298为+5.417e-9J；1299首次负至−8.925e-6J，早于step1300第二次插入。trace行不能拆分插入与solve。最可能已证实的是native dissipated输出在后续演化中失负；具体API/积分原因UNKNOWN。建议仅仪器化dt/2的1297–1301步，在check前、插入后、solve后采样能量、traction/opening、reaction/BC和dt。
+
+冻结runner SHA256与要求值一致：67dd1eb98acc5f5369b9cbf1a9bfbd7f6681068172e537768e788274cb10652d。Akantu tag源文件SHA见JSON；wheel与tag源码对应关系UNKNOWN。无history，时间积分冲量及能量根因UNKNOWN。
+
+Analysis argv: "C:\Users\xiemo\Desktop\ShardForge\relicweave-synlab\.venv\Scripts\python.exe" "C:\Users\xiemo\Desktop\ShardForge\pgfrag\experiments\cohesive_diagnostics_20261004\diagnose_cohesive.py"
+Analysis exit_code=0
