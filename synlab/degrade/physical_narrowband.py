@@ -63,6 +63,8 @@ def _assemble(mesh: trimesh.Trimesh, source: trimesh.Trimesh, recipe: Any, *,
     qa = {
         "status": "PASS" if realized else "FAIL",
         "identity": False, "level": int(recipe.level), "realized": bool(realized),
+        "operator_effect_realized": bool(realized),
+        "physical_acceptance": bool(realized),
         "geometry_changed": True,
         "geometry_hash_algorithm": GEOMETRY_HASH_ALGORITHM,
         "source_geometry_hash": _geometry_hash(source),
@@ -101,12 +103,30 @@ def _assemble(mesh: trimesh.Trimesh, source: trimesh.Trimesh, recipe: Any, *,
     if result.qa.get("failure_code"):
         failure_codes.append(str(result.qa["failure_code"]))
     result.qa["failure_codes"] = sorted(set(failure_codes))
+    wall_guard_status = str((details.get("wall_guard") or {}).get("status", "")) or None
+    if wall_guard_status is not None:
+        result.qa["wall_guard_status"] = wall_guard_status
+    accepted = bool(realized and postassembly_qa["status"] == "PASS"
+                    and wall_guard_status in (None, "PASS"))
+    result.qa["realized"] = accepted
+    result.qa["physical_acceptance"] = accepted
+    if not accepted:
+        result.physical_truth = None
+        result.meta["physical_truth_status"] = "SKIPPED_PHYSICAL_QA_FAILURE"
     if postassembly_qa["status"] != "PASS":
         result.qa["status"] = "FAIL"
         result.qa["reason"] = "postassembly entity QA failed; see postassembly.checks"
         result.qa["failure_code"] = (result.qa.get("failure_code")
                                       or next(iter(postassembly_qa["failure_codes"]),
                                               "POSTASSEMBLY_QA_FAILED"))
+    elif wall_guard_status not in (None, "PASS"):
+        result.qa["status"] = "FAIL"
+        result.qa["reason"] = "physical wall guard was not verified"
+        result.qa["failure_code"] = "WALL_GUARD_UNKNOWN"
+        result.qa["failure_codes"] = sorted(set(
+            [*result.qa["failure_codes"], "WALL_GUARD_UNKNOWN"]))
+    elif not realized:
+        result.qa["status"] = "FAIL"
     return result
 
 
@@ -225,73 +245,104 @@ def _round_edge(mesh: trimesh.Trimesh, recipe: Any, *, fragment: Any = None) -> 
 # ======================================================================================
 # P03 -- narrow-band smooth recession
 # ======================================================================================
+def _p03_preflight(mesh: trimesh.Trimesh, recipe: Any) -> tuple[float, float, float | None, int]:
+    """Reject malformed P03 parameters/source before the surface operator runs."""
+    try:
+        depth = float(recipe.parameter("depth_mm", 0.0))
+        scale_mm = float(recipe.parameter("corr_length_mm", recipe.meta.get("corr_length_mm", 6.0)))
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          "P03 depth_mm and corr_length_mm must be finite positive numbers",
+                          stage="degrade.P03.preflight") from exc
+    if not np.isfinite(depth) or depth <= 0.0:
+        raise SynLabError(ErrorCode.SCHEMA_INVALID, "P03 depth_mm must be finite and > 0",
+                          stage="degrade.P03.preflight", measurements={"depth_mm": depth})
+    if not np.isfinite(scale_mm) or scale_mm <= 0.0:
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          "P03 corr_length_mm must be finite and > 0",
+                          stage="degrade.P03.preflight", measurements={"corr_length_mm": scale_mm})
+    try:
+        guard_value = recipe.qa.get("min_wall_thickness_mm")
+        guard_mm = None if guard_value is None else float(guard_value)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          "P03 min_wall_thickness_mm must be finite and > 0 when declared",
+                          stage="degrade.P03.preflight") from exc
+    if guard_mm is not None and (not np.isfinite(guard_mm) or guard_mm <= 0.0):
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          "P03 min_wall_thickness_mm must be finite and > 0 when declared",
+                          stage="degrade.P03.preflight",
+                          measurements={"min_wall_thickness_mm": guard_mm})
+    try:
+        vertices = np.asarray(mesh.vertices)
+        faces = np.asarray(mesh.faces)
+        if (vertices.ndim != 2 or vertices.shape[1:] != (3,) or len(vertices) < 4
+                or not np.issubdtype(vertices.dtype, np.number)
+                or not np.isfinite(vertices).all()):
+            raise ValueError("vertices must be a finite non-empty (N, 3) array")
+        if (faces.ndim != 2 or faces.shape[1:] != (3,) or len(faces) < 4
+                or not np.issubdtype(faces.dtype, np.integer)
+                or int(faces.min()) < 0 or int(faces.max()) >= len(vertices)):
+            raise ValueError("faces must be a non-empty integer (M, 3) array with valid indices")
+        face_areas = np.asarray(mesh.area_faces, dtype=np.float64)
+        volume = float(mesh.volume)
+        area = float(mesh.area)
+        if (not np.isfinite(face_areas).all() or np.any(face_areas <= 0.0)
+                or not np.isfinite(area) or area <= 0.0
+                or not np.isfinite(volume) or volume <= 0.0):
+            raise ValueError("source area and signed volume must be finite and positive")
+        if not bool(mesh.is_watertight) or not bool(mesh.is_winding_consistent):
+            raise ValueError("source must be watertight with consistent winding")
+    except Exception as exc:
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          f"P03 source failed preflight: {type(exc).__name__}: {exc}",
+                          stage="degrade.P03.preflight") from exc
+    samples = int(recipe.meta.get("thickness_samples", 400))
+    if samples <= 0:
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          "P03 thickness_samples must be > 0",
+                          stage="degrade.P03.preflight", measurements={"thickness_samples": samples})
+    return depth, scale_mm, guard_mm, samples
+
+
 def _erode_interface(mesh: trimesh.Trimesh, recipe: Any, *, fragment: Any = None) -> PhysicalResult:
-    """P03: non-negative smooth depth field over the interface ROI, wall-thickness guarded."""
-    depth = float(recipe.parameter("depth_mm", 0.0))
-    if depth <= 0:
-        raise _failure(ErrorCode.DAMAGE_EFFECT_MISSING, "P03 depth_mm must be > 0",
-                       stage="degrade.P03", measurements={"depth_mm": depth})
+    """P03: non-negative smooth recession; wall acceptance awaits a qualified thickness check."""
+    depth, scale_mm, guard_mm, thickness_samples = _p03_preflight(mesh, recipe)
     roi_ids, roi_info = F.roi_faces(mesh, fragment, dict(recipe.roi or {"kind": "interface"}))
     if len(roi_ids) == 0:
         raise _failure(ErrorCode.NA_NOT_APPLICABLE, "P03 ROI selects no face",
                        stage="degrade.P03", measurements={"roi": roi_info})
     field = F.FourierField.from_payload(recipe.basis["field"])
-    scale_mm = float(recipe.parameter("corr_length_mm", recipe.meta.get("corr_length_mm", 6.0)))
     transfer = np.asarray(mesh.triangles_center, dtype=np.float64)
     raw = np.zeros(len(mesh.faces), dtype=np.float64)
-    raw[roi_ids] = np.clip(field(transfer[roi_ids]), 0.0, 1.0)
+    field_values = np.asarray(field(transfer[roi_ids]), dtype=np.float64)
+    if field_values.shape != (len(roi_ids),) or not np.isfinite(field_values).all():
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          "P03 frozen recession field must return one finite value per ROI face",
+                          stage="degrade.P03.preflight")
+    raw[roi_ids] = np.clip(field_values, 0.0, 1.0)
     normalizer = float(max(np.percentile(raw[roi_ids], 99.0), 1e-6))
-    amplitude = raw / normalizer
-    amplitude = np.clip(amplitude, 0.0, 1.0)
+    amplitude = np.clip(raw / normalizer, 0.0, 1.0)
 
-    guard = recipe.qa.get("min_wall_thickness_mm")
-    guard_mm = None if guard is None else float(guard)
-    thickness_samples = int(recipe.meta.get("thickness_samples", 400))
-    thickness_seed = int(recipe.basis.get("seed", 0)) + 9
-    # The guard is measured **pairwise** on fixed source sample points (see
-    # ``NB.paired_thickness``): an unpaired ``ray_thickness`` comparison on this rough body
-    # reports a 0.71 mm wall-thickness drop for a 0.05 mm cut simply because the seeded sample
-    # lands on a different thin feature.  A violation is a local loss of more than half of the
-    # local wall.
-    violation_budget = float(recipe.meta.get("thickness_violation_budget", 0.01))
     mask = np.zeros(len(mesh.faces), dtype=bool)
     mask[roi_ids] = True
-    attempts: list[dict[str, Any]] = []
+    thickness_seed = int(recipe.basis.get("seed", 0)) + 9
     scale = 1.0
-    body = None
-    detail: dict[str, Any] = {}
-    thickness: dict[str, float] = {}
-    for _iteration in range(int(recipe.meta.get("thickness_guard_iterations", 4))):
-        depth_field = amplitude * depth * scale
-        body, detail = NB.recessed_body(mesh, roi_ids, depth_field, recipe.basis)
-        NB.assert_watertight(body, label=f"P03 body (scale {scale:g})", stage="degrade.P03")
-        thickness = NB.paired_thickness(body, mesh, n_samples=thickness_samples,
-                                        seed=thickness_seed, face_mask=mask)
-        attempts.append({"scale": float(scale), "depth_mm": float(depth * scale),
-                         "min_damaged_mm": float(thickness["min_damaged_mm"]),
-                         "max_drop_mm": float(thickness["max_drop_mm"]),
-                         "violation_fraction": float(thickness["violation_fraction"])})
-        if guard_mm is None or float(thickness["violation_fraction"]) <= violation_budget:
-            break
-        scale *= 0.5
-    if body is None:  # pragma: no cover - the loop always runs once
-        raise _failure(ErrorCode.PRECISION_NOT_REALIZED, "P03 produced no body",
-                       stage="degrade.P03", measurements={"attempts": attempts})
-    vertex_depth = np.asarray(detail["vertex_depth_field"], dtype=np.float64)
-    guard_satisfied = bool(guard_mm is None
-                           or float(thickness["violation_fraction"]) <= violation_budget)
-    # watertightness is a property of the *operator's own output*; the following intersection is
-    # the "only remove material" guard and is measured separately (its boolean can leave
-    # near-degenerate edges that must not be reported as the operator failing to close its body).
+    depth_field = amplitude * depth * scale
+    body, detail = NB.recessed_body(mesh, roi_ids, depth_field, recipe.basis)
     report = NB.assert_watertight(body, label="P03 body", stage="degrade.P03")
+    # Kept as a diagnostic only. This legacy first-hit probe is explicitly not a wall guard.
+    legacy_probe = NB.paired_thickness(body, mesh, n_samples=thickness_samples,
+                                      seed=thickness_seed, face_mask=mask)
+    vertex_depth = np.asarray(detail["vertex_depth_field"], dtype=np.float64)
     accepted, clip_info = S.intersect_with_source(body, mesh)
     del body
     gc.collect()
-    source_volume = float(abs(mesh.volume))
+    source_volume = float(mesh.volume)
     lost_volume = source_volume - float(abs(accepted.volume))
     predicted = float(np.sum(np.asarray(mesh.area_faces, dtype=np.float64)[roi_ids]
                              * amplitude[roi_ids] * depth * scale))
-    moved = _moved_vertices(mesh, accepted, vertex_depth)
+    surface_distance = _sampled_vertex_surface_distance(mesh, accepted, vertex_depth)
     inside = _inside_mask(mesh, accepted, n=3000, seed=int(recipe.basis.get("seed", 0)) + 13)
     measurements = {
         "depth_mm": float(depth),
@@ -302,34 +353,34 @@ def _erode_interface(mesh: trimesh.Trimesh, recipe: Any, *, fragment: Any = None
         "roi_faces": float(len(roi_ids)),
         "planned_max_recession_mm": float(depth * scale),
         "planned_mean_recession_mm": float(depth * scale * float(np.mean(amplitude[roi_ids]))),
-        "measured_max_recession_mm": float(depth * scale),
-        "measured_max_vertex_shift_mm": moved["max_mm"],
-        "measured_mean_vertex_shift_mm": moved["mean_mm"],
         "lost_volume_mm3": float(max(lost_volume, 0.0)),
         "linearised_predicted_loss_mm3": predicted,
         "lost_volume_vs_linear_ratio": float(lost_volume / max(predicted, 1e-12)),
         "lost_volume_ratio": float(max(lost_volume, 0.0) / max(source_volume, 1e-12)),
-        "min_thickness_mm": float(thickness["min_damaged_mm"]),
-        "undamaged_min_thickness_mm": float(thickness["min_source_mm"]),
-        "max_local_thickness_drop_mm": float(thickness["max_drop_mm"]),
-        "thickness_violation_fraction": float(thickness["violation_fraction"]),
-        "thickness_violation_budget": float(violation_budget),
-        "thickness_guard_mm": float(guard_mm) if guard_mm is not None else 0.0,
-        "thickness_guard_satisfied": 1.0 if guard_satisfied else 0.0,
-        "thickness_guard_scale": float(scale),
         "clipped_volume_mm3": float(clip_info["clipped_volume_mm3"]),
         **_drift_measurements(accepted, mesh, roi_ids, seed=int(recipe.basis.get("seed", 0)) + 3),
         "rim_vertices_pinned": float(detail["rim_vertices_pinned"]),
         "narrowband_vertices": float(detail["roi_vertices"]),
         "max_outside_clean_mm": float(inside["max_outside_mm"]),
     }
+    if surface_distance["status"] == "COMPLETE_DIAGNOSTIC_ONLY":
+        measurements["sampled_source_vertex_to_result_surface_distance_max_mm"] = float(
+            surface_distance["max_mm"])
+        measurements["sampled_source_vertex_to_result_surface_distance_mean_mm"] = float(
+            surface_distance["mean_mm"])
     measurements["watertight"] = 1.0 if report["watertight"] else 0.0
     measurements["components"] = float(len(S.component_split(accepted)))
     hard = bool(measurements["lost_volume_mm3"] > 1e-9 and report["watertight"])
     units = {"depth_mm": "mm", "applied_depth_mm": "mm", "lost_volume_mm3": "mm3",
-             "measured_max_recession_mm": "mm", "measured_max_vertex_shift_mm": "mm",
-             "min_thickness_mm": "mm", **_drift_units(),
-             "linearised_predicted_loss_mm3": "mm3", "planned_max_recession_mm": "mm"}
+             "sampled_source_vertex_to_result_surface_distance_max_mm": "mm",
+             "sampled_source_vertex_to_result_surface_distance_mean_mm": "mm",
+             **_drift_units(), "linearised_predicted_loss_mm3": "mm3",
+             "planned_max_recession_mm": "mm"}
+    wall_guard = {
+        "status": "UNKNOWN",
+        "required_min_wall_thickness_mm": guard_mm,
+        "reason": "the legacy paired first-hit ray probe is not a qualified wall-thickness instrument",
+    }
     details = {
         "narrowband": {"backend": "degrade.physical_narrowband.erode_interface",
                        "method": "per-vertex inward normal offset by the frozen smooth depth "
@@ -337,11 +388,17 @@ def _erode_interface(mesh: trimesh.Trimesh, recipe: Any, *, fragment: Any = None
                                  "the original triangles (plan 12.1/12.2 narrow band)",
                        "roi": roi_info, "field": {k: v for k, v in detail.items()
                                                   if k != "vertex_depth_field"},
-                       "thickness_guard": attempts, "paired_thickness": thickness,
+                       "legacy_paired_thickness_probe": {
+                           "valid_for_wall_guard": False,
+                           "status": "LEGACY_INVALID_FOR_WALL",
+                           "result": legacy_probe,
+                       },
+                       "sampled_source_vertex_to_result_surface_distance": surface_distance,
                        "clip": clip_info, "grid": "none (surface operator, not a voxel field)",
                        "spacing": {"spacing_mm": 0.0, "basis": "SURFACE_OPERATOR",
                                    "note": "the declared depth is applied directly, so no grid "
                                            "spacing has to resolve it"}},
+        "wall_guard": wall_guard,
         "sdf_pipeline": {"spacing": {"spacing_mm": 0.0, "basis": "SURFACE_OPERATOR"}},
     }
     return _assemble(accepted, mesh, recipe, measurements=measurements, units=units,
@@ -717,12 +774,13 @@ def _occupancy(body: trimesh.Trimesh, points: np.ndarray) -> np.ndarray:
     return S.scene_for(body).occupancy(np.asarray(points, dtype=np.float64))
 
 
-def _moved_vertices(source: trimesh.Trimesh, body: trimesh.Trimesh,
-                    depth: np.ndarray) -> dict[str, float]:
-    """Displacement of the vertices that the narrow-band operator actually moved.
+def _sampled_vertex_surface_distance(source: trimesh.Trimesh, body: trimesh.Trimesh,
+                                     depth: np.ndarray) -> dict[str, Any]:
+    """Report sampled source-vertex to result-surface distances, not vertex displacement.
 
-    ``depth`` is the per-**vertex** field the operator applied, so it is indexed against the
-    source vertex array (not against faces).
+    ``unsigned_distance`` is nearest-surface distance and does not establish vertex
+    correspondence or recession. Incomplete samples therefore remain UNKNOWN rather than
+    exposing a partial maximum or a fabricated zero.
     """
     values = np.asarray(depth, dtype=np.float64).reshape(-1)
     vertices = np.asarray(source.vertices, dtype=np.float64)
@@ -730,12 +788,35 @@ def _moved_vertices(source: trimesh.Trimesh, body: trimesh.Trimesh,
         raise SynLabError(ErrorCode.SCHEMA_INVALID,
                           f"depth field has {values.shape[0]} entries for {len(vertices)} "
                           f"vertices", stage="degrade.physical_narrowband")
-    moved = vertices[values > 0]
-    if len(moved) == 0:
-        return {"n": 0.0, "max_mm": 0.0, "mean_mm": 0.0}
-    dist = S.scene_for(body).unsigned_distance(moved)
-    finite = np.isfinite(dist)
-    if not bool(np.any(finite)):
-        return {"n": float(len(moved)), "max_mm": 0.0, "mean_mm": 0.0}
-    dist = dist[finite]
-    return {"n": float(len(moved)), "max_mm": float(dist.max()), "mean_mm": float(dist.mean())}
+    moved = vertices[values > 0.0]
+    requested = int(len(moved))
+    row: dict[str, Any] = {
+        "status": "NOT_APPLICABLE" if requested == 0 else "UNKNOWN",
+        "interpretation": "unsigned nearest-result-surface distance; not vertex displacement or recession",
+        "requested_samples": requested,
+        "finite_samples": 0,
+        "missing_samples": requested,
+        "max_mm": None,
+        "mean_mm": None,
+    }
+    if requested == 0:
+        row["missing_samples"] = 0
+        return row
+    try:
+        distance = np.asarray(S.scene_for(body).unsigned_distance(moved), dtype=np.float64)
+    except Exception as exc:
+        row["error"] = f"{type(exc).__name__}: {exc}"
+        return row
+    if distance.shape != (requested,):
+        row["error"] = f"distance result shape {distance.shape} does not match {requested} samples"
+        return row
+    finite = np.isfinite(distance)
+    finite_count = int(np.count_nonzero(finite))
+    row["finite_samples"] = finite_count
+    row["missing_samples"] = requested - finite_count
+    if finite_count != requested:
+        return row
+    row["status"] = "COMPLETE_DIAGNOSTIC_ONLY"
+    row["max_mm"] = float(distance.max())
+    row["mean_mm"] = float(distance.mean())
+    return row

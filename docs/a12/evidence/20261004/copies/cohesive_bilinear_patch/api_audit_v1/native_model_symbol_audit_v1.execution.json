@@ -1,0 +1,18 @@
+{
+  "host_executable": "wsl.exe",
+  "argv": [
+    "-d",
+    "Ubuntu",
+    "--",
+    "env",
+    "OMP_NUM_THREADS=1",
+    "OPENBLAS_NUM_THREADS=1",
+    "MKL_NUM_THREADS=1",
+    "/mnt/c/Users/xiemo/Desktop/ShardForge/third_party/akantu-runtime/venv/bin/python",
+    "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_bilinear_patch_20261004/audit_native_model_symbols_v1.py"
+  ],
+  "host_exit_code": 0,
+  "stdout_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_bilinear_patch_20261004\\api_symbol_audit_v1\\native_model_symbol_audit_v1.stdout.txt",
+  "stderr_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_bilinear_patch_20261004\\api_symbol_audit_v1\\native_model_symbol_audit_v1.stderr.txt",
+  "audit_json_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_bilinear_patch_20261004\\api_symbol_audit_v1\\native_model_symbol_audit_v1.json"
+}

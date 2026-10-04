@@ -1,0 +1,81 @@
+{
+  "schema": "conforming-retessellation-source-preservation.v1",
+  "purpose": "Preserve the exact source of one offline local-topology candidate; not production code.",
+  "created_utc": "2026-10-04T06:16:36.4537682Z",
+  "destination_directory": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\experiments\\conforming_retessellation_candidate_20261004",
+  "copied_source": {
+    "filename": "conforming_retessellate_candidate.py",
+    "original_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\conforming_retessellate_candidate.py",
+    "bytes": 21144,
+    "sha256": "6398ee6a02b010e172cd709c17403b81e868fe6784536c257976c6edb2ecaf10",
+    "copy_sha256": "6398ee6a02b010e172cd709c17403b81e868fe6784536c257976c6edb2ecaf10",
+    "byte_identical": true,
+    "machine_specific_absolute_paths_may_exist": true,
+    "rewritten": false,
+    "replayed_on_another_machine": false
+  },
+  "original_frozen_experiment_references": [
+    {
+      "original_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\frozen_retessellation_manifest.json",
+      "sha256": "3f46fb25978ba0e1210067494c8dc538448b962c483bcc56865f93fdd1fc9391",
+      "name": "frozen_retessellation_manifest.json",
+      "copied_into_experiment": false,
+      "bytes": 14209
+    },
+    {
+      "original_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\frozen_retessellation_inputs.npz",
+      "sha256": "d80707312638ce2830847f2dc198632c5456963a6043715d27436b3db3ce6dc2",
+      "name": "frozen_retessellation_inputs.npz",
+      "copied_into_experiment": false,
+      "bytes": 191997
+    },
+    {
+      "original_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\retessellated_candidate_report.json",
+      "sha256": "6b4078337fab9f7c0d4e4d8cdaaa2e0e4442968b4aaa5274a95a9ec1820abcba",
+      "name": "retessellated_candidate_report.json",
+      "copied_into_experiment": false,
+      "bytes": 4273261
+    },
+    {
+      "original_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\retessellated_candidate_outputs.npz",
+      "sha256": "e00404f67bf13ced471e3c7c8d0596b3b50efd4c9b17f4175142712a5e5a04a0",
+      "name": "retessellated_candidate_outputs.npz",
+      "copied_into_experiment": false,
+      "bytes": 154397
+    },
+    {
+      "original_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\triangle_quality_addendum.json",
+      "sha256": "3ba3c223e4419e4f097b4904a43cbf88ac12794f8f1e9c0b96c41eed99c4e1ed",
+      "name": "triangle_quality_addendum.json",
+      "copied_into_experiment": false,
+      "bytes": 7868
+    }
+  ],
+  "execution_summary": {
+    "offline_transform_invocations": 1,
+    "cases": [
+      "P02_mesh32",
+      "P02_mesh64",
+      "P03_mesh32",
+      "P03_mesh64"
+    ],
+    "per_case_topology_gates_passed": 14,
+    "boolean_calls": 0,
+    "vertex_coordinates_modified": false,
+    "retries": 0,
+    "negative_control": {
+      "omitted_raw_face_row": 4688,
+      "positive_area_mm2": 0.6328125,
+      "boundary_edges": 3,
+      "disposition": "rejected_without_modification"
+    }
+  },
+  "limitations": [
+    "Source was evaluated only on the four frozen cases and has not been replayed on another machine.",
+    "Referenced raw artifacts remain in the original review directory and are not copied here.",
+    "Material ancestry is UNKNOWN; face lineage is limited to raw Boolean output rows.",
+    "P02 retains extremely slender positive-area triangles (q approximately 0.00161; minimum height approximately 3.14e-5 mm).",
+    "Topology candidate acceptance does not establish solver-mesh quality, physical fracture truth, or production readiness.",
+    "No new Boolean, geometry transform, solver, production edit, test edit, or Git operation was performed for this preservation task."
+  ]
+}

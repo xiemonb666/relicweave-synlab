@@ -1,0 +1,30 @@
+{
+  "status": "FAIL_BEFORE_PYTHON_START",
+  "actual_argv_source": "py_compile_execution_v2.json",
+  "actual_wsl_argv": [
+    "-d",
+    "Ubuntu",
+    "--",
+    "env",
+    "OMP_NUM_THREADS=1",
+    "OPENBLAS_NUM_THREADS=1",
+    "MKL_NUM_THREADS=1",
+    "PYTHONPYCACHEPREFIX=",
+    "/mnt/c/Users/xiemo/Desktop/ShardForge/relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/pycache",
+    "/mnt/c/Users/xiemo/Desktop/ShardForge/third_party/akantu-runtime/venv/bin/python",
+    "-m",
+    "py_compile",
+    "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_bilinear_patch_20261004/run_intrinsic_bilinear_modeI_201_v2.py",
+    "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_bilinear_patch_20261004/parse_cohesive_vtu.py"
+  ],
+  "python_started": false,
+  "python_exit_code": null,
+  "env_exit_code": 127,
+  "wsl_host_exit_code": 127,
+  "powershell_command_exit_code": 127,
+  "stderr": "env treated the cache path as the command because PowerShell split the intended PYTHONPYCACHEPREFIX assignment into two argv entries.",
+  "stderr_log": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_bilinear_patch_20261004\\controlled_intrinsic_bilinear_modeI_201_run02\\py_compile_v2.stderr.txt",
+  "solver_invoked": false,
+  "retry_performed": false,
+  "original_receipt_preserved": true
+}

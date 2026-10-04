@@ -1,0 +1,39 @@
+{
+  "status": "ARGV_SEMANTICS_CLARIFIED_NO_RAW_OR_SOURCE_MODIFICATION",
+  "native_run": {
+    "recorded_python_sys_argv": [
+      "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_bilinear_patch_20261004/run_intrinsic_bilinear_modeI_201_run03.py"
+    ],
+    "launcher_derived_process_argv": [
+      "/mnt/c/Users/xiemo/Desktop/ShardForge/third_party/akantu-runtime/venv/bin/python",
+      "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_bilinear_patch_20261004/run_intrinsic_bilinear_modeI_201_run03.py"
+    ],
+    "launcher": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\cohesive_bilinear_patch_20261004\\launch_intrinsic_bilinear_modeI_201_run03.sh",
+    "final_receipt": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_bilinear_patch_20261004\\controlled_intrinsic_bilinear_modeI_201_run03_launch_receipts\\run03_final_execution_receipt.json",
+    "not_full_process_argv": true,
+    "final_receipt_sha256": "a3cb4e89600ed72d0b698a00b2f0e158aa3b2de3472e855b0f4c50be2bd99959",
+    "execution_layer_exits": {
+      "timeout_wrapper_interpretation": "UNKNOWN; marker had no numeric value; not inferred from other exit codes.",
+      "timeout_wrapper_exit_code": null,
+      "powershell_exec_tool_exit_code": 0,
+      "wsl_host_exit_code": 0,
+      "python_launcher_exit_code": 0
+    },
+    "recorded_host_argv_semantics": "final_execution_receipt.exact_host_argv is the recorded wrapper command; actual argv and shell-expanded payload were not independently captured at the OS boundary. The empty TIMEOUT_WRAPPER_EXIT marker indicates a capture gap; timeout_wrapper_exit_code remains UNKNOWN. The exact label is not independent evidence of the OS-observed argv."
+  },
+  "analysis_run": {
+    "captured_actual_process_argv": [
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\cohesive_bilinear_patch_20261004\\analyze_intrinsic_bilinear_run03_v2.py"
+    ],
+    "receipt_sha256": "add4f85fbc751d5a67cc3bae5c2e85a880a1d90116ea7fc93b902ecc092e0b93",
+    "python_exit_code": 0,
+    "receipt": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_bilinear_patch_20261004\\controlled_intrinsic_bilinear_modeI_201_run03_analysis_receipts_v2\\run03_analysis_execution_receipt.json",
+    "python_sys_argv_not_separately_emitted": true
+  },
+  "preserved_prelaunch_failures": [
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_bilinear_patch_20261004\\controlled_intrinsic_bilinear_modeI_201_run03_analysis_receipts_v2\\run03_analysis_wrapper_prelaunch_failure.json",
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_bilinear_patch_20261004\\controlled_intrinsic_bilinear_modeI_201_run03_analysis_receipts_v2\\run03_analysis_prelaunch_check2.json"
+  ],
+  "note": "Native run_started.argv and final_receipt.exact_python_argv record the driver argument only (sys.argv-style), not the interpreter. Native process argv is launcher-derived from the frozen launcher, not independently captured at the OS boundary. final_execution_receipt.exact_host_argv is the recorded wrapper command; actual OS-boundary argv/shell-expanded payload is UNKNOWN. The blank timeout marker leaves wrapper exit UNKNOWN. Analysis execution receipt captured the PowerShell call-operator argv array including the Windows interpreter and analyzer source. Two prelaunch checks failed before analysis started; the single approved analysis process later exited 0."
+}

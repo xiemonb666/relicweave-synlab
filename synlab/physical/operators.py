@@ -1258,8 +1258,8 @@ def _run_narrowband_as_outcome(mesh: trimesh.Trimesh, recipe: DamageRecipe, *,
     The narrow band is a **surface** operator: it offsets the ROI vertices inward along the
     observed normals, pins the ROI rim to zero and keeps the original triangles everywhere else,
     so the untouched surface is never re-tessellated.  ``apply_damage`` re-derives the component
-    ledger from the returned mesh, so nothing but the mesh (and the operator's own measurements)
-    crosses this boundary.
+    ledger from the returned mesh. The accepted/realized flag and backend QA summary cross this
+    boundary; raw operator effect remains diagnostic and cannot promote a rejected result.
     """
     from ..degrade.physical_narrowband import run_narrowband_damage
 
@@ -1276,11 +1276,32 @@ def _run_narrowband_as_outcome(mesh: trimesh.Trimesh, recipe: DamageRecipe, *,
     details = dict(result.meta.get("details") or {})
     details["damage_backend"] = "degrade.physical_narrowband"
     details["backend_selected_by"] = "physical.operators.selected_backend"
-    realized = bool(result.qa.get("realized"))
+    backend_qa = dict(result.qa or {})
+    backend_physical_qa = {
+        key: backend_qa[key] for key in (
+            "status", "realized", "operator_effect_realized", "physical_acceptance",
+            "failure_code", "wall_guard_status") if key in backend_qa
+    }
+    backend_physical_qa["failure_codes"] = list(backend_qa.get("failure_codes") or [])
+    details["backend_physical_qa"] = backend_physical_qa
+    # Preserve the backend's acceptance decision. The API separately reads the raw operator
+    # diagnostic above; a raw effect cannot promote an unaccepted physical result.
+    backend_realized = backend_qa.get("realized")
+    backend_acceptance = backend_qa.get("physical_acceptance")
+    realized = bool(
+        backend_qa.get("status") == "PASS"
+        and isinstance(backend_realized, (bool, np.bool_)) and bool(backend_realized)
+        and isinstance(backend_acceptance, (bool, np.bool_)) and bool(backend_acceptance))
+    failure_code = None
+    if not realized:
+        failure_code = backend_qa.get("failure_code")
+        if not failure_code:
+            failure_code = next(iter(backend_physical_qa["failure_codes"]), None)
+        if not failure_code:
+            failure_code = ErrorCode.OPERATOR_NOT_REALIZED.value
     return DamageOutcome(mesh=representative.mesh, measurements=measurements, units=units,
                          details=details, realized=realized,
-                         failure_code=None if realized
-                         else ErrorCode.OPERATOR_NOT_REALIZED.value)
+                         failure_code=str(failure_code) if failure_code else None)
 
 
 def run_damage(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any = None) -> DamageOutcome:

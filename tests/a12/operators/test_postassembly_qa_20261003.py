@@ -90,7 +90,9 @@ def test_p02_production_route_fails_closed_on_the_three_edge_boundary_loop():
     closure = result.qa["pinhole_closure"]
     audit = audit_physical(result, mesh)
 
-    assert result.qa["realized"] is True  # effect exists; it is not final QA
+    assert result.qa["realized"] is False  # rejected entity QA is not an accepted effect
+    assert result.qa["operator_effect_realized"] is True
+    assert result.qa["physical_acceptance"] is False
     assert result.qa["status"] == "FAIL"
     assert post["status"] == "FAIL"
     assert "NOT_WATERTIGHT" in post["failure_codes"]
@@ -116,7 +118,9 @@ def test_p02_direct_narrowband_physical_result_also_fails_closed():
         np.asarray(loops[0], dtype=np.int64)]
     diagonal = float(np.linalg.norm(points.max(axis=0) - points.min(axis=0)))
 
-    assert result.qa["realized"] is True
+    assert result.qa["realized"] is False
+    assert result.qa["operator_effect_realized"] is True
+    assert result.qa["physical_acceptance"] is False
     assert result.qa["status"] == "FAIL"
     assert result.qa["postassembly"]["status"] == "FAIL"
     assert "NOT_WATERTIGHT" in result.qa["failure_codes"]
@@ -135,6 +139,8 @@ def test_closed_identity_controls_pass_for_p01_and_p02(axis_id: str):
     assert result.qa["status"] == "PASS"
     assert result.qa["postassembly"]["status"] == "PASS"
     assert result.qa["postassembly"]["checks"]["watertight"]["pass"] is True
+    assert result.qa["realized"] is True
+    assert result.qa["physical_acceptance"] is True
     assert audit["status"] == "PASS", audit["failure_codes"]
 
 
@@ -163,6 +169,8 @@ def test_open_complete_entity_identity_returns_a_diagnostic_fail_without_repair(
     result = apply_damage(None, fragment, recipe, rng=None)
 
     assert result.qa["status"] == "FAIL"
+    assert result.qa["realized"] is False
+    assert result.qa["physical_acceptance"] is False
     assert result.qa["postassembly"]["checks"]["watertight"]["source"] is False
     assert "SOURCE_NOT_WATERTIGHT" in result.qa["failure_codes"]
     assert result.qa["postassembly"]["checks"]["watertight"]["open_mesh_reason"]
@@ -184,6 +192,8 @@ def test_closed_inverted_entity_is_not_rescued_by_absolute_recorded_volume():
     audit = audit_physical(result, inverted)
 
     assert result.qa["status"] == "FAIL"
+    assert result.qa["realized"] is False
+    assert result.qa["physical_acceptance"] is False
     assert result.components[0].volume_mm3 > 0.0  # stored magnitude must not rescue signed volume
     assert post["checks"]["positive_volume"]["source_volume_mm3"] < 0.0
     assert post["checks"]["positive_volume"]["components"][

@@ -1,0 +1,101 @@
+{
+  "status": "FAIL_NO_RETRY",
+  "error": "RuntimeError('native dumper created no nonempty file')",
+  "traceback": "Traceback (most recent call last):\n  File \"/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_bilinear_patch_20261004/init_preflight_dump_v3.py\", line 112, in main\n    result=init()\n           ^^^^^^\n  File \"/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_bilinear_patch_20261004/init_preflight_dump_v3.py\", line 100, in init\n    if not dump_files or any(x[\"bytes\"]<=0 for x in dump_files): raise RuntimeError(\"native dumper created no nonempty file\")\n                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: native dumper created no nonempty file\n",
+  "physical_groups": [
+    {
+      "name": "body",
+      "element_count": 96
+    },
+    {
+      "name": "bottom",
+      "element_count": 8
+    },
+    {
+      "name": "interface",
+      "element_count": 8
+    },
+    {
+      "name": "top",
+      "element_count": 8
+    }
+  ],
+  "interface_group_element_count": 8,
+  "solver_steps": 0,
+  "input_counts": {
+    "nodes": 45,
+    "bulk_tets": 96
+  },
+  "native_counts": {
+    "nodes": 54,
+    "bulk_tets": 96,
+    "cohesive_3d6": 8
+  },
+  "native_count_gate": true,
+  "mass": {
+    "shape": [
+      54,
+      3
+    ],
+    "all_positive": true,
+    "dof_sums_kg": [
+      4e-05,
+      4e-05,
+      4e-05
+    ]
+  },
+  "energies_J": {
+    "kinetic": 0.0,
+    "potential": 0.0,
+    "dissipated": 0.0,
+    "reversible": 0.0,
+    "cohesive contact": 0.0
+  },
+  "exact_bulk_cell_local_ordinal_rest_map": true,
+  "cohesive_side_ordinal_ancestry_equal": true,
+  "exact_duplicate_pairs": {
+    "count": 9,
+    "coordinates_bit_equal": true
+  },
+  "centroid_half_partition": {
+    "lower_nodes": 27,
+    "upper_nodes": 27,
+    "disjoint": true,
+    "covers_54": true
+  },
+  "areas_m2": {
+    "input_interface_face_count": 8,
+    "input_interface": 4e-06,
+    "native_side_A": 4e-06,
+    "native_side_B": 4e-06
+  },
+  "qa_gates": {
+    "physical_interface_group_8": true,
+    "native_54_96_8": true,
+    "input_interface_faces_8_area_4e-6": true,
+    "exact_bulk_cell_local_ordinal_coordinates": true,
+    "cohesive_sides_ordinal_ancestry_equal": true,
+    "nine_duplicate_pairs_exact": true,
+    "rest_side_areas_4e-6": true,
+    "centroid_halves_disjoint_cover_all": true,
+    "mass_positive_and_4e-5_each_dof": true,
+    "initial_energies_zero": true
+  },
+  "all_qa_gates_pass": true,
+  "preflight_measurements_saved_before_dump": true,
+  "native_dumper_fields_requested": [
+    "opening",
+    "tractions",
+    "damage",
+    "delta max"
+  ],
+  "native_dump": {
+    "status": "called",
+    "dumper": "cohesive elements",
+    "step": 0,
+    "files": []
+  },
+  "argv": [
+    "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_bilinear_patch_20261004/init_preflight_dump_v3.py"
+  ]
+}

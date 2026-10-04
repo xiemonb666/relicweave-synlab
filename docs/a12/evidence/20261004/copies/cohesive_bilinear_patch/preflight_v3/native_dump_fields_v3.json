@@ -1,0 +1,48 @@
+{
+  "case": "controlled_intrinsic_bilinear_modeI",
+  "source_vtu": "paraview/solid_mechanics_model-VTU/solid_mechanics_model_0000.vtu",
+  "source_pvtu": "paraview/solid_mechanics_model_0000.pvtu",
+  "source_vtu_sha256": "0b49dda94118e330b8d0f9f7215c26654fe9b9ffae51d1cb649252df37803843",
+  "source_pvtu_sha256": "ae0e4aeaf2a0f8d82f3ff26609e3b5f2d7567535728aa684a4c25dbe26f432f3",
+  "piece": {
+    "native_cohesive_cells": 8,
+    "points": 54,
+    "representation": "one tuple per cohesive cell; not quadrature-point data"
+  },
+  "fields": [
+    {
+      "name": "opening",
+      "vtk_type": "Float64",
+      "components": 3,
+      "shape": "8x3",
+      "units": "m (field semantics; VTK omits units)",
+      "initial_values": "all 24 scalar components exactly 0"
+    },
+    {
+      "name": "tractions",
+      "vtk_type": "Float64",
+      "components": 3,
+      "shape": "8x3",
+      "units": "Pa (field semantics; VTK omits units)",
+      "initial_values": "all 24 scalar components exactly 0"
+    },
+    {
+      "name": "damage",
+      "vtk_type": "Float64",
+      "components": 1,
+      "shape": "8x1",
+      "units": "dimensionless (field semantics; VTK omits units)",
+      "initial_values": "all 8 values exactly 0"
+    },
+    {
+      "name": "delta max",
+      "vtk_type": "Float64",
+      "components": 1,
+      "shape": "8x1",
+      "units": "m (field semantics; VTK omits units)",
+      "initial_values": "all 8 values 2.1714285714285712e-8"
+    }
+  ],
+  "decode": "Inline VTK base64 blocks decoded using declared little-endian 32-bit payload byte length and Float64 metadata; each block length and tuple count checked.",
+  "content_status": "NATIVE_DUMP_CREATED_AND_FIELDS_POSTPROCESSED"
+}

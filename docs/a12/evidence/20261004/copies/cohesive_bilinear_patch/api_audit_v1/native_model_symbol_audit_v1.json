@@ -1,0 +1,197 @@
+{
+  "status": "READ_ONLY_SYMBOL_AUDIT_COMPLETE",
+  "argv": [
+    "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_bilinear_patch_20261004/audit_native_model_symbols_v1.py"
+  ],
+  "python": "3.12.15",
+  "akantu_module": "/mnt/c/Users/xiemo/Desktop/ShardForge/third_party/akantu-runtime/venv/lib/python3.12/site-packages/akantu/__init__.py",
+  "akantu_version": "5.0.7-post1",
+  "model_class": "akantu.py11_akantu.SolidMechanicsModelCohesive",
+  "mro": [
+    "akantu.py11_akantu.SolidMechanicsModelCohesive",
+    "akantu.py11_akantu.SolidMechanicsModel",
+    "akantu.py11_akantu.ConstitutiveLawsHandlerakantu::Materialakantu::Model",
+    "akantu.py11_akantu.Model",
+    "akantu.py11_akantu.ModelSolver",
+    "akantu.py11_akantu.SolverCallback",
+    "akantu.py11_akantu.Parsable",
+    "akantu.py11_akantu.ParameterRegistry",
+    "pybind11_builtins.pybind11_object",
+    "builtins.object"
+  ],
+  "target_members": [
+    {
+      "name": "initFull",
+      "present_on_class": true,
+      "descriptor_type": "instancemethod",
+      "callable": true,
+      "docstring": "initFull(self: akantu.py11_akantu.SolidMechanicsModel, _analysis_method: akantu.py11_akantu.AnalysisMethod = <AnalysisMethod._explicit_lumped_mass: 2>, _is_extrinsic: bool = False) -> None"
+    },
+    {
+      "name": "assembleMassLumped",
+      "present_on_class": true,
+      "descriptor_type": "instancemethod",
+      "callable": true,
+      "docstring": "assembleMassLumped(self: akantu.py11_akantu.SolidMechanicsModel) -> None"
+    },
+    {
+      "name": "setTimeStep",
+      "present_on_class": true,
+      "descriptor_type": "instancemethod",
+      "callable": true,
+      "docstring": "setTimeStep(self: akantu.py11_akantu.SolidMechanicsModel, time_step: float, solver_id: str = '') -> None"
+    },
+    {
+      "name": "addDumpFieldToDumper",
+      "present_on_class": true,
+      "descriptor_type": "instancemethod",
+      "callable": true,
+      "docstring": "addDumpFieldToDumper(self: akantu.py11_akantu.Model, arg0: str, arg1: str) -> None"
+    },
+    {
+      "name": "getEnergy",
+      "present_on_class": true,
+      "descriptor_type": "instancemethod",
+      "callable": true,
+      "docstring": "getEnergy(*args, **kwargs)\nOverloaded function.\n\n1. getEnergy(self: akantu.py11_akantu.SolidMechanicsModel, energy_id: str) -> float\n\n2. getEnergy(self: akantu.py11_akantu.SolidMechanicsModel, energy_id: str, group_id: str) -> float"
+    },
+    {
+      "name": "getMass",
+      "present_on_class": true,
+      "descriptor_type": "instancemethod",
+      "callable": true,
+      "docstring": "getMass(self: akantu.py11_akantu.SolidMechanicsModel) -> AkaArray"
+    },
+    {
+      "name": "dump",
+      "present_on_class": true,
+      "descriptor_type": "instancemethod",
+      "callable": true,
+      "docstring": "dump(*args, **kwargs)\nOverloaded function.\n\n1. dump(self: akantu.py11_akantu.Model) -> None\n\n2. dump(self: akantu.py11_akantu.Model, step: int) -> None\n\n3. dump(self: akantu.py11_akantu.Model, time: float, step: int) -> None\n\n4. dump(self: akantu.py11_akantu.Model, dumper_name: str) -> None\n\n5. dump(self: akantu.py11_akantu.Model, dumper_name: str, step: int) -> None\n\n6. dump(self: akantu.py11_akantu.Model, dumper_name: str, time: float, step: int) -> None"
+    },
+    {
+      "name": "solveStep",
+      "present_on_class": true,
+      "descriptor_type": "instancemethod",
+      "callable": true,
+      "docstring": "solveStep(*args, **kwargs)\nOverloaded function.\n\n1. solveStep(self: akantu.py11_akantu.ModelSolver, solver_id: str = '') -> None\n\n2. solveStep(self: akantu.py11_akantu.ModelSolver, callback: akantu.py11_akantu.SolverCallback, solver_id: str = '') -> None"
+    },
+    {
+      "name": "getInternalForce",
+      "present_on_class": true,
+      "descriptor_type": "instancemethod",
+      "callable": true,
+      "docstring": "getInternalForce(*args, **kwargs)\nOverloaded function.\n\n1. getInternalForce(self: akantu.py11_akantu.SolidMechanicsModel) -> AkaArray\n\n2. getInternalForce(self: akantu.py11_akantu.SolidMechanicsModel) -> AkaArray"
+    },
+    {
+      "name": "getTime",
+      "present_on_class": false
+    },
+    {
+      "name": "getDisplacement",
+      "present_on_class": true,
+      "descriptor_type": "instancemethod",
+      "callable": true,
+      "docstring": "getDisplacement(self: akantu.py11_akantu.SolidMechanicsModel) -> AkaArray"
+    },
+    {
+      "name": "getBlockedDOFs",
+      "present_on_class": true,
+      "descriptor_type": "instancemethod",
+      "callable": true,
+      "docstring": "getBlockedDOFs(self: akantu.py11_akantu.SolidMechanicsModel) -> AkaArray"
+    },
+    {
+      "name": "getBlockedDofs",
+      "present_on_class": false
+    },
+    {
+      "name": "displacement",
+      "present_on_class": false
+    },
+    {
+      "name": "blocked_dofs",
+      "present_on_class": false
+    }
+  ],
+  "class_dir_blocked_names": [
+    "getBlockedDOFs"
+  ],
+  "class_dir_displacement_names": [
+    "getDisplacement",
+    "getPreviousDisplacement"
+  ],
+  "all_model_public_names_used_by_driver": {
+    "initFull": {
+      "name": "initFull",
+      "present_on_class": true,
+      "descriptor_type": "instancemethod",
+      "callable": true,
+      "docstring": "initFull(self: akantu.py11_akantu.SolidMechanicsModel, _analysis_method: akantu.py11_akantu.AnalysisMethod = <AnalysisMethod._explicit_lumped_mass: 2>, _is_extrinsic: bool = False) -> None"
+    },
+    "assembleMassLumped": {
+      "name": "assembleMassLumped",
+      "present_on_class": true,
+      "descriptor_type": "instancemethod",
+      "callable": true,
+      "docstring": "assembleMassLumped(self: akantu.py11_akantu.SolidMechanicsModel) -> None"
+    },
+    "setTimeStep": {
+      "name": "setTimeStep",
+      "present_on_class": true,
+      "descriptor_type": "instancemethod",
+      "callable": true,
+      "docstring": "setTimeStep(self: akantu.py11_akantu.SolidMechanicsModel, time_step: float, solver_id: str = '') -> None"
+    },
+    "addDumpFieldToDumper": {
+      "name": "addDumpFieldToDumper",
+      "present_on_class": true,
+      "descriptor_type": "instancemethod",
+      "callable": true,
+      "docstring": "addDumpFieldToDumper(self: akantu.py11_akantu.Model, arg0: str, arg1: str) -> None"
+    },
+    "getEnergy": {
+      "name": "getEnergy",
+      "present_on_class": true,
+      "descriptor_type": "instancemethod",
+      "callable": true,
+      "docstring": "getEnergy(*args, **kwargs)\nOverloaded function.\n\n1. getEnergy(self: akantu.py11_akantu.SolidMechanicsModel, energy_id: str) -> float\n\n2. getEnergy(self: akantu.py11_akantu.SolidMechanicsModel, energy_id: str, group_id: str) -> float"
+    },
+    "getMass": {
+      "name": "getMass",
+      "present_on_class": true,
+      "descriptor_type": "instancemethod",
+      "callable": true,
+      "docstring": "getMass(self: akantu.py11_akantu.SolidMechanicsModel) -> AkaArray"
+    },
+    "dump": {
+      "name": "dump",
+      "present_on_class": true,
+      "descriptor_type": "instancemethod",
+      "callable": true,
+      "docstring": "dump(*args, **kwargs)\nOverloaded function.\n\n1. dump(self: akantu.py11_akantu.Model) -> None\n\n2. dump(self: akantu.py11_akantu.Model, step: int) -> None\n\n3. dump(self: akantu.py11_akantu.Model, time: float, step: int) -> None\n\n4. dump(self: akantu.py11_akantu.Model, dumper_name: str) -> None\n\n5. dump(self: akantu.py11_akantu.Model, dumper_name: str, step: int) -> None\n\n6. dump(self: akantu.py11_akantu.Model, dumper_name: str, time: float, step: int) -> None"
+    },
+    "solveStep": {
+      "name": "solveStep",
+      "present_on_class": true,
+      "descriptor_type": "instancemethod",
+      "callable": true,
+      "docstring": "solveStep(*args, **kwargs)\nOverloaded function.\n\n1. solveStep(self: akantu.py11_akantu.ModelSolver, solver_id: str = '') -> None\n\n2. solveStep(self: akantu.py11_akantu.ModelSolver, callback: akantu.py11_akantu.SolverCallback, solver_id: str = '') -> None"
+    },
+    "getInternalForce": {
+      "name": "getInternalForce",
+      "present_on_class": true,
+      "descriptor_type": "instancemethod",
+      "callable": true,
+      "docstring": "getInternalForce(*args, **kwargs)\nOverloaded function.\n\n1. getInternalForce(self: akantu.py11_akantu.SolidMechanicsModel) -> AkaArray\n\n2. getInternalForce(self: akantu.py11_akantu.SolidMechanicsModel) -> AkaArray"
+    },
+    "getTime": {
+      "name": "getTime",
+      "present_on_class": false
+    }
+  },
+  "model_or_mesh_constructed": false,
+  "solver_calls": 0,
+  "limitations": "Class-level symbols/docstrings only; no instance view writability or mutation semantics inferred.",
+  "source_to_tag_correspondence": "UNKNOWN"
+}

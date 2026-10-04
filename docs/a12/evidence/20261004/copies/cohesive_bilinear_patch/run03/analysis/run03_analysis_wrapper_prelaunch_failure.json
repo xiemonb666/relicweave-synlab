@@ -1,0 +1,12 @@
+{
+  "status": "ANALYSIS_NOT_STARTED_PRELAUNCH_WRAPPER_ERROR",
+  "failed_check": "PowerShell Test-Path -LiteralPath $stdout -or Test-Path -LiteralPath $stderr was parsed as repeated LiteralPath parameter",
+  "observed_error": "Cannot bind parameter because parameter LiteralPath is specified more than once.",
+  "python_started": false,
+  "analysis_attempt_count": 0,
+  "solver_rerun": false,
+  "source": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\cohesive_bilinear_patch_20261004\\analyze_intrinsic_bilinear_run03_v2.py",
+  "source_sha256": "5b921dd4dbf03adda0c5b5f17465400f4efe040ee36d54072b3996ce96585fb4",
+  "derived_output": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_bilinear_patch_20261004\\controlled_intrinsic_bilinear_modeI_201_run03_analysis",
+  "derived_output_exists": false
+}

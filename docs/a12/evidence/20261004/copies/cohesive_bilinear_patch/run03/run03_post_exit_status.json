@@ -1,0 +1,26 @@
+{
+  "status": "PROCESS_EXIT_CONFIRMED_RUN_STATUS_CLOSED",
+  "run_id": "controlled_intrinsic_bilinear_modeI_201_run03",
+  "process_table_argv": [
+    "wsl.exe",
+    "-d",
+    "Ubuntu",
+    "--",
+    "/bin/ps",
+    "-eo",
+    "pid=,args="
+  ],
+  "process_table_exit": 0,
+  "matching_run_processes": [],
+  "no_matching_run_processes": true,
+  "run_status_path": "\\\\wsl.localhost\\Ubuntu\\home\\xiemo\\cohesive_bilinear_patch_20261004\\controlled_intrinsic_bilinear_modeI_201_run03\\run_status.json",
+  "run_status": "RUN_201_POINTS_COMPLETE",
+  "solver_steps_completed": 201,
+  "grid_point_count": 201,
+  "dump_frames_and_parsed_records": 201,
+  "runner_status_sha256": "404d93e533d2dd2df8c0c2aa7085ab1b22142dbb79ab284f16f9aa1c82a5d0ab",
+  "launcher_python_exit_text": "0",
+  "launcher_python_exit_code": 0,
+  "python_exit_file_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+  "completed_at_utc": "2026-10-04T05:02:27.4764156Z"
+}

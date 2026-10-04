@@ -1,0 +1,20 @@
+{
+  "case": "controlled_intrinsic_bilinear_modeI",
+  "outcome": "GEOMETRY_PASS_NATIVE_FIELDS_VERIFIED_DRIVER_EXIT_FAIL_NO_RETRY",
+  "steps": 0,
+  "py_compile_exit": 0,
+  "python_process_exit": 2,
+  "wsl_host_exit": 2,
+  "groups": "body96,bottom8,interface8,top8",
+  "native_counts": "54nodes,96tet,8cohesive",
+  "pairing": "9 exact duplicate pairs; exact bulk cell/local ordinal rest; cohesive side ordinal ancestry equal",
+  "area_m2": "input/sideA/sideB each 4e-6",
+  "mass": "positive; 4e-5kg per DOF",
+  "initial_energies_J": "kinetic,potential,dissipated,reversible,cohesive contact all 0",
+  "dump": "native PVTU/VTU found recursively; 8 cells; Float64 opening[8,3]=0 m, tractions[8,3]=0 Pa, damage[8,1]=0 dimensionless, delta max[8,1]=2.1714285714285712e-8 m",
+  "representation": "per-cell, not QP; units are field semantics because VTK omits units",
+  "failure_reason": "driver direct-child inventory missed paraview subdirectory; original FAIL_NO_RETRY preserved; no retry/source edit",
+  "source_sha256": "49ac8220a2d24bbd73ad8735a0a377a24a3e4ee92cc168471050d36c77ac732d",
+  "snapshot_integrity": "all byte-identical",
+  "scope": "No solveStep; no constitutive validation; no production/R2/PRETRAIN_ELIGIBLE claim."
+}

@@ -2,8 +2,8 @@
   "schema": "a12.evidence_index.v1",
   "date": "2026-10-04",
   "workspace": "relicweave-synlab",
-  "cap_bytes": 1800000,
-  "payload_bytes": 1263539,
+  "cap_bytes": 2700000,
+  "payload_bytes": 2529240,
   "payload_cap_pass": true,
   "evidence": [
     {
@@ -701,15 +701,934 @@
       "copy_bytes": 9604,
       "method": "byte_exact",
       "evidence_kind": "run_status"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/narrowband_diagnosis_20261004/diagnosis.json",
+      "source_bytes": 202833,
+      "source_sha256": "0cefc6abf1d5acd0aac63ed632972d84f52942ba6156b494e739bc38de1863c3",
+      "copy_path": "copies/narrowband_diagnosis/diagnosis.json",
+      "copy_bytes": 202833,
+      "copy_sha256": "0cefc6abf1d5acd0aac63ed632972d84f52942ba6156b494e739bc38de1863c3",
+      "method": "byte_exact",
+      "evidence_kind": "raw_diagnostic_json"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/derived_partial_v4/partial_bilinear_patch_review_v2.png",
+      "source_bytes": 228372,
+      "source_sha256": "07276b0d64a171e45863ff8baf6607df5afb90a3fdc9f61622f6e2f3ee257151",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/partial_bilinear_patch_review_v2.png",
+      "copy_bytes": 228372,
+      "copy_sha256": "07276b0d64a171e45863ff8baf6607df5afb90a3fdc9f61622f6e2f3ee257151",
+      "method": "byte_exact",
+      "evidence_kind": "partial_derived_review_image"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/derived_partial_v4/analysis_partial_v2.json",
+      "source_bytes": 25897,
+      "source_sha256": "a2cc0397429f2fc103eb73916aaf37c017149331a466d2c629cee3d1cb777233",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_partial_v2.json",
+      "copy_bytes": 25897,
+      "copy_sha256": "a2cc0397429f2fc103eb73916aaf37c017149331a466d2c629cee3d1cb777233",
+      "method": "byte_exact",
+      "evidence_kind": "partial_derived_analysis"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/derived_partial_v4/native_partial_history_derived_from_closed_samples_v2.npz",
+      "source_bytes": 34025,
+      "source_sha256": "bcad4586f3878bfa280fddec466d2feb9f50d179f37ac152a49823496ead3523",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/native_partial_history_derived_from_closed_samples_v2.npz",
+      "copy_bytes": 34025,
+      "copy_sha256": "bcad4586f3878bfa280fddec466d2feb9f50d179f37ac152a49823496ead3523",
+      "method": "byte_exact",
+      "evidence_kind": "partial_derived_history"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/external_execution_started_v2.json",
+      "source_bytes": 1816,
+      "source_sha256": "c862160d4bc7acf02ce49225c4dd6791f1d052f6deae63c4d3b7daf5cbd5e4ee",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/receipts/external_execution_started_v2.json",
+      "copy_bytes": 1816,
+      "copy_sha256": "c862160d4bc7acf02ce49225c4dd6791f1d052f6deae63c4d3b7daf5cbd5e4ee",
+      "method": "byte_exact",
+      "evidence_kind": "run02_start_receipt"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/external_execution_receipt_v2.json",
+      "source_bytes": 2277,
+      "source_sha256": "bbe74dc940b828cf276b2f01c50a50edfe9c11e55cf065b3739d41413e64567c",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/receipts/external_execution_receipt_v2.json",
+      "copy_bytes": 2277,
+      "copy_sha256": "bbe74dc940b828cf276b2f01c50a50edfe9c11e55cf065b3739d41413e64567c",
+      "method": "byte_exact",
+      "evidence_kind": "run02_timeout_receipt"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/freeze_receipt_v2.json",
+      "source_bytes": 6749,
+      "source_sha256": "0271daa8174719ed12bd3483335d1a024dd6ac77b305009f95bfb3c830434e62",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/receipts/freeze_receipt_v2.json",
+      "copy_bytes": 6749,
+      "copy_sha256": "0271daa8174719ed12bd3483335d1a024dd6ac77b305009f95bfb3c830434e62",
+      "method": "byte_exact",
+      "evidence_kind": "run02_freeze_receipt"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/snapshot_integrity_v2.json",
+      "source_bytes": 5993,
+      "source_sha256": "7ff69ff20e9b4cf61e3cb43772d730a58ab7a54bc9770341975a8ec534790811",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/receipts/snapshot_integrity_v2.json",
+      "copy_bytes": 5993,
+      "copy_sha256": "7ff69ff20e9b4cf61e3cb43772d730a58ab7a54bc9770341975a8ec534790811",
+      "method": "byte_exact",
+      "evidence_kind": "run02_source_integrity"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/post_timeout_process_check_v2.json",
+      "source_bytes": 584,
+      "source_sha256": "ca8f24144477083888a68d462c6a197a19e4df69309fe754b3d62773cde0af9e",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/receipts/post_timeout_process_check_v2.json",
+      "copy_bytes": 584,
+      "copy_sha256": "ca8f24144477083888a68d462c6a197a19e4df69309fe754b3d62773cde0af9e",
+      "method": "byte_exact",
+      "evidence_kind": "run02_post_timeout_check"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/run_started.json",
+      "source_bytes": 355,
+      "source_sha256": "84c9fd33deb44ee16fd19bf5fa3892649a563832ab298bcf3488142513db9812",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/receipts/run_started.json",
+      "copy_bytes": 355,
+      "copy_sha256": "84c9fd33deb44ee16fd19bf5fa3892649a563832ab298bcf3488142513db9812",
+      "method": "byte_exact",
+      "evidence_kind": "run02_start_record"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/initial_state.npz",
+      "source_bytes": 3183,
+      "source_sha256": "983d70a007050887bb06518b60d623b239ae33f9a7b1f97c4d486f54ee696c11",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/receipts/initial_state.npz",
+      "copy_bytes": 3183,
+      "copy_sha256": "983d70a007050887bb06518b60d623b239ae33f9a7b1f97c4d486f54ee696c11",
+      "method": "byte_exact",
+      "evidence_kind": "run02_initial_state"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/py_compile_execution_v2.json",
+      "source_bytes": 1808,
+      "source_sha256": "e060f99ae1e4e252485f8d407244b4714096710a9f23fcde5a4a71453bbd2a98",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/receipts/py_compile_execution_v2.json",
+      "copy_bytes": 1808,
+      "copy_sha256": "e060f99ae1e4e252485f8d407244b4714096710a9f23fcde5a4a71453bbd2a98",
+      "method": "byte_exact",
+      "evidence_kind": "run02_failed_compile_receipt"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/py_compile_execution_v2_attempt2.json",
+      "source_bytes": 1850,
+      "source_sha256": "f0c4c6340f12a778385adfd70878947a116431fcfb12c1ff6e52f1e3404ed9e3",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/receipts/py_compile_execution_v2_attempt2.json",
+      "copy_bytes": 1850,
+      "copy_sha256": "f0c4c6340f12a778385adfd70878947a116431fcfb12c1ff6e52f1e3404ed9e3",
+      "method": "byte_exact",
+      "evidence_kind": "run02_failed_compile_receipt"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/py_compile_execution_v2_exit_interpretation.json",
+      "source_bytes": 1475,
+      "source_sha256": "7d97baa1026023d7229548be1885ad485e1135a841dcdf0446b8dbed31bbfee0",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/receipts/py_compile_execution_v2_exit_interpretation.json",
+      "copy_bytes": 1475,
+      "copy_sha256": "7d97baa1026023d7229548be1885ad485e1135a841dcdf0446b8dbed31bbfee0",
+      "method": "byte_exact",
+      "evidence_kind": "run02_compile_exit_interpretation"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/py_compile_v2.stderr.txt",
+      "source_bytes": 262,
+      "source_sha256": "a8c54784028d42b0d100a0eaf6ac204a79136afa353a98fa6cacd175659b5657",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/receipts/py_compile_v2.stderr.txt",
+      "copy_bytes": 262,
+      "copy_sha256": "a8c54784028d42b0d100a0eaf6ac204a79136afa353a98fa6cacd175659b5657",
+      "method": "byte_exact",
+      "evidence_kind": "run02_compile_failure_stderr"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/derived_partial_v2/source_snapshot/analyze_intrinsic_bilinear_partial_run02_v2.py",
+      "source_bytes": 31016,
+      "source_sha256": "2355d5ccf5895ad8d2c54c10f8c1a85a272b676f8cffcccc8e880b845d0e0726",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v2/source_snapshot/analyze_intrinsic_bilinear_partial_run02_v2.py",
+      "copy_bytes": 31016,
+      "copy_sha256": "2355d5ccf5895ad8d2c54c10f8c1a85a272b676f8cffcccc8e880b845d0e0726",
+      "method": "byte_exact",
+      "evidence_kind": "failed_analysis_source_snapshot"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/derived_partial_v2/analysis_execution_receipt_v2.json",
+      "source_bytes": 1433,
+      "source_sha256": "7a96c25694ab35eeb0b3f84557ea50ef23c2a44415ff0acadfc34e07339fff74",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v2/analysis_execution_receipt_v2.json",
+      "copy_bytes": 1433,
+      "copy_sha256": "7a96c25694ab35eeb0b3f84557ea50ef23c2a44415ff0acadfc34e07339fff74",
+      "method": "byte_exact",
+      "evidence_kind": "failed_analysis_receipt"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/derived_partial_v2/analysis_execution_started_v2.json",
+      "source_bytes": 921,
+      "source_sha256": "06957550ab5a93bcb5b25f5cb1b2dd8c089f9f69c833cfc91d237db997833235",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v2/analysis_execution_started_v2.json",
+      "copy_bytes": 921,
+      "copy_sha256": "06957550ab5a93bcb5b25f5cb1b2dd8c089f9f69c833cfc91d237db997833235",
+      "method": "byte_exact",
+      "evidence_kind": "failed_analysis_start_receipt"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/derived_partial_v2/analysis_source_manifest_v2.json",
+      "source_bytes": 666,
+      "source_sha256": "1b83a1b323ae8eaed3bdec553b3b1ac4ccd1ab804fb945eadbc619efa79232f7",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v2/analysis_source_manifest_v2.json",
+      "copy_bytes": 666,
+      "copy_sha256": "1b83a1b323ae8eaed3bdec553b3b1ac4ccd1ab804fb945eadbc619efa79232f7",
+      "method": "byte_exact",
+      "evidence_kind": "failed_analysis_source_manifest"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/derived_partial_v2/analysis_v2.stderr.txt",
+      "source_bytes": 237,
+      "source_sha256": "20420f048e4681df34e669d0d4bd3f01f672af4b18adf6c9b7ab1673da661218",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v2/analysis_v2.stderr.txt",
+      "copy_bytes": 237,
+      "copy_sha256": "20420f048e4681df34e669d0d4bd3f01f672af4b18adf6c9b7ab1673da661218",
+      "method": "byte_exact",
+      "evidence_kind": "failed_analysis_stderr"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/derived_partial_v3/source_snapshot/analyze_intrinsic_bilinear_partial_run02_v3.py",
+      "source_bytes": 31016,
+      "source_sha256": "cfef0724ea383eb71af7ae9470d2bc759eb4b5a2cb1720852d0b7f636219b646",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v3/source_snapshot/analyze_intrinsic_bilinear_partial_run02_v3.py",
+      "copy_bytes": 31016,
+      "copy_sha256": "cfef0724ea383eb71af7ae9470d2bc759eb4b5a2cb1720852d0b7f636219b646",
+      "method": "byte_exact",
+      "evidence_kind": "failed_analysis_source_snapshot"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/derived_partial_v3/analysis_execution_receipt_v3.json",
+      "source_bytes": 1433,
+      "source_sha256": "273ee82b98c6e75160cf55997bc2dbbd9e3f1e5af7f3a0dd4187dd199a53f775",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v3/analysis_execution_receipt_v3.json",
+      "copy_bytes": 1433,
+      "copy_sha256": "273ee82b98c6e75160cf55997bc2dbbd9e3f1e5af7f3a0dd4187dd199a53f775",
+      "method": "byte_exact",
+      "evidence_kind": "failed_analysis_receipt"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/derived_partial_v3/analysis_execution_started_v3.json",
+      "source_bytes": 921,
+      "source_sha256": "6f2aa8706445f55cd0a6b6cfb30834496b1cd981524f55920ea752d559b851fb",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v3/analysis_execution_started_v3.json",
+      "copy_bytes": 921,
+      "copy_sha256": "6f2aa8706445f55cd0a6b6cfb30834496b1cd981524f55920ea752d559b851fb",
+      "method": "byte_exact",
+      "evidence_kind": "failed_analysis_start_receipt"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/derived_partial_v3/analysis_source_manifest_v3.json",
+      "source_bytes": 799,
+      "source_sha256": "891b2b8614f20510a046b56fa7465dcabaa1f8592b80e90b6e11705a64da9093",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v3/analysis_source_manifest_v3.json",
+      "copy_bytes": 799,
+      "copy_sha256": "891b2b8614f20510a046b56fa7465dcabaa1f8592b80e90b6e11705a64da9093",
+      "method": "byte_exact",
+      "evidence_kind": "failed_analysis_source_manifest"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/derived_partial_v3/analysis_v3.stderr.txt",
+      "source_bytes": 237,
+      "source_sha256": "85136d841b0ade041526b52b9e022b41707a2bd0eac7e0b303104b4cd60205b5",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v3/analysis_v3.stderr.txt",
+      "copy_bytes": 237,
+      "copy_sha256": "85136d841b0ade041526b52b9e022b41707a2bd0eac7e0b303104b4cd60205b5",
+      "method": "byte_exact",
+      "evidence_kind": "failed_analysis_stderr"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/source_snapshots/analysis_v4/analysis_execution_receipt_v4.json",
+      "source_bytes": 3847,
+      "source_sha256": "9ab997e967d7a80e2df3959dd9c1717cb025c9c9ce726108f6858c10e3347d0c",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v4/analysis_execution_receipt_v4.json",
+      "copy_bytes": 3847,
+      "copy_sha256": "9ab997e967d7a80e2df3959dd9c1717cb025c9c9ce726108f6858c10e3347d0c",
+      "method": "byte_exact",
+      "evidence_kind": "partial_analysis_execution_receipt"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/source_snapshots/analysis_v4/analysis_execution_started_v4.json",
+      "source_bytes": 1035,
+      "source_sha256": "fc6e622af24f41f8b3e5532a0da30f5d7cc39bdba09366bf42226f20f49452ba",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v4/analysis_execution_started_v4.json",
+      "copy_bytes": 1035,
+      "copy_sha256": "fc6e622af24f41f8b3e5532a0da30f5d7cc39bdba09366bf42226f20f49452ba",
+      "method": "byte_exact",
+      "evidence_kind": "partial_analysis_start_receipt"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/source_snapshots/analysis_v4/analysis_source_manifest_v4.json",
+      "source_bytes": 787,
+      "source_sha256": "ec516bfb19a4e365f7658f79557a4f39bdbaa39415fb10226c6e6dc79257eba4",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v4/analysis_source_manifest_v4.json",
+      "copy_bytes": 787,
+      "copy_sha256": "ec516bfb19a4e365f7658f79557a4f39bdbaa39415fb10226c6e6dc79257eba4",
+      "method": "byte_exact",
+      "evidence_kind": "partial_analysis_source_manifest"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/source_snapshots/analysis_v4/analysis_v4.stdout.txt",
+      "source_bytes": 605,
+      "source_sha256": "70a987ff92477248c2f52f0838e894ae0f75f19586b7b067933a639cc920b767",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v4/analysis_v4.stdout.txt",
+      "copy_bytes": 605,
+      "copy_sha256": "70a987ff92477248c2f52f0838e894ae0f75f19586b7b067933a639cc920b767",
+      "method": "byte_exact",
+      "evidence_kind": "partial_analysis_stdout"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/source_snapshots/analysis_v4/analysis_v4.stderr.txt",
+      "source_bytes": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v4/analysis_v4.stderr.txt",
+      "copy_bytes": 0,
+      "copy_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "method": "byte_exact",
+      "evidence_kind": "partial_analysis_stderr"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run01/external_execution_receipt.json",
+      "source_bytes": 459,
+      "source_sha256": "8f31b96dd204442d0610499568ddd238e7b97b86dccf02113a9ed89fcd9b62e4",
+      "copy_path": "copies/cohesive_bilinear_patch/run01/external_execution_receipt.json",
+      "copy_bytes": 459,
+      "copy_sha256": "8f31b96dd204442d0610499568ddd238e7b97b86dccf02113a9ed89fcd9b62e4",
+      "method": "byte_exact",
+      "evidence_kind": "run01_execution_receipt"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run01/run_status.json",
+      "source_bytes": 1019,
+      "source_sha256": "34146f1809498067b728e958261b3d1b06729b71b9dc3e68f958ae9a74dc99dd",
+      "copy_path": "copies/cohesive_bilinear_patch/run01/run_status.json",
+      "copy_bytes": 1019,
+      "copy_sha256": "34146f1809498067b728e958261b3d1b06729b71b9dc3e68f958ae9a74dc99dd",
+      "method": "byte_exact",
+      "evidence_kind": "run01_status"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run01/python_process_exit_code.txt",
+      "source_bytes": 2,
+      "source_sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3",
+      "copy_path": "copies/cohesive_bilinear_patch/run01/python_process_exit_code.txt",
+      "copy_bytes": 2,
+      "copy_sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3",
+      "method": "byte_exact",
+      "evidence_kind": "run01_python_exit"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run01/run_started.json",
+      "source_bytes": 352,
+      "source_sha256": "fdc9750ab92ca58ec83d836409853620cbb8f0e9f542967de70693fc8372b664",
+      "copy_path": "copies/cohesive_bilinear_patch/run01/run_started.json",
+      "copy_bytes": 352,
+      "copy_sha256": "fdc9750ab92ca58ec83d836409853620cbb8f0e9f542967de70693fc8372b664",
+      "method": "byte_exact",
+      "evidence_kind": "run01_start_record"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run01/snapshot_integrity_v1.json",
+      "source_bytes": 2123,
+      "source_sha256": "776efa8bc6867403a264e070665f53c835ee3dcece33047467fc464ae171be6b",
+      "copy_path": "copies/cohesive_bilinear_patch/run01/snapshot_integrity_v1.json",
+      "copy_bytes": 2123,
+      "copy_sha256": "776efa8bc6867403a264e070665f53c835ee3dcece33047467fc464ae171be6b",
+      "method": "byte_exact",
+      "evidence_kind": "run01_source_integrity"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run01/host_stdout.log",
+      "source_bytes": 999,
+      "source_sha256": "db0befbd18d70e12f98e44d43edcdd235c3532ff9bfacc3eb6e20aa3f6cfbc80",
+      "copy_path": "copies/cohesive_bilinear_patch/run01/host_stdout.log",
+      "copy_bytes": 999,
+      "copy_sha256": "db0befbd18d70e12f98e44d43edcdd235c3532ff9bfacc3eb6e20aa3f6cfbc80",
+      "method": "byte_exact",
+      "evidence_kind": "run01_stdout"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/preflight_dump_v3/conclusion_v3.json",
+      "source_bytes": 1247,
+      "source_sha256": "39b0bd828e9fec1a40493eaf5d0262ed7b967757dbeb5497132d69f925f12acd",
+      "copy_path": "copies/cohesive_bilinear_patch/preflight_v3/conclusion_v3.json",
+      "copy_bytes": 1247,
+      "copy_sha256": "39b0bd828e9fec1a40493eaf5d0262ed7b967757dbeb5497132d69f925f12acd",
+      "method": "byte_exact",
+      "evidence_kind": "preflight_v3_conclusion"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/preflight_dump_v3/execution_receipt_v3.json",
+      "source_bytes": 3003,
+      "source_sha256": "82573bf4fa405cb9e33d681587de6342d7f7575258615623bb746ac837f500c2",
+      "copy_path": "copies/cohesive_bilinear_patch/preflight_v3/execution_receipt_v3.json",
+      "copy_bytes": 3003,
+      "copy_sha256": "82573bf4fa405cb9e33d681587de6342d7f7575258615623bb746ac837f500c2",
+      "method": "byte_exact",
+      "evidence_kind": "preflight_v3_execution_receipt"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/preflight_dump_v3/native_dump_fields_v3.json",
+      "source_bytes": 1745,
+      "source_sha256": "2101d065f52276ca089a3b0b6ebda4ebe41a30966bf269b7edebde62d49ea477",
+      "copy_path": "copies/cohesive_bilinear_patch/preflight_v3/native_dump_fields_v3.json",
+      "copy_bytes": 1745,
+      "copy_sha256": "2101d065f52276ca089a3b0b6ebda4ebe41a30966bf269b7edebde62d49ea477",
+      "method": "byte_exact",
+      "evidence_kind": "preflight_v3_native_fields"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/preflight_dump_v3/preflight_result.json",
+      "source_bytes": 2930,
+      "source_sha256": "78c8cba68b97f112ba925597a728eac45d1be0e9974f6275a6f4e90962b52ddf",
+      "copy_path": "copies/cohesive_bilinear_patch/preflight_v3/preflight_result.json",
+      "copy_bytes": 2930,
+      "copy_sha256": "78c8cba68b97f112ba925597a728eac45d1be0e9974f6275a6f4e90962b52ddf",
+      "method": "byte_exact",
+      "evidence_kind": "preflight_v3_result"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/preflight_dump_v3/snapshot_integrity_v3.json",
+      "source_bytes": 1760,
+      "source_sha256": "b607b3472b13fff1eb0f4a679c24a6f2bb9c89c60976ca9af34cc1daa6da511e",
+      "copy_path": "copies/cohesive_bilinear_patch/preflight_v3/snapshot_integrity_v3.json",
+      "copy_bytes": 1760,
+      "copy_sha256": "b607b3472b13fff1eb0f4a679c24a6f2bb9c89c60976ca9af34cc1daa6da511e",
+      "method": "byte_exact",
+      "evidence_kind": "preflight_v3_source_integrity"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/preflight_dump_v3/partial_measurements_before_dump.json",
+      "source_bytes": 1775,
+      "source_sha256": "2369515e54fc70c05d288e894634789c731bde4395dbbdf7abc8c88f4209ff7e",
+      "copy_path": "copies/cohesive_bilinear_patch/preflight_v3/partial_measurements_before_dump.json",
+      "copy_bytes": 1775,
+      "copy_sha256": "2369515e54fc70c05d288e894634789c731bde4395dbbdf7abc8c88f4209ff7e",
+      "method": "byte_exact",
+      "evidence_kind": "preflight_v3_partial_measurements"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/preflight_dump_v3/preflight_native_state.npz",
+      "source_bytes": 2475,
+      "source_sha256": "5f2edfbf91a18e094053aae4342de51412d4e68a703b5db200bb2a7184422321",
+      "copy_path": "copies/cohesive_bilinear_patch/preflight_v3/preflight_native_state.npz",
+      "copy_bytes": 2475,
+      "copy_sha256": "5f2edfbf91a18e094053aae4342de51412d4e68a703b5db200bb2a7184422321",
+      "method": "byte_exact",
+      "evidence_kind": "preflight_v3_native_state"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/preflight_dump_v3/python_process_exit_code_v3.txt",
+      "source_bytes": 2,
+      "source_sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3",
+      "copy_path": "copies/cohesive_bilinear_patch/preflight_v3/python_process_exit_code_v3.txt",
+      "copy_bytes": 2,
+      "copy_sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3",
+      "method": "byte_exact",
+      "evidence_kind": "preflight_v3_python_exit"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/preflight_dump_v3/wsl_host_exit_code_v3.txt",
+      "source_bytes": 1,
+      "source_sha256": "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35",
+      "copy_path": "copies/cohesive_bilinear_patch/preflight_v3/wsl_host_exit_code_v3.txt",
+      "copy_bytes": 1,
+      "copy_sha256": "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35",
+      "method": "byte_exact",
+      "evidence_kind": "preflight_v3_host_exit"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/preflight_dump_v3/wsl_preflight_stdout.log",
+      "source_bytes": 2539,
+      "source_sha256": "f03f36477fd8c1b67e8f58609b2de2b574d4b0e8269a918b93858aa0339c0e6c",
+      "copy_path": "copies/cohesive_bilinear_patch/preflight_v3/wsl_preflight_stdout.log",
+      "copy_bytes": 2539,
+      "copy_sha256": "f03f36477fd8c1b67e8f58609b2de2b574d4b0e8269a918b93858aa0339c0e6c",
+      "method": "byte_exact",
+      "evidence_kind": "preflight_v3_stdout"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/api_symbol_audit_v1/native_model_symbol_audit_v1.execution.json",
+      "source_bytes": 1066,
+      "source_sha256": "dab36ab63c59e4d07a22ed62167baa694d5316690f1b9faa419edc1b4b6d96ae",
+      "copy_path": "copies/cohesive_bilinear_patch/api_audit_v1/native_model_symbol_audit_v1.execution.json",
+      "copy_bytes": 1066,
+      "copy_sha256": "dab36ab63c59e4d07a22ed62167baa694d5316690f1b9faa419edc1b4b6d96ae",
+      "method": "byte_exact",
+      "evidence_kind": "api_audit_execution_receipt"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/api_symbol_audit_v1/native_model_symbol_audit_v1.json",
+      "source_bytes": 8685,
+      "source_sha256": "657f7c707304f76330d0174ef07792fb72a67a77f0944f20d82c017e5ea804a6",
+      "copy_path": "copies/cohesive_bilinear_patch/api_audit_v1/native_model_symbol_audit_v1.json",
+      "copy_bytes": 8685,
+      "copy_sha256": "657f7c707304f76330d0174ef07792fb72a67a77f0944f20d82c017e5ea804a6",
+      "method": "byte_exact",
+      "evidence_kind": "api_symbol_audit"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/narrowband_mesh64_candidate_20261004/candidate_comparison.json",
+      "source_bytes": 6150,
+      "source_sha256": "4ca288a8caaa8005572c2acb15bd059b31ccba66f07b0177cee1315f0927d12f",
+      "copy_path": "copies/narrowband_mesh64_candidate/candidate_comparison.json",
+      "copy_bytes": 6150,
+      "copy_sha256": "4ca288a8caaa8005572c2acb15bd059b31ccba66f07b0177cee1315f0927d12f",
+      "method": "byte_exact",
+      "evidence_kind": "mesh32_mesh64_comparison"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/narrowband_mesh64_candidate_20261004/orchestrator_invocation_receipt.json",
+      "source_bytes": 1164,
+      "source_sha256": "a758003a1ea0f1207f469940a19a3c5a86dbe575eccaa44b504dd40bb5aa748d",
+      "copy_path": "copies/narrowband_mesh64_candidate/orchestrator_invocation_receipt.json",
+      "copy_bytes": 1164,
+      "copy_sha256": "a758003a1ea0f1207f469940a19a3c5a86dbe575eccaa44b504dd40bb5aa748d",
+      "method": "byte_exact",
+      "evidence_kind": "mesh32_mesh64_execution_receipt"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/explicit_spacing_fix_20261004/boundary_probe.v3.py",
+      "source_sha256": "712ea236f69d7fd058d22d81e64dc28ded1f5fe62ed49cb779954d35c7bcd73c",
+      "source_bytes": 9220,
+      "copy_path": "copies/spacing_fix_v3/boundary_probe.v3.py",
+      "copy_sha256": "712ea236f69d7fd058d22d81e64dc28ded1f5fe62ed49cb779954d35c7bcd73c",
+      "copy_bytes": 9220,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/explicit_spacing_fix_20261004/boundary_probe.v3.receipt.json",
+      "source_sha256": "969750d0a55c584ceda6c896e3830502f86dac7574d66be0f887f0b1ec8e7cb2",
+      "source_bytes": 14059,
+      "copy_path": "copies/spacing_fix_v3/boundary_probe.v3.receipt.json",
+      "copy_sha256": "969750d0a55c584ceda6c896e3830502f86dac7574d66be0f887f0b1ec8e7cb2",
+      "copy_bytes": 14059,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/explicit_spacing_fix_20261004/boundary_probe.v3.report.json",
+      "source_sha256": "b148988729df5ec34ee716b188a55ffb42521419a9865c044c84b72dfbbc4e9f",
+      "source_bytes": 11335,
+      "copy_path": "copies/spacing_fix_v3/boundary_probe.v3.report.json",
+      "copy_sha256": "b148988729df5ec34ee716b188a55ffb42521419a9865c044c84b72dfbbc4e9f",
+      "copy_bytes": 11335,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/explicit_spacing_fix_20261004/boundary_probe.v3.stdout.log",
+      "source_sha256": "d87c5fea4efd856cffc80dbdffd006bd6f60a644f00c0858673d86625cf71011",
+      "source_bytes": 9160,
+      "copy_path": "copies/spacing_fix_v3/boundary_probe.v3.stdout.log",
+      "copy_sha256": "d87c5fea4efd856cffc80dbdffd006bd6f60a644f00c0858673d86625cf71011",
+      "copy_bytes": 9160,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/explicit_spacing_fix_20261004/original.sha256.txt",
+      "source_sha256": "3921742342a68ca7d04a1cd0fac5c37a75ae9c92d9a8a96c647eda0ba45cee5f",
+      "source_bytes": 126,
+      "copy_path": "copies/spacing_fix_v3/original.sha256.txt",
+      "copy_sha256": "3921742342a68ca7d04a1cd0fac5c37a75ae9c92d9a8a96c647eda0ba45cee5f",
+      "copy_bytes": 126,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/explicit_spacing_fix_20261004/run_receipt.md",
+      "source_sha256": "e80986cbd26a9d1b2f654bd5ab0a0c53fa82a579601240a4d1f96ac9e48d63c0",
+      "source_bytes": 936,
+      "copy_path": "copies/spacing_fix_v3/run_receipt.md",
+      "copy_sha256": "e80986cbd26a9d1b2f654bd5ab0a0c53fa82a579601240a4d1f96ac9e48d63c0",
+      "copy_bytes": 936,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/explicit_spacing_fix_20261004/implementation_receipt.md",
+      "source_sha256": "c4d70f7bff948ddf6a23d2306f464edb3e93ebaebc673d390f7b20771a33602b",
+      "source_bytes": 1124,
+      "copy_path": "copies/spacing_fix_v3/implementation_receipt.md",
+      "copy_sha256": "c4d70f7bff948ddf6a23d2306f464edb3e93ebaebc673d390f7b20771a33602b",
+      "copy_bytes": 1124,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/explicit_spacing_fix_20261004/sdf.py.original",
+      "source_sha256": "186583014d706cfcc20fbefda04a0c68e427f68e3ba7187a48f9a9115ddb827f",
+      "source_bytes": 35196,
+      "copy_path": "copies/spacing_fix_v3/sdf.py.original",
+      "copy_sha256": "186583014d706cfcc20fbefda04a0c68e427f68e3ba7187a48f9a9115ddb827f",
+      "copy_bytes": 35196,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/narrowband_diagnosis_20261004/actual_mesh_boundary_projections.png",
+      "source_sha256": "9ad56c8400b159ae27fb1897fe49e1c894d42228c3ca28f07a46bc6b73ba41bf",
+      "source_bytes": 169067,
+      "copy_path": "copies/narrowband_diagnosis/actual_mesh_boundary_projections.png",
+      "copy_sha256": "9ad56c8400b159ae27fb1897fe49e1c894d42228c3ca28f07a46bc6b73ba41bf",
+      "copy_bytes": 169067,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/narrowband_diagnosis_20261004/artifact_manifest.json",
+      "source_sha256": "1630ca7db8012752bd9d20a06fcd6c16dab70ef7dd1eee66f4a653c2f7b534de",
+      "source_bytes": 4285,
+      "copy_path": "copies/narrowband_diagnosis/artifact_manifest.json",
+      "copy_sha256": "1630ca7db8012752bd9d20a06fcd6c16dab70ef7dd1eee66f4a653c2f7b534de",
+      "copy_bytes": 4285,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/narrowband_diagnosis_20261004/diagnose_narrowband.py",
+      "source_sha256": "c155c0e3274f14a47460a813bd743dc26465ea34d24ce096ce64bd43e19733e6",
+      "source_bytes": 18340,
+      "copy_path": "copies/narrowband_diagnosis/diagnose_narrowband.py",
+      "copy_sha256": "c155c0e3274f14a47460a813bd743dc26465ea34d24ce096ce64bd43e19733e6",
+      "copy_bytes": 18340,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/narrowband_diagnosis_20261004/diagnosis_notes.md",
+      "source_sha256": "7deea4d512a2cd207a6d64336f5692f88f700fce3f7aeb2ee98cd75c33aba0cc",
+      "source_bytes": 4708,
+      "copy_path": "copies/narrowband_diagnosis/diagnosis_notes.md",
+      "copy_sha256": "7deea4d512a2cd207a6d64336f5692f88f700fce3f7aeb2ee98cd75c33aba0cc",
+      "copy_bytes": 4708,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/narrowband_diagnosis_20261004/diagnosis_review.json",
+      "source_sha256": "f2ec62677699cffec764928dd1bd171a4732cc9187ede68e272e163aeefd5ca8",
+      "source_bytes": 22435,
+      "copy_path": "copies/narrowband_diagnosis/diagnosis_review.json",
+      "copy_sha256": "f2ec62677699cffec764928dd1bd171a4732cc9187ede68e272e163aeefd5ca8",
+      "copy_bytes": 22435,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/narrowband_diagnosis_20261004/diagnosis_review.pre-receipt-correction.json",
+      "source_sha256": "b57b676a0bd80db24e15f423aa2b21a539baf2c6b96ec8119f722178fed5c735",
+      "source_bytes": 21356,
+      "copy_path": "copies/narrowband_diagnosis/diagnosis_review.pre-receipt-correction.json",
+      "copy_sha256": "b57b676a0bd80db24e15f423aa2b21a539baf2c6b96ec8119f722178fed5c735",
+      "copy_bytes": 21356,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/narrowband_diagnosis_20261004/receipt_correction_derived.json",
+      "source_sha256": "05b2040a7a604da31261906cab39064f918885f0d552d299efc95a97ea8d07f6",
+      "source_bytes": 2383,
+      "copy_path": "copies/narrowband_diagnosis/receipt_correction_derived.json",
+      "copy_sha256": "05b2040a7a604da31261906cab39064f918885f0d552d299efc95a97ea8d07f6",
+      "copy_bytes": 2383,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/narrowband_diagnosis_20261004/render_boundary_png.py",
+      "source_sha256": "951487f2279f8eeb33cd64bc813002ced3e9b34e4314fe42e2b080177c09f263",
+      "source_bytes": 3541,
+      "copy_path": "copies/narrowband_diagnosis/render_boundary_png.py",
+      "copy_sha256": "951487f2279f8eeb33cd64bc813002ced3e9b34e4314fe42e2b080177c09f263",
+      "copy_bytes": 3541,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/narrowband_diagnosis_20261004/run_receipts.json",
+      "source_sha256": "abab46aecdce4576e2bbdc7ed147671d7ebcc4b1d23d2ede4d172603725322a2",
+      "source_bytes": 4190,
+      "copy_path": "copies/narrowband_diagnosis/run_receipts.json",
+      "copy_sha256": "abab46aecdce4576e2bbdc7ed147671d7ebcc4b1d23d2ede4d172603725322a2",
+      "copy_bytes": 4190,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/narrowband_diagnosis_20261004/run_receipts.pre-receipt-correction.json",
+      "source_sha256": "c93af824586d236865e96274fc0cf9919b54c8a44b5a9ebade7518407352259d",
+      "source_bytes": 3067,
+      "copy_path": "copies/narrowband_diagnosis/run_receipts.pre-receipt-correction.json",
+      "copy_sha256": "c93af824586d236865e96274fc0cf9919b54c8a44b5a9ebade7518407352259d",
+      "copy_bytes": 3067,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/narrowband_diagnosis_20261004/artifact_manifest.pre-receipt-correction.json",
+      "source_sha256": "4fe3bfdcfc5e982533892c1974dcd2d1e7c0a216cd6b73f8757bd3c41583bde4",
+      "source_bytes": 2687,
+      "copy_path": "copies/narrowband_diagnosis/artifact_manifest.pre-receipt-correction.json",
+      "copy_sha256": "4fe3bfdcfc5e982533892c1974dcd2d1e7c0a216cd6b73f8757bd3c41583bde4",
+      "copy_bytes": 2687,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/relicweave_alignment_20261004/alignment.md",
+      "source_sha256": "7ca0e1c9b32ebe8cfa2d042d106d235a7cdb0c6abe1f64420d60c2eec263aaeb",
+      "source_bytes": 13530,
+      "copy_path": "copies/alignment/alignment.md",
+      "copy_sha256": "7ca0e1c9b32ebe8cfa2d042d106d235a7cdb0c6abe1f64420d60c2eec263aaeb",
+      "copy_bytes": 13530,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03_launch_receipts/run03_final_execution_receipt.json",
+      "source_sha256": "a3cb4e89600ed72d0b698a00b2f0e158aa3b2de3472e855b0f4c50be2bd99959",
+      "source_bytes": 4690,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/run03_final_execution_receipt.json",
+      "copy_sha256": "a3cb4e89600ed72d0b698a00b2f0e158aa3b2de3472e855b0f4c50be2bd99959",
+      "copy_bytes": 4690,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03_launch_receipts/run03_post_exit_status.json",
+      "source_sha256": "a944e39562ae6561ea533db30ff7e315fade210dfffcd59d26f10557948581b1",
+      "source_bytes": 985,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/run03_post_exit_status.json",
+      "copy_sha256": "a944e39562ae6561ea533db30ff7e315fade210dfffcd59d26f10557948581b1",
+      "copy_bytes": 985,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03_launch_receipts/run03_raw_closure_receipt.json",
+      "source_sha256": "508ef32ee63b6873889297b8c18c49ebaf5a17cee0aa7a8cf9f5e3c981763306",
+      "source_bytes": 1451,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/run03_raw_closure_receipt.json",
+      "copy_sha256": "508ef32ee63b6873889297b8c18c49ebaf5a17cee0aa7a8cf9f5e3c981763306",
+      "copy_bytes": 1451,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03_launch_receipts/run03_execution_receipt.json",
+      "source_sha256": "eb22744ed3432b2019cb78d8bd6ec71c6ed64e5fb2d74818c8df5b160b3b369b",
+      "source_bytes": 1931,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/run03_execution_receipt.json",
+      "copy_sha256": "eb22744ed3432b2019cb78d8bd6ec71c6ed64e5fb2d74818c8df5b160b3b369b",
+      "copy_bytes": 1931,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03_launch_receipts/run03_wsl_stdout.log",
+      "source_sha256": "e767e51eab42638278c1d544db7c25f8ba0c295268f6ef7c55bde8839aeb06a1",
+      "source_bytes": 975,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/run03_wsl_stdout.log",
+      "copy_sha256": "e767e51eab42638278c1d544db7c25f8ba0c295268f6ef7c55bde8839aeb06a1",
+      "copy_bytes": 975,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03/run_started.json",
+      "source_sha256": "7fc31da4ab1f7ebd45b9314f0d1bf4eb13f822744b599a6b60e264298b6cc97d",
+      "source_bytes": 358,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/run_started.json",
+      "copy_sha256": "7fc31da4ab1f7ebd45b9314f0d1bf4eb13f822744b599a6b60e264298b6cc97d",
+      "copy_bytes": 358,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03/run_status.json",
+      "source_sha256": "404d93e533d2dd2df8c0c2aa7085ab1b22142dbb79ab284f16f9aa1c82a5d0ab",
+      "source_bytes": 1359,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/run_status.json",
+      "copy_sha256": "404d93e533d2dd2df8c0c2aa7085ab1b22142dbb79ab284f16f9aa1c82a5d0ab",
+      "copy_bytes": 1359,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03/python_process_exit_code.txt",
+      "source_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "source_bytes": 2,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/python_process_exit_code.txt",
+      "copy_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "copy_bytes": 2,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03/native_history_partial_or_complete.npz",
+      "source_sha256": "c68372b1a812fb9d2bd5304d2519f8ecb7d6428ff6133d41f4bbe372f6ecfa66",
+      "source_bytes": 33413,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/native_history_partial_or_complete.npz",
+      "copy_sha256": "c68372b1a812fb9d2bd5304d2519f8ecb7d6428ff6133d41f4bbe372f6ecfa66",
+      "copy_bytes": 33413,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03_analysis/run03_analysis.json",
+      "source_sha256": "99d717174a0e3067628783168dca3e3830cfece93da34fe0e01ed8c2bbf416b5",
+      "source_bytes": 21660,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/analysis/run03_analysis.json",
+      "copy_sha256": "99d717174a0e3067628783168dca3e3830cfece93da34fe0e01ed8c2bbf416b5",
+      "copy_bytes": 21660,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03_analysis/run03_bilinear_modeI_review.png",
+      "source_sha256": "fc1f3f7a66d9850c44a760dcf2868cd8cc488471629814fbc182dea88d588bf5",
+      "source_bytes": 189507,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/analysis/run03_bilinear_modeI_review.png",
+      "copy_sha256": "fc1f3f7a66d9850c44a760dcf2868cd8cc488471629814fbc182dea88d588bf5",
+      "copy_bytes": 189507,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03_analysis_receipts_v2/run03_analysis_execution_receipt.json",
+      "source_sha256": "add4f85fbc751d5a67cc3bae5c2e85a880a1d90116ea7fc93b902ecc092e0b93",
+      "source_bytes": 4438,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/analysis/run03_analysis_execution_receipt.json",
+      "copy_sha256": "add4f85fbc751d5a67cc3bae5c2e85a880a1d90116ea7fc93b902ecc092e0b93",
+      "copy_bytes": 4438,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03_analysis_receipts_v2/run03_analysis_argv_semantics_addendum.json",
+      "source_sha256": "27ac51c20e9791a671c23679c0ec4abc1325ab12cf522808fc67f312b34b633d",
+      "source_bytes": 3771,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/analysis/run03_analysis_argv_semantics_addendum.json",
+      "copy_sha256": "27ac51c20e9791a671c23679c0ec4abc1325ab12cf522808fc67f312b34b633d",
+      "copy_bytes": 3771,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03_analysis_receipts_v2/run03_analysis_source_freeze_v2_receipt.json",
+      "source_sha256": "e1c92b018f87f023d7714806348f7428846a8997fbae7b191d666a2a779ba2b3",
+      "source_bytes": 2353,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/analysis/run03_analysis_source_freeze_v2_receipt.json",
+      "copy_sha256": "e1c92b018f87f023d7714806348f7428846a8997fbae7b191d666a2a779ba2b3",
+      "copy_bytes": 2353,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03_analysis_receipts_v2/run03_analysis_wrapper_prelaunch_failure.json",
+      "source_sha256": "3a914b68c72ce88aa94251333f1b207de2dd970c446a4ab543dd234cc9cde105",
+      "source_bytes": 882,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/analysis/run03_analysis_wrapper_prelaunch_failure.json",
+      "copy_sha256": "3a914b68c72ce88aa94251333f1b207de2dd970c446a4ab543dd234cc9cde105",
+      "copy_bytes": 882,
+      "method": "byte_exact"
     }
   ],
   "cap_scope": "Full docs/a12/evidence/20261004 tree including index files and pre-existing case03 note",
-  "oct4_tree_cap_bytes": 1800000,
+  "oct4_tree_cap_bytes": 2700000,
   "oct3_tree_bytes": 3631822,
-  "combined_tree_cap_bytes": 5500000,
-  "combined_tree_bytes": 4938472,
+  "combined_tree_cap_bytes": 6400000,
+  "combined_tree_bytes": 6260752,
   "combined_tree_cap_pass": true,
-  "oct4_tree_bytes": 1306650,
+  "oct4_tree_bytes": 2628930,
   "oct4_tree_cap_pass": true,
-  "scope_note": "Narrow diagnostic and native phase evidence only; event run is an early-stop diagnostic, not physics PASS. Large mesh/trace/NPZ/dense-state payloads, runtime trees and bulk raw data are excluded."
+  "scope_note": "Spacing v3 evidence, corrected narrowband diagnostic provenance, alignment audit with DOCX/extract hash references, and closed run03 raw records plus root-reviewed derived analysis/PNG and receipts. Root-reviewed 18/18 gates pass only for controlled all-DOF Mode-I toy numerical constitutive behavior and representation. Not overall physics, free fracture, mesh-bias, R2 or PRETRAIN eligibility. Run02 remains 168/201 partial and failed/incomplete. Large raw run trace, per-point NPZ/VTK files, runtime trees and bulk data are excluded.",
+  "archives": [
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/trace.jsonl",
+      "source_bytes": 227622,
+      "source_sha256": "c96e8d632f0d6427dddb38ac1d1c3efbbab3b11220e3099db352dd49a9395dc8",
+      "archive_path": "archives/cohesive_bilinear_patch/run02/trace.jsonl.gz",
+      "archive_bytes": 15253,
+      "archive_sha256": "dcfa7209e1458ac9287cfab294389c029d9c358b9e9441fd34efd7f6d35573a9",
+      "decompressed_bytes": 227622,
+      "decompressed_sha256": "c96e8d632f0d6427dddb38ac1d1c3efbbab3b11220e3099db352dd49a9395dc8",
+      "method": "lossless_archive",
+      "evidence_kind": "run02_native_trace"
+    }
+  ],
+  "source_references": [
+    {
+      "repository": "pgfrag",
+      "commit": "8b93ef909134132fd319425bde32719a8b6f98eb",
+      "source_path": "experiments/cohesive_bilinear_patch_20261004/analyze_intrinsic_bilinear_partial_run02_v4.py",
+      "source_bytes": 31016,
+      "source_sha256": "bbc8844d6217acd18bf3b0aea1b6541b69aa165d58d3f0a948344dad0e4b2f62",
+      "git_blob_sha1": "4705fd71764d10f473a07f7d2edd3f3a8063a100",
+      "synlab_snapshot_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/source_snapshots/analysis_v4/analyze_intrinsic_bilinear_partial_run02_v4.py",
+      "snapshot_sha256": "bbc8844d6217acd18bf3b0aea1b6541b69aa165d58d3f0a948344dad0e4b2f62",
+      "method": "git_backup_reference"
+    },
+    {
+      "repository": "workspace_source_hash_only",
+      "source_path": "RelicWeave_V1.44_Optimized_Complete_Plan.docx",
+      "source_bytes": 546163,
+      "source_sha256": "4507ead923d60cc8dc20c2a31e532394f4d8ab406a5703bf09eeb606ab6f6374",
+      "copy_path": null,
+      "method": "hash_only_reference",
+      "not_copied_reason": "large source document; alignment audit retains its hash and size",
+      "referenced_by_copy_path": "copies/alignment/alignment.md",
+      "referenced_by_copy_sha256": "7ca0e1c9b32ebe8cfa2d042d106d235a7cdb0c6abe1f64420d60c2eec263aaeb"
+    },
+    {
+      "repository": "workspace_source_hash_only",
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/relicweave_alignment_20261004/extract.txt",
+      "source_bytes": 607704,
+      "source_sha256": "63643ebe51f3b671a307cf68c7826a2a46910b08449526a447f99e8ed4f90560",
+      "copy_path": null,
+      "method": "hash_only_reference",
+      "not_copied_reason": "607704-byte extraction omitted by scope",
+      "referenced_by_copy_path": "copies/alignment/alignment.md",
+      "referenced_by_copy_sha256": "7ca0e1c9b32ebe8cfa2d042d106d235a7cdb0c6abe1f64420d60c2eec263aaeb"
+    },
+    {
+      "repository": "pgfrag",
+      "ref": "refs/heads/backup/forge-work-20261003",
+      "commit": "370246f2ccff9a2ab00127a8fc62cc49712ccb9c",
+      "source_path": "experiments/cohesive_bilinear_patch_20261004/run_intrinsic_bilinear_modeI_201_run03.py",
+      "source_bytes": 15822,
+      "source_sha256": "0f634ecac951bdd2525c433960f98bc9923cddf6fff0e74e1d453825807246fc",
+      "git_blob_sha1": "21aafaf9f635c804b27a231d67c240c20f1ab026",
+      "method": "git_backup_reference",
+      "qualification": "UNVALIDATED_TOY_CONSTITUTIVE_PATCH"
+    },
+    {
+      "repository": "pgfrag",
+      "ref": "refs/heads/backup/forge-work-20261003",
+      "commit": "370246f2ccff9a2ab00127a8fc62cc49712ccb9c",
+      "source_path": "experiments/cohesive_bilinear_patch_20261004/launch_intrinsic_bilinear_modeI_201_run03.sh",
+      "source_bytes": 501,
+      "source_sha256": "f8bb6ad15bd26928a8fd9205abfdbd8a7ea0fcb40d64a9c25e84005badd9dc9b",
+      "git_blob_sha1": "d4d19ae43d37af77b65029b5f6784d95102e04b2",
+      "method": "git_backup_reference",
+      "qualification": "UNVALIDATED_TOY_CONSTITUTIVE_PATCH"
+    },
+    {
+      "repository": "pgfrag",
+      "ref": "refs/heads/backup/forge-work-20261003",
+      "commit": "370246f2ccff9a2ab00127a8fc62cc49712ccb9c",
+      "source_path": "experiments/cohesive_bilinear_patch_20261004/manifest_bilinear_modeI_201_run03.json",
+      "source_bytes": 5116,
+      "source_sha256": "3b2cf67be3195ed0fcf49a569a2ab8fd05e2fa44f7638594567d50a0f173fae6",
+      "git_blob_sha1": "dd911538210b237c16b474450855c93ac1d93103",
+      "method": "git_backup_reference",
+      "qualification": "UNVALIDATED_TOY_CONSTITUTIVE_PATCH"
+    },
+    {
+      "repository": "pgfrag",
+      "ref": "refs/heads/backup/forge-work-20261003",
+      "commit": "370246f2ccff9a2ab00127a8fc62cc49712ccb9c",
+      "source_path": "experiments/cohesive_bilinear_patch_20261004/copy_run03_results_once.ps1",
+      "source_bytes": 1649,
+      "source_sha256": "32771e0855b3060782ea8140326e4ce8504c308770bd75e80c1ae8076b810d8a",
+      "git_blob_sha1": "67821642b9b962ce68ea9a0c90cef8e40587a4d4",
+      "method": "git_backup_reference",
+      "qualification": "UNVALIDATED_TOY_CONSTITUTIVE_PATCH"
+    },
+    {
+      "repository": "pgfrag",
+      "ref": "refs/heads/backup/forge-work-20261003",
+      "commit": "370246f2ccff9a2ab00127a8fc62cc49712ccb9c",
+      "source_path": "experiments/cohesive_bilinear_patch_20261004/analyze_intrinsic_bilinear_run03_v2.py",
+      "source_bytes": 14600,
+      "source_sha256": "5b921dd4dbf03adda0c5b5f17465400f4efe040ee36d54072b3996ce96585fb4",
+      "git_blob_sha1": "1e555abac8ab4a48cffd9255f9df69805bad45c1",
+      "method": "git_backup_reference",
+      "qualification": "UNVALIDATED_TOY_CONSTITUTIVE_PATCH"
+    }
+  ]
 }

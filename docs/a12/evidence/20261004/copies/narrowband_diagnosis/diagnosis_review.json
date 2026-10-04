@@ -1,0 +1,284 @@
+{
+  "schema": "a12.narrowband-routing-diagnosis.v1",
+  "created_utc": "2026-10-04T01:47:51.239759+00:00",
+  "repo_root": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+  "output_directory": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_diagnosis_20261004",
+  "scope": {
+    "mode": "read-only diagnosis",
+    "production_or_test_edits_by_this_agent": false,
+    "git_commands": false,
+    "operator_or_test_reruns": false,
+    "evidence_basis": [
+      "existing pytest-routing-v2 log and receipt",
+      "one saved small in-memory P02/P03 level-1 stage diagnostic",
+      "read-only code and installed API inspection",
+      "PNG rendered from diagnosis.json only"
+    ],
+    "original_failure_count": 9
+  },
+  "source_binding": {
+    "policy_path": "docs/a12/engineering_policy.md",
+    "policy_sha256_at_diagnostic": "707ef32c4c6765f2061e69e0d2ac24cb9907bff2f4cfa2dd0b23b7fb50708a8e",
+    "policy_six_edge_sample": {
+      "recorded_by_main_agent_review": true,
+      "artifact": "tmp/review_20261004/implementation/validity_finish/actualJSON.json",
+      "capture_script": "tmp/review_20261004/implementation/validity_finish/capture_actual.py",
+      "fixture": "minimal_88_face_box",
+      "source_faces": 88,
+      "observations": [
+        {
+          "axis": "P02",
+          "level": 4,
+          "result_faces": 84,
+          "boundary_edges": 6,
+          "result_hash_prefix": "a8447fc"
+        },
+        {
+          "axis": "P03",
+          "level": 1,
+          "result_faces": 84,
+          "boundary_edges": 6,
+          "result_hash_prefix": "235e51c"
+        }
+      ],
+      "interpretation": "The policy 6-edge count and this report’s 21-edge count are from different fixtures; both observations are valid for their respective samples."
+    },
+    "rough_probe_diagnostic": {
+      "fixture": "BUILTIN_PROBE_FIXTURE_ROUGH_INTERFACE",
+      "source_vertices": 2754,
+      "source_faces": 5504,
+      "tested_level": 1,
+      "source_watertight": true,
+      "source_hashes_match_original_pytest_outputs": true,
+      "P02_result_geometry_sha256": "3207b6705cac9dfa8240a593328a5e90d326c85e9e10d5b867ade7efbc20322f",
+      "P03_result_geometry_sha256": "3c2bcf5f189a9146852b57194352037a60d786871d22f9a2cc8d16412ca3d43a",
+      "P02_boundary_edges": 21,
+      "P03_boundary_edges": 21,
+      "boundary_topology": {
+        "components": 7,
+        "edges_per_component": 3,
+        "vertices_per_component": 3,
+        "coordinates": "At y=+9 mm, each component’s vertices share x and y and differ only in z; each three-edge cycle is collinear.",
+        "positive_area_measured": false,
+        "physical_crack_or_hole_claim": false,
+        "interpretation": "Topological boundary/T-junction pattern associated with degenerate triangles; no positive hole area was measured, so this is not evidence of seven physical holes or cracks."
+      }
+    },
+    "captured_source_sha256": {
+      "docs/a12/engineering_policy.md": "707ef32c4c6765f2061e69e0d2ac24cb9907bff2f4cfa2dd0b23b7fb50708a8e",
+      "docs/a12/evidence/20261004/copies/validity/pytest-routing-v2.log": "9ac39834492c346b862f7e1e711e63c2804a3b2741d380fdccbd497f9cd08529",
+      "synlab/degrade/axes.py": "852dc3a0c9335210e7ad91c167b73e7a5400c0884ee15a245682dd953b7121c6",
+      "synlab/degrade/narrowband.py": "31e5e44f198f357991768c2ac1ec08df4115a5e5e5c9badcf903f82b1f9c5a8a",
+      "synlab/degrade/physical_narrowband.py": "88844f78af2366b2bdabdf2ab6b5dcc12df7579c91f5cc0a38873bd021d6a19d",
+      "synlab/degrade/registry.py": "25211d9d3f9ad01a543b56f38eea45569993d66eace6eb39059c85b8c9241e00",
+      "synlab/physical/api.py": "6f12a995ea689077e7ba8592d51b5c85be2044cb1cffc1a9256cb90949401661",
+      "synlab/physical/operators.py": "a29cfe8db38a39ea91a75665783a8e078f35aefbcb926193e30d0eec2cd64c9b",
+      "synlab/physical/sdf.py": "186583014d706cfcc20fbefda04a0c68e427f68e3ba7187a48f9a9115ddb827f",
+      "tests/a12/degrade/test_axis_routing_audit.py": "a5f7ea2447d5b1211615379dc36c265bbccf9147b379bb1226a0b378673bb662",
+      "tests/a12/operators/test_narrowband.py": "44f3c1f0705a99aea92c97dfbc5b7b582c225461eafaf44fd3f4fcd0a207586c"
+    },
+    "workspace_sdf_sha256_at_report_packaging": "fd433876fa4df84d2316c93dbbe521e1094241829d5fccf93cedeeac02467b1d",
+    "sdf_source_change_note": "The diagnostic snapshot captured synlab/physical/sdf.py at SHA256 186583014d706cfcc20fbefda04a0c68e427f68e3ba7187a48f9a9115ddb827f. At report packaging the workspace file had a different SHA and choose_spacing explicitly selected explicit spacing. A parallel authorized change is in progress; this historical observation is bound to the captured hash and is not an acceptance test of the current file. No original source bytes were reconstructed in this report.",
+    "sdf_original_snapshot": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\explicit_spacing_fix_20261004\\sdf.py.original",
+      "sha256": "186583014d706cfcc20fbefda04a0c68e427f68e3ba7187a48f9a9115ddb827f",
+      "preserved_by": "parallel explicit-spacing repair owner",
+      "touched_by_this_agent": false
+    }
+  },
+  "failure_classification": [
+    {
+      "n": 1,
+      "test": "tests/a12/operators/test_narrowband.py::test_p02_realizes_every_level_with_a_watertight_edge_local_recession",
+      "classification": "real geometry/topology defect",
+      "observed_failure": "apply_axis validation raises OPERATOR_NOT_REALIZED at the first exercised level (P02 level 1) because postassembly QA reports NOT_WATERTIGHT.",
+      "root_cause": "The surface-offset candidate is closed before clipping. Native Manifold Boolean return is topologically watertight but includes 7 degenerate faces. clean_mesh removes those faces, leaving 21 boundary edges; component_split preserves them.",
+      "confidence": "high for stage where open edges appear; exact face-to-boundary causal mapping was not proven.",
+      "test_source_line": 33,
+      "log_heading_line": 3
+    },
+    {
+      "n": 2,
+      "test": "tests/a12/operators/test_narrowband.py::test_p03_realizes_sub_grid_depths_and_stays_contained",
+      "classification": "real geometry/topology defect plus invalid thickness evidence",
+      "observed_failure": "apply_axis validation raises OPERATOR_NOT_REALIZED at the first exercised level (P03 level 1) because postassembly QA reports NOT_WATERTIGHT.",
+      "root_cause": "Same Boolean/cleanup open-edge sequence as P02. Separately, P03 thickness_guard reports a passing result from a ray origin on the wrong side of the source surface and low paired-ray coverage.",
+      "confidence": "high for topology stage and wrong-side ray origin; resulting remaining wall is not measured reliably.",
+      "test_source_line": 74,
+      "log_heading_line": 46
+    },
+    {
+      "n": 3,
+      "test": "tests/a12/degrade/test_axis_routing_audit.py::test_production_route_runs_the_declared_narrowband_backend[P02]",
+      "classification": "route metadata contract/schema mismatch",
+      "observed_failure": "The selected backend and narrowband route metadata assertions pass; test then raises KeyError because details.narrowband.spacing is absent.",
+      "root_cause": "P02 records spacing under sdf_pipeline.spacing with basis SURFACE_OPERATOR and spacing_mm null; the test assumes all axes expose details.narrowband.spacing.spacing_mm == 0.",
+      "test_source_line": 86,
+      "log_heading_line": 88
+    },
+    {
+      "n": 4,
+      "test": "tests/a12/degrade/test_axis_routing_audit.py::test_production_route_runs_the_declared_narrowband_backend[P04]",
+      "classification": "route metadata contract/schema mismatch",
+      "observed_failure": "The backend selection is narrowband; test fails at the same nested spacing lookup.",
+      "root_cause": "P04 correctly identifies an analytic cutter with spacing_mm 0 under sdf_pipeline.spacing, basis ANALYTIC_CUTTER, while narrowband.details carries the cutter/search but no spacing. The route is selected correctly; the generic assertion assumes a common field layout and labels the surface route imprecisely.",
+      "test_source_line": 86,
+      "log_heading_line": 111
+    },
+    {
+      "n": 5,
+      "test": "tests/a12/degrade/test_axis_routing_audit.py::test_legacy_global_route_stays_reachable_and_is_labelled[P02]",
+      "classification": "real legacy backend limitation; required behavior pending contract review",
+      "observed_failure": "Explicit global_sdf override reaches the legacy operator but fails when Manifold intersection rejects an operand with “Not all meshes are volumes!”.",
+      "root_cause": "The legacy extracted candidate or other Boolean operand is not accepted as a positive closed volume at clip time. The trace does not isolate which operand; source fixture itself is watertight.",
+      "recommendation": "Record the observed non-volume Boolean failure. Whether an explicit global_sdf override must complete successfully or may return a structured failure remains a main-review contract decision.",
+      "test_source_line": 109,
+      "log_heading_line": 134,
+      "test_assumption_status": "pending_main_review; this diagnosis does not classify the success requirement as stale."
+    },
+    {
+      "n": 6,
+      "test": "tests/a12/degrade/test_axis_routing_audit.py::test_legacy_global_route_stays_reachable_and_is_labelled[P03]",
+      "classification": "real legacy backend limitation; required behavior pending contract review",
+      "observed_failure": "Same non-volume rejection at global_sdf candidate/source intersection.",
+      "root_cause": "Same legacy-route limitation as P02; trace does not isolate the invalid operand.",
+      "test_source_line": 109,
+      "log_heading_line": 251,
+      "recommendation": "Record the observed non-volume Boolean failure. Whether an explicit global_sdf override must complete successfully or may return a structured failure remains a main-review contract decision.",
+      "test_assumption_status": "pending_main_review; this diagnosis does not classify the success requirement as stale."
+    },
+    {
+      "n": 7,
+      "test": "tests/a12/degrade/test_axis_routing_audit.py::test_operator_audit_route_and_production_route_agree_on_p03",
+      "classification": "real postassembly geometry failure; route disagreement is not established",
+      "observed_failure": "The production route returns, but apply_axis raises OPERATOR_NOT_REALIZED before the assertions that compare route/audit evidence.",
+      "root_cause": "P03 accepted post-Boolean component is not watertight after degenerate-face cleanup. This failure cannot establish the two routes selected different backends.",
+      "test_source_line": 119,
+      "log_heading_line": 376
+    },
+    {
+      "n": 8,
+      "test": "tests/a12/degrade/test_axis_routing_audit.py::test_explicit_damage_spacing_is_honoured_verbatim",
+      "classification": "explicit contract/implementation conflict in captured source snapshot",
+      "observed_failure": "The original test log got 0.1 mm from an explicit request of 0.5701 mm.",
+      "root_cause": "Captured sdf.py SHA256 186583014d706cfcc20fbefda04a0c68e427f68e3ba7187a48f9a9115ddb827f documents explicit_mm as verbatim but the then-current selection took the minimum with min_wall_thickness/6 (0.1 mm). The code change observed during packaging appears to address this selection branch but is not validated here.",
+      "test_assumption_status": "The original test agrees with the captured docstring contract; this is not classified as an expired test assumption.",
+      "test_source_line": 191,
+      "log_heading_line": 420
+    },
+    {
+      "n": 9,
+      "test": "tests/a12/degrade/test_axis_routing_audit.py::test_pipeline_body_reports_the_budget_it_used",
+      "classification": "stale fixture/threshold assumption",
+      "observed_failure": "P07 recipe on the named probe fixture reports budget_limited=false while the test requires true.",
+      "root_cause": "The saved formula-only diagnostic found spacing 0.5189284 mm, padded builder shape 52×40×12 = 24,960 nodes under max_nodes 60,000; no relaxation is warranted. Unpadded estimators are lower (19,000 and 13,824). No SDF grid was built for this check.",
+      "recommendation": "Keep the correct fixture-specific budget decision and update the expectation/fixture only if a limited-budget example is the intent.",
+      "test_source_line": 214,
+      "log_heading_line": 436
+    }
+  ],
+  "stage_evidence": {
+    "source_mesh": "2754 vertices / 5504 faces, 0 boundary edges, watertight, winding-consistent, positive volume.",
+    "offset_body_after_repair": "P02 and P03 are watertight with 0 boundary edges and 0 degenerate faces; fix_winding and fix_inversion do not create the failure.",
+    "manifold_boolean_native_return": "P02 and P03 are is_volume/watertight with 0 boundary edges but each contains 7 degenerate faces.",
+    "clean_mesh": "merge_vertices leaves the relevant topology unchanged; nondegenerate_faces(height=1e-12) drops 7 faces and opens exactly 21 edges.",
+    "component_split": "preserves the 21 boundary edges.",
+    "final_result": "P02 and P03 each have one component, 21 boundary edges, are not watertight/is_volume, and are rejected by postassembly QA.",
+    "measurement_semantics": "Local operator measurement watertight=1 refers to the pre-clip offset body. Postassembly QA inspects the accepted delivered component and reports NOT_WATERTIGHT. Damage effect realized and physical-result acceptability are separate statuses."
+  },
+  "p03_wall_guard": {
+    "source_location": "synlab/degrade/narrowband.py:368-407; synlab/degrade/physical_narrowband.py:252-342; synlab/degrade/axes.py:564",
+    "normal_convention": "source.face_normals are outward; points + normal*eps begins outside the original source. Casting along -normal therefore returns the nearby entry hit, not the opposite wall exit.",
+    "saved_level_1_values": {
+      "requested_depth_mm": 0.05,
+      "applied_depth_mm": 0.05,
+      "measured_max_recession_mm": 0.05,
+      "measured_max_vertex_shift_mm": 0.0499998033,
+      "paired_rays": 164,
+      "requested_rays": 400,
+      "source_min_reported_mm": 0.0019998914,
+      "damaged_min_reported_mm": 0.0035131932,
+      "reported_violation_fraction": 0.0,
+      "epsilon_mm": 0.001
+    },
+    "interpretation": "The ~0.002 mm source reading is approximately 2 epsilon and supports an immediate source-surface hit. measured_max_recession_mm is assigned from depth*scale; it is not an independent measurement. measured_max_vertex_shift_mm is an observed input/output displacement, but is not a remaining-wall measurement. Only 164/400 rays were paired and unpaired rays are excluded from violation_fraction.",
+    "min_wall_contract": "P03 MIN_WALL_MM=0.6 is supplied as a guard value, but the acceptance condition uses only the fraction of paired points whose measured local thickness drop exceeds 50%, with a default violation budget of 1%. It does not require min_damaged_mm >= 0.6 mm. Treat the current MIN_WALL geometry proof as invalid until a valid measurement and explicit coverage policy exist.",
+    "do_not_flip_sign": "Simply starting at point - normal*eps is not a valid repair: after erosion, the source sample can be outside the damaged solid, so first hit measures entry/recession depth rather than remaining wall.",
+    "required_measurement_properties": [
+      "Use common material rays/paired source and output entry-exit intervals, or a validated corresponding inner/outer wall map.",
+      "Handle no-hit, multiple intervals, grazing incidence, roughness-adjacent intersections, and source/output correspondence explicitly.",
+      "Report paired and ambiguous coverage; fail or mark UNKNOWN below a declared coverage threshold instead of discarding invalid samples and passing.",
+      "Keep displacement/effect realization evidence separate from the minimum remaining-wall geometry guard."
+    ]
+  },
+  "resolution_and_physics_limits": {
+    "P02_level_1": {
+      "effective_radius_mm": 0.1,
+      "analytic_contact_width_mm": 0.1161611,
+      "analytic_max_depth_mm": 0.0532755,
+      "max_edge_parameter_mm": 1.2,
+      "moved_vertices": 102,
+      "source_vertices": 2754
+    },
+    "P03_surface_depths_mm": [
+      0.05,
+      0.1,
+      0.25,
+      0.5
+    ],
+    "interpretation": "These are per-vertex surface-offset operations, not voxel-grid-resolved fields. A requested sub-edge displacement can move existing vertices, but that alone provides neither independently measured local wall survival nor mesh convergence or physical crack validation. A t/h ratio around 8 at h=0.5 mm is only a candidate sampling condition, not a universal physical sufficiency rule."
+  },
+  "routing_and_spacing": {
+    "selected_route": "The diagnostic log shows the narrowband declared route assertions pass for P02/P04 before details-schema assertions fail.",
+    "P02_spacing_details": "sdf_pipeline.spacing has spacing_mm null and basis SURFACE_OPERATOR; details.narrowband.spacing is absent.",
+    "P03_spacing_details": "details.narrowband.spacing exists with spacing_mm 0 and basis SURFACE_OPERATOR.",
+    "P04_spacing_details": "sdf_pipeline.spacing has spacing_mm 0 and basis ANALYTIC_CUTTER; details.narrowband.spacing is absent.",
+    "explicit_spacing_test_case": {
+      "declared_mm": 0.5701,
+      "min_wall_mm": 0.6,
+      "wall_over_six_mm": 0.1,
+      "bbox_mm": [
+        60.0,
+        40.0,
+        20.0
+      ],
+      "max_nodes": 1000
+    },
+    "explicit_budget_semantics": "Honoring 0.5701 mm may exceed the node budget; the contract says report the cost rather than silently alter the explicit value. Do not interpret budget_limited=false as proof an explicit grid fits."
+  },
+  "algorithm_options_for_main_review": [
+    {
+      "option": "Native Manifold Mesh64 with preserved native output and strict geometry/topology QA.",
+      "evidence": "Installed manifold3d exposes Mesh64, a Manifold(Mesh64) overload, and to_mesh64(); Mesh64 accepts float64 vertex properties and uint64 triangle indices. The currently inspected Trimesh adapter casts vertices to float32 and returns to_mesh().",
+      "risk": "Manifold construction documentation indicates degenerate triangles may be collapsed; higher precision is available but may not eliminate coplanar/collinear Boolean degeneracy. This option was API/source inspection only; no candidate was run."
+    },
+    {
+      "option": "Avoid the post-clip Boolean only when exact containment and self-intersection predicates prove it redundant.",
+      "evidence": "The offset body before Boolean is already closed and has no degenerate faces; this fixture’s candidate and accepted volumes differ only by floating point-scale amounts, but sampled containment is not a proof.",
+      "risk": "Nonconvex geometry, high curvature, self-intersections, and outside excursions can invalidate an unchecked containment shortcut. Fail closed when proof is unavailable."
+    },
+    {
+      "option": "Construct/stitch a conforming local patch or re-extract the shared narrow-band field as a whole closed surface.",
+      "evidence": "Would avoid retaining untouched triangles across a Boolean seam or produce a globally consistent boundary.",
+      "risk": "Highest implementation cost; introduces resolution, local seam, drift, and memory risks and needs independent convergence/volume/topology validation."
+    }
+  ],
+  "recommendation": "For a later implementation task, compare the native Mesh64 preservation path and a rigorously proven Boolean-elision path as separate small spikes with unchanged strict QA. If neither yields a valid closed volume, consider conforming patch construction or shared-field whole-surface extraction. Separately redesign P03 thickness evidence before using MIN_WALL as a guard. This report does not select a repair or certify physical validity.",
+  "uncertainties": [
+    "The diagnostic proves the stage where degenerates are dropped and boundary edges appear, but it did not store a one-to-one mapping from each raw degenerate triangle to its resulting collinear edge cycle.",
+    "No positive area of any collinear boundary cycle was measured; do not interpret boundary edge counts as seven material holes or cracks.",
+    "For legacy global_sdf intersection failures, the traceback does not identify which Boolean operand failed volume validation.",
+    "No independent CAD wall-thickness correspondence or crack-growth reference is available in this study.",
+    "The P03 route agreement test cannot compare resulting evidence because apply_axis validation aborts first."
+  ],
+  "artifacts": {
+    "diagnostic_script": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_diagnosis_20261004\\diagnose_narrowband.py",
+    "diagnosis_data": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_diagnosis_20261004\\diagnosis.json",
+    "render_script": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_diagnosis_20261004\\render_boundary_png.py",
+    "png": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_diagnosis_20261004\\actual_mesh_boundary_projections.png",
+    "historical_sdf_source_snapshot": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\explicit_spacing_fix_20261004\\sdf.py.original",
+    "prior_report_version": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_diagnosis_20261004\\diagnosis_review.pre-receipt-correction.json",
+    "prior_receipt_version": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_diagnosis_20261004\\run_receipts.pre-receipt-correction.json",
+    "receipt_correction_record": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_diagnosis_20261004\\receipt_correction_derived.json"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "wsl.exe",
+    "-d",
+    "Ubuntu",
+    "--",
+    "/bin/bash",
+    "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_bilinear_patch_20261004/launch_intrinsic_bilinear_modeI_201.sh"
+  ],
+  "external_hard_timeout_ms": 300000,
+  "timeout_triggered": false,
+  "wsl_host_exit_code": 2,
+  "python_process_exit_code_path": "python_process_exit_code.txt",
+  "stdout": "host_stdout.log",
+  "stderr": "host_stderr.log"
+}

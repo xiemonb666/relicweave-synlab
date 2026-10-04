@@ -1,0 +1,384 @@
+{
+  "automatic_source_equivalence": {
+    "bbox_fit": {
+      "current": {
+        "basis": "min_wall_thickness/6",
+        "budget_limited": false,
+        "budget_ok": true,
+        "criteria": {
+          "min_wall_thickness/6": 0.19999999999999998,
+          "shortest_structure/4": 2.0
+        },
+        "declared_spacing_mm": null,
+        "max_nodes": 4000000,
+        "relaxation_factor": 1.0,
+        "relaxation_steps": 0,
+        "requested_spacing_mm": null,
+        "spacing_mm": 0.19999999999999998
+      },
+      "equal": true,
+      "field_equal": {
+        "basis": true,
+        "budget_limited": true,
+        "budget_ok": true,
+        "criteria": true,
+        "declared_spacing_mm": true,
+        "max_nodes": true,
+        "relaxation_factor": true,
+        "relaxation_steps": true,
+        "requested_spacing_mm": true,
+        "spacing_mm": true
+      },
+      "keys_equal": true,
+      "kwargs": {
+        "bbox_mm": [
+          10.0,
+          10.0,
+          10.0
+        ],
+        "max_nodes": 4000000,
+        "min_wall_thickness_mm": 1.2,
+        "shortest_structure_mm": 8.0
+      },
+      "original": {
+        "basis": "min_wall_thickness/6",
+        "budget_limited": false,
+        "budget_ok": true,
+        "criteria": {
+          "min_wall_thickness/6": 0.19999999999999998,
+          "shortest_structure/4": 2.0
+        },
+        "declared_spacing_mm": null,
+        "max_nodes": 4000000,
+        "relaxation_factor": 1.0,
+        "relaxation_steps": 0,
+        "requested_spacing_mm": null,
+        "spacing_mm": 0.19999999999999998
+      }
+    },
+    "budget_relax": {
+      "current": {
+        "basis": "min_wall_thickness/6+node_budget_relaxation+node_budget_relaxation+node_budget_relaxation+node_budget_relaxation+node_budget_relaxation+node_budget_relaxation+node_budget_relaxation+node_budget_relaxation+node_budget_relaxation",
+        "budget_limited": true,
+        "budget_ok": false,
+        "criteria": {
+          "min_wall_thickness/6": 0.09999999999999999,
+          "shortest_structure/4": 0.8
+        },
+        "declared_spacing_mm": null,
+        "max_nodes": 600000,
+        "relaxation_factor": 5.1597803519999985,
+        "relaxation_steps": 9,
+        "requested_spacing_mm": null,
+        "spacing_mm": 0.5159780351999996
+      },
+      "equal": true,
+      "field_equal": {
+        "basis": true,
+        "budget_limited": true,
+        "budget_ok": true,
+        "criteria": true,
+        "declared_spacing_mm": true,
+        "max_nodes": true,
+        "relaxation_factor": true,
+        "relaxation_steps": true,
+        "requested_spacing_mm": true,
+        "spacing_mm": true
+      },
+      "keys_equal": true,
+      "kwargs": {
+        "bbox_mm": [
+          60.0,
+          40.0,
+          20.0
+        ],
+        "max_nodes": 600000,
+        "min_wall_thickness_mm": 0.6,
+        "shortest_structure_mm": 3.2
+      },
+      "original": {
+        "basis": "min_wall_thickness/6+node_budget_relaxation+node_budget_relaxation+node_budget_relaxation+node_budget_relaxation+node_budget_relaxation+node_budget_relaxation+node_budget_relaxation+node_budget_relaxation+node_budget_relaxation",
+        "budget_limited": true,
+        "budget_ok": false,
+        "criteria": {
+          "min_wall_thickness/6": 0.09999999999999999,
+          "shortest_structure/4": 0.8
+        },
+        "declared_spacing_mm": null,
+        "max_nodes": 600000,
+        "relaxation_factor": 5.1597803519999985,
+        "relaxation_steps": 9,
+        "requested_spacing_mm": null,
+        "spacing_mm": 0.5159780351999996
+      }
+    },
+    "default": {
+      "current": {
+        "basis": "default",
+        "budget_limited": false,
+        "budget_ok": true,
+        "criteria": {
+          "default": 0.5
+        },
+        "declared_spacing_mm": null,
+        "max_nodes": 4000000,
+        "relaxation_factor": 1.0,
+        "relaxation_steps": 0,
+        "requested_spacing_mm": null,
+        "spacing_mm": 0.5
+      },
+      "equal": true,
+      "field_equal": {
+        "basis": true,
+        "budget_limited": true,
+        "budget_ok": true,
+        "criteria": true,
+        "declared_spacing_mm": true,
+        "max_nodes": true,
+        "relaxation_factor": true,
+        "relaxation_steps": true,
+        "requested_spacing_mm": true,
+        "spacing_mm": true
+      },
+      "keys_equal": true,
+      "kwargs": {},
+      "original": {
+        "basis": "default",
+        "budget_limited": false,
+        "budget_ok": true,
+        "criteria": {
+          "default": 0.5
+        },
+        "declared_spacing_mm": null,
+        "max_nodes": 4000000,
+        "relaxation_factor": 1.0,
+        "relaxation_steps": 0,
+        "requested_spacing_mm": null,
+        "spacing_mm": 0.5
+      }
+    },
+    "requested_coarser": {
+      "current": {
+        "basis": "min_wall_thickness/6",
+        "budget_limited": false,
+        "budget_ok": true,
+        "criteria": {
+          "min_wall_thickness/6": 0.09999999999999999,
+          "requested": 0.8
+        },
+        "declared_spacing_mm": null,
+        "max_nodes": 4000000,
+        "relaxation_factor": 1.0,
+        "relaxation_steps": 0,
+        "requested_spacing_mm": 0.8,
+        "spacing_mm": 0.09999999999999999
+      },
+      "equal": true,
+      "field_equal": {
+        "basis": true,
+        "budget_limited": true,
+        "budget_ok": true,
+        "criteria": true,
+        "declared_spacing_mm": true,
+        "max_nodes": true,
+        "relaxation_factor": true,
+        "relaxation_steps": true,
+        "requested_spacing_mm": true,
+        "spacing_mm": true
+      },
+      "keys_equal": true,
+      "kwargs": {
+        "min_wall_thickness_mm": 0.6,
+        "requested_mm": 0.8
+      },
+      "original": {
+        "basis": "min_wall_thickness/6",
+        "budget_limited": false,
+        "budget_ok": true,
+        "criteria": {
+          "min_wall_thickness/6": 0.09999999999999999,
+          "requested": 0.8
+        },
+        "declared_spacing_mm": null,
+        "max_nodes": 4000000,
+        "relaxation_factor": 1.0,
+        "relaxation_steps": 0,
+        "requested_spacing_mm": 0.8,
+        "spacing_mm": 0.09999999999999999
+      }
+    },
+    "requested_finer": {
+      "current": {
+        "basis": "requested",
+        "budget_limited": false,
+        "budget_ok": true,
+        "criteria": {
+          "min_wall_thickness/6": 0.09999999999999999,
+          "requested": 0.05
+        },
+        "declared_spacing_mm": null,
+        "max_nodes": 4000000,
+        "relaxation_factor": 1.0,
+        "relaxation_steps": 0,
+        "requested_spacing_mm": 0.05,
+        "spacing_mm": 0.05
+      },
+      "equal": true,
+      "field_equal": {
+        "basis": true,
+        "budget_limited": true,
+        "budget_ok": true,
+        "criteria": true,
+        "declared_spacing_mm": true,
+        "max_nodes": true,
+        "relaxation_factor": true,
+        "relaxation_steps": true,
+        "requested_spacing_mm": true,
+        "spacing_mm": true
+      },
+      "keys_equal": true,
+      "kwargs": {
+        "min_wall_thickness_mm": 0.6,
+        "requested_mm": 0.05
+      },
+      "original": {
+        "basis": "requested",
+        "budget_limited": false,
+        "budget_ok": true,
+        "criteria": {
+          "min_wall_thickness/6": 0.09999999999999999,
+          "requested": 0.05
+        },
+        "declared_spacing_mm": null,
+        "max_nodes": 4000000,
+        "relaxation_factor": 1.0,
+        "relaxation_steps": 0,
+        "requested_spacing_mm": 0.05,
+        "spacing_mm": 0.05
+      }
+    },
+    "wall_and_structure": {
+      "current": {
+        "basis": "min_wall_thickness/6",
+        "budget_limited": false,
+        "budget_ok": true,
+        "criteria": {
+          "min_wall_thickness/6": 0.09999999999999999,
+          "shortest_structure/4": 0.8
+        },
+        "declared_spacing_mm": null,
+        "max_nodes": 4000000,
+        "relaxation_factor": 1.0,
+        "relaxation_steps": 0,
+        "requested_spacing_mm": null,
+        "spacing_mm": 0.09999999999999999
+      },
+      "equal": true,
+      "field_equal": {
+        "basis": true,
+        "budget_limited": true,
+        "budget_ok": true,
+        "criteria": true,
+        "declared_spacing_mm": true,
+        "max_nodes": true,
+        "relaxation_factor": true,
+        "relaxation_steps": true,
+        "requested_spacing_mm": true,
+        "spacing_mm": true
+      },
+      "keys_equal": true,
+      "kwargs": {
+        "min_wall_thickness_mm": 0.6,
+        "shortest_structure_mm": 3.2
+      },
+      "original": {
+        "basis": "min_wall_thickness/6",
+        "budget_limited": false,
+        "budget_ok": true,
+        "criteria": {
+          "min_wall_thickness/6": 0.09999999999999999,
+          "shortest_structure/4": 0.8
+        },
+        "declared_spacing_mm": null,
+        "max_nodes": 4000000,
+        "relaxation_factor": 1.0,
+        "relaxation_steps": 0,
+        "requested_spacing_mm": null,
+        "spacing_mm": 0.09999999999999999
+      }
+    }
+  },
+  "explicit_boundary": {
+    "basis": "explicit",
+    "budget_limited": false,
+    "budget_ok": false,
+    "criteria": {
+      "explicit": 0.5701,
+      "min_wall_thickness/6": 0.09999999999999999,
+      "requested": 0.9,
+      "shortest_structure/4": 0.8
+    },
+    "declared_spacing_mm": 0.5701,
+    "estimated_nodes": 314574,
+    "invalid_explicit_inputs": [
+      "nan",
+      "inf",
+      "-inf",
+      "0.0",
+      "-0.1",
+      "'nan'",
+      "'invalid'"
+    ],
+    "max_nodes": 1000,
+    "smallest_positive_spacing_mm": 5e-324,
+    "spacing_mm": 0.5701,
+    "strict_float_equal": true
+  },
+  "final_source_sha256": "FD433876FA4DF84D2316C93DBBE521E1094241829D5FCCF93CEDEEAC02467B1D",
+  "original_source_sha256": "186583014D706CFCC20FBEFDA04A0C68E427F68E3BA7187A48F9A9115DDB827F",
+  "report_with_actual_grid_spacing": {
+    "basis": "explicit",
+    "budget_limited": false,
+    "criteria": {
+      "explicit": 0.5701,
+      "min_wall_thickness/6": 0.09999999999999999,
+      "requested": 0.9,
+      "shortest_structure/4": 0.8
+    },
+    "declared_honoured": false,
+    "declared_mm": 0.5701,
+    "estimated_nodes": 285048,
+    "max_nodes": 1000,
+    "realised_nodes": 64,
+    "realised_shape": [
+      4,
+      4,
+      4
+    ],
+    "realised_spacing_mm": 0.9,
+    "relaxation_factor": 1.0,
+    "relaxation_steps": 0,
+    "request_honoured": true,
+    "request_honoured_basis": "requested",
+    "requested_mm": 0.9,
+    "requested_over_realised": 0.6334444444444445,
+    "spacing_mm": 0.5701
+  },
+  "report_without_requested": {
+    "basis": "explicit",
+    "budget_limited": false,
+    "criteria": {
+      "explicit": 0.5701
+    },
+    "declared_honoured": true,
+    "declared_mm": 0.5701,
+    "estimated_nodes": 0,
+    "max_nodes": 4000000,
+    "relaxation_factor": 1.0,
+    "relaxation_steps": 0,
+    "request_honoured": true,
+    "request_honoured_basis": "declared",
+    "requested_mm": null,
+    "spacing_mm": 0.5701
+  }
+}

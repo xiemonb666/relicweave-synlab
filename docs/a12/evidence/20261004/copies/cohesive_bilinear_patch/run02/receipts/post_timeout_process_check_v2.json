@@ -1,0 +1,28 @@
+{
+  "status": "TARGET_PROCESSES_EXITED",
+  "timeout_run02_only": true,
+  "initial_check_argv": [
+    "wsl.exe",
+    "-d",
+    "Ubuntu",
+    "--",
+    "/bin/ps",
+    "-eo",
+    "pid=,comm=,args="
+  ],
+  "initial_wsl_host_exit_code": 0,
+  "initial_matching_process_lines": [],
+  "targeted_kill_attempts": [],
+  "confirmation_check_argv": [
+    "wsl.exe",
+    "-d",
+    "Ubuntu",
+    "--",
+    "/bin/ps",
+    "-eo",
+    "pid=,comm=,args="
+  ],
+  "confirmation_wsl_host_exit_code": 0,
+  "remaining_matching_process_lines": [],
+  "no_solver_invocation": true
+}

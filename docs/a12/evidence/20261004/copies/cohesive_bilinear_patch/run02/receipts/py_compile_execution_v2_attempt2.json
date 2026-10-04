@@ -1,0 +1,33 @@
+{
+  "stage": "py_compile_v2_driver_and_parser",
+  "command": "wsl.exe",
+  "actual_wsl_argv": [
+    "-d",
+    "Ubuntu",
+    "--",
+    "env",
+    "OMP_NUM_THREADS=1",
+    "OPENBLAS_NUM_THREADS=1",
+    "MKL_NUM_THREADS=1",
+    "PYTHONPYCACHEPREFIX=/mnt/c/Users/xiemo/Desktop/ShardForge/relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/pycache",
+    "/mnt/c/Users/xiemo/Desktop/ShardForge/third_party/akantu-runtime/venv/bin/python",
+    "-m",
+    "py_compile",
+    "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_bilinear_patch_20261004/run_intrinsic_bilinear_modeI_201_v2.py",
+    "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_bilinear_patch_20261004/parse_cohesive_vtu.py"
+  ],
+  "python_argv": [
+    "/mnt/c/Users/xiemo/Desktop/ShardForge/third_party/akantu-runtime/venv/bin/python",
+    "-m",
+    "py_compile",
+    "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_bilinear_patch_20261004/run_intrinsic_bilinear_modeI_201_v2.py",
+    "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_bilinear_patch_20261004/parse_cohesive_vtu.py"
+  ],
+  "python_started": true,
+  "python_exit_code_forwarded_by_env_and_wsl": 0,
+  "wsl_host_exit_code": 0,
+  "powershell_command_exit_code": 0,
+  "stdout_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_bilinear_patch_20261004\\controlled_intrinsic_bilinear_modeI_201_run02\\py_compile_v2_attempt2.stdout.txt",
+  "stderr_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_bilinear_patch_20261004\\controlled_intrinsic_bilinear_modeI_201_run02\\py_compile_v2_attempt2.stderr.txt",
+  "result": "PASS"
+}

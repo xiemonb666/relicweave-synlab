@@ -1,0 +1,41 @@
+{
+  "schema": "a12.narrowband-diagnosis-run-receipts.v1",
+  "repo_root": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+  "diagnosis_directory": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_diagnosis_20261004",
+  "original_pytest": {
+    "source": "existing receipt; not rerun in this diagnosis",
+    "argv": ".\\.venv\\Scripts\\python.exe -m pytest -q tests/a12/operators/test_narrowband.py tests/a12/degrade/test_axis_routing_audit.py",
+    "exit_code": 1,
+    "receipt_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\docs\\a12\\evidence\\20261004\\copies\\validity\\pytest-routing-v2.json",
+    "log_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\docs\\a12\\evidence\\20261004\\copies\\validity\\pytest-routing-v2.log",
+    "log_sha256": "9ac39834492c346b862f7e1e711e63c2804a3b2741d380fdccbd497f9cd08529",
+    "failures": 9
+  },
+  "stage_diagnostic": {
+    "argv": ".\\.venv\\Scripts\\python.exe -B .\\tmp\\review_20261004\\implementation\\narrowband_diagnosis_20261004\\diagnose_narrowband.py",
+    "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+    "python_executable": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\.venv\\Scripts\\python.exe",
+    "python_version": "3.12.14 (main, Sep  1 2026, 14:17:39) [MSC v.1944 64 bit (AMD64)]",
+    "elapsed_seconds_recorded_in_json": 1.6131637999787927,
+    "exit_code": 1,
+    "failure_receipt": "The diagnostic JSON was written, then the first plot attempt failed because matplotlib was unavailable in the repo .venv: ModuleNotFoundError: No module named matplotlib.",
+    "json_written_before_failure": true,
+    "operator_runs": 1
+  },
+  "png_render": {
+    "argv": ".\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe -B .\\tmp\\review_20261004\\implementation\\narrowband_diagnosis_20261004\\render_boundary_png.py",
+    "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+    "python_executable": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+    "exit_code": 0,
+    "input": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_diagnosis_20261004\\diagnosis.json",
+    "operator_rerun": false,
+    "output": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_diagnosis_20261004\\actual_mesh_boundary_projections.png"
+  },
+  "scope": "No production code, tests, Git state, solver, full bonds, or candidate repair paths were changed or run by this diagnostic.",
+  "historical_sdf_source_snapshot": {
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\explicit_spacing_fix_20261004\\sdf.py.original",
+    "sha256": "186583014d706cfcc20fbefda04a0c68e427f68e3ba7187a48f9a9115ddb827f",
+    "verification": "read-only SHA256 check",
+    "modified": false
+  }
+}

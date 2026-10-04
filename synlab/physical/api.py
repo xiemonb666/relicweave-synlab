@@ -930,7 +930,9 @@ def apply_damage(clean_truth: Any, fragment: Any, recipe: DamageRecipe,
             mesh, ledger_components, ledger, result_lost_volume_mm3=0.0)
         qa = {
             "status": postassembly_qa["status"], "identity": True, "level": 0,
-            "realized": True, "geometry_changed": False,
+            "realized": bool(postassembly_qa["status"] == "PASS"),
+            "physical_acceptance": bool(postassembly_qa["status"] == "PASS"),
+            "geometry_changed": False,
             "geometry_hash_algorithm": GEOMETRY_HASH_ALGORITHM,
             "source_geometry_hash": _geometry_hash(mesh),
             "result_geometry_hash": _geometry_hash(ledger_components[0].mesh),
@@ -1047,14 +1049,26 @@ def apply_damage(clean_truth: Any, fragment: Any, recipe: DamageRecipe,
     if result.qa.get("failure_code"):
         result_qa_failures.append(str(result.qa["failure_code"]))
     result.qa["failure_codes"] = sorted(set(result_qa_failures))
+    backend_qa_value = (outcome.details or {}).get("backend_physical_qa")
+    backend_qa = backend_qa_value if isinstance(backend_qa_value, dict) else {}
+    if "operator_effect_realized" in backend_qa:
+        raw_effect_value = backend_qa["operator_effect_realized"]
+        raw_operator_effect = (bool(raw_effect_value)
+                               if isinstance(raw_effect_value, (bool, np.bool_)) else False)
+    else:
+        raw_operator_effect = bool(outcome.realized)
+    result.qa["operator_effect_realized"] = raw_operator_effect
     if postassembly_qa["status"] != "PASS":
         result.qa["status"] = "FAIL"
+        result.qa["realized"] = False
         result.qa["reason"] = "postassembly entity QA failed; see postassembly.checks"
         result.qa["failure_code"] = (result.qa.get("failure_code")
                                       or next(iter(postassembly_qa["failure_codes"]),
                                               "POSTASSEMBLY_QA_FAILED"))
     elif not outcome.realized:
         result.qa["status"] = "FAIL"
+    result.qa["physical_acceptance"] = bool(
+        result.qa.get("status") == "PASS" and result.qa.get("realized") is True)
     if outcome.mesh is not None and geometry_changed:
         provenance = attach_face_provenance(
             result, clean_mesh=mesh, fragment=fragment,
@@ -1220,6 +1234,20 @@ def result_recipe(result: PhysicalResult) -> DamageRecipe:
 
 def _attach_physical_truth(result: PhysicalResult, clean_truth: Any) -> None:
     """Recompute residual truth through ``synlab.truth.api`` when that module is available."""
+    qa = dict(getattr(result, "qa", {}) or {})
+    level = int(qa.get("level", (getattr(result, "meta", {}) or {}).get("level", 0)) or 0)
+    reported_acceptance = qa.get("physical_acceptance", True)
+    acceptance_ok = (isinstance(reported_acceptance, (bool, np.bool_))
+                     and bool(reported_acceptance))
+    if (str(qa.get("status", "UNKNOWN")) != "PASS"
+            or not acceptance_ok
+            or (level > 0 and not bool(qa.get("realized", False)))):
+        result.physical_truth = None
+        result.meta["physical_truth_status"] = "SKIPPED_PHYSICAL_QA_FAILURE"
+        result.meta["physical_truth_skip_reason"] = (
+            "physical QA and acceptance must pass, and a positive level must realize its effect "
+            "before residual truth is updated")
+        return
     try:  # dependency under parallel development: absence is reported, never faked
         from ..truth.api import update_residual_truth  # type: ignore
     except Exception as exc:  # pragma: no cover - parallel-development dependency
@@ -1301,6 +1329,21 @@ def audit_physical(result: PhysicalResult, clean: Any = None) -> dict[str, Any]:
     checks["mesh_arrays_valid"] = dict(postassembly_qa["checks"]["mesh_arrays_valid"])
     checks["finite"] = dict(postassembly_qa["checks"]["finite"])
     failures.extend(postassembly_qa["failure_codes"])
+    qa_report = result.qa or {}
+    reported_acceptance = qa_report.get("physical_acceptance")
+    reported_status = str(qa_report.get("status") or "UNKNOWN")
+    acceptance_ok = ("physical_acceptance" not in qa_report
+                     or (isinstance(reported_acceptance, (bool, np.bool_))
+                         and bool(reported_acceptance)))
+    checks["reported_physical_acceptance"] = {
+        "status": reported_status,
+        "physical_acceptance": reported_acceptance,
+        "pass": bool(reported_status == "PASS" and acceptance_ok),
+    }
+    if reported_status != "PASS":
+        failures.append("PHYSICAL_RESULT_QA_NOT_PASS")
+    elif not acceptance_ok:
+        failures.append("PHYSICAL_RESULT_ACCEPTANCE_FAILED")
 
     # ---- damaged ⊆ clean (measured on the damaged surface, tolerance disclosed)
     tol_mm = float((result.qa.get("ledger", {}) or {}).get("outside_tol_mm", 1e-3))

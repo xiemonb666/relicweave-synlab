@@ -414,9 +414,14 @@ class _PhysicalAxis(_BaseAxis):
         measured = {str(k): float(v) for k, v in (result.meta.get("measured") or {}).items()
                     if isinstance(v, (int, float, np.integer, np.floating))}
         measured.update(self.extra_measurements(source, representative.mesh, result))
-        realized = bool(result.qa.get("realized", False))
+        qa_status = str(result.qa.get("status", "UNKNOWN"))
+        physical_acceptance = result.qa.get("physical_acceptance", True)
+        qa_acceptance = (qa_status == "PASS"
+                         and isinstance(physical_acceptance, (bool, np.bool_))
+                         and bool(physical_acceptance))
+        realized = bool(result.qa.get("realized", False) and qa_acceptance)
         override = self.realized_override(measured, result)
-        if override is not None:
+        if override is not None and qa_acceptance:
             realized = bool(override)
         grid_info = dict(((result.meta.get("details") or {}).get("sdf_pipeline") or {}).get("spacing")
                          or {})
@@ -455,8 +460,9 @@ class _PhysicalAxis(_BaseAxis):
                   "measured": measured,
                   "units": {str(k): str(v) for k, v in (result.meta.get("measurement_units") or {}).items()},
                   "realized": bool(realized),
-                  "realized_basis": ("DECLARED_TARGET_ACHIEVED" if override is not None
-                                     else "PHYSICAL_OUTCOME"),
+                  "realized_basis": ("PHYSICAL_QA_FAILURE" if not qa_acceptance else
+                                     "DECLARED_TARGET_ACHIEVED" if override is not None else
+                                     "PHYSICAL_OUTCOME"),
                   "grid": grid_info,
                   "physical_audit": dict(result.qa),
                   "label_status": str(result.meta.get("physical_truth_status", "UNKNOWN")),
@@ -476,7 +482,11 @@ class _PhysicalAxis(_BaseAxis):
 
     def invariant_checks(self, source: SourceBundle, result: SourceBundle) -> dict[str, Any]:
         audit = dict(_meta(result, "physical_audit") or {})
+        audit_status = str(audit.get("status", "UNKNOWN"))
         failure = str(audit.get("failure_code") or "")
+        if not failure and audit_status != "PASS":
+            failure = (next(iter(audit.get("failure_codes") or []), None)
+                       or "PHYSICAL_QA_NOT_PASS")
         return {"physical_status": str(audit.get("status", "UNKNOWN")),
                 "violated": bool(failure), "code": failure or ErrorCode.OPERATOR_NOT_REALIZED.value,
                 "label_status": str(_meta(result, "label_status", "UNKNOWN"))}

@@ -1,0 +1,9 @@
+# Offline Conforming Retessellation Candidate (2026-10-04)
+
+This directory preserves the exact source for one approved offline local-topology experiment. It is not production code and makes no claim to an original algorithm or to representing a physical crack.
+
+`conforming_retessellate_candidate.py` was copied byte-for-byte from the frozen review directory. Its SHA-256 is `6398ee6a02b010e172cd709c17403b81e868fe6784536c257976c6edb2ecaf10` (21,144 bytes). The source may contain machine-specific absolute paths; it was not rewritten and has not been replayed on another machine. This artifact was evaluated only against the four already-frozen P02/P03 Mesh32/Mesh64 cases. No runtime, NPZ files, or full lineage report are copied here; `source_manifest.json` points to those original review artifacts as uncommitted references.
+
+The saved offline candidate reported all 14 topology/conformance gates true for each of the four cases: seven exact zero-area collinear faces per case were removed after splitting their unique neighboring long faces at existing collinear interior vertices. Vertices were unchanged, and the transform made zero Boolean calls. A negative control omitting positive-area raw face row 4688 (0.6328125 mm²) created three boundary edges and was rejected without modification.
+
+The P02 cases still contain extremely slender positive-area triangles (minimum q about 0.00161 and minimum height about 3.14e-5 mm). Topological closure does not establish solver-mesh quality or physical discontinuity/fracture quality. Face lineage identifies raw Boolean output rows only; material ancestry is UNKNOWN. This experiment is not evidence of a real fracture and is not production validation.

@@ -1,13 +1,13 @@
 # 最新状态（截至 2026-10-04）
 
-A12 继续作为 RelicWeave synthetic / observation / degradation / retrieval diagnostics 服务；主仓 A3/A4 集成待完成。本轮仅在本机做小规模验证，未运行 RTX5090 批量合成或训练。Astra 单次咨询已结束；Akantu 5.0.7.post1 extrinsic cohesive 小型 capability spike 已完成但未晋级为物理结果，PD baseline 冻结，不全面迁移。当前范围和证据见 [接续矩阵](CONTINUATION_20261004.md) 与 [证据索引](evidence/20261004/index.md)。
+A12 继续作为 RelicWeave synthetic / observation / degradation / retrieval diagnostics 服务；主仓 A3/A4 集成待完成。本轮仅在本机做小规模验证，未运行 RTX5090 批量合成或训练。Astra 单次咨询已结束；Akantu 5.0.7.post1 extrinsic cohesive 小型 capability spike 已完成但未晋级为物理结果，PD baseline 冻结；root 仅批准实验探索 native PD arbitrary rest-point input 与 per-step native-bond observer，该探索尚未运行，不做全面迁移。当前范围和证据见 [接续矩阵](CONTINUATION_20261004.md) 与 [证据索引](evidence/20261004/index.md)。
 
-- **已接受的窄结果：** appearance 46 PASS、100k 排序中位数 81.37 ms（toy only）；deploy 85 PASS 仅覆盖 schema/runtime，旧 5 GB 包未迁移；native contact 真实调用 1/240/480/240 steps、momentum residual 3.42e-24、nominal envelope overlap 0.5904 mm，energy history UNKNOWN；C2 BREP 单次持久化和 half-cut 成功、单次 remesh 602 samples 最大偏差 0.0400846 mm，但 production STEP 仍 FAIL / NOT_PROMOTED；ROI h1 292 个内部样本中 1 个 OUT（距 CAD 0.000407 mm）FAIL，h0.5 1506 tets 有限几何 QA PASS、不是 physics；clipped COM OUT 在 58/294 个盒后停止，完整分区体积误差未评估，70.3% 不代表体积误差。
+- **已接受的窄结果：** appearance 46 PASS、100k 排序中位数 81.37 ms（toy only）；deploy 85 PASS 仅覆盖 schema/runtime，旧 5 GB 包未迁移；native contact 真实调用 1/240/480/240 steps、momentum residual 3.42e-24、nominal envelope overlap 0.5904 mm，energy history UNKNOWN；C2 BREP 单次持久化和 half-cut 成功、单次 remesh 602 samples 最大偏差 0.0400846 mm，但 C2 无把手候选 STEP round-trip FAIL / NOT_PROMOTED（不覆盖已把手原型窄 STEP 路径）；ROI h1 292 个内部样本中 1 个 OUT（距 CAD 0.000407 mm）FAIL，h0.5 1506 tets 有限几何 QA PASS、不是 physics；clipped COM OUT 在 58/294 个盒后停止，完整分区体积误差未评估，70.3% 不代表体积误差。
 - **QA 当前边界：** 最终哈希下 QA/label 30 PASS、damage legality + face provenance 16 PASS；appearance 最终哈希重跑仍是 46 PASS（不得累计成 92 个不同测试）。9 个 broader routing/narrowband FAIL 保留；P02/P03 actual 结果 not watertight、各 6 boundary edges。Measurement.valid 不代表 physical QA 有效。
 - **绝对体积问题更正：** abs(volume) QA bug 位于 synlab/physical/api.py 的物理结果 QA 路径，不是 h8/h6 signed-tet quality 缺陷；旧 h8/h6 signed tet orientation/quality 检查均为 positive。物理 QA 与六门准入仍须按各自证据判定。
 - **Akantu cohesive 能力验证：** zero 1707 steps 为 0 insertion / 0 drift；mode-I 1707 与 half-dt 3414 steps，两加载均 8 native interfaces。耗散 −5.572968137645039e-5 J / −9.726359554870569e-6 J，未达到 GcA=3.04e-5 J，差 82.55%（按 coarse 绝对值归一）；仅固定中央界面 API 基准，无自由裂纹或真实器物，未晋级物理结果。full-debond、damage、native-energy 语义 UNKNOWN；runner 的 `getEnergy('contact')` key 未经验证（reviewed key 为 `cohesive contact`），该能量通道及派生 ledger UNKNOWN。物理 contact 保持 NOT_RUN，界面插入不等于断裂事件。
 - **执行源与复现纪律：** Akantu canonical manifest SHA 前缀 `21b563…`；current `run_contract` 保留的执行脚本为 29,542 B / SHA 前缀 `67dd1eb98…`，与冻结 manifest `source_sha256` 和三份原始 status/receipt 哈希一致。此前 24,567 B 是更早代码尺寸，不是本轮执行源。此项只确认执行源码保留与哈希闭合，不代表全实验精确复现已验收；未声明另机重放或完整环境封装。后续 native run 必须在执行前不可覆盖地快照准确 script/input/manifest 并记录 bytes/SHA；post-run 诊断或标签修正另存。仅有 hash、缺对应 source bytes 不足以精确复现。
-- **仍待完成：** Akantu full-debond、damage 与 native-energy 语义验证及物理 R2；其余六门物理准入、材料校准、contact energy history、完整 clippedcells partition、P02/P03 broader 功能失败、production STEP 晋级及主仓 A3/A4 集成。
+- **仍待完成：** Akantu full-debond、damage 与 native-energy 语义验证及物理 R2；其余六门物理准入、材料校准、contact energy history、完整 clippedcells partition、P02/P03 broader 功能失败、C2 无把手候选 STEP round-trip 晋级及主仓 A3/A4 集成。
 
 ## 早期状态快照（截至 2026-10-03；以下细项保留历史状态）
 
@@ -19,11 +19,19 @@ VF 当前 prototype 已窄验收 canonical STEP BRep face 分类、连续 rest-c
 
 ## 当前接续（2026-10-04）
 
-Akantu extrinsic cohesive tiny case 的自由演化晋级与反复调参已暂停；原始结果保留，未获物理资格。受控 intrinsic `cohesive_bilinear` patch benchmark 只是下一门槛候选，目前由单独执行任务运行/初始化中，本清单未接受其结果。后续需覆盖纯法向、纯剪切、混合、卸载/再加载的已知 separation history，确认原生 opening/traction/damage/history 和 GcA，并评估附加初始柔度、tet-face 方向、process-zone/regularization 与初始刚度的时空分辨率。不能以 bulk CFL、减 dt、全局 x/y 锚或 h0.5 有限几何 QA 替代这些验证。
+Akantu extrinsic cohesive tiny case 的自由演化晋级与反复调参已暂停；原始结果保留，未获物理资格。受控 intrinsic `cohesive_bilinear` patch benchmark 仍是候选下一门槛。intrinsic 3D zero-step preflight_v3 实际读入 54 nodes / 96 tets / 8 coh6，8 个 cell-average opening、traction、damage 与 delta-max 初始字段可读；原 driver 的目录 inventory 步骤 exit 2，独立递归字段核验通过。201-point controlled toy run02 在 300 s 外部 timeout（WSL host −1、Python exit null、wrapper 124），最终 closed-sample 为 168/201；partial opening/traction/damage/history 可读且部分数值检查符合。full 201-point run 与最终 GcA endpoint 仍 incomplete，不能称 PASS；这不修复旧 extrinsic mixed-mode case，其 negative-D/full-debond 根因仍 UNKNOWN。run03 使用相同物理参数与 201 points，状态 `RAW_CLOSED_201`，5.712 s，Python/WSL/PowerShell exit 0，timeout marker UNKNOWN；root 独立核对 native→Windows 610/610 样本一致，并窄审阅末端耗散能约 3.04e-5 J 与目标 GcA 相符、traction=0、damage=1。root 已审 run03 analysis/PNG，18/18 gates PASS 仅覆盖 controlled all-DOF Mode-I toy 的数值本构与 representation；整体 physics、自由裂纹、mesh-bias、R2 与 PRETRAIN 仍未通过或准入。后续需覆盖纯法向、纯剪切、混合、卸载/再加载的已知 separation history，确认原生 opening/traction/damage/history 和 GcA，并评估附加初始柔度、tet-face 方向、process-zone/regularization 与初始刚度的时空分辨率。不能以 bulk CFL、减 dt、全局 x/y 锚或 h0.5 有限几何 QA 替代这些验证。
+
+QA/label 30、damage legality + face provenance 16、appearance 46 的 PASS 只对应各自当时冻结的 source hashes；QA v1 两模块定向运行 exit 1（22 PASS / 4 FAIL）；v2 exit 1（25 PASS / 3 FAIL），初报漏计的 10 项由 tmp/degradation_qa_fix/run_02/run02_counts_addendum.json 补正，3 项均因测试将 recipe.basis dict 传入 DegradationBasis 内部接口，未到 QA 断言；v3 准备后未运行，主审发现调用参数尚未修正。v4 run_03 两模块定向运行 exit 0，JUnit 28/28 distinct PASS、0 failures/errors/skips（stdout 28 dots，stderr 0）；六个源文件和 freeze 前后 SHA 完全一致。六源为 synlab/physical/api.py、synlab/physical/operators.py、synlab/degrade/axes.py、synlab/degrade/physical_narrowband.py、tests/a12/operators/test_postassembly_qa_20261003.py、tests/a12/degrade/test_physical_acceptance_20261004.py。freeze_manifest_v4.json SHA-256 be1aea30d145ff786fc301c57eb3f0893c049259720caee3755be1dc731c5fd5；run_03/junit.xml SHA-256 90a11212c34cc66f0af2e4dfcdd53ea9e224f4462a7be335f8136d07153da6bd，均位于 tmp/degradation_qa_fix/。本轮只验证 QA 状态传播、真值隔离及不将错误测量冒充壁厚；不清除 9 项 broader FAIL，也不证明 P03 真实退化成功。六源随本次备份保留。
 
 2026-10-04 只读诊断 exit 0；event probe 在 654-step cap 提前结束、观测 baseline energy/mass/reaction/count 1–654 行差异为零，但 positions UNKNOWN。这不是物理 PASS。step 650 插入 8 个界面；step 652 phase D 首次观察到 −5.572968137645039e-5 J，damage/history 与真实能量 selector 语义仍 UNKNOWN，因果未定。详细数值、argv/哈希、限定证据副本见 [cohesive diagnostics note](COHESIVE_DIAGNOSTICS_20261004.md) 和 [2026-10-04 evidence index](evidence/20261004/index.md)。
 
 当前 tiny bulk 的 `finite_deformation=false` 仅是小应变基准；真实撞击或碎片旋转下的刚体平移/大旋转客观性、接触/穿透及质量/动量/能量校核待验证，未执行。整体网格和载荷旋转只能检验 objectivity，不能代替独立 remesh 裂纹去偏。
+
+## SDF、窄带与研究接续
+
+spacing 窄修复已接受：`synlab/physical/sdf.py` SHA-256 `fd433876fa4df84d2316c93dbbe521e1094241829d5fccf93cedeeac02467b1d`；3 个既有定向 pytest PASS（只有工具转录），v3 boundary exit 0、原始快照 AST 逐字段自动路径等价 6/6。9 项 broader routing/narrowband FAIL 未清除。更正后的 11 项诊断 manifest hashes/bytes 已由 root 复核，但它不是修复。P03 壁厚射线从外侧取 first hit 是严重测量错误；P02/P03 的 Mesh32 与 Mesh64 四次冻结输入对照均显示 native 输出有 7 个退化面、0 boundary edges，`clean` 移除后形成 21 条共线 boundary edges / 7 loops，仍 non-watertight。Mesh64 精度升级未消除该现象，单精度不是已证根因；下一步检查共线交界处的拓扑一致性。旧 88-face box 的 6 边是不同 fixture；归档的旧 `wall_interval_design` 只有算法报告；另一个 `wall_intervals` helper 的 16 个定向测试仅覆盖局部 helper，尚未接入 P03。四个局部共线拓扑候选用例虽成功，正面积细长三角形仍存在，未晋级；证据留在本地，未列入本次副本。
+
+DOCX alignment audit 的总文核心已主审接受，仍保持碎片返邻居候选、A12可控辅助，正式主服务集成 PENDING。四创新 ledger 已接受为 `idea` / `accepted_for_tracking_only`，`novelty=NOT_AUDITED`；拒识前记录 Hit/Cov；拒识后先将 query 的候选列表置空，再据真值和空候选集计算 `EffectiveHit/Cov`，不能把候选列表为空误写为 metrics 本身是空列表，也不能据此宣称已验证创新或方法效果。PG ledger 两份当前稳定文件另见受控备份；正式主服务集成仍待完成。
 
 ---
 
