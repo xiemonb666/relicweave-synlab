@@ -108,7 +108,7 @@ def choose_spacing(*, min_wall_thickness_mm: float | None = None,
                    requested_mm: float | None = None, max_nodes: int = 4_000_000,
                    bbox_mm: tuple[float, float, float] | None = None,
                    explicit_mm: float | None = None) -> dict[str, Any]:
-    """Initial spacing = min(wall/6, structure/4) with an explicit node budget (plan 12.1).
+    """Choose an initial spacing with an explicit node budget (plan 12.1).
 
     ``explicit_mm`` (S12) is the **declarable** form of the decision: it is used verbatim and the
     node budget is then *reported*, never applied -- so a recipe can ask for a spacing and get
@@ -116,17 +116,31 @@ def choose_spacing(*, min_wall_thickness_mm: float | None = None,
     the shipped rule applies: the budget relaxes the spacing by 1.2x per step and the returned
     ``basis`` carries ``+node_budget_relaxation``.
 
+    ``criteria`` keeps the wall, structure, and requested values as diagnostics when an explicit
+    spacing is selected.  ``budget_limited`` means the chosen spacing was actually coarsened by
+    the automatic budget relaxation.  ``budget_ok`` reports whether the initial chosen spacing
+    fits the budget estimate; for an explicit spacing this is checked against the declared value.
+    If ``bbox_mm`` is omitted, the legacy ``budget_ok=True`` is retained because no estimate can
+    be made; it does not establish that the budget is satisfied.
+
     S12 measured the silent case this makes visible: a P03 recipe *requested* 0.95018 mm
     (``min_wall_thickness/6``) and the 600 000-node budget returned **1.1402 mm** (a 20 % coarser
     grid), with the request effectively ignored (requesting 1.1402 or 2.2804 both landed on
     1.1402; requesting 0.5701 landed on 1.1822).
     """
     candidates: list[tuple[str, float]] = []
-    explicit = None if explicit_mm is None else float(explicit_mm)
-    if explicit is not None:
-        if not (explicit > 0.0):
+    explicit = None
+    if explicit_mm is not None:
+        try:
+            explicit = float(explicit_mm)
+        except (TypeError, ValueError, OverflowError):
             raise SynLabError(ErrorCode.SCHEMA_INVALID,
-                              f"damage_spacing_mm must be > 0, got {explicit_mm!r}",
+                              f"damage_spacing_mm must be finite and > 0, got {explicit_mm!r}",
+                              stage="physical.sdf.choose_spacing")
+    if explicit is not None:
+        if not math.isfinite(explicit) or explicit <= 0.0:
+            raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                              f"damage_spacing_mm must be finite and > 0, got {explicit_mm!r}",
                               stage="physical.sdf.choose_spacing")
         candidates.append(("explicit", explicit))
     if min_wall_thickness_mm and min_wall_thickness_mm > 0:
@@ -137,8 +151,12 @@ def choose_spacing(*, min_wall_thickness_mm: float | None = None,
         candidates.append(("requested", float(requested_mm)))
     if not candidates:
         candidates.append(("default", 0.5))
-    spacing = min(value for _, value in candidates)
-    basis = min(candidates, key=lambda kv: kv[1])[0]
+    if explicit is not None:
+        spacing = explicit
+        basis = "explicit"
+    else:
+        spacing = min(value for _, value in candidates)
+        basis = min(candidates, key=lambda kv: kv[1])[0]
     budget_ok = True
     relaxation_steps = 0
     budget_limited = False
@@ -150,6 +168,10 @@ def choose_spacing(*, min_wall_thickness_mm: float | None = None,
             budget_ok = False
             budget_limited = True
             basis += "+node_budget_relaxation"
+    elif bbox_mm is not None:
+        extent = np.asarray(bbox_mm, dtype=np.float64)
+        estimated_nodes = float(np.prod(np.ceil(extent / spacing) + 3))
+        budget_ok = bool(estimated_nodes <= max_nodes)
     requested = None if requested_mm is None else float(requested_mm)
     return {"spacing_mm": float(spacing), "basis": basis, "budget_ok": budget_ok,
             "criteria": {name: float(value) for name, value in candidates},
@@ -178,10 +200,16 @@ def spacing_budget_report(choice: dict[str, Any], *,
     ``realised`` is measured on the grid object that was actually built (shape/nodes/spacing), so
     the report cannot drift from the voxel field it describes; the pre-build estimate is included
     for comparison and both numbers are reported instead of one being called "the" spacing.
+    Honour checks use the grid's spacing when available.  If no requested spacing was supplied,
+    a valid declared spacing also populates the compatibility ``request_honoured`` field and its
+    ``request_honoured_basis`` identifies that declared target.
     """
     requested = choice.get("requested_spacing_mm")
     declared = choice.get("declared_spacing_mm")
     realised = float(choice.get("spacing_mm", 0.0) or 0.0)
+    comparison_spacing = realised
+    if grid is not None and getattr(grid, "spacing", None) is not None:
+        comparison_spacing = float(grid.spacing)
     est_nodes = grid_nodes_for(bbox_mm, realised, pad_mm=float(choice.get("pad_mm", 0.0) or 0.0))
     out: dict[str, Any] = {
         "requested_mm": None if requested is None else float(requested),
@@ -195,9 +223,23 @@ def spacing_budget_report(choice: dict[str, Any], *,
         "estimated_nodes": int(est_nodes),
         "criteria": dict(choice.get("criteria", {}) or {}),
     }
-    if requested and realised > 0:
-        out["requested_over_realised"] = float(realised / float(requested))
-        out["request_honoured"] = bool(abs(realised - float(requested)) <= 1e-12)
+    if requested is not None:
+        requested_value = float(requested)
+        if requested_value:
+            out["requested_over_realised"] = float(realised / requested_value)
+        out["request_honoured"] = bool(abs(comparison_spacing - requested_value) <= 1e-12)
+        out["request_honoured_basis"] = "requested"
+    if declared is not None:
+        try:
+            declared_value = float(declared)
+        except (TypeError, ValueError, OverflowError):
+            declared_value = float("nan")
+        if math.isfinite(declared_value) and declared_value > 0.0:
+            declared_honoured = bool(abs(comparison_spacing - declared_value) <= 1e-12)
+            out["declared_honoured"] = declared_honoured
+            if requested is None:
+                out["request_honoured"] = declared_honoured
+                out["request_honoured_basis"] = "declared"
     if grid is not None:
         out["realised_shape"] = list(getattr(grid, "shape", ()) or ())
         out["realised_nodes"] = int(getattr(grid, "n_nodes", 0) or 0)
