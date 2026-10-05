@@ -1,0 +1,41 @@
+{
+  "schema": "pgfrag.job.v1",
+  "job_id": "osb-fracture-branch-001",
+  "backend_id": "peridynamics_jl_headless_0_5_4",
+  "initial_condition": {
+    "kind": "uniform_box_bar_fixture",
+    "dimensions_mm": [
+      6,
+      6,
+      16
+    ],
+    "dx_mm": 1,
+    "horizon_mm": 3
+  },
+  "material": {
+    "model": "OSB",
+    "rho_kg_m3": 1000,
+    "E_pa": 1000000,
+    "nu": 0.24,
+    "Gc_j_m2": 1,
+    "calibration_status": "UNVALIDATED_PROTOTYPE",
+    "provenance": "Uncalibrated bounded algorithm-branch fixture requested for damage/bond-state serialization verification."
+  },
+  "loading": {
+    "kind": "symmetric_axial_velocity",
+    "speed_m_s": 0.5
+  },
+  "solver": {
+    "steps": 50,
+    "dt_s": null,
+    "safety_factor": 0.8
+  },
+  "resources": {
+    "profile": "local_smoke",
+    "max_points": 1000,
+    "max_steps": 500,
+    "threads": 1,
+    "timeout_seconds": 120
+  },
+  "output_dir": "output"
+}
