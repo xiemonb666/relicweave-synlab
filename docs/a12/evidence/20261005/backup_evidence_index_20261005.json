@@ -1,0 +1,289 @@
+{
+  "schema": "shardforge.backup-evidence-index.v1",
+  "repository": "relicweave-synlab",
+  "branch": "backup/forge-work-20261003",
+  "source_snapshot_commit": "b1099e4c714baff56083570883b44fee45e110f9",
+  "remote_head_before": "b1099e4c714baff56083570883b44fee45e110f9",
+  "copy_plan_sha256": "fb2eff29c6205f728331132ffd7ec5c795049b8a35f944209c19c31f99431558",
+  "created_utc": "2026-10-05T04:46:31Z",
+  "entries": [
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261005/pg_source_reader/final_freeze_manifest.json",
+      "destination": "relicweave-synlab/docs/a12/evidence/20261005/pg_source_reader/final_freeze_manifest.json",
+      "bytes": 13204,
+      "sha256": "eba1d443ea7b66be1d818794b18362466640a7d2b8fce79e014841cc36eb10da",
+      "category": "freeze_manifest",
+      "source_status": "final-freeze",
+      "notes": "19 distinct cases: 18 full-run pass plus one corrected-node retry pass; not 19 green in one run."
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261005/pg_source_reader/fixture_source_manifest.json",
+      "destination": "relicweave-synlab/docs/a12/evidence/20261005/pg_source_reader/fixture_source_manifest.json",
+      "bytes": 4435,
+      "sha256": "ae6ba7326a70afb452c739de4fd57f56b520dc9295fdb6c9882ca800346a0ae1",
+      "category": "fixture_manifest",
+      "source_status": "final-freeze",
+      "notes": "Tracks 12 fixture files including README and byte-identity verification."
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261005/pg_source_reader/final_validation_summary.json",
+      "destination": "relicweave-synlab/docs/a12/evidence/20261005/pg_source_reader/final_validation_summary.json",
+      "bytes": 3161,
+      "sha256": "12d983876f414986b738d0eaf45454c003b57948a5c114f2419bf6e6f2ee4c32",
+      "category": "validation_summary",
+      "source_status": "final-freeze",
+      "notes": "Retains PG_DIAGNOSTIC_ONLY scope and UNKNOWN caller/fragment/crack/history/R2/component claims."
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261005/pg_source_reader/actual_named_job_source_receipt.json",
+      "destination": "relicweave-synlab/docs/a12/evidence/20261005/pg_source_reader/actual_named_job_source_receipt.json",
+      "bytes": 2450,
+      "sha256": "c5a9f25f9f353dba2466eb743e91fe04e253f2fbcf12823181af31342e994cc0",
+      "category": "source_receipt",
+      "source_status": "frozen/source-reader complete",
+      "notes": "Receipt for the actual named-job source probe."
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261005/pg_source_reader/actual_named_job_source_report.json",
+      "destination": "relicweave-synlab/docs/a12/evidence/20261005/pg_source_reader/actual_named_job_source_report.json",
+      "bytes": 3915,
+      "sha256": "24f890d45953cdac9c5d444ebc626b51dbf0630327fd2ba82b52ea7ff12971f8",
+      "category": "probe_report",
+      "source_status": "frozen/source-reader complete",
+      "notes": "Actual source-bound result summary; physical fragment outputs remain UNKNOWN."
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261005/pg_source_reader/junit_portable_fixture.xml",
+      "destination": "relicweave-synlab/docs/a12/evidence/20261005/pg_source_reader/junit_portable_fixture.xml",
+      "bytes": 4877,
+      "sha256": "5a5acfd32d8a61003ea34d0330694692ffddf6887ccf4d29fecaf8d2711a89a2",
+      "category": "junit_xml",
+      "source_status": "frozen; full run contains one failure",
+      "notes": "Preserve the one stale result_raw assertion failure from the 19-case full run."
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261005/pg_source_reader/junit_portable_retry.xml",
+      "destination": "relicweave-synlab/docs/a12/evidence/20261005/pg_source_reader/junit_portable_retry.xml",
+      "bytes": 397,
+      "sha256": "0cbc4aff7263e0d74c1cf257fab56fe19f494c4734940bc3e97e7ed3984fd90a",
+      "category": "junit_xml",
+      "source_status": "frozen; one-node retry passed",
+      "notes": "Shows the corrected single node passed; the other 18 were not rerun."
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261005/pg_partition_independent_review/independent_audit.json",
+      "destination": "relicweave-synlab/docs/a12/evidence/20261005/pg_source_reader/independent_partition_audit.json",
+      "bytes": 15613,
+      "sha256": "87d4734e9b03d3bde1e761af5cac53710bdc1676b57f6a76f5a90f5aac12465c",
+      "category": "independent_audit_json",
+      "source_status": "frozen/reviewer complete",
+      "notes": "Independent graph reconstruction agrees with CSV partitions; does not establish physical fragments or physics."
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261005/pg_partition_independent_review/independent_audit.md",
+      "destination": "relicweave-synlab/docs/a12/evidence/20261005/pg_source_reader/independent_partition_audit.md",
+      "bytes": 5631,
+      "sha256": "3cadde4476a6117ccd6a0c35a0cb33972b9b39396ccf67f0fc8cbd0bbf3dae63",
+      "category": "short_report",
+      "source_status": "frozen/reviewer complete",
+      "notes": "Human-readable independent partition audit with remaining UNKNOWN limits."
+    },
+    {
+      "source_path": "tmp/review_20261005/g01_resume/visual_probe/visual_probe_execution_receipt.json",
+      "destination": "relicweave-synlab/docs/a12/evidence/20261005/g01_visual_probe/visual_probe_execution_receipt.json",
+      "bytes": 7416,
+      "sha256": "7ed8337780ebaf6520e5990ee56da484db70e34d01af89e46b5000dc37bc815a",
+      "category": "execution_receipt",
+      "source_status": "frozen/G01 probe complete",
+      "notes": "Synthetic 400-point plane fixture; execution does not qualify real sensor noise or a physical specimen."
+    },
+    {
+      "source_path": "tmp/review_20261005/g01_resume/visual_probe/g01_conditioned_total_rms_fixture.json",
+      "destination": "relicweave-synlab/docs/a12/evidence/20261005/g01_visual_probe/g01_conditioned_total_rms_fixture.json",
+      "bytes": 12714,
+      "sha256": "204c4103531d547e1c0f3d802da35f4581cf651bb64ba0bb44b5a37480eb07bf",
+      "category": "probe_report",
+      "source_status": "frozen/G01 probe complete",
+      "notes": "Records synthetic target RMS 0.05/0.5 mm and the NPZ hash; raw NPZ omitted."
+    },
+    {
+      "source_path": "tmp/review_20261005/g01_resume/visual_probe/g01_conditioned_total_rms_3d.png",
+      "destination": "relicweave-synlab/docs/a12/evidence/20261005/g01_visual_probe/g01_conditioned_total_rms_3d.png",
+      "bytes": 427304,
+      "sha256": "90ab83350c6ff251de4f7f00876db4c7496588f65dca2e0118a7267f60c9b51b",
+      "category": "result_png",
+      "source_status": "frozen/G01 probe complete",
+      "notes": "Actual synthetic geometry comparison image."
+    },
+    {
+      "source_path": "tmp/review_20261005/g01_resume/visual_probe/g01_conditioned_total_rms_displacements.png",
+      "destination": "relicweave-synlab/docs/a12/evidence/20261005/g01_visual_probe/g01_conditioned_total_rms_displacements.png",
+      "bytes": 230559,
+      "sha256": "7d6f41ba1f43d07199034a0019596e2b466f2c86cd61d9ded80ad57cb0466db8",
+      "category": "result_png",
+      "source_status": "frozen/G01 probe complete",
+      "notes": "Actual signed displacement and histogram image."
+    },
+    {
+      "source_path": "tmp/review_20261005/doc_page_qa/pages_001_034.md",
+      "destination": "relicweave-synlab/docs/a12/evidence/20261005/document_qa/pages_001_034.md",
+      "bytes": 6960,
+      "sha256": "a74d51925b630c967e0010809d9116388cd17fe4fef1801f4e5f1b877e5ae7ec",
+      "category": "page_qa_report",
+      "source_status": "frozen/page reviewer complete",
+      "notes": "Preserve visual QA FAIL/UNCERTAIN findings; attribution to old/new source remains UNKNOWN."
+    },
+    {
+      "source_path": "tmp/review_20261005/doc_page_qa/pages_035_068.md",
+      "destination": "relicweave-synlab/docs/a12/evidence/20261005/document_qa/pages_035_068.md",
+      "bytes": 6017,
+      "sha256": "bb0784f1839cb3ef7560f2691ef6d39de76fa81803293a4b40de106d698e0b85",
+      "category": "page_qa_report",
+      "source_status": "frozen/page reviewer complete",
+      "notes": "Preserve visual QA FAIL/UNCERTAIN findings; attribution to old/new source remains UNKNOWN."
+    },
+    {
+      "source_path": "tmp/review_20261005/doc_page_qa/pages_069_102.md",
+      "destination": "relicweave-synlab/docs/a12/evidence/20261005/document_qa/pages_069_102.md",
+      "bytes": 6297,
+      "sha256": "3828f3ccbde4a6f0abbd032d72a66597d5e3456557a5a4dfaed76f669dfef068",
+      "category": "page_qa_report",
+      "source_status": "frozen/page reviewer complete",
+      "notes": "Preserve visual QA FAIL/UNCERTAIN findings; attribution to old/new source remains UNKNOWN."
+    },
+    {
+      "source_path": "tmp/review_20261005/doc_page_qa/pages_103_136.md",
+      "destination": "relicweave-synlab/docs/a12/evidence/20261005/document_qa/pages_103_136.md",
+      "bytes": 5296,
+      "sha256": "428e1de00ecb980e93e78de7ecd3558eef82fd8deb347dda37ac843c65860914",
+      "category": "page_qa_report",
+      "source_status": "frozen/page reviewer complete",
+      "notes": "Preserve visual QA FAIL/UNCERTAIN findings; attribution to old/new source remains UNKNOWN."
+    },
+    {
+      "source_path": "tmp/review_20261005/doc_page_qa/pages_137_170.md",
+      "destination": "relicweave-synlab/docs/a12/evidence/20261005/document_qa/pages_137_170.md",
+      "bytes": 4915,
+      "sha256": "3551b99be290db7de3150415ce90940c80b0506e69247c9448f14a382def1619",
+      "category": "page_qa_report",
+      "source_status": "frozen/page reviewer complete",
+      "notes": "Preserve visual QA FAIL/UNCERTAIN findings; attribution to old/new source remains UNKNOWN."
+    },
+    {
+      "source_path": "tmp/review_20261005/doc_page_qa/pages_171_204.md",
+      "destination": "relicweave-synlab/docs/a12/evidence/20261005/document_qa/pages_171_204.md",
+      "bytes": 5439,
+      "sha256": "e9e94800b10c95e6c65c41b275713a756de12735a85e0b979f812b95bec4d2c3",
+      "category": "page_qa_report",
+      "source_status": "frozen/page reviewer complete",
+      "notes": "Preserve visual QA FAIL/UNCERTAIN findings; attribution to old/new source remains UNKNOWN."
+    },
+    {
+      "source_path": "tmp/review_20261005/plan_inventory/structural_audit.json",
+      "destination": "relicweave-synlab/docs/a12/evidence/20261005/document_qa/structural_audit.json",
+      "bytes": 10719,
+      "sha256": "3079381e2d9b1c10ede28e0fb27370869c222986846be282c23d6e0f1e3e22ab",
+      "category": "structure_audit",
+      "source_status": "frozen/structural check complete",
+      "notes": "Structural audit passed; it does not override page-level visual QA failures."
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261005/chain_contract_review/focused_pytest_20261005_receipt.json",
+      "destination": "relicweave-synlab/docs/a12/evidence/20261005/chain_source_dispatch/focused_pytest_20261005_receipt.json",
+      "bytes": 757,
+      "sha256": "a0216bf2c468b916318ecf45c9b426b28d1d630bde3438847fc2034acced8858",
+      "category": "focused_pytest_receipt",
+      "source_status": "root-reviewed; frozen source snapshot",
+      "notes": "Report-only source-dispatch validation evidence; not full-chain qualification."
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261005/chain_contract_review/focused_pytest_20261005.junit.xml",
+      "destination": "relicweave-synlab/docs/a12/evidence/20261005/chain_source_dispatch/focused_pytest_20261005.junit.xml",
+      "bytes": 4128,
+      "sha256": "bdba8730d155c6e120e613a0518ef6e8038e8b99b0ac4a8cf7dc7baba38077dc",
+      "category": "focused_junit",
+      "source_status": "root-reviewed; frozen source snapshot",
+      "notes": "Report-only source-dispatch validation evidence; not full-chain qualification."
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261005/chain_contract_review/focused_pytest_20261005.stdout.txt",
+      "destination": "relicweave-synlab/docs/a12/evidence/20261005/chain_source_dispatch/focused_pytest_20261005.stdout.txt",
+      "bytes": 81,
+      "sha256": "0861033bdc2d6203bd8178972703a811b101e61fc065ed32dfd1a4824ab482f0",
+      "category": "focused_stdout",
+      "source_status": "root-reviewed; frozen source snapshot",
+      "notes": "Report-only source-dispatch validation evidence; not full-chain qualification."
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261005/chain_contract_review/pretest_sha256_20261005.json",
+      "destination": "relicweave-synlab/docs/a12/evidence/20261005/chain_source_dispatch/pretest_sha256_20261005.json",
+      "bytes": 3652,
+      "sha256": "0507950d3150fd572fde67ccfb5002ca247dc9bc608ad02d7db574665714b643",
+      "category": "pretest_snapshot",
+      "source_status": "root-reviewed; frozen source snapshot",
+      "notes": "Report-only source-dispatch validation evidence; not full-chain qualification."
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261005/chain_contract_review/posttest_sha256_20261005.json",
+      "destination": "relicweave-synlab/docs/a12/evidence/20261005/chain_source_dispatch/posttest_sha256_20261005.json",
+      "bytes": 3652,
+      "sha256": "5566964f51ab0ce82d3c347eb33f393fd05804047b02150a92ed5acae3f5c159",
+      "category": "posttest_snapshot",
+      "source_status": "root-reviewed; frozen source snapshot",
+      "notes": "Report-only source-dispatch validation evidence; not full-chain qualification."
+    },
+    {
+      "source_path": "relicweave-synlab/synlab/qa/forge_chain_audit.py",
+      "destination": "relicweave-synlab/synlab/qa/forge_chain_audit.py",
+      "bytes": 73028,
+      "sha256": "3f84f824ca2dbc908303ae3c2b14f3ac3e1d8c88349238adf59ed747be48b5d7",
+      "category": "report_only_source",
+      "source_status": "root-reviewed; frozen source",
+      "notes": "Report-only source-dispatch audit; no whole-chain/physics qualification."
+    },
+    {
+      "source_path": "relicweave-synlab/tests/a12/qa/test_forge_chain_source_dispatch_20261005.py",
+      "destination": "relicweave-synlab/tests/a12/qa/test_forge_chain_source_dispatch_20261005.py",
+      "bytes": 11038,
+      "sha256": "4df2391f107616b38854cbedc13b18c6e864ff3a4d0eeb1cc5ef102021f716e4",
+      "category": "focused_tests",
+      "source_status": "root-reviewed; frozen source",
+      "notes": "Report-only source-dispatch audit; no whole-chain/physics qualification."
+    },
+    {
+      "source_path": "relicweave-synlab/docs/a12/chain_source_reader_dispatch_20261005.md",
+      "destination": "relicweave-synlab/docs/a12/chain_source_reader_dispatch_20261005.md",
+      "bytes": 3830,
+      "sha256": "2480962d753b90700382e1477926271a69c63e6b94fffc07a0c90a50ea1eba58",
+      "category": "report_only_design",
+      "source_status": "root-reviewed; frozen source",
+      "notes": "Report-only source-dispatch audit; no whole-chain/physics qualification."
+    }
+  ],
+  "attributes": {
+    "path": ".gitattributes",
+    "old_bytes": 772,
+    "old_sha256": "1735408bb2ac0f02fb35452e5e2a3f3ac30dd971564e9e1a1dc4cf5b2ca56e88",
+    "bytes": 809,
+    "sha256": "20b8108beb52710a5f79ece8f7f7ee90fc187cc41b19b6555a2b9ddceb40571f",
+    "appended_rule": "/docs/a12/evidence/20261005/** -text"
+  },
+  "known_results_and_limits": [
+    {
+      "repo": "relicweave-synlab",
+      "status": "PG_DIAGNOSTIC_ONLY_AND_G01_SYNTHETIC",
+      "note": "Reader coverage is 19 distinct cases: 18 passed in full run and the one corrected node passed on retry; preserve the original failure. Actual PG caller/physical fragments/crack surfaces/event history/R2/components remain UNKNOWN. G01 pictures use a synthetic plane, not actual phone or reconstruction noise."
+    },
+    {
+      "repo": "relicweave-synlab",
+      "status": "DOCX_VISUAL_QA_FAILED",
+      "note": "204-page render was produced, but page review reports clipping/overlap and unresolved source attribution. Keep FAIL/UNKNOWN review reports; do not back up the draft DOCX as final."
+    }
+  ],
+  "additional_limits": [
+    "Chain source-dispatch focused suite: 25 passed, 0 failed/errors/skipped; report-only source wiring, not full-chain qualification.",
+    "Whole-chain state remains 30 gaps and 0 qualified; the main repository is unchanged.",
+    "Document render review remains FAILED with clipping/overlap; source attribution remains UNKNOWN. The DOCX draft is withheld."
+  ],
+  "note": "Evidence copies are byte-identical to their pinned tmp sources; raw large/native data and active writer files are excluded."
+}

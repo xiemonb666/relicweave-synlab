@@ -1,10 +1,10 @@
 """Read-only audit of caller-normalized RelicWeave evidence-chain metadata.
 
 The audit input is a small JSON document that names explicit producer manifests and
-caller-normalized lineage rows. It reads only those JSON references, verifies their
-JSON byte hashes, and never walks an asset/package directory. It does not compare the
-normalized rows with producer row contents or inspect payload bytes. A structurally
-complete normalized record is not producer-source verification or scientific
+caller-normalized lineage rows. Input v1 verifies only explicitly named JSON-reference
+hashes. Input v2 may dispatch the fixed PG-Frag result reader for bounded, named output
+tables; it still never walks an asset/package directory. A structurally complete
+normalized record is not whole-chain producer-source verification or scientific
 acceptance: physics and pretraining eligibility always remain unverified.
 
 The field boundaries follow:
@@ -30,8 +30,12 @@ from typing import Any, Mapping
 
 
 INPUT_SCHEMA = "relicweave.chain.audit.input.v1"
+INPUT_SCHEMA_V2 = "relicweave.chain.audit.input.v2"
 REPORT_SCHEMA = "relicweave.chain.audit.report.v1"
 MAX_REFERENCE_BYTES = 2_000_000
+PGFRAG_READER_ID = "pgfrag.result.v1"
+PGFRAG_READER_MODE = "read_producer_rows"
+PGFRAG_JOB_REFERENCE = "native_job"
 
 GATES = (
     "Geometry",
@@ -249,13 +253,304 @@ def _check_feature_policy(policy: Mapping[str, Any]) -> set[str]:
     return {row["key"] for row in channels if isinstance(row, Mapping) and isinstance(row.get("key"), str)}
 
 
+def _pgfrag_diagnostic_stub(reason: str, *, reader_id: str | None = None) -> dict[str, Any]:
+    return {
+        "status": "UNKNOWN",
+        "diagnostic_status": "UNKNOWN",
+        "reader_id": reader_id,
+        "scope": "PG_DIAGNOSTIC_ONLY",
+        "reader_dispatched": False,
+        "reader_result_metadata_read": False,
+        "producer_payload_byte_evidence": "NOT_DISPATCHED",
+        "verified_payload_files": {},
+        "source_binding": {
+            "status": "UNKNOWN",
+            "dictionary": {"status": "UNKNOWN", "bytes_verified": False, "path": None},
+            "components": {
+                name: {
+                    "status": "UNKNOWN",
+                    "bytes_verified": False,
+                    "rows_compared": 0,
+                    "files": {},
+                    "caller_match": "UNKNOWN",
+                }
+                for name in ("points", "components", "bonds")
+            },
+        },
+        "capabilities": {
+            name: {"status": "UNKNOWN", "reason": reason}
+            for name in ("physical_fragments", "crack_surfaces", "event_history", "historical_R2")
+        },
+        "reader_report": None,
+        "reason": reason,
+    }
+
+
+def _pgfrag_read_evidence(reader_report: Mapping[str, Any] | None, *, dispatched: bool) -> dict[str, Any]:
+    """Summarize only byte-verification evidence explicitly returned by the reader."""
+    if not dispatched:
+        return {
+            "reader_dispatched": False,
+            "reader_result_metadata_read": False,
+            "producer_payload_byte_evidence": "NOT_DISPATCHED",
+            "verified_payload_files": {},
+        }
+
+    report = reader_report if isinstance(reader_report, Mapping) else {}
+    result_source = _object(report.get("result_source"))
+    result_bytes = result_source.get("bytes_read")
+    if isinstance(result_bytes, int) and not isinstance(result_bytes, bool):
+        result_metadata_read: bool | None = result_bytes > 0
+    else:
+        result_metadata_read = None
+
+    file_specs = {
+        "points": ("points.csv",),
+        "components": ("components.csv",),
+        "bonds": ("bond_states.csv", "broken_bonds.csv", "isolated_points.csv"),
+    }
+    binding = _object(report.get("source_binding"))
+    components = _object(binding.get("components"))
+    verified_files: dict[str, list[str]] = {}
+    for component, expected_names in file_specs.items():
+        component_report = _object(components.get(component))
+        files = _object(component_report.get("files"))
+        names = []
+        for name in expected_names:
+            evidence = _object(files.get(name))
+            byte_count = evidence.get("bytes")
+            if (
+                evidence.get("bytes_verified") is True
+                and evidence.get("sha256_verified") is True
+                and isinstance(byte_count, int)
+                and not isinstance(byte_count, bool)
+                and byte_count >= 0
+            ):
+                names.append(name)
+        if names:
+            verified_files[component] = names
+
+    verified_count = sum(len(names) for names in verified_files.values())
+    required_count = sum(len(names) for names in file_specs.values())
+    if verified_count == required_count:
+        payload_evidence = "COMPLETE"
+    elif verified_count:
+        payload_evidence = "PARTIAL"
+    else:
+        payload_evidence = "UNKNOWN"
+    return {
+        "reader_dispatched": True,
+        "reader_result_metadata_read": result_metadata_read,
+        "producer_payload_byte_evidence": payload_evidence,
+        "verified_payload_files": verified_files,
+    }
+
+
+def _dispatch_pgfrag_source_reader(
+    document: Mapping[str, Any],
+    chain: Mapping[str, Any],
+    refs: Mapping[str, Any],
+    sources: Mapping[str, Any],
+    source_status: Mapping[str, Mapping[str, Any]],
+    root_path: Path,
+) -> tuple[dict[str, Any] | None, dict[str, str] | None]:
+    """Dispatch only the fixed PG result reader declared by an input-v2 document."""
+    if document.get("schema") != INPUT_SCHEMA_V2:
+        return None, None
+
+    declaration_value = document.get("source_readers")
+    if not isinstance(declaration_value, Mapping) or set(declaration_value) != {"native_result"}:
+        reason = "input v2 must declare exactly one allowlisted source_readers.native_result entry"
+        return _pgfrag_diagnostic_stub(reason), {
+            "field": "producer_diagnostics.pgfrag", "status": "UNKNOWN", "reason": reason,
+        }
+    declaration = declaration_value.get("native_result")
+    expected_declaration = {
+        "reader_id": PGFRAG_READER_ID,
+        "job_reference": PGFRAG_JOB_REFERENCE,
+        "mode": PGFRAG_READER_MODE,
+    }
+    if not isinstance(declaration, Mapping) or dict(declaration) != expected_declaration:
+        reason = "source reader declaration is unsupported; no dynamic module loading is permitted"
+        return _pgfrag_diagnostic_stub(reason), {
+            "field": "producer_diagnostics.pgfrag", "status": "UNKNOWN", "reason": reason,
+        }
+
+    result_ref = refs.get("native_result")
+    job_ref = refs.get("native_job")
+    result_status = source_status.get("native_result", {})
+    job_status = source_status.get("native_job", {})
+    if (
+        "native_result" not in sources
+        or "native_job" not in sources
+        or result_status.get("status") != "HASH_VERIFIED_JSON_READ"
+        or job_status.get("status") != "HASH_VERIFIED_JSON_READ"
+    ):
+        reason = "native_result and native_job JSON references must both be schema-checked and hash-verified before dispatch"
+        return _pgfrag_diagnostic_stub(reason, reader_id=PGFRAG_READER_ID), {
+            "field": "producer_diagnostics.pgfrag", "status": "UNKNOWN", "reason": reason,
+        }
+
+    result_path, result_error = _safe_relative_path(root_path, result_ref.get("path") if isinstance(result_ref, Mapping) else None)
+    job_path, job_error = _safe_relative_path(root_path, job_ref.get("path") if isinstance(job_ref, Mapping) else None)
+    if result_error or job_error or result_path is None or job_path is None:
+        reason = "verified source reference paths could not be safely resolved for the fixed PG reader"
+        return _pgfrag_diagnostic_stub(reason, reader_id=PGFRAG_READER_ID), {
+            "field": "producer_diagnostics.pgfrag", "status": "UNKNOWN", "reason": reason,
+        }
+    if result_path.name.casefold() != "result.json":
+        reason = "native_result must explicitly reference a file named result.json so its parent is the bounded reader root"
+        return _pgfrag_diagnostic_stub(reason, reader_id=PGFRAG_READER_ID), {
+            "field": "producer_diagnostics.pgfrag", "status": "UNKNOWN", "reason": reason,
+        }
+
+    result_hash = result_status.get("sha256")
+    job_hash = job_status.get("sha256")
+    if not isinstance(result_hash, str) or not re.fullmatch(r"[0-9a-fA-F]{64}", result_hash) or not isinstance(job_hash, str) or not re.fullmatch(r"[0-9a-fA-F]{64}", job_hash):
+        reason = "verified native reference digests are unavailable to bind the source reader"
+        return _pgfrag_diagnostic_stub(reason, reader_id=PGFRAG_READER_ID), {
+            "field": "producer_diagnostics.pgfrag", "status": "UNKNOWN", "reason": reason,
+        }
+    caller_rows = chain.get("pgfrag_normalized_rows") if "pgfrag_normalized_rows" in chain else None
+    if "pgfrag_normalized_rows" in chain and not isinstance(caller_rows, Mapping):
+        reason = "an explicitly supplied chain.pgfrag_normalized_rows claim must be a typed mapping"
+        diagnostic = _pgfrag_diagnostic_stub(reason, reader_id=PGFRAG_READER_ID)
+        diagnostic.update({"status": "FAIL", "diagnostic_status": "FAIL"})
+        return diagnostic, {"field": "producer_diagnostics.pgfrag", "status": "FAIL", "reason": reason}
+
+    # This fixed import is the only supported dispatch target. The result parent is
+    # the reader boundary; the caller never supplies a module or code path.
+    try:
+        from .source_readers.pgfrag_result import read_pgfrag_result
+    except ImportError:
+        reason = "the fixed PG result reader is unavailable in this audit build"
+        return _pgfrag_diagnostic_stub(reason, reader_id=PGFRAG_READER_ID), {
+            "field": "producer_diagnostics.pgfrag", "status": "UNKNOWN", "reason": reason,
+        }
+
+    try:
+        reader_report = read_pgfrag_result(
+            result_path.parent,
+            expected_result_sha256=result_hash,
+            job_path=job_path,
+            expected_job_sha256=job_hash,
+            caller_normalized_rows=caller_rows,
+            include_normalized_rows=False,
+        )
+    except Exception:
+        reason = "the fixed PG result reader could not safely interpret the declared producer source"
+        diagnostic = _pgfrag_diagnostic_stub(reason, reader_id=PGFRAG_READER_ID)
+        diagnostic.update(_pgfrag_read_evidence(None, dispatched=True))
+        diagnostic["status"] = "FAIL"
+        diagnostic["diagnostic_status"] = "FAIL"
+        diagnostic["reader_report"] = {
+            "status": "FAIL",
+            "scope": "PG_DIAGNOSTIC_ONLY",
+            "errors": [{"field": "source_reader", "status": "FAIL", "reason": reason}],
+        }
+        return diagnostic, {"field": "producer_diagnostics.pgfrag", "status": "FAIL", "reason": reason}
+
+    if not isinstance(reader_report, Mapping):
+        reader_report = {}
+    reader_status = reader_report.get("status")
+    read_evidence = _pgfrag_read_evidence(reader_report, dispatched=True)
+    binding = reader_report.get("source_binding")
+    binding = binding if isinstance(binding, Mapping) else {}
+    components = binding.get("components")
+    components = components if isinstance(components, Mapping) else {}
+    job_source = reader_report.get("job_source")
+    job_source = job_source if isinstance(job_source, Mapping) else {}
+    result_source = reader_report.get("result_source")
+    result_source = result_source if isinstance(result_source, Mapping) else {}
+    if reader_status == "FAIL":
+        errors = reader_report.get("errors")
+        first_error = errors[0] if isinstance(errors, list) and errors and isinstance(errors[0], Mapping) else {}
+        reason = first_error.get("reason") if isinstance(first_error.get("reason"), str) else "PG source reader rejected the producer payload"
+        diagnostic = _pgfrag_diagnostic_stub(reason, reader_id=PGFRAG_READER_ID)
+        diagnostic.update(read_evidence)
+        dictionary = binding.get("dictionary")
+        diagnostic["source_binding"] = {
+            "status": (
+                "SOURCE_VERIFIED"
+                if binding.get("status") == "SOURCE_VERIFIED"
+                and job_source.get("status") == "SOURCE_VERIFIED"
+                and result_source.get("external_sha256_verified") is True
+                else "UNKNOWN"
+            ),
+            "dictionary": dictionary if isinstance(dictionary, Mapping) else {"status": "UNKNOWN", "bytes_verified": False, "path": None},
+            "components": {
+                name: components[name] if isinstance(components.get(name), Mapping) else diagnostic["source_binding"]["components"][name]
+                for name in ("points", "components", "bonds")
+            },
+        }
+        diagnostic.update({"status": "FAIL", "diagnostic_status": "FAIL", "reader_report": dict(reader_report)})
+        return diagnostic, {"field": "producer_diagnostics.pgfrag", "status": "FAIL", "reason": reason}
+
+    verified = (
+        reader_status == "PG_DIAGNOSTIC_ONLY"
+        and binding.get("status") == "SOURCE_VERIFIED"
+        and job_source.get("status") == "SOURCE_VERIFIED"
+        and result_source.get("external_sha256_verified") is True
+        and all(
+            isinstance(components.get(name), Mapping)
+            and components[name].get("status") == "SOURCE_VERIFIED"
+            for name in ("points", "components", "bonds")
+        )
+        and isinstance(binding.get("dictionary"), Mapping)
+        and binding["dictionary"].get("status") == "SOURCE_VERIFIED"
+    )
+    if verified:
+        diagnostic = {
+            "status": "SOURCE_VERIFIED",
+            "diagnostic_status": "PG_DIAGNOSTIC_ONLY",
+            "reader_id": PGFRAG_READER_ID,
+            "scope": "PG_DIAGNOSTIC_ONLY",
+            **read_evidence,
+            "source_binding": {
+                "status": "SOURCE_VERIFIED",
+                "dictionary": binding.get("dictionary"),
+                "components": {
+                    name: components[name] for name in ("points", "components", "bonds")
+                },
+            },
+            "capabilities": reader_report.get("capabilities", {}),
+            "fixture_context": reader_report.get("fixture_context", {}),
+            "job_source": job_source,
+            "result_source": result_source,
+            "caller_match": reader_report.get("caller_match", {"status": "UNKNOWN", "components": {}}),
+            "row_counts": reader_report.get("row_counts", {}),
+            "reader_report": dict(reader_report),
+            "reason": "Only explicitly verified PG points, intact-bond components, and bond-state tables are source-bound; they do not establish fragments, crack surfaces, historical R2, physics, or pretraining eligibility.",
+        }
+        return diagnostic, None
+
+    errors = reader_report.get("errors")
+    first_error = errors[0] if isinstance(errors, list) and errors and isinstance(errors[0], Mapping) else {}
+    reason = first_error.get("reason") if isinstance(first_error.get("reason"), str) else "PG source reader did not verify every required producer table and identity"
+    diagnostic = _pgfrag_diagnostic_stub(reason, reader_id=PGFRAG_READER_ID)
+    diagnostic.update(read_evidence)
+    dictionary = binding.get("dictionary")
+    diagnostic["source_binding"] = {
+        "status": "UNKNOWN",
+        "dictionary": dictionary if isinstance(dictionary, Mapping) else {"status": "UNKNOWN", "bytes_verified": False, "path": None},
+        "components": {
+            name: components[name] if isinstance(components.get(name), Mapping) else diagnostic["source_binding"]["components"][name]
+            for name in ("points", "components", "bonds")
+        },
+    }
+    diagnostic["diagnostic_status"] = reader_status if isinstance(reader_status, str) else "UNKNOWN"
+    diagnostic["reader_report"] = dict(reader_report)
+    return diagnostic, {"field": "producer_diagnostics.pgfrag", "status": "UNKNOWN", "reason": reason}
+
+
 def audit_chain(document: Mapping[str, Any], root: str | Path) -> dict[str, Any]:
     """Audit one explicitly described lineage chain without mutating or scanning inputs."""
     root_path = Path(root)
     gaps: list[dict[str, str]] = []
     structural_problems: list[dict[str, str]] = []
-    if document.get("schema") != INPUT_SCHEMA:
-        _gap(gaps, "schema", "FAIL", f"expected {INPUT_SCHEMA!r}")
+    input_schema = document.get("schema")
+    if input_schema not in {INPUT_SCHEMA, INPUT_SCHEMA_V2}:
+        _gap(gaps, "schema", "FAIL", f"expected {INPUT_SCHEMA!r} or {INPUT_SCHEMA_V2!r}")
         structural_problems.append(gaps[-1])
 
     raw_refs = document.get("references")
@@ -285,6 +580,12 @@ def audit_chain(document: Mapping[str, Any], root: str | Path) -> dict[str, Any]
 
     chain_value = document.get("chain")
     chain = chain_value if isinstance(chain_value, Mapping) else {}
+    pgfrag_diagnostic, pgfrag_issue = _dispatch_pgfrag_source_reader(
+        document, chain, refs, sources, source_status, root_path,
+    )
+    if pgfrag_issue is not None:
+        _gap(gaps, pgfrag_issue["field"], pgfrag_issue["status"], pgfrag_issue["reason"])
+        structural_problems.append(gaps[-1])
     parent_manifest = sources.get("parent_asset_manifest")
     job = sources.get("native_job")
     result = sources.get("native_result")
@@ -798,12 +1099,14 @@ def audit_chain(document: Mapping[str, Any], root: str | Path) -> dict[str, Any]
     # Gate strings and output PASS fields never authorize physics or training.
     complete = not structural_problems
     ref_complete = all(source_status.get(ref_name, {}).get("status") == "HASH_VERIFIED_JSON_READ" for ref_name in REQUIRED_REFERENCE_KEYS.values())
-    if complete and ref_complete:
+    if pgfrag_diagnostic is not None and pgfrag_diagnostic.get("status") == "FAIL":
+        overall = "FAIL"
+    elif complete and ref_complete:
         overall = "STRUCTURAL_PASS"
     else:
         overall = "INCOMPLETE"
     gap_status = "COMPLETE" if not gaps else "INCOMPLETE"
-    return {
+    report = {
         "schema": REPORT_SCHEMA,
         "status": overall,
         "structural_completeness": {
@@ -864,6 +1167,39 @@ def audit_chain(document: Mapping[str, Any], root: str | Path) -> dict[str, Any]
         "producer_context": producer_context,
         "gaps": gaps,
     }
+    if pgfrag_diagnostic is not None:
+        reader_report = _object(pgfrag_diagnostic.get("reader_report"))
+        caller_match = _object(reader_report.get("caller_match"))
+        reader_dispatched = pgfrag_diagnostic.get("reader_dispatched") is True
+        payload_evidence = pgfrag_diagnostic.get("producer_payload_byte_evidence")
+        if payload_evidence == "NOT_DISPATCHED":
+            pg_payload_read: bool | None = False
+            only_json_read: bool | None = True
+        elif payload_evidence in {"COMPLETE", "PARTIAL"}:
+            pg_payload_read = True
+            only_json_read = False
+        else:
+            pg_payload_read = None if reader_dispatched else False
+            only_json_read = None if reader_dispatched else True
+        caller_match_status = caller_match.get("status")
+        pgfrag_caller_rows_compared = (
+            True if caller_match_status in {"MATCH", "MISMATCH"}
+            else None
+        )
+        report["producer_diagnostics"] = {"pgfrag": pgfrag_diagnostic}
+        report["evidence_reference_completeness"]["only_explicit_json_references_read"] = only_json_read
+        report["evidence_reference_completeness"]["pgfrag_reader_dispatched"] = reader_dispatched
+        report["evidence_reference_completeness"]["pgfrag_result_metadata_read"] = pgfrag_diagnostic.get("reader_result_metadata_read")
+        report["evidence_reference_completeness"]["pgfrag_payload_byte_evidence"] = payload_evidence
+        report["evidence_reference_completeness"]["explicit_pgfrag_payload_bytes_read"] = pg_payload_read
+        diagnostic_binding = _object(pgfrag_diagnostic.get("source_binding"))
+        report["evidence_reference_completeness"]["pgfrag_payload_source_verified"] = (
+            diagnostic_binding.get("status") == "SOURCE_VERIFIED"
+            and payload_evidence == "COMPLETE"
+        )
+        report["evidence_reference_completeness"]["pgfrag_caller_rows_compared"] = pgfrag_caller_rows_compared
+        report["source_binding"]["producer_payload_bytes_read"] = pg_payload_read
+    return report
 
 
 def _read_cli_json(root: Path, raw_path: str) -> dict[str, Any]:

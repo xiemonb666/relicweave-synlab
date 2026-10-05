@@ -1,0 +1,81 @@
+{
+  "schema": "synlab.pgfrag.source_reader.final_validation.v1",
+  "current_test_file_cases": 19,
+  "distinct_case_count": 19,
+  "version_applicability": "18 other cases passed in the one full-file run; the sole failure was a stale result_raw test variable. The corrected test assertion passed in one node retry. Reader and fixture SHA were unchanged across retry. This is 19 distinct cases, not 20.",
+  "full_file_run": {
+    "tests": 19,
+    "failures": 1,
+    "errors": 0,
+    "runtime_ms": 3258,
+    "log": "pytest_portable_fixture.log",
+    "junit": "junit_portable_fixture.xml",
+    "test_sha256": "a89e80bd6ef852817813bd64d9bc65a916d7aeebf2e872105fcbe7854b7e8f57",
+    "reader_sha256": "ed1d72f0bd25d2962217e88a226d2a72706c013c7087465b53bb9ca04116bd9e"
+  },
+  "corrected_node_retry": {
+    "node": "test_actual_pgfrag_v1_is_source_bound_and_stays_diagnostic_only",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "runtime_ms": 1496,
+    "log": "pytest_portable_retry.log",
+    "junit": "junit_portable_retry.xml",
+    "test_sha256": "0071ad62a7d6780771923cba0da01bde4326e390732ba371e703825fd8640c54",
+    "reader_sha256": "ed1d72f0bd25d2962217e88a226d2a72706c013c7087465b53bb9ca04116bd9e"
+  },
+  "portable_fixture": {
+    "root": "tests/fixtures/pgfrag/result_v1_toy_endpoint",
+    "source_files": 11,
+    "total_bytes": 1530356,
+    "within_5mb": true,
+    "all_source_hashes_preserved": true,
+    "readme_sha256": "4b9beb4d2d0277def9faf8ba97b312406cf941287d770c0e433673146c12ba2c"
+  },
+  "fixture_hash_changes_during_retry": [],
+  "source_hash_changes_during_retry": [],
+  "actual_named_job_probe": {
+    "status": "PG_DIAGNOSTIC_ONLY",
+    "scope": "PG_DIAGNOSTIC_ONLY",
+    "job_source": "SOURCE_VERIFIED",
+    "job_id_match": true,
+    "job_sha256_match": true,
+    "result_sha256": "b3fb84f20d409f4a4dca0b34ffd8b95a07b7c7944b8b6ecd70100b0b5b17dc20",
+    "caller_match": "UNKNOWN",
+    "normalized_rows_persisted": false,
+    "rows": {
+      "bond_state_rows": 20780,
+      "broken_bond_rows": 5236,
+      "component_rows": 576,
+      "inactive_bond_rows": 5236,
+      "isolated_point_rows": 0,
+      "point_rows": 576
+    },
+    "physical_fragments": "UNKNOWN",
+    "crack_surfaces": "UNKNOWN",
+    "event_history": "UNKNOWN",
+    "historical_R2": "UNKNOWN",
+    "component_graph": "UNKNOWN",
+    "unit_frame_receipt": "actual_named_job_source_receipt.json"
+  },
+  "primary_source_files": [
+    {
+      "path": "synlab/qa/source_readers/__init__.py",
+      "bytes": 300,
+      "sha256": "2d187338150a7582c6cb895cf15f8934b271c863c0a6903da5784e5f947f330b"
+    },
+    {
+      "path": "synlab/qa/source_readers/pgfrag_result.py",
+      "bytes": 40405,
+      "sha256": "ed1d72f0bd25d2962217e88a226d2a72706c013c7087465b53bb9ca04116bd9e"
+    },
+    {
+      "path": "tests/a12/qa/test_pgfrag_source_reader_20261005.py",
+      "bytes": 15514,
+      "sha256": "0071ad62a7d6780771923cba0da01bde4326e390732ba371e703825fd8640c54"
+    }
+  ],
+  "fixture_manifest": "fixture_source_manifest.json",
+  "source_review": "SOURCE_REVIEW.md",
+  "diff_summary": "DIFF_SUMMARY.md"
+}

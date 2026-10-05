@@ -1,0 +1,527 @@
+{
+  "source_files": {
+    "job.json": {
+      "bytes": 949,
+      "sha256": "83af8ea8cb0fd204ab288841fd87382c9dae77ec1cfb5dc9d0c925d610d430d1"
+    },
+    "output/result.json": {
+      "bytes": 8258,
+      "sha256": "b3fb84f20d409f4a4dca0b34ffd8b95a07b7c7944b8b6ecd70100b0b5b17dc20"
+    },
+    "output/data_dictionary.json": {
+      "bytes": 11063,
+      "sha256": "0e0a2d1d39986fa2e676deb182c529237c9c72e86d99ff85e18f06ccd50d73e0"
+    },
+    "output/points.csv": {
+      "bytes": 135416,
+      "sha256": "f78180800aa39702b31d60f2e523cb5a3fc13339644d86826c39bb9acd250edf"
+    },
+    "output/components.csv": {
+      "bytes": 27275,
+      "sha256": "b3ac06b6d86a44465650f9528fd0e1064fd7b76008f19ea3740fdae4ec7a1fa6"
+    },
+    "output/bond_states.csv": {
+      "bytes": 1095598,
+      "sha256": "2ba477c6c915f9eefdb141eb6f203b30b50fc99f6d93df0145a096771e143d3d"
+    },
+    "output/broken_bonds.csv": {
+      "bytes": 249045,
+      "sha256": "4d9d79764b3e228ab63b5ebb250c92643e7df5951e91fb6d01442ba83724a870"
+    },
+    "output/isolated_points.csv": {
+      "bytes": 41,
+      "sha256": "d0bb697a4412b470be2d5ff0fdafeef8de814f94847f0ad4569de9dfe52cd0a7"
+    }
+  },
+  "result_manifest_checks": {
+    "output/data_dictionary.json": {
+      "present_in_result_manifest": true,
+      "declared_bytes": 11063,
+      "actual_bytes": 11063,
+      "declared_sha256": "0e0a2d1d39986fa2e676deb182c529237c9c72e86d99ff85e18f06ccd50d73e0",
+      "actual_sha256": "0e0a2d1d39986fa2e676deb182c529237c9c72e86d99ff85e18f06ccd50d73e0",
+      "bytes_match": true,
+      "sha256_match": true
+    },
+    "output/points.csv": {
+      "present_in_result_manifest": true,
+      "declared_bytes": 135416,
+      "actual_bytes": 135416,
+      "declared_sha256": "f78180800aa39702b31d60f2e523cb5a3fc13339644d86826c39bb9acd250edf",
+      "actual_sha256": "f78180800aa39702b31d60f2e523cb5a3fc13339644d86826c39bb9acd250edf",
+      "bytes_match": true,
+      "sha256_match": true
+    },
+    "output/components.csv": {
+      "present_in_result_manifest": true,
+      "declared_bytes": 27275,
+      "actual_bytes": 27275,
+      "declared_sha256": "b3ac06b6d86a44465650f9528fd0e1064fd7b76008f19ea3740fdae4ec7a1fa6",
+      "actual_sha256": "b3ac06b6d86a44465650f9528fd0e1064fd7b76008f19ea3740fdae4ec7a1fa6",
+      "bytes_match": true,
+      "sha256_match": true
+    },
+    "output/bond_states.csv": {
+      "present_in_result_manifest": true,
+      "declared_bytes": 1095598,
+      "actual_bytes": 1095598,
+      "declared_sha256": "2ba477c6c915f9eefdb141eb6f203b30b50fc99f6d93df0145a096771e143d3d",
+      "actual_sha256": "2ba477c6c915f9eefdb141eb6f203b30b50fc99f6d93df0145a096771e143d3d",
+      "bytes_match": true,
+      "sha256_match": true
+    },
+    "output/broken_bonds.csv": {
+      "present_in_result_manifest": true,
+      "declared_bytes": 249045,
+      "actual_bytes": 249045,
+      "declared_sha256": "4d9d79764b3e228ab63b5ebb250c92643e7df5951e91fb6d01442ba83724a870",
+      "actual_sha256": "4d9d79764b3e228ab63b5ebb250c92643e7df5951e91fb6d01442ba83724a870",
+      "bytes_match": true,
+      "sha256_match": true
+    },
+    "output/isolated_points.csv": {
+      "present_in_result_manifest": true,
+      "declared_bytes": 41,
+      "actual_bytes": 41,
+      "declared_sha256": "d0bb697a4412b470be2d5ff0fdafeef8de814f94847f0ad4569de9dfe52cd0a7",
+      "actual_sha256": "d0bb697a4412b470be2d5ff0fdafeef8de814f94847f0ad4569de9dfe52cd0a7",
+      "bytes_match": true,
+      "sha256_match": true
+    }
+  },
+  "source_binding_checks": {
+    "all_declared_output_files_match_copied_bytes": true,
+    "copied_job_sha256_matches_result_input_declaration": true,
+    "result_json_self_sha256": "b3fb84f20d409f4a4dca0b34ffd8b95a07b7c7944b8b6ecd70100b0b5b17dc20"
+  },
+  "dataset": {
+    "job_id": "osb-fracture-branch-001",
+    "job_initial_condition": {
+      "kind": "uniform_box_bar_fixture",
+      "dimensions_mm": [
+        6,
+        6,
+        16
+      ],
+      "dx_mm": 1,
+      "horizon_mm": 3
+    },
+    "material_model": "OSB",
+    "calibration_status": "UNVALIDATED_PROTOTYPE",
+    "point_count": 576,
+    "points_ids_complete_1_based": true,
+    "canonical_bond_rows": 20780,
+    "active_bond_rows": 15544,
+    "inactive_bond_rows": 5236,
+    "broken_bond_rows": 5236,
+    "isolated_point_rows": 0,
+    "zero_active_degree_points": 0,
+    "graph_component_count_including_singletons": 2,
+    "declared_result_state": {
+      "point_count": 576,
+      "canonical_initial_bond_pairs": 20780,
+      "broken_bond_pairs_at_endpoint": 5236,
+      "intact_bond_graph_component_count": 2
+    },
+    "degree_histogram_active_per_point": {
+      "12": 4,
+      "20": 4,
+      "24": 16,
+      "25": 4,
+      "26": 16,
+      "28": 4,
+      "29": 12,
+      "30": 4,
+      "31": 16,
+      "32": 8,
+      "33": 8,
+      "34": 16,
+      "35": 8,
+      "36": 8,
+      "37": 16,
+      "40": 16,
+      "42": 4,
+      "43": 32,
+      "44": 16,
+      "46": 24,
+      "47": 24,
+      "48": 8,
+      "50": 8,
+      "51": 4,
+      "54": 12,
+      "55": 8,
+      "56": 32,
+      "57": 20,
+      "58": 24,
+      "59": 4,
+      "60": 12,
+      "61": 4,
+      "62": 16,
+      "63": 12,
+      "66": 8,
+      "69": 4,
+      "70": 16,
+      "71": 8,
+      "73": 12,
+      "76": 8,
+      "77": 24,
+      "78": 12,
+      "82": 8,
+      "84": 8,
+      "88": 8,
+      "91": 4,
+      "94": 12,
+      "95": 4,
+      "96": 4,
+      "98": 4,
+      "106": 4,
+      "107": 4
+    },
+    "degree_min": 12,
+    "degree_max": 107,
+    "degree_mean": 53.97222222222222,
+    "inactive_incident_histogram_per_point": {
+      "1": 16,
+      "2": 8,
+      "3": 8,
+      "4": 36,
+      "5": 24,
+      "6": 24,
+      "7": 16,
+      "8": 28,
+      "9": 4,
+      "10": 32,
+      "11": 28,
+      "12": 16,
+      "13": 16,
+      "14": 40,
+      "15": 16,
+      "16": 24,
+      "17": 16,
+      "18": 4,
+      "19": 12,
+      "20": 12,
+      "21": 4,
+      "22": 20,
+      "23": 8,
+      "24": 8,
+      "25": 16,
+      "26": 16,
+      "27": 16,
+      "29": 4,
+      "30": 8,
+      "31": 8,
+      "34": 12,
+      "35": 12,
+      "37": 16,
+      "41": 8,
+      "42": 4,
+      "43": 8,
+      "50": 8,
+      "51": 8,
+      "62": 8,
+      "74": 4
+    },
+    "total_point_volume_m3": 5.760000000000001e-07,
+    "total_mass_points_kg": 0.0005760000000000001,
+    "total_mass_components_kg": 0.0005760000000000001,
+    "mass_sum_delta_kg": 0.0,
+    "mass_vs_rho_times_volume_mismatches": 0,
+    "reference_bbox": {
+      "x": {
+        "min_m": -0.0025,
+        "max_m": 0.0025,
+        "extent_m": 0.005,
+        "min_mm": -2.5,
+        "max_mm": 2.5,
+        "extent_mm": 5.0
+      },
+      "y": {
+        "min_m": -0.0025,
+        "max_m": 0.0025,
+        "extent_m": 0.005,
+        "min_mm": -2.5,
+        "max_mm": 2.5,
+        "extent_mm": 5.0
+      },
+      "z": {
+        "min_m": -0.0075,
+        "max_m": 0.007500000000000001,
+        "extent_m": 0.015,
+        "min_mm": -7.5,
+        "max_mm": 7.500000000000001,
+        "extent_mm": 15.0
+      }
+    },
+    "current_bbox": {
+      "x": {
+        "min_m": -0.002522383038232546,
+        "max_m": 0.002522383038232546,
+        "extent_m": 0.005044766076465092,
+        "min_mm": -2.522383038232546,
+        "max_mm": 2.522383038232546,
+        "extent_mm": 5.044766076465092
+      },
+      "y": {
+        "min_m": -0.002522383038232546,
+        "max_m": 0.002522383038232547,
+        "extent_m": 0.005044766076465093,
+        "min_mm": -2.522383038232546,
+        "max_mm": 2.522383038232547,
+        "extent_mm": 5.044766076465093
+      },
+      "z": {
+        "min_m": -0.008060244083024855,
+        "max_m": 0.008060244083024855,
+        "extent_m": 0.01612048816604971,
+        "min_mm": -8.060244083024855,
+        "max_mm": 8.060244083024855,
+        "extent_mm": 16.12048816604971
+      }
+    },
+    "components": [
+      {
+        "ordinal_by_min_point_id": 1,
+        "point_count": 432,
+        "min_point_id": 1,
+        "max_point_id": 432,
+        "sample_first_12_point_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "point_mass_sum_kg": 0.0004320000000000001,
+        "reference_bbox_m": {
+          "x": {
+            "min_m": -0.0025,
+            "max_m": 0.0025,
+            "extent_m": 0.005,
+            "min_mm": -2.5,
+            "max_mm": 2.5,
+            "extent_mm": 5.0
+          },
+          "y": {
+            "min_m": -0.0025,
+            "max_m": 0.0025,
+            "extent_m": 0.005,
+            "min_mm": -2.5,
+            "max_mm": 2.5,
+            "extent_mm": 5.0
+          },
+          "z": {
+            "min_m": -0.0075,
+            "max_m": 0.0035,
+            "extent_m": 0.011,
+            "min_mm": -7.5,
+            "max_mm": 3.5,
+            "extent_mm": 11.0
+          }
+        },
+        "current_bbox_m": {
+          "x": {
+            "min_m": -0.002522383038232546,
+            "max_m": 0.002522383038232546,
+            "extent_m": 0.005044766076465092,
+            "min_mm": -2.522383038232546,
+            "max_mm": 2.522383038232546,
+            "extent_mm": 5.044766076465092
+          },
+          "y": {
+            "min_m": -0.002522383038232546,
+            "max_m": 0.002522383038232547,
+            "extent_m": 0.005044766076465093,
+            "min_mm": -2.522383038232546,
+            "max_mm": 2.522383038232547,
+            "extent_mm": 5.044766076465093
+          },
+          "z": {
+            "min_m": -0.008060244083024855,
+            "max_m": 0.003672159163141535,
+            "extent_m": 0.01173240324616639,
+            "min_mm": -8.060244083024855,
+            "max_mm": 3.672159163141535,
+            "extent_mm": 11.73240324616639
+          }
+        },
+        "declared_points_labels": [
+          1
+        ],
+        "declared_components_labels": [
+          1
+        ]
+      },
+      {
+        "ordinal_by_min_point_id": 2,
+        "point_count": 144,
+        "min_point_id": 433,
+        "max_point_id": 576,
+        "sample_first_12_point_ids": [
+          433,
+          434,
+          435,
+          436,
+          437,
+          438,
+          439,
+          440,
+          441,
+          442,
+          443,
+          444
+        ],
+        "point_mass_sum_kg": 0.00014400000000000003,
+        "reference_bbox_m": {
+          "x": {
+            "min_m": -0.0025,
+            "max_m": 0.0025,
+            "extent_m": 0.005,
+            "min_mm": -2.5,
+            "max_mm": 2.5,
+            "extent_mm": 5.0
+          },
+          "y": {
+            "min_m": -0.0025,
+            "max_m": 0.0025,
+            "extent_m": 0.005,
+            "min_mm": -2.5,
+            "max_mm": 2.5,
+            "extent_mm": 5.0
+          },
+          "z": {
+            "min_m": 0.0045000000000000005,
+            "max_m": 0.007500000000000001,
+            "extent_m": 0.003,
+            "min_mm": 4.500000000000001,
+            "max_mm": 7.500000000000001,
+            "extent_mm": 3.0
+          }
+        },
+        "current_bbox_m": {
+          "x": {
+            "min_m": -0.002506945647394224,
+            "max_m": 0.002506945647394224,
+            "extent_m": 0.005013891294788448,
+            "min_mm": -2.506945647394224,
+            "max_mm": 2.506945647394224,
+            "extent_mm": 5.013891294788448
+          },
+          "y": {
+            "min_m": -0.002506945647394224,
+            "max_m": 0.002506945647394224,
+            "extent_m": 0.005013891294788448,
+            "min_mm": -2.506945647394224,
+            "max_mm": 2.506945647394224,
+            "extent_mm": 5.013891294788448
+          },
+          "z": {
+            "min_m": 0.005011206017527333,
+            "max_m": 0.008060244083024855,
+            "extent_m": 0.0030490380654975228,
+            "min_mm": 5.011206017527333,
+            "max_mm": 8.060244083024855,
+            "extent_mm": 3.049038065497523
+          }
+        },
+        "declared_points_labels": [
+          2
+        ],
+        "declared_components_labels": [
+          2
+        ]
+      }
+    ]
+  },
+  "checks": {
+    "point_roster_complete_unique_1_to_N": {
+      "pass": true,
+      "witness": null
+    },
+    "canonical_bond_endpoints_valid_unique": {
+      "pass": true,
+      "witnesses": []
+    },
+    "components_csv_partition_equals_union_find": {
+      "pass": true,
+      "declared_component_count": 2,
+      "recomputed_component_count": 2,
+      "pair_witness": null
+    },
+    "points_csv_partition_equals_union_find": {
+      "pass": true,
+      "declared_component_count": 2,
+      "recomputed_component_count": 2,
+      "pair_witness": null
+    },
+    "points_and_components_partitions_equal_allowing_label_permutation": {
+      "pass": true,
+      "literal_labels_equal_at_every_point": true,
+      "pair_witness": null
+    },
+    "points_active_degree_matches_active_bond_incidence": {
+      "pass": true,
+      "mismatch_count": 0,
+      "witnesses": [],
+      "degree_sum_equals_twice_active_edges": true
+    },
+    "broken_bonds_equals_exact_inactive_pair_set": {
+      "pass": true,
+      "inactive_pair_count": 5236,
+      "broken_pair_count": 5236,
+      "inactive_missing_from_broken_first_10": [],
+      "unexpected_broken_pairs_first_10": [],
+      "length_mismatch_witnesses": []
+    },
+    "isolated_roster_equals_zero_active_degree_points_including_singletons": {
+      "pass": true,
+      "isolated_file_ids": [],
+      "recomputed_zero_degree_ids": [],
+      "metadata_mismatch_witnesses": []
+    },
+    "component_metadata_mass_equals_points_mass": {
+      "pass": true,
+      "mismatch_count": 0,
+      "witnesses": []
+    },
+    "point_mass_equals_job_density_times_volume": {
+      "pass": true,
+      "mismatch_count": 0,
+      "witnesses": []
+    },
+    "damage_equals_endpoint_inactive_incident_fraction_empirically": {
+      "pass": true,
+      "mismatch_count": 0,
+      "witnesses": [],
+      "formula_status": "independent empirical check; dictionary calls damage upstream material-model point damage"
+    },
+    "result_declared_state_counts_match_independent_counts": {
+      "pass": true,
+      "independently_recomputed": {
+        "points": 576,
+        "bonds": 20780,
+        "inactive": 5236,
+        "components": 2
+      },
+      "declared": {
+        "points": 576,
+        "bonds": 20780,
+        "inactive": 5236,
+        "components": 2
+      }
+    }
+  },
+  "limitations": [
+    "This input is explicitly a uniform_box_bar_fixture with UNVALIDATED_PROTOTYPE material calibration; it has no physical forge geometry and grants no physical-fragment qualification.",
+    "An intact-bond graph connected component is a graph partition only; it does not establish a rigid or transferable fragment.",
+    "Endpoint inactive bond pairs do not provide fracture event times, positive-area crack faces, paired-surface lineage, contact state, or historical R2 adjacency.",
+    "This audit checks copied source bytes and recomputes the declared endpoint graph partition; it does not validate fracture mechanics, calibration, energy completeness, general timestep stability, or geometry/mesh fitness."
+  ]
+}

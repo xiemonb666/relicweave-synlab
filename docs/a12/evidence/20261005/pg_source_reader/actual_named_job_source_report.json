@@ -1,0 +1,130 @@
+{
+  "caller_match": {
+    "components": {},
+    "status": "UNKNOWN"
+  },
+  "capabilities": {
+    "crack_surfaces": {
+      "reason": "surface geometry and paired-face lineage are not source fields in this fixture",
+      "status": "UNKNOWN"
+    },
+    "event_history": {
+      "reason": "endpoint bond state does not contain a per-step event timeline",
+      "status": "UNKNOWN"
+    },
+    "historical_R2": {
+      "reason": "no historical surface adjacency or relation labels are emitted",
+      "status": "UNKNOWN"
+    },
+    "physical_fragments": {
+      "reason": "endpoint intact-bond components do not certify physical fragments",
+      "status": "UNKNOWN"
+    }
+  },
+  "errors": [],
+  "fixture_context": {
+    "initial_condition_kind": "uniform_box_bar_fixture"
+  },
+  "identity": {
+    "declared_job_sha256": "83af8ea8cb0fd204ab288841fd87382c9dae77ec1cfb5dc9d0c925d610d430d1",
+    "job_id": "osb-fracture-branch-001",
+    "result_bytes": 8258,
+    "result_external_sha256_verified": true,
+    "result_sha256": "b3fb84f20d409f4a4dca0b34ffd8b95a07b7c7944b8b6ecd70100b0b5b17dc20"
+  },
+  "job_source": {
+    "bytes": 949,
+    "bytes_verified": true,
+    "job_id_match": true,
+    "sha256": "83af8ea8cb0fd204ab288841fd87382c9dae77ec1cfb5dc9d0c925d610d430d1",
+    "sha256_match": true,
+    "source_supplied": true,
+    "status": "SOURCE_VERIFIED"
+  },
+  "result_source": {
+    "bytes_read": 8258,
+    "external_sha256_verified": true,
+    "sha256": "b3fb84f20d409f4a4dca0b34ffd8b95a07b7c7944b8b6ecd70100b0b5b17dc20"
+  },
+  "row_counts": {
+    "bond_state_rows": 20780,
+    "broken_bond_rows": 5236,
+    "component_rows": 576,
+    "inactive_bond_rows": 5236,
+    "isolated_point_rows": 0,
+    "point_rows": 576
+  },
+  "schema": "synlab.pgfrag.source_read.v1",
+  "scope": "PG_DIAGNOSTIC_ONLY",
+  "source_binding": {
+    "component_partition_validation": {
+      "reason": "component labels are cross-checked with points.csv but graph connectivity is not recomputed",
+      "status": "UNKNOWN"
+    },
+    "components": {
+      "bonds": {
+        "bytes_verified": true,
+        "caller_match": "UNKNOWN",
+        "files": {
+          "bond_states.csv": {
+            "bytes": 1095598,
+            "bytes_verified": true,
+            "path": "bond_states.csv",
+            "sha256_verified": true
+          },
+          "broken_bonds.csv": {
+            "bytes": 249045,
+            "bytes_verified": true,
+            "path": "broken_bonds.csv",
+            "sha256_verified": true
+          },
+          "isolated_points.csv": {
+            "bytes": 41,
+            "bytes_verified": true,
+            "path": "isolated_points.csv",
+            "sha256_verified": true
+          }
+        },
+        "inactive_bond_rows": 5236,
+        "rows_compared": 26016,
+        "status": "SOURCE_VERIFIED"
+      },
+      "components": {
+        "bytes_verified": true,
+        "caller_match": "UNKNOWN",
+        "files": {
+          "components.csv": {
+            "bytes": 27275,
+            "bytes_verified": true,
+            "path": "components.csv",
+            "sha256_verified": true
+          }
+        },
+        "rows_compared": 576,
+        "status": "SOURCE_VERIFIED"
+      },
+      "points": {
+        "bytes_verified": true,
+        "caller_match": "UNKNOWN",
+        "files": {
+          "points.csv": {
+            "bytes": 135416,
+            "bytes_verified": true,
+            "path": "points.csv",
+            "sha256_verified": true
+          }
+        },
+        "rows_compared": 576,
+        "status": "SOURCE_VERIFIED"
+      }
+    },
+    "dictionary": {
+      "bytes_verified": true,
+      "path": "data_dictionary.json",
+      "status": "SOURCE_VERIFIED"
+    },
+    "producer_rows_compared": true,
+    "status": "SOURCE_VERIFIED"
+  },
+  "status": "PG_DIAGNOSTIC_ONLY"
+}

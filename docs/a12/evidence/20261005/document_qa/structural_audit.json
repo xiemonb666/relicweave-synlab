@@ -1,0 +1,135 @@
+{
+  "source_document": "RelicWeave_V1.46_A12_VesselForge_PGFrag_Integrated_NavFixed.docx",
+  "source_sha256_before": "15978a3956fa33e8048cc54c1dad6878a7e19d9c71b84415dcaf8732f041a3b4",
+  "source_sha256_after": "15978a3956fa33e8048cc54c1dad6878a7e19d9c71b84415dcaf8732f041a3b4",
+  "output_document": "RelicWeave_V1.46_Implementation_Update_20261005.docx",
+  "output_sha256": "85f3bb0e6115e208ce51c666d77ee756a4e2b74d67e8d039283574bb6764b531",
+  "only_changed_package_part": "word/document.xml",
+  "package_parts": {
+    "source": 23,
+    "output": 23
+  },
+  "paragraph_sequence_preserved": true,
+  "old_counts": {
+    "paragraphs": 6846,
+    "tables": 176,
+    "rows": 1341,
+    "cells": 4503,
+    "bookmark_starts": 520,
+    "bookmark_ends": 520,
+    "internal_hyperlinks": 80,
+    "drawings": 2
+  },
+  "new_counts": {
+    "paragraphs": 6866,
+    "tables": 176,
+    "rows": 1341,
+    "cells": 4503,
+    "bookmark_starts": 520,
+    "bookmark_ends": 520,
+    "internal_hyperlinks": 80,
+    "drawings": 2
+  },
+  "existing_table_subtrees_byte_identical": true,
+  "broken_internal_bookmark_anchors": [],
+  "inserted_paragraph_count": 20,
+  "inserted_paragraphs": [
+    {
+      "anchor_original_paragraph_index": 6,
+      "inserted_paragraph_indices_final_1based": [
+        7
+      ],
+      "inserted_texts": [
+        "实现快照（截至2026-10-05）：本文A12、VesselForge与PG-Frag描述的是目标架构和路线，不代表端到端功能、Physics-Ready资产或研究资格已完成。当前实现状态以本快照及A12、附录G、I、J所列日期证据为准；历史实验结论仍限于原证据对应的范围。"
+      ]
+    },
+    {
+      "anchor_original_paragraph_index": 1104,
+      "inserted_paragraph_indices_final_1based": [
+        1106,
+        1107,
+        1108,
+        1109
+      ],
+      "inserted_texts": [
+        "A12状态：截至2026-10-05，A12为 IN_PROGRESS。",
+        "全链审计：判决为 INCOMPLETE（30 gaps）；audited fragment rows=0，producer/source binding=UNKNOWN，合格高仿真预训练包=0，physics_qualified=false，pretrain_qualified=false。",
+        "局部验证：隔离基础模块与部署合同测试已通过窄范围验证；这不证明 A3/A4 主链路接入、来源绑定、现场实测、回传标签或全链资格。旧 5 GB 资产尚未迁移。",
+        "运行边界：当前本机为 LocalTiny；CPU Julia 仅有窄范围执行证据；5090 批量训练后置，GPU 路径目前未实现也未经验证，状态为 UNKNOWN。"
+      ]
+    },
+    {
+      "anchor_original_paragraph_index": 1281,
+      "inserted_paragraph_indices_final_1based": [
+        1287,
+        1288
+      ],
+      "inserted_texts": [
+        "生产载荷回读：预训练资格审查必须读取实际 producer payload，并逐项核对 event、fragment、surface、material、degradation、observation、capture、feature 与 label；同时校核单位、坐标/参考系、源文件哈希、版本及 source/event lineage。调用方提供的 schema、元数据、哈希或“PASS”字符串不能替代 source-bound 比对。",
+        "GT与历史标签：当前全链审计尚未核对实际 producer payload；在完成比对前，不得把 caller metadata/JSON 视为 source binding，也不得将调用方声明当作真实标签。fragment/object identity 与 GT provenance 必须可追溯，GT保持独立。historical_R2 记录的是磨损前的历史原始真实邻接，不是磨损标签；不得因当前磨损删除这些邻接或改写其身份，UNKNOWN 不得升格为 R0。"
+      ]
+    },
+    {
+      "anchor_original_paragraph_index": 4003,
+      "inserted_paragraph_indices_final_1based": [
+        4011,
+        4012
+      ],
+      "inserted_texts": [
+        "观测驱动闭环：核心流程为 observed fragments → candidate ranking → evidence → recapture 或 STOP。排序结果是待核验候选，不是自动确认的真实碎片；证据不足时应重采或停止，并保留来源与版本链。",
+        "预训练门槛：进入 pretrain-ready 前，统一账本必须闭合 VesselForge 母资产/版本与几何来源、PG-Frag 事件/候选碎片/材料、A12 磨损方案及可追溯观测/捕获、独立 GT 与标签、生产载荷回读和来源绑定。任一门槛失败或 UNKNOWN 均维持 INCOMPLETE。几何预览、材料场 toy、contact/point 诊断只属于 diagnostic profile；缓存分块、固定碎片数或手绘断口不能冒充物理碎裂数据。"
+      ]
+    },
+    {
+      "anchor_original_paragraph_index": 6018,
+      "inserted_paragraph_indices_final_1based": [
+        6028,
+        6029,
+        6030
+      ],
+      "inserted_texts": [
+        "浮雕机制与视觉判决：run02 在闭合解析圆柱 fixture 上闭合了浮雕几何/颜色映射机制（6,402 vertices、12,800 triangles），但最大外缘边长为 1.441476344 mm，是 0.45 mm 浮雕高度的 3.20 倍；粗糙面片视觉被判高质量失败。.50 mm 与 .25 mm 两档局部细化机制在有限探针上通过，最大几何误差分别为 .0145773 mm 与 .00602363 mm；这是有限探针结果，不是全域误差界。复核图像仍未达到高质量验收标准：过渡带有扇形三角片、细节面板坐标轴标签拥挤；真实器物风格与 PBR 资格仍 UNKNOWN。以上结果不构成多母体资产、真实材料校准或物理资格。",
+        "壁厚绑定与缓存：旧 v5 的 39 项窄范围测试通过，但旧实际 STEP 资产绑定失败（CANONICAL_BREP_FACE_BOUNDS_MISMATCH:0，0 stations bound）；该旧 run 仍为 FAIL，不改判。根因已确认：默认边界框受三角化缓存影响；geometry-only AddOptimal(False, False) 在 mesh 前后差值为 0，面积/质心差值为 0；默认缓存观察到的最大边界框影响约 0.0019768022993463 mm。共享、版本化的 geometry-only bounds policy 已在 producer/consumer 实现，CAD tolerance 保持 1e-7；新一轮 57 个 distinct targeted JUnit 全 PASS，0 failures/errors/skips，五个 source/test SHA 前后与实际文件一致。一次授权的 migration copy 收据为 PASS_MOTHER_STATION_BINDING：有限母体站点 2/2 bound，7 个原 payload 逐字节保持；使用 2 次 STEP imports，0 mesh/export/rebuild。该结果不建立 global wall（UNVERIFIED）或 global minimum wall（NOT_ESTABLISHED）；fragment mapping/第二阶段 lineage 尚未实现（UNAVAILABLE/UNIMPLEMENTED），physics 仍 UNKNOWN。外层 migration wrapper 的最终 exit code 未记录；此处仅报告绑定结果，不声称包装器 exit 0。",
+        "单杯母体候选：beaker 单例实际运行 64.29 s、exit=2；native 结果含 1 个 closed valid solid/shell 与 13 个 non-axis C2 joins，STEP roundtrip 通过（volume Δ=−2.73576e−9 mm³，bounds Δ=0）。法向检查有 1,840 个候选、1,839 个已测、1 个 UNKNOWN；抽样最小值 1.021637 mm 不是全局最小值，因此总体判为 FAIL_OR_LOCAL_EVIDENCE_UNKNOWN。实际 solid/cut 图显示杯身比旧 mesh 圆滑，但底部局部弯曲半径偏小（有限采样约 0.86–0.92 mm）；这不构成真实器物或风格验收。bowl 仍为 NOT_RUN。"
+      ]
+    },
+    {
+      "anchor_original_paragraph_index": 6431,
+      "inserted_paragraph_indices_final_1based": [
+        6444,
+        6445,
+        6446
+      ],
+      "inserted_texts": [
+        "A8与可见性窄审：loaded A8 有 9 个状态，响应非零、最大位移约 21 nm，但没有断裂事件/状态转移。bond visibility v3 的 10/10 窄测试通过，JUnit、pins 与 sidecar 相符；STEP 入口的两对实际探针已完成：既有 STEP 导入下，同壁 pair 为 IN、跨腔 pair 为 OUT；native gate 与 RelicWeave 全链尚未接入。这些结果不构成裂纹传播或物理资格证据。",
+        "B3原生阈值分支：数值审计及 PNG 窄审通过：3 个状态各含 6,124 条 directed rows/3,062 个 canonical pairs；632 对发生阈值状态变化，对应 1,264 条 directed 记录。图中可见原生阈值历史与 reverse-pair y=x；这是 all-points-affine 分支诊断，没有时间积分，也没有自由断裂。",
+        "受控界面与物理资格：18 项 controlled cohesive 检查属于受控界面能力诊断，不证明 free fracture。此前 extrinsic-D 与 half-dt 负结果保留；材料校准、自由裂纹、断裂表面、能量平衡及方向收敛仍为 UNKNOWN，因此尚未取得 full physics qualification。"
+      ]
+    },
+    {
+      "anchor_original_paragraph_index": 6518,
+      "inserted_paragraph_indices_final_1based": [
+        6534,
+        6535
+      ],
+      "inserted_texts": [
+        "实施优先级：可替换后端是目标架构，不要求首条最小链同时落地 PD、FEM、Phase-Field、MPM。当前优先让一个 native 后端贯通 RelicWeave 样例，并先通过本构响应、能量、分辨率与方向偏差 benchmark。",
+        "候选后端与资格：其他后端仅在明确 benchmark 缺口和所需证据成立时作为候选加入；后端更换须记录版本并重新验收。独立 benchmark 不要求先安装第二套完整生产 solver。几何预览或材料场 toy 仅进入 diagnostic profile，不能取得 Physics-Ready 资格。这是 ENGINEERING_DECISION；研究新颖性为 NOT_ESTABLISHED。"
+      ]
+    },
+    {
+      "anchor_original_paragraph_index": 6767,
+      "inserted_paragraph_indices_final_1based": [
+        6785,
+        6786,
+        6787
+      ],
+      "inserted_texts": [
+        "独立离散复现：Physics-Ready 判定须固定相同物理材料场、形状与载荷，独立改变离散：覆盖多个独立 remesh，并分别进行 point-lattice rotations 与 subvoxel translations。时间步收敛与加载速率敏感性须另行分组验证，不能与离散变化混为同一组；各组分别报告力/能量平衡、断裂几何和方向误差收敛。",
+        "尺度分离：分别记录 CAD chord deflection、tet-edge 长度 h、PD horizon δ、process-zone 尺度、局部壁厚 t 与浮雕/粗糙度最小波长 λ_min，并报告 h/t 等比例关系。CAD chord deflection 不能代替 tet-edge 或 PD h；当 h 与 t 同数量级时，不得判为高质量。",
+        "防止伪收敛：旋转协变通过本身不能证明离散方向偏差已消除；PD 也须独立网格与点格验证。修复缓存边界框身份问题时不得放宽 1e-7 容差掩盖误差；不得固定碎片数量或绘制裂纹来代替物理断裂，候选 solver 须先登记并通过独立 benchmark。"
+      ]
+    }
+  ],
+  "evidence_paths_exist": true
+}
