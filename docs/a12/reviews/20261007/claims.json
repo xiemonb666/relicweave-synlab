@@ -1,0 +1,563 @@
+{
+  "degradation": {
+    "assessment": "155/155 status PASS and paired-value coverage/error are distinct predicates. PASS here does not mean planned/measured fidelity, external calibration, or coverage of 20 independent mothers.",
+    "execution_status_denominator": {
+      "axes_audited": 31,
+      "axes_registered": 31,
+      "calibration_status_counts": {
+        "UNCALIBRATED": 155
+      },
+      "independent_mothers_observed": 1,
+      "level0_identity_hashes_equal": true,
+      "level0_identity_rows": 31,
+      "level0_pass_rows": 31,
+      "levels": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "planned_axis_level_rows": 155,
+      "row_realized_counts": {
+        "True": 155
+      },
+      "row_status_counts": {
+        "PASS": 155
+      },
+      "row_valid_counts": {
+        "True": 155
+      },
+      "source_provenance_counts": {
+        "BUILTIN_PROBE_FIXTURE_ROUGH_INTERFACE": 40,
+        "BUILTIN_PROBE_REAL_RENDER": 115
+      }
+    },
+    "fidelity_rows": {
+      "G01": [
+        {
+          "absolute_relative_error_pct": 13.057684046434703,
+          "level": 1,
+          "measured": 0.056528842023217354,
+          "planned": 0.05,
+          "status": "PASS"
+        },
+        {
+          "absolute_relative_error_pct": 12.225652359213177,
+          "level": 2,
+          "measured": 0.11222565235921318,
+          "planned": 0.1,
+          "status": "PASS"
+        },
+        {
+          "absolute_relative_error_pct": 11.119858968387032,
+          "level": 3,
+          "measured": 0.5555992948419352,
+          "planned": 0.5,
+          "status": "PASS"
+        },
+        {
+          "absolute_relative_error_pct": 8.141297402033931,
+          "level": 4,
+          "measured": 1.0814129740203393,
+          "planned": 1.0,
+          "status": "PASS"
+        }
+      ],
+      "G01_all_level_rows": [
+        {
+          "identity": true,
+          "level": 0,
+          "measured": null,
+          "planned": 0.0,
+          "status": "PASS"
+        },
+        {
+          "identity": false,
+          "level": 1,
+          "measured": 0.056528842023217354,
+          "planned": 0.05,
+          "status": "PASS"
+        },
+        {
+          "identity": false,
+          "level": 2,
+          "measured": 0.11222565235921318,
+          "planned": 0.1,
+          "status": "PASS"
+        },
+        {
+          "identity": false,
+          "level": 3,
+          "measured": 0.5555992948419352,
+          "planned": 0.5,
+          "status": "PASS"
+        },
+        {
+          "identity": false,
+          "level": 4,
+          "measured": 1.0814129740203393,
+          "planned": 1.0,
+          "status": "PASS"
+        }
+      ],
+      "G08": [
+        {
+          "absolute_relative_error_pct": 11.561000306077817,
+          "level": 1,
+          "measured": 0.35375599877568875,
+          "planned": 0.4,
+          "status": "PASS"
+        },
+        {
+          "absolute_relative_error_pct": 6.059655801936362,
+          "level": 2,
+          "measured": 0.7515227535845092,
+          "planned": 0.8,
+          "status": "PASS"
+        },
+        {
+          "absolute_relative_error_pct": 20.20740528335655,
+          "level": 3,
+          "measured": 1.1170963260330082,
+          "planned": 1.4,
+          "status": "PASS"
+        },
+        {
+          "absolute_relative_error_pct": 12.931896694378652,
+          "level": 4,
+          "measured": 1.9154982727236698,
+          "planned": 2.2,
+          "status": "PASS"
+        }
+      ],
+      "max_relative_error": {
+        "axis_id": "G08",
+        "level": 3,
+        "measured": 1.1170963260330082,
+        "planned": 1.4,
+        "relative_error_pct": 20.20740528335655
+      },
+      "relative_error_gt_1pct": 10,
+      "rows_with_nonzero_target_and_pair": 36
+    },
+    "planned_measured_pairing_denominator": {
+      "axes_registered": 31,
+      "axes_with_any_nonnull_pair": 9,
+      "axes_with_no_nonnull_pair": [
+        "G02",
+        "G04",
+        "G05",
+        "I01",
+        "I02",
+        "I03",
+        "I04",
+        "I05",
+        "I06",
+        "I07",
+        "I08",
+        "I09",
+        "I10",
+        "P01",
+        "P02",
+        "P05",
+        "P06",
+        "X01",
+        "X02",
+        "X03",
+        "X04",
+        "X05"
+      ],
+      "axes_with_nonnull_pair": [
+        "G01",
+        "G03",
+        "G06",
+        "G07",
+        "G08",
+        "P03",
+        "P04",
+        "P07",
+        "P08"
+      ],
+      "axes_with_pair_key_definition": 28,
+      "axes_without_pair_key_definition": [
+        "P01",
+        "P05",
+        "P06"
+      ],
+      "json_unpaired_axes_field": [
+        "P01",
+        "P05",
+        "P06"
+      ],
+      "pair_definition_axes": [
+        "G01",
+        "G02",
+        "G03",
+        "G04",
+        "G05",
+        "G06",
+        "G07",
+        "G08",
+        "I01",
+        "I02",
+        "I03",
+        "I04",
+        "I05",
+        "I06",
+        "I07",
+        "I08",
+        "I09",
+        "I10",
+        "P02",
+        "P03",
+        "P04",
+        "P07",
+        "P08",
+        "X01",
+        "X02",
+        "X03",
+        "X04",
+        "X05"
+      ],
+      "pair_field_semantics": "pair_definition has mappings for these axes; json unpaired_axes lists only axes without any mapping, not every axis lacking non-null row values",
+      "rows_with_both_values": 36,
+      "rows_with_pair_by_level": [
+        {
+          "level": 0,
+          "rows": 31,
+          "rows_with_nonnull_pair": 0
+        },
+        {
+          "level": 1,
+          "rows": 31,
+          "rows_with_nonnull_pair": 9
+        },
+        {
+          "level": 2,
+          "rows": 31,
+          "rows_with_nonnull_pair": 9
+        },
+        {
+          "level": 3,
+          "rows": 31,
+          "rows_with_nonnull_pair": 9
+        },
+        {
+          "level": 4,
+          "rows": 31,
+          "rows_with_nonnull_pair": 9
+        }
+      ],
+      "total_rows": 155
+    },
+    "saved_report_claim": {
+      "denominators": {
+        "axes_audited": 31,
+        "axes_fail": 0,
+        "axes_missing": 0,
+        "axes_na": 0,
+        "axes_pass": 31,
+        "axes_registered": 31,
+        "levels_failed": 0,
+        "levels_na": 0,
+        "levels_passed": 155,
+        "levels_planned": 155
+      },
+      "level0_failures": [],
+      "level0_hash_equal_all": true,
+      "level0_identity_all_true": true,
+      "level0_n": 31,
+      "limits": {
+        "independent_mothers_observed": 1,
+        "min_independent_mothers_required": 20,
+        "note": "the 20-mother requirement is a dataset-level requirement; this audit runs on the sources available in the store plus the labelled probe fixture",
+        "source_limit": 1
+      },
+      "max_abs_error": 0.2845017272763304,
+      "max_rel_error": 0.2020740528335655,
+      "n_axes_with_paired_quantity": 9,
+      "n_levels": 155,
+      "n_levels_with_paired_quantity": 36,
+      "n_rel_error_gt_1pct": 10,
+      "pair_definition": {
+        "G01": [
+          "planned_target_rms_mm",
+          "measured_applied_rms_mm",
+          "mm"
+        ],
+        "G02": [
+          "planned_keep_fraction",
+          "measured_kept_fraction",
+          "ratio"
+        ],
+        "G03": [
+          "planned_retained_coverage",
+          "measured_retained_coverage",
+          "ratio"
+        ],
+        "G04": [
+          "planned_translation_mm",
+          "measured_realized_translation_mm",
+          "mm"
+        ],
+        "G05": [
+          "planned_max_error_mm",
+          "measured_realized_max_error_mm",
+          "mm"
+        ],
+        "G06": [
+          "planned_ratio_error",
+          "measured_measured_ratio",
+          "ratio (+1)"
+        ],
+        "G07": [
+          "planned_focal_ratio",
+          "measured_measured_focal_ratio",
+          "ratio"
+        ],
+        "G08": [
+          "planned_height_mm",
+          "measured_measured_max_displacement_mm",
+          "mm"
+        ],
+        "I01": [
+          "planned_psf_sigma_px",
+          "measured_measured_psf_sigma_px",
+          "px"
+        ],
+        "I02": [
+          "planned_length_px",
+          "measured_measured_length_px",
+          "px"
+        ],
+        "I03": [
+          "planned_read_sigma",
+          "measured_measured_read_sigma",
+          "sigma"
+        ],
+        "I04": [
+          "planned_exposure_ev",
+          "measured_measured_exposure_ev",
+          "EV"
+        ],
+        "I05": [
+          "planned_wb_deviation",
+          "measured_measured_wb_deviation",
+          "ratio"
+        ],
+        "I06": [
+          "planned_saturation_target",
+          "measured_measured_saturation_target",
+          "ratio"
+        ],
+        "I07": [
+          "planned_target_coverage",
+          "measured_measured_target_coverage",
+          "ratio"
+        ],
+        "I08": [
+          "planned_keep_fraction",
+          "measured_measured_keep_fraction",
+          "ratio"
+        ],
+        "I09": [
+          "planned_resize_scale",
+          "measured_measured_resize_scale",
+          "ratio"
+        ],
+        "I10": [
+          "planned_jpeg_quality",
+          "measured_measured_jpeg_quality",
+          "quality"
+        ],
+        "P02": [
+          "planned_max_recession_mm",
+          "measured_measured_max_recession_mm",
+          "mm"
+        ],
+        "P03": [
+          "planned_depth_mm",
+          "measured_applied_depth_mm",
+          "mm"
+        ],
+        "P04": [
+          "planned_contact_loss_target",
+          "measured_achieved_contact_loss",
+          "ratio"
+        ],
+        "P07": [
+          "planned_depth_mm",
+          "measured_realized_max_recession_mm",
+          "mm"
+        ],
+        "P08": [
+          "planned_affected_area",
+          "measured_achieved_affected_area_fraction",
+          "ratio"
+        ],
+        "X01": [
+          "planned_missing_rate",
+          "measured_measured_missing_rate",
+          "ratio"
+        ],
+        "X02": [
+          "planned_boundary_px",
+          "measured_measured_boundary_px",
+          "px"
+        ],
+        "X03": [
+          "planned_missing_rate",
+          "measured_measured_missing_rate",
+          "ratio"
+        ],
+        "X04": [
+          "planned_bias_sigma",
+          "measured_measured_mean_shift",
+          "sigma"
+        ],
+        "X05": [
+          "planned_preset_index",
+          "measured_measured_preset_index",
+          "index"
+        ]
+      }
+    },
+    "status_snapshot_refs": {
+      "status.md_completed_claim_line": 33,
+      "status.md_open_pairing_claim_line": 81
+    }
+  },
+  "minimum_doc_repair_proposal": [
+    "status.md line 33: retain 155/155 but label the predicate as per-level execution/validity for one uncalibrated mother; state it is not target-fidelity validation.",
+    "status.md line 81: distinguish 28/31 pair-key mappings from 9/31 axes with any observed non-null pair (36/155 level rows); 22/31 axes have no observed pair, while P01/P05/P06 have no pair mapping. Attach G01/G08 errors to the paired-measurement audit.",
+    "patterns.md: resolve or mark UNKNOWN the §4.2 14/16 vs §5 13/16 discrepancy. Split fixture displacement success, true-mother family-audit status, and true-mother geometry applied/refused. Identify the saved pattern-merge report separately from the canonical A05 CLI report."
+  ],
+  "patterns": {
+    "assessment": "The docs’ 13/16 and 14/16 true-mother counts are internally inconsistent. The later saved pattern-merge JSON is a different snapshot/aggregation and different family-level predicate; it does not resolve the underlying applied-geometry count. Keep canonical A05 report status UNKNOWN/PENDING until command/input equivalence is established.",
+    "doc_refs": {
+      "canonical_A05_pending_lines": "patterns.md:188-199",
+      "fixture_geometry_values_lines": "patterns.md:97,118-119,149",
+      "true_mother_13_of_16_line": "patterns.md:191",
+      "true_mother_14_of_16_lines": "patterns.md:139-147"
+    },
+    "documented_fixture": {
+      "PAT14": {
+        "displacement_mm": 0.8,
+        "flipped_faces": 0,
+        "volume_delta_mm3": 1701.5,
+        "watertight": true
+      },
+      "PAT15": {
+        "displacement_mm": 0.5,
+        "flipped_faces": 0,
+        "volume_delta_mm3": -443.2,
+        "watertight": true
+      },
+      "denominator": "the documented fixture result covers 16 pattern families; geometry-capable modes PAT14/PAT15 are reported applied",
+      "evidence_type": "documentation statement; this review did not find a distinct pinned fixture result JSON among the cited files",
+      "faces": 28088,
+      "fixture_type": "synlab.patterns.fixtures.analytic_revolve_mother"
+    },
+    "saved_pattern_merge_report": {
+      "command": "python.exe tools/evidence_min.py --step pattern-merge",
+      "committed": false,
+      "failure_count": 0,
+      "families_ok": 16,
+      "family_ok_counts": {
+        "True": 16
+      },
+      "family_status_counts": {
+        "QA_PASSED": 16
+      },
+      "generated_at": null,
+      "geometry_families": {
+        "PAT14": {
+          "guard_code": "PRECISION_BUDGET_EXCEEDED",
+          "guard_measurements": {
+            "achieved_edge_mm": 6.288749589866022,
+            "min_wavelength_mm": 6.912384759906509
+          },
+          "mode": "relief",
+          "pass": true,
+          "reason": "the geometry was refused by a structured guard (wall thickness, mesh precision or a missing mother declaration) instead of being faked; the guard does its job, the gap is reported in guard_measurements",
+          "status": "GUARD_REJECTED"
+        },
+        "PAT15": {
+          "guard_code": "PRECISION_BUDGET_EXCEEDED",
+          "guard_measurements": {
+            "achieved_edge_mm": 6.288749589866022,
+            "min_wavelength_mm": 6.7517434320407315
+          },
+          "mode": "engrave",
+          "pass": true,
+          "reason": "the geometry was refused by a structured guard (wall thickness, mesh precision or a missing mother declaration) instead of being faked; the guard does its job, the gap is reported in guard_measurements",
+          "status": "GUARD_REJECTED"
+        }
+      },
+      "interpretation": "16/16 family-level QA includes acceptance of the structured resolution refusals. PAT14 and PAT15 statuses are GUARD_REJECTED; successful geometry realization on this saved true-mother source is 0/2 geometry modes, not 16/16.",
+      "mother_faces": 6624,
+      "mother_id": "V01-M01-101",
+      "mother_source": "synlab.mothers.api.create_mother (base: periodic, 8213.7 mm2, 285.9 mm)",
+      "mother_source_metadata_conflict": "report records 6,624 faces; patterns.md §4.2 describes 23,520 faces and fixture §4.1 describes 28,088 faces. The report provenance is create_mother, but exact mesh equivalence to §4.2 is unpinned.",
+      "n_families": 16,
+      "ok": true,
+      "path": "relicweave-synlab/data/a12/reports/pattern_audit.json",
+      "sha256": "e52989f1fa25cfb47442094c3c36dccbccc8b59a10ca97c9cbf910d3071e7e71",
+      "step": "pattern-merge",
+      "top_status": "QA_PASSED"
+    },
+    "true_mother_document_counts": {
+      "internal_count_conflict": "14/16 with 2 named failures vs 13/16 with 3 remaining; not reconciled by the documentation",
+      "section_4_2_families_ok": 14,
+      "section_4_2_n_families": 16,
+      "section_4_2_named_refusals": [
+        "PAT14",
+        "PAT15"
+      ],
+      "section_5_families_passed": 13,
+      "section_5_remaining_count": 3
+    }
+  },
+  "qualification": "This is a provenance/count interpretation only; it does not upgrade A12 physical readiness or any release status.",
+  "review_scope": "metadata-only report reconciliation; no tests, Blender, CAD, solver, rendering, Git, or production/doc changes",
+  "schema": "a12.claims_alignment.review.v1",
+  "source_files": [
+    {
+      "bytes": 10683,
+      "mtime_utc": "2026-10-02T12:32:12.581802+00:00",
+      "mtime_utc_epoch": 1790944332.5818024,
+      "path": "relicweave-synlab/docs/a12/status.md",
+      "sha256": "3c5593d847b2638c28c409b1921c9075e823b1cc8d54a90544a52bb9ddc1f1d5"
+    },
+    {
+      "bytes": 27584,
+      "mtime_comparison_note": "Filesystem mtime 2026-10-01T17:14Z, earlier than saved pattern_audit.json mtime 2026-10-02T03:59Z; mtime is inventory metadata, not a run receipt.",
+      "mtime_utc": "2026-10-01T17:14:03.712773+00:00",
+      "mtime_utc_epoch": 1790874843.7127733,
+      "path": "relicweave-synlab/docs/a12/patterns.md",
+      "sha256": "ca0cb226a17c1ee9950955bc2fda40827ea694b8ae7a2a92348f328dddc05311"
+    },
+    {
+      "bytes": 562921,
+      "mtime_utc": "2026-10-02T08:23:22.415381+00:00",
+      "mtime_utc_epoch": 1790929402.4153812,
+      "path": "relicweave-synlab/data/a12/reports/precision_probe_07_degrade_audit.json",
+      "sha256": "b38d7dd1cddeff2dfcc06173de44ac83eb583cab045c05d6f47aff102a9f39fb"
+    },
+    {
+      "bytes": 93604,
+      "mtime_utc": "2026-10-02T08:24:36.405350+00:00",
+      "mtime_utc_epoch": 1790929476.4053497,
+      "path": "relicweave-synlab/data/a12/reports/precision_probe_09_degrade_error.json",
+      "sha256": "d964413f473caea5bb75ec7a7ca39c140dcd8ac38892e13ebe3247a40327987e"
+    },
+    {
+      "bytes": 349060,
+      "mtime_utc": "2026-10-02T03:59:04.439922+00:00",
+      "mtime_utc_epoch": 1790913544.4399219,
+      "path": "relicweave-synlab/data/a12/reports/pattern_audit.json",
+      "sha256": "e52989f1fa25cfb47442094c3c36dccbccc8b59a10ca97c9cbf910d3071e7e71"
+    }
+  ]
+}

@@ -1,5 +1,9 @@
 # A12 随机花纹模块（`synlab.patterns`）
 
+## 2026-10-07 审阅澄清（分开样本与判据）
+
+真母体`13/16`与`14/16`为历史计数冲突，暂记UNKNOWN。现存[pattern-merge报告](./reviews/20261007/reports/pattern_audit.json)的16/16是族级QA，PAT14/PAT15均因`PRECISION_BUDGET_EXCEEDED`被守卫拒绝，不代表实位移成功；0.8/0.5 mm成功仅为解析fixture。该报告`step=pattern-merge`，不是canonical A05 CLI收据；A05状态仍按PENDING。详见[审阅说明](./reviews/20261007/REVIEW.md)/[结构化计数](./reviews/20261007/claims.json)。
+
 本文档记录第 9 节（随机花纹：16 族纹样与验收）的实现、命令、实测指标、状态与缺口。
 所有数字都来自本机真实运行；未运行的项目写 `NOT_RUN`，不适用写 `NA`。
 

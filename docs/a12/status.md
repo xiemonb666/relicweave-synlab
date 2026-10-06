@@ -1,5 +1,9 @@
 # A12 状态板：已完成 / 未完成
 
+## 2026-10-07 审阅澄清（保留历史状态）
+
+`155/155 PASS`仅指31轴×5档执行/有效性；155行均未标定，样本仅1个独立母体，不代表剂量精度。配对报告中仅9/31轴、36/155档有非空目标/实测值；28/31轴有配对键，22轴无实测配对，仅P01/P05/P06无定义。G01四非零档误差8.14–13.06%，G08最大20.2074%。见[执行审计](./reviews/20261007/reports/precision_probe_07_degrade_audit.json)、[配对报告](./reviews/20261007/reports/precision_probe_09_degrade_error.json)及[审阅说明](./reviews/20261007/REVIEW.md)/[结构化计数](./reviews/20261007/claims.json)。
+
 **快照**：2026-10-02 夜（本地）。**本文件是状态的唯一权威清单**；细节见 `open_items.md`（未开工/在修追踪）、`engineering_policy.md`（算法选型政策）、`precision_audit.md`（实测精度）、`decision_record.md`（口径裁决）、各专项文档。
 **数据基线**：最新库 `data/a12_trainable/store`（463 资产）· 最新包 `data/a12_exports/negfix/next_experiment/training_package` · 旧代归档 `data/_archive_pre_fix/`（36.3 GB）。
 **服务**：后端 `127.0.0.1:8077` → `data/a12_trainable/store`（health/registry/assets 200）· 前端预览 `http://localhost:4188/synlab/showcase`（200）· 周期提交循环每 15 分钟推送 GitHub。
