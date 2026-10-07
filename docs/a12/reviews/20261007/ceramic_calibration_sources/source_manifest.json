@@ -1,0 +1,119 @@
+{
+  "schema": "shardforge.ceramic_calibration_source_manifest.v1",
+  "created_date": "2026-10-07",
+  "access_date": "2026-10-07",
+  "timezone": "Asia/Shanghai",
+  "scope": "Metadata-only primary-literature and official-test-method review for fired earthenware and porcelain stoneware comparators. No physical tests or production-parameter updates were made.",
+  "local_reference_files": [
+    {
+      "path": "pgfrag/docs/references/CERAMIC_FRACTURE_BENCHMARK_20261004.md",
+      "sha256": "9a6660c36b1eee66d6ab2d943bf8110e24acbb599f2bbf17c9c9b38222c9e40d",
+      "role": "Existing local secondary research note used to avoid duplicating prior Kalami and Kilikoglou coverage; not a primary paper file."
+    }
+  ],
+  "source_file_hash_policy": "No primary-source PDF or ASTM standard was mirrored locally because this assignment allows only three metadata outputs. Each source record therefore sets localfilehash to null; no URL digest is misrepresented as a local file hash.",
+  "sources": [
+    {
+      "id": "muller_2015_kalami_clay",
+      "type": "primary_research_article",
+      "citation": "N. S. Müller, G. Vekinis, P. M. Day, and V. Kilikoglou, The influence of microstructure and texture on the mechanical properties of rock tempered archaeological ceramics, Journal of the European Ceramic Society 35 (2015), 831-843.",
+      "doi": "10.1016/j.jeurceramsoc.2014.09.025",
+      "urls": [
+        "https://doi.org/10.1016/j.jeurceramsoc.2014.09.025",
+        "https://ltt.arizona.edu/sites/ltt.lab.arizona.edu/files/2015%20Mueller%20et%20al%20Mechanical%20of%20rock%20tempered_J%20Eur%20Cer%20Soc.pdf"
+      ],
+      "accessed_date": "2026-10-07",
+      "verification": "Primary author-hosted PDF opened and inspected; paper pages 832-839 were checked for sample manufacture, water-immersion porosity, strength, notched fracture, modulus, and summary values.",
+      "source_partial_coverage": {
+        "condition": "Un-tempered low-calcareous Kalami experimental clay briquette fired at 1050 C, plus other clay/firing/temper states as contrasts.",
+        "covered": [
+          "Firing schedule: 200 C/h, 1 h soak, air; ambient drying for >10 days before firing.",
+          "Total porosity about 11%, mainly closed; companion material total porosity method and stated approx. +/-2% uncertainty.",
+          "E = 68.4 +/- 7.5 GPa (five compliance-corrected bending curves).",
+          "Three-point TRS about 70 MPa (five measurements; support span and numeric scatter unavailable).",
+          "Effective finite-notch mode-I K about 1.2 MPa m^1/2 (four-point notched bend, n=3); G is related to K and E in paper."
+        ],
+        "not_covered_or_not_reported": [
+          "Fired bulk density value; the 2.77 +/- 0.05 g/mL figure is estimated true density of raw Kalami clay, not fired bulk density.",
+          "Poisson ratio, direct tensile strength, numerical per-specimen spread for the 1.2 MPa m^1/2 value, and measured moisture at test.",
+          "A project-specific full material card or calibration for archaeological sherds."
+        ]
+      },
+      "localfilehash": null,
+      "localfilehash_status": "SOURCE_NOT_MIRRORED; metadata-only scope"
+    },
+    {
+      "id": "martin_marquez_2010_porcelain_stoneware",
+      "type": "primary_research_article",
+      "citation": "J. Martín-Márquez, J. M. Rincón, and M. Romero, Effect of microstructure on mechanical properties of porcelain stoneware, Journal of the European Ceramic Society 30 (2010), 3063-3069.",
+      "doi": "10.1016/j.jeurceramsoc.2010.07.015",
+      "urls": [
+        "https://doi.org/10.1016/j.jeurceramsoc.2010.07.015",
+        "https://files.core.ac.uk/download/pdf/45451165.pdf"
+      ],
+      "accessed_date": "2026-10-07",
+      "verification": "Primary article metadata and author-manuscript text were checked via the journal record and repository-indexed full text, including Table 2 and the methods extract.",
+      "source_partial_coverage": {
+        "condition": "Reference industrial tile body: 50 wt% kaolinitic clay, 40 wt% feldspar, 10 wt% quartz; fast-fired from 1200 to 1300 C.",
+        "covered": [
+          "Dynamic E by resonance-frequency method; table gives 48-65 GPa by firing temperature.",
+          "Indentation-derived K_Ic values 1.2-1.4 MPa m^1/2; 1000 gf, 15 s, ten-indentation mean per condition, with no SD tabulated.",
+          "Flexural test: UNE-EN 843-1, 50 x 10 x 8 mm bars, 36 mm span, 3 mm/min, n=10.",
+          "Bulk/open/absolute density and porosity methods are named (ASTM C373-88 and C329-88); results are plotted rather than numerically tabulated in the extracted article text."
+        ],
+        "not_covered_or_not_reported": [
+          "Poisson ratio, direct tensile strength, and a sharp-precracked mode-I K_Ic or measured G_c.",
+          "Per-temperature flexural strength means and dispersions in a tabulated form.",
+          "Residual moisture or controlled humidity at mechanical test."
+        ]
+      },
+      "localfilehash": null,
+      "localfilehash_status": "SOURCE_NOT_MIRRORED; metadata-only scope"
+    },
+    {
+      "id": "astm_c1421_18r25",
+      "type": "official_test_standard",
+      "citation": "ASTM C1421-18(2025), Standard Test Methods for Determination of Fracture Toughness of Advanced Ceramics at Ambient Temperature.",
+      "doi": "10.1520/C1421-18R25",
+      "urls": [
+        "https://store.astm.org/standards/c1421"
+      ],
+      "accessed_date": "2026-10-07",
+      "verification": "ASTM International official standard page; active edition and scope inspected.",
+      "source_partial_coverage": {
+        "covered": [
+          "Mode-I fracture-toughness methods for precracked beam, surface crack in flexure, and chevron-notched beam specimens at ambient temperature.",
+          "Sharp-crack beam methods, reporting in SI units, and sensitivity of reported values to crack method, environment, rate, and temperature."
+        ],
+        "not_covered_or_not_reported": [
+          "No ceramic-body property numbers or project material qualification.",
+          "Advanced-ceramic scope does not establish direct applicability to porous or tempered traditional pottery."
+        ]
+      },
+      "localfilehash": null,
+      "localfilehash_status": "STANDARD_NOT_MIRRORED; metadata-only scope"
+    },
+    {
+      "id": "astm_c1259_21r26",
+      "type": "official_test_standard",
+      "citation": "ASTM C1259-21(2026), Standard Test Method for Dynamic Young’s Modulus, Shear Modulus, and Poisson’s Ratio for Advanced Ceramics by Impulse Excitation of Vibration.",
+      "doi": "10.1520/C1259-21R26",
+      "urls": [
+        "https://store.astm.org/c1259-21r26.html"
+      ],
+      "accessed_date": "2026-10-07",
+      "verification": "ASTM International official standard page; active version, method title, and measurement scope inspected.",
+      "source_partial_coverage": {
+        "covered": [
+          "Dynamic E from flexural resonance and shear modulus from torsional resonance; nu is computed from the elastic moduli."
+        ],
+        "not_covered_or_not_reported": [
+          "No ceramic-body property numbers or project material qualification.",
+          "Dynamic values do not automatically equal static moduli for a fracture solver; scope is advanced ceramics."
+        ]
+      },
+      "localfilehash": null,
+      "localfilehash_status": "STANDARD_NOT_MIRRORED; metadata-only scope"
+    }
+  ]
+}

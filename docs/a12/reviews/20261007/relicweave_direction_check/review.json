@@ -1,0 +1,101 @@
+{
+  "review_type": "read-only direction review",
+  "plan_updated": false,
+  "docx": {
+    "path": "C:/Users/xiemo/Desktop/ShardForge/RelicWeave_V1.46_A12_VesselForge_PGFrag_Integrated_NavFixed.docx",
+    "sha256": "15978A3956FA33E8048CC54C1DAD6878A7E19D9C71B84415DCAF8732F041A3B4"
+  },
+  "background_only": "pgfrag/docs/progress/20261006_physics_core_review_addendum.md (DRAFT; read for context only)",
+  "directional_assessment": {
+    "core_alignment": "aligned",
+    "assessment": "The plan retains observed-fragment candidate ranking with traceable evidence, verification/recapture/stop behavior, separates historical adjacency/current fit/visible evidence, and makes GT offline. It assigns asset generation to VesselForge, physical fracture to PG-Frag, and orchestration/observation/training/diagnostics to A12.",
+    "maturity_assessment": "The integrated plan is broader than current proof; treat its full pipeline and scale as planned capabilities, not completed evidence."
+  },
+  "current_proof_snapshot": {
+    "source": "Task context and background draft; not rerun in this review",
+    "cohesive_toy_case": "fixed 93-DOF case (27 source points; 81 BASE + 12 front); 16 queries; 16 QP3 assemblies; one KKT check",
+    "physical_package_count": 0,
+    "progress_estimates": {
+      "PG-Frag": "25–35% subjective engineering estimate",
+      "VesselForge": "30–40% subjective engineering estimate",
+      "A12": "30–40% subjective engineering estimate"
+    },
+    "vesselforge": "Three source families (bowl/beaker/jar), two saved default STEP instances (bowl/jar), zero parameter-domain-qualified styles; current smooth C4 jar-inner work is local 2D."
+  },
+  "source_evidence": [
+    {
+      "location": "P99",
+      "excerpt": "输出包括有序候选、来源可追溯的证据、待核验状态、补采或停止原因。",
+      "supports": "Core candidate/evidence/workflow direction"
+    },
+    {
+      "location": "P100; T10 R1-R4",
+      "excerpt": "historical_R2用于邻片检索；current_fit_valid用于当前实体贴合；evidence_visible用于当前观测对应。",
+      "supports": "Three labels remain distinct; wear does not erase historical positives"
+    },
+    {
+      "location": "P168-P171; T8 R1-R4",
+      "excerpt": "未经校准的分数标ranking_score；只有校准过才显示对应概率含义。",
+      "supports": "Candidate contract and observability/unknown handling"
+    },
+    {
+      "location": "P353-P354; P1306-P1311",
+      "excerpt": "权威调用链为 VesselForge Asset Contract → PG-Frag Job/Result Contract → A12 SyntheticLab。",
+      "supports": "Project responsibilities and standard-contract seam"
+    },
+    {
+      "location": "T30 R1; T31 R1-R7; P171",
+      "excerpt": "真值审计和特权上界，不入部署式特征。",
+      "supports": "Strict offline GT and leakage boundary"
+    },
+    {
+      "location": "P1366",
+      "excerpt": "闭环通过只代表三项目合同串通，不代表任何高保真物理或真实迁移已成立。",
+      "supports": "Small proof is a contract gate, not physics/transfer qualification"
+    },
+    {
+      "location": "T160 R1-R5; P2284; T163 R1-R8",
+      "excerpt": "真正的内部模型必须由参数、场、取向、界面和损伤律构成。",
+      "supports": "Material and solver requirements"
+    },
+    {
+      "location": "P2051; P406",
+      "excerpt": "三者任一缺失都不能声称端到端可复现。",
+      "supports": "Completion evidence and staged scale plan"
+    }
+  ],
+  "alignment_risks": [
+    {
+      "id": "R1",
+      "title": "Contract completion could be overstated",
+      "locations": ["P1366", "P2051"],
+      "evidence": "A12 closure requires a validator-backed VesselForge asset, PG-Frag job/result lineage, and A12 release/permission audit. Current toy proof and unqualified style do not establish the complete seam.",
+      "action": "Keep the toy result mathematical/interface-only and physical package count at 0 until the manifests and validators exist. Treat the plan’s 8–12 fragment count only as an integration-fixture size; actual fragment count must emerge from physics, and a fixed fixture count must not be enforced as fracture control."
+    },
+    {
+      "id": "R2",
+      "title": "Candidate score could be read as truth or probability",
+      "locations": ["P168", "P169", "T8 R1-R4"],
+      "evidence": "Uncalibrated values are ranking scores; an open-library result is conditional on current input/library; missing evidence is not conflict.",
+      "action": "Preserve multi-neighbor candidates and send low-observability/unknown cases through verification, recapture, or STOP."
+    },
+    {
+      "id": "R3",
+      "title": "Truth and visible evidence could leak across the model boundary",
+      "locations": ["P100", "P171", "T10 R1-R4", "T30 R1", "T31 R1-R7"],
+      "evidence": "Historical adjacency, current fit, and visible correspondence have separate meanings; object/seed/pose/GT are audit-only.",
+      "action": "Build features from ObsPack and its quality whitelist; keep labels and hidden provenance in the offline audit path."
+    },
+    {
+      "id": "R4",
+      "title": "Future physics/material and scale scope exceeds current proof",
+      "locations": ["P362-P363", "T160 R1-R5", "P2284", "T163 R1-R8", "P366", "P406"],
+      "evidence": "PG-Frag expects backend-qualified material/defect/event inputs; background records rho=1 as uncalibrated. A12 scale and 31-axis plans are staged future scope.",
+      "action": "Keep local qualification small; defer bulk generation and avoid describing the 93-DOF cohesive toy as realistic fracture."
+    }
+  ],
+  "files_written": [
+    "tmp/review_20261007/relicweave_direction_check/REVIEW.md",
+    "tmp/review_20261007/relicweave_direction_check/review.json"
+  ]
+}
