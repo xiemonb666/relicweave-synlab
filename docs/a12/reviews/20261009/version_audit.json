@@ -1,0 +1,152 @@
+{
+  "audit_date": "2026-10-09",
+  "workspace": "C:/Users/xiemo/Desktop/ShardForge",
+  "mode": "read_only_static_audit",
+  "documents": [
+    {
+      "path": "C:/Users/xiemo/Desktop/ShardForge/RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx",
+      "sha256": "883C831648D0697F456228F4D862DEDA8A36FF9740ECD6AADB3A3EBFDFDFFC7D",
+      "role": "current master"
+    },
+    {
+      "path": "C:/Users/xiemo/Desktop/ShardForge/RelicWeave_V1.47.docx",
+      "sha256": "41F1254E40A2ECABDCFA1C6583AF2FCE0AE1B0AB980D5F9179BBAF687B7BE64B",
+      "role": "original for provenance"
+    }
+  ],
+  "conclusion": {
+    "active_generation_schema": "synlab.v3",
+    "inner_config_key": "schema",
+    "api_envelope_key": "schema_version",
+    "synlab_v2_config_support": "not implemented or accepted by current source paths",
+    "v3_only_design": false,
+    "qualification": "The typed v3 config model, compile path, CLI/API validation, current config examples and tests exist. Broader G30 orchestration and stated migration promises remain design or pending integration."
+  },
+  "findings": [
+    {
+      "id": "DOC-01",
+      "classification": "confirmed_document_inconsistency",
+      "finding": "V1.47 calls synlab.v2 current at body[921], then calls it legacy/read-only at body[2110], body[2146] and body[2355] table row[5], while G30.5 uses v3 at body[2242-2243].",
+      "evidence": [
+        "C:/Users/xiemo/Desktop/ShardForge/RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx body[921], body[2110], body[2146-2147], body[2242-2243], body[2355] table row[5]",
+        "C:/Users/xiemo/Desktop/ShardForge/RelicWeave_V1.47.docx body[903], body[2090], body[2126-2127], body[2222-2223], body[2334] table row[5]"
+      ]
+    },
+    {
+      "id": "DOC-02",
+      "classification": "confirmed_document_runtime_mismatch",
+      "finding": "The G30 inner config examples use schema_version, while GenerationSpec aliases schema_id to schema and rejects extra fields. API schema_version is an outer job envelope field.",
+      "evidence": [
+        "C:/Users/xiemo/Desktop/ShardForge/RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx body[2147], body[2243]",
+        "C:/Users/xiemo/Desktop/ShardForge/relicweave-synlab/synlab/schemas/spec.py:20-21,221-246",
+        "C:/Users/xiemo/Desktop/ShardForge/relicweave-synlab/synlab/api/deps.py:59-70",
+        "C:/Users/xiemo/Desktop/ShardForge/relicweave-synlab/tests/a12/api/api_test_support.py:45-84"
+      ]
+    },
+    {
+      "id": "IMPL-01",
+      "classification": "unimplemented_compatibility_design",
+      "finding": "No current source/config/test implementation accepts or migrates synlab.v2 GenerationSpec. The API schema map includes v3/train.v1/diagnose.v1 only.",
+      "evidence": [
+        "C:/Users/xiemo/Desktop/ShardForge/relicweave-synlab/synlab/schemas/spec.py:15,221-246",
+        "C:/Users/xiemo/Desktop/ShardForge/relicweave-synlab/synlab/api/specs.py:25-46",
+        "C:/Users/xiemo/Desktop/ShardForge/relicweave-synlab/synlab/api/deps.py:59-70",
+        "C:/Users/xiemo/Desktop/ShardForge/relicweave-synlab/synlab/qc/acceptance.py:551-595"
+      ],
+      "note": "The exact synlab.v2 string was absent from the searched current SynLab source/config/test paths, excluding requested historical/vendor trees."
+    },
+    {
+      "id": "IMPL-02",
+      "classification": "unmapped_fields",
+      "finding": "The V2 example lists schema_version, release_id, master_seed, unit and top-level mother. Current GenerationSpec has schema, master_seed, units, dataset and other typed blocks, with no release_id, singular unit or top-level mother; no v2-to-v3 map was found.",
+      "evidence": [
+        "C:/Users/xiemo/Desktop/ShardForge/RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx body[2147-2151]",
+        "C:/Users/xiemo/Desktop/ShardForge/relicweave-synlab/synlab/schemas/spec.py:221-246"
+      ]
+    },
+    {
+      "id": "IMPL-03",
+      "classification": "external_contract_pending",
+      "finding": "The master DOCX calls rw-schema-1.1 current, while current project documentation marks main-repo integration pending and records the external schema, field mapping and versioned migrator as missing/pending.",
+      "evidence": [
+        "C:/Users/xiemo/Desktop/ShardForge/RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx body[921]",
+        "C:/Users/xiemo/Desktop/ShardForge/relicweave-synlab/README.md:7-10",
+        "C:/Users/xiemo/Desktop/ShardForge/relicweave-synlab/docs/a12/contract_diff.json:3-10,72-76"
+      ],
+      "note": "contract_diff.json is dated 2026-10-01; current SynLab source search still found no rw-schema adapter."
+    },
+    {
+      "id": "HIST-01",
+      "classification": "implemented_historical_compatibility",
+      "finding": "Historical training package v1 is research-readable only; deploy reads require the separate deploy v2 boundary. This is not synlab.v2 config compatibility.",
+      "evidence": [
+        "C:/Users/xiemo/Desktop/ShardForge/relicweave-synlab/synlab/storage/export.py:3008-3012,3039-3056",
+        "C:/Users/xiemo/Desktop/ShardForge/relicweave-synlab/synlab/storage/deploy_boundary.py:21,77-86",
+        "C:/Users/xiemo/Desktop/ShardForge/relicweave-synlab/tests/a12/storage/test_deploy_boundary_v2.py:161-188,429-434"
+      ]
+    }
+  ],
+  "version_layers": [
+    {
+      "layer": "generation_config",
+      "current_schema": "synlab.v3",
+      "key": "schema",
+      "evidence": [
+        "C:/Users/xiemo/Desktop/ShardForge/relicweave-synlab/synlab/schemas/spec.py:15,221-246",
+        "C:/Users/xiemo/Desktop/ShardForge/relicweave-synlab/synlab/config.py:83-88,115-166",
+        "C:/Users/xiemo/Desktop/ShardForge/relicweave-synlab/configs/a12/pilot.yaml:1-9"
+      ]
+    },
+    {
+      "layer": "api_job_envelope",
+      "accepted_schema_version": [
+        "synlab.v3",
+        "synlab.train.v1",
+        "synlab.diagnose.v1"
+      ],
+      "key": "schema_version",
+      "evidence": [
+        "C:/Users/xiemo/Desktop/ShardForge/relicweave-synlab/synlab/api/deps.py:59-70",
+        "C:/Users/xiemo/Desktop/ShardForge/relicweave-synlab/synlab/api/specs.py:25-46"
+      ]
+    },
+    {
+      "layer": "asset_store_and_packages",
+      "schemas": [
+        "synlab.store.v1",
+        "a12.obs.v1",
+        "synlab.mother.v1",
+        "synlab.training_package.v1",
+        "synlab.training_package_manifest.v1",
+        "synlab.training_package_deploy.v2"
+      ],
+      "evidence": [
+        "C:/Users/xiemo/Desktop/ShardForge/relicweave-synlab/synlab/storage/store.py:28,150-157",
+        "C:/Users/xiemo/Desktop/ShardForge/relicweave-synlab/synlab/storage/export.py:64-65,1483-1485",
+        "C:/Users/xiemo/Desktop/ShardForge/relicweave-synlab/synlab/storage/deploy_boundary.py:21,77-109"
+      ]
+    }
+  ],
+  "recommended_position": [
+    "Current generation config is synlab.v3 using the inner schema field.",
+    "schema_version belongs to the outer API job envelope; artifact, package and deploy schemas remain separately versioned.",
+    "Mark synlab.v2 and rw-schema-1.1 compatibility unsupported/pending until definitions, maps, migrators and tests exist."
+  ],
+  "acceptance_gaps": [
+    "No synlab.v2 model, loader dispatch, frozen fixture, field mapping or v2-to-v3 migrator.",
+    "No explicit synlab.v2 acceptance/rejection or migration/hash-preservation regression test.",
+    "The G30.5 inner v3 example uses schema_version, conflicting with the active GenerationSpec alias.",
+    "No current rw-schema-1.1 external schema or adapter; project docs list these as pending.",
+    "No regression test distinguishes outer API schema_version from inner GenerationSpec schema."
+  ],
+  "verification": {
+    "docx_extraction": "Read word/document.xml with the bundled Python zipfile/lxml executor and cite body nodes and table rows.",
+    "source_review": "Static searches and line-numbered source reads; no runtime commands or numeric generation.",
+    "tests_run": false,
+    "cli_run": false,
+    "writes": [
+      "C:/Users/xiemo/Desktop/ShardForge/tmp/contract_alignment_20261009/version_audit.md",
+      "C:/Users/xiemo/Desktop/ShardForge/tmp/contract_alignment_20261009/version_audit.json"
+    ]
+  }
+}

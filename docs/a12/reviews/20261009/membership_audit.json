@@ -1,0 +1,126 @@
+{
+  "audit_id": "contract_alignment_20261009_membership",
+  "date": "2026-10-09",
+  "mode": "read_only_static_audit",
+  "verdict": "specified_in_v1_47_but_not_implemented_or_accepted_in_a12_evidence_reviewed",
+  "concept_distinction": {
+    "membership_recovery": "For q and frozen gallery G, derive V_G(q) from an independent, confirmed object-membership GT manifest intersected with G and excluding q. R1/R2 express pairwise physical semantics; their labeled-edge union must not be used to construct V_G. Confirmed same-object membership stays positive even if pair adjacency is unresolved. Membership closure is independent of pair-adjacency closure.",
+    "pair_topk": "R2 direct historical-neighbor ranking/retrieval; does not predict all same-vessel members.",
+    "r2_local_closure": "Closure over direct historical adjacency edges; distinct relation semantics and target.",
+    "physical_assembly": "Full geometry assembly or repair is not required by the in-gallery membership target."
+  },
+  "crosswalk": [
+    {
+      "topic": "query_gallery",
+      "contract": "Freeze G; exclude q from candidates and V_G(q); derive member truth by intersecting G with the independent confirmed object-membership GT manifest; claim only members inside this frozen gallery.",
+      "evidence": "RelationPool.candidate_ids excludes q; neighbours returns full historical R2 only (gallery.py:454-456,558-559); no independent member manifest/closure schema.",
+      "status": "partial_reusable_primitives_member_contract_missing"
+    },
+    {
+      "topic": "R0_R1_R2_UNKNOWN_and_membership_truth",
+      "contract": "The independent confirmed object-membership manifest defines same-vessel membership. R1/R2 are pairwise physical relation categories and must not be unioned as the source of member truth. Confirmed object membership remains positive when pair adjacency is unresolved. R2 is direct, non-transitive historical adjacency; R0 is different-vessel. Distinguish pair-relation UNKNOWN from unresolved membership; exclude only cases where membership eligibility itself is unresolved or the independent manifest cannot establish frozen-gallery closure.",
+      "evidence": "RelationPack and pair relation code represent typed pair labels/grey zones; pool.neighbours and training denominator are R2-only (data_contract.md:15; gallery.py:454-456; training/api.py:443-510).",
+      "status": "pair_labels_exist_membership_closure_missing"
+    },
+    {
+      "topic": "input_output",
+      "contract": "Legal Obs, frozen gallery, and public cost/budget/stopping-policy definitions in; predicted member set, evidence/provenance, uncertainty and explicit abstain/unknown/stop out. GT-derived rewards are offline train/evaluation signals only, never deployment observation inputs.",
+      "evidence": "QueryRosterEntry/EpisodeState carry R2 neighbors and candidate IDs, not member closure/predicted-set/report schema (runtime.py:544-568). Generic CLI/API provide episode/evaluate but no member recovery endpoint (cli.py:297-361; interfaces.md:55-58).",
+      "status": "missing_member_api_and_output"
+    },
+    {
+      "topic": "A12_22_generator",
+      "contract": "Whole-Vessel Episode Generator exports an independent confirmed object-membership manifest separately from typed R1/R2 adjacency graph and member/mother factors; mixes mothers; evaluator sees Truth while training sees legal Obs (master DOCX body 568-569).",
+      "evidence": "Six generic packs exist, but EpisodePack is episode_trace. EpisodeEnv/run_episode_config handles one frozen gallery and one query; ROLE_EPISODE stores trace (data_contract.md:7-18; env.py:78-137; episodes/api.py:95-136,207-215; roles.py:47-60).",
+      "status": "generator_truth_asset_member_evaluator_not_found"
+    },
+    {
+      "topic": "hypothesis_stop_budget",
+      "contract": "Freeze hypothesis/hash/split/M/K/seed/budget/guard/stop rule; log evidence, revisions and costs.",
+      "evidence": "Existing action environment has max_actions/max_seconds/candidate_pool_size and STOP, but computes R2 coverage, not membership closure (env.py:78-137; tests/a12/episodes).",
+      "status": "generic_active_episode_primitives_only"
+    },
+    {
+      "topic": "truth_obs_isolation",
+      "contract": "Hidden mother/object ID, full truth graph and labels are evaluator-only; model uses legal observed fields.",
+      "evidence": "Features/labels/provenance separated; forbidden fields and lineage split documented (data_contract.md:18,44-59; roles.py:123). No dedicated member-generator/evaluator leakage test found.",
+      "status": "principle_exists_member_specific_verification_missing"
+    },
+    {
+      "topic": "metrics_empty_aggregation",
+      "contract": "Nonempty GT with empty prediction: R=0, P=NA, F1=0; empty GT is separate member-absent; double-empty correct-empty without P/R/F1=1; equal query weighting within object then object macro; source-cluster CI (master body 128-129).",
+      "evidence": "Training/diagnostic metrics are historical R2 Hit/Cov/PoolCov; A18/A30 are generic pair fixtures; no member-set estimator/object-macro member aggregation (training/api.py:443-510; acceptance_report.md:28-29,41).",
+      "status": "member_metric_contract_and_tests_missing"
+    },
+    {
+      "topic": "splits_gallery_generalization",
+      "contract": "Split shape lineage before generation; freeze confirm; use multiple independent gallery cohorts for gallery-generalization claims.",
+      "evidence": "A12 data contract has shape_lineage_id split and 80/10/10; execution plan has frozen gallery/cluster stats for pair retrieval (data_contract.md:55-59; plan:2157-2160,2177-2194). No member-closure cohort qualification found.",
+      "status": "reusable_split_principles_member_protocol_missing"
+    },
+    {
+      "topic": "baselines_privileged_controls",
+      "contract": "Static member-set baseline with dev-frozen threshold; compare pairwise/cluster/metric/set/graph/prototype; scalar feedback B1 is not a member head; Oracle-R2 controls are offline and matched.",
+      "evidence": "Current pair R2 ranker and active-observation oracle exist; no member head/B1 member implementation or Oracle-R2 member control found (plan:1010-1014,2100-2112; episodes/baselines.py).",
+      "status": "member_baselines_and_controls_missing"
+    },
+    {
+      "topic": "A01_A36_acceptance",
+      "contract": "Add explicit A12.22/member acceptance for generation, truth isolation, metrics, empty cases, controls and stop/budget reproducibility.",
+      "evidence": "Two historical A17 snapshots differ: acceptance_delta.md at 2026-10-02 01:45:24+08 records FAIL (fixed job/run IDs caused a recovery-probe UNIQUE conflict); acceptance_report.md generated at 2026-10-02 11:48:01+08 records PASS. The difference alone does not establish current system state. Both concern data-job/checkpoint recovery, not member recovery. A08/A15/A19 NOT_RUN; A29/A31/A32 NA; A30 PASS is a generic/pair fixture (acceptance_report.md:19,26,28-30,40-43; acceptance_delta.md:43-44,130-134).",
+      "status": "no_member_specific_acceptance_item_found"
+    }
+  ],
+  "minimum_contract_clauses": [
+    "Independent confirmed object-membership GT manifest with provenance/version and explicit frozen-gallery closure eligibility; derive V_G(q) by intersecting that manifest with G and excluding q. Do not construct member truth from the labeled R1/R2 edge union. Confirmed same-object membership remains positive when pair adjacency is unresolved; exclude from closed-set main evaluation only unresolved membership eligibility or unproven closure. Keep pair-adjacency closure separate.",
+    "Separate MemberEpisodeSpec/world generator, truth-side member-set asset and inference result asset/schema; episode_trace remains an observation-action trace.",
+    "Inference accepts legal Obs, frozen gallery and public cost/budget/stopping-policy definitions; hidden IDs/full graph/oracle and GT-derived rewards remain offline-only, with rewards used only for training/evaluation and never as deployment observation inputs.",
+    "MemberResult includes predicted set, uncertainty/evidence/provenance, explicit open/closed/abstain/unknown statuses, revisions, budget consumption and stop reason.",
+    "Hand-computed exact empty/nonempty cases, object-equal then object-macro estimator and source-cluster CI; report fixed-gallery conditionality.",
+    "Static member baseline with dev-frozen threshold; B1 scalar relation feedback as ablation; privileged Oracle-R2 offline with matched and shuffled/equal-context controls.",
+    "Dedicated A12.22/member acceptance mapped to code/API/asset role/CLI/tests and status; pair A18/A30 or job-recovery A17 cannot substitute."
+  ],
+  "evidence_refs": {
+    "master_docx_body_locations": [
+      "body 128-129: V_G, q exclusion and member metric semantics",
+      "body 568-569: A12.22 Whole-Vessel Episode Generator",
+      "body 596/598: B2.3 in-gallery member closure"
+    ],
+    "plan_lines": [
+      "1010-1014",
+      "2100-2112",
+      "2157-2160",
+      "2177-2194"
+    ],
+    "code_docs_tests": [
+      "docs/a12/data_contract.md:7-18,44-59",
+      "docs/a12/interfaces.md:55-58",
+      "synlab/relations/gallery.py:454-456,558-559",
+      "synlab/schemas/runtime.py:544-568",
+      "synlab/training/api.py:209-211,443-510",
+      "synlab/episodes/env.py:78-137",
+      "synlab/episodes/api.py:95-136,207-215",
+      "synlab/roles.py:16-20,47-60,123",
+      "synlab/cli.py:297-361",
+      "tests/a12/episodes/test_env.py",
+      "tests/a12/episodes/test_baselines.py",
+      "tests/a12/episodes/test_api.py",
+      "docs/a12/acceptance_report.md",
+      "docs/a12/acceptance_delta.md",
+      "docs/handover/20261007/HANDOVER.md"
+    ]
+  },
+  "docx_extraction": {
+    "method": "Bundled Python python.exe -B, zipfile plus lxml over word/document.xml; body XML-order paragraph/table location, no page guessing.",
+    "sha256": {
+      "RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx": "883C831648D0697F456228F4D862DEDA8A36FF9740ECD6AADB3A3EBFDFDFFC7D",
+      "RelicWeave_V1.47.docx": "41F1254E40A2ECABDCFA1C6583AF2FCE0AE1B0AB980D5F9179BBAF687B7BE64B",
+      "A12_Codex_Execution_Plan_V1.2.md": "437D03778D6E4BB622A5A92A5749FF36AD515C2AFE34AA17BE4E951666D51A39"
+    }
+  },
+  "limitations": [
+    "Static review only; tests, experiments, training and numerical runs were not executed.",
+    "Search scope was limited to requested A12 docs, code, tests, README/current handover and the specified execution plan, excluding backup/vendor/third_party. Not found means no evidence in reviewed scope, not proof about unreviewed files or external repositories.",
+    "Two historical A17 snapshots differ: acceptance_delta.md at 2026-10-02 01:45:24+08 says FAIL and acceptance_report.md generated at 2026-10-02 11:48:01+08 says PASS. This difference alone must not be used to infer current system state. Both snapshots concern job/checkpoint recovery and neither provides member-recovery qualification. No acceptance was run in this audit."
+  ]
+}

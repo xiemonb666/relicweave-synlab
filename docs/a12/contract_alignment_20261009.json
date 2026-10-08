@@ -1,0 +1,412 @@
+{
+  "review_id": "CONTRACT_ALIGNMENT_20261009",
+  "date": "2026-10-09",
+  "status": "CONTRACT_DOCUMENT_REVISED",
+  "review_mode": "STATIC_REVIEW",
+  "scope": {
+    "written_scope": "Markdown contract correction, append-only dated clauses, byte snapshots and exact audit copies",
+    "master_docx_writeback": "PENDING",
+    "tests_cli_numeric_training_solver_experiments": "NOT_RUN",
+    "source_code_historical_receipts_delivery_sidecars": "NOT_MODIFIED",
+    "delivery_state": "PG/VF/A12 completion and the recorded zero physically qualified complete data packs remain unchanged"
+  },
+  "input_pins": {
+    "audit_sources": {
+      "version_audit.md": {
+        "path": "tmp/contract_alignment_20261009/version_audit.md",
+        "bytes": 6495,
+        "sha256": "7c8daa63077da17a1c86eb10e3e22acd63b4857f23977acb8b9c997741de9fc5"
+      },
+      "version_audit.json": {
+        "path": "tmp/contract_alignment_20261009/version_audit.json",
+        "bytes": 8144,
+        "sha256": "56ee4fcbadb1f2605e2fc1daff0f9e0abf61ac60ce39383a37c14f5e69d7cf03"
+      },
+      "unknown_audit.md": {
+        "path": "tmp/contract_alignment_20261009/unknown_audit.md",
+        "bytes": 12926,
+        "sha256": "1cb1cb5c0ad47fbb977aff2f1943d40713616b75f453e9effd8a984ade1dcd92"
+      },
+      "unknown_audit.json": {
+        "path": "tmp/contract_alignment_20261009/unknown_audit.json",
+        "bytes": 11080,
+        "sha256": "262cbcfd270181640891c3317c07871bf52d577c316ef548b3a46e04ff571a12"
+      },
+      "membership_audit.md": {
+        "path": "tmp/contract_alignment_20261009/membership_audit.md",
+        "bytes": 15241,
+        "sha256": "2e51f26c15d19ff0105db584fbb3c79bf70daf89e99a3d1ee32a484f0a9bb0d8"
+      },
+      "membership_audit.json": {
+        "path": "tmp/contract_alignment_20261009/membership_audit.json",
+        "bytes": 11011,
+        "sha256": "54eb4f5d7ed96fb7573ccc6ac9cbe0a6742a0a3b8e2323497052eb1d646f1d23"
+      }
+    },
+    "pre_edit_contracts": {
+      "data_contract.before.md": {
+        "path": "relicweave-synlab/docs/a12/reviews/20261009/data_contract.before.md",
+        "bytes": 4758,
+        "sha256": "db67589068d48bcc9500eada8a4cba5f6e99fac2e053f67fee0dec68d782ac1f"
+      },
+      "interfaces.before.md": {
+        "path": "relicweave-synlab/docs/a12/reviews/20261009/interfaces.before.md",
+        "bytes": 6436,
+        "sha256": "8193fe460289705296dd12402f968d26bdf62418b292d6043734f4ba26cf4b1b"
+      }
+    },
+    "docx": {
+      "current_master": {
+        "path": "RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx",
+        "bytes": 786150,
+        "sha256": "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d"
+      },
+      "original_provenance_only": {
+        "path": "RelicWeave_V1.47.docx",
+        "bytes": 779513,
+        "sha256": "41f1254e40a2ecabdcfa1c6583af2fce0ae1b0ab980d5f9179bbaf687b7be64b"
+      }
+    }
+  },
+  "decisions": [
+    {
+      "id": "D01",
+      "topic": "version_layers",
+      "decision": "Generation config is inner synlab.v3; canonical serialized key schema. Model field is schema_id; populate_by_name also permits schema_id input. schema_version belongs to API outer job envelope. train/diagnose/pool/store/asset/package/deploy versions are independent; deploy.v2 is not generation synlab.v2.",
+      "status": "DOCUMENT_REVISED",
+      "evidence": [
+        "synlab/schemas/spec.py:15,221-246",
+        "synlab/api/deps.py:59-70",
+        "synlab/api/specs.py:25-46",
+        "synlab/storage/deploy_boundary.py:21,77-109"
+      ],
+      "gap": "No synlab.v2 config reader/migrator or rw-schema-1.1 adapter/field map was found."
+    },
+    {
+      "id": "D02",
+      "topic": "relation_ontology",
+      "decision": "Physical classes are R0/R1/R2. Preserve storage codebook R0=0,R1=1,R2=2,TINY_CONTACT=3,UNKNOWN=4. UNKNOWN is an unconfirmed relation/source state, not a fourth posterior or R0; TINY_CONTACT is a grey-zone stored label.",
+      "status": "DOCUMENT_REVISED",
+      "evidence": [
+        "synlab/schemas/runtime.py:255-271",
+        "synlab/training/adapter.py:36-42",
+        "synlab/training/batch.py:425-435,454-460"
+      ],
+      "gap": "No typed relation head or calibrated abstention interface is implemented."
+    },
+    {
+      "id": "D03",
+      "topic": "mask_boundaries",
+      "decision": "relation valid, loss_mask, pair_valid and point correspondence validity are separate. mapping_valid is only this review’s logical name, not a current A12 schema column; current field is CorrespondenceSample.valid and exported name is corr_valid. Follow the code mapping; add no column or source code. UNKNOWN/TINY are not default relation negatives; adjacency uncertainty does not itself invalidate local point mapping.",
+      "status": "DOCUMENT_REVISED",
+      "evidence": [
+        "synlab/training/batch.py:214-253,425-435,454-503,579-613",
+        "synlab/training/supervision.py:280-310",
+        "synlab/truth/api.py:770-785",
+        "synlab/schemas/runtime.py:275-291",
+        "synlab/schemas/view_channels.json:207-211",
+        "synlab/storage/export.py:171-175,1970-1975"
+      ],
+      "gap": "AUC valid/loss_mask mismatch is registered under MC07."
+    },
+    {
+      "id": "D04",
+      "topic": "member_truth",
+      "decision": "V_G(q) comes from an independent confirmed object-membership manifest intersected with frozen G and excluding q, not a union of R1/R2 adjacency edges. Confirmed identity with unknown pair adjacency stays member-positive. Pairwise R1 needs pair-level identity confirmation and sufficient exclusion of that pair direct adjacency, not gallery closure. Member and neighbor closure are independent; mate_absent differs from member_absent.",
+      "status": "SPECIFIED",
+      "evidence": [
+        "V1.47 master DOCX BODY[128-129]",
+        "membership_audit.md recommendations 1-2",
+        "synlab/relations/gallery.py:454-456,558-559"
+      ],
+      "gap": "No independent membership manifest, closure field or member estimator found."
+    },
+    {
+      "id": "D05",
+      "topic": "member_interface",
+      "decision": "Proposed request/result, set, candidate, decision/reason, iteration and stop/cost fields are logical contract only. Do not add them to strict GenerationSpec; create/register a dedicated versioned schema/API/asset role before implementation. GT-derived answers/rewards remain offline.",
+      "status": "SPECIFIED",
+      "evidence": [
+        "docs/a12/data_contract.md:18,44-59",
+        "synlab/schemas/spec.py:221-246",
+        "synlab/episodes/api.py:95-136,207-215",
+        "synlab/roles.py:16-20,47-60"
+      ],
+      "gap": "No member schema, role, API, CLI or A12.22 implementation found."
+    },
+    {
+      "id": "D06",
+      "topic": "member_metrics",
+      "decision": "Empty prediction against nonempty GT gives R=0/P=NA/F1=0. Empty GT reports member-absent false inclusion/abstention; double empty is correct-empty without P/R/F1=1. Aggregate query-equal within object then object macro; CI by source cluster.",
+      "status": "SPECIFIED",
+      "evidence": [
+        "V1.47 master DOCX BODY[128-129]",
+        "membership_audit.md metrics row",
+        "synlab/training/api.py:443-510"
+      ],
+      "gap": "Existing aggregate metrics are pair/R2 metrics."
+    },
+    {
+      "id": "D07",
+      "topic": "relation_auc_semantics",
+      "decision": "discrimination_auc filters valid but not loss_mask; TINY_CONTACT may be valid=true and loss_mask=false and enter its non-R2 class. Record as static semantic gap; do not change source or historical values.",
+      "status": "STATIC_REVIEW",
+      "evidence": [
+        "synlab/relations/negatives.py:892-928",
+        "synlab/truth/api.py:770-785"
+      ],
+      "gap": "No runtime or numeric evaluation run."
+    },
+    {
+      "id": "D08",
+      "topic": "A17_historical_snapshots",
+      "decision": "acceptance_delta at 2026-10-02 01:45:24+08 records FAIL; acceptance_report generated 2026-10-02 11:48:01+08 records PASS. Neither establishes current A17 status; both concern data job/checkpoint recovery, not member recovery.",
+      "status": "STATIC_REVIEW",
+      "evidence": [
+        "membership_audit.md:24,38-40"
+      ],
+      "gap": "No current A17 status inferred."
+    }
+  ],
+  "docx_crosswalk": [
+    {
+      "locator": "§9 BODY[920-921]; G25.3 BODY[2109-2110]; H2 BODY[2354-2355] row[5]",
+      "correction": "Current generation is inner synlab.v3 with canonical schema; v2/rw-schema compatibility pending; other artifact/package/deploy versions independent.",
+      "status": "PENDING_DOCX_WRITEBACK"
+    },
+    {
+      "locator": "G30.1 BODY[2146-2151]",
+      "correction": "Keep as proposed design; use current GenerationSpec for executable configs; no v2 field/migration compatibility promises without evidence.",
+      "status": "PENDING_DOCX_WRITEBACK"
+    },
+    {
+      "locator": "G30.5 BODY[2241-2243]",
+      "correction": "Inner example key schema: synlab.v3; schema_version only outer job envelope; unimplemented migrator remains pending.",
+      "status": "PENDING_DOCX_WRITEBACK"
+    },
+    {
+      "locator": "BODY[109,181,201,211], training field table BODY[1627]",
+      "correction": "Three physical classes; preserve label codebook including TINY_CONTACT; keep label and task masks separate from logits/abstention.",
+      "status": "PENDING_DOCX_WRITEBACK"
+    },
+    {
+      "locator": "A6.15 component table BODY[319], paragraph[7] M_R2 and paragraph[13] Soft Typed Graph",
+      "finding": "Both cells describe R0/R1/R2/UNKNOWN as posterior/distribution, a substantive four-way physical output conflict. UNKNOWN remains a legal stored state but is not a fourth physical prediction class.",
+      "correction": "Change both to three physical scores/posterior classes plus an independent unresolved/abstain field; preserve the UNKNOWN storage code and do not remove UNKNOWN globally.",
+      "status": "PENDING_DOCX_WRITEBACK"
+    },
+    {
+      "locator": "A6.15 BODY[315], A6.15.1 BODY[320], Step 2 BODY[324], Step 5 BODY[327], separation BODY[331-334]",
+      "correction": "Three physical relation posterior classes plus independent epistemic abstention; A6.15 remains research candidate.",
+      "status": "PENDING_DOCX_WRITEBACK"
+    },
+    {
+      "locator": "T0 BODY[350-352]; Graph Memory BODY[366-368]",
+      "correction": "T0 uses three relation classes and separate decision; graph may store UNKNOWN state but not as fourth physical posterior.",
+      "status": "PENDING_DOCX_WRITEBACK"
+    },
+    {
+      "locator": "§2.0 BODY[112-114]; A12.22 BODY[568-569]; §2.2.2 BODY[128-129]",
+      "correction": "V_G derives from independent frozen-gallery member GT; R2 neighbour set/closure is separate; retain existing empty-set rules.",
+      "status": "PENDING_DOCX_WRITEBACK"
+    },
+    {
+      "locator": "Original V1.47.docx BODY[903,2090,2126-2127,2222-2223,2334 row[5]",
+      "correction": "Provenance only; not edited.",
+      "status": "NOT_MODIFIED"
+    }
+  ],
+  "acceptance_gates": [
+    {
+      "id": "MC01",
+      "name": "Independent membership truth/closure",
+      "status": "SPECIFIED / NOT_RUN",
+      "gap": "No member manifest or closure eligibility implementation.",
+      "acceptance": "Manifest intersects frozen G, excludes q; unknown adjacency with confirmed identity remains positive; member closure differs from neighbor closure."
+    },
+    {
+      "id": "MC02",
+      "name": "Versioned member schema/API/role",
+      "status": "SPECIFIED / NOT_RUN",
+      "gap": "No member schema, role, API or CLI.",
+      "acceptance": "Register dedicated schema/API/role; strict GenerationSpec rejects undeclared member fields."
+    },
+    {
+      "id": "MC03",
+      "name": "GT isolation",
+      "status": "SPECIFIED / NOT_RUN",
+      "gap": "Member-specific evaluator/generator leakage tests not found.",
+      "acceptance": "Only lawful Obs/opaque route/frozen versions/public budget online; GT IDs/answers/graph/reward offline."
+    },
+    {
+      "id": "MC04",
+      "name": "Set semantics fixtures",
+      "status": "SPECIFIED / NOT_RUN",
+      "gap": "Pair/R2 fixtures do not prove member-set behavior.",
+      "acceptance": "R1-only positive, R2 non-transitivity, q exclusion, UNKNOWN dimensions and open/closed eligibility."
+    },
+    {
+      "id": "MC05",
+      "name": "Metrics/empty cases",
+      "status": "SPECIFIED / NOT_RUN",
+      "gap": "No member set estimator/object macro.",
+      "acceptance": "Hand-computed nonempty, empty and double-empty cases; object macro and source-cluster CI."
+    },
+    {
+      "id": "MC06",
+      "name": "Iteration/budget/controls",
+      "status": "SPECIFIED / NOT_RUN",
+      "gap": "episode_trace is observation-action trace; no member state/baseline/control.",
+      "acceptance": "Log hashes, add/remove, cost/stop; B1 as ablation; Oracle-R2 offline diagnostic, not guaranteed strict upper bound, matched context/budget and controls."
+    },
+    {
+      "id": "MC07",
+      "name": "Relation metric mask",
+      "status": "SPECIFIED / NOT_RUN",
+      "gap": "discrimination_auc omits loss_mask filtering.",
+      "acceptance": "Use relation task mask; do not promote UNKNOWN wholesale to negative."
+    }
+  ],
+  "status_ledger": {
+    "review": "CONTRACT_DOCUMENT_REVISED / STATIC_REVIEW",
+    "member_recovery": "SPECIFIED / NOT_RUN",
+    "typed_relation_head": "NOT_IMPLEMENTED / NOT_RUN",
+    "calibrated_abstention": "NOT_IMPLEMENTED / NOT_RUN",
+    "master_docx": "PENDING",
+    "A01-A36_and_delivery_sidecars": "UNCHANGED",
+    "PG_VF_A12_completion_and_zero_qualified_packs": "UNCHANGED"
+  },
+  "write_manifest": [
+    {
+      "path": "relicweave-synlab/docs/a12/data_contract.md",
+      "kind": "existing_markdown_append_only",
+      "before": {
+        "bytes": 4758,
+        "sha256": "db67589068d48bcc9500eada8a4cba5f6e99fac2e053f67fee0dec68d782ac1f"
+      },
+      "after": {
+        "bytes": 10974,
+        "sha256": "04fdcb7c4f3b2efed6f8b982ede6209edf0f8da3f609939e5818db44e1d6d66b"
+      },
+      "original_byte_prefix_preserved": true
+    },
+    {
+      "path": "relicweave-synlab/docs/a12/interfaces.md",
+      "kind": "existing_markdown_append_only",
+      "before": {
+        "bytes": 6436,
+        "sha256": "8193fe460289705296dd12402f968d26bdf62418b292d6043734f4ba26cf4b1b"
+      },
+      "after": {
+        "bytes": 10244,
+        "sha256": "f56a9b7579d4aa287748ec258bf9a3101dd7de30479e2edf76966fd3ee7cb923"
+      },
+      "original_byte_prefix_preserved": true
+    },
+    {
+      "path": "relicweave-synlab/docs/a12/reviews/20261009/data_contract.before.md",
+      "kind": "original_byte_snapshot",
+      "bytes": 4758,
+      "sha256": "db67589068d48bcc9500eada8a4cba5f6e99fac2e053f67fee0dec68d782ac1f"
+    },
+    {
+      "path": "relicweave-synlab/docs/a12/reviews/20261009/interfaces.before.md",
+      "kind": "original_byte_snapshot",
+      "bytes": 6436,
+      "sha256": "8193fe460289705296dd12402f968d26bdf62418b292d6043734f4ba26cf4b1b"
+    },
+    {
+      "path": "relicweave-synlab/docs/a12/reviews/20261009/version_audit.md",
+      "kind": "byte_exact_audit_copy",
+      "source": "tmp/contract_alignment_20261009/version_audit.md",
+      "bytes": 6495,
+      "sha256": "7c8daa63077da17a1c86eb10e3e22acd63b4857f23977acb8b9c997741de9fc5",
+      "source_copy_equal": true
+    },
+    {
+      "path": "relicweave-synlab/docs/a12/reviews/20261009/version_audit.json",
+      "kind": "byte_exact_audit_copy",
+      "source": "tmp/contract_alignment_20261009/version_audit.json",
+      "bytes": 8144,
+      "sha256": "56ee4fcbadb1f2605e2fc1daff0f9e0abf61ac60ce39383a37c14f5e69d7cf03",
+      "source_copy_equal": true
+    },
+    {
+      "path": "relicweave-synlab/docs/a12/reviews/20261009/unknown_audit.md",
+      "kind": "byte_exact_audit_copy",
+      "source": "tmp/contract_alignment_20261009/unknown_audit.md",
+      "bytes": 12926,
+      "sha256": "1cb1cb5c0ad47fbb977aff2f1943d40713616b75f453e9effd8a984ade1dcd92",
+      "source_copy_equal": true
+    },
+    {
+      "path": "relicweave-synlab/docs/a12/reviews/20261009/unknown_audit.json",
+      "kind": "byte_exact_audit_copy",
+      "source": "tmp/contract_alignment_20261009/unknown_audit.json",
+      "bytes": 11080,
+      "sha256": "262cbcfd270181640891c3317c07871bf52d577c316ef548b3a46e04ff571a12",
+      "source_copy_equal": true
+    },
+    {
+      "path": "relicweave-synlab/docs/a12/reviews/20261009/membership_audit.md",
+      "kind": "byte_exact_audit_copy",
+      "source": "tmp/contract_alignment_20261009/membership_audit.md",
+      "bytes": 15241,
+      "sha256": "2e51f26c15d19ff0105db584fbb3c79bf70daf89e99a3d1ee32a484f0a9bb0d8",
+      "source_copy_equal": true
+    },
+    {
+      "path": "relicweave-synlab/docs/a12/reviews/20261009/membership_audit.json",
+      "kind": "byte_exact_audit_copy",
+      "source": "tmp/contract_alignment_20261009/membership_audit.json",
+      "bytes": 11011,
+      "sha256": "54eb4f5d7ed96fb7573ccc6ac9cbe0a6742a0a3b8e2323497052eb1d646f1d23",
+      "source_copy_equal": true
+    },
+    {
+      "path": "relicweave-synlab/docs/a12/contract_alignment_20261009.md",
+      "kind": "new_markdown_report",
+      "bytes": 11945,
+      "sha256": "ceedeb73a98efc0f57608342fb362096806102c03e939decfd3bb11e509059ec"
+    },
+    {
+      "path": "relicweave-synlab/docs/a12/contract_alignment_20261009.json",
+      "kind": "this_manifest_json",
+      "self_hash_omitted_to_avoid_recursive_reference": true,
+      "sha256": null,
+      "self_sha256_omitted_to_avoid_recursive_reference": true,
+      "bytes": 18795
+    }
+  ],
+  "verification": {
+    "audit_input_pins": "PASS",
+    "snapshots_byte_exact": "PASS",
+    "original_contract_byte_prefixes": "PASS",
+    "six_audit_copies_equal_sources": "PASS",
+    "master_and_original_docx_hashes": "UNCHANGED",
+    "local_report_links": "PASS",
+    "json_parse": "PASS after write",
+    "tests_cli_numeric_runs": "NOT_RUN",
+    "body319_component_cells_added": "PASS",
+    "mapping_valid_terminology": "PASS: logical name only; current CorrespondenceSample.valid exports as corr_valid; no new column or source edit."
+  },
+  "after_pins": {
+    "relicweave-synlab/docs/a12/data_contract.md": {
+      "bytes": 10974,
+      "sha256": "04fdcb7c4f3b2efed6f8b982ede6209edf0f8da3f609939e5818db44e1d6d66b"
+    },
+    "relicweave-synlab/docs/a12/interfaces.md": {
+      "bytes": 10244,
+      "sha256": "f56a9b7579d4aa287748ec258bf9a3101dd7de30479e2edf76966fd3ee7cb923"
+    },
+    "relicweave-synlab/docs/a12/contract_alignment_20261009.md": {
+      "bytes": 11945,
+      "sha256": "ceedeb73a98efc0f57608342fb362096806102c03e939decfd3bb11e509059ec"
+    },
+    "relicweave-synlab/docs/a12/contract_alignment_20261009.json": {
+      "bytes": 18795,
+      "sha256": null,
+      "sha256_note": "reported externally; omitted from this file to avoid recursive self-hash"
+    }
+  }
+}

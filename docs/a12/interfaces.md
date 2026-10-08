@@ -74,3 +74,23 @@
 模块状态只允许 `SPECIFIED / IMPLEMENTED / QA_PASSED / VALIDATED / RELEASED / PENDING / MISSING`。
 未运行写 `NOT_RUN`；不适用写 `NA`。**禁止**用随机曲线、假进度、空实现、固定图片、预填排行榜冒充结果。
 外部后端缺失（Blender/实拍数据/CUDA）必须报 `ENV_CAPABILITY_MISSING` 或 `PENDING`，并记录替代路线。
+
+
+## 5. 合同对齐补充（2026-10-09；CONTRACT_DOCUMENT_REVISED / STATIC_REVIEW）
+
+本补充逐条解释现行版本与 A12 目标边界；证据和 DOCX 原文交叉索引见 [合同对齐报告](contract_alignment_20261009.md)。本节不宣称 typed relation head、member API、member role 或 A12.22 已实现。
+
+- **配置版本字段：**生成配置的规范化键为 `schema`；实现模型字段为 `schema_id`，其 `populate_by_name` 输入行为允许 `schema_id`。`schema_version` 留在 API job envelope。生成 `synlab.v3` 与 train/diagnose/pool、store、asset、package、deploy schema 分层独立；deploy v2 不是生成配置 v2。`synlab.v2` 读取/迁移和 `rw-schema-1.1` adapter 均标为未证实/待补。
+- **关系字段：**`relation_truth` 的物理监督类别为 R0/R1/R2；存储标签 codebook 保留 R0=0、R1=1、R2=2、TINY_CONTACT=3、UNKNOWN=4。标签 code、relation `valid`、`loss_mask`、`pair_valid` 与点对应有效性不互相替代。`mapping_valid` 仅是本次勘误对点对应有效性的逻辑称呼，不是当前 A12 schema 列名；当前字段为 `CorrespondenceSample.valid`（`synlab/schemas/runtime.py:290`），导出字段为 `corr_valid`（`synlab/schemas/view_channels.json:210`；`synlab/storage/export.py:171–175`），以代码映射为准，不新增列、不改源码。UNKNOWN 是未确认状态，不是物理类别或 R0；决策 abstention 与物理后验分开。
+- **成员恢复边界：**未来 member truth 由独立 object-membership manifest 在冻结图库内派生，`V_G(q)=(manifest members ∩ G)\{q}`；R2 邻接真值仍独立。邻接未知不能推翻已确认同器身份；pairwise R1 不要求 gallery 全集闭合。成员闭合集与 neighbor 闭合集分开，mate-absent 与 member-absent 分开。
+- **待定义的逻辑载体：**可在后续 schema 设计中定义独立 member manifest/result、closed-gallery eligibility、成员 decision/reason、迭代 add/remove、证据和预算/stop 字段。这里的名称只表达逻辑合同，当前没有新类、API 函数、role 或命令；A12.22 仍为 `SPECIFIED / NOT_RUN`。
+- **线上/离线隔离：**部署只接受授权 `Obs`、作路由的 opaque reference、冻结 gallery/model/policy 版本与公开成本/预算/停止策略。隐藏 object/mother ID、成员答案、完整 GT 图和 GT 派生奖励只可供离线 truth、训练或评估使用，不得作为部署输入、特征或排序键。
+- **评测与控制：**成员集合主指标遵循 data contract §8.4 的空集合语义、object macro 与 source-cluster 区间。B1 是关系标量反馈研究消融；Oracle-R2 是离线特权诊断，不保证是严格性能上界；应匹配预算并配 shuffle/corrupted/predicted 控制。均不是现有 member capability。
+- **已知评测语义缺口：**当前 `discrimination_auc` 只筛 `valid`、不筛 `loss_mask`，可能把 `TINY_CONTACT` 带入非 R2 类。该问题仅登记为静态审查结果，未修源码或重算历史分数；`UNKNOWN` 不得整体并入负例。
+
+历史验收状态、交付 sidecar、A01–A36 记录及主 DOCX 本轮均未改写。主 DOCX 回写状态 `PENDING`；本节与报告只表示合同文档修订，不表示接口实现、QA 通过或功能完成。
+
+
+### 5.1 未注册成员字段与严格 schema（补充勘误，2026-10-09）
+
+当前 `GenerationSpec` 是严格 schema，未声明字段会被拒绝。上述成员恢复请求/结果字段是逻辑合同；不得直接塞入现有 `GenerationSpec` 或假定可由现有 API/CLI 接收。后续须定义并注册专用版本化 schema、API 与 asset role，完成实现及验收后才能将状态提升；此之前保持 `SPECIFIED / NOT_RUN`。Oracle-R2 仅指离线特权诊断，不保证是严格性能上界。

@@ -1,0 +1,116 @@
+{
+  "audit_date": "2026-10-09",
+  "audit_type": "read_only_static_cross_audit",
+  "verdict": {
+    "unknown_is_fourth_physical_relation_in_current_training": false,
+    "unknown_is_present_in_storage_label_codes": true,
+    "typed_r0_r1_r2_classifier_implemented": false,
+    "document_design_text_consistent": false,
+    "summary": "UNKNOWN is a stored/unresolved label code with masks; no current typed relation head sends it to a physical softmax. V1.47 future-design sections conflict by using four-way posterior wording before separately defining UNKNOWN as epistemic abstention."
+  },
+  "scope": {
+    "workspace": "C:\\Users\\xiemo\\Desktop\\ShardForge",
+    "primary_docx": "C:\\Users\\xiemo\\Desktop\\ShardForge\\RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx",
+    "original_docx_trace_only": "C:\\Users\\xiemo\\Desktop\\ShardForge\\RelicWeave_V1.47.docx",
+    "execution_plan": "C:\\Users\\xiemo\\Desktop\\ShardForge\\A12_Codex_Execution_Plan_V1.2.md",
+    "data_contract": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\docs\\a12\\data_contract.md",
+    "docx_parser": "C:\\Users\\xiemo\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe -B with zipfile/lxml",
+    "exclusions": ["workspace_backup", "old backup", "vendor", "third_party"],
+    "tests_run": false,
+    "training_or_solver_run": false
+  },
+  "confirmed_facts": [
+    {
+      "id": "ontology",
+      "fact": "R0/R1/R2 are mutually exclusive physical pair relations when adjudicated; R1 and R2 both imply same-vessel membership. UNKNOWN means unconfirmed relation/source, with loss_mask=false and never recoded to R0. TINY_CONTACT is a separate measured grey-zone storage label.",
+      "evidence": [
+        {"path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\A12_Codex_Execution_Plan_V1.2.md", "lines": "672-678"},
+        {"path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx", "body_node": 109, "text_context": "R0=不同物理器物；R1=同器物且无直接历史断裂接触；R2=直接历史邻接；UNKNOWN=关系未确认；R2 邻接不传递。"}
+      ]
+    },
+    {
+      "id": "storage_codes",
+      "fact": "The runtime schema uses string constants and RelationEdge.kind: str; training maps R0=0,R1=1,R2=2,TINY_CONTACT=3,UNKNOWN=4. This is a label-side codebook, not a model output dimension.",
+      "evidence": [
+        {"path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\synlab\\schemas\\runtime.py", "lines": "255-271"},
+        {"path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\synlab\\training\\adapter.py", "lines": "36-42"},
+        {"path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\synlab\\training\\batch.py", "lines": "425-435,454-460"}
+      ]
+    },
+    {
+      "id": "masks",
+      "fact": "Training constructs R2 positives and confirmed R0/R1 negatives; UNKNOWN/TINY cannot enter ordinary negatives and are audited out of supervision. Unknown padded slots are also excluded by pair_valid.",
+      "evidence": [
+        {"path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\synlab\\training\\batch.py", "lines": "214-253,425-435,454-503,579-613"},
+        {"path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\synlab\\training\\supervision.py", "lines": "280-310"},
+        {"path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\synlab\\truth\\api.py", "lines": "6-15,700-717,770-785"}
+      ]
+    },
+    {
+      "id": "current_head_and_loss",
+      "fact": "No relation_logits/relation_head is implemented in current training code. Main training creates a single pair similarity score and uses masked multi-positive ranking. PairRefineHead's defined output is one refine_logit. Existing three-logit CE is a separate missing/compatible/contradicting task, not relation classification.",
+      "evidence": [
+        {"path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\synlab\\training\\model.py", "lines": "369-390,732-768"},
+        {"path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\synlab\\training\\trainer.py", "lines": "433-463,566-593"},
+        {"path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\synlab\\training\\losses.py", "lines": "137-145,336-393,565-592"}
+      ]
+    },
+    {
+      "id": "transitivity",
+      "fact": "R2 is symmetric and non-transitive; same-vessel identity is transitive only for a closed membership set. R1 is same-vessel without direct R2, so R1 itself is not transitive; absence of an R2 row is not sufficient evidence for R1.",
+      "evidence": [
+        {"path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\synlab\\truth\\api.py", "lines": "6-15,1359-1398"},
+        {"path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tests\\a12\\truth\\test_relations.py", "lines": "54-65"},
+        {"path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx", "body_node": 332, "text_context": "P_R2≤P_same；closed same-vessel membership is transitive; R1 and R2 direct relations are not transitive."}
+      ]
+    },
+    {
+      "id": "abstention_and_metrics",
+      "fact": "Generic diagnostics support acceptance thresholds and explicit REJECTED status. training.api.evaluate applies an optional raw embedding-dot threshold and reports effective metrics, but leaves each row status OK and the top-level status OK even if acceptance is empty. This is not a calibrated UNKNOWN posterior.",
+      "evidence": [
+        {"path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\synlab\\diagnostics\\metrics.py", "lines": "35-40,168-186,252-284,312-335"},
+        {"path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\synlab\\training\\api.py", "lines": "209-219,371-373,405-429,503"},
+        {"path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\A12_Codex_Execution_Plan_V1.2.md", "lines": "2141-2153,2161-2166"}
+      ]
+    },
+    {
+      "id": "relation_auc_mask_boundary",
+      "fact": "discrimination_auc filters valid rows but not loss_mask; current truth producers mark UNKNOWN invalid, but mark TINY_CONTACT valid with loss_mask=false, so TINY is included in the metric's non-R2 class. Treat as broad diagnostic or align it with training validity masks.",
+      "evidence": [
+        {"path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\synlab\\relations\\negatives.py", "lines": "892-928"},
+        {"path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\synlab\\truth\\api.py", "lines": "770-785"}
+      ]
+    }
+  ],
+  "document_conflicts": [
+    {"kind": "four_way_future_output_wording", "evidence": [{"path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx", "body_node": 324, "text_context": "relation head 输出 R0/R1/R2/UNKNOWN posterior"}, {"path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx", "body_node": 327, "text_context": "更新 R0/R1/R2/UNKNOWN posterior"}, {"path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx", "body_node": 352, "table_row": 1, "text_context": "T0 Pairwise baseline 输入 q,c，输出 R0/R1/R2/UNKNOWN"}]},
+    {"kind": "explicit_separation_rule", "evidence": [{"path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx", "body_node": 332, "text_context": "UNKNOWN is independent epistemic abstention, not a fourth physical relation; physical posterior covers R0/R1/R2 only."}, {"path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx", "body_node": 334, "text_context": "separate same-vessel and direct-contact heads; independent abstention status."}]},
+    {"kind": "data_contract_gap", "evidence": [{"path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\docs\\a12\\data_contract.md", "lines": "3-5,14-19", "text_context": "RelationPack names R labels, grey zones, valid/loss mask/pool but does not define UNKNOWN, relation-logit classes, or abstention field semantics."}]}
+  ],
+  "recommended_decision": {
+    "physical_relation_classes": ["R0", "R1", "R2"],
+    "stored_non_class_labels": ["TINY_CONTACT", "UNKNOWN"],
+    "physical_head_logits": 3,
+    "unknown_supervision": "exclude UNKNOWN/TINY from physical relation CE and do not use them as relation negatives; keep relation loss masks separate from point-correspondence mapping_valid, since pair-level adjacency uncertainty does not itself invalidate local mapping",
+    "decision_interface": "independent ACCEPT/REJECT/ABSTAIN plus reason, calibrated threshold/policy version, evidence coverage",
+    "same_vessel_vs_r2": "P_R2 <= P_same; closed membership is transitive and is required for Level 3 denominator eligibility, but not for pairwise R1; R1 requires confirmed same-vessel identity for that pair and sufficient exclusion of that pair's historical direct adjacency",
+    "candidate_ranking": "allow multiple R2 positives and multiple accepts; do not normalize candidates as one mutually exclusive label"
+  },
+  "minimum_acceptance": [
+    "Assert physical relation logits have final dimension 3 and exact class order R0/R1/R2.",
+    "Fixture proves UNKNOWN/TINY do not enter physical relation CE or relation-negative/hard-negative sampling, and confirmed-label relation metrics use the task-specific relation mask; report exclusion reasons. Point-correspondence examples use independent mapping_valid: pair-level UNKNOWN/TINY does not itself invalidate local mapping or determine correspondence dustbin handling.",
+    "Relation consumers reject or exclude UNKNOWN rows even if relation valid=true but loss_mask=false; do not silently substitute valid for relation loss_mask. Point-correspondence consumers use mapping_valid independently.",
+    "A-B R2, B-C R2, A-C R1 fixture proves same-vessel transitivity within closed membership and direct R2 non-transitivity; pairwise R1 requires that pair's same-vessel identity confirmed and its direct adjacency sufficiently excluded, while full gallery closure is only a Level 3 denominator condition.",
+    "Two true mates B and C for one query remain independently rankable and may both be accepted.",
+    "Low-confidence decisions produce explicit abstain/reject status and reason; raw ranking, coverage, risks, and effective recall are reported; present-query rejection yields effective zero, absent-query false accept is counted separately."
+  ],
+  "limitations": [
+    "Static source/document audit only; existing tests were read but not executed.",
+    "The master DOCX future architecture is a proposal; source code confirms it is not implemented.",
+    "Original RelicWeave_V1.47.docx was used only for provenance, not as normative source."
+  ],
+  "deliverables": [
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\contract_alignment_20261009\\unknown_audit.md",
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\contract_alignment_20261009\\unknown_audit.json"
+  ]
+}

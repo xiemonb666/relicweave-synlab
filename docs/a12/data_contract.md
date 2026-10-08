@@ -71,3 +71,39 @@ lineage_id/mother_id/fragment_id/event_id/split/variant/axis_id/level。
 `pattern.evaluate` 只读冻结系数。执行重试只增加 `execution_attempt`，不改内容 seed；
 换 seed/网格预算/算法参数 = 新的 `generation_variant`/`spec_hash`。
 五档强度共用同一 `basis_id`。
+
+
+## 8. 合同勘误（2026-10-09；CONTRACT_DOCUMENT_REVISED）
+
+本节按当前 `relicweave-synlab` 源码和 2026-10-09 静态合同复核补充解释。逐项原文定位、修正句、状态和证据见 [合同对齐报告](contract_alignment_20261009.md)；本节只记录合同口径，不表示新增接口、实现或验收已完成。
+
+### 8.1 版本层级
+
+当前生成配置为内层 `synlab.v3`。配置规范的规范化/序列化键为 `schema`；当前模型内部使用 `schema_id`，并保留 `populate_by_name` 所允许的 `schema_id` 输入形式。`schema_version` 属于 API 外层 job envelope，不是 `GenerationSpec` 的内层配置键。API job 的 `synlab.v3`、`synlab.train.v1`、`synlab.diagnose.v1`，以及 pool、store、各 asset、package 和 deploy 边界的版本各自独立；例如 `synlab.training_package_deploy.v2` 不表示 `synlab.v2` 生成配置。
+
+当前源代码没有证明接受或迁移 `synlab.v2` 配置，也没有证明 `rw-schema-1.1` 到 A12 pack 的 adapter、字段映射或 versioned migrator。旧版只读与迁移的文字在所引主 DOCX 中仍属待兑现合同/设计；在对应模型、字段映射、冻结 fixture、迁移记录和回归验收建立前，不作兼容承诺。G30.1/G30.5 保留“拟实现/研究方案”身份；可执行配置以当前 `configs/a12` 与 `synlab/schemas/spec.py` 为依据。
+
+### 8.2 关系真值、存储标签与预测状态
+
+物理 pair relation 的类别固定为 `R0/R1/R2`。存储和监督侧仍保留合法标签码 `R0=0, R1=1, R2=2, TINY_CONTACT=3, UNKNOWN=4`；该 codebook 不是模型输出维数。`TINY_CONTACT` 是数值灰区，`UNKNOWN` 表示关系/来源未确认；两者不得改写成 `R0` 或用作默认负例。物理关系 logits 目标为三类；`UNKNOWN`/`TINY_CONTACT` 从其关系监督分母排除。决策拒判/abstention 是单独状态，应带 reason、策略/阈值版本和证据覆盖；现有单一 pair similarity、scalar refine 输出及 missing/compatible/contradicting 辅助三分类均不能当作 typed relation head 或校准 abstain 接口。
+
+relation `valid`、`loss_mask`、padding `pair_valid` 与点对应有效性分别表达不同条件。`mapping_valid` 仅是本次合同勘误对点对应有效性的逻辑称呼，不是当前 A12 schema 列名；当前字段为 `synlab.schemas.runtime.CorrespondenceSample.valid`（`runtime.py:290`），导出字段为 `corr_valid`（`schemas/view_channels.json:210`；`storage/export.py:171–175`），具体以代码映射为准。本次不新增列、不改源码。邻接关系未知不自动否定同一 pair 的局部点映射有效性；关系标签 mask 不得替代点对应有效性。
+
+已登记的静态评测缺口：`synlab/relations/negatives.py:892-928` 的 `discrimination_auc` 按 `valid` 筛行但不检查 `loss_mask`；现有 truth producer 对 `TINY_CONTACT` 可标 `valid=true, loss_mask=false`。因此这条诊断路径会将灰区纳入非 R2 类，需在未来修正或清楚限定指标解释。此条是静态代码语义记录，没有运行/重算指标，也未修改代码或历史成绩。不得把所有 `UNKNOWN` 汇总为负例。
+
+### 8.3 成员真值与冻结图库
+
+对查询 `q` 与冻结图库 `G`，R2 直接邻片真值 `N_G(q)` 与成员集合真值 `V_G(q)` 分开定义。`V_G(q)` 必须从独立、已确认的 object-membership GT manifest 与 `G` 求交，再排除 `q`；不得由已标注的 R1/R2 adjacency 边并集构造。若 `q` 与候选的同器身份已独立确认，即使这对的 R1/R2 邻接仍未知，该候选仍为 member-positive。pairwise `R1` 只要求该 pair 的同器身份已确认、且该 pair 的直接历史邻接有充分排除证据；它不要求整个 gallery 闭合。`R2` 邻片闭合与成员集合闭合各自审查；`mate_absent` 不等于 `member_absent`。闭集成员主评测仅纳入独立 object membership 已确认且 manifest 能证明冻结图库闭合的对象。结论范围是库内集合恢复，不延伸到库外实物发现、完整重装配或物理修复。
+
+A12.22 成员恢复仍是目标合同。未来输入限于合法 `Obs`、仅作路由的 opaque sample reference、冻结 gallery/model/policy 版本和公开成本、预算、停止策略。隐藏 `mother_id/object_id`、完整关系图、成员答案、GT 派生奖励只进入离线 truth/training/evaluator，不作部署观察、特征或排序键。建议输出成员集合、R2 邻片候选与 R1 同器候选分栏，另记 ACCEPT/REJECT/ABSTAIN、reason、每轮新增/撤回成员、证据来源、成本和 `stop_reason`。这些是待实现的逻辑字段/合同，不是现有 API、role、schema 或 CLI。
+
+### 8.4 成员评测与状态
+
+闭集主指标按 query 先算，再在 object 内 query 等权，最后 object macro；置信区间按独立 source cluster 聚类，query 加权均值只作补充。对非空 GT 且预测为空，Recall=0、Precision=NA、F1=0。GT 为空时单独统计 `member_absent`、false inclusion 与 abstention；双空只记 `correct-empty`，不记 Precision/Recall/F1=1。固定单 gallery 的结论限定为该 gallery 条件。B1 仅是 R2 标量反馈消融，不是已存在的成员头；Oracle-R2 是离线特权诊断，必须匹配预算并配 equal-budget、shuffle 与 corrupted/predicted-R2 控制，不作为部署输入或当前能力。
+
+新增 `MC01`–`MC07` 是本次提出的独立合同验收门编号，不冒充历史 A01–A36、A37 或已执行门。状态为 `SPECIFIED / NOT_RUN`；实现、数值、测试和 CLI 状态均未改变。本轮不改变 PG/VF/A12 完成度及“0 个物理合格完整数据包”的记录。主 DOCX 的相关正文冲突仍待回写；本 Markdown 报告是本次合同勘误入口。
+
+
+### 8.5 未注册成员字段与严格 schema（补充勘误，2026-10-09）
+
+当前 `GenerationSpec` 是严格 schema，未声明字段会被拒绝。上文成员恢复请求/结果字段是逻辑合同；不得直接塞入现有配置对象或假定现有 API/CLI 可调用。后续须定义并注册专用版本化 schema、接口和 asset role，完成实现及验收后才能将状态提升；此之前保持 `SPECIFIED / NOT_RUN`。
