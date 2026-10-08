@@ -1,0 +1,53 @@
+{
+  "schema": "vesselforge.global_bspline_meridian.minimum_jerk_freeze.v2",
+  "phase": "source_frozen_not_executed",
+  "control_net": "NOT_COMPUTED",
+  "fixed_families": ["bowl", "jar"],
+  "degree": 5,
+  "control_count_per_coordinate": 11,
+  "internal_knots": ["1/6", "1/3", "1/2", "2/3", "5/6"],
+  "exact_systems_if_root_approved": {
+    "per_family": {"r_kkt_dimension": 16, "z_kkt_dimension": 15},
+    "total_systems": 4,
+    "objective": "exact integral of squared third derivative",
+    "solver": "Fraction Gauss-Jordan without regularization"
+  },
+  "checks_if_root_approved": [
+    "exact equality residuals and strict linear inequalities",
+    "exact Boehm extraction into six degree-5 Bezier spans",
+    "endpoint derivative jets through order four at every span join",
+    "control hull, derivative-pole sufficiency, and endpoint regularity",
+    "exact degree-24 Bernstein coefficients for P_R=S^3-R^2*D^2"
+  ],
+  "base_target_region": "UNASSIGNED_BOTH_TARGETS_SCREENED_ON_ALL_SPANS",
+  "inner_profile": "NOT_CONSTRUCTED",
+  "normal_wall_and_global_reach": "UNKNOWN_NOT_COMPUTED",
+  "accepted_total_crest_targets_mm": {"bowl": "92", "jar": "122"},
+  "mouth_body_datums_mm": {"bowl": "90", "jar": "120"},
+  "total_height_verification": "NOT_CHECKED_LIP_NOT_CONSTRUCTED",
+  "execution_requires_root_ready": true,
+  "future_limits": {"wall_seconds": 10, "max_json_bytes": 8388608},
+  "future_output_relative_path": "vesselforge/tmp/review_20261006/global_bspline_meridian_20261006/minimum_jerk_candidate",
+  "pinned_files": [
+    {
+      "path": "vesselforge/experiments/global_bspline_meridian_20261006/bspline_constraint_source.py",
+      "sha256": "e2d978bb817fa83918d2a494e1a084863fe413b8e176411038e9a8ba757f15d9"
+    },
+    {
+      "path": "vesselforge/experiments/global_bspline_meridian_20261006/bspline_minimum_jerk_driver.py",
+      "sha256": "e69d7b937f1e4810e60d89852d3cf8a82a049721ea59ba04f4a03462d664e4b9"
+    },
+    {
+      "path": "vesselforge/experiments/global_bspline_meridian_20261006/fixed_cases.json",
+      "sha256": "47aa718e1feae7005db0b5d7fd77393c308d9d1eefa0faa43212dc077a865908"
+    },
+    {
+      "path": "vesselforge/experiments/global_bspline_meridian_20261006/DESIGN_PROPOSAL.md",
+      "sha256": "5eeb0b0f0fe2aeb14a143eab5646d92f3db111c074208c9e48e5e95d4ea5ce8f"
+    },
+    {
+      "path": "tmp/review_20261006/global_bspline_meridian_20261006/REVIEW_PLAN.md",
+      "sha256": "686ec854aacef68c3f8beb52acaf6c22b9d013d8733fb4b8b99d498c873e57e5"
+    }
+  ]
+}

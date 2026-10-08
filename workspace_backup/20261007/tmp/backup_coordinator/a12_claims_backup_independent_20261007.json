@@ -1,0 +1,550 @@
+{
+  "schema": "a12_claims_backup_independent_postverify.v1",
+  "started_utc": "2026-10-07T01:58:54.245924+00:00",
+  "input_pins": {
+    "manifest": {
+      "path": "tmp/review_20261007/a12_claims_alignment/BACKUP_MANIFEST_PROPOSAL_v2.json",
+      "bytes": 5523,
+      "sha256": "1ae5b299ce72f9e37d2c80f04324affa20dfd60f56a0ff9e90fd29477e0de6a6"
+    },
+    "receipt": {
+      "path": "tmp/backup_coordinator/a12_claims_backup_execution_20261007.json",
+      "bytes": 2938234,
+      "sha256": "18fc1bc1a7a3a4df1ee23488bc07903d7ffe27bed95b8b8ae10fb75195710442"
+    }
+  },
+  "source_checks": [
+    {
+      "item_id": "doc-status.md",
+      "source_path": "relicweave-synlab/docs/a12/status.md",
+      "bytes": 11320,
+      "sha256": "11ecbd79d155f01e59acd62b8c6ab3607c997c5aaddfea0ed02cf113ca1bffeb",
+      "expected_bytes": 11320,
+      "expected_sha256": "11ecbd79d155f01e59acd62b8c6ab3607c997c5aaddfea0ed02cf113ca1bffeb",
+      "pass": true
+    },
+    {
+      "item_id": "doc-patterns.md",
+      "source_path": "relicweave-synlab/docs/a12/patterns.md",
+      "bytes": 28122,
+      "sha256": "9148882b4f60e93ea2e222a59f21cfa91d73972e394eb6e06b7d270482407c25",
+      "expected_bytes": 28122,
+      "expected_sha256": "9148882b4f60e93ea2e222a59f21cfa91d73972e394eb6e06b7d270482407c25",
+      "pass": true
+    },
+    {
+      "item_id": "copy-REVIEW.md",
+      "source_path": "tmp/review_20261007/a12_claims_alignment/REVIEW.md",
+      "bytes": 7232,
+      "sha256": "881e71d0441d235b2143a1a06cf7429547892a953c2c74a951ec6161576eeeba",
+      "expected_bytes": 7232,
+      "expected_sha256": "881e71d0441d235b2143a1a06cf7429547892a953c2c74a951ec6161576eeeba",
+      "pass": true
+    },
+    {
+      "item_id": "copy-claims.json",
+      "source_path": "tmp/review_20261007/a12_claims_alignment/claims.json",
+      "bytes": 17991,
+      "sha256": "7c7d6c6c00e7086c7da1b531103cb95812b87e5befd0ae69730e1f395d482806",
+      "expected_bytes": 17991,
+      "expected_sha256": "7c7d6c6c00e7086c7da1b531103cb95812b87e5befd0ae69730e1f395d482806",
+      "pass": true
+    },
+    {
+      "item_id": "copy-precision_probe_07_degrade_audit.json",
+      "source_path": "relicweave-synlab/data/a12/reports/precision_probe_07_degrade_audit.json",
+      "bytes": 562921,
+      "sha256": "b38d7dd1cddeff2dfcc06173de44ac83eb583cab045c05d6f47aff102a9f39fb",
+      "expected_bytes": 562921,
+      "expected_sha256": "b38d7dd1cddeff2dfcc06173de44ac83eb583cab045c05d6f47aff102a9f39fb",
+      "pass": true
+    },
+    {
+      "item_id": "copy-precision_probe_09_degrade_error.json",
+      "source_path": "relicweave-synlab/data/a12/reports/precision_probe_09_degrade_error.json",
+      "bytes": 93604,
+      "sha256": "d964413f473caea5bb75ec7a7ca39c140dcd8ac38892e13ebe3247a40327987e",
+      "expected_bytes": 93604,
+      "expected_sha256": "d964413f473caea5bb75ec7a7ca39c140dcd8ac38892e13ebe3247a40327987e",
+      "pass": true
+    },
+    {
+      "item_id": "copy-pattern_audit.json",
+      "source_path": "relicweave-synlab/data/a12/reports/pattern_audit.json",
+      "bytes": 349060,
+      "sha256": "e52989f1fa25cfb47442094c3c36dccbccc8b59a10ca97c9cbf910d3071e7e71",
+      "expected_bytes": 349060,
+      "expected_sha256": "e52989f1fa25cfb47442094c3c36dccbccc8b59a10ca97c9cbf910d3071e7e71",
+      "pass": true
+    }
+  ],
+  "receipt_shape": {
+    "detailed_git_command_counts": {
+      "stage_index": 7,
+      "stage_blob": 7,
+      "commit_tree": 7,
+      "commit_blob": 7
+    },
+    "stage_summary_rows": 7,
+    "commit_summary_rows": 7,
+    "copy_receipt_rows": 5,
+    "copies": 5,
+    "in_place_edits": 2,
+    "copy_bytes": 1030808,
+    "edit_bytes": 39442,
+    "total_bytes": 1070250,
+    "per_path": [
+      {
+        "path": "docs/a12/status.md",
+        "detailed_stage_index": true,
+        "detailed_stage_blob": true,
+        "detailed_commit_tree": true,
+        "detailed_commit_blob": true,
+        "summary_stage": true,
+        "summary_commit": true,
+        "oid": "3e7e399d141804f0bdb34f2922fef69703835825"
+      },
+      {
+        "path": "docs/a12/patterns.md",
+        "detailed_stage_index": true,
+        "detailed_stage_blob": true,
+        "detailed_commit_tree": true,
+        "detailed_commit_blob": true,
+        "summary_stage": true,
+        "summary_commit": true,
+        "oid": "a84456143944e81bfc6fcc21418588a9f0c83521"
+      },
+      {
+        "path": "docs/a12/reviews/20261007/REVIEW.md",
+        "detailed_stage_index": true,
+        "detailed_stage_blob": true,
+        "detailed_commit_tree": true,
+        "detailed_commit_blob": true,
+        "summary_stage": true,
+        "summary_commit": true,
+        "oid": "bfb7386398df2b39c80862de4234f400111119d4"
+      },
+      {
+        "path": "docs/a12/reviews/20261007/claims.json",
+        "detailed_stage_index": true,
+        "detailed_stage_blob": true,
+        "detailed_commit_tree": true,
+        "detailed_commit_blob": true,
+        "summary_stage": true,
+        "summary_commit": true,
+        "oid": "9af7dc52a2d78711d2e680d5b6669e60948dbf2f"
+      },
+      {
+        "path": "docs/a12/reviews/20261007/reports/precision_probe_07_degrade_audit.json",
+        "detailed_stage_index": true,
+        "detailed_stage_blob": true,
+        "detailed_commit_tree": true,
+        "detailed_commit_blob": true,
+        "summary_stage": true,
+        "summary_commit": true,
+        "oid": "6f79d17fb9bc20c0c79a6b6fedb10999b9834ac9"
+      },
+      {
+        "path": "docs/a12/reviews/20261007/reports/precision_probe_09_degrade_error.json",
+        "detailed_stage_index": true,
+        "detailed_stage_blob": true,
+        "detailed_commit_tree": true,
+        "detailed_commit_blob": true,
+        "summary_stage": true,
+        "summary_commit": true,
+        "oid": "e317bb9e9ad3b870905525fd61ed4d539303145a"
+      },
+      {
+        "path": "docs/a12/reviews/20261007/reports/pattern_audit.json",
+        "detailed_stage_index": true,
+        "detailed_stage_blob": true,
+        "detailed_commit_tree": true,
+        "detailed_commit_blob": true,
+        "summary_stage": true,
+        "summary_commit": true,
+        "oid": "cb4c54d3c16ef54b3c5fed06655b5183bbadb16a"
+      }
+    ]
+  },
+  "git_commands": [
+    {
+      "label": "repo_top",
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "-c",
+        "core.autocrlf=false",
+        "rev-parse",
+        "--show-toplevel"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.039293,
+      "stdout_bytes": 52,
+      "stdout_sha256": "9ea1ac9ee869f2259073d90e273cb55384dc0801132b72c10b12794e67f8410f",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "head",
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "-c",
+        "core.autocrlf=false",
+        "rev-parse",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.032908,
+      "stdout_bytes": 41,
+      "stdout_sha256": "0d29c6a09dd5aa9611d5a3182b8dd992d3d21aa6e292bda826584187562918c7",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "parent",
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "-c",
+        "core.autocrlf=false",
+        "rev-parse",
+        "HEAD^"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.032163,
+      "stdout_bytes": 41,
+      "stdout_sha256": "7ad7c0ef2b547888f80162ccaffcb5dc6becb9bf3de6034baaf244cdfe18bf48",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "branch",
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "-c",
+        "core.autocrlf=false",
+        "branch",
+        "--show-current"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.028989,
+      "stdout_bytes": 27,
+      "stdout_sha256": "f50110fba5e8f77ff5799dd68a48c97b2646278d8f9f3a0b51bbb6fb1f3521a7",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "commit_paths",
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "-c",
+        "core.autocrlf=false",
+        "diff-tree",
+        "--no-commit-id",
+        "--name-only",
+        "-r",
+        "HEAD^",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.036943,
+      "stdout_bytes": 311,
+      "stdout_sha256": "3aba8d6504874a5faea403471edb039e5d3113a75c1953afbcf3206e8658568f",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "remote_ref",
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "-c",
+        "core.autocrlf=false",
+        "ls-remote",
+        "origin",
+        "refs/heads/backup/forge-work-20261003"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 1.918384,
+      "stdout_bytes": 79,
+      "stdout_sha256": "0e781367e5e61436fedb3973adba2320c358b3fcf0ae7d3efcdfe1b7488416fa",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "tracked_status",
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "-c",
+        "core.autocrlf=false",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=no"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.040963,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "show_blob:docs/a12/patterns.md",
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "-c",
+        "core.autocrlf=false",
+        "show",
+        "HEAD:docs/a12/patterns.md"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.038236,
+      "stdout_bytes": 28122,
+      "stdout_sha256": "9148882b4f60e93ea2e222a59f21cfa91d73972e394eb6e06b7d270482407c25",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "show_blob:docs/a12/reviews/20261007/REVIEW.md",
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "-c",
+        "core.autocrlf=false",
+        "show",
+        "HEAD:docs/a12/reviews/20261007/REVIEW.md"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.039514,
+      "stdout_bytes": 7232,
+      "stdout_sha256": "881e71d0441d235b2143a1a06cf7429547892a953c2c74a951ec6161576eeeba",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "show_blob:docs/a12/reviews/20261007/claims.json",
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "-c",
+        "core.autocrlf=false",
+        "show",
+        "HEAD:docs/a12/reviews/20261007/claims.json"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.035536,
+      "stdout_bytes": 17991,
+      "stdout_sha256": "7c7d6c6c00e7086c7da1b531103cb95812b87e5befd0ae69730e1f395d482806",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "show_blob:docs/a12/reviews/20261007/reports/pattern_audit.json",
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "-c",
+        "core.autocrlf=false",
+        "show",
+        "HEAD:docs/a12/reviews/20261007/reports/pattern_audit.json"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.032167,
+      "stdout_bytes": 349060,
+      "stdout_sha256": "e52989f1fa25cfb47442094c3c36dccbccc8b59a10ca97c9cbf910d3071e7e71",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "show_blob:docs/a12/reviews/20261007/reports/precision_probe_07_degrade_audit.json",
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "-c",
+        "core.autocrlf=false",
+        "show",
+        "HEAD:docs/a12/reviews/20261007/reports/precision_probe_07_degrade_audit.json"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.041164,
+      "stdout_bytes": 562921,
+      "stdout_sha256": "b38d7dd1cddeff2dfcc06173de44ac83eb583cab045c05d6f47aff102a9f39fb",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "show_blob:docs/a12/reviews/20261007/reports/precision_probe_09_degrade_error.json",
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "-c",
+        "core.autocrlf=false",
+        "show",
+        "HEAD:docs/a12/reviews/20261007/reports/precision_probe_09_degrade_error.json"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.033085,
+      "stdout_bytes": 93604,
+      "stdout_sha256": "d964413f473caea5bb75ec7a7ca39c140dcd8ac38892e13ebe3247a40327987e",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "show_blob:docs/a12/status.md",
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "-c",
+        "core.autocrlf=false",
+        "show",
+        "HEAD:docs/a12/status.md"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.031068,
+      "stdout_bytes": 11320,
+      "stdout_sha256": "11ecbd79d155f01e59acd62b8c6ab3607c997c5aaddfea0ed02cf113ca1bffeb",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "file_checks": [
+    {
+      "path": "docs/a12/patterns.md",
+      "bytes": 28122,
+      "sha256": "9148882b4f60e93ea2e222a59f21cfa91d73972e394eb6e06b7d270482407c25",
+      "expected_bytes": 28122,
+      "expected_sha256": "9148882b4f60e93ea2e222a59f21cfa91d73972e394eb6e06b7d270482407c25",
+      "git_blob_oid_sha1": "a84456143944e81bfc6fcc21418588a9f0c83521",
+      "receipt_git_oid": "a84456143944e81bfc6fcc21418588a9f0c83521",
+      "pass": true
+    },
+    {
+      "path": "docs/a12/reviews/20261007/REVIEW.md",
+      "bytes": 7232,
+      "sha256": "881e71d0441d235b2143a1a06cf7429547892a953c2c74a951ec6161576eeeba",
+      "expected_bytes": 7232,
+      "expected_sha256": "881e71d0441d235b2143a1a06cf7429547892a953c2c74a951ec6161576eeeba",
+      "git_blob_oid_sha1": "bfb7386398df2b39c80862de4234f400111119d4",
+      "receipt_git_oid": "bfb7386398df2b39c80862de4234f400111119d4",
+      "pass": true
+    },
+    {
+      "path": "docs/a12/reviews/20261007/claims.json",
+      "bytes": 17991,
+      "sha256": "7c7d6c6c00e7086c7da1b531103cb95812b87e5befd0ae69730e1f395d482806",
+      "expected_bytes": 17991,
+      "expected_sha256": "7c7d6c6c00e7086c7da1b531103cb95812b87e5befd0ae69730e1f395d482806",
+      "git_blob_oid_sha1": "9af7dc52a2d78711d2e680d5b6669e60948dbf2f",
+      "receipt_git_oid": "9af7dc52a2d78711d2e680d5b6669e60948dbf2f",
+      "pass": true
+    },
+    {
+      "path": "docs/a12/reviews/20261007/reports/pattern_audit.json",
+      "bytes": 349060,
+      "sha256": "e52989f1fa25cfb47442094c3c36dccbccc8b59a10ca97c9cbf910d3071e7e71",
+      "expected_bytes": 349060,
+      "expected_sha256": "e52989f1fa25cfb47442094c3c36dccbccc8b59a10ca97c9cbf910d3071e7e71",
+      "git_blob_oid_sha1": "cb4c54d3c16ef54b3c5fed06655b5183bbadb16a",
+      "receipt_git_oid": "cb4c54d3c16ef54b3c5fed06655b5183bbadb16a",
+      "pass": true
+    },
+    {
+      "path": "docs/a12/reviews/20261007/reports/precision_probe_07_degrade_audit.json",
+      "bytes": 562921,
+      "sha256": "b38d7dd1cddeff2dfcc06173de44ac83eb583cab045c05d6f47aff102a9f39fb",
+      "expected_bytes": 562921,
+      "expected_sha256": "b38d7dd1cddeff2dfcc06173de44ac83eb583cab045c05d6f47aff102a9f39fb",
+      "git_blob_oid_sha1": "6f79d17fb9bc20c0c79a6b6fedb10999b9834ac9",
+      "receipt_git_oid": "6f79d17fb9bc20c0c79a6b6fedb10999b9834ac9",
+      "pass": true
+    },
+    {
+      "path": "docs/a12/reviews/20261007/reports/precision_probe_09_degrade_error.json",
+      "bytes": 93604,
+      "sha256": "d964413f473caea5bb75ec7a7ca39c140dcd8ac38892e13ebe3247a40327987e",
+      "expected_bytes": 93604,
+      "expected_sha256": "d964413f473caea5bb75ec7a7ca39c140dcd8ac38892e13ebe3247a40327987e",
+      "git_blob_oid_sha1": "e317bb9e9ad3b870905525fd61ed4d539303145a",
+      "receipt_git_oid": "e317bb9e9ad3b870905525fd61ed4d539303145a",
+      "pass": true
+    },
+    {
+      "path": "docs/a12/status.md",
+      "bytes": 11320,
+      "sha256": "11ecbd79d155f01e59acd62b8c6ab3607c997c5aaddfea0ed02cf113ca1bffeb",
+      "expected_bytes": 11320,
+      "expected_sha256": "11ecbd79d155f01e59acd62b8c6ab3607c997c5aaddfea0ed02cf113ca1bffeb",
+      "git_blob_oid_sha1": "3e7e399d141804f0bdb34f2922fef69703835825",
+      "receipt_git_oid": "3e7e399d141804f0bdb34f2922fef69703835825",
+      "pass": true
+    }
+  ],
+  "gates": {
+    "pinned_inputs_and_manifest_receipt_shape": true,
+    "repo_root": true,
+    "head": true,
+    "parent": true,
+    "branch": true,
+    "exact_commit_pathset": true,
+    "remote_ref": true,
+    "tracked_clean": true,
+    "seven_exact_raw_git_show_blobs": true,
+    "all_gates_pass": true
+  },
+  "repository_mutations_performed": false,
+  "tests_run": false,
+  "actual_repository_state": {
+    "repo": "relicweave-synlab",
+    "root": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+    "branch": "backup/forge-work-20261003",
+    "head": "367858aae0e1ec3cb1dd87056a1490a2af167125",
+    "parent": "b6058511e1255f70bc4f026bad57a7bb595aaa85",
+    "commit_paths": [
+      "docs/a12/patterns.md",
+      "docs/a12/reviews/20261007/REVIEW.md",
+      "docs/a12/reviews/20261007/claims.json",
+      "docs/a12/reviews/20261007/reports/pattern_audit.json",
+      "docs/a12/reviews/20261007/reports/precision_probe_07_degrade_audit.json",
+      "docs/a12/reviews/20261007/reports/precision_probe_09_degrade_error.json",
+      "docs/a12/status.md"
+    ],
+    "remote_ref": "refs/heads/backup/forge-work-20261003",
+    "remote_head": "367858aae0e1ec3cb1dd87056a1490a2af167125",
+    "tracked_status_clean": true
+  },
+  "status": "PASS",
+  "finished_utc": "2026-10-07T01:58:56.643161+00:00"
+}

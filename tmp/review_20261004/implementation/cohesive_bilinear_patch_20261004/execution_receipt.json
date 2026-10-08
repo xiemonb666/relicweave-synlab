@@ -1,0 +1,23 @@
+{
+  "case": "controlled_intrinsic_bilinear_modeI",
+  "status": "FAIL_NO_RETRY",
+  "py_compile": {
+    "exit_code": 0,
+    "argv": "wsl.exe -d Ubuntu -- env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 /mnt/c/Users/xiemo/Desktop/ShardForge/third_party/akantu-runtime/venv/bin/python -m py_compile /mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_bilinear_patch_20261004/init_preflight.py"
+  },
+  "unique_preflight": {
+    "solver_attempts": 0,
+    "solver_steps": 0,
+    "host_exit_code": 1,
+    "script_failure_exit_code": 2,
+    "argv": "wsl.exe -d Ubuntu -- env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 /mnt/c/Users/xiemo/Desktop/ShardForge/third_party/akantu-runtime/venv/bin/python /mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_bilinear_patch_20261004/init_preflight.py"
+  },
+  "failure": "AttributeError: Python Mesh has no createGroupsFromMeshData; binding suggests createGroupsFromMeshDataUInt. Stopped before initFull; no alternate API retry.",
+  "snapshot_integrity_path": "init_preflight_snapshot/snapshot_integrity.json",
+  "snapshot_integrity_all_identical": true,
+  "source_sha256": "b40bde6eb42a869b39b5e93b86b65c36d825ae8f8c91567b62313f2f2dd45418",
+  "mesh_sha256": "b98402c5a7b7af36b8e5e8a2a90c7db689cb1af86a089c8e1b9a0dbf07ba2638",
+  "material_sha256": "ad92d6449b6ecc804ca73811806706e917c43c8b05f0f50625229e494853a666",
+  "manifest_sha256": "388aeb12e22073382533f01e063d1690764748c7a4afd98f666ed52b1851af42",
+  "raw_failure": "preflight_result.json"
+}

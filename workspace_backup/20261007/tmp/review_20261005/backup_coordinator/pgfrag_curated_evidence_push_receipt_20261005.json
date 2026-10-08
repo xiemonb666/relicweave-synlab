@@ -1,0 +1,64 @@
+{
+  "schema": "shardforge.git-backup-push-receipt.v1",
+  "repository": "pgfrag",
+  "branch": "backup/forge-work-20261003",
+  "parent_commit": "bf15835cac97a2ba032ec1872c57e6e60cb1e977",
+  "commit": "44699ac585219172d601084ff58869d95f05fa8e",
+  "commit_subject": "docs: preserve native resume diagnostic evidence",
+  "remote_head_before": "bf15835cac97a2ba032ec1872c57e6e60cb1e977",
+  "remote_head_after": "44699ac585219172d601084ff58869d95f05fa8e",
+  "copy_plan_sha256": "fb2eff29c6205f728331132ffd7ec5c795049b8a35f944209c19c31f99431558",
+  "staged_path_count": 5,
+  "paths": [
+    {
+      "path": ".gitattributes",
+      "blob_oid": "73353e9fae37e11d32b7837420d32091746d04d6",
+      "object_bytes": 1011,
+      "object_sha256": "a08bb1af3e96d6276a3c372594bf1a410f23b8702a7b2c496b4806c5b8a2dea8",
+      "worktree_bytes": 1011,
+      "worktree_sha256": "a08bb1af3e96d6276a3c372594bf1a410f23b8702a7b2c496b4806c5b8a2dea8",
+      "matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261005/backup_evidence_index_20261005.json",
+      "blob_oid": "caee049eb49575543e82dda2411db9b8b1712fb7",
+      "object_bytes": 2642,
+      "object_sha256": "b495cd773d41bbca27043fb25813bc57c6a2b96c77041d6ce7eda521c4c71594",
+      "worktree_bytes": 2642,
+      "worktree_sha256": "b495cd773d41bbca27043fb25813bc57c6a2b96c77041d6ce7eda521c4c71594",
+      "matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261005/native_resume/deliverables_manifest.json",
+      "blob_oid": "0378cf767cd4b0e0ef69a02fdda8dbb1be193c4f",
+      "object_bytes": 1913,
+      "object_sha256": "bf51755f70c004035094cf0e56a51d414147ef9d4d373f81bc1185befc4f87a6",
+      "worktree_bytes": 1913,
+      "worktree_sha256": "bf51755f70c004035094cf0e56a51d414147ef9d4d373f81bc1185befc4f87a6",
+      "matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261005/native_resume/native_b_affine_threshold_audit.png",
+      "blob_oid": "d9c1cfe7a7f1969d2a72403e2a3c928065422cc6",
+      "object_bytes": 178316,
+      "object_sha256": "90f4758fbaf7db226f7252df61457652fb9e83465a4f4dc96756c9143d1f49f2",
+      "worktree_bytes": 178316,
+      "worktree_sha256": "90f4758fbaf7db226f7252df61457652fb9e83465a4f4dc96756c9143d1f49f2",
+      "matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261005/native_resume/native_resume_audit.json",
+      "blob_oid": "fb470d328150d01c426d8580ea2354fc440eb7ea",
+      "object_bytes": 19195,
+      "object_sha256": "33e58103c2fa314ff842190bc8b0baa85eb6edd52b4e0ee252cff039d7829e09",
+      "worktree_bytes": 19195,
+      "worktree_sha256": "33e58103c2fa314ff842190bc8b0baa85eb6edd52b4e0ee252cff039d7829e09",
+      "matches_worktree": true
+    }
+  ],
+  "push_result": [
+    "To https://github.com/xiemonb666/pgfrag.git",
+    "   bf15835..44699ac  backup/forge-work-20261003 -> backup/forge-work-20261003"
+  ],
+  "exact_approved_paths_clean_after_push": true
+}

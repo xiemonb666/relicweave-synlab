@@ -1,0 +1,23 @@
+{
+  "created_utc": "2026-10-05T05:35:15.5262867Z",
+  "purpose": "single-case lossless ZIP preparation only; no repository copy or Git action",
+  "status": "verified_lossless_under_cap",
+  "archive_path": "tmp/review_20261005/backup_coordinator/native_coupon_point_state_baseline_20261005.zip",
+  "compression": "System.IO.Compression.ZipArchive CompressionLevel.Optimal (DEFLATE)",
+  "cap_bytes_exclusive": 52428800,
+  "source_path": "pgfrag/experiments/free_evolution_coupon_20261005/run_attempt_01/results/point_state_history.f64le",
+  "expected_source_bytes": 37044000,
+  "expected_source_sha256": "0f436e4d8cabd29f3f634334e2d1e00e920be098cafaea8a1e0a9df2b221be77",
+  "source_sha256_during_archive": "0f436e4d8cabd29f3f634334e2d1e00e920be098cafaea8a1e0a9df2b221be77",
+  "source_bytes_during_archive": 37044000,
+  "archive_bytes": 21983671,
+  "archive_sha256": "2584cde51f58baef184b82857c37e95266d825545ef0979b4d86a9d8cb0eb6d0",
+  "readback": {
+    "entry_path": "pgfrag/experiments/free_evolution_coupon_20261005/run_attempt_01/results/point_state_history.f64le",
+    "uncompressed_bytes": 37044000,
+    "uncompressed_sha256": "0f436e4d8cabd29f3f634334e2d1e00e920be098cafaea8a1e0a9df2b221be77",
+    "compressed_entry_bytes": 21983377,
+    "match": true
+  },
+  "elapsed_seconds": 0.736
+}

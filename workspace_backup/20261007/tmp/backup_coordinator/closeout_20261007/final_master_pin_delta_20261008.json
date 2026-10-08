@@ -1,0 +1,72 @@
+{
+  "schema": "final_master_pin_delta_v1",
+  "state": "ABORTED_NOT_FINAL_PREP_ONLY",
+  "created_local_date": "2026-10-08",
+  "scope": "single final-master pin registration in the closeout inventory builder; inventory outputs were not regenerated",
+  "builder": {
+    "path": "tmp/backup_coordinator/closeout_20261007/build_closeout_inventory_v2.py",
+    "previous_bytes": 55967,
+    "previous_sha256": "741319d107112aa2e06a4639a673b0000c2e1422aba907a2360ad4962d599d34",
+    "current_bytes": 56118,
+    "current_sha256": "2cfeaa37b3afc1a4896dda8f071dcf4cd6f5b9a74dbcbfd3e5b30e90d6658581",
+    "delta_bytes": 151,
+    "delta_line": " \"RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx\":{\"bytes\":786150,\"sha256\":\"883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d\"},",
+    "delta_line_count": 1,
+    "reconstructed_previous_sha256_matches": true,
+    "ast_parse": "PASS"
+  },
+  "master_pin": {
+    "workspace_root_relative_path": "RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx",
+    "configured_final_bytes": 786150,
+    "configured_final_sha256": "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d",
+    "observed_after_promotion_bytes": 786150,
+    "observed_after_promotion_sha256": "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d",
+    "matches_final_pin": true
+  },
+  "unchanged_files": {
+    "executor": {
+      "path": "tmp/backup_coordinator/closeout_20261007/execute_closeout_backup.py",
+      "bytes": 69359,
+      "sha256": "9a27e1a9980fb99c144ee3dd63fe3c38405aa9b78eb03179c3ebceaba7cc1306",
+      "mtime_utc": "2026-10-07T17:51:13.538280+00:00"
+    },
+    "readme": {
+      "path": "tmp/backup_coordinator/closeout_20261007/README.md",
+      "bytes": 4566,
+      "sha256": "c64dafaafbcc1b95752cde84c3f3be012f8feb90e0509333e4d1de65129f8d5b",
+      "mtime_utc": "2026-10-07T17:44:39.051166+00:00"
+    }
+  },
+  "aborted_help_attempt": {
+    "classification": "ABORTED_NOT_FINAL",
+    "command": "bundled Python execute_closeout_inventory_v2.py --help",
+    "note": "The builder has no help-only entry point and began its top-level inventory scan. The parent and child Python processes were terminated immediately after detection.",
+    "started_at_observed_local": "2026-10-08T02:13:25+08:00",
+    "stdout_stderr": "Not recoverable: the parent process held child stdout/stderr in capture_output memory and was terminated before emitting or persisting either stream; no stdout/stderr files were created.",
+    "inventory_outputs_after_termination": {
+      "inventory_json": {
+        "path": "tmp/backup_coordinator/closeout_20261007/inventory.json",
+        "bytes": 24816927,
+        "sha256": "ab2ed14b7c56293106939144058233030f4a905268304191b1a6bf2de0d0197a",
+        "mtime_utc": "2026-10-07T04:52:50.669333+00:00"
+      },
+      "action_manifest_json": {
+        "path": "tmp/backup_coordinator/closeout_20261007/explicit_action_manifest.json",
+        "bytes": 10186380,
+        "sha256": "5696d603f538cfbaf0fd5a757ecf90acf84fa8464742933b90ba1bc18a064a2b",
+        "mtime_utc": "2026-10-07T04:52:50.798724+00:00"
+      },
+      "unchanged_from_pre_attempt_observation": true
+    },
+    "copy_or_git_operations_performed": false
+  },
+  "operations_not_performed": [
+    "full inventory completion",
+    "credential scan",
+    "export",
+    "copy",
+    "stage",
+    "commit",
+    "push"
+  ]
+}

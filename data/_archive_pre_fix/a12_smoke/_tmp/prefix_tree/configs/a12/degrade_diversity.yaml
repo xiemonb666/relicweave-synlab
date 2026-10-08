@@ -1,0 +1,47 @@
+# 退化多样性配置（A12：把 31 轴退化真正接进合成数据生成链）——**新文件，不改冻结配置**
+#
+# 语义：一条谱系生成完成后，按本文件声明的轴 × 档位，在该谱系自己的真实资产上做退化，
+# 每档提交为**独立资产**（role = degrade_variant），五档共享同一 basis，level 0 是**真恒等**
+# （返回 source 资产引用，不复制字节）。
+#
+# 接入点：`synlab/pipeline.py::build_one_mother` 第 9 步（`_materialize_degrade_diversity`），
+# 默认关闭；`run_generation(..., degrade_diversity=True)` 或环境变量
+# `SYNLAB_DEGRADE_DIVERSITY=1`（也可直接给本文件路径）才启用，既有行为逐位不变。
+#
+# 实现：`synlab/degrade/diversity.py`；字段与实测见 `docs/a12/degrade_axes.md` §9。
+
+schema: synlab.degrade_diversity.v1
+enabled: true
+
+#: 打在每个退化资产业绩 `meta.data_semantics` 上的语义标签（与 pipeline 的
+#: data_semantics() 并列写入，批次可程序化区分）。
+data_semantics: degrade_diversity_v1
+
+#: 每轴默认档位（0..4，含 level 0 恒等）。单轴可用 `levels:` 覆盖。
+levels: [0, 1, 2, 3, 4]
+
+per_lineage:
+  #: 一条谱系实际物化多少条轴（声明顺序前 N 条，或按 selection=rotate 轮转窗口）。
+  max_axes: 9
+  #: declared = 取声明顺序前 max_axes 条；rotate = 以 mother_index 为起点轮转
+  #: （多谱系批量生成时用固定轮转覆盖全部轴，且同一谱系可复现）。
+  selection: declared
+
+#: 声明的轴：覆盖各阶段代表轴（PHYSICAL / OPTICS / SENSOR / ISP / GEOMETRY_OBS /
+#: FEATURE_PROTOCOL）。`family` 必须等于 axis_id 首字母，`stage` 必须等于注册表声明
+#: （load_diversity_config 逐条校验，不一致直接报错而不是静默跳过）。
+axes:
+  - {axis_id: P03, family: P, stage: PHYSICAL,        variant: smooth_recession_field, note: "几何磨损（界面 ROI 平滑退让）"}
+  - {axis_id: I01, family: I, stage: OPTICS,          variant: gaussian_psf,          note: "光学模糊（高斯 PSF 离焦）"}
+  - {axis_id: I03, family: I, stage: SENSOR,          variant: photon_scale,          note: "传感器噪声（光子量级 + 读出噪声）"}
+  - {axis_id: I05, family: I, stage: ISP,             variant: fixed_direction_wb,    note: "白平衡（固定方向色偏）"}
+  - {axis_id: I09, family: I, stage: ISP,             variant: antialiased_downsample, note: "分辨率降采样（抗混叠）"}
+  - {axis_id: G05, family: G, stage: GEOMETRY_OBS,    variant: qem_decimation,        note: "几何观测简化（QEM 抽面）"}
+  - {axis_id: G08, family: G, stage: GEOMETRY_OBS,    variant: bump,                  note: "几何观测伪影（标注扰动/假面片，仅观测侧）"}
+  - {axis_id: X01, family: X, stage: FEATURE_PROTOCOL, variant: presence_removal,     note: "协议：模态缺失（presence=false）"}
+  - {axis_id: X04, family: X, stage: FEATURE_PROTOCOL, variant: regression_bias,      note: "协议：估计回归偏置/方差标定"}
+
+#: 角色契约（写入资产 meta，便于审计；代码里是常量 ROLE_DEGRADE_SOURCE / ROLE_DEGRADE_VARIANT）
+roles:
+  source: degrade_source
+  variant: degrade_variant

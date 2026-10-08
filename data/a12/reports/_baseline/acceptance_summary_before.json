@@ -1,0 +1,619 @@
+{
+  "counts": {
+    "FAIL": 4,
+    "NA": 7,
+    "NOT_RUN": 17,
+    "PASS": 5,
+    "PENDING": 3
+  },
+  "generated_at": 1790876010.334467,
+  "items": {
+    "A01": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [
+        "synlab/observe/features.py::assert_no_leakage"
+      ],
+      "metrics": {
+        "forbidden_fields_in_committed_features": [],
+        "leakage_detector": true,
+        "unknown_field_rejected": true
+      },
+      "notes": "schema rejection + recursive whitelist + committed feature audit",
+      "seconds": 0.022,
+      "status": "PASS",
+      "title": "合同与权限（六 pack、features/labels 边界）"
+    },
+    "A02": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [
+        "docs/a12/env_report.json"
+      ],
+      "metrics": {
+        "max_mm_error": 1.4210854715202004e-14,
+        "max_px_error": 0.0
+      },
+      "notes": "analytic projection/back-projection round trip",
+      "seconds": 0.001,
+      "status": "PASS",
+      "title": "坐标投影（mm、K、T、depth/range、crop）"
+    },
+    "A03": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {
+        "min_lineages_per_vessel": 1,
+        "total_mothers": 1,
+        "vessels_present": 1
+      },
+      "notes": "counts come from committed mother assets; 24x20 requires the L2 run",
+      "seconds": 0.002,
+      "status": "PENDING",
+      "title": "母体（24 族 × ≥20 独立母体）"
+    },
+    "A04": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {
+        "ids": [],
+        "materials_present": 0
+      },
+      "notes": "shading vs geometric layers must be distinguishable",
+      "seconds": 0.001,
+      "status": "NOT_RUN",
+      "title": "材料层（12 材料 / 4 层结构）"
+    },
+    "A05": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {},
+      "notes": "run `synlab pattern-audit` first",
+      "seconds": 0.0,
+      "status": "NOT_RUN",
+      "title": "花纹（16 family）"
+    },
+    "A06": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [
+        "data/a12/reports/fracture_audit.json"
+      ],
+      "metrics": {
+        "backends": {
+          "plane_shared_cut": "FAIL"
+        },
+        "backends_pass": 0,
+        "conservation_ratio_max": null,
+        "overlap_ratio_max": null,
+        "shared_distance_p95_max": null
+      },
+      "notes": "",
+      "seconds": 0.0,
+      "status": "FAIL",
+      "title": "断裂守恒（四必做后端、薄壳、复杂体）"
+    },
+    "A07": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {},
+      "notes": "requires a fracture event with an error budget",
+      "seconds": 0.0,
+      "status": "NOT_RUN",
+      "title": "精度实现（cutter / 共形 warp）"
+    },
+    "A08": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {},
+      "notes": "requires `synlab.truth` fixture run",
+      "seconds": 0.0,
+      "status": "NOT_RUN",
+      "title": "真值关系（R2/R1/R0/UNKNOWN 与事件树）"
+    },
+    "A09": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [
+        "data/a12/reports/physical_audit.json"
+      ],
+      "metrics": {},
+      "notes": "",
+      "seconds": 0.0,
+      "status": "FAIL",
+      "title": "减法损伤（P01–P04/P07 + 适用 P08）"
+    },
+    "A10": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {},
+      "notes": "run `synlab operator-audit` first",
+      "seconds": 0.001,
+      "status": "NOT_RUN",
+      "title": "31 轴身份与效果"
+    },
+    "A11": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {},
+      "notes": "requires an observation-geometry run",
+      "seconds": 0.0,
+      "status": "NOT_RUN",
+      "title": "伪凸起/补面/假桥（G08 三变体）"
+    },
+    "A12": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {},
+      "notes": "requires an observation run",
+      "seconds": 0.0,
+      "status": "NOT_RUN",
+      "title": "成像标签（RGB、深度、mask、可见性）"
+    },
+    "A13": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {},
+      "notes": "requires camera profiles to be exercised",
+      "seconds": 0.0,
+      "status": "NOT_RUN",
+      "title": "物理近远档（U 相机 profile）"
+    },
+    "A14": {
+      "commands": [],
+      "evidence": [],
+      "metrics": {},
+      "notes": "not applicable to profile SANDBOX_CORE",
+      "status": "NA",
+      "title": "实际 MVS 子集"
+    },
+    "A15": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {},
+      "notes": "run `synlab build-pool` first",
+      "seconds": 0.0,
+      "status": "NOT_RUN",
+      "title": "全库和采样（多 R2、R1/R0、无邻片）"
+    },
+    "A16": {
+      "commands": [],
+      "evidence": [],
+      "metrics": {},
+      "notes": "not applicable to profile SANDBOX_CORE",
+      "status": "NA",
+      "title": "训练有效性（五任务、valid 与 missing）"
+    },
+    "A17": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {},
+      "notes": "recovery probe raised IntegrityError: UNIQUE constraint failed: jobs.job_id",
+      "seconds": 0.005,
+      "status": "FAIL",
+      "title": "恢复（数据 job 与训练 checkpoint）"
+    },
+    "A18": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {},
+      "notes": "diagnostics fixture has not been run",
+      "seconds": 0.0,
+      "status": "NOT_RUN",
+      "title": "诊断计算（指标与统计）"
+    },
+    "A19": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {},
+      "notes": "run `synlab episode` first",
+      "seconds": 0.0,
+      "status": "NOT_RUN",
+      "title": "规则 episode（actions/cost/STOP）"
+    },
+    "A20": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {},
+      "notes": "run the API/frontend evidence script first",
+      "seconds": 0.001,
+      "status": "NOT_RUN",
+      "title": "UI/API（12 页与真实端到端）"
+    },
+    "A21": {
+      "commands": [],
+      "evidence": [],
+      "metrics": {},
+      "notes": "not applicable to profile SANDBOX_CORE",
+      "status": "NA",
+      "title": "资源与规模（L2/L3）"
+    },
+    "A22": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [
+        "docs/a12/runbook.md"
+      ],
+      "metrics": {
+        "releases": 0,
+        "runbook": true,
+        "store_health": true
+      },
+      "notes": "",
+      "seconds": 0.025,
+      "status": "PENDING",
+      "title": "发布交接（新目录启动/读写恢复）"
+    },
+    "A23": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [
+        "docs/a12/reuse_manifest.json"
+      ],
+      "metrics": {
+        "custom_gap_without_evidence": [],
+        "custom_gaps": 4,
+        "incomplete": [],
+        "modules": 25
+      },
+      "notes": "",
+      "seconds": 0.001,
+      "status": "PASS",
+      "title": "开源复用（第 2.4 节全部适用模块）"
+    },
+    "A24": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {},
+      "notes": "requires observation source-dependency audit",
+      "seconds": 0.0,
+      "status": "NOT_RUN",
+      "title": "观测来源/DAG"
+    },
+    "A25": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {},
+      "notes": "requires the pixel/display contract suite",
+      "seconds": 0.0,
+      "status": "NOT_RUN",
+      "title": "坐标/展示（0.5px、resize、EXIF、COLMAP 往返、100mm GLB）"
+    },
+    "A26": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {},
+      "notes": "requires the warped_partition backend to run",
+      "seconds": 0.001,
+      "status": "NOT_RUN",
+      "title": "分区形变（共享 PLC / 共形网格）"
+    },
+    "A27": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {},
+      "notes": "requires fracture + truth audits",
+      "seconds": 0.0,
+      "status": "NOT_RUN",
+      "title": "来源/对应（原三角 ID、公共面积、损伤关联分离）"
+    },
+    "A28": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {},
+      "notes": "requires physical identity audit (components/debris/ancestry)",
+      "seconds": 0.0,
+      "status": "PENDING",
+      "title": "物理身份/损伤（P01/P02 固定场、嵌套、多组件）"
+    },
+    "A29": {
+      "commands": [],
+      "evidence": [],
+      "metrics": {},
+      "notes": "not applicable to profile SANDBOX_CORE",
+      "status": "NA",
+      "title": "检索/匹配（双塔、TopM 精排、全 R2 排除）"
+    },
+    "A30": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {},
+      "notes": "requires the metrics fixture (hand-computed q=B/C case)",
+      "seconds": 0.0,
+      "status": "NOT_RUN",
+      "title": "拒识/分母（多正例接受集、失败主分母）"
+    },
+    "A31": {
+      "commands": [],
+      "evidence": [],
+      "metrics": {},
+      "notes": "not applicable to profile SANDBOX_CORE",
+      "status": "NA",
+      "title": "独立数据/统计（N 广度深度、gallery 隔离、CP 假设）"
+    },
+    "A32": {
+      "commands": [],
+      "evidence": [],
+      "metrics": {},
+      "notes": "not applicable to profile SANDBOX_CORE",
+      "status": "NA",
+      "title": "全流程泄漏（置换、ID 重命名、同器库负控）"
+    },
+    "A33": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [
+        "data/a12/reports/api_security.json"
+      ],
+      "metrics": {
+        "deployment_truth_denied": true,
+        "idempotency_conflict_409": true,
+        "operator_truth_denied": true,
+        "oracle_export_denied": true,
+        "path_traversal_denied": true,
+        "sse_seq_monotonic": true,
+        "unregistered_file_role_denied": true,
+        "workspace_isolation": true
+      },
+      "notes": "",
+      "seconds": 0.001,
+      "status": "PASS",
+      "title": "权限/输入（服务端角色、路径/资源限制）"
+    },
+    "A34": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [
+        "data/a12/reports/recovery_probe.json"
+      ],
+      "metrics": {},
+      "notes": "",
+      "seconds": 0.0,
+      "status": "PASS",
+      "title": "资产/调度（同 blob 多 role、code identity、GPU 清退、reservation）"
+    },
+    "A35": {
+      "commands": [],
+      "evidence": [],
+      "metrics": {},
+      "notes": "not applicable to profile SANDBOX_CORE",
+      "status": "NA",
+      "title": "续训/监督分母（acknowledged cursor、prefetch 重放）"
+    },
+    "A36": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {
+        "compiled": {
+          "coverage.yaml": "OK",
+          "degrade_recipes/paired_edgewear_blur_bump.yaml": "OK",
+          "degrade_recipes/paired_plane_levels.yaml": "OK",
+          "diagnose_sandbox.yaml": "OK",
+          "pilot.yaml": "OK",
+          "pool_dev.yaml": "ERROR:C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\configs\\a12\\pool_dev.yaml: 14 validation errors for GenerationSpec\ns",
+          "pool_pilot.yaml": "ERROR:C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\configs\\a12\\pool_pilot.yaml: 14 validation errors for GenerationSpec",
+          "sandbox.yaml": "OK",
+          "train_pilot.yaml": "OK",
+          "train_sandbox.yaml": "OK"
+        },
+        "failed": {
+          "pool_dev.yaml": "ERROR:C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\configs\\a12\\pool_dev.yaml: 14 validation errors for GenerationSpec\ns",
+          "pool_pilot.yaml": "ERROR:C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\configs\\a12\\pool_pilot.yaml: 14 validation errors for GenerationSpec"
+        },
+        "profiles_registered": [
+          "CALIBRATED_PHONE",
+          "CORE_COVERAGE",
+          "PILOT",
+          "RESEARCH_EVIDENCE",
+          "SANDBOX_CORE",
+          "SCALE_100K",
+          "SCALE_10K",
+          "SCALE_50K"
+        ]
+      },
+      "notes": "every shipped config must compile through the typed schema",
+      "seconds": 0.035,
+      "status": "FAIL",
+      "title": "配置/发布（route/scope 枚举、全部配置编译）"
+    }
+  },
+  "platform": "Windows-11-10.0.26200-SP0",
+  "profile": "SANDBOX_CORE",
+  "python": "3.12.14",
+  "registry": {
+    "axis": {
+      "by_status": {
+        "IMPLEMENTED": 31
+      },
+      "count": 31,
+      "ids": [
+        "G01",
+        "G02",
+        "G03",
+        "G04",
+        "G05",
+        "G06",
+        "G07",
+        "G08",
+        "I01",
+        "I02",
+        "I03",
+        "I04",
+        "I05",
+        "I06",
+        "I07",
+        "I08",
+        "I09",
+        "I10",
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P07",
+        "P08",
+        "X01",
+        "X02",
+        "X03",
+        "X04",
+        "X05"
+      ]
+    },
+    "fracture_backend": {
+      "by_status": {
+        "IMPLEMENTED": 3,
+        "MISSING": 1,
+        "PENDING": 1
+      },
+      "count": 5,
+      "ids": [
+        "fracture_modes",
+        "plane_shared_cut",
+        "rough_shared_cut",
+        "secondary_fracture",
+        "warped_partition"
+      ]
+    },
+    "layer_combo": {
+      "by_status": {
+        "IMPLEMENTED": 4
+      },
+      "count": 4,
+      "ids": [
+        "L01",
+        "L02",
+        "L03",
+        "L04"
+      ]
+    },
+    "material": {
+      "by_status": {
+        "IMPLEMENTED": 12
+      },
+      "count": 12,
+      "ids": [
+        "M01",
+        "M02",
+        "M03",
+        "M04",
+        "M05",
+        "M06",
+        "M07",
+        "M08",
+        "M09",
+        "M10",
+        "M11",
+        "M12"
+      ]
+    },
+    "pattern": {
+      "by_status": {
+        "IMPLEMENTED": 16
+      },
+      "count": 16,
+      "ids": [
+        "PAT01",
+        "PAT02",
+        "PAT03",
+        "PAT04",
+        "PAT05",
+        "PAT06",
+        "PAT07",
+        "PAT08",
+        "PAT09",
+        "PAT10",
+        "PAT11",
+        "PAT12",
+        "PAT13",
+        "PAT14",
+        "PAT15",
+        "PAT16"
+      ]
+    },
+    "vessel": {
+      "by_status": {
+        "IMPLEMENTED": 24
+      },
+      "count": 24,
+      "ids": [
+        "V01",
+        "V02",
+        "V03",
+        "V04",
+        "V05",
+        "V06",
+        "V07",
+        "V08",
+        "V09",
+        "V10",
+        "V11",
+        "V12",
+        "V13",
+        "V14",
+        "V15",
+        "V16",
+        "V17",
+        "V18",
+        "V19",
+        "V20",
+        "V21",
+        "V22",
+        "V23",
+        "V24"
+      ]
+    }
+  },
+  "schema": "synlab.acceptance.v1",
+  "summary_hash": "sha256:d97c969382b24d3d124a4fde155225323db07e72bcd2f0b15a83179e837f2845"
+}

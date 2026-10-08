@@ -1,0 +1,249 @@
+{
+  "schema": "research-ledger-update-manifest.v1",
+  "date": "2026-10-04",
+  "purpose": "Byte-preserving pre-main-review snapshot and root decision sync for the two research ledgers.",
+  "scope": "Only the four INNOVATION_LEDGER.md / innovation_ledger.json files were edited. No production code, solver, experiment output, or Git state was changed.",
+  "pre_review_source_snapshots": [
+    {
+      "source_path": "vesselforge/docs/research/INNOVATION_LEDGER.md",
+      "snapshot_path": "relicweave-synlab/tmp/review_20261004/implementation/research_ledgers_20261004/vesselforge_INNOVATION_LEDGER.md",
+      "bytes": 16373,
+      "sha256": "93e620f8d40f935e2f96a3900273583a16fd0e3e8c628f1b40375e42f1b975f2",
+      "byte_identical_to_pre_review_source": true
+    },
+    {
+      "source_path": "vesselforge/docs/research/innovation_ledger.json",
+      "snapshot_path": "relicweave-synlab/tmp/review_20261004/implementation/research_ledgers_20261004/vesselforge_innovation_ledger.json",
+      "bytes": 16026,
+      "sha256": "813ca7761be7a791cc7e22657ee24d1675c56f868fab747245f29241573dc8af",
+      "byte_identical_to_pre_review_source": true
+    },
+    {
+      "source_path": "pgfrag/docs/research/INNOVATION_LEDGER.md",
+      "snapshot_path": "relicweave-synlab/tmp/review_20261004/implementation/research_ledgers_20261004/pgfrag_INNOVATION_LEDGER.md",
+      "bytes": 19680,
+      "sha256": "f9c911cc404af2e4aa2475a008897a39e12fac666bed68163cd55eb0f06879ec",
+      "byte_identical_to_pre_review_source": true
+    },
+    {
+      "source_path": "pgfrag/docs/research/innovation_ledger.json",
+      "snapshot_path": "relicweave-synlab/tmp/review_20261004/implementation/research_ledgers_20261004/pgfrag_innovation_ledger.json",
+      "bytes": 19351,
+      "sha256": "49be726743f0377f21bd6b6ea942fb7d363c69b452e331139121fd01db34aee9",
+      "byte_identical_to_pre_review_source": true
+    }
+  ],
+  "updated_outputs": [
+    {
+      "path": "vesselforge/docs/research/INNOVATION_LEDGER.md",
+      "bytes": 18868,
+      "sha256": "bc60113221dc959ae5d55cf1e5fe446e8b537efd82f0e779527e5129eade7324"
+    },
+    {
+      "path": "vesselforge/docs/research/innovation_ledger.json",
+      "bytes": 20221,
+      "sha256": "4d415ededb78ee19a1b8d8e9c3e314b905fc0ed60e984bf305f6cb194c1df0e7"
+    },
+    {
+      "path": "pgfrag/docs/research/INNOVATION_LEDGER.md",
+      "bytes": 23126,
+      "sha256": "957008f5fb755cb995337e90ea8dd1639cbc32dcadc0f46fb7b931fd7fbff952"
+    },
+    {
+      "path": "pgfrag/docs/research/innovation_ledger.json",
+      "bytes": 24550,
+      "sha256": "e85a2ce4c33227eac699d1e3e005bb25e761e909dc8dd3cf6edd6fa31d2eec74"
+    }
+  ],
+  "main_review": {
+    "decision": "accepted_for_tracking_only",
+    "candidate_status": "idea",
+    "previous_status": "pending-main-review",
+    "candidate_validation": "NOT_RUN",
+    "novelty": "NOT_AUDITED",
+    "records": {
+      "vesselforge": [
+        {
+          "id": "VF-RC-001",
+          "title": "连续母体材质坐标与可追溯纹样证据",
+          "record_kind": "candidate_research_contribution",
+          "status": "idea",
+          "status_history": [
+            {
+              "status": "pending-main-review",
+              "recorded_at": "2026-10-04",
+              "reason": "初版底账等待 root 主审。"
+            },
+            {
+              "status": "idea",
+              "recorded_at": "2026-10-04",
+              "reason": "root 接受作为跟踪条目；不表示方法实现、实验验证或新颖性成立。"
+            }
+          ],
+          "review_priority": "P1",
+          "main_review": "accepted_for_tracking_only",
+          "validation_status": "NOT_RUN",
+          "validation_occurred": false,
+          "novelty": "NOT_AUDITED"
+        },
+        {
+          "id": "VF-RC-002",
+          "title": "成像退化与可观测证据的配对生成协议",
+          "record_kind": "candidate_research_contribution",
+          "status": "idea",
+          "status_history": [
+            {
+              "status": "pending-main-review",
+              "recorded_at": "2026-10-04",
+              "reason": "初版底账等待 root 主审。"
+            },
+            {
+              "status": "idea",
+              "recorded_at": "2026-10-04",
+              "reason": "root 接受作为跟踪条目；不表示方法实现、实验验证或新颖性成立。"
+            }
+          ],
+          "review_priority": "P2",
+          "main_review": "accepted_for_tracking_only",
+          "validation_status": "NOT_RUN",
+          "validation_occurred": false,
+          "novelty": "NOT_AUDITED"
+        }
+      ],
+      "pgfrag": [
+        {
+          "id": "PG-RC-001",
+          "title": "事件到共同静止材料坐标的双侧裂面谱系",
+          "record_kind": "candidate_research_contribution",
+          "status": "idea",
+          "status_history": [
+            {
+              "status": "pending-main-review",
+              "recorded_at": "2026-10-04",
+              "reason": "初版底账等待 root 主审。"
+            },
+            {
+              "status": "idea",
+              "recorded_at": "2026-10-04",
+              "reason": "root 接受作为跟踪条目；不表示方法实现、实验验证或新颖性成立。"
+            }
+          ],
+          "review_priority": "P1",
+          "main_review": "accepted_for_tracking_only",
+          "validation_status": "NOT_RUN",
+          "validation_occurred": false,
+          "novelty": "NOT_AUDITED"
+        },
+        {
+          "id": "PG-RC-002",
+          "title": "配套验证：薄壁尺度公平性与数据资格分层",
+          "record_kind": "supporting_validation_plan",
+          "status": "idea",
+          "status_history": [
+            {
+              "status": "pending-main-review",
+              "recorded_at": "2026-10-04",
+              "reason": "初版底账等待 root 主审。"
+            },
+            {
+              "status": "idea",
+              "recorded_at": "2026-10-04",
+              "reason": "root 接受作为跟踪条目；不表示方法实现、实验验证或新颖性成立。"
+            }
+          ],
+          "review_priority": "P2",
+          "main_review": "accepted_for_tracking_only",
+          "validation_status": "NOT_RUN",
+          "validation_occurred": false,
+          "novelty": "NOT_AUDITED"
+        }
+      ]
+    },
+    "paper_evidence_requirement": "Final evidence chain must measure a benefit to RelicWeave adjacent-fragment candidate retrieval; mesh appearance, geometric closure, or wrapper/API success alone is insufficient.",
+    "metric_semantics": {
+      "pre_rejection_ranking": "Report ordinary Hit/Cov before applying rejection.",
+      "post_rejection_effective": "After rejection, set the rejected query candidate list to empty and report EffectiveHit/EffectiveCov.",
+      "also_report": [
+        "acceptance rate",
+        "accepted-subset indicators",
+        "accepted-subset risk",
+        "no-neighbor false-recommendation risk"
+      ]
+    },
+    "specific_decisions": [
+      "VF-RC-001 is the priority data-field/lineage research candidate.",
+      "VF-RC-002 is narrowed to paired generation of imaging degradation and observable evidence. Generator/metadata/paired intervention only; ranking, rejection, and active recapture decisions remain in RelicWeave A3/A4/A6; action outcomes are downstream evaluation only.",
+      "PG-RC-001 is the priority event-to-paired-evidence candidate.",
+      "PG-RC-002 is a supporting numerical-fairness/data-qualification validation plan, not an established method contribution.",
+      "C2 no-handle BREP candidate STEP round-trip failed and was not promoted; this does not assert pass/fail for the separate handled-cup production STEP."
+    ],
+    "active_201_artifacts_read": false
+  },
+  "checks": {
+    "original_snapshot_hashes_verified": true,
+    "json_utf8_parse": true,
+    "unique_ids_per_project": true,
+    "markdown_json_id_status_title_match": true,
+    "all_four_current_status_idea": true,
+    "historical_pending_state_preserved": true,
+    "main_review_tracking_only_synced": true,
+    "candidate_validation_not_run_synced": true,
+    "novelty_not_audited_synced": true,
+    "corrected_rejection_metric_semantics_synced": true,
+    "c2_step_failure_scoped_to_c2_candidate": true,
+    "vf002_role_and_title_narrowed": true,
+    "pg002_marked_supporting_validation_plan": true,
+    "all_records_link_to_downstream_relicweave_retrieval_evaluation": true,
+    "active_201_artifacts_read": false,
+    "pgfrag_pre_run02_snapshot_hashes_verified": true,
+    "pgfrag_pre_energy_gate_clarification_snapshot_hashes_verified": true,
+    "pgfrag_updated_json_utf8_parse": true,
+    "pgfrag_markdown_json_id_status_title_match": true,
+    "pgfrag_run02_168_of_201_energy_final_gate_incomplete_synced": true,
+    "pgfrag_run03_not_run_synced": true,
+    "pgfrag_candidates_idea_tracking_only_validation_not_run_novelty_not_audited": true,
+    "pgfrag_stop_rule_current_round_budget_root_refreeze_not_permanent_ban": true,
+    "vesselforge_outputs_unchanged_from_main_review": true
+  },
+  "manifest_excludes_its_own_hash": true,
+  "pre_pg_run02_update_snapshots": [
+    {
+      "source_path": "pgfrag/docs/research/INNOVATION_LEDGER.md",
+      "snapshot_path": "relicweave-synlab/tmp/review_20261004/implementation/research_ledgers_20261004/pgfrag_pre_final_201_update_INNOVATION_LEDGER.md",
+      "bytes": 22101,
+      "sha256": "86bc3786b7614f83a69e5fcf09a50d8044c25655a3d9abbf760b313fb29ff8b7",
+      "byte_identical_to_pre_update_source": true
+    },
+    {
+      "source_path": "pgfrag/docs/research/innovation_ledger.json",
+      "snapshot_path": "relicweave-synlab/tmp/review_20261004/implementation/research_ledgers_20261004/pgfrag_pre_final_201_update_innovation_ledger.json",
+      "bytes": 23525,
+      "sha256": "78f821060752ae2c94c5b976675d44deaf9ca49c2ba19211a48fc6b2f98ed6b8",
+      "byte_identical_to_pre_update_source": true
+    }
+  ],
+  "pre_pg_energy_gate_clarification_snapshots": [
+    {
+      "source_path": "pgfrag/docs/research/INNOVATION_LEDGER.md",
+      "snapshot_path": "relicweave-synlab/tmp/review_20261004/implementation/research_ledgers_20261004/pgfrag_pre_energy_gate_clarification_INNOVATION_LEDGER.md",
+      "bytes": 23104,
+      "sha256": "c172db82dedaee00ace7f58df3ea5ab708c309c9d3238cf6f850db8f87a52404",
+      "byte_identical_to_pre_update_source": true
+    },
+    {
+      "source_path": "pgfrag/docs/research/innovation_ledger.json",
+      "snapshot_path": "relicweave-synlab/tmp/review_20261004/implementation/research_ledgers_20261004/pgfrag_pre_energy_gate_clarification_innovation_ledger.json",
+      "bytes": 24528,
+      "sha256": "f204369a5ec675a2adb3194b84650c83f0fd82a493d764a6594b496ed73180ae",
+      "byte_identical_to_pre_update_source": true
+    }
+  ],
+  "pgfrag_run02_update": {
+    "frozen_fact_source": "Root-provided status snapshot; no active 201 artifacts were opened.",
+    "run01": "property binding failed; 0 steps",
+    "run02": "external 300 s cap; closed artifacts cover only 168/201 records (indices 0..167); energy/final GcA gate NOT_EVALUATED_INCOMPLETE",
+    "run03": "plan preparation only; NOT_RUN",
+    "candidate_validation": "NOT_RUN",
+    "active_201_artifacts_read": false
+  }
+}

@@ -1,0 +1,1082 @@
+{
+  "schema": "luna-exact-backup-execution-receipt.v1",
+  "created_utc": "2026-10-05T09:57:53.1182346Z",
+  "repository": "vesselforge",
+  "plan_sha256": "5404c9e1ae3b2eb12427954d8693e0819dfd57208d5a68c302632cd3e3bc8c59",
+  "branch": "backup/forge-work-20261003",
+  "parent_head_expected": "87c269ff25b1060b1ad56b72fdadf7de6d4df775",
+  "approved_identity_used_per_call": "A12 SynLab <synlab@local>",
+  "candidate_path_count": 19,
+  "candidate_paths": [
+    "docs/evidence/20261005/single_inner_fairing_v3/diagnostic_run_record.json",
+    "docs/evidence/20261005/single_inner_fairing_v3/diagnostic.stderr.txt",
+    "docs/evidence/20261005/single_inner_fairing_v3/diagnostic.stdout.txt",
+    "docs/evidence/20261005/single_inner_fairing_v3/FROZEN_SHA256.txt",
+    "docs/evidence/20261005/single_inner_fairing_v3/math_diagnostics.json",
+    "docs/evidence/20261005/single_inner_fairing_v3/plot_run_record.json",
+    "docs/evidence/20261005/single_inner_fairing_v3/plot.stderr.txt",
+    "docs/evidence/20261005/single_inner_fairing_v3/plot.stdout.txt",
+    "docs/evidence/20261005/single_inner_fairing_v3/RESULTS.md",
+    "docs/evidence/20261005/single_inner_fairing_v3/REVIEW_AND_EXECUTION_BUDGET.md",
+    "docs/evidence/20261005/single_inner_fairing_v3/RUN_OUTPUT_SHA256.txt",
+    "docs/evidence/20261005/single_inner_fairing_v3/single_inner_fairing_profile_rz_arrays.json",
+    "docs/evidence/20261005/single_inner_fairing_v3/single_inner_fairing_profile_rz.png",
+    "experiments/smooth_surface_coupled_design_20261005/coupled_profile_math.py",
+    "experiments/smooth_surface_coupled_design_20261005/fixed_case_beaker_coupled_v2.json",
+    "experiments/smooth_surface_single_inner_fairing_20261005/DESIGN_NOTE.md",
+    "experiments/smooth_surface_single_inner_fairing_20261005/fixed_case_beaker_single_inner_fairing_v1.json",
+    "experiments/smooth_surface_single_inner_fairing_20261005/plot_single_inner_fairing_section.py",
+    "experiments/smooth_surface_single_inner_fairing_20261005/single_inner_fairing_math.py"
+  ],
+  "status": "pushed_and_remote_head_verified",
+  "copy_results": [
+    {
+      "source_path": "tmp/review_20261005/smooth_single_inner_fairing/frozen_run/diagnostic_run_record.json",
+      "destination_path": "docs/evidence/20261005/single_inner_fairing_v3/diagnostic_run_record.json",
+      "bytes": 4114,
+      "sha256": "4a6b9232a00be115849e3352d8ee4d97925f520738cfc354c3e03f9a81f44a40",
+      "already_present_same_bytes": false,
+      "match": true
+    },
+    {
+      "source_path": "tmp/review_20261005/smooth_single_inner_fairing/frozen_run/diagnostic.stderr.txt",
+      "destination_path": "docs/evidence/20261005/single_inner_fairing_v3/diagnostic.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "already_present_same_bytes": false,
+      "match": true
+    },
+    {
+      "source_path": "tmp/review_20261005/smooth_single_inner_fairing/frozen_run/diagnostic.stdout.txt",
+      "destination_path": "docs/evidence/20261005/single_inner_fairing_v3/diagnostic.stdout.txt",
+      "bytes": 275,
+      "sha256": "4de46e9225ae9e4a85ea5281deebcc0273999b21581dcdd8ed5b924c1698ea30",
+      "already_present_same_bytes": false,
+      "match": true
+    },
+    {
+      "source_path": "tmp/review_20261005/smooth_single_inner_fairing/FROZEN_SHA256.txt",
+      "destination_path": "docs/evidence/20261005/single_inner_fairing_v3/FROZEN_SHA256.txt",
+      "bytes": 1584,
+      "sha256": "35fe13502da52b67ae3d7a15ce1b7566f050ab339f04cd9708c7ee56b7ed82f4",
+      "already_present_same_bytes": false,
+      "match": true
+    },
+    {
+      "source_path": "tmp/review_20261005/smooth_single_inner_fairing/frozen_run/math_diagnostics.json",
+      "destination_path": "docs/evidence/20261005/single_inner_fairing_v3/math_diagnostics.json",
+      "bytes": 1044484,
+      "sha256": "88b09514619fa62e1df1afb4954d4be14275b3907fad76ba13749c066933b550",
+      "already_present_same_bytes": false,
+      "match": true
+    },
+    {
+      "source_path": "tmp/review_20261005/smooth_single_inner_fairing/frozen_run/plot_run_record.json",
+      "destination_path": "docs/evidence/20261005/single_inner_fairing_v3/plot_run_record.json",
+      "bytes": 4513,
+      "sha256": "83875eaa1345f757bde03df6891c524ce65ec0985d71bcb1bf7bbd3c720e34b8",
+      "already_present_same_bytes": false,
+      "match": true
+    },
+    {
+      "source_path": "tmp/review_20261005/smooth_single_inner_fairing/frozen_run/plot.stderr.txt",
+      "destination_path": "docs/evidence/20261005/single_inner_fairing_v3/plot.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "already_present_same_bytes": false,
+      "match": true
+    },
+    {
+      "source_path": "tmp/review_20261005/smooth_single_inner_fairing/frozen_run/plot.stdout.txt",
+      "destination_path": "docs/evidence/20261005/single_inner_fairing_v3/plot.stdout.txt",
+      "bytes": 321,
+      "sha256": "37f8fb38e7818037745dc81735bc9858bc48a5a79395102bcfabe1caa3544598",
+      "already_present_same_bytes": false,
+      "match": true
+    },
+    {
+      "source_path": "tmp/review_20261005/smooth_single_inner_fairing/frozen_run/RESULTS.md",
+      "destination_path": "docs/evidence/20261005/single_inner_fairing_v3/RESULTS.md",
+      "bytes": 2637,
+      "sha256": "afd8a28f256df695ef404fce776e9ebfc9c50cf1d3fec2e9e59f3a1ddc9834dd",
+      "already_present_same_bytes": false,
+      "match": true
+    },
+    {
+      "source_path": "tmp/review_20261005/smooth_single_inner_fairing/REVIEW_AND_EXECUTION_BUDGET.md",
+      "destination_path": "docs/evidence/20261005/single_inner_fairing_v3/REVIEW_AND_EXECUTION_BUDGET.md",
+      "bytes": 3063,
+      "sha256": "07c2c3a31614828c9570558a2ebfd74790a6334059b03bbbdcd3a205b85d1191",
+      "already_present_same_bytes": false,
+      "match": true
+    },
+    {
+      "source_path": "tmp/review_20261005/smooth_single_inner_fairing/frozen_run/RUN_OUTPUT_SHA256.txt",
+      "destination_path": "docs/evidence/20261005/single_inner_fairing_v3/RUN_OUTPUT_SHA256.txt",
+      "bytes": 1531,
+      "sha256": "1ccc99958d3e896131265ce50041db5abde9310bd1eff40779cbb779d6744fc0",
+      "already_present_same_bytes": false,
+      "match": true
+    },
+    {
+      "source_path": "tmp/review_20261005/smooth_single_inner_fairing/frozen_run/plot/single_inner_fairing_profile_rz_arrays.json",
+      "destination_path": "docs/evidence/20261005/single_inner_fairing_v3/single_inner_fairing_profile_rz_arrays.json",
+      "bytes": 979125,
+      "sha256": "eff161042a7eb82c10c8c2af245f4632a97d84a9764d937c7772152003456176",
+      "already_present_same_bytes": false,
+      "match": true
+    },
+    {
+      "source_path": "tmp/review_20261005/smooth_single_inner_fairing/frozen_run/plot/single_inner_fairing_profile_rz.png",
+      "destination_path": "docs/evidence/20261005/single_inner_fairing_v3/single_inner_fairing_profile_rz.png",
+      "bytes": 188520,
+      "sha256": "8bbe41a5c3e6b78ba220b6f5b181f195a44e88f17addeea86b943d095c81e147",
+      "already_present_same_bytes": false,
+      "match": true
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "-c",
+        "core.autocrlf=false",
+        "add",
+        "--",
+        "docs/evidence/20261005/single_inner_fairing_v3/diagnostic_run_record.json",
+        "docs/evidence/20261005/single_inner_fairing_v3/diagnostic.stderr.txt",
+        "docs/evidence/20261005/single_inner_fairing_v3/diagnostic.stdout.txt",
+        "docs/evidence/20261005/single_inner_fairing_v3/FROZEN_SHA256.txt",
+        "docs/evidence/20261005/single_inner_fairing_v3/math_diagnostics.json",
+        "docs/evidence/20261005/single_inner_fairing_v3/plot_run_record.json",
+        "docs/evidence/20261005/single_inner_fairing_v3/plot.stderr.txt",
+        "docs/evidence/20261005/single_inner_fairing_v3/plot.stdout.txt",
+        "docs/evidence/20261005/single_inner_fairing_v3/RESULTS.md",
+        "docs/evidence/20261005/single_inner_fairing_v3/REVIEW_AND_EXECUTION_BUDGET.md",
+        "docs/evidence/20261005/single_inner_fairing_v3/RUN_OUTPUT_SHA256.txt",
+        "docs/evidence/20261005/single_inner_fairing_v3/single_inner_fairing_profile_rz_arrays.json",
+        "docs/evidence/20261005/single_inner_fairing_v3/single_inner_fairing_profile_rz.png",
+        "experiments/smooth_surface_coupled_design_20261005/coupled_profile_math.py",
+        "experiments/smooth_surface_coupled_design_20261005/fixed_case_beaker_coupled_v2.json",
+        "experiments/smooth_surface_single_inner_fairing_20261005/DESIGN_NOTE.md",
+        "experiments/smooth_surface_single_inner_fairing_20261005/fixed_case_beaker_single_inner_fairing_v1.json",
+        "experiments/smooth_surface_single_inner_fairing_20261005/plot_single_inner_fairing_section.py",
+        "experiments/smooth_surface_single_inner_fairing_20261005/single_inner_fairing_math.py"
+      ],
+      "exit_code": 0,
+      "output": []
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "-c",
+        "core.autocrlf=false",
+        "-c",
+        "user.name=A12 SynLab",
+        "-c",
+        "user.email=synlab@local",
+        "commit",
+        "-m",
+        "backup: preserve single-inner fairing math diagnostic",
+        "-m",
+        "Preserve the frozen single-inner-span pure-math inputs, required coupled-v2 parent dependencies, and diagnostic/plot evidence. This does not establish CAD/OCC/STEP validation, whole-section self-intersection, or global normal-wall qualification."
+      ],
+      "exit_code": 0,
+      "output": [
+        "[backup/forge-work-20261003 f7aa104] backup: preserve single-inner fairing math diagnostic",
+        " 19 files changed, 86793 insertions(+)",
+        " create mode 100644 docs/evidence/20261005/single_inner_fairing_v3/FROZEN_SHA256.txt",
+        " create mode 100644 docs/evidence/20261005/single_inner_fairing_v3/RESULTS.md",
+        " create mode 100644 docs/evidence/20261005/single_inner_fairing_v3/REVIEW_AND_EXECUTION_BUDGET.md",
+        " create mode 100644 docs/evidence/20261005/single_inner_fairing_v3/RUN_OUTPUT_SHA256.txt",
+        " create mode 100644 docs/evidence/20261005/single_inner_fairing_v3/diagnostic.stderr.txt",
+        " create mode 100644 docs/evidence/20261005/single_inner_fairing_v3/diagnostic.stdout.txt",
+        " create mode 100644 docs/evidence/20261005/single_inner_fairing_v3/diagnostic_run_record.json",
+        " create mode 100644 docs/evidence/20261005/single_inner_fairing_v3/math_diagnostics.json",
+        " create mode 100644 docs/evidence/20261005/single_inner_fairing_v3/plot.stderr.txt",
+        " create mode 100644 docs/evidence/20261005/single_inner_fairing_v3/plot.stdout.txt",
+        " create mode 100644 docs/evidence/20261005/single_inner_fairing_v3/plot_run_record.json",
+        " create mode 100644 docs/evidence/20261005/single_inner_fairing_v3/single_inner_fairing_profile_rz.png",
+        " create mode 100644 docs/evidence/20261005/single_inner_fairing_v3/single_inner_fairing_profile_rz_arrays.json",
+        " create mode 100644 experiments/smooth_surface_coupled_design_20261005/coupled_profile_math.py",
+        " create mode 100644 experiments/smooth_surface_coupled_design_20261005/fixed_case_beaker_coupled_v2.json",
+        " create mode 100644 experiments/smooth_surface_single_inner_fairing_20261005/DESIGN_NOTE.md",
+        " create mode 100644 experiments/smooth_surface_single_inner_fairing_20261005/fixed_case_beaker_single_inner_fairing_v1.json",
+        " create mode 100644 experiments/smooth_surface_single_inner_fairing_20261005/plot_single_inner_fairing_section.py",
+        " create mode 100644 experiments/smooth_surface_single_inner_fairing_20261005/single_inner_fairing_math.py"
+      ]
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "-c",
+        "core.autocrlf=false",
+        "push",
+        "origin",
+        "HEAD:refs/heads/backup/forge-work-20261003"
+      ],
+      "exit_code": 0,
+      "output": [
+        "To https://github.com/xiemonb666/vesselforge.git",
+        "   87c269f..f7aa104  HEAD -> backup/forge-work-20261003"
+      ]
+    }
+  ],
+  "stage_blob_checks": [
+    {
+      "path": "docs/evidence/20261005/single_inner_fairing_v3/diagnostic_run_record.json",
+      "object_id": "d4e1968c0ba476c49026d2be7eae8bc4d5305284",
+      "bytes": 4114,
+      "sha256": "4a6b9232a00be115849e3352d8ee4d97925f520738cfc354c3e03f9a81f44a40",
+      "expected_bytes": 4114,
+      "expected_sha256": "4a6b9232a00be115849e3352d8ee4d97925f520738cfc354c3e03f9a81f44a40",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "d4e1968c0ba476c49026d2be7eae8bc4d5305284"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/evidence/20261005/single_inner_fairing_v3/diagnostic.stderr.txt",
+      "object_id": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_bytes": 0,
+      "expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/evidence/20261005/single_inner_fairing_v3/diagnostic.stdout.txt",
+      "object_id": "c049e990811246951096445eec16ebcaa3753981",
+      "bytes": 275,
+      "sha256": "4de46e9225ae9e4a85ea5281deebcc0273999b21581dcdd8ed5b924c1698ea30",
+      "expected_bytes": 275,
+      "expected_sha256": "4de46e9225ae9e4a85ea5281deebcc0273999b21581dcdd8ed5b924c1698ea30",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "c049e990811246951096445eec16ebcaa3753981"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/evidence/20261005/single_inner_fairing_v3/FROZEN_SHA256.txt",
+      "object_id": "4313c9cc5bc10bbc855f75b73348a6224c26e6ab",
+      "bytes": 1584,
+      "sha256": "35fe13502da52b67ae3d7a15ce1b7566f050ab339f04cd9708c7ee56b7ed82f4",
+      "expected_bytes": 1584,
+      "expected_sha256": "35fe13502da52b67ae3d7a15ce1b7566f050ab339f04cd9708c7ee56b7ed82f4",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "4313c9cc5bc10bbc855f75b73348a6224c26e6ab"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/evidence/20261005/single_inner_fairing_v3/math_diagnostics.json",
+      "object_id": "dde950e70218184b0e79a045ce0bee86e2bdc652",
+      "bytes": 1044484,
+      "sha256": "88b09514619fa62e1df1afb4954d4be14275b3907fad76ba13749c066933b550",
+      "expected_bytes": 1044484,
+      "expected_sha256": "88b09514619fa62e1df1afb4954d4be14275b3907fad76ba13749c066933b550",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "dde950e70218184b0e79a045ce0bee86e2bdc652"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/evidence/20261005/single_inner_fairing_v3/plot_run_record.json",
+      "object_id": "ccb85ef919a8ab8e3705861c25abaafb7614e637",
+      "bytes": 4513,
+      "sha256": "83875eaa1345f757bde03df6891c524ce65ec0985d71bcb1bf7bbd3c720e34b8",
+      "expected_bytes": 4513,
+      "expected_sha256": "83875eaa1345f757bde03df6891c524ce65ec0985d71bcb1bf7bbd3c720e34b8",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "ccb85ef919a8ab8e3705861c25abaafb7614e637"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/evidence/20261005/single_inner_fairing_v3/plot.stderr.txt",
+      "object_id": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_bytes": 0,
+      "expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/evidence/20261005/single_inner_fairing_v3/plot.stdout.txt",
+      "object_id": "e771c8dea8bc1bdfba0426b73587c94de8cba709",
+      "bytes": 321,
+      "sha256": "37f8fb38e7818037745dc81735bc9858bc48a5a79395102bcfabe1caa3544598",
+      "expected_bytes": 321,
+      "expected_sha256": "37f8fb38e7818037745dc81735bc9858bc48a5a79395102bcfabe1caa3544598",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "e771c8dea8bc1bdfba0426b73587c94de8cba709"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/evidence/20261005/single_inner_fairing_v3/RESULTS.md",
+      "object_id": "92b44f92a91e51f4ea2411c656b48cffe85a2d87",
+      "bytes": 2637,
+      "sha256": "afd8a28f256df695ef404fce776e9ebfc9c50cf1d3fec2e9e59f3a1ddc9834dd",
+      "expected_bytes": 2637,
+      "expected_sha256": "afd8a28f256df695ef404fce776e9ebfc9c50cf1d3fec2e9e59f3a1ddc9834dd",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "92b44f92a91e51f4ea2411c656b48cffe85a2d87"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/evidence/20261005/single_inner_fairing_v3/REVIEW_AND_EXECUTION_BUDGET.md",
+      "object_id": "b40da45fd99d08d105155691fbd8b0bace8d5dc4",
+      "bytes": 3063,
+      "sha256": "07c2c3a31614828c9570558a2ebfd74790a6334059b03bbbdcd3a205b85d1191",
+      "expected_bytes": 3063,
+      "expected_sha256": "07c2c3a31614828c9570558a2ebfd74790a6334059b03bbbdcd3a205b85d1191",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "b40da45fd99d08d105155691fbd8b0bace8d5dc4"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/evidence/20261005/single_inner_fairing_v3/RUN_OUTPUT_SHA256.txt",
+      "object_id": "0520164d8adb8b61da074856a780a3b1e8af3780",
+      "bytes": 1531,
+      "sha256": "1ccc99958d3e896131265ce50041db5abde9310bd1eff40779cbb779d6744fc0",
+      "expected_bytes": 1531,
+      "expected_sha256": "1ccc99958d3e896131265ce50041db5abde9310bd1eff40779cbb779d6744fc0",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "0520164d8adb8b61da074856a780a3b1e8af3780"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/evidence/20261005/single_inner_fairing_v3/single_inner_fairing_profile_rz_arrays.json",
+      "object_id": "ada396288964322fa4d066ae8099495a31917571",
+      "bytes": 979125,
+      "sha256": "eff161042a7eb82c10c8c2af245f4632a97d84a9764d937c7772152003456176",
+      "expected_bytes": 979125,
+      "expected_sha256": "eff161042a7eb82c10c8c2af245f4632a97d84a9764d937c7772152003456176",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "ada396288964322fa4d066ae8099495a31917571"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/evidence/20261005/single_inner_fairing_v3/single_inner_fairing_profile_rz.png",
+      "object_id": "80c3ed7088f18e57880810bd307d1b80cd873ebb",
+      "bytes": 188520,
+      "sha256": "8bbe41a5c3e6b78ba220b6f5b181f195a44e88f17addeea86b943d095c81e147",
+      "expected_bytes": 188520,
+      "expected_sha256": "8bbe41a5c3e6b78ba220b6f5b181f195a44e88f17addeea86b943d095c81e147",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "80c3ed7088f18e57880810bd307d1b80cd873ebb"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "experiments/smooth_surface_coupled_design_20261005/coupled_profile_math.py",
+      "object_id": "651ec1b5f588a06891c9e0277e221c856dc6d49d",
+      "bytes": 38387,
+      "sha256": "4a90264b83e465af8bdb4dc7771f61ab4cb8314bc8d4d0ef540952310f3cb85b",
+      "expected_bytes": 38387,
+      "expected_sha256": "4a90264b83e465af8bdb4dc7771f61ab4cb8314bc8d4d0ef540952310f3cb85b",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "651ec1b5f588a06891c9e0277e221c856dc6d49d"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "experiments/smooth_surface_coupled_design_20261005/fixed_case_beaker_coupled_v2.json",
+      "object_id": "911ed2db0e61fb0d8f2d71a5400d0a6b007aeef4",
+      "bytes": 11034,
+      "sha256": "7e65d490c5cf1a5fa80d9964b1c89392c06a30290768bf00bfad03b4e757d391",
+      "expected_bytes": 11034,
+      "expected_sha256": "7e65d490c5cf1a5fa80d9964b1c89392c06a30290768bf00bfad03b4e757d391",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "911ed2db0e61fb0d8f2d71a5400d0a6b007aeef4"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "experiments/smooth_surface_single_inner_fairing_20261005/DESIGN_NOTE.md",
+      "object_id": "412be725a7019e9c4b59c1f161218ae8acb8c43f",
+      "bytes": 2273,
+      "sha256": "0ef94eca0abc08f3f85461ef9ed6fd3827d2d14af15636dd54119afca1bbd225",
+      "expected_bytes": 2273,
+      "expected_sha256": "0ef94eca0abc08f3f85461ef9ed6fd3827d2d14af15636dd54119afca1bbd225",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "412be725a7019e9c4b59c1f161218ae8acb8c43f"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "experiments/smooth_surface_single_inner_fairing_20261005/fixed_case_beaker_single_inner_fairing_v1.json",
+      "object_id": "0334273824ee8f633dec70c8a2134ed37c4de817",
+      "bytes": 11668,
+      "sha256": "2d7a0950f870a8663f7e326275e3c666d880e906d04fccbcd0f1ba7d453fd3c0",
+      "expected_bytes": 11668,
+      "expected_sha256": "2d7a0950f870a8663f7e326275e3c666d880e906d04fccbcd0f1ba7d453fd3c0",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "0334273824ee8f633dec70c8a2134ed37c4de817"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "experiments/smooth_surface_single_inner_fairing_20261005/plot_single_inner_fairing_section.py",
+      "object_id": "1a45e36ee1241155b132d820fd391be93e055aca",
+      "bytes": 8657,
+      "sha256": "80c9dbbece8c583b63fcabf7c241f56316ff3c0a7af07692573c6cd740014d84",
+      "expected_bytes": 8657,
+      "expected_sha256": "80c9dbbece8c583b63fcabf7c241f56316ff3c0a7af07692573c6cd740014d84",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "1a45e36ee1241155b132d820fd391be93e055aca"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "experiments/smooth_surface_single_inner_fairing_20261005/single_inner_fairing_math.py",
+      "object_id": "6df4f24992a6397e5de722f3c2ecee9992678915",
+      "bytes": 10586,
+      "sha256": "f3315ac8d1fc112f4dc0af4bb4cea86dddd262052bcbc94c6f776780aefbbec8",
+      "expected_bytes": 10586,
+      "expected_sha256": "f3315ac8d1fc112f4dc0af4bb4cea86dddd262052bcbc94c6f776780aefbbec8",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "6df4f24992a6397e5de722f3c2ecee9992678915"
+      ],
+      "cat_file_exit_code": 0
+    }
+  ],
+  "commit_blob_checks": [
+    {
+      "path": "docs/evidence/20261005/single_inner_fairing_v3/diagnostic_run_record.json",
+      "object_id": "d4e1968c0ba476c49026d2be7eae8bc4d5305284",
+      "bytes": 4114,
+      "sha256": "4a6b9232a00be115849e3352d8ee4d97925f520738cfc354c3e03f9a81f44a40",
+      "expected_bytes": 4114,
+      "expected_sha256": "4a6b9232a00be115849e3352d8ee4d97925f520738cfc354c3e03f9a81f44a40",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "d4e1968c0ba476c49026d2be7eae8bc4d5305284"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/evidence/20261005/single_inner_fairing_v3/diagnostic.stderr.txt",
+      "object_id": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_bytes": 0,
+      "expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/evidence/20261005/single_inner_fairing_v3/diagnostic.stdout.txt",
+      "object_id": "c049e990811246951096445eec16ebcaa3753981",
+      "bytes": 275,
+      "sha256": "4de46e9225ae9e4a85ea5281deebcc0273999b21581dcdd8ed5b924c1698ea30",
+      "expected_bytes": 275,
+      "expected_sha256": "4de46e9225ae9e4a85ea5281deebcc0273999b21581dcdd8ed5b924c1698ea30",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "c049e990811246951096445eec16ebcaa3753981"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/evidence/20261005/single_inner_fairing_v3/FROZEN_SHA256.txt",
+      "object_id": "4313c9cc5bc10bbc855f75b73348a6224c26e6ab",
+      "bytes": 1584,
+      "sha256": "35fe13502da52b67ae3d7a15ce1b7566f050ab339f04cd9708c7ee56b7ed82f4",
+      "expected_bytes": 1584,
+      "expected_sha256": "35fe13502da52b67ae3d7a15ce1b7566f050ab339f04cd9708c7ee56b7ed82f4",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "4313c9cc5bc10bbc855f75b73348a6224c26e6ab"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/evidence/20261005/single_inner_fairing_v3/math_diagnostics.json",
+      "object_id": "dde950e70218184b0e79a045ce0bee86e2bdc652",
+      "bytes": 1044484,
+      "sha256": "88b09514619fa62e1df1afb4954d4be14275b3907fad76ba13749c066933b550",
+      "expected_bytes": 1044484,
+      "expected_sha256": "88b09514619fa62e1df1afb4954d4be14275b3907fad76ba13749c066933b550",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "dde950e70218184b0e79a045ce0bee86e2bdc652"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/evidence/20261005/single_inner_fairing_v3/plot_run_record.json",
+      "object_id": "ccb85ef919a8ab8e3705861c25abaafb7614e637",
+      "bytes": 4513,
+      "sha256": "83875eaa1345f757bde03df6891c524ce65ec0985d71bcb1bf7bbd3c720e34b8",
+      "expected_bytes": 4513,
+      "expected_sha256": "83875eaa1345f757bde03df6891c524ce65ec0985d71bcb1bf7bbd3c720e34b8",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "ccb85ef919a8ab8e3705861c25abaafb7614e637"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/evidence/20261005/single_inner_fairing_v3/plot.stderr.txt",
+      "object_id": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_bytes": 0,
+      "expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/evidence/20261005/single_inner_fairing_v3/plot.stdout.txt",
+      "object_id": "e771c8dea8bc1bdfba0426b73587c94de8cba709",
+      "bytes": 321,
+      "sha256": "37f8fb38e7818037745dc81735bc9858bc48a5a79395102bcfabe1caa3544598",
+      "expected_bytes": 321,
+      "expected_sha256": "37f8fb38e7818037745dc81735bc9858bc48a5a79395102bcfabe1caa3544598",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "e771c8dea8bc1bdfba0426b73587c94de8cba709"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/evidence/20261005/single_inner_fairing_v3/RESULTS.md",
+      "object_id": "92b44f92a91e51f4ea2411c656b48cffe85a2d87",
+      "bytes": 2637,
+      "sha256": "afd8a28f256df695ef404fce776e9ebfc9c50cf1d3fec2e9e59f3a1ddc9834dd",
+      "expected_bytes": 2637,
+      "expected_sha256": "afd8a28f256df695ef404fce776e9ebfc9c50cf1d3fec2e9e59f3a1ddc9834dd",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "92b44f92a91e51f4ea2411c656b48cffe85a2d87"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/evidence/20261005/single_inner_fairing_v3/REVIEW_AND_EXECUTION_BUDGET.md",
+      "object_id": "b40da45fd99d08d105155691fbd8b0bace8d5dc4",
+      "bytes": 3063,
+      "sha256": "07c2c3a31614828c9570558a2ebfd74790a6334059b03bbbdcd3a205b85d1191",
+      "expected_bytes": 3063,
+      "expected_sha256": "07c2c3a31614828c9570558a2ebfd74790a6334059b03bbbdcd3a205b85d1191",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "b40da45fd99d08d105155691fbd8b0bace8d5dc4"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/evidence/20261005/single_inner_fairing_v3/RUN_OUTPUT_SHA256.txt",
+      "object_id": "0520164d8adb8b61da074856a780a3b1e8af3780",
+      "bytes": 1531,
+      "sha256": "1ccc99958d3e896131265ce50041db5abde9310bd1eff40779cbb779d6744fc0",
+      "expected_bytes": 1531,
+      "expected_sha256": "1ccc99958d3e896131265ce50041db5abde9310bd1eff40779cbb779d6744fc0",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "0520164d8adb8b61da074856a780a3b1e8af3780"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/evidence/20261005/single_inner_fairing_v3/single_inner_fairing_profile_rz_arrays.json",
+      "object_id": "ada396288964322fa4d066ae8099495a31917571",
+      "bytes": 979125,
+      "sha256": "eff161042a7eb82c10c8c2af245f4632a97d84a9764d937c7772152003456176",
+      "expected_bytes": 979125,
+      "expected_sha256": "eff161042a7eb82c10c8c2af245f4632a97d84a9764d937c7772152003456176",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "ada396288964322fa4d066ae8099495a31917571"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/evidence/20261005/single_inner_fairing_v3/single_inner_fairing_profile_rz.png",
+      "object_id": "80c3ed7088f18e57880810bd307d1b80cd873ebb",
+      "bytes": 188520,
+      "sha256": "8bbe41a5c3e6b78ba220b6f5b181f195a44e88f17addeea86b943d095c81e147",
+      "expected_bytes": 188520,
+      "expected_sha256": "8bbe41a5c3e6b78ba220b6f5b181f195a44e88f17addeea86b943d095c81e147",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "80c3ed7088f18e57880810bd307d1b80cd873ebb"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "experiments/smooth_surface_coupled_design_20261005/coupled_profile_math.py",
+      "object_id": "651ec1b5f588a06891c9e0277e221c856dc6d49d",
+      "bytes": 38387,
+      "sha256": "4a90264b83e465af8bdb4dc7771f61ab4cb8314bc8d4d0ef540952310f3cb85b",
+      "expected_bytes": 38387,
+      "expected_sha256": "4a90264b83e465af8bdb4dc7771f61ab4cb8314bc8d4d0ef540952310f3cb85b",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "651ec1b5f588a06891c9e0277e221c856dc6d49d"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "experiments/smooth_surface_coupled_design_20261005/fixed_case_beaker_coupled_v2.json",
+      "object_id": "911ed2db0e61fb0d8f2d71a5400d0a6b007aeef4",
+      "bytes": 11034,
+      "sha256": "7e65d490c5cf1a5fa80d9964b1c89392c06a30290768bf00bfad03b4e757d391",
+      "expected_bytes": 11034,
+      "expected_sha256": "7e65d490c5cf1a5fa80d9964b1c89392c06a30290768bf00bfad03b4e757d391",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "911ed2db0e61fb0d8f2d71a5400d0a6b007aeef4"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "experiments/smooth_surface_single_inner_fairing_20261005/DESIGN_NOTE.md",
+      "object_id": "412be725a7019e9c4b59c1f161218ae8acb8c43f",
+      "bytes": 2273,
+      "sha256": "0ef94eca0abc08f3f85461ef9ed6fd3827d2d14af15636dd54119afca1bbd225",
+      "expected_bytes": 2273,
+      "expected_sha256": "0ef94eca0abc08f3f85461ef9ed6fd3827d2d14af15636dd54119afca1bbd225",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "412be725a7019e9c4b59c1f161218ae8acb8c43f"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "experiments/smooth_surface_single_inner_fairing_20261005/fixed_case_beaker_single_inner_fairing_v1.json",
+      "object_id": "0334273824ee8f633dec70c8a2134ed37c4de817",
+      "bytes": 11668,
+      "sha256": "2d7a0950f870a8663f7e326275e3c666d880e906d04fccbcd0f1ba7d453fd3c0",
+      "expected_bytes": 11668,
+      "expected_sha256": "2d7a0950f870a8663f7e326275e3c666d880e906d04fccbcd0f1ba7d453fd3c0",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "0334273824ee8f633dec70c8a2134ed37c4de817"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "experiments/smooth_surface_single_inner_fairing_20261005/plot_single_inner_fairing_section.py",
+      "object_id": "1a45e36ee1241155b132d820fd391be93e055aca",
+      "bytes": 8657,
+      "sha256": "80c9dbbece8c583b63fcabf7c241f56316ff3c0a7af07692573c6cd740014d84",
+      "expected_bytes": 8657,
+      "expected_sha256": "80c9dbbece8c583b63fcabf7c241f56316ff3c0a7af07692573c6cd740014d84",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "1a45e36ee1241155b132d820fd391be93e055aca"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "experiments/smooth_surface_single_inner_fairing_20261005/single_inner_fairing_math.py",
+      "object_id": "6df4f24992a6397e5de722f3c2ecee9992678915",
+      "bytes": 10586,
+      "sha256": "f3315ac8d1fc112f4dc0af4bb4cea86dddd262052bcbc94c6f776780aefbbec8",
+      "expected_bytes": 10586,
+      "expected_sha256": "f3315ac8d1fc112f4dc0af4bb4cea86dddd262052bcbc94c6f776780aefbbec8",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "cat-file",
+        "blob",
+        "6df4f24992a6397e5de722f3c2ecee9992678915"
+      ],
+      "cat_file_exit_code": 0
+    }
+  ],
+  "failure": null,
+  "stage_command_argv": [
+    "git",
+    "-C",
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+    "-c",
+    "core.autocrlf=false",
+    "add",
+    "--",
+    "docs/evidence/20261005/single_inner_fairing_v3/diagnostic_run_record.json",
+    "docs/evidence/20261005/single_inner_fairing_v3/diagnostic.stderr.txt",
+    "docs/evidence/20261005/single_inner_fairing_v3/diagnostic.stdout.txt",
+    "docs/evidence/20261005/single_inner_fairing_v3/FROZEN_SHA256.txt",
+    "docs/evidence/20261005/single_inner_fairing_v3/math_diagnostics.json",
+    "docs/evidence/20261005/single_inner_fairing_v3/plot_run_record.json",
+    "docs/evidence/20261005/single_inner_fairing_v3/plot.stderr.txt",
+    "docs/evidence/20261005/single_inner_fairing_v3/plot.stdout.txt",
+    "docs/evidence/20261005/single_inner_fairing_v3/RESULTS.md",
+    "docs/evidence/20261005/single_inner_fairing_v3/REVIEW_AND_EXECUTION_BUDGET.md",
+    "docs/evidence/20261005/single_inner_fairing_v3/RUN_OUTPUT_SHA256.txt",
+    "docs/evidence/20261005/single_inner_fairing_v3/single_inner_fairing_profile_rz_arrays.json",
+    "docs/evidence/20261005/single_inner_fairing_v3/single_inner_fairing_profile_rz.png",
+    "experiments/smooth_surface_coupled_design_20261005/coupled_profile_math.py",
+    "experiments/smooth_surface_coupled_design_20261005/fixed_case_beaker_coupled_v2.json",
+    "experiments/smooth_surface_single_inner_fairing_20261005/DESIGN_NOTE.md",
+    "experiments/smooth_surface_single_inner_fairing_20261005/fixed_case_beaker_single_inner_fairing_v1.json",
+    "experiments/smooth_surface_single_inner_fairing_20261005/plot_single_inner_fairing_section.py",
+    "experiments/smooth_surface_single_inner_fairing_20261005/single_inner_fairing_math.py"
+  ],
+  "stage_exit_codes": [
+    0
+  ],
+  "staged_path_count": 19,
+  "staged_paths": [
+    "docs/evidence/20261005/single_inner_fairing_v3/diagnostic_run_record.json",
+    "docs/evidence/20261005/single_inner_fairing_v3/diagnostic.stderr.txt",
+    "docs/evidence/20261005/single_inner_fairing_v3/diagnostic.stdout.txt",
+    "docs/evidence/20261005/single_inner_fairing_v3/FROZEN_SHA256.txt",
+    "docs/evidence/20261005/single_inner_fairing_v3/math_diagnostics.json",
+    "docs/evidence/20261005/single_inner_fairing_v3/plot_run_record.json",
+    "docs/evidence/20261005/single_inner_fairing_v3/plot.stderr.txt",
+    "docs/evidence/20261005/single_inner_fairing_v3/plot.stdout.txt",
+    "docs/evidence/20261005/single_inner_fairing_v3/RESULTS.md",
+    "docs/evidence/20261005/single_inner_fairing_v3/REVIEW_AND_EXECUTION_BUDGET.md",
+    "docs/evidence/20261005/single_inner_fairing_v3/RUN_OUTPUT_SHA256.txt",
+    "docs/evidence/20261005/single_inner_fairing_v3/single_inner_fairing_profile_rz_arrays.json",
+    "docs/evidence/20261005/single_inner_fairing_v3/single_inner_fairing_profile_rz.png",
+    "experiments/smooth_surface_coupled_design_20261005/coupled_profile_math.py",
+    "experiments/smooth_surface_coupled_design_20261005/fixed_case_beaker_coupled_v2.json",
+    "experiments/smooth_surface_single_inner_fairing_20261005/DESIGN_NOTE.md",
+    "experiments/smooth_surface_single_inner_fairing_20261005/fixed_case_beaker_single_inner_fairing_v1.json",
+    "experiments/smooth_surface_single_inner_fairing_20261005/plot_single_inner_fairing_section.py",
+    "experiments/smooth_surface_single_inner_fairing_20261005/single_inner_fairing_math.py"
+  ],
+  "commit_command_argv": [
+    "git",
+    "-C",
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+    "-c",
+    "core.autocrlf=false",
+    "-c",
+    "user.name=A12 SynLab",
+    "-c",
+    "user.email=synlab@local",
+    "commit",
+    "-m",
+    "backup: preserve single-inner fairing math diagnostic",
+    "-m",
+    "Preserve the frozen single-inner-span pure-math inputs, required coupled-v2 parent dependencies, and diagnostic/plot evidence. This does not establish CAD/OCC/STEP validation, whole-section self-intersection, or global normal-wall qualification."
+  ],
+  "commit_exit_code": 0,
+  "commit_output": [
+    "[backup/forge-work-20261003 f7aa104] backup: preserve single-inner fairing math diagnostic",
+    " 19 files changed, 86793 insertions(+)",
+    " create mode 100644 docs/evidence/20261005/single_inner_fairing_v3/FROZEN_SHA256.txt",
+    " create mode 100644 docs/evidence/20261005/single_inner_fairing_v3/RESULTS.md",
+    " create mode 100644 docs/evidence/20261005/single_inner_fairing_v3/REVIEW_AND_EXECUTION_BUDGET.md",
+    " create mode 100644 docs/evidence/20261005/single_inner_fairing_v3/RUN_OUTPUT_SHA256.txt",
+    " create mode 100644 docs/evidence/20261005/single_inner_fairing_v3/diagnostic.stderr.txt",
+    " create mode 100644 docs/evidence/20261005/single_inner_fairing_v3/diagnostic.stdout.txt",
+    " create mode 100644 docs/evidence/20261005/single_inner_fairing_v3/diagnostic_run_record.json",
+    " create mode 100644 docs/evidence/20261005/single_inner_fairing_v3/math_diagnostics.json",
+    " create mode 100644 docs/evidence/20261005/single_inner_fairing_v3/plot.stderr.txt",
+    " create mode 100644 docs/evidence/20261005/single_inner_fairing_v3/plot.stdout.txt",
+    " create mode 100644 docs/evidence/20261005/single_inner_fairing_v3/plot_run_record.json",
+    " create mode 100644 docs/evidence/20261005/single_inner_fairing_v3/single_inner_fairing_profile_rz.png",
+    " create mode 100644 docs/evidence/20261005/single_inner_fairing_v3/single_inner_fairing_profile_rz_arrays.json",
+    " create mode 100644 experiments/smooth_surface_coupled_design_20261005/coupled_profile_math.py",
+    " create mode 100644 experiments/smooth_surface_coupled_design_20261005/fixed_case_beaker_coupled_v2.json",
+    " create mode 100644 experiments/smooth_surface_single_inner_fairing_20261005/DESIGN_NOTE.md",
+    " create mode 100644 experiments/smooth_surface_single_inner_fairing_20261005/fixed_case_beaker_single_inner_fairing_v1.json",
+    " create mode 100644 experiments/smooth_surface_single_inner_fairing_20261005/plot_single_inner_fairing_section.py",
+    " create mode 100644 experiments/smooth_surface_single_inner_fairing_20261005/single_inner_fairing_math.py"
+  ],
+  "commit": "f7aa1041ba94bc93d16b589b997ae100ab440055",
+  "commit_parent": "87c269ff25b1060b1ad56b72fdadf7de6d4df775",
+  "changed_path_count": 19,
+  "changed_paths": [
+    "docs/evidence/20261005/single_inner_fairing_v3/diagnostic_run_record.json",
+    "docs/evidence/20261005/single_inner_fairing_v3/diagnostic.stderr.txt",
+    "docs/evidence/20261005/single_inner_fairing_v3/diagnostic.stdout.txt",
+    "docs/evidence/20261005/single_inner_fairing_v3/FROZEN_SHA256.txt",
+    "docs/evidence/20261005/single_inner_fairing_v3/math_diagnostics.json",
+    "docs/evidence/20261005/single_inner_fairing_v3/plot_run_record.json",
+    "docs/evidence/20261005/single_inner_fairing_v3/plot.stderr.txt",
+    "docs/evidence/20261005/single_inner_fairing_v3/plot.stdout.txt",
+    "docs/evidence/20261005/single_inner_fairing_v3/RESULTS.md",
+    "docs/evidence/20261005/single_inner_fairing_v3/REVIEW_AND_EXECUTION_BUDGET.md",
+    "docs/evidence/20261005/single_inner_fairing_v3/RUN_OUTPUT_SHA256.txt",
+    "docs/evidence/20261005/single_inner_fairing_v3/single_inner_fairing_profile_rz_arrays.json",
+    "docs/evidence/20261005/single_inner_fairing_v3/single_inner_fairing_profile_rz.png",
+    "experiments/smooth_surface_coupled_design_20261005/coupled_profile_math.py",
+    "experiments/smooth_surface_coupled_design_20261005/fixed_case_beaker_coupled_v2.json",
+    "experiments/smooth_surface_single_inner_fairing_20261005/DESIGN_NOTE.md",
+    "experiments/smooth_surface_single_inner_fairing_20261005/fixed_case_beaker_single_inner_fairing_v1.json",
+    "experiments/smooth_surface_single_inner_fairing_20261005/plot_single_inner_fairing_section.py",
+    "experiments/smooth_surface_single_inner_fairing_20261005/single_inner_fairing_math.py"
+  ],
+  "commit_tree_path_check": "exact_match",
+  "commit_blob_match_count": 19,
+  "commit_tree_verified": true,
+  "remote_head_before_push": "87c269ff25b1060b1ad56b72fdadf7de6d4df775",
+  "remote_query_before_push_argv": [
+    "git",
+    "-C",
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+    "ls-remote",
+    "--heads",
+    "origin",
+    "backup/forge-work-20261003"
+  ],
+  "remote_query_before_push_exit_code": 0,
+  "push_argv": [
+    "git",
+    "-C",
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+    "-c",
+    "core.autocrlf=false",
+    "push",
+    "origin",
+    "HEAD:refs/heads/backup/forge-work-20261003"
+  ],
+  "push_exit_code": 0,
+  "push_output": [
+    "To https://github.com/xiemonb666/vesselforge.git",
+    "   87c269f..f7aa104  HEAD -> backup/forge-work-20261003"
+  ],
+  "remote_head_after_push": "f7aa1041ba94bc93d16b589b997ae100ab440055",
+  "remote_query_after_push_argv": [
+    "git",
+    "-C",
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+    "ls-remote",
+    "--heads",
+    "origin",
+    "backup/forge-work-20261003"
+  ],
+  "remote_query_after_push_exit_code": 0,
+  "local_head_after": "f7aa1041ba94bc93d16b589b997ae100ab440055",
+  "branch_after": "backup/forge-work-20261003",
+  "remaining_staged_paths": null,
+  "exact_path_status_after": [],
+  "finished_utc": "2026-10-05T09:58:04.1013749Z"
+}

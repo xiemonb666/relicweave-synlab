@@ -1,0 +1,174 @@
+{
+  "background_linear": [
+    0.02,
+    0.02,
+    0.025
+  ],
+  "camera": {
+    "K": [
+      [
+        1643.7894736842104,
+        0.0,
+        1023.5
+      ],
+      [
+        0.0,
+        1643.7894736842104,
+        767.5
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "T_WC": [
+      [
+        0.2204119246421599,
+        -0.7378794311033914,
+        0.6379283099456194,
+        -71.27017809401093
+      ],
+      [
+        0.0,
+        0.6540125176280567,
+        0.7564837253938851,
+        -39.92837482800525
+      ],
+      [
+        -0.9754068809863599,
+        -0.16673803387453737,
+        0.1441521577504645,
+        225.4545031440216
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "convention": "opencv_pixel_center_0_0",
+    "dist": [
+      -0.052,
+      0.019,
+      0.0012,
+      -0.0009,
+      -0.0041
+    ],
+    "far_mm": 1000000.0,
+    "focus_distance_mm": 60.0,
+    "image_size": [
+      2048,
+      1536
+    ],
+    "model": "OPENCV",
+    "near_mm": 1.0
+  },
+  "checks": {
+    "camera_uv_tol_px": 0.1,
+    "depth_pack_range_mm": 100000.0,
+    "face_order_tol_mm": 0.01,
+    "raycast_depth_tol_mm": 0.5,
+    "raycast_samples": 1500
+  },
+  "depth_pack_range_mm": 100000.0,
+  "light": {
+    "ambient": [
+      0.3,
+      0.3,
+      0.33
+    ],
+    "color": [
+      2.35,
+      2.25,
+      2.1
+    ],
+    "direction": [
+      -0.3505437645797537,
+      -0.6209632401127066,
+      -0.7010875291595074
+    ]
+  },
+  "linearity_probes": [],
+  "objects": [
+    {
+      "axis": {
+        "forward": "NEGATIVE_Y",
+        "up": "Z"
+      },
+      "is_target": true,
+      "labels": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\data\\a12\\reports\\blender\\_work\\fracture_roi_CAM_LOCAL_V3_ROI60mm_D2048#roi+06c000#d00_CAM_LOCAL_V3_ROI60mm_D2048#roi+06c000#d00_20261002-173850_d78c34e5\\target_labels.npz",
+      "mesh": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\data\\a12\\reports\\blender\\_work\\fracture_roi_CAM_LOCAL_V3_ROI60mm_D2048#roi+06c000#d00_CAM_LOCAL_V3_ROI60mm_D2048#roi+06c000#d00_20261002-173850_d78c34e5\\target.ply",
+      "mesh_format": "ply",
+      "name": "target",
+      "object_pose_T_WO": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "pass_index": 1
+    }
+  ],
+  "output_dir": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\data\\a12\\reports\\blender\\_work\\fracture_roi_CAM_LOCAL_V3_ROI60mm_D2048#roi+06c000#d00_CAM_LOCAL_V3_ROI60mm_D2048#roi+06c000#d00_20261002-173850_d78c34e5",
+  "provenance": {
+    "albedo_source_kind": "SENSOR_SIM",
+    "requested_by": "synlab.observe.blender.render_view_blender",
+    "source_kind": "SENSOR_SIM"
+  },
+  "render": {
+    "aa_geometry_samples": 16,
+    "compute_device_type": "AUTO",
+    "denoise": false,
+    "denoiser": "OPENIMAGEDENOISE",
+    "device": "GPU",
+    "filter_width": 1.5,
+    "geometry_filter_width": 0.01,
+    "geometry_max_bounces": 0,
+    "geometry_samples": 1,
+    "gpu_device_index": null,
+    "gpu_require": true,
+    "max_bounces": 4,
+    "samples": 16,
+    "seed": 20261001
+  },
+  "resolution": [
+    2048,
+    1536
+  ],
+  "schema": "rws.blender.render.config/1",
+  "uncertain": {
+    "coc_px_threshold": 0.75,
+    "depth_edge_tol_mm": 0.25,
+    "f_number": 4.0,
+    "focus_distance_mm": 60.0,
+    "motion_amplitude_px": 0.0
+  },
+  "view_id": "CAM_LOCAL_V3_ROI60mm_D2048#roi+06c000#d00",
+  "write": {
+    "exr": true,
+    "npy": true,
+    "previews": true
+  }
+}

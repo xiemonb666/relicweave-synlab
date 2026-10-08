@@ -1,0 +1,35 @@
+{
+  "added_source_lines": [
+    "        # Narrow V1.47 closeout review coverage: small QA/review JSON records only,",
+    "        # excluding any directory whose name identifies it as a render output.",
+    "        if q.lower().startswith(\"tmp/v147_user_merge_20261007/\") and size<=5*1024*1024:",
+    "            review_parts=q.lower().split(\"/\")",
+    "            in_render_dir=any(\"render\" in part for part in review_parts[:-1])",
+    "            is_review_record=any(any(token in part for token in (\"qa\",\"review\",\"critic\",\"independent\")) for part in review_parts)",
+    "            if is_review_record and not in_render_dir:return \"closed_review_record\",True"
+  ],
+  "ast_parse": "PASS",
+  "builder_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\backup_coordinator\\closeout_20261007\\build_closeout_inventory_v2.py",
+  "delta_kind": "one narrow JSON classification insertion",
+  "new_bytes": 56749,
+  "new_sha256": "cdb83cdea2c78f1e1a04df6d0ba6c21c9d02c94b9b9ced34999cb3eec7bdd90e",
+  "old_bytes": 56155,
+  "old_sha256": "ae69f1ab9c0dda710cf1c9875295d185f81eeca9c7b38d0b1db1c6e7e5f5cd14",
+  "preserved_prechange_snapshot": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\backup_coordinator\\closeout_20261007\\build_closeout_inventory_v2.py.pre_qa_json_coverage_fix_20261008.snapshot",
+  "removed_source_lines": [],
+  "rule": {
+    "classification": "closed_review_record",
+    "exclude_if_any_parent_directory_contains": "render",
+    "extension": ".json",
+    "include": true,
+    "max_bytes": 5242880,
+    "required_path_token_any": [
+      "qa",
+      "review",
+      "critic",
+      "independent"
+    ],
+    "workspace_relative_prefix": "tmp/v147_user_merge_20261007/"
+  },
+  "schema": "qa_json_coverage_builder_delta_v1"
+}

@@ -1,0 +1,67 @@
+{
+  "schema": "relicweave.chain.audit.v2_pytest_receipt.v1",
+  "kind": "single_v2_targeted_pytest",
+  "workdir": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+  "executable": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\.venv\\Scripts\\python.exe",
+  "argv": [
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/a12/qa/test_forge_chain_audit_20261004.py",
+    "--junitxml=..\\tmp\\review_20261004\\implementation\\forge_chain_audit_20261004\\v2_pytest.junit.xml"
+  ],
+  "exit_code": 0,
+  "raw_stdout": "..................                                                       [100%]\r\n",
+  "raw_stderr": "",
+  "stdout_file": "tmp/review_20261004/implementation/forge_chain_audit_20261004/v2_pytest.stdout.txt",
+  "stdout_sha256": "816EAD0483A2D68A061695C59A168F18DAB69D908A01BBAD9E20E8EE1C7692C6",
+  "stderr_file": "tmp/review_20261004/implementation/forge_chain_audit_20261004/v2_pytest.stderr.txt",
+  "stderr_sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+  "junit_file": "tmp/review_20261004/implementation/forge_chain_audit_20261004/v2_pytest.junit.xml",
+  "junit_sha256": "D0F8A1F69F3BEE63886728B435C0D202B179E644987797EE124C88C6C1E8D561",
+  "testsuite": {
+    "tests": "18",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "0.371"
+  },
+  "preflight_file": "tmp/review_20261004/implementation/forge_chain_audit_20261004/v2_pytest_preflight.json",
+  "preflight_sha256": "80F415FD808312CB5DFA8A072443A74DD67DBF79AC79290863097451116F43EC",
+  "source_sha256": "CA9B8EDA3D970F3BE0BF39A5124E296C48DA86AC8AA4D88AB41213F7F33D62AC",
+  "test_sha256": "59E9BAA3A53B96BA0940D386D68BF00F11F4AFA7ED4EFC20EF721887B7FEA396",
+  "input_sha256": "6F8C23B64601AB6AAD0BB0EE1F3C271802C9BF1EB8A43DB895FAAA4226EA234E",
+  "producer_json_sha256": [
+    {
+      "name": "parent_asset_manifest",
+      "path": "relicweave-synlab/tmp/review_20261003/implementation/vf/artifacts/four_bands_brep_semantics1_final/manifest.json",
+      "sha256": "3A2640A3E98F777AF3E3CD6C1C9B3CDF488DF423B25255539E9181CD0B515832"
+    },
+    {
+      "name": "native_job",
+      "path": "relicweave-synlab/tmp/review_20261003/implementation/pg/jobs/osb_fracture_branch_001/job.json",
+      "sha256": "83AF8EA8CB0FD204AB288841FD87382C9DAE77EC1CFB5DC9D0C925D610D430D1"
+    },
+    {
+      "name": "native_result",
+      "path": "relicweave-synlab/tmp/review_20261003/implementation/pg/jobs/osb_fracture_branch_001/output/result.json",
+      "sha256": "B3FB84F20D409F4A4DCA0B34FFD8B95A07B7C7944B8B6ECD70100B0B5B17DC20"
+    },
+    {
+      "name": "dataset_export_manifest",
+      "path": "relicweave-synlab/data/a12_exports/experiment_ready/training_package/export_manifest.json",
+      "sha256": "07700A460589D325E2029F0522B73261043EB5C2031F4F3EE4C51C663AA585E9"
+    },
+    {
+      "name": "degradation_index",
+      "path": "relicweave-synlab/data/a12_exports/experiment_ready/training_package/degrade/index.json",
+      "sha256": "9D44852B7FFFED7E7A7605A02316538B490631FFDFF3664334C6D131ECDC1DAC"
+    },
+    {
+      "name": "feature_policy",
+      "path": "relicweave-synlab/synlab/schemas/view_channels.json",
+      "sha256": "84AAA8F72179B0D059F6AFB88D2655F9761B96401193C52C3B78C699F0E88E7F"
+    }
+  ]
+}

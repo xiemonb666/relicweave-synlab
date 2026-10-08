@@ -1,0 +1,201 @@
+{
+  "store": "C:\\Users\\xiemo\\AppData\\Local\\Temp\\l0_census_bh9d38b6\\store",
+  "fragment_id": "LIN0000_V02_M01_PAT02_E01-m",
+  "damage_semantics": "subset_v2",
+  "recipe_id": "P03_depth_light",
+  "control_clean_vs_clean": {
+    "instrument": "trimesh.proximity.signed_distance (exact, float64; positive = inside)",
+    "samples": 1200,
+    "outside_points": 0,
+    "outside_fraction": 0.0,
+    "max_outside_mm": 0.0,
+    "p99_outside_mm": 0.0,
+    "signed_max_outside_mm": -0.0,
+    "tol_mm": 0.001,
+    "approx_open3d": {
+      "samples": 1200,
+      "outside_points": 5,
+      "outside_fraction": 0.004166666666666667,
+      "max_outside_mm": 0.004691867157816887,
+      "p99_outside_mm": 9.692748215456943e-05,
+      "tol_mm": 0.001,
+      "signed_max_mm": 0.004691867157816887,
+      "max_outside_distance_mm": 0.004691867157816887
+    }
+  },
+  "control_identity_level": {
+    "status": "PASS",
+    "failure_codes": [],
+    "damage_semantics": "subset_v2",
+    "subset_instrument": "trimesh.proximity.signed_distance (exact, float64; positive = inside)",
+    "subset_max_outside_mm_exact": 0.0,
+    "subset_max_outside_mm_open3d": 0.008743492886424065,
+    "subset_outside_points": 0,
+    "watertight": true,
+    "positive_volume": true,
+    "components": [
+      [
+        "c0",
+        "CORE",
+        69626.275927
+      ]
+    ],
+    "lost_volume_mm3": 0.0,
+    "component_count": 1,
+    "assembly": {},
+    "shared_source_object": true
+  },
+  "global_sdf_path_after": {
+    "status": "PASS",
+    "failure_codes": [],
+    "damage_semantics": "subset_v2",
+    "subset_instrument": "trimesh.proximity.signed_distance (exact, float64; positive = inside)",
+    "subset_max_outside_mm_exact": 2.6133040176739605e-06,
+    "subset_max_outside_mm_open3d": 0.0014018026413396,
+    "subset_outside_points": 0,
+    "watertight": true,
+    "positive_volume": true,
+    "components": [
+      [
+        "c0",
+        "CORE",
+        69349.695214
+      ]
+    ],
+    "lost_volume_mm3": 276.58071298516006,
+    "component_count": 1,
+    "assembly": {
+      "connected_bodies": 3,
+      "material_bodies": 1,
+      "non_material_bodies": 2,
+      "non_material_faces": [
+        2,
+        2
+      ],
+      "non_material_volume_mm3": 0.0,
+      "material_floor_mm3": 6.962627592696003e-08,
+      "material_floor_overridden": false,
+      "pinhole_closures": [
+        {
+          "applied": true,
+          "watertight_before": false,
+          "faces_added": 2,
+          "volume_delta_mm3": 0.0,
+          "max_pinhole_diagonal_mm": 0.001,
+          "max_pinhole_area_mm2": 1e-06,
+          "boundary": {
+            "boundary_edges": 6,
+            "boundary_vertices": 6,
+            "loops": 2,
+            "loop_sizes": [
+              3,
+              3
+            ]
+          },
+          "loops": [
+            {
+              "vertices": [
+                9737,
+                9738,
+                9739
+              ],
+              "diagonal_mm": 4.997699295419747e-05,
+              "area_mm2": 0.0,
+              "fillable": true
+            },
+            {
+              "vertices": [
+                26248,
+                26250,
+                26249
+              ],
+              "diagonal_mm": 2.288818359375e-05,
+              "area_mm2": 0.0,
+              "fillable": true
+            }
+          ],
+          "watertight_after": true
+        }
+      ],
+      "pinholes_filled": 2,
+      "watertight_bodies": 1,
+      "bodies": 1
+    },
+    "measured": {
+      "depth_mm": 0.05,
+      "corr_length_mm": 6.0,
+      "field_normalizer": 0.8350176882845214,
+      "realized_max_recession_mm": 0.049885471572286455,
+      "realized_mean_recession_mm": 0.012014494253711218,
+      "lost_volume_mm3": 276.58071298516006,
+      "lost_volume_ratio": 0.003972361142441372,
+      "roi_external_drift_mm": 0.2866218388080597,
+      "contact_lost_fraction": 1.0,
+      "contact_residual_area_mm2": 0.0,
+      "min_thickness_mm": 1.7567923069000244,
+      "thickness_guard_satisfied": 1.0,
+      "thickness_guard_iterations": 1.0,
+      "removed_samples": 1944.0
+    },
+    "ledger": {
+      "source_volume_mm3": 69626.27592696004,
+      "component_count": 1,
+      "raw_connected_bodies": 1,
+      "non_material_body_count": 0,
+      "non_material_body_faces": [],
+      "non_material_body_volume_mm3": 0.0,
+      "material_floor_mm3": 6.962627592696003e-08,
+      "material_floor_overridden": false,
+      "original_component_count": 1,
+      "contamination_component_count": 0,
+      "damaged_volume_mm3": 69349.69521397488,
+      "added_volume_mm3": 0.0,
+      "debris_volume_mm3": 0.0,
+      "support_threshold_mm3": 1392.5255185392007,
+      "representative_component_id": "LIN0000_V02_M01_PAT02_E01-m#c0",
+      "representative_available": true,
+      "representative_status": "PENDING",
+      "evidence_lost": false,
+      "lost_volume_mm3": 276.58071298516006,
+      "conservation_ok": true,
+      "assembly": {
+        "connected_bodies": 3,
+        "material_bodies": 1,
+        "non_material_bodies": 2,
+        "non_material_faces": [
+          2,
+          2
+        ],
+        "non_material_volume_mm3": 0.0,
+        "pinholes_filled": 2,
+        "watertight_bodies": 1
+      }
+    }
+  },
+  "narrowband_path_after": {
+    "status": "PASS",
+    "failure_codes": [],
+    "damage_semantics": "subset_v2",
+    "subset_instrument": "trimesh.proximity.signed_distance (exact, float64; positive = inside)",
+    "subset_max_outside_mm_exact": 2.2840520973163083e-08,
+    "subset_max_outside_mm_open3d": 0.0034694813657552004,
+    "subset_outside_points": 0,
+    "watertight": true,
+    "positive_volume": true,
+    "components": [
+      [
+        "c0",
+        "CORE",
+        69588.824969
+      ]
+    ],
+    "lost_volume_mm3": 37.45095797587419,
+    "component_count": 1,
+    "assembly": {}
+  },
+  "shipped_instrument_would_say": {
+    "identity": "DAMAGED_NOT_SUBSET_OF_CLEAN (measured 0.0087 mm on an identical body)",
+    "global_body": "DAMAGED_NOT_SUBSET_OF_CLEAN (0.0014 mm > tol 1e-3) + NON_POSITIVE_VOLUME + NOT_WATERTIGHT",
+    "narrowband_body": "DAMAGED_NOT_SUBSET_OF_CLEAN (0.0035 mm > tol 1e-3)"
+  }
+}

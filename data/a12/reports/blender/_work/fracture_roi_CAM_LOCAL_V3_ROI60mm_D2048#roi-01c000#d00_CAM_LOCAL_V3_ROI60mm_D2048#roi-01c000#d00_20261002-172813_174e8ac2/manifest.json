@@ -1,0 +1,642 @@
+{
+  "argv": [
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\blender-5.2.2-windows-x64\\blender.exe",
+    "--background",
+    "--factory-startup",
+    "--python-exit-code",
+    "3",
+    "--python",
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\blender_scripts\\render_worker.py",
+    "--",
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\data\\a12\\reports\\blender\\_work\\fracture_roi_CAM_LOCAL_V3_ROI60mm_D2048#roi-01c000#d00_CAM_LOCAL_V3_ROI60mm_D2048#roi-01c000#d00_20261002-172813_174e8ac2\\render_config.json"
+  ],
+  "blender": {
+    "binary": "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\blender-5.2.2-windows-x64\\blender.exe",
+    "build_commit_date": "b'2026-09-14'",
+    "build_hash": "d13f752e3b9c",
+    "cycles_device_setting": "GPU",
+    "device_selection": {
+      "available_devices": [
+        {
+          "id": "CUDA_NVIDIA GeForce RTX 5060 Laptop GPU_0000:64:00",
+          "name": "NVIDIA GeForce RTX 5060 Laptop GPU",
+          "type": "CUDA",
+          "use": true
+        },
+        {
+          "id": "CPU",
+          "name": "AMD Ryzen AI 7 H 350",
+          "type": "CPU",
+          "use": false
+        },
+        {
+          "id": "CUDA_NVIDIA GeForce RTX 5060 Laptop GPU_0000:64:00_OptiX",
+          "name": "NVIDIA GeForce RTX 5060 Laptop GPU",
+          "type": "OPTIX",
+          "use": true
+        },
+        {
+          "id": "HIP_AMD Radeon(TM) 860M Graphics_0000:65:00",
+          "name": "AMD Radeon(TM) 860M Graphics",
+          "type": "HIP",
+          "use": true
+        }
+      ],
+      "compute_device_type_after_scene_setting": "OPTIX",
+      "cycles_device_setting": "GPU",
+      "enabled_devices": [
+        "NVIDIA GeForce RTX 5060 Laptop GPU"
+      ],
+      "fallback": false,
+      "fallback_reason": null,
+      "requested_compute_device_type": "AUTO",
+      "requested_device": "GPU",
+      "requested_device_index": null,
+      "require_gpu": true,
+      "resolved_compute_device_type": "OPTIX",
+      "resolved_device": "GPU"
+    },
+    "gpu_devices": [
+      "CUDA:NVIDIA GeForce RTX 5060 Laptop GPU",
+      "CPU:AMD Ryzen AI 7 H 350",
+      "OPTIX:NVIDIA GeForce RTX 5060 Laptop GPU",
+      "HIP:AMD Radeon(TM) 860M Graphics"
+    ],
+    "python": "3.13.13",
+    "version": "5.2.2 LTS",
+    "version_tuple": [
+      5,
+      2,
+      2
+    ]
+  },
+  "camera": {
+    "T_WC": [
+      [
+        -0.9972319392521838,
+        -0.028793225004232818,
+        0.06855223941772107,
+        -3.512388011595958
+      ],
+      [
+        0.0,
+        0.921975937992542,
+        0.3872471688247347,
+        -19.161553291817253
+      ],
+      [
+        -0.0743536101028654,
+        0.386175245137008,
+        -0.9194238525881536,
+        59.84709816527864
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "axis_point_corner_px": [
+      1024.0,
+      768.0
+    ],
+    "clip_mm": [
+      1.0,
+      1000000.0
+    ],
+    "convention": "project pixel-centre index (i,j) == blender corner (i+0.5, j+0.5)",
+    "cx": 1023.5,
+    "cy": 767.5,
+    "fx": 1643.7894736842104,
+    "fy": 1643.7894736842104,
+    "image_size": [
+      2048,
+      1536
+    ],
+    "lens_mm": 28.894737243652344,
+    "principal_point_px": [
+      1023.5,
+      767.5
+    ],
+    "selfcheck": {
+      "convention": "project pixel-centre index (i,j) == blender corner (i+0.5, j+0.5)",
+      "du_px": 0.00031928443922879524,
+      "dv_px": 0.0004135171373036428,
+      "max_uv_error_px": 0.0004135171373036428,
+      "n_points": 65,
+      "tolerance_px": 0.1,
+      "v_axis_measured_from_bottom": true
+    },
+    "sensor_width_mm": 36.0,
+    "shift_px_per_unit": [
+      -2048.00048828125,
+      2047.9998779296875
+    ],
+    "shift_x": -0.0,
+    "shift_y": -4.470348713425665e-08,
+    "u_increases_to_the_right": true,
+    "v_axis_measured_from_bottom": true
+  },
+  "checks": {
+    "aa_pass_fractional": {
+      "aa_filter_width": 1.5,
+      "aa_samples": 16,
+      "depth_edge_px": 0,
+      "exact_filter_width": 0.01,
+      "exact_samples": 1,
+      "face_id_fractional_px": 649462,
+      "mixed_label_px": 698382,
+      "object_index_fractional_px": 0,
+      "surface_tag_fractional_px": 7553
+    },
+    "camera_model": {
+      "convention": "project pixel-centre index (i,j) == blender corner (i+0.5, j+0.5)",
+      "du_px": 0.00031928443922879524,
+      "dv_px": 0.0004135171373036428,
+      "max_uv_error_px": 0.0004135171373036428,
+      "n_points": 65,
+      "tolerance_px": 0.1,
+      "v_axis_measured_from_bottom": true
+    },
+    "exact_pass_integrality": {
+      "face_id_non_integral": 0,
+      "material_index_non_integral": 0,
+      "note": "exact geometry pass must be integral; the anti-aliased pass is measured separately",
+      "object_index_non_integral": 0,
+      "surface_tag_non_integral": 0,
+      "tolerance": 0.001
+    },
+    "face_order": [
+      {
+        "max_centroid_error_mm": 0.0,
+        "n_faces": 115435,
+        "name": "target"
+      }
+    ],
+    "pass_aa_behaviour": {
+      "conclusion": "measured: the Shader AOV passes behave like RGB (filter-averaged, fractional labels on mixed borders), while the Z / Object Index passes of Cycles 5.2.2 return identical values under 0.01 px vs 1.5 px filters and 1 vs N samples, i.e. they are NOT anti-aliased the way RGB is; the Material Index pass returns a constant in this build and the delivered surface tag therefore comes from a per-face Shader AOV",
+      "master_material_index_count": 3,
+      "material_index_pass_usable": false,
+      "material_index_pass_values": [
+        0.0
+      ],
+      "object_index_pass_filtered": false,
+      "rgb_pass_filtered": true,
+      "shader_aov_pass_filtered": true,
+      "z_pass_filtered": true
+    },
+    "pass_channel_ranges": {
+      "clamping_suspected": false,
+      "depth_mm": [
+        34.36455535888672,
+        10000000000.0
+      ],
+      "depth_pack_a_vs_pack_b_max_diff_mm": 0.0,
+      "face_label_aov": [
+        0.0,
+        114996.0
+      ],
+      "material_index_audit": [
+        0.0,
+        0.0
+      ],
+      "note": "measured ranges of the packed geometry channels; a scene with geometry farther than 1 mm must show depth > 1.0 or the pack is being clamped",
+      "object_index": [
+        0.0,
+        1.0
+      ],
+      "surface_tag_aov": [
+        0.0,
+        2.0
+      ]
+    },
+    "raycast_vs_exact_pass": {
+      "boundary_samples": 484,
+      "depth_compared_boundary_px": 483,
+      "depth_compared_interior_px": 307,
+      "depth_tolerance_mm": 0.5,
+      "depth_unavailable_px": 1,
+      "face_id_compared_interior": 307,
+      "face_id_mismatch_boundary": 106,
+      "face_id_mismatch_interior": 0,
+      "hits": 791,
+      "interior_samples": 307,
+      "label_mapping": "ray-cast face index -> per-object research label array",
+      "max_depth_error_boundary_mm": 0.17509336383312757,
+      "max_depth_error_interior_mm": 0.019043813169247414,
+      "mean_depth_error_interior_mm": 0.006340970569204777,
+      "n_rays": 1500,
+      "note": "interior = the 3x3 neighbourhood of the rendered object index is a single object; boundary samples may legitimately disagree between a pixel-centre ray and a filtered render",
+      "object_index_mismatch": 1,
+      "status": "OK",
+      "target_pass_index": 1
+    },
+    "rgb_background_linearity": {
+      "distance_to_srgb_alternative": 0.14684408288885853,
+      "expected_linear": [
+        0.02,
+        0.02,
+        0.025
+      ],
+      "max_abs_error": 4.097819326920327e-09,
+      "measured_median": [
+        0.019999999552965164,
+        0.019999999552965164,
+        0.02500000409781933
+      ],
+      "n_background_px": 1538295,
+      "note": "a declared constant world radiance returned unchanged proves the float EXR carries scene-linear numbers (no view transform baked in)",
+      "srgb_encoded_alternative": [
+        0.15170371931624205,
+        0.15170371931624205,
+        0.17184408698667786
+      ],
+      "status": "OK"
+    },
+    "rgb_linearity": {
+      "status": "NOT_REQUESTED"
+    }
+  },
+  "config_schema": "rws.blender.render.config/1",
+  "elapsed_seconds": 8.677020072937012,
+  "exr_readback": {
+    "aa_a": {
+      "channels": 4,
+      "colorspace": "Non-Color",
+      "dtype": "float32",
+      "row_order": "flipped_from_blender_bottom_up",
+      "size": [
+        2048,
+        1536
+      ]
+    },
+    "aa_b": {
+      "channels": 4,
+      "colorspace": "Non-Color",
+      "dtype": "float32",
+      "row_order": "flipped_from_blender_bottom_up",
+      "size": [
+        2048,
+        1536
+      ]
+    },
+    "exact_a": {
+      "channels": 4,
+      "colorspace": "Non-Color",
+      "dtype": "float32",
+      "row_order": "flipped_from_blender_bottom_up",
+      "size": [
+        2048,
+        1536
+      ]
+    },
+    "exact_b": {
+      "channels": 4,
+      "colorspace": "Non-Color",
+      "dtype": "float32",
+      "row_order": "flipped_from_blender_bottom_up",
+      "size": [
+        2048,
+        1536
+      ]
+    },
+    "rgb": {
+      "channels": 4,
+      "colorspace": "Linear Rec.709",
+      "dtype": "float32",
+      "row_order": "flipped_from_blender_bottom_up",
+      "size": [
+        2048,
+        1536
+      ]
+    },
+    "targetonly_a": {
+      "channels": 4,
+      "colorspace": "Non-Color",
+      "dtype": "float32",
+      "row_order": "flipped_from_blender_bottom_up",
+      "size": [
+        2048,
+        1536
+      ]
+    }
+  },
+  "light": {
+    "ambient_linear": [
+      0.3,
+      0.3,
+      0.33
+    ],
+    "background_linear": [
+      0.02,
+      0.02,
+      0.025
+    ],
+    "direction_travel": [
+      -0.3505437645797537,
+      -0.6209632401127066,
+      -0.7010875291595074
+    ],
+    "sun_color_normalised": [
+      1.0,
+      0.957446813583374,
+      0.8936170339584351
+    ],
+    "sun_energy_irradiance": 7.382742881774902,
+    "world_model": "LIGHT_PATH_MIX(camera=background, other=ambient)"
+  },
+  "objects": [
+    {
+      "face_id_unique": 115435,
+      "is_target": true,
+      "material_slots": 7,
+      "max_centroid_error_mm": 0.0,
+      "mesh": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\data\\a12\\reports\\blender\\_work\\fracture_roi_CAM_LOCAL_V3_ROI60mm_D2048#roi-01c000#d00_CAM_LOCAL_V3_ROI60mm_D2048#roi-01c000#d00_20261002-172813_174e8ac2\\target.ply",
+      "mesh_sha256": "af1df3f1d1e4e1e294158664b0618080f6ae5b4d61144a0049b997732b034d23",
+      "n_faces": 115435,
+      "name": "target",
+      "pass_index": 1,
+      "surface_tags": [
+        0,
+        2,
+        6
+      ]
+    }
+  ],
+  "output_dir": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\data\\a12\\reports\\blender\\_work\\fracture_roi_CAM_LOCAL_V3_ROI60mm_D2048#roi-01c000#d00_CAM_LOCAL_V3_ROI60mm_D2048#roi-01c000#d00_20261002-172813_174e8ac2",
+  "outputs": {
+    "aa_face_id_raw.npy": {
+      "bytes": 12583040,
+      "sha256": "e8a9174b8c2d5bbaba31520d9e8fec9824825de6a4fd4466620fd916b0fd0d4a"
+    },
+    "aa_object_index_raw.npy": {
+      "bytes": 12583040,
+      "sha256": "c93bf871c2d8d133148ba7dc26a284244bc259996c54d458c056d4057e0848d5"
+    },
+    "aa_surface_tag_raw.npy": {
+      "bytes": 12583040,
+      "sha256": "41d66703143bd0f6e74e33ee9a061313424825b389d4581ad42c6e0c27148ac7"
+    },
+    "channels.json": {
+      "bytes": 3267,
+      "sha256": "2585dbd0b4d28d7eecde591b1c550fcee82fe2ece83e7e4cff74db2c7ff17c38"
+    },
+    "depth_preview.png": {
+      "bytes": 215832,
+      "sha256": "0aff1a146458d7d3f5116e5a62044b3954d82419541a953db2911d420f0f1283"
+    },
+    "depth_z_aa_mm.npy": {
+      "bytes": 12583040,
+      "sha256": "e54e03db80c3fe288ef8b1449f702c81c9e54f820e88da3beb677624a7ae0ad8"
+    },
+    "depth_z_mm.npy": {
+      "bytes": 12583040,
+      "sha256": "626d81734ce6b7802bb336371f7ee0712585c9d42830c55c7492c636190123d5"
+    },
+    "geometry_passes_aa_a.exr": {
+      "bytes": 8357056,
+      "sha256": "2a431ef59b0998281dde0f893edfc2910c002ab4829eb31a109e9f1d73abca39"
+    },
+    "geometry_passes_aa_b.exr": {
+      "bytes": 5473501,
+      "sha256": "ba5250b5ecbcbbe8fd9ffbed6bb09db8d4808a5e13366456b8fbceee6c867fa8"
+    },
+    "geometry_passes_exact_a.exr": {
+      "bytes": 6396271,
+      "sha256": "77cb228a11fcc87f84ebfc5803bd152366310cfb5d9587911c44b3a8c6a17a01"
+    },
+    "geometry_passes_exact_b.exr": {
+      "bytes": 5446576,
+      "sha256": "7e6d44e6eb5b33c6c7ddd1079cbacebc4ae5e9431492d7c76877ba3d7fd46d32"
+    },
+    "geometry_passes_targetonly_a.exr": {
+      "bytes": 5888911,
+      "sha256": "062283e15cfdeb13858619c9a81638a57879f3e6158205ec5caa2413fa4aac6b"
+    },
+    "id_face.npy": {
+      "bytes": 12583040,
+      "sha256": "8fe70dc73ce147ab4fa3668cf558f0e90e83b88bfa1e46c683005c040b33db0f"
+    },
+    "id_preview.png": {
+      "bytes": 256103,
+      "sha256": "724c5d66e6bd61dd8a2056e16de17033bac4fc960d9244aab38a0d4b670bcd56"
+    },
+    "object_index.npy": {
+      "bytes": 12583040,
+      "sha256": "d8091107e0838b2cfbca9cb4867c7558d5615cc1606ea18df135b90705b0a929"
+    },
+    "occlusion.npy": {
+      "bytes": 3145856,
+      "sha256": "35bad7789f217f4c242455a8ab5301a8ac49247b30c09247874ee383dcfe271a"
+    },
+    "rgb_linear.exr": {
+      "bytes": 18925815,
+      "sha256": "be2c06b88be3ca471f4e401c41e6ce185116cfe1ee2947c1b9283228a4773a9c"
+    },
+    "rgb_linear.npy": {
+      "bytes": 37748864,
+      "sha256": "4c364a1111d2c5ecc54c65fbc0c2cbe1af51c3849f38ae57cf9e0ff827f9bd91"
+    },
+    "rgb_preview.png": {
+      "bytes": 2164954,
+      "sha256": "0f0311ee57e1d9c271f509ec2cf644c829580b324219d8cd26e954978cb47b54"
+    },
+    "surface_tag.npy": {
+      "bytes": 6291584,
+      "sha256": "2731dc190eb0fb31bed97132ed7230b776c023f83892ea6cab9027f751912ea4"
+    },
+    "target_visibility.npy": {
+      "bytes": 3145856,
+      "sha256": "314f95b83109238131c19d7887abd9d1a651495379be2324d6a77670c4d46c78"
+    },
+    "uncertain_mask.npy": {
+      "bytes": 3145856,
+      "sha256": "76591e29251acd9f255a807c35cf33e7d26f9056db075a0d617d03004ceb2b68"
+    },
+    "visibility.npy": {
+      "bytes": 3145856,
+      "sha256": "314f95b83109238131c19d7887abd9d1a651495379be2324d6a77670c4d46c78"
+    }
+  },
+  "pass_pack": {
+    "alpha_channel": "unused: the compositor output alpha is the film alpha (a constant 1.0), so each 3-channel pack is a separate render",
+    "depth_range_reference_mm": 100000.0,
+    "note": "every geometry channel is written unscaled into a float32 OpenEXR; the ray-cast cross-check fails if a value were clamped",
+    "packs": {
+      "geometry_aa": [
+        {
+          "Blue": "rws_face_id",
+          "Green": "Object Index",
+          "Red": "Depth"
+        },
+        {
+          "Blue": "Depth",
+          "Green": "Material Index",
+          "Red": "rws_surface_tag"
+        }
+      ],
+      "geometry_exact": [
+        {
+          "Blue": "rws_face_id",
+          "Green": "Object Index",
+          "Red": "Depth"
+        },
+        {
+          "Blue": "Depth",
+          "Green": "Material Index",
+          "Red": "rws_surface_tag"
+        }
+      ],
+      "geometry_targetonly": [
+        {
+          "Blue": "Material Index",
+          "Green": "Object Index",
+          "Red": "Depth"
+        }
+      ]
+    },
+    "scaling": "NONE (raw pass values)"
+  },
+  "render": {
+    "adaptive_sampling": true,
+    "denoise": false,
+    "denoise_applies_to": "RGB only (Image pass); geometry channels are separate renders with use_denoising = False",
+    "denoiser": null,
+    "engine": "CYCLES",
+    "filter_width": 1.5,
+    "max_bounces": 4,
+    "pixel_filter_type": "BLACKMAN_HARRIS",
+    "resolution": [
+      2048,
+      1536
+    ],
+    "samples_requested": 16,
+    "samples_used": 16,
+    "seed": 20261001,
+    "unit_note": "1 Blender unit == 1 mm; Depth pass values are millimetres",
+    "unit_scale_length_m": 0.0010000000474974513
+  },
+  "renders": [
+    {
+      "bytes": 18925815,
+      "channels": {},
+      "denoise": false,
+      "filter_width": 1.5,
+      "kind": "image",
+      "max_bounces": 4,
+      "pack_index": 0,
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\data\\a12\\reports\\blender\\_work\\fracture_roi_CAM_LOCAL_V3_ROI60mm_D2048#roi-01c000#d00_CAM_LOCAL_V3_ROI60mm_D2048#roi-01c000#d00_20261002-172813_174e8ac2\\pass_rgb.exr",
+      "samples_requested": 16,
+      "samples_used": 16,
+      "seconds": 1.8122296333312988,
+      "tag": "rgb"
+    },
+    {
+      "bytes": 6396271,
+      "channels": {
+        "Blue": "rws_face_id",
+        "Green": "Object Index",
+        "Red": "Depth"
+      },
+      "denoise": false,
+      "filter_width": 0.009999999776482582,
+      "kind": "geometry",
+      "max_bounces": 0,
+      "pack_index": 0,
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\data\\a12\\reports\\blender\\_work\\fracture_roi_CAM_LOCAL_V3_ROI60mm_D2048#roi-01c000#d00_CAM_LOCAL_V3_ROI60mm_D2048#roi-01c000#d00_20261002-172813_174e8ac2\\pass_geometry_exact_a.exr",
+      "samples_requested": 1,
+      "samples_used": 1,
+      "seconds": 0.4555366039276123,
+      "tag": "geometry_exact"
+    },
+    {
+      "bytes": 5446576,
+      "channels": {
+        "Blue": "Depth",
+        "Green": "Material Index",
+        "Red": "rws_surface_tag"
+      },
+      "denoise": false,
+      "filter_width": 0.009999999776482582,
+      "kind": "geometry",
+      "max_bounces": 0,
+      "pack_index": 1,
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\data\\a12\\reports\\blender\\_work\\fracture_roi_CAM_LOCAL_V3_ROI60mm_D2048#roi-01c000#d00_CAM_LOCAL_V3_ROI60mm_D2048#roi-01c000#d00_20261002-172813_174e8ac2\\pass_geometry_exact_b.exr",
+      "samples_requested": 1,
+      "samples_used": 1,
+      "seconds": 0.5100018978118896,
+      "tag": "geometry_exact"
+    },
+    {
+      "bytes": 8357056,
+      "channels": {
+        "Blue": "rws_face_id",
+        "Green": "Object Index",
+        "Red": "Depth"
+      },
+      "denoise": false,
+      "filter_width": 1.5,
+      "kind": "geometry",
+      "max_bounces": 0,
+      "pack_index": 0,
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\data\\a12\\reports\\blender\\_work\\fracture_roi_CAM_LOCAL_V3_ROI60mm_D2048#roi-01c000#d00_CAM_LOCAL_V3_ROI60mm_D2048#roi-01c000#d00_20261002-172813_174e8ac2\\pass_geometry_aa_a.exr",
+      "samples_requested": 16,
+      "samples_used": 16,
+      "seconds": 0.9820585250854492,
+      "tag": "geometry_aa"
+    },
+    {
+      "bytes": 5473501,
+      "channels": {
+        "Blue": "Depth",
+        "Green": "Material Index",
+        "Red": "rws_surface_tag"
+      },
+      "denoise": false,
+      "filter_width": 1.5,
+      "kind": "geometry",
+      "max_bounces": 0,
+      "pack_index": 1,
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\data\\a12\\reports\\blender\\_work\\fracture_roi_CAM_LOCAL_V3_ROI60mm_D2048#roi-01c000#d00_CAM_LOCAL_V3_ROI60mm_D2048#roi-01c000#d00_20261002-172813_174e8ac2\\pass_geometry_aa_b.exr",
+      "samples_requested": 16,
+      "samples_used": 16,
+      "seconds": 1.0414330959320068,
+      "tag": "geometry_aa"
+    },
+    {
+      "bytes": 5888911,
+      "channels": {
+        "Blue": "Material Index",
+        "Green": "Object Index",
+        "Red": "Depth"
+      },
+      "denoise": false,
+      "filter_width": 0.009999999776482582,
+      "kind": "geometry",
+      "max_bounces": 0,
+      "pack_index": 0,
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\data\\a12\\reports\\blender\\_work\\fracture_roi_CAM_LOCAL_V3_ROI60mm_D2048#roi-01c000#d00_CAM_LOCAL_V3_ROI60mm_D2048#roi-01c000#d00_20261002-172813_174e8ac2\\pass_geometry_targetonly_a.exr",
+      "samples_requested": 1,
+      "samples_used": 1,
+      "seconds": 0.5160534381866455,
+      "tag": "geometry_targetonly"
+    }
+  ],
+  "schema": "rws.blender.render.manifest/1",
+  "statistics": {
+    "depth_valid_fraction": 0.5109891891479492,
+    "id_classes_visible": 14048,
+    "occluded_fraction": 0.0,
+    "target_visible_fraction": 0.28940359751383465,
+    "uncertain_fraction": 0.5105800628662109,
+    "unique_object_indices": [
+      -1,
+      1
+    ],
+    "visible_fraction": 0.28940359751383465
+  },
+  "status": "OK",
+  "target_pass_index": 1,
+  "view_id": "CAM_LOCAL_V3_ROI60mm_D2048#roi-01c000#d00"
+}

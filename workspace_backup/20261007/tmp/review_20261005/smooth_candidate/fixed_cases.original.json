@@ -1,0 +1,58 @@
+{
+  "schema": "vesselforge.smooth_surface_route.fixed_cases/0.2.0",
+  "units": {"length": "mm", "coordinate_order": ["radius", "z"]},
+  "scope": "Two fixed analytic geometry candidates; not measured vessels or a validated parameter domain.",
+  "shared_construction": {
+    "degree": 5,
+    "curve": "piecewise exact quintic Bezier from endpoint position, first derivative, and second derivative",
+    "parameter_width_per_side_span": 1.0,
+    "radial_wall_semantics": "inner control net is outer control net shifted by -wall_radial_setting_mm in radius at unchanged z; this is not normal thickness",
+    "station_second_derivatives_rz": [0.0, 0.0],
+    "outer_underside_radius_mm": 12.0,
+    "outer_side_root_radius_mm": 16.0,
+    "shared_side_root_derivative_rz_per_parameter": [4.0, 0.0],
+    "lip_tangent_scale_mm_per_parameter": 8.0,
+    "lip_bridge_second_derivatives_rz": [[0.0, 0.0], [0.0, 0.0]],
+    "base_bridge_second_derivatives_rz": [[0.0, 0.0], [0.0, 0.0]],
+    "outside_underside_parameter_width": 3.0,
+    "axis_edge_continuity": "expected revolution-axis singularity; excluded from meridian C2 join gate and normal ray sampling"
+  },
+  "families": {
+    "beaker": {
+      "family": "beaker",
+      "height_mm": 110.0,
+      "max_radius_mm": 42.0,
+      "mouth_diameter_mm": 70.0,
+      "wall_radial_setting_mm": 2.5,
+      "base_thickness_setting_mm": 4.5,
+      "outer_mouth_radius_mm": 37.5,
+      "inner_mouth_radius_mm": 35.0,
+      "outer_side_stations": [
+        {"point_rz_mm": [16.0, 4.5], "d1_rz_per_parameter": [4.0, 0.0]},
+        {"point_rz_mm": [27.0, 20.0], "d1_rz_per_parameter": [12.0, 18.0]},
+        {"point_rz_mm": [38.0, 43.0], "d1_rz_per_parameter": [8.0, 22.0]},
+        {"point_rz_mm": [42.0, 70.0], "d1_rz_per_parameter": [0.0, 12.0]},
+        {"point_rz_mm": [39.0, 96.0], "d1_rz_per_parameter": [-3.5, 12.0]},
+        {"point_rz_mm": [37.5, 110.0], "d1_rz_per_parameter": [0.0, 8.0]}
+      ]
+    },
+    "bowl": {
+      "family": "bowl",
+      "height_mm": 90.0,
+      "max_radius_mm": 60.0,
+      "mouth_diameter_mm": 108.0,
+      "wall_radial_setting_mm": 3.0,
+      "base_thickness_setting_mm": 6.0,
+      "outer_mouth_radius_mm": 57.0,
+      "inner_mouth_radius_mm": 54.0,
+      "outer_side_stations": [
+        {"point_rz_mm": [16.0, 6.0], "d1_rz_per_parameter": [4.0, 0.0]},
+        {"point_rz_mm": [28.0, 20.0], "d1_rz_per_parameter": [14.0, 17.0]},
+        {"point_rz_mm": [45.0, 45.0], "d1_rz_per_parameter": [20.0, 24.0]},
+        {"point_rz_mm": [58.5, 66.0], "d1_rz_per_parameter": [3.0, 12.0]},
+        {"point_rz_mm": [60.0, 74.0], "d1_rz_per_parameter": [0.0, 4.0]},
+        {"point_rz_mm": [57.0, 90.0], "d1_rz_per_parameter": [0.0, 8.0]}
+      ]
+    }
+  }
+}

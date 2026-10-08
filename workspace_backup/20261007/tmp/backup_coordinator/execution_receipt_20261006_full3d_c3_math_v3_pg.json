@@ -1,0 +1,189 @@
+{
+  "repo": "pgfrag",
+  "branch": "backup/forge-work-20261003",
+  "pre_head": "a7c4699d74e341333da8d108c546cefe1bb0f052",
+  "pre_remote_head": "a7c4699d74e341333da8d108c546cefe1bb0f052",
+  "commit": "1bc1a48f6f9bb1cfe93adb05b877d735132f4df7",
+  "parent": "a7c4699d74e341333da8d108c546cefe1bb0f052",
+  "remote_after": "1bc1a48f6f9bb1cfe93adb05b877d735132f4df7",
+  "copy_count": 8,
+  "source_count": 8,
+  "bytes": 4710669,
+  "staged_count": 8,
+  "committed_path_count": 8,
+  "blob_count": 8,
+  "copy_rows": [
+    {
+      "source": "tmp/review_20261006/full3d_cracked_elastic_operator_20261006/SOURCE_PINS.json",
+      "destination": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/SOURCE_PINS.json",
+      "bytes": 2903,
+      "sha256": "16355c781749fb4940a187afb3d985d9f1362fd3a33c1e6cc425cffdf9ed0ac7"
+    },
+    {
+      "source": "tmp/review_20261006/full3d_cracked_elastic_operator_20261006/REVIEW.md",
+      "destination": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/REVIEW.md",
+      "bytes": 6811,
+      "sha256": "e95a3ec1b55365cc4617a6db4faddd1291f167236182996ce82ff6b5ff0fc5ce"
+    },
+    {
+      "source": "tmp/review_20261006/full3d_cracked_elastic_operator_20261006/run01/EXECUTION_RECEIPT.json",
+      "destination": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/run01/EXECUTION_RECEIPT.json",
+      "bytes": 7682,
+      "sha256": "c8bd78e433dd2c7ad95479e29d796aa51d5a1705e7f2969ae451d3f436e93a66"
+    },
+    {
+      "source": "tmp/review_20261006/full3d_cracked_elastic_operator_20261006/run01/result.json",
+      "destination": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/run01/result.json",
+      "bytes": 4661989,
+      "sha256": "3b31e7d40c1d8e4b5d829f0b093fee4edadc966bde4086a4b3f4ba48fdf89cd2"
+    },
+    {
+      "source": "tmp/review_20261006/full3d_and_local_operator_independent/full3d_saved_array/audit_saved_full3d_arrays.py",
+      "destination": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/independent/audit_saved_full3d_arrays.py",
+      "bytes": 13704,
+      "sha256": "a35af5770fe7cd7b8f544294586e156d8dc75b9a944d07f456a2cee2da9d61d1"
+    },
+    {
+      "source": "tmp/review_20261006/full3d_and_local_operator_independent/full3d_saved_array/audit.json",
+      "destination": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/independent/audit.json",
+      "bytes": 4062,
+      "sha256": "658317052ab19a1e1b71782aec6b66469c9c320218850791bdc866fb68c6645b"
+    },
+    {
+      "source": "tmp/review_20261006/full3d_and_local_operator_independent/full3d_saved_array/execution_receipt.json",
+      "destination": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/independent/execution_receipt.json",
+      "bytes": 1524,
+      "sha256": "a60f1fa2fab66d08f321cf57ff1ef93858e0d0a4803a26a10b99e8626b61c926"
+    },
+    {
+      "source": "tmp/review_20261006/full3d_and_local_operator_independent/full3d_saved_array/spectrum.png",
+      "destination": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/independent/spectrum.png",
+      "bytes": 11994,
+      "sha256": "3ec0d7b06695f77a7f9da02f65115471e25770ea490b8a47390178a6264dfdfe"
+    }
+  ],
+  "add_command": {
+    "argv": [
+      "git",
+      "-C",
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+      "-c",
+      "core.autocrlf=false",
+      "add",
+      "--",
+      "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/SOURCE_PINS.json",
+      "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/REVIEW.md",
+      "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/run01/EXECUTION_RECEIPT.json",
+      "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/run01/result.json",
+      "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/independent/audit_saved_full3d_arrays.py",
+      "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/independent/audit.json",
+      "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/independent/execution_receipt.json",
+      "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/independent/spectrum.png"
+    ],
+    "rc": 0,
+    "output": []
+  },
+  "commit_command": {
+    "argv": [
+      "git",
+      "-C",
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+      "-c",
+      "core.autocrlf=false",
+      "-c",
+      "user.name=PGFrag Maintainer",
+      "-c",
+      "user.email=pgfrag@local",
+      "commit",
+      "-m",
+      "backup: preserve Full3D diagnostic evidence",
+      "-m",
+      "Preserve the pinned Full3D saved diagnostic arrays and independent cached-array algebra review. The result is OK_DIAGNOSTIC_ONLY_UNQUALIFIED; its prescribed manufactured coefficients are not a solution obtained from K u=f, and the independent check used saved arrays only. No solver, CAD, or physical fracture qualification is claimed."
+    ],
+    "rc": 0,
+    "output": [
+      "[backup/forge-work-20261003 1bc1a48] backup: preserve Full3D diagnostic evidence",
+      " 8 files changed, 179632 insertions(+)",
+      " create mode 100644 docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/REVIEW.md",
+      " create mode 100644 docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/SOURCE_PINS.json",
+      " create mode 100644 docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/independent/audit.json",
+      " create mode 100644 docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/independent/audit_saved_full3d_arrays.py",
+      " create mode 100644 docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/independent/execution_receipt.json",
+      " create mode 100644 docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/independent/spectrum.png",
+      " create mode 100644 docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/run01/EXECUTION_RECEIPT.json",
+      " create mode 100644 docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/run01/result.json"
+    ]
+  },
+  "push_command": {
+    "argv": [
+      "git",
+      "-C",
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+      "-c",
+      "core.autocrlf=false",
+      "push",
+      "origin",
+      "HEAD:refs/heads/backup/forge-work-20261003"
+    ],
+    "rc": 0,
+    "output": [
+      "To https://github.com/xiemonb666/pgfrag.git",
+      "   a7c4699..1bc1a48  HEAD -> backup/forge-work-20261003"
+    ]
+  },
+  "committed_blobs": [
+    {
+      "path": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/SOURCE_PINS.json",
+      "bytes": 2903,
+      "sha256": "16355c781749fb4940a187afb3d985d9f1362fd3a33c1e6cc425cffdf9ed0ac7",
+      "git_blob": "0670ad0df6c2be51a7eefa092d258756aa30f334"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/REVIEW.md",
+      "bytes": 6811,
+      "sha256": "e95a3ec1b55365cc4617a6db4faddd1291f167236182996ce82ff6b5ff0fc5ce",
+      "git_blob": "6ec576c6cd81eac30b726034236feb84b9acddcc"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/run01/EXECUTION_RECEIPT.json",
+      "bytes": 7682,
+      "sha256": "c8bd78e433dd2c7ad95479e29d796aa51d5a1705e7f2969ae451d3f436e93a66",
+      "git_blob": "cc602721de5959262410651f80a9543a40ef4848"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/run01/result.json",
+      "bytes": 4661989,
+      "sha256": "3b31e7d40c1d8e4b5d829f0b093fee4edadc966bde4086a4b3f4ba48fdf89cd2",
+      "git_blob": "4b41208dbc6b5fb57aac261449c0e19270bdc7be"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/independent/audit_saved_full3d_arrays.py",
+      "bytes": 13704,
+      "sha256": "a35af5770fe7cd7b8f544294586e156d8dc75b9a944d07f456a2cee2da9d61d1",
+      "git_blob": "4613a0486cae9cde93a29809bbee3c2b245824f3"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/independent/audit.json",
+      "bytes": 4062,
+      "sha256": "658317052ab19a1e1b71782aec6b66469c9c320218850791bdc866fb68c6645b",
+      "git_blob": "31a6addaa98959173e338e7167ad1f7700f29c24"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/independent/execution_receipt.json",
+      "bytes": 1524,
+      "sha256": "a60f1fa2fab66d08f321cf57ff1ef93858e0d0a4803a26a10b99e8626b61c926",
+      "git_blob": "5a0d78db79c25a02f03673de31aa036955b30d2d"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/independent/spectrum.png",
+      "bytes": 11994,
+      "sha256": "3ec0d7b06695f77a7f9da02f65115471e25770ea490b8a47390178a6264dfdfe",
+      "git_blob": "57c3db07bd862e0680cec486d6103231eaa72704"
+    }
+  ],
+  "post_status": {
+    "tracked_dirty": 0,
+    "staged": 0
+  },
+  "verified_remote_matches_commit": true
+}

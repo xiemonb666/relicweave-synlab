@@ -1,0 +1,30 @@
+# Merged master visual QA — pages 19–36
+
+Source DOCX: `C:/Users/xiemo/Desktop/ShardForge/tmp/v147_user_merge_20261007/fresh_merge_final_candidate.docx`
+Source SHA-256 (start and end): `70aa097680aa1920528ba4b6d9646821ac78b367618c0e9b8dbc36439fa38044` (unchanged; matches the frozen candidate).
+Rendered PNGs: `C:/Users/xiemo/Desktop/ShardForge/tmp/v147_user_merge_20261007/fresh_merge_final_render` (1547 × 2002 px).
+Method: every page was inspected individually with `view_image(detail=original)`, in batches of at most three; no contact sheet or OCR substitution. Display-viewport truncation was not treated as image cropping.
+
+Result: 18/18 pages inspected; 18 pass; 0 visual issues. The reviewed text, glyphs, tables, page transitions, and long reference titles/URLs remain readable. No clipping, overlap, missing-font glyphs, boundary overruns, or orphan headings were observed.
+
+| Page | PNG SHA-256 | Status | Visual check |
+|---:|---|---|---|
+| 19 | `02BBCA180EA32867877C03C7D725FF55E6108EC668790ED849FCA6DE1EAEB35E` | PASS | A6.1正文与原则表排版清晰；表格列边界完整，无重叠或裁字。 |
+| 20 | `7DED4CABED04819178CACBD001FF22234578E4A879EDFBB194663CA6F957E801` | PASS | A6.2对照表及A6.3开头可读；页间续表和标题衔接正常。 |
+| 21 | `53F83E4C121CB22FBCC35436C0080A7253DF4F31BFBC9E4D6B69C2A5FB3FB561` | PASS | A6.3–A6.4正文、表格完整可读；无孤标题或字形碰撞。 |
+| 22 | `C78747C0384332059FBFB577DE40C7B877125000D68F374F081C627237D39350` | PASS | A6.4续表与A6.5正文/表格清晰；表格行列未见越界。 |
+| 23 | `4312E3823E0A790CB44C884AE4DBF116E37A10C31FB8E1DD933D453870C6E5EA` | PASS | A6.6表格及A6.7标题、正文可读；续表边界正常。 |
+| 24 | `0DF348FCDA92BB989B8DDFAFEA806A858DC77A63C990683E301EAFF4200E65D5` | PASS | 候选登记表首行及A6.8–A6.9正文排版清楚；续表完整，无孤标题。 |
+| 25 | `78477A4CEB994F4042FAE0B336338B48A39284F7162B7A1F57BCA9184298CF8D` | PASS | INNO登记表续页可读，长状态字段虽换行但仍清楚；无单元格碰撞。 |
+| 26 | `B74E16AAFA8DF38021AC6BD60D0BD2502ECACC712CC96B112814A47DEF85F3CE` | PASS | INNO-20至INNO-31续表边界完整；字段换行清晰，无裁字。 |
+| 27 | `AA81EA654DACB4300E879690BDD1DDD91BF5AFB6AB7FE6DBED3DA65EE6122EC4` | PASS | A6.10–A6.12正文及登记表可读；表格续接和标题位置正常。 |
+| 28 | `3A8B6EE79057B8787ABF1121EB897057EEADA5705A57404B4055C3536DEE8FB8` | PASS | A6.12续表、A6.13代码段与A6.14开头清晰；代码未裁切。 |
+| 29 | `0A7119BF846E4D20AC5995BBABB47E89ADE00BC56F79589C1653F88A1EDC6FF9` | PASS | A6.14参考表的长论文标题自然换行且可读；表格边界完整。 |
+| 30 | `F14B9D71107AB8B14A3CE22EF566BF0A0581D53C89A4D32A94712CC606063025` | PASS | 参考表续页各列可读，长标题和引用信息未溢出或碰撞。 |
+| 31 | `756817B53809737DE28CABB31C504D9D120B1861F94D3E3F4029B5CA6C102F76` | PASS | A6.14续表与A6.15正文清晰；标题未孤行，段落正常换行。 |
+| 32 | `97A7D104816B507D07828E575F963969E23605F54D2C1EDB3388F00EDC80C72C` | PASS | A6.15组件表及推理步骤可读；单元格内容无重叠或裁字。 |
+| 33 | `2A02D6F80B37070DA9D1E7C8C08109DAC5B499136C998052D4AE7FE08B3799AA` | PASS | A6.15.1续段、A6.16表格和A6.17标题/正文排版正常。 |
+| 34 | `FA42724C6F81E07B1280ADA5D0BDD5EB593B6FAE355653B5BA2F43636D82C462` | PASS | A6.17反馈表及A6.18记忆表可读；行列边界和段落衔接正常。 |
+| 35 | `7B6E81667604473DAAA92E910F4BA41FA527235F4C00FF63986BF31EF943E3DF` | PASS | A6.18续表、A6.19控制表及A6.20开头清晰；无表格碰撞。 |
+| 36 | `58FC6C8EF35F7D917077187C96D0A373158FB6229AB2E27C1B31C11BC4CA1219` | PASS | A6.20训练阶段表与A6.20.1/A6.21正文可读；无孤标题或裁字。 |
+

@@ -1,0 +1,40 @@
+{
+  "arrays": [
+    "points",
+    "normals",
+    "point_valid",
+    "normal_valid",
+    "scale_valid",
+    "frame_id"
+  ],
+  "rows": {
+    "31968c3678914ed48b19d82e6718443c": {
+      "frame_id_match_fraction": 0.9704184704184704,
+      "frame_id_source": "T_WC+K+depth_z",
+      "frame_id_unmatched": 123,
+      "frames": 4,
+      "n_points": 4158,
+      "points_hash": "sha256:1af10fb51ef8e0b790beb70489232168d8ddb98fa39ba01fd17adb2e88e35be9",
+      "shard": "geometry/shard_0000.npz"
+    },
+    "4c0422a4f3754bd285868f54d9f7dfc8": {
+      "frame_id_match_fraction": 1.0,
+      "frame_id_source": "T_WC+K+depth_z",
+      "frame_id_unmatched": 0,
+      "frames": 4,
+      "n_points": 585,
+      "points_hash": "sha256:4a568449a3297aae5ff3cb61bc3cbf4d45412158d68115fc306db123ef496bae",
+      "shard": "geometry/shard_0000.npz"
+    },
+    "f65686c4f2394288834705b142518e81": {
+      "frame_id_match_fraction": 0.998468606431853,
+      "frame_id_source": "T_WC+K+depth_z",
+      "frame_id_unmatched": 2,
+      "frames": 4,
+      "n_points": 1306,
+      "points_hash": "sha256:1b573366d9c15e211144f0c7e896131a58ebb5e70bb881019e4775fb15381c0b",
+      "shard": "geometry/shard_0000.npz"
+    }
+  },
+  "schema": "synlab.geometry_index.v2"
+}

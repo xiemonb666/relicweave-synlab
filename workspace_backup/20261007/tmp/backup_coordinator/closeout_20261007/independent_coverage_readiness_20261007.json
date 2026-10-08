@@ -1,0 +1,181 @@
+{
+  "schema": "independent_full_code_backup_path_review_v1",
+  "status": "PRE_GO_PATH_ONLY_REVIEW_NOT_FINAL_MANIFEST_AUDIT",
+  "superseded_for_current_builder_review_by": "independent_coverage_readiness_20261007_addendum.json",
+  "reviewed_on": "2026-10-07",
+  "scope": {
+    "writer_source": "tmp/backup_coordinator/closeout_20261007/build_inventory.py",
+    "writer_source_bytes": 31910,
+    "writer_source_sha256": "f22962eedfdf14e4ee39d5d543c626d42d6d51229ac6c26c72f913d867773fa0",
+    "writer_executed": false,
+    "path_inventory_method": "rg --files -uuu with common Git, virtual-environment, package-cache, build, and runtime payload exclusions; path strings and selected file sizes only",
+    "inventory_script_source_read": true,
+    "project_or_artifact_source_contents_read": false,
+    "git_read_only_status_queries_run_after_report_creation": true,
+    "git_history_blob_remote_or_mutation_commands_run": false,
+    "tracked_status_observed": {
+      "pgfrag": "clean output from git status --short --untracked-files=no",
+      "vesselforge": "clean output from git status --short --untracked-files=no",
+      "relicweave-synlab": "M docs/a12/HANDOVER.md from git status --short --untracked-files=no; this reviewer did not edit that file"
+    },
+    "source_destination_or_HEAD_blob_hashes_checked": false,
+    "copy_or_Git_mutation_performed": false,
+    "candidate_writer_outputs_present_at_review": false,
+    "path_count_under_inventory_exclusions": 45317
+  },
+  "findings": [
+    {
+      "id": "docx_reference_omission",
+      "severity": "high",
+      "evidence": [
+        "PGFrag_VesselForge_Guide_v12.docx",
+        "RelicWeave_V1.46_A12_VesselForge_PGFrag_Integrated_NavFixed.docx",
+        "RelicWeave_V1.46_Implementation_Update_20261005.docx",
+        "PGFrag_VesselForge_Guide_v11.docx",
+        "RelicWeave_V1.44_Optimized_Complete_Plan.docx"
+      ],
+      "logic": "DOC_EXTS contains .md/.rst/.adoc but not .docx; the root-external file walker records excluded rows only for a short extension set that also omits .docx.",
+      "effect": "The five project/reference DOCX files are silently absent from the manifest. One additional font-probe DOCX exists under tmp and should remain excluded as a generated probe.",
+      "recommended_disposition": "Include the two final DOCX and V1.46 reference/update document requested by root; explicitly disposition Guide v11 and the V1.44 plan."
+    },
+    {
+      "id": "root_backup_coordinator_subtree_omission",
+      "severity": "high",
+      "evidence": [
+        "tmp/backup_coordinator/a12_claims_backup_orchestrator_20261007.py",
+        "tmp/backup_coordinator/science_closed_backup_orchestrator_20261007.py",
+        "tmp/backup_coordinator/next_vf_coupled_backup_orchestrator_20261007.py",
+        "tmp/backup_coordinator/closeout_20261007/build_inventory.py"
+      ],
+      "logic": "The root-external os.walk prunes tmp/backup_coordinator as a whole.",
+      "effect": "Authored helper code and all plans/receipts/review evidence in that subtree are outside the non-Git archive candidate scan.",
+      "recommended_disposition": "Include the handoff-referenced small plans, receipts, reviews, and authored helpers by explicit path allowlist; keep large raw Git command logs and unrelated historical artifacts separately dispositioned."
+    },
+    {
+      "id": "snapshot_suffix_coverage",
+      "severity": "high",
+      "evidence": [
+        "relicweave-synlab/tmp/review_20261004/implementation/explicit_spacing_fix_20261004/sdf.py.original",
+        "relicweave-synlab/data/_archive_pre_fix/a12_smoke/_tmp/prefix_tree/synlab/pipeline.py.damaged.bak",
+        "relicweave-synlab/tmp/review_20261003/pgfrag/pending_audit_patch/audit.py.baseline_139a5d5.py",
+        "pgfrag/tmp/review_20261004/native_point_history/v2_frozen/native_point_history.py.frozen"
+      ],
+      "logic": "CODE_EXTS checks the final suffix, while is_snapshot_name only accepts specific marker words and endings; .py.original, .py.damaged.bak, .py.baseline_*, and arbitrary .py.disabled snapshots do not match that allowlist. Some files ending in .py remain included, but the coverage depends on their final suffix.",
+      "effect": "Authored source history/snapshot files can silently disappear. The path family for audit.py.baseline_139a5d5.py is under relicweave-synlab/tmp/review_20261003/pgfrag/pending_audit_patch/.",
+      "recommended_disposition": "Enumerate all files whose names contain a source suffix before another suffix; classify source snapshots separately from logs and generated outputs instead of using a short marker allowlist."
+    },
+    {
+      "id": "selected_replay_path_prefix_mismatch",
+      "severity": "high",
+      "evidence": [
+        {
+          "path": "pgfrag/tmp/review_20261007/mixed93_moving_front_reanalysis_20261007/run01/failure_arrays.npz",
+          "bytes": 1770008
+        },
+        {
+          "path": "pgfrag/tmp/review_20261006/tip_aligned_quadrature_study_20261006/run01/arrays.npz",
+          "bytes": 12356515
+        },
+        {
+          "path": "pgfrag/tmp/review_20261006/mixed93_cached_lefm_solve_20261006/run01/arrays.npz",
+          "bytes": 1569232
+        }
+      ],
+      "logic": "SELECTED_DATA_RELS stores paths prefixed with pgfrag/, but the per-repository os.walk compares repo-relative paths without that prefix.",
+      "effect": "These selected NPZ files cannot match the allowlist and fall through to generated numeric dataset exclusion.",
+      "recommended_disposition": "Normalize selection keys to the relevant repo-relative path or compare a structured repo/path pair. Reconfirm only the three root-approved replay artifacts; keep other mass artifacts excluded."
+    },
+    {
+      "id": "test_fixture_false_exclusions",
+      "severity": "high",
+      "evidence": [
+        {
+          "path": "relicweave-synlab/tests/fixtures/pgfrag/result_v1_toy_endpoint/output/result.json",
+          "reason": "is_generated_path checks output before the tests/fixtures inclusion branch"
+        },
+        {
+          "path": "relicweave-synlab/tests/fixtures/pgfrag/result_v1_toy_endpoint/output/data_dictionary.json",
+          "reason": "same output-path precedence"
+        },
+        {
+          "path": "relicweave-synlab/tests/fixtures/pgfrag/result_v1_toy_endpoint/output/bond_states.csv",
+          "bytes": 1095598,
+          "reason": "numeric fixture inclusion requires size <= 1 MiB"
+        }
+      ],
+      "logic": "JSON generated-path exclusion precedes fixtures/tests inclusion; numeric fixtures larger than 1 MiB are excluded unless explicitly selected.",
+      "effect": "Required test fixtures can be silently dropped because of directory naming or an arbitrary size threshold.",
+      "recommended_disposition": "Prioritize recognized test/fixture fixture paths over generic output/report heuristics; list larger fixtures for explicit review rather than automatic exclusion."
+    },
+    {
+      "id": "root_third_party_runtime_pruning",
+      "severity": "high",
+      "evidence": [
+        "third_party/akantu-runtime",
+        "third_party/blender-5.2.2-windows-x64",
+        "third_party/blender-5.2.2-windows-x64.zip (404453484 bytes)",
+        "third_party/doc-render-runtime",
+        "third_party/pgfrag-geometry-runtime",
+        "third_party/pgfrag-runtime",
+        "third_party/vesselforge-runtime"
+      ],
+      "logic": "The root-external walker does not prune third_party or call path_in_skipped_subtree; SKIP_SUBTREES is used only for repo walking and only for relicweave-synlab.",
+      "effect": "Source-like files inside root runtime/install bundles may be classified as project source. The Blender ZIP is ignored by current source extensions, but other source/config/license paths are traversed.",
+      "recommended_disposition": "Prune named runtime/install bundles at the external-root walk while separately retaining applicable project dependency manifests and legal notices."
+    },
+    {
+      "id": "handoff_review_json_selection",
+      "severity": "high",
+      "evidence": [
+        "vesselforge/tmp/review_20261007/native_c4_source_independent/FINAL_SOURCE_REVIEW.json",
+        "vesselforge/tmp/review_20261007/monotone_normal_strip_independent/ACTUAL_RESULT_ADDENDUM.json",
+        "vesselforge/tmp/review_20261007/global_wall_distance_independent/RESULT_REVIEW.json",
+        "pgfrag/tmp/review_20261007/mixed93_moving_front_independent/REVIEW.json",
+        "pgfrag/tmp/review_20261007/mixed93_moving_front_independent/FIX_REVIEW.json",
+        "pgfrag/tmp/review_20261007/mixed93_moving_front_independent/CHECKPOINT_REVIEW.json"
+      ],
+      "logic": "CLOSED_REVIEW_ROOTS enumerates four specific PG roots. Outside those roots, JSON files need a directory segment such as tests/fixtures/schemas/configs/examples or a limited basename token; generic review/receipt/result JSON does not match.",
+      "effect": "Handoff-referenced small review JSON and receipts outside the four roots can be omitted even when Markdown siblings are included.",
+      "recommended_disposition": "Add a handoff-derived exact allowlist for all required small review JSON/receipts, including the VF final-source, 3mm/front, and PG front-independent artifacts; no path matching 3mm was found in this path scan."
+    },
+    {
+      "id": "non_git_root_authored_scripts",
+      "severity": "medium",
+      "evidence": [
+        "_scratch_heads.py",
+        "data/a12_reports/measure_rig_ladder.py",
+        "data/a12_reports/measure_wear_ladder.py",
+        "data/a12/reports/extract_v144.py"
+      ],
+      "logic": "The root-external walker includes ordinary .py files outside repository and backup-coordinator subtrees.",
+      "effect": "These four are visible candidates. The path tmp/_scratch_heads.py was not present; workspace-root _scratch_heads.py is present.",
+      "recommended_disposition": "Preserve the four current authored scripts with original relative-path/SHA mapping; verify the final manifest actually contains them."
+    },
+    {
+      "id": "document_reference_followup",
+      "severity": "medium",
+      "evidence": [
+        "No V1.46-named Markdown path was found by filename search; two V1.46 DOCX and two rendered PDFs were found."
+      ],
+      "logic": "Path-name search cannot identify a reference Markdown file whose name lacks V1.46; source content was not scanned.",
+      "effect": "The requested original V1.46 reference/MD needs a known path or an explicit final-manifest check.",
+      "recommended_disposition": "Root should bind the exact V1.46 Markdown source path in the final manifest; keep generated PDFs as references only if explicitly requested."
+    }
+  ],
+  "candidate_inventory_outputs": {
+    "inventory_json_present": false,
+    "stage_manifest_present": false,
+    "readme_present": false,
+    "note": "Only build_inventory.py was present in closeout_20261007 at the time of this review. This is a source-coverage readiness review, not an audit of a generated manifest."
+  },
+  "release_gate": {
+    "ready_for_manifest_postverification": false,
+    "reason": "No final inventory/manifest or root GO was present; several logic-level omissions require disposition first.",
+    "required_later_checks": [
+      "Every approved manifest path resolves to the intended source and destination relative path.",
+      "For every path including already-tracked files, compare actual source SHA/bytes to raw HEAD blob SHA/bytes; never use tracked status as a substitute.",
+      "Verify exact changed path sets, parent commits, live remote branch refs, and tracked/index cleanliness once the finalized backup execution is approved.",
+      "Retain untracked WIP and report source/HEAD mismatches without modifying either repository."
+    ]
+  }
+}

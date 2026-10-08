@@ -1,0 +1,24 @@
+{
+  "frozen_at": "2026-10-04 before G01 integration edits",
+  "records": [
+    {
+      "path": "synlab\\degrade\\ops_geometry.py",
+      "source_sha256_before": "7909CAF7943E1D82B37D56C288792D22B292C52D85654925A694B5AC37AE8569",
+      "snapshot": "baseline\\ops_geometry.py",
+      "snapshot_sha256": "7909CAF7943E1D82B37D56C288792D22B292C52D85654925A694B5AC37AE8569"
+    },
+    {
+      "path": "synlab\\degrade\\axes.py",
+      "source_sha256_before": "1255550FE50741C81C2C57CF1EA5B4701496E8B1E933949279E4F54D41CF0E87",
+      "snapshot": "baseline\\axes.py",
+      "snapshot_sha256": "1255550FE50741C81C2C57CF1EA5B4701496E8B1E933949279E4F54D41CF0E87"
+    },
+    {
+      "path": "tests\\a12\\degrade\\test_g01_total_rms_20261004.py",
+      "source_sha256_before": "ABSENT",
+      "snapshot": null,
+      "snapshot_sha256": null
+    }
+  ],
+  "test_runs": "NONE"
+}

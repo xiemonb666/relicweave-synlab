@@ -1,0 +1,108 @@
+{
+  "schema": "synlab.a12_campaign.manifest.v1",
+  "campaign": "a12_campaign",
+  "config_used": "configs/a12/realistic.yaml",
+  "config_sha256": "sha256:d9d0c25ff7b4d0541450975a6cbed80c6a8275f68e1a2b03398935ab35240116",
+  "baseline_config_frozen": {
+    "path": "configs/a12/next_experiment.yaml",
+    "sha256": "sha256:8186653101612cbc20e9eeba3f60ffbc241e3d1e3ebd690fdecb60746ab1fb16",
+    "frozen_expected": "sha256:8186653101612cbc20e9eeba3f60ffbc241e3d1e3ebd690fdecb60746ab1fb16"
+  },
+  "baseline_config_unmodified": true,
+  "registry_fingerprint": "sha256:05f69981b63e739f8533b51cee98e54f296fba89d823abf8779814ef2b9624fb",
+  "registry_counts": {
+    "vessel": {
+      "count": 24,
+      "by_status": {
+        "IMPLEMENTED": 24
+      }
+    },
+    "material": {
+      "count": 12,
+      "by_status": {
+        "IMPLEMENTED": 12
+      }
+    },
+    "layer_combo": {
+      "count": 4,
+      "by_status": {
+        "IMPLEMENTED": 4
+      }
+    },
+    "pattern": {
+      "count": 16,
+      "by_status": {
+        "IMPLEMENTED": 16
+      }
+    },
+    "fracture_backend": {
+      "count": 5,
+      "by_status": {
+        "MISSING": 1,
+        "IMPLEMENTED": 3,
+        "PENDING": 1
+      }
+    },
+    "axis": {
+      "count": 31,
+      "by_status": {
+        "IMPLEMENTED": 31
+      }
+    }
+  },
+  "load_all_errors": {},
+  "git": {
+    "head": "c3a149f6aee73245db7c3540e55c0292da2d1a66",
+    "dirty": true,
+    "dirty_files": [
+      "M frontend/src/components/showcase/FragmentAssemblyViewport.tsx",
+      " M frontend/src/components/showcase/sections.tsx",
+      " M frontend/src/lib/glb.ts",
+      " M frontend/src/styles-showcase.css",
+      " M synlab/fracture/api.py",
+      " M synlab/fracture/booleans.py",
+      " M synlab/fracture/cut.py",
+      " M synlab/fracture/event.py",
+      " M synlab/physical/api.py",
+      " M synlab/pipeline.py",
+      " M synlab/relations/multi_event.py",
+      " M synlab/relations/negatives.py",
+      " M synlab/storage/export.py",
+      " M synlab/training/adapter.py",
+      " M synlab/training/batch.py",
+      " M synlab/training/losses.py",
+      " M synlab/training/smoke.py",
+      " M synlab/training/trainer.py",
+      " M tests/a12/mothers/test_mother_geometry_audit.py",
+      " M tests/a12/relations/test_multi_event_negatives.py",
+      " M tests/a12/training/test_real_package_smoke.py",
+      " M tools/build_demo_assets.py",
+      "?? configs/a12/realistic.yaml",
+      "?? docs/a12/dataset_registry.md",
+      "?? docs/a12/training_run.md",
+      "?? synlab/observe/realism.py",
+      "?? synlab/pipeline.py.damaged.bak",
+      "?? synlab/qc/data_quality.py",
+      "?? synlab/training/labels.py",
+      "?? synlab/training/supervision.py",
+      "?? tests/a12/observe/_probe_realism_bridge.py",
+      "?? tests/a12/observe/_probe_realism_timing.py",
+      "?? tests/a12/observe/run_realistic_lineage.py",
+      "?? tests/a12/qc/test_data_quality.py",
+      "?? tests/a12/showcase/test_display_shading.py",
+      "?? tests/a12/training/test_supervision_contract.py",
+      "?? tools/check_data_quality.py",
+      "?? tools/loader_probe_run.py"
+    ],
+    "dirty_count": 38
+  },
+  "validate": {
+    "command": "python -m synlab.cli validate --config configs/a12/realistic.yaml",
+    "exit_code": 0,
+    "first_line": "OK"
+  },
+  "store_root": "data/a12_campaign/store",
+  "ledger": "data/a12_campaign/campaign_ledger.json",
+  "batch_reports": "data/a12/reports/campaign_batches.json",
+  "note": "the plan is derived only from master_seed + vessel/material/pattern/layer lists + target_mothers, so lineage i equals lineage i of data/a12; batching cannot shift any lineage"
+}

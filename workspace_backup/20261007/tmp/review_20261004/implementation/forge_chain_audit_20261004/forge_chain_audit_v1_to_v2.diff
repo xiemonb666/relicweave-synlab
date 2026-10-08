@@ -1,0 +1,291 @@
+--- v1_snapshot/forge_chain_audit.py
++++ relicweave-synlab/synlab/qa/forge_chain_audit.py
+@@ -1,9 +1,11 @@
+-"""Read-only, fail-closed audit of the RelicWeave evidence chain.
++"""Read-only audit of caller-normalized RelicWeave evidence-chain metadata.
+ 
+ The audit input is a small JSON document that names explicit producer manifests and
+-normalized lineage rows. It reads only those JSON references, verifies their hashes,
+-and never walks an asset/package directory. A structurally complete record is not a
+-scientific acceptance: physics and pretraining eligibility always remain unverified.
++caller-normalized lineage rows. It reads only those JSON references, verifies their
++JSON byte hashes, and never walks an asset/package directory. It does not compare the
++normalized rows with producer row contents or inspect payload bytes. A structurally
++complete normalized record is not producer-source verification or scientific
++acceptance: physics and pretraining eligibility always remain unverified.
+ 
+ The field boundaries follow:
+ * ``forge.asset.v1`` (VesselForge manifest; geometry-only validation scope);
+@@ -48,7 +50,8 @@
+     "damage_strength", "spurious_mask", "hard_case_tag", "lineage_id", "mother_id",
+     "fragment_id", "event_id", "split", "variant", "axis_id", "level",
+     "labels_relation", "R2", "neg_mask", "pos_mask", "quality_target", "corr_weight",
+-    "reward", "done_success",
++    "reward", "done_success", "fragment_ids", "fragmentID", "fragmentIds", "fragment_index",
++    "sample_id", "row_id", "capture_id",
+ })
+ 
+ # Fields in synlab.training.adapter.FeatureBundle that may reach the tensor bundle.
+@@ -203,6 +206,38 @@
+     return value if isinstance(value, Mapping) else {}
+ 
+ 
++def _validate_id_roster(value: Any, field: str, gaps: list[dict[str, str]], structural_problems: list[dict[str, str]], *, required: bool) -> tuple[set[str], bool]:
++    """Validate an explicit stable-ID roster without imposing a sample-count target."""
++    if not isinstance(value, list):
++        if required or value is not None:
++            item = {"field": field, "status": "UNKNOWN", "reason": "an explicit ID roster list is missing or malformed"}
++            _gap(gaps, item["field"], item["status"], item["reason"])
++            structural_problems.append(item)
++        return set(), False
++    valid = True
++    ids: set[str] = set()
++    if required and not value:
++        item = {"field": field, "status": "UNKNOWN", "reason": "the required ID roster is explicitly empty"}
++        _gap(gaps, item["field"], item["status"], item["reason"])
++        structural_problems.append(item)
++        valid = False
++    for index, raw_id in enumerate(value):
++        if not isinstance(raw_id, str) or not raw_id or raw_id.strip() != raw_id:
++            item = {"field": f"{field}[{index}]", "status": "UNKNOWN", "reason": "roster entries must be non-empty stable strings without surrounding whitespace"}
++            _gap(gaps, item["field"], item["status"], item["reason"])
++            structural_problems.append(item)
++            valid = False
++            continue
++        if raw_id in ids:
++            item = {"field": f"{field}[{index}]", "status": "FAIL", "reason": f"duplicate ID {raw_id!r} in declared roster"}
++            _gap(gaps, item["field"], item["status"], item["reason"])
++            structural_problems.append(item)
++            valid = False
++            continue
++        ids.add(raw_id)
++    return ids, valid
++
++
+ def _check_feature_policy(policy: Mapping[str, Any]) -> set[str]:
+     """Return the explicitly permitted deploy channel names from A12's policy JSON."""
+     if policy.get("schema") != "synlab.view_channel_policy.v1":
+@@ -330,6 +365,16 @@
+     event_value = chain.get("event")
+     event = event_value if isinstance(event_value, Mapping) else {}
+     event_id = event.get("event_id")
++    event_fragment_ids, event_roster_valid = _validate_id_roster(
++        event.get("fragment_ids"), "event.fragment_ids", gaps, structural_problems, required=True
++    )
++    reference_library_ids, reference_library_roster_valid = _validate_id_roster(
++        chain.get("reference_library_fragment_ids"),
++        "reference_library.fragment_ids",
++        gaps,
++        structural_problems,
++        required=False,
++    )
+     for field, value, reason in (
+         ("event.event_id", event_id, "no event identifier connects the native run to fragments"),
+         ("event.parent_asset_id", event.get("parent_asset_id"), "event does not explicitly name its parent asset"),
+@@ -381,6 +426,7 @@
+     fragments_value = chain.get("fragments")
+     fragments = fragments_value if isinstance(fragments_value, list) else []
+     fragment_ids: set[str] = set()
++    fragment_rows_valid = True
+     if not fragments:
+         _gap(gaps, "fragment_set.fragments", "UNKNOWN", "no row-level fragment set is supplied; PG graph components or A12 aggregate fragment counts are not fragment lineage")
+         structural_problems.append(gaps[-1])
+@@ -389,15 +435,18 @@
+         if not isinstance(fragment, Mapping):
+             _gap(gaps, field, "FAIL", "fragment row must be an object and is retained as an invalid row")
+             structural_problems.append(gaps[-1])
++            fragment_rows_valid = False
+             continue
+         fid = fragment.get("fragment_id")
+-        if not isinstance(fid, str) or not fid:
+-            _gap(gaps, f"{field}.fragment_id", "UNKNOWN", "fragment has no stable identifier")
+-            structural_problems.append(gaps[-1])
++        if not isinstance(fid, str) or not fid or fid.strip() != fid:
++            _gap(gaps, f"{field}.fragment_id", "UNKNOWN", "fragment has no stable non-empty identifier or contains surrounding whitespace")
++            structural_problems.append(gaps[-1])
++            fragment_rows_valid = False
+             continue
+         if fid in fragment_ids:
+             _gap(gaps, f"{field}.fragment_id", "FAIL", f"duplicate fragment id {fid!r}")
+             structural_problems.append(gaps[-1])
++            fragment_rows_valid = False
+         fragment_ids.add(fid)
+         if fragment.get("event_id") != event_id:
+             _gap(gaps, f"{field}.event_id", "FAIL", "orphan fragment: fragment event_id does not match the declared event")
+@@ -410,10 +459,11 @@
+             _gap(gaps, f"{field}.material_id", "FAIL", "fragment material lineage does not match forge.asset.v1 material.id")
+             structural_problems.append(gaps[-1])
+         # Deliberately no fragment size/count threshold: every supplied row stays audited.
+-    if fragments and isinstance(event.get("fragment_ids"), list):
+-        declared_ids = set(event["fragment_ids"])
+-        if declared_ids != fragment_ids:
+-            _gap(gaps, "event.fragment_ids", "FAIL", "event fragment roster differs from the supplied fragment rows")
++    event_roster_matches_rows: bool | None = None
++    if fragments and event_roster_valid and fragment_rows_valid:
++        event_roster_matches_rows = event_fragment_ids == fragment_ids
++        if not event_roster_matches_rows:
++            _gap(gaps, "event.fragment_ids", "FAIL", "explicit event fragment roster does not exactly match the normalized fragment rows")
+             structural_problems.append(gaps[-1])
+ 
+     surfaces_value = chain.get("crack_surfaces")
+@@ -467,6 +517,10 @@
+         if sorted(sides) != ["A", "B"]:
+             _gap(gaps, f"crack_surfaces[{pair_id}]", "INCOMPLETE", "paired interface needs exactly one A side and one B side")
+             structural_problems.append(gaps[-1])
++        pair_fragment_ids = [row.get("fragment_id") for row in rows]
++        if len(pair_fragment_ids) != 2 or not all(isinstance(fid, str) and fid for fid in pair_fragment_ids) or len(set(pair_fragment_ids)) != 2:
++            _gap(gaps, f"crack_surfaces[{pair_id}].fragment_id", "FAIL", "paired crack surfaces must belong to two distinct fragments")
++            structural_problems.append(gaps[-1])
+ 
+     material = chain.get("material") if isinstance(chain.get("material"), Mapping) else {}
+     parent_material_id = _object((parent_manifest or {}).get("material")).get("id")
+@@ -501,12 +555,22 @@
+             structural_problems.append(gaps[-1])
+         query = relation.get("query_fragment_id")
+         candidate = relation.get("candidate_fragment_id")
+-        if query not in fragment_ids:
+-            _gap(gaps, f"{field}.query_fragment_id", "FAIL", "historical relation query is not in the audited fragment set")
+-            structural_problems.append(gaps[-1])
+         if not isinstance(candidate, str) or not candidate or candidate == query:
+             _gap(gaps, f"{field}.candidate_fragment_id", "FAIL", "historical relation needs a distinct, identified candidate")
+             structural_problems.append(gaps[-1])
++        for endpoint_name, endpoint_id in (("query_fragment_id", query), ("candidate_fragment_id", candidate)):
++            if not isinstance(endpoint_id, str) or not endpoint_id or endpoint_id.strip() != endpoint_id:
++                _gap(gaps, f"{field}.{endpoint_name}", "UNKNOWN", "relation endpoint must be a non-empty stable fragment ID")
++                structural_problems.append(gaps[-1])
++            elif endpoint_id not in fragment_ids and endpoint_id not in reference_library_ids:
++                if reference_library_roster_valid:
++                    reason = "relation endpoint is absent from both the event roster and the declared reference-library roster"
++                    status = "FAIL"
++                else:
++                    reason = "relation endpoint is outside the event roster and no valid explicit reference-library roster can validate it"
++                    status = "UNKNOWN"
++                _gap(gaps, f"{field}.{endpoint_name}", status, reason)
++                structural_problems.append(gaps[-1])
+         if label == "R2":
+             pair_id = relation.get("interface_pair_id")
+             if pair_id not in pairs:
+@@ -588,6 +652,8 @@
+ 
+     features = chain.get("features") if isinstance(chain.get("features"), Mapping) else {}
+     feature_fields = features.get("fields")
++    feature_policy_doc = sources.get("feature_policy")
++    deploy_channels = _check_feature_policy(feature_policy_doc or {})
+     if not isinstance(feature_fields, list) or not feature_fields:
+         _gap(gaps, "features.fields", "UNKNOWN", "actual feature-field whitelist is not enumerated")
+         structural_problems.append(gaps[-1])
+@@ -597,15 +663,17 @@
+         if len(feature_names) != len(feature_fields):
+             _gap(gaps, "features.fields", "FAIL", "feature field list contains non-string or duplicate entries")
+             structural_problems.append(gaps[-1])
+-        policy_doc = sources.get("feature_policy")
+-        deploy_channels = _check_feature_policy(policy_doc or {})
+-        allowed = FEATURE_BUNDLE_FIELDS | deploy_channels
+         for field in sorted(feature_names):
+             if field in FORBIDDEN_FEATURE_FIELDS:
+                 _gap(gaps, f"features.fields.{field}", "FAIL", "A12 explicitly forbids this field in a feature bundle/model forward pass")
+                 structural_problems.append(gaps[-1])
+-            elif field not in allowed:
+-                _gap(gaps, f"features.fields.{field}", "FAIL", "field is outside synlab.training.adapter.FeatureBundle and the declared deploy channel policy")
++            elif field in FEATURE_BUNDLE_FIELDS:
++                continue
++            elif field in deploy_channels:
++                _gap(gaps, f"features.fields.{field}", "UNKNOWN", "this is a deploy view-channel name, not proof of a valid synlab.training.adapter.FeatureBundle tensor field")
++                structural_problems.append(gaps[-1])
++            elif field not in FEATURE_BUNDLE_FIELDS:
++                _gap(gaps, f"features.fields.{field}", "UNKNOWN", "field is outside the audited FeatureBundle tensor-field whitelist; its mapping to an actual model tensor is unknown")
+                 structural_problems.append(gaps[-1])
+     if features.get("schema") != "a12.obs.v1":
+         _gap(gaps, "features.schema", "UNKNOWN", "feature payload does not declare A12 a12.obs.v1")
+@@ -675,7 +743,8 @@
+         assets = export.get("assets") if isinstance(export.get("assets"), Mapping) else {}
+         by_role = assets.get("by_role") if isinstance(assets.get("by_role"), Mapping) else {}
+         closure = export.get("reference_closure") if isinstance(export.get("reference_closure"), Mapping) else {}
+-        degrade_counts = export.get("degrade_diversity", {}).get("counts", {}) if isinstance(export.get("degrade_diversity"), Mapping) else {}
++        degrade_diversity = export.get("degrade_diversity") if isinstance(export.get("degrade_diversity"), Mapping) else {}
++        degrade_counts = degrade_diversity.get("counts") if isinstance(degrade_diversity.get("counts"), Mapping) else {}
+         degradation_index = sources.get("degradation_index", {})
+         degradation_rows = degradation_index.get("rows") if isinstance(degradation_index.get("rows"), list) else []
+         degradation_sources = degradation_index.get("sources") if isinstance(degradation_index.get("sources"), list) else []
+@@ -692,6 +761,7 @@
+             "a12_relation_kind_counts": counts.get("relation_kinds"),
+             "a12_relation_counts_are_aggregate_only": True,
+             "a12_degrade_actual_counts": degrade_counts,
++            "a12_degrade_count_key_presence": {key: key in degrade_counts for key in ("degrade_sources", "degrade_variants")},
+             "a12_degrade_aggregate_variants": counts.get("degrade_materialised_variants"),
+             "a12_degradation_index_row_count": len(degradation_rows),
+             "a12_degradation_index_source_count": len(degradation_sources),
+@@ -702,8 +772,21 @@
+         if closure.get("ok") is False:
+             _gap(gaps, "dataset_export_manifest.reference_closure", "INCOMPLETE", "A12 export manifest declares reference_closure.ok=false; its aggregate package is not a closed lineage chain")
+             structural_problems.append(gaps[-1])
+-        if isinstance(degrade_counts, Mapping) and degrade_counts and (degrade_counts.get("degrade_sources", 0) == 0 or degrade_counts.get("degrade_variants", 0) == 0):
+-            _gap(gaps, "degradation.actual_measurements", "UNKNOWN", "A12 degradation diversity metadata reports zero committed sources/variants; aggregate materialised counts do not supply row-level recipe measurements")
++        zero_keys: list[str] = []
++        for key in ("degrade_sources", "degrade_variants"):
++            if key not in degrade_counts:
++                _gap(gaps, f"dataset_export_manifest.degrade_diversity.counts.{key}", "UNKNOWN", f"MISSING_AGGREGATE: export does not declare {key}; its value cannot be inferred as zero")
++                structural_problems.append(gaps[-1])
++            else:
++                value = degrade_counts[key]
++                if isinstance(value, bool) or not isinstance(value, int) or value < 0:
++                    _gap(gaps, f"dataset_export_manifest.degrade_diversity.counts.{key}", "UNKNOWN", f"aggregate {key} must be a nonnegative integer; observed {value!r}")
++                    structural_problems.append(gaps[-1])
++                elif value == 0:
++                    zero_keys.append(key)
++        if zero_keys:
++            values = ", ".join(f"{key}=0" for key in zero_keys)
++            _gap(gaps, "degradation.actual_measurements", "UNKNOWN", f"A12 degradation diversity metadata explicitly records {values}; this is a known zero commitment, not a missing aggregate, and materialised counts do not supply row-level recipe measurements")
+             structural_problems.append(gaps[-1])
+         if "degradation_index" in sources and not degradation_rows and not degradation_sources:
+             _gap(gaps, "degradation_index.rows", "UNKNOWN", "explicit A12 degrade/index.json reference has empty rows and sources")
+@@ -727,10 +810,17 @@
+             "status": "COMPLETE" if complete else "INCOMPLETE",
+             "blocking_issue_count": len(structural_problems),
+             "fragment_row_count_audited": len(fragments),
++            "event_fragment_roster_count": len(event_fragment_ids),
++            "event_fragment_roster_status": "VALID" if event_roster_valid else "INCOMPLETE",
++            "event_fragment_roster_matches_normalized_rows": event_roster_matches_rows,
++            "reference_library_fragment_roster_count": len(reference_library_ids),
++            "reference_library_roster_status": "VALID" if reference_library_roster_valid else "UNKNOWN",
++            "fixed_fragment_count_required": False,
+             "surface_row_count_audited": len(surfaces),
+             "surface_pair_count_audited": len(pairs),
+             "relation_row_count_audited": len(relations),
+             "relation_labels_seen": relation_counts,
++            "relation_endpoint_universe": "event.fragment_ids union chain.reference_library_fragment_ids",
+         },
+         "evidence_reference_completeness": {
+             "status": "COMPLETE" if ref_complete else "INCOMPLETE",
+@@ -738,6 +828,31 @@
+             "max_reference_bytes": MAX_REFERENCE_BYTES,
+             "only_explicit_json_references_read": True,
+             "package_payloads_scanned": False,
++            "normalized_rows_are_caller_supplied": True,
++            "producer_row_contents_compared_with_normalized_rows": False,
++        },
++        "source_binding": {
++            "status": "UNKNOWN",
++            "normalized_rows_are_caller_supplied": True,
++            "producer_row_contents_compared": False,
++            "producer_payload_bytes_read": False,
++            "status_by_component": {
++                name: "UNKNOWN"
++                for name in (
++                    "event", "fragments", "crack_surfaces", "material", "historical_relations",
++                    "degradation", "observations", "capture_records", "features", "labels", "gates",
++                )
++            },
++            "reason": "Hash-verified JSON references establish only the bytes of the named metadata files. The auditor does not join normalized event, fragment, surface, relation, measurement, observation, capture, feature, label, or gate rows back to producer row contents or payload bytes.",
++        },
++        "feature_input_audit": {
++            "status": "UNKNOWN",
++            "declared_feature_fields": sorted(feature_names),
++            "audited_feature_bundle_tensor_fields": sorted(FEATURE_BUNDLE_FIELDS),
++            "declared_deploy_view_channels": sorted(deploy_channels),
++            "deploy_channel_names_are_feature_bundle_fields": False,
++            "feature_payload_scanned": False,
++            "reason": "A deploy channel name does not establish a mapping to an actual FeatureBundle tensor; fragment IDs remain indexing metadata and are forbidden as model inputs.",
+         },
+         "science_qualification": {
+             "status": "SCIENCE_UNVERIFIED",

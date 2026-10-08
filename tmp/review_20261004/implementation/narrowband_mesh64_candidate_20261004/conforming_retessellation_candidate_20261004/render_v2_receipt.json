@@ -1,0 +1,37 @@
+{
+  "task": "authorized v2 XY projection correction; render saved arrays once",
+  "timestamp_utc": "2026-10-04T05:44:38.3008811Z",
+  "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+  "python_executable": "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+  "argv": [
+    "-B",
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\render_retessellation_before_after_v2.py"
+  ],
+  "process_exit": 0,
+  "elapsed_seconds": 1.270709,
+  "conversion_rerun": false,
+  "boolean_calls": 0,
+  "v1_preserved": true,
+  "hashes_before": {
+    "report": "6b4078337fab9f7c0d4e4d8cdaaa2e0e4442968b4aaa5274a95a9ec1820abcba",
+    "inputs": "d80707312638ce2830847f2dc198632c5456963a6043715d27436b3db3ce6dc2",
+    "outputs": "e00404f67bf13ced471e3c7c8d0596b3b50efd4c9b17f4175142712a5e5a04a0",
+    "renderer": "4ce8dec2c73db22e4a99913b2797d1b40f7d4515366d0367507de285488bb5db"
+  },
+  "stdout": {
+    "sha256": "a0466adfdf444e501025ad4a34c1224a99efe0fb4b5da5ea32bc44680ae788bf",
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\render_v2_run.stdout.txt",
+    "bytes": 751
+  },
+  "stderr": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\render_v2_run.stderr.txt",
+    "bytes": 0
+  },
+  "png": {
+    "sha256": "f5c9a1d38dd7718a3686adbad69f2136331fb30c29b81facab92f4dbc07f5bb9",
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\retessellation_before_after_local_topology_v2.png",
+    "bytes": 533636
+  },
+  "interpretation": "Derived visualization from frozen raw inputs and saved candidate arrays/report. Bottom row correctly uses XY projection at Z=-1.6 mm to show the positive-area omitted face and its unchanged rejected hole."
+}

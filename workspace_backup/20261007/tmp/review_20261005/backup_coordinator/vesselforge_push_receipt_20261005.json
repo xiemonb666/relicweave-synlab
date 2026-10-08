@@ -1,0 +1,101 @@
+{
+  "schema": "shardforge.vesselforge-push-receipt.v1",
+  "captured_at_utc": "2026-10-04T23:53:42.590Z",
+  "approved_candidate_manifest": "tmp/review_20261005/backup_coordinator/vesselforge_candidates_20261005.json",
+  "approved_candidate_manifest_sha256": "72bc94d9f57a017ae23c705bdfab4e75ab2301bbbc4fe2d3ef358c8a480100c9",
+  "repo": "vesselforge",
+  "branch": "backup/forge-work-20261003",
+  "commit": "8da9b538e2588fe51418588cb6301c258cd5363f",
+  "parent": "b5ac9237dc2404d7178ac798b5e16ae449840737",
+  "remote_branch_head": "8da9b538e2588fe51418588cb6301c258cd5363f",
+  "remote_push_verified": true,
+  "commit_subject": "Back up geometry guards and local ornament refinement",
+  "commit_body": "Preserve the approved geometry source and regression set with the isolated refinement prototype, cases, and review notes. The 57 targeted tests passed; this mechanism work does not establish physics correctness or high-quality qualification.",
+  "commit_identity": "A12 SynLab <synlab@local>",
+  "committed_paths": [
+    "experiments/surface_ornament_refinement_20261005/CHECK_PLAN.md",
+    "experiments/surface_ornament_refinement_20261005/FREEZE_MANIFEST.json",
+    "experiments/surface_ornament_refinement_20261005/SCOPE_DIFF.md",
+    "experiments/surface_ornament_refinement_20261005/candidate_cases.json",
+    "experiments/surface_ornament_refinement_20261005/refinement_prototype.py",
+    "src/vesselforge/asset.py",
+    "src/vesselforge/brep_identity.py",
+    "src/vesselforge/wall_mesh_binding.py",
+    "tests/test_brep_identity.py",
+    "tests/test_wall_mesh_binding.py"
+  ],
+  "committed_path_count": 10,
+  "files": [
+    {
+      "path": "vesselforge/src/vesselforge/brep_identity.py",
+      "bytes": 3834,
+      "sha256": "a59d0056f4d0ff7bb7bf7932750c33dab773ddc0792f3cfe4bae707bfea53c3a",
+      "git_blob_sha1": "04c1394a3b57510048fb6a5bf2cc0fa920715246"
+    },
+    {
+      "path": "vesselforge/src/vesselforge/asset.py",
+      "bytes": 20798,
+      "sha256": "015c863f3b3215b60a08a6cb36605b3582b846348abd37dd2f7ed1bca0c32804",
+      "git_blob_sha1": "22de079cfb415712a7e3825ab50df2e345e5d29a"
+    },
+    {
+      "path": "vesselforge/src/vesselforge/wall_mesh_binding.py",
+      "bytes": 50769,
+      "sha256": "395c78c72f4df0748dd9e05b5ef2b742cffe1d115bd7dc87a1624ea17b4edac0",
+      "git_blob_sha1": "c9ace6b1cfb6aa7b80c0afc812f70b0416467e8d"
+    },
+    {
+      "path": "vesselforge/tests/test_brep_identity.py",
+      "bytes": 4698,
+      "sha256": "15e007278abe080b9548459f328b8444249c143c6561decf6924c4b8f0b92297",
+      "git_blob_sha1": "17ca1b56ad22208cf61a285d574fe75f7c9c2ea3"
+    },
+    {
+      "path": "vesselforge/tests/test_wall_mesh_binding.py",
+      "bytes": 21730,
+      "sha256": "dbb1baefa6dc2a4ea1b62b30fe22c6e22fbc6c51d1739afcae37fae92ad2b2f2",
+      "git_blob_sha1": "51f455b2dc5703b04479c57b51cec2ace7459e9c"
+    },
+    {
+      "path": "vesselforge/experiments/surface_ornament_refinement_20261005/refinement_prototype.py",
+      "bytes": 59865,
+      "sha256": "5e946c205fb233e9354dfdde10d562597484ee38193e7930f93ce999f5840f74",
+      "git_blob_sha1": "1c80376122adc825f0b088201f2b597c96a720cb"
+    },
+    {
+      "path": "vesselforge/experiments/surface_ornament_refinement_20261005/candidate_cases.json",
+      "bytes": 5555,
+      "sha256": "ab89a0832366d0391b9539248cfbfab62e7ea770f3cf9b1499ee6b39b0b533c1",
+      "git_blob_sha1": "9ea588ec853dc5ac926b914a1ecf586d73175a15"
+    },
+    {
+      "path": "vesselforge/experiments/surface_ornament_refinement_20261005/CHECK_PLAN.md",
+      "bytes": 4921,
+      "sha256": "16bbd58d17b8a5ffaf605ba515555cde455a968548c0cd19b64bfc3db6443575",
+      "git_blob_sha1": "06da3af0bfd86171508b6862a10e6bb137f35fcc"
+    },
+    {
+      "path": "vesselforge/experiments/surface_ornament_refinement_20261005/SCOPE_DIFF.md",
+      "bytes": 1293,
+      "sha256": "a044c7fe1a0c8eedafba0fe9ab3b149bab7bed08fa76bd5900a1f670e8e69c33",
+      "git_blob_sha1": "aa791ff340f9da81bbb855181655705350a8aa1e"
+    },
+    {
+      "path": "vesselforge/experiments/surface_ornament_refinement_20261005/FREEZE_MANIFEST.json",
+      "bytes": 1303,
+      "sha256": "2c40059921e341c8586cfaa063fda69d6f061453c8917fdc0512e72637cc790a",
+      "git_blob_sha1": "2831759176346ea82655c53724b90566bd081f77"
+    }
+  ],
+  "tests": {
+    "status": "root reported 57 targeted tests PASS; coordinator did not rerun"
+  },
+  "no_force_push": true,
+  "git_configuration_changed": false,
+  "per_command_settings": [
+    "core.autocrlf=false for exact-byte staging",
+    "existing repository commit identity per invocation"
+  ],
+  "post_commit_selected_worktree_changes": [],
+  "currently_staged_paths": []
+}

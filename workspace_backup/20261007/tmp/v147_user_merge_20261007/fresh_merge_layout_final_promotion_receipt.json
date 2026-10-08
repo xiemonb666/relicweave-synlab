@@ -1,0 +1,52 @@
+{
+  "promotion": "byte-for-byte copy of frozen candidate; no rebuild or render",
+  "promoted_at_local": "2026-10-08 02:14:32 +08:00",
+  "source": {
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\v147_user_merge_20261007\\fresh_merge_layout_final_candidate.docx",
+    "bytes": 786150,
+    "sha256": "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d"
+  },
+  "target_before": {
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx",
+    "bytes": 734565,
+    "sha256": "9af0efe877115200dd99bbcf8f24f3124e2932245d71795fc00252d08e278436"
+  },
+  "original_snapshot": {
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\closeout_documents_20261007\\master_v147_frozen_candidate_9af0efe877115200dd99bbcf8f24f3124e2932245d71795fc00252d08e278436.docx",
+    "bytes": 734565,
+    "sha256": "9af0efe877115200dd99bbcf8f24f3124e2932245d71795fc00252d08e278436"
+  },
+  "target_after": {
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx",
+    "bytes": 786150,
+    "sha256": "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d"
+  },
+  "candidate_sha256": "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d",
+  "protected": {
+    "handoff_md": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\docs\\handover\\20261007\\HANDOVER.md",
+      "bytes": 41396,
+      "sha256": "f226a153f8aed2da04e07298f1277cd74071370d52cf74a4967702c2792f7a53"
+    },
+    "handoff_docx": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\docs\\handover\\20261007\\RelicWeave_A12_VesselForge_PGFrag_Handover_20261007.docx",
+      "bytes": 64641,
+      "sha256": "c8b4e57340c7c9d485aeb5c6aa298ba90ac166870c9d8d0a7d414d35051f7fd2"
+    },
+    "baseline_v146": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\RelicWeave_V1.46_A12_VesselForge_PGFrag_Integrated_NavFixed.docx",
+      "bytes": 733634,
+      "sha256": "15978a3956fa33e8048cc54c1dad6878a7e19d9c71b84415dcaf8732f041a3b4"
+    },
+    "user_v147": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\RelicWeave_V1.47.docx",
+      "bytes": 779513,
+      "sha256": "41f1254e40a2ecabdcfa1c6583af2fce0ae1b0ab980d5f9179bbaf687b7be64b"
+    }
+  },
+  "verification": {
+    "snapshot_still_matches_original_root": true,
+    "protected_inputs_unchanged": true,
+    "target_matches_source_sha_and_bytes": true
+  }
+}

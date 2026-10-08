@@ -1,0 +1,1150 @@
+{
+  "schema": "curated_git_backup_execution_receipt.v1",
+  "plan_path": "tmp/backup_coordinator/next_core_incremental_plan_20261006_v3.json",
+  "plan_sha256": "897eeb4135cbfa2b912e4ed345262e453e1da30cf30ae74cc1f98c91bd38a35e",
+  "approved_plan_sha256": "897eeb4135cbfa2b912e4ed345262e453e1da30cf30ae74cc1f98c91bd38a35e",
+  "status": "COMPLETE",
+  "branch": "backup/forge-work-20261003",
+  "expected_file_count": 65,
+  "expected_total_bytes": 1678227,
+  "repositories": [
+    {
+      "repo": "pgfrag",
+      "commit_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+        "-c",
+        "core.autocrlf=false",
+        "-c",
+        "user.name=PGFrag Maintainer",
+        "-c",
+        "user.email=pgfrag@local",
+        "commit",
+        "-m",
+        "backup: preserve frozen geometry and wall diagnostics",
+        "-m",
+        "Source and bounded evidence for safe-v2 topology, provider and guard contracts, synthetic energy gate, mesh binding, and local wall checks. Some checks pass only their fixed fixtures; bias remains NOT_ADMITTED and no coupled, native, solver, or physical qualification is claimed."
+      ],
+      "commit_rc": 0,
+      "commit_stdout": "[backup/forge-work-20261003 861fc8a] backup: preserve frozen geometry and wall diagnostics\n 54 files changed, 28406 insertions(+)\n create mode 100644 docs/evidence/20261006/core_incremental/discretization_bias/fixture_metrics.png\n create mode 100644 docs/evidence/20261006/core_incremental/discretization_bias/independent_review.json\n create mode 100644 docs/evidence/20261006/core_incremental/discretization_bias/independent_review.md\n create mode 100644 docs/evidence/20261006/core_incremental/discretization_bias/metrics_report.json\n create mode 100644 docs/evidence/20261006/core_incremental/discretization_bias/pair_metrics.csv\n create mode 100644 docs/evidence/20261006/core_incremental/griffith_energy_gate_v2/ACTUAL_TEST_RECEIPT.json\n create mode 100644 docs/evidence/20261006/core_incremental/griffith_energy_gate_v2/fixture_states.json\n create mode 100644 docs/evidence/20261006/core_incremental/griffith_energy_gate_v2/quasistatic_energy_gate_flow.svg\n create mode 100644 docs/evidence/20261006/core_incremental/j_guard_v3/precopy_guard_v3.diff\n create mode 100644 docs/evidence/20261006/core_incremental/j_guard_v3/precopy_guard_v3_pins.json\n create mode 100644 docs/evidence/20261006/core_incremental/j_guard_v3/precopy_guard_v3_receipt.json\n create mode 100644 docs/evidence/20261006/core_incremental/local_front_provider/REVIEW.md\n create mode 100644 docs/evidence/20261006/core_incremental/local_front_support_safe_v2/REVIEW.md\n create mode 100644 docs/evidence/20261006/core_incremental/mesh_binding/MESH_BINDING_REVIEW.md\n create mode 100644 docs/evidence/20261006/core_incremental/mesh_binding/fixture/explicit_fragment_fixture_output.json\n create mode 100644 docs/evidence/20261006/core_incremental/mesh_binding/fixture/interface_pair_ledger.json\n create mode 100644 docs/evidence/20261006/core_incremental/mesh_binding/fixture/piece_negative.obj\n create mode 100644 docs/evidence/20261006/core_incremental/mesh_binding/fixture/piece_positive.obj\n create mode 100644 docs/evidence/20261006/core_incremental/mesh_binding/mesh_binding_execution_receipt.json\n create mode 100644 docs/evidence/20261006/core_incremental/wall_resolution/REVIEW.md\n create mode 100644 docs/evidence/20261006/core_incremental/wall_resolution/actual_section_samples.png\n create mode 100644 docs/evidence/20261006/core_incremental/wall_resolution/thin_wall_qualification_inputs.json\n create mode 100644 docs/evidence/20261006/core_incremental/wall_resolution/thin_wall_qualification_report.json\n create mode 100644 experiments/discretization_bias_metrics_20261006/README.md\n create mode 100644 experiments/discretization_bias_metrics_20261006/bias_metrics.py\n create mode 100644 experiments/discretization_bias_metrics_20261006/fixtures/baseline.json\n create mode 100644 experiments/discretization_bias_metrics_20261006/fixtures/fixture_study.json\n create mode 100644 experiments/discretization_bias_metrics_20261006/fixtures/graph_only_fragments.json\n create mode 100644 experiments/discretization_bias_metrics_20261006/fixtures/h_seed_changed.json\n create mode 100644 experiments/discretization_bias_metrics_20261006/fixtures/no_fracture.json\n create mode 100644 experiments/discretization_bias_metrics_20261006/fixtures/rotated.json\n create mode 100644 experiments/discretization_bias_metrics_20261006/fixtures/translated.json\n create mode 100644 experiments/discretization_bias_metrics_20261006/tests/test_bias_metrics.py\n create mode 100644 experiments/fracture_artifact_contract_20261006/fixtures/planar_box_mesh_binding_manifest.json\n create mode 100644 experiments/fracture_artifact_contract_20261006/mesh_binding_validator.py\n create mode 100644 experiments/fracture_artifact_contract_20261006/test_mesh_binding_validator.py\n create mode 100644 experiments/griffith_front_energy_gate_v2_20261006/CHANGE_SUMMARY.md\n create mode 100644 experiments/griffith_front_energy_gate_v2_20261006/README.md\n create mode 100644 experiments/griffith_front_energy_gate_v2_20261006/griffith_front_energy_gate_v2.py\n create mode 100644 experiments/griffith_front_energy_gate_v2_20261006/run_fixture.py\n create mode 100644 experiments/griffith_front_energy_gate_v2_20261006/test_griffith_front_energy_gate_v2.py\n create mode 100644 experiments/local_front_provider_20261006/README.md\n create mode 100644 experiments/local_front_provider_20261006/local_front_provider.py\n create mode 100644 experiments/local_front_provider_20261006/local_front_section.png\n create mode 100644 experiments/local_front_provider_20261006/provider_diagnostic.json\n create mode 100644 experiments/local_front_provider_20261006/run_provider_diagnostic.py\n create mode 100644 experiments/local_front_support_safe_v2_20261006/README.md\n create mode 100644 experiments/local_front_support_safe_v2_20261006/focused_geometry_check.py\n create mode 100644 experiments/local_front_support_safe_v2_20261006/support_topology.py\n create mode 100644 experiments/modeiii_j_integral_20261006/j_integral_precopy_guard_v3.py\n create mode 100644 experiments/modeiii_j_integral_20261006/test_precopy_guard_v3.py\n create mode 100644 experiments/wall_resolution_guard_20261006/README.md\n create mode 100644 experiments/wall_resolution_guard_20261006/test_thin_wall_qualification.py\n create mode 100644 experiments/wall_resolution_guard_20261006/thin_wall_qualification.py\n",
+      "commit_stderr": "",
+      "commit": "861fc8a4b09a646b82f25c2b24b2abc3ba7fb873",
+      "parent": "ab926e275a215979b4338a9f2b2d63bf5a0e90c8",
+      "commit_path_count": 54,
+      "commit_paths": [
+        "docs/evidence/20261006/core_incremental/discretization_bias/fixture_metrics.png",
+        "docs/evidence/20261006/core_incremental/discretization_bias/independent_review.json",
+        "docs/evidence/20261006/core_incremental/discretization_bias/independent_review.md",
+        "docs/evidence/20261006/core_incremental/discretization_bias/metrics_report.json",
+        "docs/evidence/20261006/core_incremental/discretization_bias/pair_metrics.csv",
+        "docs/evidence/20261006/core_incremental/griffith_energy_gate_v2/ACTUAL_TEST_RECEIPT.json",
+        "docs/evidence/20261006/core_incremental/griffith_energy_gate_v2/fixture_states.json",
+        "docs/evidence/20261006/core_incremental/griffith_energy_gate_v2/quasistatic_energy_gate_flow.svg",
+        "docs/evidence/20261006/core_incremental/j_guard_v3/precopy_guard_v3_pins.json",
+        "docs/evidence/20261006/core_incremental/j_guard_v3/precopy_guard_v3_receipt.json",
+        "docs/evidence/20261006/core_incremental/j_guard_v3/precopy_guard_v3.diff",
+        "docs/evidence/20261006/core_incremental/local_front_provider/REVIEW.md",
+        "docs/evidence/20261006/core_incremental/local_front_support_safe_v2/REVIEW.md",
+        "docs/evidence/20261006/core_incremental/mesh_binding/fixture/explicit_fragment_fixture_output.json",
+        "docs/evidence/20261006/core_incremental/mesh_binding/fixture/interface_pair_ledger.json",
+        "docs/evidence/20261006/core_incremental/mesh_binding/fixture/piece_negative.obj",
+        "docs/evidence/20261006/core_incremental/mesh_binding/fixture/piece_positive.obj",
+        "docs/evidence/20261006/core_incremental/mesh_binding/mesh_binding_execution_receipt.json",
+        "docs/evidence/20261006/core_incremental/mesh_binding/MESH_BINDING_REVIEW.md",
+        "docs/evidence/20261006/core_incremental/wall_resolution/actual_section_samples.png",
+        "docs/evidence/20261006/core_incremental/wall_resolution/REVIEW.md",
+        "docs/evidence/20261006/core_incremental/wall_resolution/thin_wall_qualification_inputs.json",
+        "docs/evidence/20261006/core_incremental/wall_resolution/thin_wall_qualification_report.json",
+        "experiments/discretization_bias_metrics_20261006/bias_metrics.py",
+        "experiments/discretization_bias_metrics_20261006/fixtures/baseline.json",
+        "experiments/discretization_bias_metrics_20261006/fixtures/fixture_study.json",
+        "experiments/discretization_bias_metrics_20261006/fixtures/graph_only_fragments.json",
+        "experiments/discretization_bias_metrics_20261006/fixtures/h_seed_changed.json",
+        "experiments/discretization_bias_metrics_20261006/fixtures/no_fracture.json",
+        "experiments/discretization_bias_metrics_20261006/fixtures/rotated.json",
+        "experiments/discretization_bias_metrics_20261006/fixtures/translated.json",
+        "experiments/discretization_bias_metrics_20261006/README.md",
+        "experiments/discretization_bias_metrics_20261006/tests/test_bias_metrics.py",
+        "experiments/fracture_artifact_contract_20261006/fixtures/planar_box_mesh_binding_manifest.json",
+        "experiments/fracture_artifact_contract_20261006/mesh_binding_validator.py",
+        "experiments/fracture_artifact_contract_20261006/test_mesh_binding_validator.py",
+        "experiments/griffith_front_energy_gate_v2_20261006/CHANGE_SUMMARY.md",
+        "experiments/griffith_front_energy_gate_v2_20261006/griffith_front_energy_gate_v2.py",
+        "experiments/griffith_front_energy_gate_v2_20261006/README.md",
+        "experiments/griffith_front_energy_gate_v2_20261006/run_fixture.py",
+        "experiments/griffith_front_energy_gate_v2_20261006/test_griffith_front_energy_gate_v2.py",
+        "experiments/local_front_provider_20261006/local_front_provider.py",
+        "experiments/local_front_provider_20261006/local_front_section.png",
+        "experiments/local_front_provider_20261006/provider_diagnostic.json",
+        "experiments/local_front_provider_20261006/README.md",
+        "experiments/local_front_provider_20261006/run_provider_diagnostic.py",
+        "experiments/local_front_support_safe_v2_20261006/focused_geometry_check.py",
+        "experiments/local_front_support_safe_v2_20261006/README.md",
+        "experiments/local_front_support_safe_v2_20261006/support_topology.py",
+        "experiments/modeiii_j_integral_20261006/j_integral_precopy_guard_v3.py",
+        "experiments/modeiii_j_integral_20261006/test_precopy_guard_v3.py",
+        "experiments/wall_resolution_guard_20261006/README.md",
+        "experiments/wall_resolution_guard_20261006/test_thin_wall_qualification.py",
+        "experiments/wall_resolution_guard_20261006/thin_wall_qualification.py"
+      ],
+      "committed_blob_checks": [
+        {
+          "path": "experiments/local_front_support_safe_v2_20261006/support_topology.py",
+          "git_object_id": "15a2357d632c8892daef98cecc42149575bfcbb7",
+          "content_bytes": 27060,
+          "content_sha256": "919cb60a6d65ae6b55a0bd12b569ec6627066b2a72dfcca52145209336588664"
+        },
+        {
+          "path": "experiments/local_front_support_safe_v2_20261006/focused_geometry_check.py",
+          "git_object_id": "b9719c6e77625383cba2bb8a1956fafce72b2439",
+          "content_bytes": 5365,
+          "content_sha256": "2ce8de74fc2f646f6d9cc50aad95ed7e44c55be5150eba3e8f5543d20d37269e"
+        },
+        {
+          "path": "experiments/local_front_support_safe_v2_20261006/README.md",
+          "git_object_id": "aeffed36723d20ee259e28a3aea04402806e9ca7",
+          "content_bytes": 1175,
+          "content_sha256": "be2e030e71f031518bc7c806be12dd3918898158c19d36041f8628c8d89982aa"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/local_front_support_safe_v2/REVIEW.md",
+          "git_object_id": "32d05989ec40ff2880fbeda8d51d3951409a152c",
+          "content_bytes": 4731,
+          "content_sha256": "f25cd8a05823d6288545c3a4a0ccfb0156fcaa585625033c2d11fd99b3933d23"
+        },
+        {
+          "path": "experiments/local_front_provider_20261006/local_front_provider.py",
+          "git_object_id": "a7b8c0b05e96ddab46c1fd626c3388d28fac1e89",
+          "content_bytes": 29526,
+          "content_sha256": "c586ec99dee8dc61f7a74904e1c0ce196d8ca562cbc2bb6f61411a8262c96421"
+        },
+        {
+          "path": "experiments/local_front_provider_20261006/run_provider_diagnostic.py",
+          "git_object_id": "c841f3c98c8d4aec30187b7fee143b4dbc2bb76f",
+          "content_bytes": 37108,
+          "content_sha256": "e5516f17dc946e62e73b6400736a50bb432ad2cd75537efff7c635ea70ec53d8"
+        },
+        {
+          "path": "experiments/local_front_provider_20261006/README.md",
+          "git_object_id": "a75bd681e905d6b7177704d5f0e86f05c4ebff01",
+          "content_bytes": 1511,
+          "content_sha256": "e85c4beb6bc131015f65c9e047154330f0e93196b1c44425c71207ff944faf58"
+        },
+        {
+          "path": "experiments/local_front_provider_20261006/provider_diagnostic.json",
+          "git_object_id": "2e8faa96215f99e3e7334121aaf8184548c3f902",
+          "content_bytes": 106887,
+          "content_sha256": "d5e9ac536c8bc5876359662c880e428fba68991680414dcf5766f059282c7e2d"
+        },
+        {
+          "path": "experiments/local_front_provider_20261006/local_front_section.png",
+          "git_object_id": "e53ef6575785adafba149cc5581107783cebdd01",
+          "content_bytes": 23352,
+          "content_sha256": "46c02dbd9344d975e46f5d26fd35ef85615d18c8a07ba7558bbde3593555713c"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/local_front_provider/REVIEW.md",
+          "git_object_id": "16b8b3d5a74f361c09ee7d444e8c345f3a25af03",
+          "content_bytes": 4920,
+          "content_sha256": "2f7605e96d8f9caf88420cd3cdbb2f06d15237cbe793c7ceb7ff99f92adb358f"
+        },
+        {
+          "path": "experiments/modeiii_j_integral_20261006/j_integral_precopy_guard_v3.py",
+          "git_object_id": "6725bacd13368b94c8533fb2a3114c57104dcdce",
+          "content_bytes": 14066,
+          "content_sha256": "b4d5ca3734d0e44e7b8ed4bb690257c61e72c647d499003faae6d8fee6880b7b"
+        },
+        {
+          "path": "experiments/modeiii_j_integral_20261006/test_precopy_guard_v3.py",
+          "git_object_id": "7d4620979c29ca2009a8feb0697b94547bd75972",
+          "content_bytes": 5462,
+          "content_sha256": "98195943bd197d4c7f00dcb4bd7bf930a0a40786eece2514bab7fb931fa467fe"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/j_guard_v3/precopy_guard_v3_receipt.json",
+          "git_object_id": "e1048de0ddc52a32f26aadab75950b56ba45d996",
+          "content_bytes": 1162,
+          "content_sha256": "b9babab6396225b9d1700824a530482aee294c79c262834d283fc9e5c88ccad7"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/j_guard_v3/precopy_guard_v3_pins.json",
+          "git_object_id": "6eee487167b5452dd0c68fa3d303b683a8811ea7",
+          "content_bytes": 4452,
+          "content_sha256": "72c87a860a7fb796e6d53bb7dbda8724a1aed27b4f6106ab97e3ec9afe6e22f1"
+        },
+        {
+          "path": "experiments/griffith_front_energy_gate_v2_20261006/griffith_front_energy_gate_v2.py",
+          "git_object_id": "a5ebc8d999b6b612ac44b81f4e67b03122b63e45",
+          "content_bytes": 28295,
+          "content_sha256": "442426684ffa776ea24a877ce30e368a8795608aefc82883a91701281fb144b3"
+        },
+        {
+          "path": "experiments/griffith_front_energy_gate_v2_20261006/test_griffith_front_energy_gate_v2.py",
+          "git_object_id": "7693352f91a877aee549bab3bcb8b705b076403a",
+          "content_bytes": 9386,
+          "content_sha256": "3bcf3282d518e284a1b5b92e3283dbdbcd2d9d559d8ce97d6bfc45ee95e78309"
+        },
+        {
+          "path": "experiments/griffith_front_energy_gate_v2_20261006/run_fixture.py",
+          "git_object_id": "cc0acb1cba9686f7269f4277e0d2c860f755d9b1",
+          "content_bytes": 11714,
+          "content_sha256": "5bb595cf7cc35f113dcda5483ea7299d4e407b7278fb2ed3644a8a552ea130fc"
+        },
+        {
+          "path": "experiments/griffith_front_energy_gate_v2_20261006/README.md",
+          "git_object_id": "551c153d015c5375145e27e2f42b9dbbd778faf5",
+          "content_bytes": 4621,
+          "content_sha256": "def58b109f11c4fb81990d4b8398b480c4b0c12138ac507ee619f2ff05fc7432"
+        },
+        {
+          "path": "experiments/griffith_front_energy_gate_v2_20261006/CHANGE_SUMMARY.md",
+          "git_object_id": "b16e7417360c50447f17340bb3a4de9afcb89be8",
+          "content_bytes": 1578,
+          "content_sha256": "26572825fd53a74f570e23603313aeede151f7f98ffa31b715f02c8204fe98ac"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/griffith_energy_gate_v2/ACTUAL_TEST_RECEIPT.json",
+          "git_object_id": "b60919ab06cf810bd26074c90fff385c88d81cfd",
+          "content_bytes": 3536,
+          "content_sha256": "29c66ffd20d4e349f33e64fb9c992e7ffa6adf5ba679cdaa6b04c4c745fb4c00"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/griffith_energy_gate_v2/fixture_states.json",
+          "git_object_id": "a93b5465d4fb0e33e272bff9f7391ad8a0970afe",
+          "content_bytes": 127145,
+          "content_sha256": "0884d424a404adc918555dff95afc3f2b1b9ee773f728d53f62d6bad54aeeb08"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/griffith_energy_gate_v2/quasistatic_energy_gate_flow.svg",
+          "git_object_id": "34f9c432606fe9411ea613a623040440c5232890",
+          "content_bytes": 3811,
+          "content_sha256": "00293a98c7a6f03a1eedd2ffb04a75d43d0901d877137e0ed666ebe5bda3ef30"
+        },
+        {
+          "path": "experiments/fracture_artifact_contract_20261006/mesh_binding_validator.py",
+          "git_object_id": "d470061b15c006d42c0aa66a58731369b0ea3ab4",
+          "content_bytes": 38002,
+          "content_sha256": "3cd8018456c8be1e8a17cdbac9cfb4d7b227f09bb3170f8a04083ede2db8d51f"
+        },
+        {
+          "path": "experiments/fracture_artifact_contract_20261006/test_mesh_binding_validator.py",
+          "git_object_id": "dfab9e36cbd960aee2549bf3ae75869348e0fd62",
+          "content_bytes": 6913,
+          "content_sha256": "d21fd672bf799b24d6bd4a8fabc78346a4936be2036067552e47a23a085c4a0b"
+        },
+        {
+          "path": "experiments/fracture_artifact_contract_20261006/fixtures/planar_box_mesh_binding_manifest.json",
+          "git_object_id": "d65690617f7c7b6571ac36ca8211943d8a49f141",
+          "content_bytes": 1480,
+          "content_sha256": "6c490acb9ac1f54b045373e633d1db441361b46669d9b1b559a65e6a19b058b3"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/mesh_binding/mesh_binding_execution_receipt.json",
+          "git_object_id": "9698dd444f6cd10ebe74dc1c7970c3d6d262d642",
+          "content_bytes": 3850,
+          "content_sha256": "e14f8eae0ccdeab5b8e909d7748dd225187b122d5cdead2b967129e4a3db81f1"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/mesh_binding/MESH_BINDING_REVIEW.md",
+          "git_object_id": "4a5b4ee0c129d704a7e5ddb733bbff682f8c7728",
+          "content_bytes": 4949,
+          "content_sha256": "d94278c391a9afc3d9ec3bb7c668d610a399cd8df18b7341f68b2f38cebb73c8"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/mesh_binding/fixture/explicit_fragment_fixture_output.json",
+          "git_object_id": "b769dd9a096982cbd2068025b4a98d1fb742ef07",
+          "content_bytes": 17872,
+          "content_sha256": "0b18a24b8f58d1df516743c55cc0cb4c4a3629e5288fbcd920be3c4afecebe16"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/mesh_binding/fixture/interface_pair_ledger.json",
+          "git_object_id": "c94907d07b61faba554647e8b15a0e89b21567d4",
+          "content_bytes": 3973,
+          "content_sha256": "b5e2d578d7f56f28cdf0edf988f0755ff4002b2f3a3b9b6fe96a337672bfd9fe"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/mesh_binding/fixture/piece_negative.obj",
+          "git_object_id": "681c57997fac008dad2fd1ada6e0fa15bb554d21",
+          "content_bytes": 812,
+          "content_sha256": "5f5e8e3556173f7f214b98d0e1cf87ec3f0ff84898d127e60ecd4b78a3e4a083"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/mesh_binding/fixture/piece_positive.obj",
+          "git_object_id": "66d99067ea3d34609ecab73f25f69bb5cf54c132",
+          "content_bytes": 808,
+          "content_sha256": "342e18222e59ce3e1863b606cab77841bd8035adb6da326573eba73512eec42f"
+        },
+        {
+          "path": "experiments/wall_resolution_guard_20261006/thin_wall_qualification.py",
+          "git_object_id": "46520ce5c95b4ee0d593e0b470f0f03b6cb6a354",
+          "content_bytes": 49085,
+          "content_sha256": "cd7eee448bf25d852dd2c23b8f6ea371c21004ed3a6b901b7be2e271a1b437d6"
+        },
+        {
+          "path": "experiments/wall_resolution_guard_20261006/test_thin_wall_qualification.py",
+          "git_object_id": "d419c74d918179189069cd7be4a966e8b23ea0c8",
+          "content_bytes": 7585,
+          "content_sha256": "bf71b77c26b4651dc69b36f3f5ebc81053454f35c7cc29e504dcfadf25b8b09b"
+        },
+        {
+          "path": "experiments/wall_resolution_guard_20261006/README.md",
+          "git_object_id": "8ea2e7e5c9024b1e70fce283b940c3c036f5e0be",
+          "content_bytes": 2135,
+          "content_sha256": "12fa002f824784a8b4b9b7a03e1c6148341a0ae2b03e8e780a3fd1a1f11edf4e"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/wall_resolution/thin_wall_qualification_inputs.json",
+          "git_object_id": "e78715f1dd40dc2ee6daa5caaa9bcb701b487c48",
+          "content_bytes": 246997,
+          "content_sha256": "1f86e4d9d1627ede302a2c660024597a62387866dca2eb2572a1023854b1ef86"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/wall_resolution/thin_wall_qualification_report.json",
+          "git_object_id": "1295abe435e9fac588c154328967907202c241e3",
+          "content_bytes": 140949,
+          "content_sha256": "b8802f7e20c07fbed172aedd18f875561ef8d53a7f11624dc2ee40f112b85316"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/wall_resolution/actual_section_samples.png",
+          "git_object_id": "8eb4202f2fc30aca575105a900505e896c48e18e",
+          "content_bytes": 165180,
+          "content_sha256": "0fbeaca6413b1dd5a91dc73611fe195db095a4b836df528797d76fb2617818ba"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/wall_resolution/REVIEW.md",
+          "git_object_id": "acae200a087a827bdf6c6d83cd4ff6ce0c9aa942",
+          "content_bytes": 2638,
+          "content_sha256": "3aaaed5bbe4477a778ee4cb80252afa8cb5395e8ffebaf24d0a437a4d4b02bab"
+        },
+        {
+          "path": "experiments/discretization_bias_metrics_20261006/bias_metrics.py",
+          "git_object_id": "bc56dd47d4fc0efe9f9a87738db71db44668335b",
+          "content_bytes": 23542,
+          "content_sha256": "88a1dee2c69e19cfe26751f5b9e875b13335faa98b77d34d25bc0a27b50f141a"
+        },
+        {
+          "path": "experiments/discretization_bias_metrics_20261006/tests/test_bias_metrics.py",
+          "git_object_id": "7b0ee193925385e55a851347635f449341b66b40",
+          "content_bytes": 5834,
+          "content_sha256": "dd3390cb7a7844d4f908fdfa682f18c9a9a95f82d336774aa89dca20d31756b0"
+        },
+        {
+          "path": "experiments/discretization_bias_metrics_20261006/README.md",
+          "git_object_id": "40d2fbb05a64cb6e82661128da32d8f0594a3fe0",
+          "content_bytes": 3367,
+          "content_sha256": "fdb8a53b7381fb3240f19f1296e37aba98fb333e2d59cae7d2e9b2644e67e369"
+        },
+        {
+          "path": "experiments/discretization_bias_metrics_20261006/fixtures/fixture_study.json",
+          "git_object_id": "1a7cd83a2aec4ab15b53d42ee7aa8c60673e4605",
+          "content_bytes": 13779,
+          "content_sha256": "36e613370ca6c0bec07365cee57fcaa05ba904e43fc264f22d4cc45f432a9aaa"
+        },
+        {
+          "path": "experiments/discretization_bias_metrics_20261006/fixtures/baseline.json",
+          "git_object_id": "96ae282db233b3533437887d7c37836e8cf24eaf",
+          "content_bytes": 3885,
+          "content_sha256": "e6229529d842a7d202f8cd003fc01ddc4277b4bcc828b4ea73fe94df02b77055"
+        },
+        {
+          "path": "experiments/discretization_bias_metrics_20261006/fixtures/rotated.json",
+          "git_object_id": "a4dade375a5fb6dcb4ae0050807648257831610e",
+          "content_bytes": 3887,
+          "content_sha256": "e6d46862fea2a1735b355d891685baea093f8fe7c2bddc7205f5164f93f30544"
+        },
+        {
+          "path": "experiments/discretization_bias_metrics_20261006/fixtures/translated.json",
+          "git_object_id": "685027c355ea0ff4e9b036327bd20c9789b5880e",
+          "content_bytes": 3945,
+          "content_sha256": "ee9568265c802aaac7f668845844db31d3e537b24b9e695c4496528b762eefde"
+        },
+        {
+          "path": "experiments/discretization_bias_metrics_20261006/fixtures/h_seed_changed.json",
+          "git_object_id": "44a50f46a037116af3fa51fbcd722878a8555b13",
+          "content_bytes": 3885,
+          "content_sha256": "8157b597db36e3e3396d96801b8596c8956105f4267a02779d89a40dff56cd93"
+        },
+        {
+          "path": "experiments/discretization_bias_metrics_20261006/fixtures/no_fracture.json",
+          "git_object_id": "5e4ee374e36a2ca019c23048c3084a8212887025",
+          "content_bytes": 2833,
+          "content_sha256": "69e19416af39939b0ab08f03e19493cd52796f65d3c698b82317986302a48ff8"
+        },
+        {
+          "path": "experiments/discretization_bias_metrics_20261006/fixtures/graph_only_fragments.json",
+          "git_object_id": "fcefd9de2d88570b008ff0397dbc2785af95c55b",
+          "content_bytes": 3610,
+          "content_sha256": "70443e19c332927e0b761b369aa4c7f7786e60fb4f028389803a5d88ef43e9f9"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/discretization_bias/metrics_report.json",
+          "git_object_id": "be526ad05e7d46157b73faf4d454a68f164a4a3c",
+          "content_bytes": 4665,
+          "content_sha256": "e37d0098a52bed881f87f4c37018c0efc2737afa9e299f4301581f2eed7de5b1"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/discretization_bias/pair_metrics.csv",
+          "git_object_id": "2bdfcb7dd342f6c5b2f66b9b0252fecf2a3333da",
+          "content_bytes": 1923,
+          "content_sha256": "543e392d06ee7b9220d053ceffafb278f769d1ecb40b137ccbcec135125eb7d0"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/discretization_bias/fixture_metrics.png",
+          "git_object_id": "d2d2c3c17406efcae2cf505d6fd582b1c2d5bb17",
+          "content_bytes": 80768,
+          "content_sha256": "7b0cd7eccd791228ba783970f199b14b31ac806e72d0b46211d4e852ef7a2db9"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/discretization_bias/independent_review.md",
+          "git_object_id": "fe4bb7423081495a3665bbe2ed9ad3db9dfc3dd0",
+          "content_bytes": 1746,
+          "content_sha256": "03a54b2c56622307ada1627d15796823d01244817ad8b47f00981cc85c904061"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/discretization_bias/independent_review.json",
+          "git_object_id": "6f46d20cf2d96af543e8ef22e2ff85afcee49d71",
+          "content_bytes": 3412,
+          "content_sha256": "85633590eb3dbbd02f9b150def48e454b9e0abe1bc178106044c32938ead9fd1"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/j_guard_v3/precopy_guard_v3.diff",
+          "git_object_id": "3400fe1665c1c7a5e20648e845db2afa58fcc0e7",
+          "content_bytes": 4131,
+          "content_sha256": "37c3698ce34ad16861382e6a51e052bb066acdaf61864d81db8b32113fed6324"
+        }
+      ],
+      "push_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+        "-c",
+        "core.autocrlf=false",
+        "push",
+        "origin",
+        "refs/heads/backup/forge-work-20261003:refs/heads/backup/forge-work-20261003"
+      ],
+      "push_rc": 0,
+      "push_stdout": "",
+      "push_stderr": "To https://github.com/xiemonb666/pgfrag.git\n   ab926e2..861fc8a  backup/forge-work-20261003 -> backup/forge-work-20261003\n",
+      "remote_head_after": "861fc8a4b09a646b82f25c2b24b2abc3ba7fb873",
+      "local_head_after": "861fc8a4b09a646b82f25c2b24b2abc3ba7fb873",
+      "remote_matches_local": true,
+      "tracked_status_after": "",
+      "tracked_clean_after": true
+    },
+    {
+      "repo": "vesselforge",
+      "commit_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "-c",
+        "core.autocrlf=false",
+        "-c",
+        "user.name=A12 SynLab",
+        "-c",
+        "user.email=synlab@local",
+        "commit",
+        "-m",
+        "backup: preserve catalog corner-fairing design audit",
+        "-m",
+        "Bounded 2-D math prototype and independent algebra audit only; no CAD/STEP or real-vessel, styling, global-wall, fracture, or physical qualification."
+      ],
+      "commit_rc": 0,
+      "commit_stdout": "[backup/forge-work-20261003 d46d8ed] backup: preserve catalog corner-fairing design audit\n 11 files changed, 4877 insertions(+)\n create mode 100644 docs/evidence/20261006/core_incremental/catalog_corner_fairing/DESIGN_AUDIT.json\n create mode 100644 docs/evidence/20261006/core_incremental/catalog_corner_fairing/POST_RUN_SOURCE_PINS.json\n create mode 100644 docs/evidence/20261006/core_incremental/catalog_corner_fairing/PRE_RUN_SOURCE_PINS.json\n create mode 100644 docs/evidence/20261006/core_incremental/catalog_corner_fairing/REVIEW.md\n create mode 100644 docs/evidence/20261006/core_incremental/catalog_corner_fairing/catalog_corner_fairing_profile_plot.png\n create mode 100644 docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/INDEPENDENT_ALGEBRA_CHECK.json\n create mode 100644 docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/REVIEW.json\n create mode 100644 docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/REVIEW.md\n create mode 100644 docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/independent_control_check.py\n create mode 100644 experiments/catalog_corner_fairing_20261006/DESIGN_NOTE.md\n create mode 100644 experiments/catalog_corner_fairing_20261006/catalog_corner_fairing.py\n",
+      "commit_stderr": "",
+      "commit": "d46d8ed0075370ac1869eecb9a664411197c79b3",
+      "parent": "a0ba9030ff8c5c855e82acc4a84aa09dd737092c",
+      "commit_path_count": 11,
+      "commit_paths": [
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/catalog_corner_fairing_profile_plot.png",
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/DESIGN_AUDIT.json",
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/INDEPENDENT_ALGEBRA_CHECK.json",
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/independent_control_check.py",
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/REVIEW.json",
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/REVIEW.md",
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/POST_RUN_SOURCE_PINS.json",
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/PRE_RUN_SOURCE_PINS.json",
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/REVIEW.md",
+        "experiments/catalog_corner_fairing_20261006/catalog_corner_fairing.py",
+        "experiments/catalog_corner_fairing_20261006/DESIGN_NOTE.md"
+      ],
+      "committed_blob_checks": [
+        {
+          "path": "experiments/catalog_corner_fairing_20261006/catalog_corner_fairing.py",
+          "git_object_id": "14b31cf1f1ed0bb68478f04e365fc5cb5f135b8c",
+          "content_bytes": 43891,
+          "content_sha256": "6c1e94150d769158c757469141aab23796b005421d3878b150271d375086d534"
+        },
+        {
+          "path": "experiments/catalog_corner_fairing_20261006/DESIGN_NOTE.md",
+          "git_object_id": "786ad3371f8414c588ab68750b931c51202004cc",
+          "content_bytes": 2602,
+          "content_sha256": "5f7b95e1cfe7e79c6006fa0e682c5b75df6d4cf1caf8791dfa0c1832534b32b5"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/catalog_corner_fairing/REVIEW.md",
+          "git_object_id": "01fbabc56ebba7914bb9e7d76391dc86b9ee6a0c",
+          "content_bytes": 5309,
+          "content_sha256": "f8922286073ba869af2256b24b83ec8b8e0fb9f5f3de7d7e5013a39fea23b7c9"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/catalog_corner_fairing/PRE_RUN_SOURCE_PINS.json",
+          "git_object_id": "1f7368ec477fcf5c57774f7f0e51133023eb0210",
+          "content_bytes": 589,
+          "content_sha256": "35aed61b06b58a3bcac7eafdc3b05ec8d1ce2f4f7eb91e02b70443aa048f4f5a"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/catalog_corner_fairing/POST_RUN_SOURCE_PINS.json",
+          "git_object_id": "1f7368ec477fcf5c57774f7f0e51133023eb0210",
+          "content_bytes": 589,
+          "content_sha256": "35aed61b06b58a3bcac7eafdc3b05ec8d1ce2f4f7eb91e02b70443aa048f4f5a"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/catalog_corner_fairing/DESIGN_AUDIT.json",
+          "git_object_id": "986d52118a918d0be5b7cce532c55a75909a2166",
+          "content_bytes": 116672,
+          "content_sha256": "e36bb07ea07469671babda8e35c11fcf5a4a15b1d624ed2a16eaf44a3f57cf7e"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/catalog_corner_fairing/catalog_corner_fairing_profile_plot.png",
+          "git_object_id": "8f7e02b36aea7594dd6f0cbc0ac50074487338cf",
+          "content_bytes": 164328,
+          "content_sha256": "6427145d9e63a94c986170783f17d91a4b126224ec93b148c6545fcc7e864c0f"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/independent_control_check.py",
+          "git_object_id": "2459316ba9c2a0db325eccc5c707be8f58b78182",
+          "content_bytes": 7872,
+          "content_sha256": "36dc9b731064eac5bb9395f75af952f6d1791a14aa1f2e96ebf0574b6fe24c24"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/INDEPENDENT_ALGEBRA_CHECK.json",
+          "git_object_id": "e761b0a17a9d8c99fcbadaffeb859ab98f894e4f",
+          "content_bytes": 14258,
+          "content_sha256": "800b22706bc35679d939f76a949fc801500b9030a5b205d43988ce9c55c8bb5a"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/REVIEW.md",
+          "git_object_id": "43371f48fdd47a75d69d780bfdf0eff6489b6a18",
+          "content_bytes": 3049,
+          "content_sha256": "90a7ffe48c398e012468fb0617482e5fd37a1054d3fc24ecb38d4addee6a1efb"
+        },
+        {
+          "path": "docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/REVIEW.json",
+          "git_object_id": "34a74f68f0335762f6e37a27aecba6ac940a15b6",
+          "content_bytes": 3765,
+          "content_sha256": "c0fe70e3eadbd64e33fda2a22ba26c6c0941bd8847fe63738446e1c03959abcc"
+        }
+      ],
+      "push_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+        "-c",
+        "core.autocrlf=false",
+        "push",
+        "origin",
+        "refs/heads/backup/forge-work-20261003:refs/heads/backup/forge-work-20261003"
+      ],
+      "push_rc": 0,
+      "push_stdout": "",
+      "push_stderr": "To https://github.com/xiemonb666/vesselforge.git\n   a0ba903..d46d8ed  backup/forge-work-20261003 -> backup/forge-work-20261003\n",
+      "remote_head_after": "d46d8ed0075370ac1869eecb9a664411197c79b3",
+      "local_head_after": "d46d8ed0075370ac1869eecb9a664411197c79b3",
+      "remote_matches_local": true,
+      "tracked_status_after": "",
+      "tracked_clean_after": true
+    }
+  ],
+  "copy_and_source_checks": [
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/local_front_support_safe_v2_20261006/support_topology.py",
+      "destination_path": "experiments/local_front_support_safe_v2_20261006/support_topology.py",
+      "operation": "stage_exact_existing",
+      "bytes": 27060,
+      "source_sha256": "919cb60a6d65ae6b55a0bd12b569ec6627066b2a72dfcca52145209336588664",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/local_front_support_safe_v2_20261006/focused_geometry_check.py",
+      "destination_path": "experiments/local_front_support_safe_v2_20261006/focused_geometry_check.py",
+      "operation": "stage_exact_existing",
+      "bytes": 5365,
+      "source_sha256": "2ce8de74fc2f646f6d9cc50aad95ed7e44c55be5150eba3e8f5543d20d37269e",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/local_front_support_safe_v2_20261006/README.md",
+      "destination_path": "experiments/local_front_support_safe_v2_20261006/README.md",
+      "operation": "stage_exact_existing",
+      "bytes": 1175,
+      "source_sha256": "be2e030e71f031518bc7c806be12dd3918898158c19d36041f8628c8d89982aa",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/local_front_support_safe_v2_20261006/REVIEW.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_support_safe_v2/REVIEW.md",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 4731,
+      "source_sha256": "f25cd8a05823d6288545c3a4a0ccfb0156fcaa585625033c2d11fd99b3933d23",
+      "destination_preexists": false
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/local_front_provider_20261006/local_front_provider.py",
+      "destination_path": "experiments/local_front_provider_20261006/local_front_provider.py",
+      "operation": "stage_exact_existing",
+      "bytes": 29526,
+      "source_sha256": "c586ec99dee8dc61f7a74904e1c0ce196d8ca562cbc2bb6f61411a8262c96421",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/local_front_provider_20261006/run_provider_diagnostic.py",
+      "destination_path": "experiments/local_front_provider_20261006/run_provider_diagnostic.py",
+      "operation": "stage_exact_existing",
+      "bytes": 37108,
+      "source_sha256": "e5516f17dc946e62e73b6400736a50bb432ad2cd75537efff7c635ea70ec53d8",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/local_front_provider_20261006/README.md",
+      "destination_path": "experiments/local_front_provider_20261006/README.md",
+      "operation": "stage_exact_existing",
+      "bytes": 1511,
+      "source_sha256": "e85c4beb6bc131015f65c9e047154330f0e93196b1c44425c71207ff944faf58",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/local_front_provider_20261006/provider_diagnostic.json",
+      "destination_path": "experiments/local_front_provider_20261006/provider_diagnostic.json",
+      "operation": "stage_exact_existing",
+      "bytes": 106887,
+      "source_sha256": "d5e9ac536c8bc5876359662c880e428fba68991680414dcf5766f059282c7e2d",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/local_front_provider_20261006/local_front_section.png",
+      "destination_path": "experiments/local_front_provider_20261006/local_front_section.png",
+      "operation": "stage_exact_existing",
+      "bytes": 23352,
+      "source_sha256": "46c02dbd9344d975e46f5d26fd35ef85615d18c8a07ba7558bbde3593555713c",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/local_front_provider_20261006/REVIEW.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_provider/REVIEW.md",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 4920,
+      "source_sha256": "2f7605e96d8f9caf88420cd3cdbb2f06d15237cbe793c7ceb7ff99f92adb358f",
+      "destination_preexists": false
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/modeiii_j_integral_20261006/j_integral_precopy_guard_v3.py",
+      "destination_path": "experiments/modeiii_j_integral_20261006/j_integral_precopy_guard_v3.py",
+      "operation": "stage_exact_existing",
+      "bytes": 14066,
+      "source_sha256": "b4d5ca3734d0e44e7b8ed4bb690257c61e72c647d499003faae6d8fee6880b7b",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/modeiii_j_integral_20261006/test_precopy_guard_v3.py",
+      "destination_path": "experiments/modeiii_j_integral_20261006/test_precopy_guard_v3.py",
+      "operation": "stage_exact_existing",
+      "bytes": 5462,
+      "source_sha256": "98195943bd197d4c7f00dcb4bd7bf930a0a40786eece2514bab7fb931fa467fe",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/modeiii_j_integral_20261006/precopy_guard_v3_receipt.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/j_guard_v3/precopy_guard_v3_receipt.json",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 1162,
+      "source_sha256": "b9babab6396225b9d1700824a530482aee294c79c262834d283fc9e5c88ccad7",
+      "destination_preexists": false
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/modeiii_j_integral_20261006/precopy_guard_v3_pins.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/j_guard_v3/precopy_guard_v3_pins.json",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 4452,
+      "source_sha256": "72c87a860a7fb796e6d53bb7dbda8724a1aed27b4f6106ab97e3ec9afe6e22f1",
+      "destination_preexists": false
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/griffith_front_energy_gate_v2_20261006/griffith_front_energy_gate_v2.py",
+      "destination_path": "experiments/griffith_front_energy_gate_v2_20261006/griffith_front_energy_gate_v2.py",
+      "operation": "stage_exact_existing",
+      "bytes": 28295,
+      "source_sha256": "442426684ffa776ea24a877ce30e368a8795608aefc82883a91701281fb144b3",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/griffith_front_energy_gate_v2_20261006/test_griffith_front_energy_gate_v2.py",
+      "destination_path": "experiments/griffith_front_energy_gate_v2_20261006/test_griffith_front_energy_gate_v2.py",
+      "operation": "stage_exact_existing",
+      "bytes": 9386,
+      "source_sha256": "3bcf3282d518e284a1b5b92e3283dbdbcd2d9d559d8ce97d6bfc45ee95e78309",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/griffith_front_energy_gate_v2_20261006/run_fixture.py",
+      "destination_path": "experiments/griffith_front_energy_gate_v2_20261006/run_fixture.py",
+      "operation": "stage_exact_existing",
+      "bytes": 11714,
+      "source_sha256": "5bb595cf7cc35f113dcda5483ea7299d4e407b7278fb2ed3644a8a552ea130fc",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/griffith_front_energy_gate_v2_20261006/README.md",
+      "destination_path": "experiments/griffith_front_energy_gate_v2_20261006/README.md",
+      "operation": "stage_exact_existing",
+      "bytes": 4621,
+      "source_sha256": "def58b109f11c4fb81990d4b8398b480c4b0c12138ac507ee619f2ff05fc7432",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/griffith_front_energy_gate_v2_20261006/CHANGE_SUMMARY.md",
+      "destination_path": "experiments/griffith_front_energy_gate_v2_20261006/CHANGE_SUMMARY.md",
+      "operation": "stage_exact_existing",
+      "bytes": 1578,
+      "source_sha256": "26572825fd53a74f570e23603313aeede151f7f98ffa31b715f02c8204fe98ac",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/griffith_front_energy_gate_v2_20261006/ACTUAL_TEST_RECEIPT.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/griffith_energy_gate_v2/ACTUAL_TEST_RECEIPT.json",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 3536,
+      "source_sha256": "29c66ffd20d4e349f33e64fb9c992e7ffa6adf5ba679cdaa6b04c4c745fb4c00",
+      "destination_preexists": false
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/griffith_front_energy_gate_v2_20261006/fixture_states.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/griffith_energy_gate_v2/fixture_states.json",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 127145,
+      "source_sha256": "0884d424a404adc918555dff95afc3f2b1b9ee773f728d53f62d6bad54aeeb08",
+      "destination_preexists": false
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/griffith_front_energy_gate_v2_20261006/quasistatic_energy_gate_flow.svg",
+      "destination_path": "docs/evidence/20261006/core_incremental/griffith_energy_gate_v2/quasistatic_energy_gate_flow.svg",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 3811,
+      "source_sha256": "00293a98c7a6f03a1eedd2ffb04a75d43d0901d877137e0ed666ebe5bda3ef30",
+      "destination_preexists": false
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/fracture_artifact_contract_20261006/mesh_binding_validator.py",
+      "destination_path": "experiments/fracture_artifact_contract_20261006/mesh_binding_validator.py",
+      "operation": "stage_exact_existing",
+      "bytes": 38002,
+      "source_sha256": "3cd8018456c8be1e8a17cdbac9cfb4d7b227f09bb3170f8a04083ede2db8d51f",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/fracture_artifact_contract_20261006/test_mesh_binding_validator.py",
+      "destination_path": "experiments/fracture_artifact_contract_20261006/test_mesh_binding_validator.py",
+      "operation": "stage_exact_existing",
+      "bytes": 6913,
+      "source_sha256": "d21fd672bf799b24d6bd4a8fabc78346a4936be2036067552e47a23a085c4a0b",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/fracture_artifact_contract_20261006/fixtures/planar_box_mesh_binding_manifest.json",
+      "destination_path": "experiments/fracture_artifact_contract_20261006/fixtures/planar_box_mesh_binding_manifest.json",
+      "operation": "stage_exact_existing",
+      "bytes": 1480,
+      "source_sha256": "6c490acb9ac1f54b045373e633d1db441361b46669d9b1b559a65e6a19b058b3",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/fracture_artifact_contract_20261006/mesh_binding_execution_receipt.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/mesh_binding/mesh_binding_execution_receipt.json",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 3850,
+      "source_sha256": "e14f8eae0ccdeab5b8e909d7748dd225187b122d5cdead2b967129e4a3db81f1",
+      "destination_preexists": false
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/fracture_artifact_contract_20261006/MESH_BINDING_REVIEW.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/mesh_binding/MESH_BINDING_REVIEW.md",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 4949,
+      "source_sha256": "d94278c391a9afc3d9ec3bb7c668d610a399cd8df18b7341f68b2f38cebb73c8",
+      "destination_preexists": false
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/explicit_fragment_fixture_20261006/explicit_fragment_fixture_output.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/mesh_binding/fixture/explicit_fragment_fixture_output.json",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 17872,
+      "source_sha256": "0b18a24b8f58d1df516743c55cc0cb4c4a3629e5288fbcd920be3c4afecebe16",
+      "destination_preexists": false
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/explicit_fragment_fixture_20261006/interface_pair_ledger.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/mesh_binding/fixture/interface_pair_ledger.json",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 3973,
+      "source_sha256": "b5e2d578d7f56f28cdf0edf988f0755ff4002b2f3a3b9b6fe96a337672bfd9fe",
+      "destination_preexists": false
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/explicit_fragment_fixture_20261006/piece_negative.obj",
+      "destination_path": "docs/evidence/20261006/core_incremental/mesh_binding/fixture/piece_negative.obj",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 812,
+      "source_sha256": "5f5e8e3556173f7f214b98d0e1cf87ec3f0ff84898d127e60ecd4b78a3e4a083",
+      "destination_preexists": false
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/explicit_fragment_fixture_20261006/piece_positive.obj",
+      "destination_path": "docs/evidence/20261006/core_incremental/mesh_binding/fixture/piece_positive.obj",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 808,
+      "source_sha256": "342e18222e59ce3e1863b606cab77841bd8035adb6da326573eba73512eec42f",
+      "destination_preexists": false
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/wall_resolution_guard_20261006/thin_wall_qualification.py",
+      "destination_path": "experiments/wall_resolution_guard_20261006/thin_wall_qualification.py",
+      "operation": "stage_exact_existing",
+      "bytes": 49085,
+      "source_sha256": "cd7eee448bf25d852dd2c23b8f6ea371c21004ed3a6b901b7be2e271a1b437d6",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/wall_resolution_guard_20261006/test_thin_wall_qualification.py",
+      "destination_path": "experiments/wall_resolution_guard_20261006/test_thin_wall_qualification.py",
+      "operation": "stage_exact_existing",
+      "bytes": 7585,
+      "source_sha256": "bf71b77c26b4651dc69b36f3f5ebc81053454f35c7cc29e504dcfadf25b8b09b",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/wall_resolution_guard_20261006/README.md",
+      "destination_path": "experiments/wall_resolution_guard_20261006/README.md",
+      "operation": "stage_exact_existing",
+      "bytes": 2135,
+      "source_sha256": "12fa002f824784a8b4b9b7a03e1c6148341a0ae2b03e8e780a3fd1a1f11edf4e",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/wall_resolution_guard_20261006/thin_wall_qualification_inputs.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/wall_resolution/thin_wall_qualification_inputs.json",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 246997,
+      "source_sha256": "1f86e4d9d1627ede302a2c660024597a62387866dca2eb2572a1023854b1ef86",
+      "destination_preexists": false
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/wall_resolution_guard_20261006/thin_wall_qualification_report.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/wall_resolution/thin_wall_qualification_report.json",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 140949,
+      "source_sha256": "b8802f7e20c07fbed172aedd18f875561ef8d53a7f11624dc2ee40f112b85316",
+      "destination_preexists": false
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/wall_resolution_guard_20261006/actual_section_samples.png",
+      "destination_path": "docs/evidence/20261006/core_incremental/wall_resolution/actual_section_samples.png",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 165180,
+      "source_sha256": "0fbeaca6413b1dd5a91dc73611fe195db095a4b836df528797d76fb2617818ba",
+      "destination_preexists": false
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/wall_resolution_guard_20261006/REVIEW.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/wall_resolution/REVIEW.md",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 2638,
+      "source_sha256": "3aaaed5bbe4477a778ee4cb80252afa8cb5395e8ffebaf24d0a437a4d4b02bab",
+      "destination_preexists": false
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/discretization_bias_metrics_20261006/bias_metrics.py",
+      "destination_path": "experiments/discretization_bias_metrics_20261006/bias_metrics.py",
+      "operation": "stage_exact_existing",
+      "bytes": 23542,
+      "source_sha256": "88a1dee2c69e19cfe26751f5b9e875b13335faa98b77d34d25bc0a27b50f141a",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/discretization_bias_metrics_20261006/tests/test_bias_metrics.py",
+      "destination_path": "experiments/discretization_bias_metrics_20261006/tests/test_bias_metrics.py",
+      "operation": "stage_exact_existing",
+      "bytes": 5834,
+      "source_sha256": "dd3390cb7a7844d4f908fdfa682f18c9a9a95f82d336774aa89dca20d31756b0",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/discretization_bias_metrics_20261006/README.md",
+      "destination_path": "experiments/discretization_bias_metrics_20261006/README.md",
+      "operation": "stage_exact_existing",
+      "bytes": 3367,
+      "source_sha256": "fdb8a53b7381fb3240f19f1296e37aba98fb333e2d59cae7d2e9b2644e67e369",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/discretization_bias_metrics_20261006/fixtures/fixture_study.json",
+      "destination_path": "experiments/discretization_bias_metrics_20261006/fixtures/fixture_study.json",
+      "operation": "stage_exact_existing",
+      "bytes": 13779,
+      "source_sha256": "36e613370ca6c0bec07365cee57fcaa05ba904e43fc264f22d4cc45f432a9aaa",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/discretization_bias_metrics_20261006/fixtures/baseline.json",
+      "destination_path": "experiments/discretization_bias_metrics_20261006/fixtures/baseline.json",
+      "operation": "stage_exact_existing",
+      "bytes": 3885,
+      "source_sha256": "e6229529d842a7d202f8cd003fc01ddc4277b4bcc828b4ea73fe94df02b77055",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/discretization_bias_metrics_20261006/fixtures/rotated.json",
+      "destination_path": "experiments/discretization_bias_metrics_20261006/fixtures/rotated.json",
+      "operation": "stage_exact_existing",
+      "bytes": 3887,
+      "source_sha256": "e6d46862fea2a1735b355d891685baea093f8fe7c2bddc7205f5164f93f30544",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/discretization_bias_metrics_20261006/fixtures/translated.json",
+      "destination_path": "experiments/discretization_bias_metrics_20261006/fixtures/translated.json",
+      "operation": "stage_exact_existing",
+      "bytes": 3945,
+      "source_sha256": "ee9568265c802aaac7f668845844db31d3e537b24b9e695c4496528b762eefde",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/discretization_bias_metrics_20261006/fixtures/h_seed_changed.json",
+      "destination_path": "experiments/discretization_bias_metrics_20261006/fixtures/h_seed_changed.json",
+      "operation": "stage_exact_existing",
+      "bytes": 3885,
+      "source_sha256": "8157b597db36e3e3396d96801b8596c8956105f4267a02779d89a40dff56cd93",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/discretization_bias_metrics_20261006/fixtures/no_fracture.json",
+      "destination_path": "experiments/discretization_bias_metrics_20261006/fixtures/no_fracture.json",
+      "operation": "stage_exact_existing",
+      "bytes": 2833,
+      "source_sha256": "69e19416af39939b0ab08f03e19493cd52796f65d3c698b82317986302a48ff8",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/discretization_bias_metrics_20261006/fixtures/graph_only_fragments.json",
+      "destination_path": "experiments/discretization_bias_metrics_20261006/fixtures/graph_only_fragments.json",
+      "operation": "stage_exact_existing",
+      "bytes": 3610,
+      "source_sha256": "70443e19c332927e0b761b369aa4c7f7786e60fb4f028389803a5d88ef43e9f9",
+      "destination_preexists": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/discretization_bias_metrics_20261006/metrics_report.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/discretization_bias/metrics_report.json",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 4665,
+      "source_sha256": "e37d0098a52bed881f87f4c37018c0efc2737afa9e299f4301581f2eed7de5b1",
+      "destination_preexists": false
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/discretization_bias_metrics_20261006/pair_metrics.csv",
+      "destination_path": "docs/evidence/20261006/core_incremental/discretization_bias/pair_metrics.csv",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 1923,
+      "source_sha256": "543e392d06ee7b9220d053ceffafb278f769d1ecb40b137ccbcec135125eb7d0",
+      "destination_preexists": false
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/discretization_bias_metrics_20261006/fixture_metrics.png",
+      "destination_path": "docs/evidence/20261006/core_incremental/discretization_bias/fixture_metrics.png",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 80768,
+      "source_sha256": "7b0cd7eccd791228ba783970f199b14b31ac806e72d0b46211d4e852ef7a2db9",
+      "destination_preexists": false
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/wall_bias_independent/REVIEW.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/discretization_bias/independent_review.md",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 1746,
+      "source_sha256": "03a54b2c56622307ada1627d15796823d01244817ad8b47f00981cc85c904061",
+      "destination_preexists": false
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/wall_bias_independent/review.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/discretization_bias/independent_review.json",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 3412,
+      "source_sha256": "85633590eb3dbbd02f9b150def48e454b9e0abe1bc178106044c32938ead9fd1",
+      "destination_preexists": false
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "experiments/catalog_corner_fairing_20261006/catalog_corner_fairing.py",
+      "destination_path": "experiments/catalog_corner_fairing_20261006/catalog_corner_fairing.py",
+      "operation": "stage_exact_existing",
+      "bytes": 43891,
+      "source_sha256": "6c1e94150d769158c757469141aab23796b005421d3878b150271d375086d534",
+      "destination_preexists": true
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "experiments/catalog_corner_fairing_20261006/DESIGN_NOTE.md",
+      "destination_path": "experiments/catalog_corner_fairing_20261006/DESIGN_NOTE.md",
+      "operation": "stage_exact_existing",
+      "bytes": 2602,
+      "source_sha256": "5f7b95e1cfe7e79c6006fa0e682c5b75df6d4cf1caf8791dfa0c1832534b32b5",
+      "destination_preexists": true
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261006/catalog_corner_fairing_20261006/REVIEW.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/catalog_corner_fairing/REVIEW.md",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 5309,
+      "source_sha256": "f8922286073ba869af2256b24b83ec8b8e0fb9f5f3de7d7e5013a39fea23b7c9",
+      "destination_preexists": false
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261006/catalog_corner_fairing_20261006/PRE_RUN_SOURCE_PINS.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/catalog_corner_fairing/PRE_RUN_SOURCE_PINS.json",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 589,
+      "source_sha256": "35aed61b06b58a3bcac7eafdc3b05ec8d1ce2f4f7eb91e02b70443aa048f4f5a",
+      "destination_preexists": false
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261006/catalog_corner_fairing_20261006/POST_RUN_SOURCE_PINS.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/catalog_corner_fairing/POST_RUN_SOURCE_PINS.json",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 589,
+      "source_sha256": "35aed61b06b58a3bcac7eafdc3b05ec8d1ce2f4f7eb91e02b70443aa048f4f5a",
+      "destination_preexists": false
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261006/catalog_corner_fairing_20261006/DESIGN_AUDIT.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/catalog_corner_fairing/DESIGN_AUDIT.json",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 116672,
+      "source_sha256": "e36bb07ea07469671babda8e35c11fcf5a4a15b1d624ed2a16eaf44a3f57cf7e",
+      "destination_preexists": false
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261006/catalog_corner_fairing_20261006/catalog_corner_fairing_profile_plot.png",
+      "destination_path": "docs/evidence/20261006/core_incremental/catalog_corner_fairing/catalog_corner_fairing_profile_plot.png",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 164328,
+      "source_sha256": "6427145d9e63a94c986170783f17d91a4b126224ec93b148c6545fcc7e864c0f",
+      "destination_preexists": false
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261006/catalog_corner_fairing_independent/independent_control_check.py",
+      "destination_path": "docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/independent_control_check.py",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 7872,
+      "source_sha256": "36dc9b731064eac5bb9395f75af952f6d1791a14aa1f2e96ebf0574b6fe24c24",
+      "destination_preexists": false
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261006/catalog_corner_fairing_independent/INDEPENDENT_ALGEBRA_CHECK.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/INDEPENDENT_ALGEBRA_CHECK.json",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 14258,
+      "source_sha256": "800b22706bc35679d939f76a949fc801500b9030a5b205d43988ce9c55c8bb5a",
+      "destination_preexists": false
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261006/catalog_corner_fairing_independent/REVIEW.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/REVIEW.md",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 3049,
+      "source_sha256": "90a7ffe48c398e012468fb0617482e5fd37a1054d3fc24ecb38d4addee6a1efb",
+      "destination_preexists": false
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261006/catalog_corner_fairing_independent/REVIEW.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/REVIEW.json",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 3765,
+      "source_sha256": "c0fe70e3eadbd64e33fda2a22ba26c6c0941bd8847fe63738446e1c03959abcc",
+      "destination_preexists": false
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/modeiii_j_integral_20261006/precopy_guard_v3.diff",
+      "destination_path": "docs/evidence/20261006/core_incremental/j_guard_v3/precopy_guard_v3.diff",
+      "operation": "copy_then_stage_exact_destination",
+      "bytes": 4131,
+      "source_sha256": "37c3698ce34ad16861382e6a51e052bb066acdaf61864d81db8b32113fed6324",
+      "destination_preexists": false
+    }
+  ],
+  "errors": [],
+  "finished_local_time": "2026-10-06T07:06:28.0189839+08:00"
+}

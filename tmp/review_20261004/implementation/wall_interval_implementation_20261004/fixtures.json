@@ -1,0 +1,164 @@
+{
+  "contract_version": "wall_interval_fixtures_20261004_v1",
+  "units": "mm",
+  "ray_origin_rule": "station + 0.001 * outward_wall_direction",
+  "ray_direction_rule": "negative outward_wall_direction",
+  "source_geometry": {
+    "outer_box_extents": [10.0, 10.0, 10.0],
+    "outer_box_center": [0.0, 0.0, 0.0],
+    "inner_cavity_extents": [8.0, 8.0, 8.0],
+    "inner_cavity_center": [0.0, 0.0, 0.0],
+    "inner_shell_winding": "reversed",
+    "station_mm": [5.0, 0.0, 0.0],
+    "outward_wall_direction": [1.0, 0.0, 0.0],
+    "analytic_source_interval_distance_mm": [0.001, 1.001],
+    "analytic_source_wall_thickness_mm": 1.0,
+    "opposite_wall_is_a_separate_interval": true
+  },
+  "primary_fixtures": [
+    {
+      "id": "known_hollow_box",
+      "test": "test_known_one_mm_hollow_box_pairs_only_the_station_material_interval",
+      "result": "same hollow box",
+      "expected_result_interval_distance_mm": [0.001, 1.001],
+      "expected_remaining_thickness_mm": 1.0,
+      "expected_status": "SAMPLED_PASS",
+      "expected_relative_violation_fraction": 0.0
+    },
+    {
+      "id": "uniform_cavity_side_erosion_0_2_mm",
+      "test": "test_uniform_cavity_side_erosion_of_point_two_mm_keeps_point_eight_mm",
+      "result": "same outer box; cavity extents are 8.4 x 8.4 x 8.4",
+      "expected_result_interval_distance_mm": [0.001, 0.801],
+      "expected_remaining_thickness_mm": 0.8,
+      "expected_relative_loss": 0.2,
+      "expected_status": "SAMPLED_PASS"
+    },
+    {
+      "id": "absolute_minimum_violation",
+      "test": "test_point_five_mm_remaining_fails_absolute_guard_even_at_half_loss_boundary",
+      "result": "same outer box; cavity extents are 9 x 9 x 9",
+      "expected_remaining_thickness_mm": 0.5,
+      "expected_status": "SAMPLED_FAIL",
+      "expected_reason": "ABSOLUTE_MIN_WALL_VIOLATION"
+    },
+    {
+      "id": "local_through_hole",
+      "test": "test_local_through_hole_is_a_definite_perforation_at_its_centerline",
+      "cutter": {
+        "primitive": "cylinder",
+        "radius_mm": 0.2,
+        "height_mm": 2.0,
+        "sections": 24,
+        "axis": "X",
+        "center_mm": [4.5, 0.0, 0.0],
+        "boolean_calls": 1,
+        "engine": "manifold"
+      },
+      "expected_result_interval_over_selected_source_segment": [],
+      "expected_remaining_thickness_mm": 0.0,
+      "expected_status": "SAMPLED_FAIL",
+      "expected_reason": "PERFORATED"
+    },
+    {
+      "id": "missing_source_surface_station",
+      "test": "test_station_without_a_source_surface_interval_is_unknown",
+      "station_mm": [0.0, 0.0, 0.0],
+      "expected_status": "UNKNOWN",
+      "expected_reason": "SOURCE_INTERVAL_MISSING"
+    },
+    {
+      "id": "grazing_shared_box_edge",
+      "test": "test_edge_grazing_station_is_not_accepted_as_a_wall_thickness_measurement",
+      "station_mm": [5.0, 5.0, 0.0],
+      "outward_direction": [1.0, 0.0, 0.0],
+      "geometry_note": "shared +X/+Y box edge; inward ray lies along the +Y face",
+      "expected_status": "UNKNOWN"
+    },
+    {
+      "id": "multiple_intervals_split_fail",
+      "test": "test_two_retained_material_segments_are_split_fail_without_invented_total_thickness",
+      "result_segments_along_positive_x_wall": [
+        {"x_mm": [4.6, 5.0], "yz_extents_mm": [4.0, 4.0]},
+        {"x_mm": [4.0, 4.4], "yz_extents_mm": [4.0, 4.0]}
+      ],
+      "analytic_result_interval_distances_mm": [[0.001, 0.401], [0.601, 1.001]],
+      "expected_status": "SAMPLED_FAIL",
+      "expected_reason": "SPLIT_INTERVAL",
+      "expected_single_remaining_thickness_mm": null,
+      "expected_loss_mm": null,
+      "expected_relative_loss": null
+    },
+    {
+      "id": "invalid_mesh_controls",
+      "tests": [
+        {
+          "test": "test_open_source_mesh_is_unknown_and_not_repaired",
+          "expected_status": "UNKNOWN",
+          "expected_reason": "SOURCE_OPEN_MESH"
+        },
+        {
+          "test": "test_inverted_source_mesh_is_unknown_and_not_reoriented",
+          "expected_status": "UNKNOWN",
+          "expected_reason": "SOURCE_INVERTED_OR_NONPOSITIVE_VOLUME"
+        }
+      ]
+    }
+  ],
+  "additional_negative_controls": [
+    {
+      "test": "test_self_intersecting_closed_mesh_is_unknown_before_ray_sampling",
+      "expected_status": "UNKNOWN",
+      "expected_reason": "SOURCE_SELF_INTERSECTING"
+    },
+    {
+      "test": "test_threshold_band_is_unknown_and_not_counted_as_classified_coverage",
+      "nominal_remaining_mm": 0.6,
+      "expected_status": "UNKNOWN",
+      "expected_reason": "ABSOLUTE_GUARD_WITHIN_FLOAT32_UNCERTAINTY",
+      "expected_stations_classified": 0,
+      "expected_stations_measured": 1,
+      "expected_coverage_fraction": 0.0,
+      "expected_measurement_coverage_fraction": 1.0
+    },
+    {
+      "test": "test_missing_trusted_wall_direction_is_unknown_without_claiming_coverage",
+      "expected_status": "UNKNOWN",
+      "expected_reason": "WALL_DIRECTION_UNTRUSTED"
+    },
+    {
+      "test": "test_nonfinite_guard_returns_json_safe_structured_unknown",
+      "parameter": "min_remaining_wall_mm",
+      "value": "NaN",
+      "expected_status": "UNKNOWN",
+      "expected_json_allow_nan_false": true
+    },
+    {
+      "test": "test_none_provenance_does_not_satisfy_trusted_direction_evidence",
+      "expected_status": "UNKNOWN",
+      "expected_reason": "WALL_DIRECTION_UNTRUSTED"
+    },
+    {
+      "test": "test_gap_midpoint_on_surface_returns_unknown_without_occupancy_classification",
+      "fake_query": "one all-hit ray with two valid crossings; center occupancy gap has surface distance zero",
+      "expected_status": "UNKNOWN",
+      "expected_reason": "GAP_PROBE_ON_OR_NEAR_SURFACE",
+      "expected_occupancy_calls": 0
+    },
+    {
+      "test": "test_nonfinite_occupancy_is_unknown_and_never_collapses_to_no_material",
+      "fake_query": "one all-hit ray with valid distance probes and a NaN occupancy result",
+      "expected_status": "UNKNOWN",
+      "expected_reason": "NONFINITE_OCCUPANCY_RESPONSE",
+      "expected_occupancy_calls": 1
+    }
+  ],
+  "execution_state": {
+    "source_only_test_count": 16,
+    "native_ray_queries_run": false,
+    "occupancy_queries_run": false,
+    "pytest_run": false,
+    "boolean_fixture_constructed": false,
+    "expectations_are_results": false
+  }
+}

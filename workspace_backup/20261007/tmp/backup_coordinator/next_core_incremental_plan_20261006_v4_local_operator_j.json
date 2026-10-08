@@ -1,0 +1,966 @@
+{
+  "schema": "curated_incremental_backup_plan.v1",
+  "plan_id": "next_core_incremental_plan_20261006_v4_local_operator_j",
+  "created_utc": "2026-10-06T03:11:53.4249922Z",
+  "plan_only": true,
+  "git_mutations_performed": false,
+  "root_exact_plan_review_required_before_copy_or_git_write": true,
+  "execution_eligibility": "DO_NOT_EXECUTE_BEFORE_ROOT_REVIEWS_EXACT_PLAN_SHA",
+  "constraints": {
+    "max_candidate_files": 31,
+    "max_candidate_bytes": 8388608,
+    "exact_paths_only": true,
+    "no_force_add": true,
+    "no_attributes_change": true,
+    "no_persistent_git_config_change": true,
+    "no_commit_or_push_until_root_approval": true,
+    "per_command_core_autocrlf_false_recommended": true
+  },
+  "repo_preflight": [
+    {
+      "repo": "pgfrag",
+      "branch": "backup/forge-work-20261003",
+      "head": "861fc8a4b09a646b82f25c2b24b2abc3ba7fb873",
+      "remote_branch": "backup/forge-work-20261003",
+      "remote_head": "861fc8a4b09a646b82f25c2b24b2abc3ba7fb873",
+      "local_equals_remote": true,
+      "index_clean": true,
+      "tracked_status_lines": 0
+    }
+  ],
+  "candidate_file_count": 31,
+  "candidate_total_bytes": 1369157,
+  "candidate_limit_bytes": 8388608,
+  "unique_destination_count": 31,
+  "groups": [
+    {
+      "id": "pg_local_front_operator_outer125",
+      "file_count": 18,
+      "status": "Frozen one-shot operator worker assembled scalar K; outer wrapper returned 125 and did not promote a primary result. Independent saved-K numerical readback/PNG are evidence only; no solver or qualification."
+    },
+    {
+      "id": "pg_solved_field_j_unknown_contract",
+      "file_count": 13,
+      "status": "Worker readback stage completed, but parent returned UNKNOWN_WORKER_RESULT_CONTRACT due to quadrature metadata mapping. Mapping correction is source-only and unapplied; no retry or independent J."
+    }
+  ],
+  "source_freeze_validation": [
+    {
+      "case": "local_front_operator_20261006",
+      "source_freeze_path": "tmp/review_20261006/local_front_operator_20261006/source_freeze.json",
+      "owned_source_pins": [
+        {
+          "path": "experiments/local_front_operator_20261006/fixed_case.json",
+          "bytes": 7609,
+          "sha256": "bee0638bdbafdcd9dd1af02152faf3d87384503b6a029a70831f71b5369c162b",
+          "matched": true
+        },
+        {
+          "path": "experiments/local_front_operator_20261006/operator_diagnostic.py",
+          "bytes": 60973,
+          "sha256": "77b0db5f26855ffb6d444154d42b04c5644fc99737be177420a3efad76ac9e59",
+          "matched": true
+        },
+        {
+          "path": "experiments/local_front_operator_20261006/README.md",
+          "bytes": 3956,
+          "sha256": "64bf3e86b88bd3aef705f25f9cb5967d2e3d372bc14bb392c2585b7b9e6301ed",
+          "matched": true
+        },
+        {
+          "path": "tmp/review_20261006/local_front_operator_20261006/SOURCE_REVIEW.md",
+          "bytes": 6183,
+          "sha256": "5d3ccee25c47aee57d937e49e08b9d3c904d623393b21c7cbc20ced416a8d273",
+          "matched": true
+        }
+      ],
+      "run_status": "PROCESS_NONZERO",
+      "outer_return_code": 125,
+      "staging_hash_matches_outer_receipt": true,
+      "independent_saved_K_json_and_PNG_pins_match": true,
+      "mixed_full3D_review_excluded": true
+    },
+    {
+      "case": "solved_field_j_coupling_20261006",
+      "source_freeze_path": "tmp/review_20261006/solved_field_j_coupling_20261006/source_freeze.json",
+      "owned_source_pins": [
+        {
+          "path": "experiments/solved_field_j_coupling_20261006/read_solved_field_j.py",
+          "bytes": 69924,
+          "sha256": "4b2eca6bae43ca74aaee6129f58da838e35d2ab3f7e1ca22cd3fdba21d13815d",
+          "matched": true
+        },
+        {
+          "path": "experiments/solved_field_j_coupling_20261006/README.md",
+          "bytes": 2097,
+          "sha256": "fd24a27ce44f4e38f7b8b1bab23fe4459fc97e0778f39dc36673770464f50242",
+          "matched": true
+        },
+        {
+          "path": "tmp/review_20261006/solved_field_j_coupling_20261006/SOURCE_REVIEW.md",
+          "bytes": 2928,
+          "sha256": "258913bb6a888b8d997bc62934f4be8986a59d88bbc5bedf6706aaca1f879aa4",
+          "matched": true
+        }
+      ],
+      "parent_status": "UNKNOWN_WORKER_RESULT_CONTRACT",
+      "worker_return_code": 0,
+      "outer_return_code": 1,
+      "stage_and_mapping_helper_pins_match": true
+    }
+  ],
+  "files": [
+    {
+      "id": "local_front_operator_case",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "experiments/local_front_operator_20261006/fixed_case.json",
+      "destination_path": "experiments/local_front_operator_20261006/fixed_case.json",
+      "operation": "stage_exact_existing",
+      "role": "frozen fixed 100-source, 140-DOF, 256-query diagnostic case",
+      "bytes": 7609,
+      "sha256": "bee0638bdbafdcd9dd1af02152faf3d87384503b6a029a70831f71b5369c162b",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/local_front_operator_20261006/fixed_case.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/local_front_operator_20261006/fixed_case.json: text: unspecified",
+        "experiments/local_front_operator_20261006/fixed_case.json: eol: unspecified",
+        "experiments/local_front_operator_20261006/fixed_case.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_driver",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "experiments/local_front_operator_20261006/operator_diagnostic.py",
+      "destination_path": "experiments/local_front_operator_20261006/operator_diagnostic.py",
+      "operation": "stage_exact_existing",
+      "role": "frozen local-front scalar antiplane operator diagnostic driver",
+      "bytes": 60973,
+      "sha256": "77b0db5f26855ffb6d444154d42b04c5644fc99737be177420a3efad76ac9e59",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/local_front_operator_20261006/operator_diagnostic.py"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/local_front_operator_20261006/operator_diagnostic.py: text: unspecified",
+        "experiments/local_front_operator_20261006/operator_diagnostic.py: eol: unspecified",
+        "experiments/local_front_operator_20261006/operator_diagnostic.py: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_readme",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "experiments/local_front_operator_20261006/README.md",
+      "destination_path": "experiments/local_front_operator_20261006/README.md",
+      "operation": "stage_exact_existing",
+      "role": "scope and run contract for the frozen diagnostic",
+      "bytes": 3956,
+      "sha256": "64bf3e86b88bd3aef705f25f9cb5967d2e3d372bc14bb392c2585b7b9e6301ed",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/local_front_operator_20261006/README.md"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/local_front_operator_20261006/README.md: text: unspecified",
+        "experiments/local_front_operator_20261006/README.md: eol: unspecified",
+        "experiments/local_front_operator_20261006/README.md: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_freeze",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/source_freeze.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/source_freeze.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "immutable source freeze for the failed one-shot diagnostic",
+      "bytes": 3541,
+      "sha256": "8b7e29a701a53ec9f00f24cb5ed2b45d80ffc470df2ce225dbbf4380026424af",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/local_front_operator_20261006/source_freeze.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/local_front_operator/source_freeze.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/source_freeze.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/source_freeze.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_source_review",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/SOURCE_REVIEW.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/SOURCE_REVIEW.md",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "source review with bounded scope and fail-closed rules",
+      "bytes": 6183,
+      "sha256": "5d3ccee25c47aee57d937e49e08b9d3c904d623393b21c7cbc20ced416a8d273",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/local_front_operator_20261006/SOURCE_REVIEW.md"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/local_front_operator/SOURCE_REVIEW.md: text: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/SOURCE_REVIEW.md: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/SOURCE_REVIEW.md: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_execution_addendum",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/EXECUTION_ADDENDUM.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/EXECUTION_ADDENDUM.md",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "actual outer rc 125 and basis-count mapping failure; no retry or solver",
+      "bytes": 816,
+      "sha256": "c62f51d7c30541d4f78acabd91a6897fed23f155be8bf017bd91bbb9d35ec571",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/local_front_operator_20261006/EXECUTION_ADDENDUM.md"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/local_front_operator/EXECUTION_ADDENDUM.md: text: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/EXECUTION_ADDENDUM.md: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/EXECUTION_ADDENDUM.md: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_mapping_helper",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/basis_count_mapping_fix.py",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/basis_count_mapping_fix.py",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "source-only readback mapping helper; does not rerun provider or operator",
+      "bytes": 4220,
+      "sha256": "5481a2cb6e73b6cc92a0dfe8588c79477d501ca1a389ef12969b26a586d5204b",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/local_front_operator_20261006/basis_count_mapping_fix.py"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/local_front_operator/basis_count_mapping_fix.py: text: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/basis_count_mapping_fix.py: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/basis_count_mapping_fix.py: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_stage",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/runs/run01/.local_front_scalar_operator.json.149216.worker.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/.local_front_scalar_operator.json.149216.worker.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "preserved 494763-byte worker staging K/spectrum payload; outer result was not promoted",
+      "bytes": 494763,
+      "sha256": "ebdea44857ab2b1a358fc679d0b1e4996943905a5996ba83f8f8f1ba68340762",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/local_front_operator_20261006/runs/run01/.local_front_scalar_operator.json.149216.worker.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/.local_front_scalar_operator.json.149216.worker.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/.local_front_scalar_operator.json.149216.worker.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/.local_front_scalar_operator.json.149216.worker.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_actual_readback",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/runs/run01/actual_operator_readback.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/actual_operator_readback.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "readback of saved unqualified scalar K; outer promotion failure retained",
+      "bytes": 8453,
+      "sha256": "7ed92d02a7b4f680c8cd832dd7004f092a114bc2cfbddfa59c3e21c913cce924",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/local_front_operator_20261006/runs/run01/actual_operator_readback.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/actual_operator_readback.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/actual_operator_readback.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/actual_operator_readback.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_outer_receipt",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/runs/run01/external_run_receipt.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/external_run_receipt.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "actual external wrapper receipt recording PROCESS_NONZERO and exit code 125",
+      "bytes": 2333,
+      "sha256": "8997cd8e929456e3fa5d2cd0ba14f1efcd40dfb99cbf6efcbb57a24eeda9ccdd",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/local_front_operator_20261006/runs/run01/external_run_receipt.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/external_run_receipt.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/external_run_receipt.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/external_run_receipt.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_unknown_receipt",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/runs/run01/local_front_scalar_operator.unknown_receipt.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/local_front_scalar_operator.unknown_receipt.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "preserved UNKNOWN receipt; no accepted primary output",
+      "bytes": 1803,
+      "sha256": "8c6f623a1504103e06776ca7f185af797d042351ea96714fe7685a7709ab9fba",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/local_front_operator_20261006/runs/run01/local_front_scalar_operator.unknown_receipt.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/local_front_scalar_operator.unknown_receipt.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/local_front_scalar_operator.unknown_receipt.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/local_front_scalar_operator.unknown_receipt.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_outer_stdout",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/runs/run01/outer_stdout.txt",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/outer_stdout.txt",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "actual outer stdout from the failed one-shot run",
+      "bytes": 411,
+      "sha256": "5ee49920c870fd44e6b6958f6a0941b155a28aa10bfdac8b4a6b5d8a9f24dbc5",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/local_front_operator_20261006/runs/run01/outer_stdout.txt"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/outer_stdout.txt: text: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/outer_stdout.txt: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/outer_stdout.txt: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_outer_stderr",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/runs/run01/outer_stderr.txt",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/outer_stderr.txt",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "actual empty outer stderr from the failed one-shot run",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/local_front_operator_20261006/runs/run01/outer_stderr.txt"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/outer_stderr.txt: text: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/outer_stderr.txt: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/outer_stderr.txt: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_pre_pins",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/runs/run01/pre_run_source_pins.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/pre_run_source_pins.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "pre-run source and dependency SHA pins",
+      "bytes": 3989,
+      "sha256": "2d480a346f803f3c4819133617abc2759de5a806f47ecbb077d590aaf23b836a",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/local_front_operator_20261006/runs/run01/pre_run_source_pins.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/pre_run_source_pins.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/pre_run_source_pins.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/pre_run_source_pins.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_post_pins",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/runs/run01/post_run_source_pins.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/post_run_source_pins.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "post-run unchanged source/dependency pins and actual wrapper exit status",
+      "bytes": 4676,
+      "sha256": "1692d68ad92affc9b9f5c7230918670b9c5b8a85bec2f35cd046e1860eea287f",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/local_front_operator_20261006/runs/run01/post_run_source_pins.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/post_run_source_pins.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/post_run_source_pins.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/post_run_source_pins.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_independent_audit_source",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_and_local_operator_independent/local_saved_array_audit.py",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/independent/local_saved_array_audit.py",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "independent saved-K readback script; no reassembly or solver",
+      "bytes": 11631,
+      "sha256": "066cf71f7d17d60412debd1ab2e9c671a20c24af27d73683a51d531e5361032f",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/full3d_and_local_operator_independent/local_saved_array_audit.py"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/local_front_operator/independent/local_saved_array_audit.py: text: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/independent/local_saved_array_audit.py: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/independent/local_saved_array_audit.py: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_independent_audit_json",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_and_local_operator_independent/local_saved_array_audit.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/independent/local_saved_array_audit.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "independent saved-K algebra/eigenvalue readback; failed outer promotion remains",
+      "bytes": 2482,
+      "sha256": "e1c60fa1ab3a1a073cb1f0f8ab51afea4a4fb3c33810d42914c0134ade74229a",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/full3d_and_local_operator_independent/local_saved_array_audit.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/local_front_operator/independent/local_saved_array_audit.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/independent/local_saved_array_audit.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/independent/local_saved_array_audit.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_independent_K_png",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_and_local_operator_independent/local_saved_K_spectrum.png",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/independent/local_saved_K_spectrum.png",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "spectrum plot for the saved scalar diagnostic K",
+      "bytes": 10990,
+      "sha256": "451319c14f3e09378c98a47e5530b30aeed7e6598134ac5720cc44b618b6b1b1",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/full3d_and_local_operator_independent/local_saved_K_spectrum.png"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/local_front_operator/independent/local_saved_K_spectrum.png: text: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/independent/local_saved_K_spectrum.png: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_operator/independent/local_saved_K_spectrum.png: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "solved_field_j_driver",
+      "group": "pg_solved_field_j_unknown_contract",
+      "repo": "pgfrag",
+      "source_path": "experiments/solved_field_j_coupling_20261006/read_solved_field_j.py",
+      "destination_path": "experiments/solved_field_j_coupling_20261006/read_solved_field_j.py",
+      "operation": "stage_exact_existing",
+      "role": "frozen solved-field/J readback adapter source",
+      "bytes": 69924,
+      "sha256": "4b2eca6bae43ca74aaee6129f58da838e35d2ab3f7e1ca22cd3fdba21d13815d",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/solved_field_j_coupling_20261006/read_solved_field_j.py"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/solved_field_j_coupling_20261006/read_solved_field_j.py: text: unspecified",
+        "experiments/solved_field_j_coupling_20261006/read_solved_field_j.py: eol: unspecified",
+        "experiments/solved_field_j_coupling_20261006/read_solved_field_j.py: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "solved_field_j_readme",
+      "group": "pg_solved_field_j_unknown_contract",
+      "repo": "pgfrag",
+      "source_path": "experiments/solved_field_j_coupling_20261006/README.md",
+      "destination_path": "experiments/solved_field_j_coupling_20261006/README.md",
+      "operation": "stage_exact_existing",
+      "role": "scope and contract notes for the frozen readback adapter",
+      "bytes": 2097,
+      "sha256": "fd24a27ce44f4e38f7b8b1bab23fe4459fc97e0778f39dc36673770464f50242",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/solved_field_j_coupling_20261006/README.md"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/solved_field_j_coupling_20261006/README.md: text: unspecified",
+        "experiments/solved_field_j_coupling_20261006/README.md: eol: unspecified",
+        "experiments/solved_field_j_coupling_20261006/README.md: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "solved_field_j_source_freeze",
+      "group": "pg_solved_field_j_unknown_contract",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/source_freeze.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/source_freeze.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "immutable pre-run source freeze; paired with actual failure addendum",
+      "bytes": 4972,
+      "sha256": "d5654bf579a8e7a11bd7a08a01b6878e88e96263dc1a14896f4b2067a9f449a8",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/solved_field_j_coupling_20261006/source_freeze.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/source_freeze.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/source_freeze.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/source_freeze.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "solved_field_j_freeze_sha256",
+      "group": "pg_solved_field_j_unknown_contract",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/source_freeze.sha256",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/source_freeze.sha256",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "source-freeze digest sidecar",
+      "bytes": 86,
+      "sha256": "c16b29cbec69ead7e86d8e4e9ee39dcac0431085e477c0609e749c7c2f4c3a50",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/solved_field_j_coupling_20261006/source_freeze.sha256"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/source_freeze.sha256: text: unspecified",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/source_freeze.sha256: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/source_freeze.sha256: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "solved_field_j_source_review",
+      "group": "pg_solved_field_j_unknown_contract",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/SOURCE_REVIEW.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/SOURCE_REVIEW.md",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "original source review record; later execution failure is separately retained",
+      "bytes": 2928,
+      "sha256": "258913bb6a888b8d997bc62934f4be8986a59d88bbc5bedf6706aaca1f879aa4",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/solved_field_j_coupling_20261006/SOURCE_REVIEW.md"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/SOURCE_REVIEW.md: text: unspecified",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/SOURCE_REVIEW.md: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/SOURCE_REVIEW.md: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "solved_field_j_execution_addendum_md",
+      "group": "pg_solved_field_j_unknown_contract",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/EXECUTION_ADDENDUM.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/EXECUTION_ADDENDUM.md",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "actual worker stage retained; parent result remains UNKNOWN after metadata rejection",
+      "bytes": 1698,
+      "sha256": "d91ea236b3344d25605a784b44a75b0f4190ec8ca7b0773d71328dc2af5c5a61",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/solved_field_j_coupling_20261006/EXECUTION_ADDENDUM.md"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/EXECUTION_ADDENDUM.md: text: unspecified",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/EXECUTION_ADDENDUM.md: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/EXECUTION_ADDENDUM.md: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "solved_field_j_execution_addendum_json",
+      "group": "pg_solved_field_j_unknown_contract",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/EXECUTION_ADDENDUM.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/EXECUTION_ADDENDUM.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "machine-readable failure, stage, and source pin record",
+      "bytes": 3695,
+      "sha256": "b680360b602f2798927a9c36b567710a9aebedd6acd7b83d5ef5ff3bbcfef2dd",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/solved_field_j_coupling_20261006/EXECUTION_ADDENDUM.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/EXECUTION_ADDENDUM.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/EXECUTION_ADDENDUM.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/EXECUTION_ADDENDUM.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "solved_field_j_metadata_helper",
+      "group": "pg_solved_field_j_unknown_contract",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/metadata_mapping_fix.py",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/metadata_mapping_fix.py",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "source-only quadrature metadata mapping candidate; not applied and no rerun",
+      "bytes": 3758,
+      "sha256": "39157314717d988e3136cb0feccd84784bd3002dcf52aadd5486b7d3b90bb2e3",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/solved_field_j_coupling_20261006/metadata_mapping_fix.py"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/metadata_mapping_fix.py: text: unspecified",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/metadata_mapping_fix.py: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/metadata_mapping_fix.py: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "solved_field_j_worker_stage",
+      "group": "pg_solved_field_j_unknown_contract",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/runs/run01/.solved_field_j_coupling.json.34676.worker.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/.solved_field_j_coupling.json.34676.worker.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "preserved 649133-byte readback stage; result contract rejected by parent",
+      "bytes": 649133,
+      "sha256": "1377e428a12f53bbc9dc9537c4dbf5d0c3f67a937bcdeceee6ddc6c98dfdfac9",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/solved_field_j_coupling_20261006/runs/run01/.solved_field_j_coupling.json.34676.worker.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/.solved_field_j_coupling.json.34676.worker.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/.solved_field_j_coupling.json.34676.worker.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/.solved_field_j_coupling.json.34676.worker.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "solved_field_j_run_receipt",
+      "group": "pg_solved_field_j_unknown_contract",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/runs/run01/run_receipt.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/run_receipt.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "actual readback run receipt; worker rc 0 but parent rc 1 on contract validation",
+      "bytes": 1650,
+      "sha256": "6a7eef3761ccc07a941dcb49805cf20c127825230f738560a32d5b2669f60b6b",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/solved_field_j_coupling_20261006/runs/run01/run_receipt.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/run_receipt.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/run_receipt.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/run_receipt.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "solved_field_j_parent_result",
+      "group": "pg_solved_field_j_unknown_contract",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/runs/run01/solved_field_j_coupling.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/solved_field_j_coupling.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "actual UNKNOWN_WORKER_RESULT_CONTRACT parent result; retained as failure evidence",
+      "bytes": 387,
+      "sha256": "6f3854d603f1c861dd86eceb44efe3374f84263a4053b9d0ed07d07f11926873",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/solved_field_j_coupling_20261006/runs/run01/solved_field_j_coupling.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/solved_field_j_coupling.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/solved_field_j_coupling.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/solved_field_j_coupling.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "solved_field_j_stdout",
+      "group": "pg_solved_field_j_unknown_contract",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/runs/run01/stdout.log",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/stdout.log",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "actual outer stdout log from the contract-rejected run",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/solved_field_j_coupling_20261006/runs/run01/stdout.log"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/stdout.log: text: unspecified",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/stdout.log: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/stdout.log: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "solved_field_j_stderr",
+      "group": "pg_solved_field_j_unknown_contract",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/runs/run01/stderr.log",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/stderr.log",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "actual empty outer stderr log from the contract-rejected run",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/solved_field_j_coupling_20261006/runs/run01/stderr.log"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/stderr.log: text: unspecified",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/stderr.log: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/stderr.log: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    }
+  ],
+  "already_present_unchanged": [],
+  "blocked_files": [],
+  "excluded_material": [
+    "Independent J readback currently writing; no independent-J result is included.",
+    "Full3D, bridge, moving-front, C3, whole-body, active stage/mapper files, and other active components are excluded. Mixed full3D/local REVIEW.md and review.json are not copied; only the local saved-K audit script, numeric JSON, and PNG are included.",
+    "No source fix is applied, no retry or solver rerun is performed, and no large unrelated payload, cache, vendor tree, or credential is included."
+  ],
+  "known_claim_boundaries": [
+    "Local-front saved K and its independent numerical readback are scalar diagnostic evidence only. Outer rc 125 and the UNKNOWN receipt remain; no primary promotion, solver/load, full-3D or physical qualification is claimed.",
+    "Solved-field/J data are readback evidence only. Parent result remains UNKNOWN_WORKER_RESULT_CONTRACT; the source-only metadata correction is unapplied, no retry or independent J run is included, and no J or physics qualification is claimed."
+  ],
+  "active_writer_notes": [
+    "Only the two root-reviewed, frozen local-front and solved-field/J failure/readback evidence packages are inventoried. Source and run artifacts are not modified.",
+    "All candidate paths have been rehashed from current source files; only this plan is written. No repo copy, stage, commit, or push has occurred for this v4 plan."
+  ]
+}

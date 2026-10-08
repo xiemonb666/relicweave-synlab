@@ -1,0 +1,45 @@
+{
+  "source_docx": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_candidate.docx",
+  "source_sha256": "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d",
+  "source_sha256_start": "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d",
+  "source_sha256_end": "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d",
+  "page_count": 225,
+  "render_directory": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render",
+  "render_dimensions_px": {
+    "width": 1547,
+    "height": 2002
+  },
+  "range": {
+    "start": 181,
+    "end": 198
+  },
+  "summary": {
+    "pages_inspected": 18,
+    "pass": 16,
+    "issues": 2,
+    "issue_details": [
+      {"page": 183, "location": "bottom of page", "detail": "G23.3 heading is followed only by the readable releases/SYN-0001/ line before the path listing continues on page 184; stranded section opening."},
+      {"page": 191, "location": "bottom of page", "detail": "G30.4 heading is followed only by the readable synlab doctor command before the CLI sequence continues on page 192; stranded section opening."}
+    ]
+  },
+  "pages": [
+    {"page": 181, "png_path": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-181.png", "png_sha256": "96A865E29D6823987AB9ED9289B657E9000A049D72F444EBEFE936A410903D0B", "inspected": true, "status": "pass", "notes": "Resource table and dense G22.2 text readable; table rules, header, and footer intact."},
+    {"page": 182, "png_path": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-182.png", "png_sha256": "2526A7C0E95E226E7C1C725C86C29F95015C73BD29812B62ADCC570EA2572164", "inspected": true, "status": "pass", "notes": "G22.5–G22.7 readable; G23.1 table begins at bottom and continues with repeated header on 183."},
+    {"page": 183, "png_path": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-183.png", "png_sha256": "8882A160C294889B364B8ECCEB44D36C7367398E588C532BBD77B84C821D2B51", "inspected": true, "status": "issue", "notes": "G23.1 continuation and budget table intact. At bottom, G23.3 has only the readable releases/SYN-0001/ line before the path listing continues on 184; stranded section opening."},
+    {"page": 184, "png_path": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-184.png", "png_sha256": "41C89F77FE71E753F26415EA3D6E66E8415002A6CA57B9D2BB00BB58BFE5FB40", "inspected": true, "status": "pass", "notes": "Directory/path continuation legible; G24 table boundaries and body text intact."},
+    {"page": 185, "png_path": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-185.png", "png_sha256": "914AC71D1A3291F3F387043F4C7A5692A39548D3E16C3023E16D4E3D5E20E577", "inspected": true, "status": "pass", "notes": "G25.1 code and G25.2 text/list readable without clipping or collisions."},
+    {"page": 186, "png_path": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-186.png", "png_sha256": "B3DFA9109161BF2D887606654061C03F2C6491F6BECACFF7817DE9B489149D5C", "inspected": true, "status": "pass", "notes": "G25.3 and G26 table clear; G27 heading/table continue with repeated header on 187."},
+    {"page": 187, "png_path": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-187.png", "png_sha256": "E26FC3A036C03D9D9286FA9FCC842060C4B44A51C300752099E5C6D814EE4363", "inspected": true, "status": "pass", "notes": "G27 table continuation, repeated header, and G27.2 list readable; footer intact."},
+    {"page": 188, "png_path": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-188.png", "png_sha256": "AF3A8EC32B962100583928F9048DF214397AE1DB8619BEBD598CFF46BDBAEBFE", "inspected": true, "status": "pass", "notes": "G27.3 and G28 acceptance table/text legible; table borders intact."},
+    {"page": 189, "png_path": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-189.png", "png_sha256": "25B6CA6CE8243AFBC6667A8012178B64128DEC32EDE3718D09A871F2DB38DAF7", "inspected": true, "status": "pass", "notes": "G29 table and G30 opening prose readable; no boundary or footer defect."},
+    {"page": 190, "png_path": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-190.png", "png_sha256": "4872CAAC8E22B722D54CD1436DD999A403A9E9DA603CA2236CF1733A15B75AB8", "inspected": true, "status": "pass", "notes": "G30.1 YAML/config block readable through final stop_disk_percent: 90 line."},
+    {"page": 191, "png_path": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-191.png", "png_sha256": "0E9F069B75E675237BE7500CF1E32B4BD04410CEE4FDE5731B2E15FDD065474F", "inspected": true, "status": "issue", "notes": "G30.2/G30.3 code readable. At bottom, G30.4 has only the readable synlab doctor command before the CLI sequence continues on 192; stranded section opening."},
+    {"page": 192, "png_path": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-192.png", "png_sha256": "EB4B3951ABAEF7646ACE728D7BD55652BEA8A3CD7CE4DC0350662C09421EA2C8", "inspected": true, "status": "pass", "notes": "CLI command continuation and G30.5 config legible; no page-edge clipping."},
+    {"page": 193, "png_path": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-193.png", "png_sha256": "D270D6CC4A88090622FFD53E133052DD9F5DE44787FF3F3FB964CAAF63EB0F14", "inspected": true, "status": "pass", "notes": "Config tail, G30.6 table, and G30.7 pseudocode readable; code continues normally on 194."},
+    {"page": 194, "png_path": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-194.png", "png_sha256": "2E8C17CA7FD91FEF9718A6F8C60CB812791B71E248BFB1AA6449D30AFBB6855B", "inspected": true, "status": "pass", "notes": "G30.7 code continuation and G30.8 intact; G31 table begins at bottom and continues with repeated header on 195."},
+    {"page": 195, "png_path": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-195.png", "png_sha256": "85B4B3A6043ABAB20B9B9C074FB3D415569F11E5328C6511C3CCAF05668570A5", "inspected": true, "status": "pass", "notes": "G31 table continuation repeats header; prose, G31.1, G32 opening, and GL1 URL readable."},
+    {"page": 196, "png_path": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-196.png", "png_sha256": "281CE82DA28CA454417C008A04ABB2D905D1A8711EDD51D87690EF9E015CB1EB", "inspected": true, "status": "pass", "notes": "GL2–GL15 references and wrapped URLs readable; footer intact."},
+    {"page": 197, "png_path": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-197.png", "png_sha256": "3092E698247155A8F81D7EC93EB94F56C92B8924F2BA621AE504B61D60EA2481", "inspected": true, "status": "pass", "notes": "Appendix H opening and H1/H2 tables/text legible; borders and footer intact."},
+    {"page": 198, "png_path": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-198.png", "png_sha256": "5EA045E410A0E525ECB857F61474D1B5F33BD7584F9F6E7A57C05D1162687D89", "inspected": true, "status": "pass", "notes": "H3–H6 readable; H6 heading is followed by its explanatory line, not stranded."}
+  ]
+}

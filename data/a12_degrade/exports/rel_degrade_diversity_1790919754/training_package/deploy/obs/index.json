@@ -1,0 +1,183 @@
+{
+  "channel_names": [
+    "K",
+    "deployment_mask",
+    "depth_z",
+    "roi",
+    "tiles",
+    "uncertain_mask",
+    "valid",
+    "view_pos"
+  ],
+  "channel_policy": {
+    "env_override": "SYNLAB_VIEW_CHANNEL_POLICY",
+    "hash": "sha256:8627b39e30825e3dd33af1e50afe87250f338a1b59cc6cdc1ea93f0ec5014f2f",
+    "note": "the deployment view's channel set is data, not a literal: this is the policy the shards were written under, with its own hash",
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\synlab\\schemas\\view_channels.json",
+    "schema": "synlab.view_channel_policy.v1",
+    "source": "raw observation arrays of obs_result (synlab/observe/routes.py:observation_to_dict)"
+  },
+  "channels": [
+    {
+      "caveat": null,
+      "dtype": "uint8",
+      "evidence_class": "SENSOR_PROXY",
+      "fragments_with_channel": 2,
+      "key": "tiles",
+      "optional": false,
+      "reason": "the delivered RGB view itself",
+      "source_array": "rgb",
+      "unit": "count"
+    },
+    {
+      "caveat": null,
+      "dtype": "bool",
+      "evidence_class": "SENSOR_PROXY",
+      "fragments_with_channel": 2,
+      "key": "valid",
+      "optional": false,
+      "reason": "pixels a deployment profile may obtain; a real acquisition knows its own usable mask",
+      "source_array": "deployment_mask",
+      "unit": "1"
+    },
+    {
+      "caveat": null,
+      "dtype": "float32",
+      "evidence_class": "RIG_COMMANDED",
+      "fragments_with_channel": 2,
+      "key": "view_pos",
+      "optional": false,
+      "reason": "commanded slide position of the delivered view (rig metadata, not an answer)",
+      "source_array": "views[].u_position_mm",
+      "unit": "mm"
+    },
+    {
+      "caveat": "on this checkout depth comes from the renderer (`renderer depth is in mm by construction`); the field is the documented rig output, its values are simulated",
+      "dtype": "float32",
+      "evidence_class": "CAVEAT_NOT_MEASURED_ON_REAL_RIG",
+      "fragments_with_channel": 2,
+      "key": "depth_z",
+      "optional": false,
+      "reason": "camera z of the delivered view; a real rig with a depth sensor or MVS output provides it",
+      "source_array": "depth_z",
+      "unit": "mm"
+    },
+    {
+      "caveat": null,
+      "dtype": "bool",
+      "evidence_class": "SENSOR_PROXY",
+      "fragments_with_channel": 2,
+      "key": "deployment_mask",
+      "optional": false,
+      "reason": "the deployment mask channel itself, kept beside the RGB so a consumer need not infer it",
+      "source_array": "deployment_mask",
+      "unit": "1"
+    },
+    {
+      "caveat": "on a real rig this channel is an estimate, not the renderer's exact mixed-pixel labelling",
+      "dtype": "bool",
+      "evidence_class": "CAVEAT_ESTIMATOR_REQUIRED",
+      "fragments_with_channel": 2,
+      "key": "uncertain_mask",
+      "optional": false,
+      "reason": "pixels that cannot be attributed to one surface (mixture / defocus / depth edge); an acquisition can estimate this",
+      "source_array": "uncertain_mask",
+      "unit": "1"
+    },
+    {
+      "caveat": null,
+      "dtype": "bool",
+      "evidence_class": "SENSOR_PROXY",
+      "fragments_with_channel": 2,
+      "key": "roi",
+      "optional": true,
+      "reason": "the working region of interest; acquisition-side (which part of the frame the operator targeted)",
+      "source_array": "roi",
+      "unit": "1"
+    },
+    {
+      "caveat": "the three camera profiles of configs/a12/camera_profiles.json are all calibrated=false / STRESS_UNCALIBRATED, so the shipped K is a declared profile, not a measured calibration",
+      "dtype": "float64",
+      "evidence_class": "CALIBRATED_ON_REAL_RIG",
+      "fragments_with_channel": 2,
+      "key": "K",
+      "optional": false,
+      "reason": "camera intrinsics: a real acquisition is given fx/fy/cx/cy by calibration (p1163)",
+      "source_array": "K",
+      "unit": "1"
+    }
+  ],
+  "opaque_naming": "sha256(asset fragment id)[:24]",
+  "research_only_channels": [
+    "T_WC",
+    "dist",
+    "id_map",
+    "rgb_linear",
+    "surface_tag"
+  ],
+  "rows": {
+    "LIN0000_V02_M01_PAT02_E01-m": {
+      "channels": [
+        "K",
+        "deployment_mask",
+        "depth_z",
+        "roi",
+        "tiles",
+        "uncertain_mask",
+        "valid",
+        "view_pos"
+      ],
+      "hash": "sha256:789f6aa34d3b73b7f15a6b18037037e571f7a77195cad3a81d845b437dd92c83",
+      "opaque": "24382e8df934c5d4fa362d3e",
+      "shape": [
+        4,
+        192,
+        256,
+        3
+      ],
+      "shard": "obs/shard_0000.tar",
+      "truth_channels": [],
+      "view_pos_source": "T_WC[0,3]",
+      "views": 4
+    },
+    "LIN0000_V02_M01_PAT02_E01-p": {
+      "channels": [
+        "K",
+        "deployment_mask",
+        "depth_z",
+        "roi",
+        "tiles",
+        "uncertain_mask",
+        "valid",
+        "view_pos"
+      ],
+      "hash": "sha256:b1268233a306d9b892942aa831b2d0e60250621c6abb2771f461cfd9531ebccb",
+      "opaque": "99d6ba555e36f770932ded35",
+      "shape": [
+        4,
+        192,
+        256,
+        3
+      ],
+      "shard": "obs/shard_0000.tar",
+      "truth_channels": [],
+      "view_pos_source": "T_WC[0,3]",
+      "views": 4
+    }
+  },
+  "schema": "synlab.obs_index.v1",
+  "view_pos": {
+    "definition": "camera slide coordinate in the scan frame, read from the delivered pose T_WC as T_WC[0, 3] -- the same definition synlab.degrade.api uses for a ViewFrame's u_position_mm",
+    "fallback": "view_meta.u_position_mm, only when no pose was delivered",
+    "measured": {
+      "finite": 8,
+      "max": -1.1917781829833984,
+      "min": -1.4268035888671875,
+      "nonzero_finite": 8,
+      "varies_across_views": true,
+      "views": 8
+    },
+    "missing_marker": "nan (neither T_WC nor a real u_position_mm was delivered)",
+    "unit": "mm"
+  }
+}

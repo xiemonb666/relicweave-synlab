@@ -1,0 +1,60 @@
+--- v2/synlab/degrade/rms_fields.py
++++ v3/synlab/degrade/rms_fields.py
+@@ -131,6 +131,8 @@
+         raise ValueError("mask must be a boolean array with the same shape as raw_field_mm")
+     selected_mask = np.array(selected_mask, dtype=bool, copy=True)
+ 
++    if isinstance(target_rms_mm, (bool, np.bool_)):
++        raise ValueError("target_rms_mm must be a finite nonnegative scalar")
+     try:
+         target = float(target_rms_mm)
+     except (TypeError, ValueError, OverflowError) as exc:
+@@ -177,6 +179,7 @@
+         # Zero displacement is the identity transform over the selected finite samples.
+         output[selected_mask] = np.where(finite_mask, 0.0, selected)
+         if finite_count != requested_count:
++            output[selected_mask] = selected
+             return result("UNKNOWN_NONFINITE_INPUT", 0.0)
+         return result("EXACT", 0.0)
+ 
+@@ -197,6 +200,8 @@
+     scale_representable = bool(np.isfinite(scale) and scale > 0.0)
+     if not np.isfinite(unit_rms) or unit_rms <= 0.0 or not np.all(np.isfinite(scaled)):
+         return result("UNKNOWN_NONFINITE_SCALE", None)
++    if not scale_representable:
++        return result("UNKNOWN_SCALE_UNREPRESENTABLE", None)
+ 
+     output[selected_mask] = scaled
+     actual_measure = _measure(output[selected_mask])
+@@ -208,9 +213,5 @@
+                                             rtol=_RMS_REL_TOL, atol=0.0)):
+         output[selected_mask] = selected
+         return result("UNKNOWN_RMS_MISMATCH", None)
+-    if not scale_representable:
+-        # The normalized construction can keep the field finite even when target/raw_rms
+-        # itself underflows or overflows. Do not report a fabricated scalar factor or EXACT.
+-        return result("UNKNOWN_SCALE_UNREPRESENTABLE", None)
+     return result("EXACT", scale)
+ 
+--- v2/tests/a12/degrade/test_rms_fields_20261004.py
++++ v3/tests/a12/degrade/test_rms_fields_20261004.py
+@@ -109,16 +109,15 @@
+ 
+     assert underflow_result.status == "UNKNOWN_SCALE_UNREPRESENTABLE"
+     assert underflow_result.scale_factor is None
+-    assert underflow_result.actual_rms_mm == smallest_positive
++    assert underflow_result.actual_rms_mm == underflow_result.raw_rms_mm == 1e100
+     assert underflow_result.actual_rms_mm > 0.0
+     assert underflow_result.to_metadata()["conditioned_exact_rms"] is False
+-    np.testing.assert_array_equal(underflow_result.calibrated_field_mm,
+-                                  [smallest_positive, -smallest_positive])
++    np.testing.assert_array_equal(underflow_result.calibrated_field_mm, underflow_original)
+     np.testing.assert_array_equal(underflow_result.raw_field_mm, underflow_original)
+     np.testing.assert_array_equal(underflow_raw, underflow_original)
+ 
+ 
+-@pytest.mark.parametrize("target", [-1.0, np.nan, np.inf])
++@pytest.mark.parametrize("target", [-1.0, np.nan, np.inf, True, np.bool_(True)])
+ def test_invalid_target_is_rejected(target: float) -> None:
+     with pytest.raises(ValueError, match="target_rms_mm"):
+         calibrate_rms_field(np.array([1.0, 2.0]), np.array([True, True]), target)

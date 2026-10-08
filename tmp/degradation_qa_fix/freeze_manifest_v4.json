@@ -1,0 +1,89 @@
+{
+  "status": "READY_FOR_ROOT_REVIEW",
+  "repository": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+  "git_head": "32454d0ac9ef3f669c1858741f3fd0b60ff53064",
+  "parent_freeze_manifest_v1": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\degradation_qa_fix\\freeze_manifest_v1.json",
+  "parent_freeze_manifest_v1_sha256": "35711A3C000A24ECFEE4CACBE99B1346DA67AC60C480AB4B3BEC08A7056DDD92",
+  "parent_freeze_manifest_v2": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\degradation_qa_fix\\freeze_manifest_v2.json",
+  "parent_freeze_manifest_v2_sha256": "73C756867395F76EB58D449890F570619D15DBE333A479BFFEFF7B2D01630DCA",
+  "parent_freeze_manifest_v3": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\degradation_qa_fix\\freeze_manifest_v3.json",
+  "parent_freeze_manifest_v3_sha256": "D56A6E9D5D7AC1E88DC4B9095B67FF1BFAE3D323D338B89DEC57ECF0C328083E",
+  "operators_original_snapshot": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\degradation_qa_fix\\source_before_v2\\operators.py",
+  "operators_original_snapshot_manifest": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\degradation_qa_fix\\source_before_v2\\manifest.json",
+  "operators_original_bytes": 74689,
+  "operators_original_sha256": "A29CFE8DB38A39EA91A75665783A8E078F35AEFBCB926193E30D0EEC2CD64C9B",
+  "source_before_v4_snapshot": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\degradation_qa_fix\\source_before_v4\\test_physical_acceptance_20261004.py",
+  "source_before_v4_bytes": 20112,
+  "source_before_v4_sha256": "FA5F57E42017722398FBEEB829691D299CB03D7FC11AC24C1E1E46AE0950F25F",
+  "source_before_v4_manifest": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\degradation_qa_fix\\source_before_v4\\manifest.json",
+  "single_parameter_diff": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\degradation_qa_fix\\test_apply_basis_parameter_v3_to_v4.patch",
+  "single_parameter_diff_bytes": 828,
+  "single_parameter_diff_sha256": "3C6C279DE3AAE21A87A5FC756CDCB64B1EEEAD5604BDDC8539C9A03CA9AF7DD8",
+  "changed_since_v3": [
+    {
+      "path": "tests/a12/degrade/test_physical_acceptance_20261004.py",
+      "before_bytes": 20112,
+      "before_sha256": "FA5F57E42017722398FBEEB829691D299CB03D7FC11AC24C1E1E46AE0950F25F",
+      "after_bytes": 20105,
+      "after_sha256": "1F6B9017271731557D7486082E3EAC638D633AA01CA45E8326398CE9BF8EA2C5"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "synlab/physical/api.py",
+      "bytes": 103943,
+      "sha256": "4685FB7D37CDDFDD737CFD92C4021691F1A416E208163B80F5F829FC3F518EA9"
+    },
+    {
+      "path": "synlab/physical/operators.py",
+      "bytes": 75911,
+      "sha256": "AB9F1BF896553D3D3E56CA08837D515475A5E2F23659C4F01212F0EFAF90A96B"
+    },
+    {
+      "path": "synlab/degrade/axes.py",
+      "bytes": 140342,
+      "sha256": "1255550FE50741C81C2C57CF1EA5B4701496E8B1E933949279E4F54D41CF0E87"
+    },
+    {
+      "path": "synlab/degrade/physical_narrowband.py",
+      "bytes": 46650,
+      "sha256": "47D1DC5308AEE795D49F05CB28165BBE4A940DBD27E3E3A59579BB9EB6A976EA"
+    },
+    {
+      "path": "tests/a12/operators/test_postassembly_qa_20261003.py",
+      "bytes": 12262,
+      "sha256": "AC553BDB176421129EFDC70E8901D684D39DA3507476926A9D24F34EEA2164D0"
+    },
+    {
+      "path": "tests/a12/degrade/test_physical_acceptance_20261004.py",
+      "bytes": 20105,
+      "sha256": "1F6B9017271731557D7486082E3EAC638D633AA01CA45E8326398CE9BF8EA2C5"
+    }
+  ],
+  "preserved_freezes": [
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\degradation_qa_fix\\freeze_manifest_v1.json",
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\degradation_qa_fix\\freeze_manifest_v2.json",
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\degradation_qa_fix\\freeze_manifest_v3.json"
+  ],
+  "preserved_runs": [
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\degradation_qa_fix\\run_01",
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\degradation_qa_fix\\run_02"
+  ],
+  "run_02_counts_addendum": {
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\degradation_qa_fix\\run_02\\run02_counts_addendum.json",
+    "bytes": 552,
+    "sha256": "291308DD0BF0E5BF4B4B8E88D2F85912267870DEEEA9AB4CD4C66DC5AC20F0D2",
+    "passed": 25,
+    "failed": 3,
+    "total": 28,
+    "exit_code": 1
+  },
+  "tests_run_for_v4": false,
+  "next_run_scope": "Await root approval; only the previously approved two modules, at most one run.",
+  "callsite_check": {
+    "sample_basis_object": "basis",
+    "recipe_argument": "basis=basis",
+    "apply_argument": "basis, operator.default_variant",
+    "assertions_changed": false
+  }
+}

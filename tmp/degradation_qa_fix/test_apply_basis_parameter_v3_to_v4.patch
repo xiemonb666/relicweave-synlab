@@ -1,0 +1,13 @@
+diff --git a/tmp/degradation_qa_fix/source_before_v4/test_physical_acceptance_20261004.py b/tests/a12/degrade/test_physical_acceptance_20261004.py
+index d4d63c7..ccfb036 100644
+--- a/tmp/degradation_qa_fix/source_before_v4/test_physical_acceptance_20261004.py
++++ b/tests/a12/degrade/test_physical_acceptance_20261004.py
+@@ -204,7 +204,7 @@ def test_physical_axis_override_cannot_revive_failed_or_unaccepted_qa(monkeypatc
+                         lambda _recipe, _fragment, _clean: fake)
+ 
+     output = operator._apply(source, 1, operator.params_for(1, operator.default_variant),
+-                             recipe.basis, operator.default_variant)
++                             basis, operator.default_variant)
+ 
+     assert output.meta["realized"] is False
+     assert output.meta["realized_basis"] == "PHYSICAL_QA_FAILURE"

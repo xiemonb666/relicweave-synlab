@@ -1,0 +1,46 @@
+{
+  "action_operations_includes_force_copy": true,
+  "added_source_lines": [
+    "# Normalize ignored copy operations only after copy rows, including any raw-source snapshots, are present.",
+    "for e in entries:",
+    "    if e.get(\"operation\")==\"copy_then_stage_exact\" and e.get(\"destination_ignore_status\")==\"ignored_exact_path_force_add_required\":",
+    "        e[\"operation\"]=\"copy_then_stage_exact_force\"",
+    "    op=e.get(\"operation\")",
+    "    ignore=e.get(\"destination_ignore_status\")",
+    "    if op in {\"copy_then_stage_exact\",\"copy_then_stage_exact_force\",\"stage_existing_exact\",\"stage_existing_exact_force\",\"destination_already_same_bytes_stage_exact\",\"already_recoverable_same_bytes_destination\"}:",
+    "        if ignore not in {\"ignored_exact_path_force_add_required\",\"not_ignored_or_tracked\"}:",
+    "            raise RuntimeError(\"action row is missing its exact destination ignore-status query\")",
+    "        if ignore==\"ignored_exact_path_force_add_required\" and not op.endswith(\"_force\"):",
+    "            raise RuntimeError(\"ignored destination lacks a pinned exact force-add operation\")",
+    "        if op.endswith(\"_force\") and ignore!=\"ignored_exact_path_force_add_required\":",
+    "            raise RuntimeError(\"force-add operation lacks a pinned ignored destination\")",
+    "action_operations={\"stage_existing_exact\",\"stage_existing_exact_force\",\"copy_then_stage_exact\",\"copy_then_stage_exact_force\",\"destination_already_same_bytes_stage_exact\",\"blocked_source_pin_drift\",\"blocked_destination_collision\",\"blocked_source_unavailable\",\"blocked_destination_escape\"}"
+  ],
+  "after_bytes": 57924,
+  "after_sha256": "11622789099326a8f2fad58a9806ce3527c04362144203e01853fb585e7b1ac9",
+  "ast_parse": "PASS",
+  "before_bytes": 56749,
+  "before_sha256": "cdb83cdea2c78f1e1a04df6d0ba6c21c9d02c94b9b9ced34999cb3eec7bdd90e",
+  "builder_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\backup_coordinator\\closeout_20261007\\build_closeout_inventory_v2.py",
+  "fail_closed_missing_or_inconsistent_ignore_pin": true,
+  "frozen_executor_supported_copy_operation": "copy_then_stage_exact_force",
+  "interrupted_scan": "aborted before inventory/action manifest write",
+  "normalization_after_all_entry_generation_and_ignore_queries": true,
+  "prechange_snapshot": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\backup_coordinator\\closeout_20261007\\build_closeout_inventory_v2.py.pre_ignored_copy_force_20261008.snapshot",
+  "previous_stale_action_manifest": {
+    "all_raw_snapshot_rows_had_ignore_status": true,
+    "copy_then_stage_exact_with_ignored_pin": 806,
+    "exact_raw_snapshot_rows": 90,
+    "late_attribute_raw_snapshot_rows": 0,
+    "sha256": "49feb8117dac2e44e8f383b35c8a56a3b9e5d1cb62450470db4b479f5ce55814"
+  },
+  "removed_source_lines": [
+    "action_operations={\"stage_existing_exact\",\"stage_existing_exact_force\",\"copy_then_stage_exact\",\"destination_already_same_bytes_stage_exact\",\"blocked_source_pin_drift\",\"blocked_destination_collision\",\"blocked_source_unavailable\",\"blocked_destination_escape\"}"
+  ],
+  "schema": "ignored_copy_operation_builder_delta_v1",
+  "supplementary_targets_root_checked": {
+    "check_ignore_no_index_verbose_returncode": 1,
+    "count": 3,
+    "meaning": "not ignored; retain ordinary copy_then_stage_exact; frozen exporter and supplement parser unchanged"
+  }
+}

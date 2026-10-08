@@ -1,0 +1,49 @@
+{
+  "schema": "vesselforge.whole_body_c3_profiles.freeze.v1",
+  "phase": "source_design_only_not_executed",
+  "review_plan": "tmp/review_20261006/whole_body_c2_profiles_20261006/REVIEW_PLAN.md",
+  "execution_requires_root_ready": true,
+  "bounded_future_run": {
+    "families": [
+      "bowl",
+      "jar"
+    ],
+    "outer_spans": 16,
+    "profile_samples": 128,
+    "normal_offset_point_probes": 16,
+    "total_evaluations": 144,
+    "ceiling": 256,
+    "candidate_bbox_height_mm": {
+      "bowl": 92,
+      "jar": 122
+    },
+    "inner_spans": "NOT_CONSTRUCTED_SOURCE_ONLY",
+    "cad": "NOT_AUTHORIZED"
+  },
+  "pinned_files": [
+    {
+      "sha256": "057233b930a2b8e0e3ef43a3568f1cb0e6e972baed97eeeeceb6459d9de8c951",
+      "path": "vesselforge/experiments/whole_body_c2_profiles_20261006/profile_design.py"
+    },
+    {
+      "sha256": "e1e9c3cf659dbc59d99a18c4b70694201518be4f3aba09a57806402e732cf95a",
+      "path": "vesselforge/experiments/whole_body_c2_profiles_20261006/fixed_cases.json"
+    },
+    {
+      "sha256": "8b5c8b7e78c8d2e245f9ade1498e3dd3c5f69b0a7a82eaf593e3ea49b1b7dbbf",
+      "path": "vesselforge/experiments/whole_body_c2_profiles_20261006/DESIGN_PROPOSAL.md"
+    },
+    {
+      "sha256": "9fab758e2bc43926f6fe2e82b8ee6b65e4d3fdbaebbca8da84e29f5feb0f4a2b",
+      "path": "vesselforge/experiments/whole_body_c2_profiles_20261006/CONTROL_HULL_DESIGN.md"
+    },
+    {
+      "sha256": "d1d327f298dad639e0529edf45d4a5d4c6a6fe6b7cf7ac2773a3fcd48adb66a7",
+      "path": "vesselforge/experiments/whole_body_c2_profiles_20261006/diagnostic_driver_source_only.py"
+    },
+    {
+      "sha256": "734be4d98d9aabc3e30e3385506a64b28cf31a376dd34e91d1b1e6538376811e",
+      "path": "tmp/review_20261006/whole_body_c2_profiles_20261006/REVIEW_PLAN.md"
+    }
+  ]
+}

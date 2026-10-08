@@ -1,0 +1,2659 @@
+{
+  "manifest_sha256": "21b563069550e2091474fe94877bd3ceaae094ac4c92aed3900ecdd94702dd68",
+  "frozen_endtime_s": 0.0001,
+  "expected_full_debond_GcA_J": 3.0399999999999997e-05,
+  "zero_load": {
+    "case": "zero_load",
+    "run_status": "COMPLETED",
+    "steps_completed": 1707,
+    "endtime_reached": true,
+    "first_insertion_step": null,
+    "first_insertion_time_s": null,
+    "native_insertions": 0,
+    "api_insertions": 0,
+    "cohesive_element_count": 0,
+    "lineage_status": "EXACT_FOR_CONTRACT_MESH_FROM_NATIVE_CONNECTIVITY",
+    "bulk_elements_before_after": [
+      96,
+      96
+    ],
+    "current_nodes_with_material_ancestry": 45,
+    "cell_local_ordinal_mapping_validation": {
+      "method": "same native bulk element row ID + local vertex ordinal; no coordinates used",
+      "native_bulk_rows_before_after": [
+        96,
+        96
+      ],
+      "native_bulk_element_ids_and_local_ordinals_checked": 384,
+      "current_to_material_mapping_conflict_count": 0,
+      "mapping_conflicts": [],
+      "input_node_identity_errors": [],
+      "input_nodes_identity_checked": 45,
+      "post_bulk_rows_backmap_exact_count": 96,
+      "post_bulk_rows_backmap_checked_count": 96,
+      "bulk_connectivity_rows_bytewise_unchanged_count": 96,
+      "bulk_connectivity_rows_changed_count": 0,
+      "current_nodes_mapped": 45,
+      "current_nodes_with_material_ancestry": 45,
+      "pass": true
+    },
+    "paired_rest_gap_max_m": 0.0,
+    "cohesive_rest_side_area_sums_m2": [
+      0.0,
+      0.0
+    ],
+    "target_rest_area_m2_per_side": 0.0,
+    "area_relative_errors": null,
+    "outward_normal_dot_min_max": null,
+    "facets": [],
+    "mass_component_sums_before_kg": [
+      4e-05,
+      4e-05,
+      4e-05
+    ],
+    "mass_component_sums_after_kg": [
+      4e-05,
+      4e-05,
+      4e-05
+    ],
+    "mass_conserved_by_component": true,
+    "energies_J": {
+      "kinetic": 0.0,
+      "potential": 0.0,
+      "dissipated": 0.0,
+      "reversible": 0.0,
+      "contact": 0.0
+    },
+    "external_work_J": 0.0,
+    "ledger_residual_J": 0.0,
+    "ledger_relative_residual": null,
+    "cohesive_dissipation_signed_J": 0.0,
+    "cohesive_dissipation_target_J": 3.0399999999999997e-05,
+    "dissipation_target_gate": "NOT_REACHED",
+    "fragment_summary": {
+      "api_present": true,
+      "status": "READ",
+      "fragment_count": 1,
+      "fragment_group_names": [
+        "fragment_0"
+      ]
+    },
+    "maximum_nodal_displacement_norm_m": 0.0,
+    "visualization_facets": []
+  },
+  "modeI_dt": {
+    "case": "modeI_dt",
+    "run_status": "COMPLETED",
+    "steps_completed": 1707,
+    "endtime_reached": true,
+    "first_insertion_step": 650,
+    "first_insertion_time_s": 3.807850029291154e-05,
+    "native_insertions": 8,
+    "api_insertions": 8,
+    "cohesive_element_count": 8,
+    "lineage_status": "EXACT_FOR_CONTRACT_MESH_FROM_NATIVE_CONNECTIVITY",
+    "bulk_elements_before_after": [
+      96,
+      96
+    ],
+    "current_nodes_with_material_ancestry": 54,
+    "cell_local_ordinal_mapping_validation": {
+      "method": "same native bulk element row ID + local vertex ordinal; no coordinates used",
+      "native_bulk_rows_before_after": [
+        96,
+        96
+      ],
+      "native_bulk_element_ids_and_local_ordinals_checked": 384,
+      "current_to_material_mapping_conflict_count": 0,
+      "mapping_conflicts": [],
+      "input_node_identity_errors": [],
+      "input_nodes_identity_checked": 45,
+      "post_bulk_rows_backmap_exact_count": 96,
+      "post_bulk_rows_backmap_checked_count": 96,
+      "bulk_connectivity_rows_bytewise_unchanged_count": 72,
+      "bulk_connectivity_rows_changed_count": 24,
+      "current_nodes_mapped": 54,
+      "current_nodes_with_material_ancestry": 54,
+      "pass": true
+    },
+    "paired_rest_gap_max_m": 0.0,
+    "cohesive_rest_side_area_sums_m2": [
+      4e-06,
+      4e-06
+    ],
+    "target_rest_area_m2_per_side": 4e-06,
+    "area_relative_errors": [
+      0.0,
+      0.0
+    ],
+    "outward_normal_dot_min_max": [
+      -1.0,
+      -1.0
+    ],
+    "facets": [
+      {
+        "cohesive_element_id": 0,
+        "parent_bulk_element_ids_by_side": [
+          [
+            48
+          ],
+          [
+            28
+          ]
+        ],
+        "side_area_m2": [
+          5e-07,
+          5e-07
+        ],
+        "outward_unit_normals": [
+          [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "outward_normal_dot": -1.0,
+        "paired_rest_gap_m": 0.0,
+        "shared_input_material_node_ids": [
+          18,
+          19,
+          22
+        ]
+      },
+      {
+        "cohesive_element_id": 1,
+        "parent_bulk_element_ids_by_side": [
+          [
+            50
+          ],
+          [
+            29
+          ]
+        ],
+        "side_area_m2": [
+          5e-07,
+          5e-07
+        ],
+        "outward_unit_normals": [
+          [
+            0.0,
+            -0.0,
+            -1.0
+          ],
+          [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "outward_normal_dot": -1.0,
+        "paired_rest_gap_m": 0.0,
+        "shared_input_material_node_ids": [
+          18,
+          21,
+          22
+        ]
+      },
+      {
+        "cohesive_element_id": 2,
+        "parent_bulk_element_ids_by_side": [
+          [
+            54
+          ],
+          [
+            34
+          ]
+        ],
+        "side_area_m2": [
+          5e-07,
+          5e-07
+        ],
+        "outward_unit_normals": [
+          [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "outward_normal_dot": -1.0,
+        "paired_rest_gap_m": 0.0,
+        "shared_input_material_node_ids": [
+          19,
+          20,
+          23
+        ]
+      },
+      {
+        "cohesive_element_id": 3,
+        "parent_bulk_element_ids_by_side": [
+          [
+            56
+          ],
+          [
+            35
+          ]
+        ],
+        "side_area_m2": [
+          5e-07,
+          5e-07
+        ],
+        "outward_unit_normals": [
+          [
+            0.0,
+            -0.0,
+            -1.0
+          ],
+          [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "outward_normal_dot": -1.0,
+        "paired_rest_gap_m": 0.0,
+        "shared_input_material_node_ids": [
+          19,
+          22,
+          23
+        ]
+      },
+      {
+        "cohesive_element_id": 4,
+        "parent_bulk_element_ids_by_side": [
+          [
+            60
+          ],
+          [
+            40
+          ]
+        ],
+        "side_area_m2": [
+          5e-07,
+          5e-07
+        ],
+        "outward_unit_normals": [
+          [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "outward_normal_dot": -1.0,
+        "paired_rest_gap_m": 0.0,
+        "shared_input_material_node_ids": [
+          21,
+          22,
+          25
+        ]
+      },
+      {
+        "cohesive_element_id": 5,
+        "parent_bulk_element_ids_by_side": [
+          [
+            62
+          ],
+          [
+            41
+          ]
+        ],
+        "side_area_m2": [
+          5e-07,
+          5e-07
+        ],
+        "outward_unit_normals": [
+          [
+            0.0,
+            -0.0,
+            -1.0
+          ],
+          [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "outward_normal_dot": -1.0,
+        "paired_rest_gap_m": 0.0,
+        "shared_input_material_node_ids": [
+          21,
+          24,
+          25
+        ]
+      },
+      {
+        "cohesive_element_id": 6,
+        "parent_bulk_element_ids_by_side": [
+          [
+            66
+          ],
+          [
+            46
+          ]
+        ],
+        "side_area_m2": [
+          5e-07,
+          5e-07
+        ],
+        "outward_unit_normals": [
+          [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "outward_normal_dot": -1.0,
+        "paired_rest_gap_m": 0.0,
+        "shared_input_material_node_ids": [
+          22,
+          23,
+          26
+        ]
+      },
+      {
+        "cohesive_element_id": 7,
+        "parent_bulk_element_ids_by_side": [
+          [
+            68
+          ],
+          [
+            47
+          ]
+        ],
+        "side_area_m2": [
+          5e-07,
+          5e-07
+        ],
+        "outward_unit_normals": [
+          [
+            0.0,
+            -0.0,
+            -1.0
+          ],
+          [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "outward_normal_dot": -1.0,
+        "paired_rest_gap_m": 0.0,
+        "shared_input_material_node_ids": [
+          22,
+          25,
+          26
+        ]
+      }
+    ],
+    "mass_component_sums_before_kg": [
+      4e-05,
+      4e-05,
+      4e-05
+    ],
+    "mass_component_sums_after_kg": [
+      4e-05,
+      4e-05,
+      4e-05
+    ],
+    "mass_conserved_by_component": true,
+    "energies_J": {
+      "kinetic": 0.00035243160383350224,
+      "potential": 0.00021605427591339405,
+      "dissipated": -5.572968137645039e-05,
+      "reversible": 0.0,
+      "contact": 0.0
+    },
+    "external_work_J": 0.0005037457682805293,
+    "ledger_residual_J": -9.01043008991664e-06,
+    "ledger_relative_residual": -0.017886860113331716,
+    "cohesive_dissipation_signed_J": -5.572968137645039e-05,
+    "cohesive_dissipation_target_J": 3.0399999999999997e-05,
+    "dissipation_target_gate": "NOT_REACHED",
+    "fragment_summary": {
+      "api_present": true,
+      "status": "READ",
+      "fragment_count": 2,
+      "fragment_group_names": [
+        "fragment_0",
+        "fragment_1"
+      ]
+    },
+    "maximum_nodal_displacement_norm_m": 3.4688948288886425e-05,
+    "visualization_facets": [
+      {
+        "cohesive_element_id": 0,
+        "side_a": {
+          "18": {
+            "current_node_id": 47,
+            "rest_xyz_m": [
+              -0.001,
+              -0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -2.2926380565890796e-05,
+              -2.2926380565965392e-05,
+              8.410607401624339e-06
+            ],
+            "deformed_xyz_m": [
+              -0.0010229263805658908,
+              -0.0010229263805659654,
+              0.002008410607401624
+            ]
+          },
+          "19": {
+            "current_node_id": 46,
+            "rest_xyz_m": [
+              0.0,
+              -0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -2.324461075130438e-05,
+              -2.3220573787334392e-05,
+              8.768633392598014e-06
+            ],
+            "deformed_xyz_m": [
+              -2.324461075130438e-05,
+              -0.0010232205737873345,
+              0.002008768633392598
+            ]
+          },
+          "22": {
+            "current_node_id": 45,
+            "rest_xyz_m": [
+              0.0,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -2.3320999555377728e-05,
+              -2.3320999555440323e-05,
+              9.195208980380494e-06
+            ],
+            "deformed_xyz_m": [
+              -2.3320999555377728e-05,
+              -2.3320999555440323e-05,
+              0.0020091952089803804
+            ]
+          }
+        },
+        "side_b": {
+          "18": {
+            "current_node_id": 18,
+            "rest_xyz_m": [
+              -0.001,
+              -0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              2.3575154750560995e-05,
+              2.3575154750635416e-05,
+              4.7578371905647416e-07
+            ],
+            "deformed_xyz_m": [
+              -0.0009764248452494391,
+              -0.0009764248452493646,
+              0.0020004757837190565
+            ]
+          },
+          "19": {
+            "current_node_id": 19,
+            "rest_xyz_m": [
+              0.0,
+              -0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              2.3262328934296574e-05,
+              2.33531791909877e-05,
+              6.2195330352823e-07
+            ],
+            "deformed_xyz_m": [
+              2.3262328934296574e-05,
+              -0.0009766468208090124,
+              0.0020006219533035283
+            ]
+          },
+          "22": {
+            "current_node_id": 22,
+            "rest_xyz_m": [
+              0.0,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              2.3330666720015156e-05,
+              2.3330666720077715e-05,
+              8.523901909922772e-07
+            ],
+            "deformed_xyz_m": [
+              2.3330666720015156e-05,
+              2.3330666720077715e-05,
+              0.0020008523901909924
+            ]
+          }
+        }
+      },
+      {
+        "cohesive_element_id": 1,
+        "side_a": {
+          "21": {
+            "current_node_id": 48,
+            "rest_xyz_m": [
+              -0.001,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -2.3220573787271732e-05,
+              -2.324461075137869e-05,
+              8.768633392597538e-06
+            ],
+            "deformed_xyz_m": [
+              -0.0010232205737872719,
+              -2.324461075137869e-05,
+              0.0020087686333925977
+            ]
+          },
+          "18": {
+            "current_node_id": 47,
+            "rest_xyz_m": [
+              -0.001,
+              -0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -2.2926380565890796e-05,
+              -2.2926380565965392e-05,
+              8.410607401624339e-06
+            ],
+            "deformed_xyz_m": [
+              -0.0010229263805658908,
+              -0.0010229263805659654,
+              0.002008410607401624
+            ]
+          },
+          "22": {
+            "current_node_id": 45,
+            "rest_xyz_m": [
+              0.0,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -2.3320999555377728e-05,
+              -2.3320999555440323e-05,
+              9.195208980380494e-06
+            ],
+            "deformed_xyz_m": [
+              -2.3320999555377728e-05,
+              -2.3320999555440323e-05,
+              0.0020091952089803804
+            ]
+          }
+        },
+        "side_b": {
+          "21": {
+            "current_node_id": 21,
+            "rest_xyz_m": [
+              -0.001,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              2.3353179190924995e-05,
+              2.3262328934370974e-05,
+              6.219533035276959e-07
+            ],
+            "deformed_xyz_m": [
+              -0.000976646820809075,
+              2.3262328934370974e-05,
+              0.002000621953303528
+            ]
+          },
+          "18": {
+            "current_node_id": 18,
+            "rest_xyz_m": [
+              -0.001,
+              -0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              2.3575154750560995e-05,
+              2.3575154750635416e-05,
+              4.7578371905647416e-07
+            ],
+            "deformed_xyz_m": [
+              -0.0009764248452494391,
+              -0.0009764248452493646,
+              0.0020004757837190565
+            ]
+          },
+          "22": {
+            "current_node_id": 22,
+            "rest_xyz_m": [
+              0.0,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              2.3330666720015156e-05,
+              2.3330666720077715e-05,
+              8.523901909922772e-07
+            ],
+            "deformed_xyz_m": [
+              2.3330666720015156e-05,
+              2.3330666720077715e-05,
+              0.0020008523901909924
+            ]
+          }
+        }
+      },
+      {
+        "cohesive_element_id": 2,
+        "side_a": {
+          "19": {
+            "current_node_id": 46,
+            "rest_xyz_m": [
+              0.0,
+              -0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -2.324461075130438e-05,
+              -2.3220573787334392e-05,
+              8.768633392598014e-06
+            ],
+            "deformed_xyz_m": [
+              -2.324461075130438e-05,
+              -0.0010232205737873345,
+              0.002008768633392598
+            ]
+          },
+          "20": {
+            "current_node_id": 50,
+            "rest_xyz_m": [
+              0.001,
+              -0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -2.3094006536184208e-05,
+              -2.3244056624381815e-05,
+              8.878107363703259e-06
+            ],
+            "deformed_xyz_m": [
+              0.000976905993463816,
+              -0.0010232440566243818,
+              0.0020088781073637034
+            ]
+          },
+          "23": {
+            "current_node_id": 49,
+            "rest_xyz_m": [
+              0.001,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -2.315896063759338e-05,
+              -2.3211633295276322e-05,
+              9.27629382341055e-06
+            ],
+            "deformed_xyz_m": [
+              0.0009768410393624066,
+              -2.3211633295276322e-05,
+              0.0020092762938234104
+            ]
+          }
+        },
+        "side_b": {
+          "19": {
+            "current_node_id": 19,
+            "rest_xyz_m": [
+              0.0,
+              -0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              2.3262328934296574e-05,
+              2.33531791909877e-05,
+              6.2195330352823e-07
+            ],
+            "deformed_xyz_m": [
+              2.3262328934296574e-05,
+              -0.0009766468208090124,
+              0.0020006219533035283
+            ]
+          },
+          "20": {
+            "current_node_id": 20,
+            "rest_xyz_m": [
+              0.001,
+              -0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              2.3140609474464805e-05,
+              2.317357203933508e-05,
+              1.1265701130345692e-06
+            ],
+            "deformed_xyz_m": [
+              0.001023140609474465,
+              -0.000976826427960665,
+              0.0020011265701130347
+            ]
+          },
+          "23": {
+            "current_node_id": 23,
+            "rest_xyz_m": [
+              0.001,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              2.3141313721565206e-05,
+              2.2978326286293366e-05,
+              1.0294554859025206e-06
+            ],
+            "deformed_xyz_m": [
+              0.0010231413137215652,
+              2.2978326286293366e-05,
+              0.0020010294554859026
+            ]
+          }
+        }
+      },
+      {
+        "cohesive_element_id": 3,
+        "side_a": {
+          "22": {
+            "current_node_id": 45,
+            "rest_xyz_m": [
+              0.0,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -2.3320999555377728e-05,
+              -2.3320999555440323e-05,
+              9.195208980380494e-06
+            ],
+            "deformed_xyz_m": [
+              -2.3320999555377728e-05,
+              -2.3320999555440323e-05,
+              0.0020091952089803804
+            ]
+          },
+          "19": {
+            "current_node_id": 46,
+            "rest_xyz_m": [
+              0.0,
+              -0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -2.324461075130438e-05,
+              -2.3220573787334392e-05,
+              8.768633392598014e-06
+            ],
+            "deformed_xyz_m": [
+              -2.324461075130438e-05,
+              -0.0010232205737873345,
+              0.002008768633392598
+            ]
+          },
+          "23": {
+            "current_node_id": 49,
+            "rest_xyz_m": [
+              0.001,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -2.315896063759338e-05,
+              -2.3211633295276322e-05,
+              9.27629382341055e-06
+            ],
+            "deformed_xyz_m": [
+              0.0009768410393624066,
+              -2.3211633295276322e-05,
+              0.0020092762938234104
+            ]
+          }
+        },
+        "side_b": {
+          "22": {
+            "current_node_id": 22,
+            "rest_xyz_m": [
+              0.0,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              2.3330666720015156e-05,
+              2.3330666720077715e-05,
+              8.523901909922772e-07
+            ],
+            "deformed_xyz_m": [
+              2.3330666720015156e-05,
+              2.3330666720077715e-05,
+              0.0020008523901909924
+            ]
+          },
+          "19": {
+            "current_node_id": 19,
+            "rest_xyz_m": [
+              0.0,
+              -0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              2.3262328934296574e-05,
+              2.33531791909877e-05,
+              6.2195330352823e-07
+            ],
+            "deformed_xyz_m": [
+              2.3262328934296574e-05,
+              -0.0009766468208090124,
+              0.0020006219533035283
+            ]
+          },
+          "23": {
+            "current_node_id": 23,
+            "rest_xyz_m": [
+              0.001,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              2.3141313721565206e-05,
+              2.2978326286293366e-05,
+              1.0294554859025206e-06
+            ],
+            "deformed_xyz_m": [
+              0.0010231413137215652,
+              2.2978326286293366e-05,
+              0.0020010294554859026
+            ]
+          }
+        }
+      },
+      {
+        "cohesive_element_id": 4,
+        "side_a": {
+          "21": {
+            "current_node_id": 48,
+            "rest_xyz_m": [
+              -0.001,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -2.3220573787271732e-05,
+              -2.324461075137869e-05,
+              8.768633392597538e-06
+            ],
+            "deformed_xyz_m": [
+              -0.0010232205737872719,
+              -2.324461075137869e-05,
+              0.0020087686333925977
+            ]
+          },
+          "22": {
+            "current_node_id": 45,
+            "rest_xyz_m": [
+              0.0,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -2.3320999555377728e-05,
+              -2.3320999555440323e-05,
+              9.195208980380494e-06
+            ],
+            "deformed_xyz_m": [
+              -2.3320999555377728e-05,
+              -2.3320999555440323e-05,
+              0.0020091952089803804
+            ]
+          },
+          "25": {
+            "current_node_id": 51,
+            "rest_xyz_m": [
+              0.0,
+              0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -2.3211633295225433e-05,
+              -2.3158960637656063e-05,
+              9.276293823410166e-06
+            ],
+            "deformed_xyz_m": [
+              -2.3211633295225433e-05,
+              0.0009768410393623439,
+              0.00200927629382341
+            ]
+          }
+        },
+        "side_b": {
+          "21": {
+            "current_node_id": 21,
+            "rest_xyz_m": [
+              -0.001,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              2.3353179190924995e-05,
+              2.3262328934370974e-05,
+              6.219533035276959e-07
+            ],
+            "deformed_xyz_m": [
+              -0.000976646820809075,
+              2.3262328934370974e-05,
+              0.002000621953303528
+            ]
+          },
+          "22": {
+            "current_node_id": 22,
+            "rest_xyz_m": [
+              0.0,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              2.3330666720015156e-05,
+              2.3330666720077715e-05,
+              8.523901909922772e-07
+            ],
+            "deformed_xyz_m": [
+              2.3330666720015156e-05,
+              2.3330666720077715e-05,
+              0.0020008523901909924
+            ]
+          },
+          "25": {
+            "current_node_id": 25,
+            "rest_xyz_m": [
+              0.0,
+              0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              2.2978326286242724e-05,
+              2.3141313721627863e-05,
+              1.0294554859020361e-06
+            ],
+            "deformed_xyz_m": [
+              2.2978326286242724e-05,
+              0.0010231413137216279,
+              0.002001029455485902
+            ]
+          }
+        }
+      },
+      {
+        "cohesive_element_id": 5,
+        "side_a": {
+          "24": {
+            "current_node_id": 52,
+            "rest_xyz_m": [
+              -0.001,
+              0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -2.324405662433111e-05,
+              -2.3094006536258764e-05,
+              8.878107363702357e-06
+            ],
+            "deformed_xyz_m": [
+              -0.001023244056624331,
+              0.0009769059934637413,
+              0.0020088781073637025
+            ]
+          },
+          "21": {
+            "current_node_id": 48,
+            "rest_xyz_m": [
+              -0.001,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -2.3220573787271732e-05,
+              -2.324461075137869e-05,
+              8.768633392597538e-06
+            ],
+            "deformed_xyz_m": [
+              -0.0010232205737872719,
+              -2.324461075137869e-05,
+              0.0020087686333925977
+            ]
+          },
+          "25": {
+            "current_node_id": 51,
+            "rest_xyz_m": [
+              0.0,
+              0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -2.3211633295225433e-05,
+              -2.3158960637656063e-05,
+              9.276293823410166e-06
+            ],
+            "deformed_xyz_m": [
+              -2.3211633295225433e-05,
+              0.0009768410393623439,
+              0.00200927629382341
+            ]
+          }
+        },
+        "side_b": {
+          "24": {
+            "current_node_id": 24,
+            "rest_xyz_m": [
+              -0.001,
+              0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              2.3173572039284038e-05,
+              2.3140609474539127e-05,
+              1.1265701130337213e-06
+            ],
+            "deformed_xyz_m": [
+              -0.000976826427960716,
+              0.001023140609474539,
+              0.002001126570113034
+            ]
+          },
+          "21": {
+            "current_node_id": 21,
+            "rest_xyz_m": [
+              -0.001,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              2.3353179190924995e-05,
+              2.3262328934370974e-05,
+              6.219533035276959e-07
+            ],
+            "deformed_xyz_m": [
+              -0.000976646820809075,
+              2.3262328934370974e-05,
+              0.002000621953303528
+            ]
+          },
+          "25": {
+            "current_node_id": 25,
+            "rest_xyz_m": [
+              0.0,
+              0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              2.2978326286242724e-05,
+              2.3141313721627863e-05,
+              1.0294554859020361e-06
+            ],
+            "deformed_xyz_m": [
+              2.2978326286242724e-05,
+              0.0010231413137216279,
+              0.002001029455485902
+            ]
+          }
+        }
+      },
+      {
+        "cohesive_element_id": 6,
+        "side_a": {
+          "22": {
+            "current_node_id": 45,
+            "rest_xyz_m": [
+              0.0,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -2.3320999555377728e-05,
+              -2.3320999555440323e-05,
+              9.195208980380494e-06
+            ],
+            "deformed_xyz_m": [
+              -2.3320999555377728e-05,
+              -2.3320999555440323e-05,
+              0.0020091952089803804
+            ]
+          },
+          "23": {
+            "current_node_id": 49,
+            "rest_xyz_m": [
+              0.001,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -2.315896063759338e-05,
+              -2.3211633295276322e-05,
+              9.27629382341055e-06
+            ],
+            "deformed_xyz_m": [
+              0.0009768410393624066,
+              -2.3211633295276322e-05,
+              0.0020092762938234104
+            ]
+          },
+          "26": {
+            "current_node_id": 53,
+            "rest_xyz_m": [
+              0.001,
+              0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -2.3158650300398966e-05,
+              -2.3158650300449975e-05,
+              9.151065938132803e-06
+            ],
+            "deformed_xyz_m": [
+              0.000976841349699601,
+              0.0009768413496995501,
+              0.002009151065938133
+            ]
+          }
+        },
+        "side_b": {
+          "22": {
+            "current_node_id": 22,
+            "rest_xyz_m": [
+              0.0,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              2.3330666720015156e-05,
+              2.3330666720077715e-05,
+              8.523901909922772e-07
+            ],
+            "deformed_xyz_m": [
+              2.3330666720015156e-05,
+              2.3330666720077715e-05,
+              0.0020008523901909924
+            ]
+          },
+          "23": {
+            "current_node_id": 23,
+            "rest_xyz_m": [
+              0.001,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              2.3141313721565206e-05,
+              2.2978326286293366e-05,
+              1.0294554859025206e-06
+            ],
+            "deformed_xyz_m": [
+              0.0010231413137215652,
+              2.2978326286293366e-05,
+              0.0020010294554859026
+            ]
+          },
+          "26": {
+            "current_node_id": 26,
+            "rest_xyz_m": [
+              0.001,
+              0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              2.2934552326067587e-05,
+              2.2934552326118528e-05,
+              1.2360570264348482e-06
+            ],
+            "deformed_xyz_m": [
+              0.0010229345523260676,
+              0.0010229345523261185,
+              0.0020012360570264348
+            ]
+          }
+        }
+      },
+      {
+        "cohesive_element_id": 7,
+        "side_a": {
+          "25": {
+            "current_node_id": 51,
+            "rest_xyz_m": [
+              0.0,
+              0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -2.3211633295225433e-05,
+              -2.3158960637656063e-05,
+              9.276293823410166e-06
+            ],
+            "deformed_xyz_m": [
+              -2.3211633295225433e-05,
+              0.0009768410393623439,
+              0.00200927629382341
+            ]
+          },
+          "22": {
+            "current_node_id": 45,
+            "rest_xyz_m": [
+              0.0,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -2.3320999555377728e-05,
+              -2.3320999555440323e-05,
+              9.195208980380494e-06
+            ],
+            "deformed_xyz_m": [
+              -2.3320999555377728e-05,
+              -2.3320999555440323e-05,
+              0.0020091952089803804
+            ]
+          },
+          "26": {
+            "current_node_id": 53,
+            "rest_xyz_m": [
+              0.001,
+              0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -2.3158650300398966e-05,
+              -2.3158650300449975e-05,
+              9.151065938132803e-06
+            ],
+            "deformed_xyz_m": [
+              0.000976841349699601,
+              0.0009768413496995501,
+              0.002009151065938133
+            ]
+          }
+        },
+        "side_b": {
+          "25": {
+            "current_node_id": 25,
+            "rest_xyz_m": [
+              0.0,
+              0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              2.2978326286242724e-05,
+              2.3141313721627863e-05,
+              1.0294554859020361e-06
+            ],
+            "deformed_xyz_m": [
+              2.2978326286242724e-05,
+              0.0010231413137216279,
+              0.002001029455485902
+            ]
+          },
+          "22": {
+            "current_node_id": 22,
+            "rest_xyz_m": [
+              0.0,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              2.3330666720015156e-05,
+              2.3330666720077715e-05,
+              8.523901909922772e-07
+            ],
+            "deformed_xyz_m": [
+              2.3330666720015156e-05,
+              2.3330666720077715e-05,
+              0.0020008523901909924
+            ]
+          },
+          "26": {
+            "current_node_id": 26,
+            "rest_xyz_m": [
+              0.001,
+              0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              2.2934552326067587e-05,
+              2.2934552326118528e-05,
+              1.2360570264348482e-06
+            ],
+            "deformed_xyz_m": [
+              0.0010229345523260676,
+              0.0010229345523261185,
+              0.0020012360570264348
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "modeI_dt2": {
+    "case": "modeI_dt2",
+    "run_status": "COMPLETED",
+    "steps_completed": 3414,
+    "endtime_reached": true,
+    "first_insertion_step": 1297,
+    "first_insertion_time_s": 3.799062683069713e-05,
+    "native_insertions": 8,
+    "api_insertions": 8,
+    "cohesive_element_count": 8,
+    "lineage_status": "EXACT_FOR_CONTRACT_MESH_FROM_NATIVE_CONNECTIVITY",
+    "bulk_elements_before_after": [
+      96,
+      96
+    ],
+    "current_nodes_with_material_ancestry": 54,
+    "cell_local_ordinal_mapping_validation": {
+      "method": "same native bulk element row ID + local vertex ordinal; no coordinates used",
+      "native_bulk_rows_before_after": [
+        96,
+        96
+      ],
+      "native_bulk_element_ids_and_local_ordinals_checked": 384,
+      "current_to_material_mapping_conflict_count": 0,
+      "mapping_conflicts": [],
+      "input_node_identity_errors": [],
+      "input_nodes_identity_checked": 45,
+      "post_bulk_rows_backmap_exact_count": 96,
+      "post_bulk_rows_backmap_checked_count": 96,
+      "bulk_connectivity_rows_bytewise_unchanged_count": 72,
+      "bulk_connectivity_rows_changed_count": 24,
+      "current_nodes_mapped": 54,
+      "current_nodes_with_material_ancestry": 54,
+      "pass": true
+    },
+    "paired_rest_gap_max_m": 0.0,
+    "cohesive_rest_side_area_sums_m2": [
+      4e-06,
+      4e-06
+    ],
+    "target_rest_area_m2_per_side": 4e-06,
+    "area_relative_errors": [
+      0.0,
+      0.0
+    ],
+    "outward_normal_dot_min_max": [
+      -1.0,
+      -1.0
+    ],
+    "facets": [
+      {
+        "cohesive_element_id": 0,
+        "parent_bulk_element_ids_by_side": [
+          [
+            66
+          ],
+          [
+            46
+          ]
+        ],
+        "side_area_m2": [
+          5e-07,
+          5e-07
+        ],
+        "outward_unit_normals": [
+          [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "outward_normal_dot": -1.0,
+        "paired_rest_gap_m": 0.0,
+        "shared_input_material_node_ids": [
+          22,
+          23,
+          26
+        ]
+      },
+      {
+        "cohesive_element_id": 1,
+        "parent_bulk_element_ids_by_side": [
+          [
+            68
+          ],
+          [
+            47
+          ]
+        ],
+        "side_area_m2": [
+          5e-07,
+          5e-07
+        ],
+        "outward_unit_normals": [
+          [
+            0.0,
+            -0.0,
+            -1.0
+          ],
+          [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "outward_normal_dot": -1.0,
+        "paired_rest_gap_m": 0.0,
+        "shared_input_material_node_ids": [
+          22,
+          25,
+          26
+        ]
+      },
+      {
+        "cohesive_element_id": 2,
+        "parent_bulk_element_ids_by_side": [
+          [
+            48
+          ],
+          [
+            28
+          ]
+        ],
+        "side_area_m2": [
+          5e-07,
+          5e-07
+        ],
+        "outward_unit_normals": [
+          [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "outward_normal_dot": -1.0,
+        "paired_rest_gap_m": 0.0,
+        "shared_input_material_node_ids": [
+          18,
+          19,
+          22
+        ]
+      },
+      {
+        "cohesive_element_id": 3,
+        "parent_bulk_element_ids_by_side": [
+          [
+            50
+          ],
+          [
+            29
+          ]
+        ],
+        "side_area_m2": [
+          5e-07,
+          5e-07
+        ],
+        "outward_unit_normals": [
+          [
+            0.0,
+            -0.0,
+            -1.0
+          ],
+          [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "outward_normal_dot": -1.0,
+        "paired_rest_gap_m": 0.0,
+        "shared_input_material_node_ids": [
+          18,
+          21,
+          22
+        ]
+      },
+      {
+        "cohesive_element_id": 4,
+        "parent_bulk_element_ids_by_side": [
+          [
+            54
+          ],
+          [
+            34
+          ]
+        ],
+        "side_area_m2": [
+          5e-07,
+          5e-07
+        ],
+        "outward_unit_normals": [
+          [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "outward_normal_dot": -1.0,
+        "paired_rest_gap_m": 0.0,
+        "shared_input_material_node_ids": [
+          19,
+          20,
+          23
+        ]
+      },
+      {
+        "cohesive_element_id": 5,
+        "parent_bulk_element_ids_by_side": [
+          [
+            56
+          ],
+          [
+            35
+          ]
+        ],
+        "side_area_m2": [
+          5e-07,
+          5e-07
+        ],
+        "outward_unit_normals": [
+          [
+            0.0,
+            -0.0,
+            -1.0
+          ],
+          [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "outward_normal_dot": -1.0,
+        "paired_rest_gap_m": 0.0,
+        "shared_input_material_node_ids": [
+          19,
+          22,
+          23
+        ]
+      },
+      {
+        "cohesive_element_id": 6,
+        "parent_bulk_element_ids_by_side": [
+          [
+            60
+          ],
+          [
+            40
+          ]
+        ],
+        "side_area_m2": [
+          5e-07,
+          5e-07
+        ],
+        "outward_unit_normals": [
+          [
+            -0.0,
+            -0.0,
+            -1.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "outward_normal_dot": -1.0,
+        "paired_rest_gap_m": 0.0,
+        "shared_input_material_node_ids": [
+          21,
+          22,
+          25
+        ]
+      },
+      {
+        "cohesive_element_id": 7,
+        "parent_bulk_element_ids_by_side": [
+          [
+            62
+          ],
+          [
+            41
+          ]
+        ],
+        "side_area_m2": [
+          5e-07,
+          5e-07
+        ],
+        "outward_unit_normals": [
+          [
+            0.0,
+            -0.0,
+            -1.0
+          ],
+          [
+            -0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "outward_normal_dot": -1.0,
+        "paired_rest_gap_m": 0.0,
+        "shared_input_material_node_ids": [
+          21,
+          24,
+          25
+        ]
+      }
+    ],
+    "mass_component_sums_before_kg": [
+      4e-05,
+      4e-05,
+      4e-05
+    ],
+    "mass_component_sums_after_kg": [
+      4e-05,
+      4e-05,
+      4e-05
+    ],
+    "mass_conserved_by_component": true,
+    "energies_J": {
+      "kinetic": 0.00039400027168873345,
+      "potential": 0.00011823012955104869,
+      "dissipated": -9.726359554870569e-06,
+      "reversible": 0.0,
+      "contact": 0.0
+    },
+    "external_work_J": 0.0005013039202350114,
+    "ledger_residual_J": -1.2001214499001876e-06,
+    "ledger_relative_residual": -0.0023939997304181673,
+    "cohesive_dissipation_signed_J": -9.726359554870569e-06,
+    "cohesive_dissipation_target_J": 3.0399999999999997e-05,
+    "dissipation_target_gate": "NOT_REACHED",
+    "fragment_summary": {
+      "api_present": true,
+      "status": "READ",
+      "fragment_count": 2,
+      "fragment_group_names": [
+        "fragment_0",
+        "fragment_1"
+      ]
+    },
+    "maximum_nodal_displacement_norm_m": 1.6668138120199364e-05,
+    "visualization_facets": [
+      {
+        "cohesive_element_id": 0,
+        "side_a": {
+          "22": {
+            "current_node_id": 46,
+            "rest_xyz_m": [
+              0.0,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -9.154179816696812e-06,
+              -9.154179816693363e-06,
+              9.157616537159365e-06
+            ],
+            "deformed_xyz_m": [
+              -9.154179816696812e-06,
+              -9.154179816693363e-06,
+              0.0020091576165371596
+            ]
+          },
+          "23": {
+            "current_node_id": 50,
+            "rest_xyz_m": [
+              0.001,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -9.14826092878412e-06,
+              -9.080546545194748e-06,
+              9.440319333573972e-06
+            ],
+            "deformed_xyz_m": [
+              0.000990851739071216,
+              -9.080546545194748e-06,
+              0.002009440319333574
+            ]
+          },
+          "26": {
+            "current_node_id": 45,
+            "rest_xyz_m": [
+              0.001,
+              0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -9.314941396920839e-06,
+              -9.314941396915033e-06,
+              9.307692254954073e-06
+            ],
+            "deformed_xyz_m": [
+              0.0009906850586030793,
+              0.0009906850586030849,
+              0.002009307692254954
+            ]
+          }
+        },
+        "side_b": {
+          "22": {
+            "current_node_id": 22,
+            "rest_xyz_m": [
+              0.0,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              8.966491038800211e-06,
+              8.966491038796757e-06,
+              8.063618587574696e-07
+            ],
+            "deformed_xyz_m": [
+              8.966491038800211e-06,
+              8.966491038796757e-06,
+              0.0020008063618587573
+            ]
+          },
+          "23": {
+            "current_node_id": 23,
+            "rest_xyz_m": [
+              0.001,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              8.930171250563449e-06,
+              9.052782392386827e-06,
+              8.424609811967295e-07
+            ],
+            "deformed_xyz_m": [
+              0.0010089301712505635,
+              9.052782392386827e-06,
+              0.002000842460981197
+            ]
+          },
+          "26": {
+            "current_node_id": 26,
+            "rest_xyz_m": [
+              0.001,
+              0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              9.07411044221093e-06,
+              9.074110442205314e-06,
+              1.1049841472364755e-06
+            ],
+            "deformed_xyz_m": [
+              0.001009074110442211,
+              0.0010090741104422053,
+              0.0020011049841472364
+            ]
+          }
+        }
+      },
+      {
+        "cohesive_element_id": 1,
+        "side_a": {
+          "25": {
+            "current_node_id": 52,
+            "rest_xyz_m": [
+              0.0,
+              0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -9.080546545200513e-06,
+              -9.148260928780623e-06,
+              9.440319333573926e-06
+            ],
+            "deformed_xyz_m": [
+              -9.080546545200513e-06,
+              0.0009908517390712194,
+              0.002009440319333574
+            ]
+          },
+          "22": {
+            "current_node_id": 46,
+            "rest_xyz_m": [
+              0.0,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -9.154179816696812e-06,
+              -9.154179816693363e-06,
+              9.157616537159365e-06
+            ],
+            "deformed_xyz_m": [
+              -9.154179816696812e-06,
+              -9.154179816693363e-06,
+              0.0020091576165371596
+            ]
+          },
+          "26": {
+            "current_node_id": 45,
+            "rest_xyz_m": [
+              0.001,
+              0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -9.314941396920839e-06,
+              -9.314941396915033e-06,
+              9.307692254954073e-06
+            ],
+            "deformed_xyz_m": [
+              0.0009906850586030793,
+              0.0009906850586030849,
+              0.002009307692254954
+            ]
+          }
+        },
+        "side_b": {
+          "25": {
+            "current_node_id": 25,
+            "rest_xyz_m": [
+              0.0,
+              0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              9.05278239239247e-06,
+              8.930171250560005e-06,
+              8.424609811967403e-07
+            ],
+            "deformed_xyz_m": [
+              9.05278239239247e-06,
+              0.00100893017125056,
+              0.002000842460981197
+            ]
+          },
+          "22": {
+            "current_node_id": 22,
+            "rest_xyz_m": [
+              0.0,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              8.966491038800211e-06,
+              8.966491038796757e-06,
+              8.063618587574696e-07
+            ],
+            "deformed_xyz_m": [
+              8.966491038800211e-06,
+              8.966491038796757e-06,
+              0.0020008063618587573
+            ]
+          },
+          "26": {
+            "current_node_id": 26,
+            "rest_xyz_m": [
+              0.001,
+              0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              9.07411044221093e-06,
+              9.074110442205314e-06,
+              1.1049841472364755e-06
+            ],
+            "deformed_xyz_m": [
+              0.001009074110442211,
+              0.0010090741104422053,
+              0.0020011049841472364
+            ]
+          }
+        }
+      },
+      {
+        "cohesive_element_id": 2,
+        "side_a": {
+          "18": {
+            "current_node_id": 48,
+            "rest_xyz_m": [
+              -0.001,
+              -0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -9.208119685704182e-06,
+              -9.20811968570307e-06,
+              9.032537825748322e-06
+            ],
+            "deformed_xyz_m": [
+              -0.0010092081196857042,
+              -0.0010092081196857031,
+              0.0020090325378257484
+            ]
+          },
+          "19": {
+            "current_node_id": 47,
+            "rest_xyz_m": [
+              0.0,
+              -0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -9.097810109862e-06,
+              -9.147797136191006e-06,
+              9.23447976754457e-06
+            ],
+            "deformed_xyz_m": [
+              -9.097810109862e-06,
+              -0.001009147797136191,
+              0.0020092344797675446
+            ]
+          },
+          "22": {
+            "current_node_id": 46,
+            "rest_xyz_m": [
+              0.0,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -9.154179816696812e-06,
+              -9.154179816693363e-06,
+              9.157616537159365e-06
+            ],
+            "deformed_xyz_m": [
+              -9.154179816696812e-06,
+              -9.154179816693363e-06,
+              0.0020091576165371596
+            ]
+          }
+        },
+        "side_b": {
+          "18": {
+            "current_node_id": 18,
+            "rest_xyz_m": [
+              -0.001,
+              -0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              9.078764673945492e-06,
+              9.078764673944258e-06,
+              6.259957835815333e-07
+            ],
+            "deformed_xyz_m": [
+              -0.0009909212353260545,
+              -0.0009909212353260558,
+              0.0020006259957835817
+            ]
+          },
+          "19": {
+            "current_node_id": 19,
+            "rest_xyz_m": [
+              0.0,
+              -0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              8.991241235290721e-06,
+              8.886157367767056e-06,
+              3.81222938207957e-07
+            ],
+            "deformed_xyz_m": [
+              8.991241235290721e-06,
+              -0.000991113842632233,
+              0.002000381222938208
+            ]
+          },
+          "22": {
+            "current_node_id": 22,
+            "rest_xyz_m": [
+              0.0,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              8.966491038800211e-06,
+              8.966491038796757e-06,
+              8.063618587574696e-07
+            ],
+            "deformed_xyz_m": [
+              8.966491038800211e-06,
+              8.966491038796757e-06,
+              0.0020008063618587573
+            ]
+          }
+        }
+      },
+      {
+        "cohesive_element_id": 3,
+        "side_a": {
+          "21": {
+            "current_node_id": 49,
+            "rest_xyz_m": [
+              -0.001,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -9.147797136194478e-06,
+              -9.097810109860875e-06,
+              9.234479767544552e-06
+            ],
+            "deformed_xyz_m": [
+              -0.0010091477971361945,
+              -9.097810109860875e-06,
+              0.0020092344797675446
+            ]
+          },
+          "18": {
+            "current_node_id": 48,
+            "rest_xyz_m": [
+              -0.001,
+              -0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -9.208119685704182e-06,
+              -9.20811968570307e-06,
+              9.032537825748322e-06
+            ],
+            "deformed_xyz_m": [
+              -0.0010092081196857042,
+              -0.0010092081196857031,
+              0.0020090325378257484
+            ]
+          },
+          "22": {
+            "current_node_id": 46,
+            "rest_xyz_m": [
+              0.0,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -9.154179816696812e-06,
+              -9.154179816693363e-06,
+              9.157616537159365e-06
+            ],
+            "deformed_xyz_m": [
+              -9.154179816696812e-06,
+              -9.154179816693363e-06,
+              0.0020091576165371596
+            ]
+          }
+        },
+        "side_b": {
+          "21": {
+            "current_node_id": 21,
+            "rest_xyz_m": [
+              -0.001,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              8.886157367770517e-06,
+              8.991241235289493e-06,
+              3.8122293820793514e-07
+            ],
+            "deformed_xyz_m": [
+              -0.0009911138426322295,
+              8.991241235289493e-06,
+              0.002000381222938208
+            ]
+          },
+          "18": {
+            "current_node_id": 18,
+            "rest_xyz_m": [
+              -0.001,
+              -0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              9.078764673945492e-06,
+              9.078764673944258e-06,
+              6.259957835815333e-07
+            ],
+            "deformed_xyz_m": [
+              -0.0009909212353260545,
+              -0.0009909212353260558,
+              0.0020006259957835817
+            ]
+          },
+          "22": {
+            "current_node_id": 22,
+            "rest_xyz_m": [
+              0.0,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              8.966491038800211e-06,
+              8.966491038796757e-06,
+              8.063618587574696e-07
+            ],
+            "deformed_xyz_m": [
+              8.966491038800211e-06,
+              8.966491038796757e-06,
+              0.0020008063618587573
+            ]
+          }
+        }
+      },
+      {
+        "cohesive_element_id": 4,
+        "side_a": {
+          "19": {
+            "current_node_id": 47,
+            "rest_xyz_m": [
+              0.0,
+              -0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -9.097810109862e-06,
+              -9.147797136191006e-06,
+              9.23447976754457e-06
+            ],
+            "deformed_xyz_m": [
+              -9.097810109862e-06,
+              -0.001009147797136191,
+              0.0020092344797675446
+            ]
+          },
+          "20": {
+            "current_node_id": 51,
+            "rest_xyz_m": [
+              0.001,
+              -0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -9.167909573603211e-06,
+              -9.160266787253095e-06,
+              9.36390674257729e-06
+            ],
+            "deformed_xyz_m": [
+              0.0009908320904263967,
+              -0.0010091602667872531,
+              0.0020093639067425774
+            ]
+          },
+          "23": {
+            "current_node_id": 50,
+            "rest_xyz_m": [
+              0.001,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -9.14826092878412e-06,
+              -9.080546545194748e-06,
+              9.440319333573972e-06
+            ],
+            "deformed_xyz_m": [
+              0.000990851739071216,
+              -9.080546545194748e-06,
+              0.002009440319333574
+            ]
+          }
+        },
+        "side_b": {
+          "19": {
+            "current_node_id": 19,
+            "rest_xyz_m": [
+              0.0,
+              -0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              8.991241235290721e-06,
+              8.886157367767056e-06,
+              3.81222938207957e-07
+            ],
+            "deformed_xyz_m": [
+              8.991241235290721e-06,
+              -0.000991113842632233,
+              0.002000381222938208
+            ]
+          },
+          "20": {
+            "current_node_id": 20,
+            "rest_xyz_m": [
+              0.001,
+              -0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              9.081673128011159e-06,
+              9.001487737822051e-06,
+              2.839494428215954e-07
+            ],
+            "deformed_xyz_m": [
+              0.0010090816731280112,
+              -0.0009909985122621779,
+              0.0020002839494428215
+            ]
+          },
+          "23": {
+            "current_node_id": 23,
+            "rest_xyz_m": [
+              0.001,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              8.930171250563449e-06,
+              9.052782392386827e-06,
+              8.424609811967295e-07
+            ],
+            "deformed_xyz_m": [
+              0.0010089301712505635,
+              9.052782392386827e-06,
+              0.002000842460981197
+            ]
+          }
+        }
+      },
+      {
+        "cohesive_element_id": 5,
+        "side_a": {
+          "22": {
+            "current_node_id": 46,
+            "rest_xyz_m": [
+              0.0,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -9.154179816696812e-06,
+              -9.154179816693363e-06,
+              9.157616537159365e-06
+            ],
+            "deformed_xyz_m": [
+              -9.154179816696812e-06,
+              -9.154179816693363e-06,
+              0.0020091576165371596
+            ]
+          },
+          "19": {
+            "current_node_id": 47,
+            "rest_xyz_m": [
+              0.0,
+              -0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -9.097810109862e-06,
+              -9.147797136191006e-06,
+              9.23447976754457e-06
+            ],
+            "deformed_xyz_m": [
+              -9.097810109862e-06,
+              -0.001009147797136191,
+              0.0020092344797675446
+            ]
+          },
+          "23": {
+            "current_node_id": 50,
+            "rest_xyz_m": [
+              0.001,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -9.14826092878412e-06,
+              -9.080546545194748e-06,
+              9.440319333573972e-06
+            ],
+            "deformed_xyz_m": [
+              0.000990851739071216,
+              -9.080546545194748e-06,
+              0.002009440319333574
+            ]
+          }
+        },
+        "side_b": {
+          "22": {
+            "current_node_id": 22,
+            "rest_xyz_m": [
+              0.0,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              8.966491038800211e-06,
+              8.966491038796757e-06,
+              8.063618587574696e-07
+            ],
+            "deformed_xyz_m": [
+              8.966491038800211e-06,
+              8.966491038796757e-06,
+              0.0020008063618587573
+            ]
+          },
+          "19": {
+            "current_node_id": 19,
+            "rest_xyz_m": [
+              0.0,
+              -0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              8.991241235290721e-06,
+              8.886157367767056e-06,
+              3.81222938207957e-07
+            ],
+            "deformed_xyz_m": [
+              8.991241235290721e-06,
+              -0.000991113842632233,
+              0.002000381222938208
+            ]
+          },
+          "23": {
+            "current_node_id": 23,
+            "rest_xyz_m": [
+              0.001,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              8.930171250563449e-06,
+              9.052782392386827e-06,
+              8.424609811967295e-07
+            ],
+            "deformed_xyz_m": [
+              0.0010089301712505635,
+              9.052782392386827e-06,
+              0.002000842460981197
+            ]
+          }
+        }
+      },
+      {
+        "cohesive_element_id": 6,
+        "side_a": {
+          "21": {
+            "current_node_id": 49,
+            "rest_xyz_m": [
+              -0.001,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -9.147797136194478e-06,
+              -9.097810109860875e-06,
+              9.234479767544552e-06
+            ],
+            "deformed_xyz_m": [
+              -0.0010091477971361945,
+              -9.097810109860875e-06,
+              0.0020092344797675446
+            ]
+          },
+          "22": {
+            "current_node_id": 46,
+            "rest_xyz_m": [
+              0.0,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -9.154179816696812e-06,
+              -9.154179816693363e-06,
+              9.157616537159365e-06
+            ],
+            "deformed_xyz_m": [
+              -9.154179816696812e-06,
+              -9.154179816693363e-06,
+              0.0020091576165371596
+            ]
+          },
+          "25": {
+            "current_node_id": 52,
+            "rest_xyz_m": [
+              0.0,
+              0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -9.080546545200513e-06,
+              -9.148260928780623e-06,
+              9.440319333573926e-06
+            ],
+            "deformed_xyz_m": [
+              -9.080546545200513e-06,
+              0.0009908517390712194,
+              0.002009440319333574
+            ]
+          }
+        },
+        "side_b": {
+          "21": {
+            "current_node_id": 21,
+            "rest_xyz_m": [
+              -0.001,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              8.886157367770517e-06,
+              8.991241235289493e-06,
+              3.8122293820793514e-07
+            ],
+            "deformed_xyz_m": [
+              -0.0009911138426322295,
+              8.991241235289493e-06,
+              0.002000381222938208
+            ]
+          },
+          "22": {
+            "current_node_id": 22,
+            "rest_xyz_m": [
+              0.0,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              8.966491038800211e-06,
+              8.966491038796757e-06,
+              8.063618587574696e-07
+            ],
+            "deformed_xyz_m": [
+              8.966491038800211e-06,
+              8.966491038796757e-06,
+              0.0020008063618587573
+            ]
+          },
+          "25": {
+            "current_node_id": 25,
+            "rest_xyz_m": [
+              0.0,
+              0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              9.05278239239247e-06,
+              8.930171250560005e-06,
+              8.424609811967403e-07
+            ],
+            "deformed_xyz_m": [
+              9.05278239239247e-06,
+              0.00100893017125056,
+              0.002000842460981197
+            ]
+          }
+        }
+      },
+      {
+        "cohesive_element_id": 7,
+        "side_a": {
+          "24": {
+            "current_node_id": 53,
+            "rest_xyz_m": [
+              -0.001,
+              0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -9.160266787258848e-06,
+              -9.167909573602073e-06,
+              9.3639067425773e-06
+            ],
+            "deformed_xyz_m": [
+              -0.0010091602667872588,
+              0.000990832090426398,
+              0.0020093639067425774
+            ]
+          },
+          "21": {
+            "current_node_id": 49,
+            "rest_xyz_m": [
+              -0.001,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -9.147797136194478e-06,
+              -9.097810109860875e-06,
+              9.234479767544552e-06
+            ],
+            "deformed_xyz_m": [
+              -0.0010091477971361945,
+              -9.097810109860875e-06,
+              0.0020092344797675446
+            ]
+          },
+          "25": {
+            "current_node_id": 52,
+            "rest_xyz_m": [
+              0.0,
+              0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              -9.080546545200513e-06,
+              -9.148260928780623e-06,
+              9.440319333573926e-06
+            ],
+            "deformed_xyz_m": [
+              -9.080546545200513e-06,
+              0.0009908517390712194,
+              0.002009440319333574
+            ]
+          }
+        },
+        "side_b": {
+          "24": {
+            "current_node_id": 24,
+            "rest_xyz_m": [
+              -0.001,
+              0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              9.001487737827747e-06,
+              9.081673128010047e-06,
+              2.8394944282165657e-07
+            ],
+            "deformed_xyz_m": [
+              -0.0009909985122621722,
+              0.0010090816731280101,
+              0.0020002839494428215
+            ]
+          },
+          "21": {
+            "current_node_id": 21,
+            "rest_xyz_m": [
+              -0.001,
+              0.0,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              8.886157367770517e-06,
+              8.991241235289493e-06,
+              3.8122293820793514e-07
+            ],
+            "deformed_xyz_m": [
+              -0.0009911138426322295,
+              8.991241235289493e-06,
+              0.002000381222938208
+            ]
+          },
+          "25": {
+            "current_node_id": 25,
+            "rest_xyz_m": [
+              0.0,
+              0.001,
+              0.002
+            ],
+            "displacement_xyz_m": [
+              9.05278239239247e-06,
+              8.930171250560005e-06,
+              8.424609811967403e-07
+            ],
+            "deformed_xyz_m": [
+              9.05278239239247e-06,
+              0.00100893017125056,
+              0.002000842460981197
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "dt_refinement": {
+    "same_endtime": true,
+    "coarse_signed_dissipation_J": -5.572968137645039e-05,
+    "fine_signed_dissipation_J": -9.726359554870569e-06,
+    "absolute_difference_J": 4.6003321821579815e-05,
+    "absolute_difference_over_coarse_abs": 0.8254725432724145,
+    "gate": "NOT_REACHED because neither case reached the frozen positive Gc*A dissipation target"
+  },
+  "nonclaims": {
+    "contact": "NOT_RUN",
+    "roughness": "NOT_VALIDATED",
+    "free_crack_path": "NOT_VALIDATED; only a central physical interface is enabled",
+    "real_ceramic_qualification": "NOT_VALIDATED_TOY",
+    "gpu": "UNKNOWN"
+  }
+}

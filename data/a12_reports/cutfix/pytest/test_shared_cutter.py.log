@@ -1,0 +1,12 @@
+﻿..F.F..F                                                                 [100%]
+================================== FAILURES ===================================
+E   synlab.errors.SynLabError: [ErrorCode.CUTTER_NOT_CLOSED] (fracture.cut.verify) cutter is not watertight: 4369 edges with != 2 incident faces
+C:\Users\xiemo\Desktop\ShardForge\relicweave-synlab\synlab\fracture\cut.py:1346: synlab.errors.SynLabError: [ErrorCode.CUTTER_NOT_CLOSED] (fracture.cut.verify) cutter is not watertight: 4369 edges with != 2 incident faces
+E   synlab.errors.SynLabError: [ErrorCode.CUTTER_NOT_CLOSED] (fracture.cut.verify) cutter is not watertight: 1290 edges with != 2 incident faces
+C:\Users\xiemo\Desktop\ShardForge\relicweave-synlab\synlab\fracture\cut.py:1346: synlab.errors.SynLabError: [ErrorCode.CUTTER_NOT_CLOSED] (fracture.cut.verify) cutter is not watertight: 1290 edges with != 2 incident faces
+E   synlab.errors.SynLabError: [ErrorCode.CUTTER_NOT_CLOSED] (fracture.cut.verify) cutter is not watertight: 4369 edges with != 2 incident faces
+C:\Users\xiemo\Desktop\ShardForge\relicweave-synlab\synlab\fracture\cut.py:1346: synlab.errors.SynLabError: [ErrorCode.CUTTER_NOT_CLOSED] (fracture.cut.verify) cutter is not watertight: 4369 edges with != 2 incident faces
+=========================== short test summary info ===========================
+FAILED tests/a12/fracture/test_shared_cutter.py::test_rough_cutter_is_closed_and_within_budget
+FAILED tests/a12/fracture/test_shared_cutter.py::test_cutter_build_is_reproducible
+FAILED tests/a12/fracture/test_shared_cutter.py::test_default_cutter_reports_its_measured_error

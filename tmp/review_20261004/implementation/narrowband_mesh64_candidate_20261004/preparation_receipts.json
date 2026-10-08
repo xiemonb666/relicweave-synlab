@@ -1,0 +1,133 @@
+{
+  "schema": "a12.narrowband-mesh64-preflight-receipts.v1",
+  "repo_root": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+  "candidate_boolean_call_total": 0,
+  "preparation_invocations_total": 2,
+  "preparation_successful_invocations": 1,
+  "preparation_cases_constructed": 2,
+  "offset_body_constructions_total": 2,
+  "P03_paired_thickness_calls_total": 0,
+  "candidate_boolean_calls_total": 0,
+  "receipt_source_note": "Prior command output summaries were retained in the task context. These rows are explicit transcriptions of actual command/cwd/exit outcomes; where the exact historical stdin or raw stdout was not retained it is marked as partial/derived rather than presented as a raw log.",
+  "invocations": [
+    {
+      "id": "prepare-1",
+      "kind": "frozen_input_preparation",
+      "argv": [
+        ".\\.venv\\Scripts\\python.exe",
+        "-B",
+        ".\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\prepare_frozen_inputs.py"
+      ],
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+      "exit_code": 1,
+      "elapsed_seconds": 1.241,
+      "outcome": "ImportError at the attempted synlab.degrade.fields alias; stopped before source fixture and offset construction.",
+      "source_or_offset_constructions": 0,
+      "boolean_calls": 0,
+      "raw_stream_saved": false
+    },
+    {
+      "id": "prepare-2",
+      "kind": "frozen_input_preparation",
+      "argv": [
+        ".\\.venv\\Scripts\\python.exe",
+        "-B",
+        ".\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\prepare_frozen_inputs.py"
+      ],
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+      "exit_code": 0,
+      "elapsed_seconds": 1.962,
+      "outcome": "Successful one-time freeze; one source fixture; two cases; one _offset_body construction per case; no Boolean.",
+      "source_fixture_constructions": 1,
+      "offset_body_constructions": 2,
+      "operator_cases": 2,
+      "boolean_calls": 0,
+      "P03_paired_thickness_calls": 0,
+      "raw_stream_saved": false
+    },
+    {
+      "id": "api-static-1",
+      "kind": "static_dependency_api_inspection",
+      "argv_status": "partial_transcription; original stdin body not retained",
+      "argv": [
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+        "- (inline static inspection; exact stdin not retained)"
+      ],
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+      "exit_code": 1,
+      "outcome": "ModuleNotFoundError importing manifold3d from the VF runtime. No mesh construction or Boolean.",
+      "mesh_constructions": 0,
+      "boolean_calls": 0,
+      "raw_stream_saved": false
+    },
+    {
+      "id": "api-static-2",
+      "kind": "static_dependency_api_inspection",
+      "argv_status": "captured from actual tool invocation",
+      "argv": [
+        ".\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-c",
+        "(inline static inspection; exact source recoverable only from task transcript)"
+      ],
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+      "exit_code": 0,
+      "outcome": "Inspected Mesh64 constructor/API and Trimesh adapter source; no mesh construction or Boolean.",
+      "mesh_constructions": 0,
+      "boolean_calls": 0,
+      "raw_stream_saved": false
+    },
+    {
+      "id": "api-static-3-failed",
+      "kind": "static_dependency_api_inspection",
+      "argv": [
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\inspect_mesh64_api.py"
+      ],
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+      "exit_code": 1,
+      "outcome": "inspect.signature on nanobind Mesh64.__init__ raised ValueError; no mesh construction or Boolean. Failed stdout capture file was then superseded by corrected successful output, but this failure is preserved in this receipt.",
+      "mesh_constructions": 0,
+      "boolean_calls": 0,
+      "raw_stream_saved": false
+    },
+    {
+      "id": "api-static-3-corrected",
+      "kind": "static_dependency_api_inspection",
+      "argv": [
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\.venv\\Scripts\\python.exe",
+        "-B",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\inspect_mesh64_api.py"
+      ],
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+      "exit_code": 0,
+      "outcome": "Saved mesh64_api_static_evidence.json; inspected API/source only, no mesh construction or Boolean.",
+      "mesh_constructions": 0,
+      "boolean_calls": 0,
+      "raw_stream_saved": true
+    },
+    {
+      "id": "syntax-parse",
+      "kind": "ast_only_script_parse",
+      "argv": [
+        ".\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-c",
+        "ast.parse prepare_frozen_inputs.py, compare_mesh32_mesh64.py, render_comparison.py"
+      ],
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+      "exit_code": 0,
+      "outcome": "Three scripts parsed successfully. No imports of project operators and no Boolean calls.",
+      "mesh_constructions": 0,
+      "boolean_calls": 0,
+      "raw_stream_saved": false
+    }
+  ],
+  "candidate_execution_receipt": {
+    "status": "not_run_waiting_for_parent_approval",
+    "planned_max_boolean_calls": 4,
+    "actual_boolean_calls": 0,
+    "candidate_output_json_or_npz_present": false
+  }
+}

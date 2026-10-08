@@ -1,0 +1,1313 @@
+"""P01–P08 only-remove-material algorithms (plan 12.2, 12.3, 30.7).
+
+Every geometry axis follows the frozen pipeline: ROI → halo (> maximum erosion depth +
+isosurface halo) → uniform grid origin/spacing → ``d0`` → add the non-negative field →
+marching cubes → shared seam nodes → merge/clean → intersect with the source → QA.  The
+appearance axes (P05, P06 appearance variant, P08 paint variant) never touch geometry and
+report the geometry hash they measured instead of claiming it.
+"""
+
+from __future__ import annotations
+
+from dataclasses import replace
+from typing import Any, Callable
+
+import numpy as np
+import trimesh
+from scipy.spatial import cKDTree
+
+from ..errors import ErrorCode, SynLabError
+from . import fields as F
+from . import sdf as S
+from .recipe import DamageOutcome, DamageRecipe
+
+DEG = 180.0 / np.pi
+
+#: S11: project the extracted level set onto the exact field's zero set?  **Measured: this is a
+#: real refinement of the extraction but it is not a fix for ``roi_external_drift``**, and it
+#: costs post-clip watertightness, so it is OFF by default:
+#:
+#: ==================  ==========  ==============  ======================
+#: L0 P03 body         drift (mm)  lost vol (mm3)  accepted boundary edges
+#: ==================  ==========  ==============  ======================
+#: projection off        0.35424        319.31          43  (not watertight)
+#: projection on         0.35407        242.03          90  (not watertight)
+#: ==================  ==========  ==============  ======================
+#:
+#: The vertex residual against the *exact* field improves from mean 0.00296 / p95 0.0115 mm to
+#: mean 0.00017 / p95 6.1e-6 mm and the spurious volume loss drops by 24.2 %, but the drift is a
+#: **max over sampled clean-surface points** and its tail sits exactly where the 1.14 mm grid
+#: cannot represent the geometry (the corrections there exceed the 0.75 * spacing budget and are
+#: refused, so the residual max stays at 1.401 mm).  ``recipe.grid["project_to_level_set"]=True``
+#: enables it; the drift fix is the narrow-band backend, not this.
+PROJECT_TO_LEVEL_SET_DEFAULT = False
+
+
+# ---------------------------------------------------------------------------- context
+
+
+class SdfContext:
+    """Uniform grid + signed distance + ROI weight machinery shared by the geometry axes."""
+
+    def __init__(self, mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any = None) -> None:
+        self.mesh = mesh
+        self.recipe = recipe
+        self.fragment = fragment
+        thickness = S.ray_thickness(mesh, n_samples=160, seed=int(recipe.basis.get("seed", 0)) % 997)
+        structure = float(recipe.meta.get("shortest_structure_mm", 0.0) or 0.0)
+        extent = np.asarray(mesh.bounds[1]) - np.asarray(mesh.bounds[0])
+        if structure <= 0:
+            structure = float(np.min(extent))
+        grid_spec = dict(recipe.grid or {})
+        requested = grid_spec.get("spacing_mm")
+        explicit = grid_spec.get("damage_spacing_mm")
+        spacing_choice = S.choose_spacing(
+            min_wall_thickness_mm=max(thickness["p05_mm"], 1e-3),
+            shortest_structure_mm=structure,
+            requested_mm=requested,
+            max_nodes=int(grid_spec.get("max_nodes", 1_500_000)),
+            bbox_mm=tuple(float(v) for v in extent),
+            explicit_mm=explicit,
+        )
+        self.spacing_info = {**spacing_choice, "measured_thickness": thickness}
+        self.spacing = float(spacing_choice["spacing_mm"])
+        self.pad_mm = float(grid_spec.get("pad_mm", max(1.0, 2.0 * self.spacing)))
+        self.grid = S.grid_for_mesh(mesh, self.spacing, pad_mm=self.pad_mm,
+                                    backend=recipe.sdf_backend or S.DEFAULT_SDF_BACKEND)
+        # S12: the node budget is a *decision*, and it has to be readable from the result.
+        # ``requested_mm`` is what the axis asked for, ``spacing_mm`` is what the budget allowed,
+        # and both the realised grid shape/nodes and the relaxation factor are recorded so a
+        # "0.95 requested -> 1.14 realised" (the measured P03 case) can never be silent again.
+        self.spacing_info["realised"] = S.spacing_budget_report(
+            spacing_choice, bbox_mm=tuple(float(v) for v in extent), grid=self.grid)
+        self.d0, self.sdf_info = S.signed_distance_field(
+            mesh, self.grid, backend=recipe.sdf_backend,
+            surface_check_samples=int(grid_spec.get("surface_check_samples", 800)),
+            seed=int(recipe.basis.get("seed", 1)) % 1024)
+        self.roi_ids, self.roi_info = F.roi_faces(mesh, fragment, recipe.roi)
+        density = float(grid_spec.get("roi_density_mm", max(self.spacing, 0.4)))
+        self.anchors = F.roi_anchor_points(mesh, self.roi_ids, density_mm=density)
+        self.anchor_normals = np.asarray(mesh.face_normals, dtype=np.float64)[self.roi_ids]
+        self.anchor_points = np.asarray(mesh.triangles_center, dtype=np.float64)[self.roi_ids]
+        self.interface_area_mm2 = float(np.sum(np.asarray(mesh.area_faces, dtype=np.float64)[self.roi_ids]))
+        self.tree = cKDTree(self.anchors)
+
+    # ------------------------------------------------------------------ weights
+    def weight(self, points: np.ndarray, *, core_mm: float, halo_mm: float) -> np.ndarray:
+        dist, _ = self.tree.query(np.asarray(points, dtype=np.float64), workers=1)
+        return F.smoothstep((float(halo_mm) - dist) / max(float(halo_mm) - float(core_mm), 1e-9))
+
+    def nearest_anchor(self, points: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+        dist, idx = self.tree.query(np.asarray(points, dtype=np.float64), workers=1)
+        return dist, idx
+
+    def contact_state(self, body: trimesh.Trimesh, *, eps_mm: float = 2e-3) -> dict[str, float]:
+        """Residual contact of the original interface patch (measured by occupancy)."""
+        return F.interface_contact(self.mesh, self.fragment, self.recipe.roi, body, eps_mm=eps_mm,
+                                   density_mm=float(self.recipe.grid.get("roi_density_mm", 0.5)))
+
+    # ------------------------------------------------------------------ extraction
+    def extract(self, b_fn: Callable[[np.ndarray], np.ndarray], *, t: float, core_mm: float,
+                halo_mm: float, label: str = "") -> tuple[trimesh.Trimesh, dict[str, Any]]:
+        """``M_t = {d0 + t·α·b ≤ 0}``, then intersect with the source and fix nesting."""
+        if t <= 0:
+            raise SynLabError(ErrorCode.DAMAGE_EFFECT_MISSING,
+                              f"{label}: zero-strength extraction requested", stage="physical.extract")
+        tree = self.tree
+        halo = float(halo_mm)
+        core = float(core_mm)
+
+        def pointwise(points: np.ndarray) -> np.ndarray:
+            dist, _ = tree.query(points, workers=1)
+            alpha = F.smoothstep((halo - dist) / max(halo - core, 1e-9))
+            return float(t) * alpha * np.maximum(np.asarray(b_fn(points), dtype=np.float64), 0.0)
+
+        field, chunk_info = S.evaluate_field(self.grid, pointwise, base=self.d0,
+                                             chunk=int(self.recipe.grid.get("chunk", 24)),
+                                             halo=int(self.recipe.grid.get("halo", 1)))
+        applied = field - self.d0
+        roi_nodes = applied > 0
+        candidate = S.marching_cubes_mesh(field, self.grid)
+        projection_info: dict[str, Any] = {"applied": False,
+                                           "reason": "project_to_level_set is off"}
+        # S11: marching cubes places vertices on the *interpolant* of the node samples, and that
+        # displacement is what ``roi_external_drift_mm`` measures.  Projecting onto the exact
+        # field's zero set removes it; the switch is explicit and its effect is reported.
+        if bool(self.recipe.grid.get("project_to_level_set",
+                                     PROJECT_TO_LEVEL_SET_DEFAULT)):
+            def exact_field(points: np.ndarray,
+                            _pointwise: Callable[[np.ndarray], np.ndarray] = pointwise
+                            ) -> np.ndarray:
+                return S.scene_for(self.mesh).signed_distance(points) + _pointwise(points)
+
+            candidate, projection_info = S.refine_to_level_set(
+                candidate, exact_field, spacing=float(self.grid.spacing),
+                iterations=int(self.recipe.grid.get("project_iterations",
+                                                    S.LEVEL_SET_PROJECTION_ITERATIONS)))
+        info_extra = {"level_set_projection": projection_info}
+        accepted, clip_info = S.intersect_with_source(candidate, self.mesh)
+        nesting_info = {"applied": False, "removed_volume_mm3": 0.0, "removed_area_mm2": 0.0}
+        previous = self.recipe.previous_mesh
+        if previous is not None and bool((self.recipe.nesting or {}).get("correct", True)):
+            before_v = float(abs(accepted.volume))
+            before_a = float(accepted.area)
+            nested = S.boolean_op("intersection", [accepted, previous])
+            removed_v = max(0.0, before_v - float(abs(nested.volume)))
+            removed_a = max(0.0, before_a - float(nested.area))
+            budget_rel = float((self.recipe.nesting or {}).get("budget_rel", 0.02))
+            base_v = max(float(abs(previous.volume)), 1e-9)
+            nesting_info = {
+                "applied": True, "removed_volume_mm3": removed_v, "removed_area_mm2": removed_a,
+                "removed_volume_rel": removed_v / base_v,
+                "budget_rel": budget_rel,
+                "within_budget": bool(removed_v / base_v <= budget_rel),
+            }
+            accepted = nested
+        info = {
+            "label": label, "t": float(t), "core_mm": core, "halo_mm": halo,
+            "field_max_mm": float(applied.max()), "field_mean_roi_mm": float(applied[roi_nodes].mean())
+            if roi_nodes.any() else 0.0,
+            "field_nodes_nonzero": int(roi_nodes.sum()),
+            "chunk": chunk_info, "clip": clip_info, "nesting": nesting_info,
+            "sdf": {k: v for k, v in self.sdf_info.items() if k != "grid"},
+            "grid": self.grid.as_dict(), "spacing": self.spacing_info,
+            # S12: requested vs realised spacing/node budget in one place, measured on the grid
+            # that was actually built, so the decision is readable from the result itself.
+            "spacing_budget": dict(self.spacing_info.get("realised") or {}),
+            "roi": self.roi_info, "mesh": S.watertight_report(accepted),
+            **info_extra,
+        }
+        return accepted, info
+
+
+# ---------------------------------------------------------------------------- helpers
+
+
+def _lattice_from_points(points: np.ndarray, model: F.HeightModel) -> F.HeightModel:
+    """Rebuild a height lattice on the *same* frame/lattice from another point set."""
+    pts = np.asarray(points, dtype=np.float64)
+    uvw = model.frame.to_uvw(pts)
+    iu = np.rint((uvw[:, 0] - model.u0) / model.du).astype(np.int64)
+    iv = np.rint((uvw[:, 1] - model.v0) / model.dv).astype(np.int64)
+    ok = (iu >= 0) & (iu < model.shape[0]) & (iv >= 0) & (iv < model.shape[1])
+    iu, iv, w = iu[ok], iv[ok], uvw[ok, 2]
+    f = np.full(model.shape, -np.inf, dtype=np.float64)
+    lo = np.full(model.shape, np.inf, dtype=np.float64)
+    np.maximum.at(f, (iu, iv), w)
+    np.minimum.at(lo, (iu, iv), w)
+    valid = np.isfinite(f)
+    spread = np.where(valid, f - lo, 0.0)
+    return F.HeightModel(frame=model.frame, u0=model.u0, v0=model.v0, du=model.du, dv=model.dv,
+                         f=np.where(valid, f, 0.0), valid=valid, w_spread_mm=spread,
+                         multi_valued_mm=model.multi_valued_mm, source="damaged_surface")
+
+
+def _interface_surface_points(mesh: trimesh.Trimesh, ctx: SdfContext, *, halo_mm: float,
+                              n: int = 4000, seed: int = 0) -> np.ndarray:
+    """Surface samples of ``mesh`` inside the ROI band (used to re-measure the height map)."""
+    pts, _fid = trimesh.sample.sample_surface(mesh, int(n), seed=int(seed) % (2**31))
+    pts = np.asarray(pts, dtype=np.float64)
+    dist, _ = ctx.tree.query(pts, workers=1)
+    return pts[dist <= float(halo_mm)]
+
+
+def _removed_surface_points(body: trimesh.Trimesh, ctx: SdfContext, *, n: int = 3000,
+                            seed: int = 0) -> np.ndarray:
+    """Original surface samples whose material is gone in ``body`` (spatial loss map)."""
+    pts, _fid = trimesh.sample.sample_surface(ctx.mesh, int(n), seed=int(seed) % (2**31))
+    pts = np.asarray(pts, dtype=np.float64)
+    inside = S.scene_for(body).occupancy(pts)
+    return pts[~inside]
+
+
+def _edge_localization(removed: np.ndarray, edge_points: np.ndarray, radius: float) -> dict[str, float]:
+    if len(removed) == 0 or len(edge_points) == 0:
+        return {"removed_samples": float(len(removed)), "within_2r_fraction": 0.0}
+    tree = cKDTree(edge_points)
+    dist, _ = tree.query(removed, workers=1)
+    return {"removed_samples": float(len(removed)),
+            "within_2r_fraction": float((dist <= 2.0 * radius).mean()),
+            "edge_distance_mean_mm": float(dist.mean())}
+
+
+def _thickness_guarded(extract: Callable[[float], tuple[trimesh.Trimesh, dict[str, Any]]],
+                       *, guard_mm: float | None, max_iterations: int = 3,
+                       seed: int = 0) -> tuple[trimesh.Trimesh, dict[str, Any], dict[str, Any]]:
+    """Reduce the depth until the measured minimum wall thickness respects the guard."""
+    info: dict[str, Any] = {"guard_mm": guard_mm, "iterations": 0}
+    if not guard_mm:
+        body, detail = extract(1.0)
+        info["iterations"] = 1
+        info["thickness"] = S.ray_thickness(body, n_samples=200, seed=seed)["min_mm"]
+        info["satisfied"] = True
+        return body, detail, info
+    scale = 1.0
+    body, detail = extract(scale)
+    thickness = S.ray_thickness(body, n_samples=200, seed=seed)
+    info["iterations"] = 1
+    while thickness["min_mm"] < float(guard_mm) and info["iterations"] < max_iterations:
+        scale *= 0.5
+        body, detail = extract(scale)
+        thickness = S.ray_thickness(body, n_samples=200, seed=seed)
+        info["iterations"] += 1
+    info["thickness"] = thickness
+    info["final_scale"] = scale
+    info["satisfied"] = bool(thickness["min_mm"] >= float(guard_mm))
+    return body, detail, info
+
+
+# ---------------------------------------------------------------------------- P01
+
+
+def polish_interface(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any = None) -> DamageOutcome:
+    """P01: own-outward height low-pass with ``target = g + c ≤ f`` (plan 12.2, 30.7)."""
+    ctx = SdfContext(mesh, recipe, fragment=fragment)
+    strength = float(recipe.parameter("recession_strength", 0.0))
+    radius_mm = float(recipe.parameter("radius_mm", recipe.meta.get("radius_mm", 1.0)))
+    if strength <= 0:
+        raise SynLabError(ErrorCode.DAMAGE_EFFECT_MISSING, "P01 recession_strength must be > 0",
+                          stage="physical.P01")
+    surface = _interface_surface_points(ctx.mesh, ctx, halo_mm=max(3.0 * radius_mm, 1.0),
+                                        n=int(recipe.meta.get("samples", 6000)),
+                                        seed=int(recipe.basis.get("seed", 0)))
+    if len(surface) < 32:
+        raise SynLabError(ErrorCode.NA_NOT_APPLICABLE,
+                          f"P01 needs a single-valued patch with >= 32 interface samples, got {len(surface)}",
+                          stage="physical.P01")
+    normals = None
+    dist, idx = ctx.tree.query(surface, workers=1)
+    if len(ctx.anchors):
+        normals = np.asarray(mesh.face_normals, dtype=np.float64)[ctx.roi_ids][
+            np.clip(idx, 0, len(ctx.roi_ids) - 1)]
+    cell_mm = float(recipe.meta.get("cell_mm", max(0.25, radius_mm / 2.0)))
+    model = F.height_model(surface, normals, cell_mm=cell_mm,
+                           multi_valued_mm=float(recipe.meta.get("multi_valued_mm", 2.0)))
+    sigma_cells = max(1.0, radius_mm / max(0.5 * (model.du + model.dv), 1e-6))
+    model_single = model.single_valued_fraction >= float(recipe.meta.get("single_valued_min", 0.9))
+    fallback = None
+    if model_single:
+        target, target_info = model.static_target(sigma_cells)
+        recession = np.maximum(model.f - target, 0.0)
+        recession = np.where(model.valid, recession, 0.0)
+        recession_model = replace(model, f=recession)
+        max_recession = float(recession[model.valid].max()) if model.valid.any() else 0.0
+        if max_recession <= 0:
+            raise SynLabError(ErrorCode.DAMAGE_EFFECT_MISSING,
+                              "P01: the low-pass target equals the source height everywhere "
+                              "(no high-frequency content in the frozen band)",
+                              stage="physical.P01")
+
+        def b_fn(points: np.ndarray) -> np.ndarray:
+            values, hit = recession_model.sample(points)
+            return np.where(hit, values, 0.0)
+    else:
+        # multi-valued / high curvature patch: local SDF morphological opening (plan 12.2)
+        fallback = {"reason": "patch not single-valued",
+                    "single_valued_fraction": model.single_valued_fraction,
+                    "multi_valued_cells": model.multi_valued_cells}
+        erosion_depth = float(recipe.parameter("radius_mm", 1.0)) * 0.25 * strength
+        b_fn = lambda points: np.full(len(points), erosion_depth)  # noqa: E731
+        target, target_info = None, {"fallback": True, "erosion_depth_mm": erosion_depth}
+        max_recession = erosion_depth
+    halo = max(2.5 * radius_mm, max_recession + 2.0 * ctx.spacing)
+    body, detail = ctx.extract(b_fn, t=strength, core_mm=0.0, halo_mm=halo, label="P01")
+    damaged_surface = _interface_surface_points(body, ctx, halo_mm=halo,
+                                                n=int(recipe.meta.get("samples", 6000)),
+                                                seed=int(recipe.basis.get("seed", 0)) + 1)
+    after = _lattice_from_points(damaged_surface, model)
+    shared = model.valid & after.valid
+    hf_before = model.high_frequency_rms(sigma_cells, mask=shared) if shared.any() else 0.0
+    hf_after = after.high_frequency_rms(sigma_cells, mask=shared) if shared.any() else 0.0
+    removed = _removed_surface_points(body, ctx, n=2500, seed=int(recipe.basis.get("seed", 0)) + 2)
+    thickness = S.ray_thickness(body, n_samples=200, seed=3)
+    measurements = {
+        "recession_strength": strength,
+        "radius_mm": radius_mm,
+        "target_le_f": 1.0 if target_info.get("target_le_f", True) else 0.0,
+        "static_target_c_mm": float(target_info.get("c_mm", 0.0)),
+        "max_recession_mm": max_recession,
+        "mean_recession_mm": float(target_info.get("recession_mean_mm", max_recession)),
+        "hf_rms_before_mm": float(hf_before),
+        "hf_rms_after_mm": float(hf_after),
+        "hf_rms_reduction": float(hf_before - hf_after),
+        "hf_rms_reduction_rel": float((hf_before - hf_after) / hf_before) if hf_before > 1e-12 else 0.0,
+        "shared_cells": float(int(shared.sum())),
+        "single_valued_fraction": float(model.single_valued_fraction),
+        "fallback_used": 1.0 if fallback else 0.0,
+        "lost_volume_mm3": float(abs(ctx.mesh.volume) - abs(body.volume)),
+        "min_thickness_mm": thickness["min_mm"],
+        "p05_thickness_mm": thickness["p05_mm"],
+        **_drift_measurements(body, ctx, halo_mm=halo),
+    }
+    measurements["edge_localization_within_2r"] = _edge_localization(
+        removed, _roi_edge_samples(ctx), radius_mm)["within_2r_fraction"]
+    details = {"sdf_pipeline": detail, "height_model": {"shape": list(model.shape),
+                                                        "coverage": model.coverage,
+                                                        "cell_mm": [model.du, model.dv],
+                                                        "sigma_cells": sigma_cells},
+               "target_info": target_info, "fallback": fallback,
+               "removed_samples": int(len(removed))}
+    realized = bool(hf_before - hf_after > 1e-6 and measurements["lost_volume_mm3"] > 0)
+    return DamageOutcome(mesh=body, measurements=measurements,
+                         units={"max_recession_mm": "mm", "hf_rms_before_mm": "mm",
+                                "hf_rms_after_mm": "mm", "hf_rms_reduction": "mm",
+                                "lost_volume_mm3": "mm3", "min_thickness_mm": "mm",
+                                "roi_external_drift_mm": "mm",
+                                "roi_external_drift_p50_mm": "mm",
+                                "roi_external_drift_p95_mm": "mm",
+                                "roi_external_drift_p99_mm": "mm"},
+                         details=details, realized=realized)
+
+
+def _roi_edge_samples(ctx: SdfContext, *, min_angle_deg: float = 25.0) -> np.ndarray:
+    edges = F.convex_edges(ctx.mesh, min_angle_deg=min_angle_deg, face_ids=ctx.roi_ids)
+    return F.edge_sample_points(ctx.mesh, edges, density_mm=max(ctx.spacing, 0.3))
+
+
+#: S12: quantiles of the drift population that are reported beside the max.  The max is a
+#: two-sided statistic: it is decided by the few samples that land on the worst representable
+#: feature, so it is an upper-bound probe, not a typical displacement.  The quantiles are
+#: **additive**: ``roi_external_drift_mm`` keeps its exact meaning and its exact value.
+DRIFT_QUANTILES: tuple[float, ...] = (50.0, 95.0, 99.0)
+
+
+def _roi_external_drift_stats(body: trimesh.Trimesh, ctx: SdfContext, *, halo_mm: float,
+                              n: int = 1500, seed: int = 7) -> dict[str, float]:
+    """Displacement of the *non-ROI* surface: the max (plan 12.2 P03/P07) plus its quantiles.
+
+    ``max_mm`` is bit-for-bit the number the shipped :func:`_roi_external_drift` returned: the
+    same seed, the same ``n``, the same halo test and the same occupancy/distance instrument.
+    The population the max is taken over is the set of **non-ROI source surface samples whose
+    material is gone** from the delivered body; a sample that is still covered never moved and
+    contributes 0, which is why the quantiles are taken over the *moved* subsamples and
+    ``populated_by`` says so explicitly.
+    """
+    out: dict[str, float] = {"max_mm": 0.0, "samples": 0.0, "outside_samples": 0.0,
+                             "moved_samples": 0.0}
+    for q in DRIFT_QUANTILES:
+        out[f"p{q:g}_mm"] = 0.0
+    pts, _fid = trimesh.sample.sample_surface(ctx.mesh, int(n), seed=int(seed))
+    pts = np.asarray(pts, dtype=np.float64)
+    dist, _ = ctx.tree.query(pts, workers=1)
+    outside = pts[dist > float(halo_mm)]
+    out["samples"] = float(len(pts))
+    out["outside_samples"] = float(len(outside))
+    if len(outside) == 0:
+        return out
+    inside = S.scene_for(body).occupancy(outside)
+    moved = outside[~inside]
+    out["moved_samples"] = float(len(moved))
+    if len(moved) == 0:
+        return out
+    values = np.asarray(S.scene_for(body).unsigned_distance(moved), dtype=np.float64)
+    values = values[np.isfinite(values)]
+    if values.size == 0:
+        return out
+    out["max_mm"] = float(values.max())
+    for q in DRIFT_QUANTILES:
+        out[f"p{q:g}_mm"] = float(np.percentile(values, q))
+    return out
+
+
+def _roi_external_drift(body: trimesh.Trimesh, ctx: SdfContext, *, halo_mm: float,
+                        n: int = 1500, seed: int = 7) -> float:
+    """Max displacement of the *non-ROI* surface: must stay ~0 (plan 12.2 P03/P07)."""
+    return float(_roi_external_drift_stats(body, ctx, halo_mm=halo_mm, n=n,
+                                           seed=seed)["max_mm"])
+
+
+def _drift_measurements(body: trimesh.Trimesh, ctx: SdfContext, *, halo_mm: float,
+                        n: int = 1500, seed: int = 7) -> dict[str, float]:
+    """The ``roi_external_drift*`` measurement block (max + p50/p95/p99, S12).
+
+    Raises ``SynLabError`` if the max would differ from what :func:`_roi_external_drift` returns,
+    so the additive keys can never silently replace the shipped statistic.
+    """
+    stats = _roi_external_drift_stats(body, ctx, halo_mm=halo_mm, n=n, seed=seed)
+    out = {"roi_external_drift_mm": float(stats["max_mm"]),
+           "roi_external_drift_p50_mm": float(stats["p50_mm"]),
+           "roi_external_drift_p95_mm": float(stats["p95_mm"]),
+           "roi_external_drift_p99_mm": float(stats["p99_mm"]),
+           "roi_external_drift_samples": float(stats["samples"]),
+           "roi_external_drift_moved_samples": float(stats["moved_samples"])}
+    shipped = float(_roi_external_drift(body, ctx, halo_mm=halo_mm, n=n, seed=seed))
+    if shipped != out["roi_external_drift_mm"]:  # pragma: no cover - guards the refactor
+        raise SynLabError(
+            ErrorCode.SCHEMA_INVALID,
+            f"roi_external_drift max moved: {shipped!r} != {out['roi_external_drift_mm']!r}",
+            stage="physical.operators.drift")
+    return out
+
+
+# ---------------------------------------------------------------------------- P02
+
+
+def round_edge(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any = None) -> DamageOutcome:
+    """P02: edge-distance driven inward fillet; never a whole-patch Laplacian (plan 12.2)."""
+    ctx = SdfContext(mesh, recipe, fragment=fragment)
+    strength = float(recipe.parameter("recession_strength", 0.0))
+    radius_mm = float(recipe.parameter("edge_width_mm", recipe.meta.get("edge_width_mm", 0.4)))
+    variant = recipe.variant or "sdf_fillet"
+    if strength <= 0:
+        raise SynLabError(ErrorCode.DAMAGE_EFFECT_MISSING, "P02 recession_strength must be > 0",
+                          stage="physical.P02")
+    edges = F.convex_edges(ctx.mesh, min_angle_deg=float(recipe.meta.get("min_edge_angle_deg", 25.0)),
+                           face_ids=ctx.roi_ids)
+    if len(edges) == 0:
+        edges = F.convex_edges(ctx.mesh, min_angle_deg=float(recipe.meta.get("min_edge_angle_deg", 25.0)))
+    edge_points = F.edge_sample_points(ctx.mesh, edges, density_mm=max(ctx.spacing * 0.5, 0.2))
+    if len(edge_points) < 4:
+        raise SynLabError(ErrorCode.NA_NOT_APPLICABLE,
+                          "P02 needs convex edges on the ROI boundary; none found",
+                          stage="physical.P02")
+    angles = F.dihedral_angles_at_edges(ctx.mesh, edges)
+    if len(angles) == len(edges) and len(edges):
+        seg_mid = np.asarray(ctx.mesh.vertices, dtype=np.float64)[edges].mean(axis=1)
+        angle_tree = cKDTree(seg_mid)
+        _d, nearest = angle_tree.query(edge_points, workers=1)
+        edge_angle = angles[np.clip(nearest, 0, len(angles) - 1)]
+    else:
+        edge_angle = np.full(len(edge_points), 90.0)
+    half = np.radians(np.clip(edge_angle, 5.0, 175.0)) / 2.0
+    depth_needed = np.clip(radius_mm * (1.0 / np.maximum(np.sin(half), 1e-3) - 1.0), 0.0, 4.0 * radius_mm)
+    chamfer = variant == "chamfer"
+    if chamfer:
+        # planar chamfer: linear profile, generates a new edge (must be declared, plan 30.7)
+        profile = lambda rho, r: np.clip(1.0 - np.asarray(rho) / max(r, 1e-9), 0.0, 1.0)  # noqa: E731
+    else:
+        profile = F.bump_profile
+    tree = cKDTree(edge_points)
+
+    def b_fn(points: np.ndarray) -> np.ndarray:
+        dist, idx = tree.query(np.asarray(points, dtype=np.float64), workers=1)
+        return depth_needed[np.clip(idx, 0, len(depth_needed) - 1)] * profile(dist, radius_mm)
+
+    body, detail = ctx.extract(b_fn, t=strength, core_mm=0.0, halo_mm=2.0 * radius_mm + 2.0 * ctx.spacing,
+                               label="P02")
+    removed = _removed_surface_points(body, ctx, n=2500, seed=int(recipe.basis.get("seed", 0)) + 5)
+    localization = _edge_localization(removed, edge_points, radius_mm)
+    after_edges = F.convex_edges(body, min_angle_deg=float(recipe.meta.get("min_edge_angle_deg", 25.0)),
+                                 face_ids=None)
+    after_angles = F.dihedral_angles_at_edges(body, after_edges) if len(after_edges) else np.zeros(0)
+    sharp_before = int(np.sum(np.asarray(angles) >= 30.0)) if len(angles) else 0
+    sharp_after = int(np.sum(after_angles >= 30.0)) if len(after_angles) else 0
+    measurements = {
+        "recession_strength": strength,
+        "edge_width_mm": radius_mm,
+        "max_recession_mm": float(np.max(depth_needed)) if len(depth_needed) else 0.0,
+        "mean_recession_mm": float(np.mean(depth_needed)) if len(depth_needed) else 0.0,
+        "edge_samples": float(len(edge_points)),
+        "edge_dihedral_median_deg": float(np.median(edge_angle)) if len(edge_angle) else 0.0,
+        "lost_volume_mm3": float(abs(ctx.mesh.volume) - abs(body.volume)),
+        "lost_area_mm2": float(ctx.mesh.area - body.area),
+        "removed_within_2r_fraction": float(localization["within_2r_fraction"]),
+        "sharp_edges_before": float(sharp_before),
+        "sharp_edges_after": float(sharp_after),
+        "new_sharp_edge_ratio": float(sharp_after / max(sharp_before, 1)),
+        "chamfer_variant": 1.0 if chamfer else 0.0,
+        "min_thickness_mm": S.ray_thickness(body, n_samples=160, seed=4)["min_mm"],
+        **_drift_measurements(body, ctx, halo_mm=2.0 * radius_mm + ctx.spacing),
+    }
+    realized = bool(measurements["lost_volume_mm3"] > 0 and localization["within_2r_fraction"] > 0.5)
+    details = {"sdf_pipeline": detail, "edges_before": int(len(edges)), "edges_after": int(len(after_edges)),
+               "variant": variant}
+    return DamageOutcome(mesh=body, measurements=measurements,
+                         units={"max_recession_mm": "mm", "lost_volume_mm3": "mm3",
+                                "edge_width_mm": "mm", "min_thickness_mm": "mm",
+                                "roi_external_drift_mm": "mm",
+                                "roi_external_drift_p50_mm": "mm",
+                                "roi_external_drift_p95_mm": "mm",
+                                "roi_external_drift_p99_mm": "mm"},
+                         details=details, realized=realized)
+
+
+# ---------------------------------------------------------------------------- P03 / P07
+
+
+def _smooth_recession(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any,
+                      depth_mm: float, label: str, roi: dict[str, Any] | None,
+                      thickness_guard_mm: float | None) -> DamageOutcome:
+    if roi is not None:
+        recipe = replace(recipe, roi=roi)
+    ctx = SdfContext(mesh, recipe, fragment=fragment)
+    field = F.FourierField.from_payload(recipe.basis["field"])
+    scale_mm = float(recipe.parameter("corr_length_mm", recipe.meta.get("corr_length_mm", 6.0)))
+    anchor_values = np.clip(field(ctx.anchors), 0.0, 1.0)
+    normalizer = float(max(np.percentile(anchor_values, 99.0), 1e-6))
+
+    def b_fn(points: np.ndarray) -> np.ndarray:
+        return float(depth_mm) * np.clip(field(points) / normalizer, 0.0, 1.0)
+
+    halo = float(depth_mm) * 2.0 + float(recipe.meta.get("halo_mm", 3.0 * ctx.spacing + 1.0))
+
+    def extract(scale: float) -> tuple[trimesh.Trimesh, dict[str, Any]]:
+        return ctx.extract(b_fn, t=float(scale), core_mm=0.0, halo_mm=halo, label=label)
+
+    body, detail, guard = _thickness_guarded(extract, guard_mm=thickness_guard_mm,
+                                             seed=int(recipe.basis.get("seed", 0)) + 9)
+    removed = _removed_surface_points(body, ctx, n=2500, seed=int(recipe.basis.get("seed", 0)) + 6)
+    thickness = guard.get("thickness") or S.ray_thickness(body, n_samples=200, seed=6)
+    contact = ctx.contact_state(body)
+    measurements = {
+        "depth_mm": float(depth_mm),
+        "corr_length_mm": scale_mm,
+        "field_normalizer": normalizer,
+        "realized_max_recession_mm": float(detail["field_max_mm"]),
+        "realized_mean_recession_mm": float(detail["field_mean_roi_mm"]),
+        "lost_volume_mm3": float(abs(ctx.mesh.volume) - abs(body.volume)),
+        "lost_volume_ratio": float(1.0 - abs(body.volume) / max(abs(ctx.mesh.volume), 1e-12)),
+        **_drift_measurements(body, ctx, halo_mm=halo),
+        "contact_lost_fraction": float(contact["lost_fraction"]),
+        "contact_residual_area_mm2": float(contact["residual_area_mm2"]),
+        "min_thickness_mm": thickness["min_mm"],
+        "thickness_guard_satisfied": 1.0 if guard.get("satisfied", True) else 0.0,
+        "thickness_guard_iterations": float(guard.get("iterations", 1)),
+        "removed_samples": float(len(removed)),
+    }
+    realized = bool(measurements["lost_volume_mm3"] > 1e-9)
+    details = {"sdf_pipeline": detail, "thickness_guard": guard, "field_id": field.field_id,
+               "roi": ctx.roi_info}
+    return DamageOutcome(mesh=body, measurements=measurements,
+                         units={"depth_mm": "mm", "lost_volume_mm3": "mm3",
+                                "realized_max_recession_mm": "mm", "min_thickness_mm": "mm",
+                                "roi_external_drift_mm": "mm",
+                                "contact_residual_area_mm2": "mm2"},
+                         details=details, realized=realized)
+
+
+def erode_interface(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any = None) -> DamageOutcome:
+    """P03: smooth non-negative recession over the interface ROI, wall thickness guarded."""
+    depth = float(recipe.parameter("depth_mm", 0.0))
+    if depth <= 0:
+        raise SynLabError(ErrorCode.DAMAGE_EFFECT_MISSING, "P03 depth_mm must be > 0",
+                          stage="physical.P03")
+    return _smooth_recession(mesh, recipe, fragment=fragment, depth_mm=depth, label="P03", roi=None,
+                             thickness_guard_mm=recipe.qa.get("min_wall_thickness_mm"))
+
+
+def erode_outer(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any = None) -> DamageOutcome:
+    """P07: erosion of the original outer-wall ROI only, no hidden-surface backfill."""
+    depth = float(recipe.parameter("depth_mm", 0.0))
+    if depth <= 0:
+        raise SynLabError(ErrorCode.DAMAGE_EFFECT_MISSING, "P07 depth_mm must be > 0",
+                          stage="physical.P07")
+    roi = dict(recipe.roi or {})
+    if roi.get("kind") in (None, "interface"):
+        roi = {"kind": "outer", "direction": roi.get("direction", [0.0, 0.0, 1.0]),
+               "cos_min": roi.get("cos_min", 0.25)}
+    outcome = _smooth_recession(mesh, recipe, fragment=fragment, depth_mm=depth, label="P07", roi=roi,
+                                thickness_guard_mm=recipe.qa.get("min_wall_thickness_mm"))
+    outcome.measurements["outer_only_roi"] = 1.0
+    return outcome
+
+
+# ---------------------------------------------------------------------------- P04
+
+
+def _cutter_ellipsoid(center: np.ndarray, axes: np.ndarray, radii: np.ndarray,
+                      *, subdivisions: int = 2) -> trimesh.Trimesh:
+    sphere = trimesh.creation.icosphere(subdivisions=int(subdivisions), radius=1.0)
+    transform = np.eye(4)
+    transform[:3, :3] = np.asarray(axes, dtype=np.float64) @ np.diag(np.asarray(radii, dtype=np.float64))
+    transform[:3, 3] = np.asarray(center, dtype=np.float64)
+    sphere.apply_transform(transform)
+    return S.clean_mesh(sphere)
+
+
+def chip_material(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any = None) -> DamageOutcome:
+    """P04: fixed cutter position/direction, size found by a 1-D geometric search (plan 30.7)."""
+    ctx = SdfContext(mesh, recipe, fragment=fragment)
+    target = float(recipe.parameter("contact_loss_target", 0.0))
+    if target <= 0:
+        raise SynLabError(ErrorCode.DAMAGE_EFFECT_MISSING, "P04 target must be > 0", stage="physical.P04")
+    variant = recipe.variant or "contact_loss"
+    basis = dict(recipe.basis or {})
+    center = np.asarray(basis["center_mm"], dtype=np.float64)
+    direction = np.asarray(basis["direction"], dtype=np.float64)
+    direction = direction / max(np.linalg.norm(direction), 1e-12)
+    e1 = np.cross(direction, np.array([0.0, 0.0, 1.0]))
+    if np.linalg.norm(e1) < 1e-6:
+        e1 = np.cross(direction, np.array([0.0, 1.0, 0.0]))
+    e1 /= np.linalg.norm(e1)
+    e2 = np.cross(direction, e1)
+    base_radii = np.asarray(basis.get("radii_mm", [1.0, 1.0, 1.0]), dtype=np.float64)
+    source_volume = float(abs(mesh.volume))
+    min_ratio = float(recipe.meta.get("min_representative_ratio", 0.05))
+
+    def build(scale: float) -> trimesh.Trimesh:
+        radii = np.maximum(base_radii * float(scale), 1e-4)
+        return _cutter_ellipsoid(center, np.stack([e1, e2, direction], axis=1), radii)
+
+    def evaluate(scale: float) -> dict[str, Any]:
+        cutter = build(scale)
+        body = S.boolean_op("difference", [mesh, cutter])
+        contact = ctx.contact_state(body)
+        parts = S.component_split(body)
+        volumes = [float(abs(p.volume)) for p in parts]
+        return {"scale": float(scale), "body": body, "contact": contact,
+                "components": parts, "volumes": volumes,
+                "volume_ratio": (max(volumes) / max(source_volume, 1e-12)) if volumes else 0.0}
+
+    def loss_of(scale: float) -> tuple[float, dict[str, Any]]:
+        state = evaluate(scale)
+        if variant == "volume_loss" or len(ctx.anchor_points) == 0:
+            loss = 1.0 - float(abs(state["body"].volume)) / max(source_volume, 1e-12)
+        else:
+            loss = float(state["contact"]["lost_fraction"])
+        return loss, state
+
+    # 1-D search: the cutter family is nested in ``scale`` so the loss is monotone
+    lo, hi = 0.0, 1.0
+    state_hi = evaluate(hi)
+    guard = 0
+    while state_hi["volume_ratio"] > min_ratio and loss_of(hi)[0] < target and guard < 8:
+        lo, hi = hi, hi * 2.0
+        state_hi = evaluate(hi)
+        guard += 1
+    loss_hi, state_hi = loss_of(hi)
+    trace = [{"scale": hi, "loss": loss_hi, "volume_ratio": state_hi["volume_ratio"]}]
+    if loss_hi < target - float(recipe.meta.get("target_tol", 0.01)):
+        raise SynLabError(
+            ErrorCode.TARGET_INFEASIBLE,
+            f"P04 target {target:.3f} unreachable: the largest nested cutter that keeps the "
+            f"representative body ({min_ratio:.2f} of the source volume) only removes "
+            f"{loss_hi:.3f} of the contact ({variant})",
+            stage="physical.P04",
+            measurements={"target": target, "achieved_max": loss_hi,
+                          "scale_max": hi, "search_grow_steps": guard})
+    best_state = state_hi
+    best_loss = loss_hi
+    for _iteration in range(int(recipe.meta.get("bisection_iterations", 12))):
+        mid = 0.5 * (lo + hi)
+        loss_mid, state_mid = loss_of(mid)
+        trace.append({"scale": mid, "loss": loss_mid, "volume_ratio": state_mid["volume_ratio"]})
+        if state_mid["volume_ratio"] < min_ratio:
+            hi = mid
+            continue
+        if loss_mid >= target:
+            hi, best_loss, best_state = mid, loss_mid, state_mid
+        else:
+            lo = mid
+        if abs(loss_mid - target) <= float(recipe.meta.get("target_tol", 0.01)) * 0.5:
+            break
+    body = best_state["body"]
+    if best_state["volume_ratio"] < min_ratio:
+        raise SynLabError(ErrorCode.TARGET_INFEASIBLE,
+                          f"P04 target {target:.3f} would eliminate the representative body "
+                          f"(largest component {best_state['volume_ratio']:.3f} of source volume)",
+                          stage="physical.P04", measurements={"target": target,
+                                                              "volume_ratio": best_state["volume_ratio"]})
+    parts = best_state["components"]
+    volumes = best_state["volumes"]
+    contact = best_state["contact"]
+    measurements = {
+        "contact_loss_target": target,
+        "achieved_contact_loss": float(contact["lost_fraction"]),
+        "target_abs_error": float(abs(contact["lost_fraction"] - target)),
+        "contact_lost_area_mm2": float(contact["lost_area_mm2"]),
+        "contact_residual_area_mm2": float(contact["residual_area_mm2"]),
+        "cutter_scale": float(best_state["scale"]),
+        "cutter_radius_mm": float(np.max(base_radii * best_state["scale"])),
+        "search_iterations": float(len(trace)),
+        "lost_volume_mm3": float(source_volume - sum(volumes)),
+        "components": float(len(parts)),
+        "largest_component_ratio": float(best_state["volume_ratio"]),
+        "min_thickness_mm": S.ray_thickness(body, n_samples=160, seed=11)["min_mm"],
+    }
+    details = {"sdf_pipeline": {"roi": ctx.roi_info, "spacing": ctx.spacing_info}, "search": trace,
+               "variant": variant, "cutter": {"center_mm": [float(v) for v in center],
+                                              "direction": [float(v) for v in direction],
+                                              "base_radii_mm": [float(v) for v in base_radii]}}
+    realized = bool(measurements["lost_volume_mm3"] > 1e-9)
+    return DamageOutcome(mesh=body, measurements=measurements,
+                         units={"achieved_contact_loss": "1", "contact_lost_area_mm2": "mm2",
+                                "cutter_radius_mm": "mm", "lost_volume_mm3": "mm3",
+                                "min_thickness_mm": "mm"},
+                         details=details, realized=realized)
+
+
+# ---------------------------------------------------------------------------- appearance
+
+
+def _appearance_payload(recipe: DamageRecipe, fragment: Any) -> dict[str, Any]:
+    appearance = None
+    if fragment is not None:
+        appearance = (getattr(fragment, "meta", None) or {}).get("appearance")
+    appearance = appearance or recipe.meta.get("appearance") or recipe.basis.get("appearance")
+    if not appearance:
+        raise SynLabError(
+            ErrorCode.NA_NOT_APPLICABLE,
+            f"{recipe.axis_id}: appearance axes need texel channels "
+            "(texel_albedo/texel_substrate_albedo/texel_area_mm2/texel_layer)",
+            stage="physical.appearance")
+    for key in ("texel_albedo", "texel_substrate_albedo", "texel_area_mm2"):
+        if key not in appearance:
+            raise SynLabError(ErrorCode.NA_NOT_APPLICABLE,
+                              f"{recipe.axis_id}: appearance payload misses {key}",
+                              stage="physical.appearance")
+    return appearance
+
+
+def _copy_appearance_channels(appearance: dict[str, Any]) -> dict[str, Any]:
+    """Copy mutable appearance containers while retaining opaque reference-valued channels.
+
+    P05/P06 update only their result arrays and masks.  Array channels and nested containers are
+    copied so an operator cannot mutate its source; opaque values (including truth references)
+    pass through by identity and are never modified here.
+    """
+    def copy_channel(value: Any) -> Any:
+        if isinstance(value, np.ndarray):
+            return np.array(value, copy=True)
+        if isinstance(value, dict):
+            return {key: copy_channel(item) for key, item in value.items()}
+        if isinstance(value, list):
+            return [copy_channel(item) for item in value]
+        if isinstance(value, tuple):
+            return tuple(copy_channel(item) for item in value)
+        return value
+
+    return {key: copy_channel(value) for key, value in appearance.items()}
+
+
+def remove_paint(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any = None) -> DamageOutcome:
+    """P05: nested paint masks from a frozen continuous rank field; glaze/body shows through."""
+    appearance = _appearance_payload(recipe, fragment)
+    retained = float(recipe.parameter("retained_fraction", 1.0))
+    if not np.isfinite(retained) or not 0.0 <= retained <= 1.0:
+        raise ValueError("P05 retained_fraction must be finite and in [0, 1]")
+    albedo = np.asarray(appearance["texel_albedo"], dtype=np.float32)
+    substrate = np.asarray(appearance["texel_substrate_albedo"], dtype=np.float32)
+    area = np.asarray(appearance["texel_area_mm2"], dtype=np.float64)
+    n_texels = int(albedo.shape[0]) if albedo.ndim else 0
+    layer = np.asarray(appearance.get("texel_layer", np.zeros(n_texels, dtype=np.int32)))
+    if "texel_positions" not in appearance:
+        raise ValueError("P05 appearance payload requires texel_positions")
+    if albedo.ndim != 2 or albedo.shape[1:] != (3,):
+        raise ValueError("P05 texel_albedo must have shape (N, 3)")
+    if substrate.shape != albedo.shape:
+        raise ValueError("P05 texel_substrate_albedo must have shape (N, 3)")
+    if (not np.all(np.isfinite(albedo)) or np.any(albedo < 0.0) or np.any(albedo > 1.0)):
+        raise ValueError("P05 texel_albedo values must be finite and in [0, 1]")
+    if (not np.all(np.isfinite(substrate)) or np.any(substrate < 0.0) or
+            np.any(substrate > 1.0)):
+        raise ValueError("P05 texel_substrate_albedo values must be finite and in [0, 1]")
+    if area.shape != (len(albedo),) or layer.shape != (len(albedo),):
+        raise ValueError("P05 texel area and layer channels must match texel_albedo")
+    if not np.all(np.isfinite(area)) or np.any(area <= 0.0):
+        raise ValueError("P05 texel_area_mm2 values must be finite and strictly positive")
+    positions = np.asarray(appearance["texel_positions"], dtype=np.float64)
+    if positions.shape != (len(albedo), 3):
+        raise ValueError("P05 texel_positions must have shape (N, 3)")
+    if not np.all(np.isfinite(positions)):
+        raise ValueError("P05 texel_positions values must be finite")
+    field = F.FourierField.from_payload(recipe.basis["rank_field"])
+    rank = np.clip(field(positions), 0.0, 1.0)
+    paint_texels = layer > 0
+    prior_removed = np.asarray(appearance.get("paint_mask_removed",
+                                               np.zeros(len(rank), dtype=bool)))
+    if prior_removed.shape != (len(rank),) or prior_removed.dtype.kind != "b":
+        raise ValueError("P05 paint_mask_removed must be a boolean mask matching texel_albedo")
+    prior_removed = prior_removed & paint_texels
+    selected_mask = np.zeros(len(rank), dtype=bool)
+    if paint_texels.any():
+        paint_ids = np.flatnonzero(paint_texels)
+        local_removed, selection = F.rank_mask_for_area_fraction(
+            rank[paint_texels], 1.0 - retained, area[paint_texels], tail="lower")
+        selected_mask[paint_ids[local_removed]] = True
+    else:
+        _, selection = F.rank_mask_for_area_fraction(
+            rank[paint_texels], 0.0, area[paint_texels], tail="lower")
+    removed_mask = prior_removed | selected_mask
+    newly_removed_mask = removed_mask & ~prior_removed
+    new_albedo = np.array(albedo, copy=True)
+    new_albedo[removed_mask] = substrate[removed_mask]
+    removed_area = float(area[removed_mask].sum())
+    newly_removed_area = float(area[newly_removed_mask].sum())
+    total_paint_area = float(area[paint_texels].sum())
+    residual = 1.0 - (removed_area / max(total_paint_area, 1e-12))
+    measurements = {
+        "retained_fraction": retained,
+        "paint_texels": float(int(paint_texels.sum())),
+        "removed_texels": float(int(removed_mask.sum())),
+        "newly_removed_texels": float(int(newly_removed_mask.sum())),
+        "paint_total_area_mm2": total_paint_area,
+        "paint_removed_area_mm2": removed_area,
+        "paint_newly_removed_area_mm2": newly_removed_area,
+        "paint_residual_fraction": float(residual),
+        "revealed_substrate_fraction": float(removed_area / max(total_paint_area, 1e-12)),
+        "paint_removed_area_target_fraction": float(1.0 - retained),
+        "paint_removed_area_fraction_error": float(
+            removed_area / max(total_paint_area, 1e-12) - (1.0 - retained)),
+        "mean_albedo_delta": float(np.abs(new_albedo - albedo).mean()),
+        "geometry_hash_unchanged": 1.0,
+        "paint_visible_residual_area_mm2": float(residual * total_paint_area),
+    }
+    details = {"rank_field_id": field.field_id,
+               "rank_boundary_score": selection.get("boundary_score"),
+               "mask_nested": True,
+               "removed_area_selection": {"weight_unit": "mm2", **selection},
+               "geometry": S.mesh_summary(mesh)}
+    output_appearance = _copy_appearance_channels(appearance)
+    output_appearance.update({"texel_albedo": new_albedo,
+                              "paint_mask_retained": paint_texels & ~removed_mask,
+                              "paint_mask_removed": removed_mask})
+    return DamageOutcome(mesh=mesh, appearance=output_appearance,
+                         measurements=measurements,
+                         units={"paint_removed_area_mm2": "mm2", "paint_total_area_mm2": "mm2",
+                                "paint_newly_removed_area_mm2": "mm2",
+                                "paint_removed_area_target_fraction": "1",
+                                "paint_removed_area_fraction_error": "1"},
+                         details={**details,
+                                  "newly_removed_area_mm2": newly_removed_area,
+                                  "cumulative_removed_area_mm2": removed_area},
+                         realized=bool(newly_removed_area > 0.0))
+
+
+def dirt_cover(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any = None) -> DamageOutcome:
+    """P06: smooth patch coverage; the core variant changes appearance only (plan 12.3)."""
+    appearance = _appearance_payload(recipe, fragment)
+    coverage = float(recipe.parameter("coverage", 0.0))
+    if not np.isfinite(coverage) or not 0.0 <= coverage <= 1.0:
+        raise ValueError("P06 coverage must be finite and in [0, 1]")
+    field = F.FourierField.from_payload(recipe.basis["dirt_field"])
+    albedo = np.asarray(appearance["texel_albedo"], dtype=np.float32)
+    n_texels = int(albedo.shape[0]) if albedo.ndim else 0
+    roughness = np.asarray(appearance.get("texel_roughness", np.full(n_texels, 0.6)),
+                           dtype=np.float32)
+    area = np.asarray(appearance["texel_area_mm2"], dtype=np.float64)
+    if albedo.ndim != 2 or albedo.shape[1:] != (3,):
+        raise ValueError("P06 texel_albedo must have shape (N, 3)")
+    if area.shape != (len(albedo),) or roughness.shape != (len(albedo),):
+        raise ValueError("P06 albedo, roughness and area channels must share the same texel count")
+    if not np.all(np.isfinite(albedo)) or np.any(albedo < 0.0) or np.any(albedo > 1.0):
+        raise ValueError("P06 texel_albedo values must be finite and in [0, 1]")
+    if not np.all(np.isfinite(area)) or np.any(area <= 0.0):
+        raise ValueError("P06 texel_area_mm2 values must be finite and strictly positive")
+    if (not np.all(np.isfinite(roughness)) or np.any(roughness < 0.0) or
+            np.any(roughness > 1.0)):
+        raise ValueError("P06 texel_roughness values must be finite and in [0, 1]")
+    if "texel_positions" not in appearance:
+        raise ValueError("P06 appearance payload requires texel_positions")
+    positions = np.asarray(appearance["texel_positions"], dtype=np.float64)
+    if positions.shape != (len(albedo), 3):
+        raise ValueError("P06 texel_positions must have shape (N, 3)")
+    if not np.all(np.isfinite(positions)):
+        raise ValueError("P06 texel_positions values must be finite")
+    dirt_color = np.asarray(recipe.basis.get("dirt_color", [0.22, 0.18, 0.13]), dtype=np.float32)
+    dirt_roughness = float(recipe.basis.get("dirt_roughness", 0.95))
+    if dirt_color.shape != (3,) or not np.all(np.isfinite(dirt_color)) or np.any(
+            dirt_color < 0.0) or np.any(dirt_color > 1.0):
+        raise ValueError("P06 dirt_color must have shape (3,) with finite values in [0, 1]")
+    if not np.isfinite(dirt_roughness) or not 0.0 <= dirt_roughness <= 1.0:
+        raise ValueError("P06 dirt_roughness must be finite and in [0, 1]")
+    values = np.clip(field(positions), 0.0, 1.0)
+    covered, selection = F.rank_mask_for_area_fraction(values, coverage, area, tail="lower")
+    new_albedo = np.array(albedo, copy=True)
+    new_roughness = np.array(roughness, copy=True)
+    new_albedo[covered] = 0.5 * new_albedo[covered] + 0.5 * dirt_color[None, :]
+    new_roughness[covered] = dirt_roughness
+    covered_area = float(area[covered].sum())
+    total_area = float(area.sum())
+    pattern = np.asarray(appearance.get("pattern_region", np.zeros(len(albedo), dtype=bool)))
+    interface = np.asarray(appearance.get("interface_region", np.zeros(len(albedo), dtype=bool)))
+    paint_removed = np.asarray(appearance.get("paint_mask_removed",
+                                               np.zeros(len(albedo), dtype=bool)))
+    if any(mask.shape != (len(albedo),) or mask.dtype.kind != "b"
+           for mask in (pattern, interface, paint_removed)):
+        raise ValueError("P06 pattern and interface masks must match texel_albedo")
+    visible_pattern = pattern & ~paint_removed
+    original_pattern_area = float(area[pattern].sum())
+    cumulative_pattern_loss_area = float(area[pattern & paint_removed].sum())
+    visible_pattern_area = float(area[visible_pattern].sum())
+    interface_area = float(area[interface].sum())
+    variant = recipe.variant or "dirt_appearance"
+    measurements = {
+        "coverage": coverage,
+        "realized_coverage": float(covered_area / max(total_area, 1e-12)),
+        "covered_area_mm2": covered_area,
+        "covered_area_target_mm2": float(selection["target_area"]),
+        "coverage_area_error_mm2": float(covered_area - selection["target_area"]),
+        "coverage_fraction_error": float(covered_area / max(total_area, 1e-12) - coverage),
+        "covered_texels": float(int(covered.sum())),
+        "original_pattern_area_mm2": original_pattern_area,
+        "cumulative_pattern_loss_area_mm2": cumulative_pattern_loss_area,
+        "visible_pattern_area_mm2": visible_pattern_area,
+        "interface_visibility_reduction": float(area[covered & interface].sum() / interface_area)
+        if interface_area > 0 else 0.0,
+        "mean_albedo_delta": float(np.abs(new_albedo - albedo).mean()),
+        "roughness_delta": float(np.abs(new_roughness - roughness).mean()),
+        "geometry_hash_unchanged": 1.0 if variant == "dirt_appearance" else 0.0,
+        "contamination_entity": 1.0 if variant == "dirt_geometry" else 0.0,
+    }
+    details = {"field_id": field.field_id,
+               "selection": {"weight_unit": "mm2", **selection}, "variant": variant,
+               "pattern_visibility_status": ("APPLICABLE" if visible_pattern_area > 0.0 else
+                                              "NOT_APPLICABLE_NO_SURVIVING_PATTERN")}
+    if visible_pattern_area > 0.0:
+        measurements["pattern_visibility_reduction"] = float(
+            area[covered & visible_pattern].sum() / visible_pattern_area)
+    added_bodies: list[Any] = []
+    outcome_mesh = mesh
+    if variant == "dirt_geometry":
+        thickness = float(recipe.parameter("layer_thickness_mm", 0.3))
+        # explicit contamination shell over the covered region, registered as its own entity
+        shell = _contamination_shell(mesh, recipe, covered_area=covered_area, thickness_mm=thickness,
+                                     total_area=total_area)
+        if shell is not None:
+            added_bodies.append(shell)
+            measurements["contamination_volume_mm3"] = float(abs(shell.volume))
+            measurements["contamination_area_mm2"] = float(shell.area)
+            measurements["geometry_hash_unchanged"] = 0.0
+    output_appearance = _copy_appearance_channels(appearance)
+    output_appearance.update({"texel_albedo": new_albedo, "texel_roughness": new_roughness,
+                              "dirt_mask": covered})
+    return DamageOutcome(mesh=outcome_mesh, appearance=output_appearance,
+                         measurements=measurements,
+                         units={"coverage": "1", "realized_coverage": "1",
+                                "covered_area_mm2": "mm2", "covered_area_target_mm2": "mm2",
+                                "coverage_area_error_mm2": "mm2", "coverage_fraction_error": "1",
+                                "original_pattern_area_mm2": "mm2",
+                                "cumulative_pattern_loss_area_mm2": "mm2",
+                                "visible_pattern_area_mm2": "mm2",
+                                "pattern_visibility_reduction": "1",
+                                "contamination_volume_mm3": "mm3"},
+                         details=details, realized=bool(covered.any()), added_bodies=added_bodies)
+
+
+def _contamination_shell(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, covered_area: float,
+                         thickness_mm: float, total_area: float) -> trimesh.Trimesh | None:
+    """Outward offset shell over the covered fraction; a separate contamination body."""
+    if covered_area <= 0 or total_area <= 0:
+        return None
+    fraction = float(np.clip(covered_area / total_area, 0.0, 1.0))
+    spacing = float(recipe.grid.get("spacing_mm") or 0.0) or max(thickness_mm / 3.0, 0.2)
+    grid = S.grid_for_mesh(mesh, spacing, pad_mm=float(thickness_mm) + 2.0 * spacing)
+    d0, _info = S.signed_distance_field(mesh, grid, surface_check_samples=200,
+                                        seed=int(recipe.basis.get("seed", 0)) % 512)
+    field = F.FourierField.from_payload(recipe.basis["dirt_field"])
+    anchors, _fid = trimesh.sample.sample_surface(mesh, 1200, seed=5)
+    values = np.clip(field(np.asarray(anchors, dtype=np.float64)), 0.0, 1.0)
+    threshold = F.threshold_for_fraction(values, fraction, tail="lower")
+
+    def b_fn(points: np.ndarray) -> np.ndarray:
+        vals = np.clip(field(points), 0.0, 1.0)
+        mask = (vals <= threshold).astype(np.float64)
+        return float(thickness_mm) * mask
+
+    out, _chunk = S.evaluate_field(grid, b_fn, base=d0, chunk=24, halo=1)
+    shell_mesh = S.marching_cubes_mesh(out, grid)
+    shell_mesh, _clip = S.intersect_with_source(shell_mesh, mesh)
+    try:
+        grown = S.boolean_op("difference", [shell_mesh, mesh])
+    except SynLabError:
+        return None
+    return grown
+
+
+# ---------------------------------------------------------------------------- P08
+
+
+def crack_or_coat_loss(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any = None) -> DamageOutcome:
+    """P08: three separately registered variants (plan 12.3, 30.9)."""
+    variant = recipe.variant or "geometry_crack"
+    affected = float(recipe.parameter("affected_area", 0.0))
+    if variant == "paint_coat_loss":
+        coat_layer = int(recipe.basis.get("coat_layer_id", 1))
+        appearance = _appearance_payload(recipe, fragment)
+        layer = np.asarray(appearance.get("texel_layer", np.zeros(len(appearance["texel_albedo"]),
+                                                               dtype=np.int32)))
+        coat = layer == coat_layer
+        area = np.asarray(appearance["texel_area_mm2"], dtype=np.float64)
+        field = F.FourierField.from_payload(recipe.basis["rank_field"])
+        rank = np.clip(field(np.asarray(appearance["texel_positions"], dtype=np.float64)), 0.0, 1.0)
+        threshold = F.threshold_for_fraction(rank[coat], affected, tail="lower")
+        removed = coat & (rank <= threshold)
+        substrate = np.asarray(appearance["texel_substrate_albedo"], dtype=np.float32)
+        albedo = np.array(appearance["texel_albedo"], copy=True)
+        albedo[removed] = substrate[removed]
+        coat_area = float(area[coat].sum())
+        removed_area = float(area[removed].sum())
+        measurements = {
+            "affected_area": affected,
+            "coat_total_area_mm2": coat_area,
+            "coat_removed_area_mm2": removed_area,
+            "coat_residual_fraction": float(1.0 - removed_area / max(coat_area, 1e-12)),
+            "realized_affected_fraction": float(removed_area / max(coat_area, 1e-12)),
+            "geometry_hash_unchanged": 1.0,
+        }
+        return DamageOutcome(mesh=mesh, appearance={"texel_albedo": albedo, "coat_mask_removed": removed},
+                             measurements=measurements, units={"coat_removed_area_mm2": "mm2"},
+                             details={"variant": variant, "threshold": threshold},
+                             realized=bool(removed_area > 0))
+    if variant == "geometric_coat_loss":
+        ctx = SdfContext(mesh, recipe, fragment=fragment)
+        thickness = float(recipe.parameter("layer_thickness_mm", recipe.meta.get("layer_thickness_mm", 0.3)))
+        field = F.FourierField.from_payload(recipe.basis["rank_field"])
+        anchors = np.asarray(np.asarray(mesh.triangles_center, dtype=np.float64)[ctx.roi_ids])
+        values = np.clip(field(anchors), 0.0, 1.0)
+        threshold = F.threshold_for_fraction(values, affected, tail="lower")
+        anchor_selected = values <= threshold
+        sampled_fraction = float(anchor_selected.mean()) if anchor_selected.size else 0.0
+        normals = np.asarray(mesh.face_normals, dtype=np.float64)[ctx.roi_ids]
+        anchor_tree = cKDTree(anchors)
+
+        def b_fn(points: np.ndarray) -> np.ndarray:
+            vals = np.clip(field(points), 0.0, 1.0)
+            _d, idx = anchor_tree.query(points, workers=1)
+            face_normal_ok = True
+            mask = (vals <= threshold).astype(np.float64)
+            return float(thickness) * mask * (1.0 if face_normal_ok else 1.0)
+
+        body, detail = ctx.extract(b_fn, t=1.0, core_mm=0.0,
+                                   halo_mm=thickness + 2.0 * ctx.spacing, label="P08_coat")
+        removed = _removed_surface_points(body, ctx, n=2000, seed=int(recipe.basis.get("seed", 0)) + 8)
+        removed_uv = np.asarray(mesh.triangles_center, dtype=np.float64)[ctx.roi_ids]
+        coat_area = float(ctx.interface_area_mm2)
+        measurements = {
+            "affected_area": affected,
+            "layer_thickness_mm": thickness,
+            "coat_total_area_mm2": coat_area,
+            "coat_removed_area_mm2": float(len(removed)),
+            "lost_volume_mm3": float(abs(ctx.mesh.volume) - abs(body.volume)),
+            "realized_lost_volume_over_area_mm": float(
+                (abs(ctx.mesh.volume) - abs(body.volume)) / max(coat_area, 1e-12)),
+            "geometry_hash_unchanged": 0.0,
+            "min_thickness_mm": S.ray_thickness(body, n_samples=160, seed=12)["min_mm"],
+        }
+        details = {"sdf_pipeline": detail, "variant": variant, "threshold": threshold,
+                   "anchor_faces": int(len(removed_uv)),
+                   "affected_rank_selection": {
+                       "tail": "lower", "requested_fraction": affected,
+                       "anchor_samples": int(anchor_selected.size),
+                       "selected_anchor_samples": int(anchor_selected.sum()),
+                       "sampled_fraction": sampled_fraction,
+                       "sampled_fraction_error": float(sampled_fraction - affected),
+                       "sampling_basis": "unweighted ROI face-centre anchors; finite approximation, "
+                                        "not area-weighted or exact"}}
+        return DamageOutcome(mesh=body, measurements=measurements,
+                             units={"lost_volume_mm3": "mm3", "layer_thickness_mm": "mm"},
+                             details=details,
+                             realized=bool(measurements["lost_volume_mm3"] > 1e-9))
+    if variant != "geometry_crack":
+        raise SynLabError(ErrorCode.SCHEMA_INVALID, f"unknown P08 variant {variant!r}",
+                          stage="physical.P08")
+    return _geometry_crack(mesh, recipe, fragment=fragment)
+
+
+def _geometry_crack(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any = None) -> DamageOutcome:
+    """Finite-width cutter that really removes material; may split the body (plan 30.8)."""
+    ctx = SdfContext(mesh, recipe, fragment=fragment)
+    target = float(recipe.parameter("affected_area", 0.0))
+    if target <= 0:
+        raise SynLabError(ErrorCode.DAMAGE_EFFECT_MISSING, "P08 geometry_crack needs affected_area > 0",
+                          stage="physical.P08")
+    basis = dict(recipe.basis or {})
+    direction = np.asarray(basis.get("crack_direction", ctx.mesh.face_normals[ctx.roi_ids].mean(axis=0)),
+                           dtype=np.float64)
+    direction /= max(np.linalg.norm(direction), 1e-12)
+    length_dir = np.asarray(basis.get("crack_length_dir", [1.0, 0.0, 0.0]), dtype=np.float64)
+    length_dir -= direction * float(length_dir @ direction)
+    if np.linalg.norm(length_dir) < 1e-6:
+        length_dir = np.cross(direction, np.array([0.0, 0.0, 1.0]))
+    length_dir /= np.linalg.norm(length_dir)
+    depth_dir = np.cross(direction, length_dir)
+    center = np.asarray(basis.get("crack_center_mm", ctx.anchor_points.mean(axis=0)), dtype=np.float64)
+    extent = np.asarray(ctx.mesh.bounds[1]) - np.asarray(ctx.mesh.bounds[0])
+    length = float(basis.get("crack_length_mm", np.linalg.norm(extent) * 1.2))
+    depth = float(basis.get("crack_depth_mm", float(np.max(extent)) * 1.5))
+    source_volume = float(abs(mesh.volume))
+    min_ratio = float(recipe.meta.get("min_representative_ratio", 0.05))
+
+    def build(width: float) -> trimesh.Trimesh:
+        box = trimesh.creation.box(extents=(max(width, 1e-4), length, depth))
+        transform = np.eye(4)
+        transform[:3, :3] = np.stack([depth_dir, length_dir, direction], axis=1)
+        transform[:3, 3] = center
+        box.apply_transform(transform)
+        return S.clean_mesh(box)
+
+    def evaluate(width: float) -> dict[str, Any]:
+        body = S.boolean_op("difference", [mesh, build(width)])
+        contact = ctx.contact_state(body)
+        parts = S.component_split(body)
+        volumes = [float(abs(p.volume)) for p in parts]
+        return {"width": float(width), "body": body, "contact": contact, "components": parts,
+                "volumes": volumes,
+                "volume_ratio": (max(volumes) / max(source_volume, 1e-12)) if volumes else 0.0}
+
+    def loss_of(width: float) -> tuple[float, dict[str, Any]]:
+        state = evaluate(width)
+        area_fraction = float(len(ctx.anchor_points) and state["contact"]["lost_fraction"])
+        return area_fraction, state
+
+    lo, hi = 1e-3, max(float(ctx.spacing), 0.05)
+    state_hi = evaluate(hi)
+    guard = 0
+    while loss_of(hi)[0] < target and state_hi["volume_ratio"] > min_ratio and guard < 12:
+        lo, hi = hi, hi * 1.8
+        state_hi = evaluate(hi)
+        guard += 1
+    loss_hi, state_hi = loss_of(hi)
+    trace = [{"width": hi, "loss": loss_hi, "volume_ratio": state_hi["volume_ratio"]}]
+    if loss_hi < target - 0.01:
+        raise SynLabError(
+            ErrorCode.TARGET_INFEASIBLE,
+            f"P08 geometry_crack: target affected area {target:.3f} unreachable with the frozen "
+            f"crack line (max {loss_hi:.3f} before the representative body is lost)",
+            stage="physical.P08", measurements={"target": target, "achieved_max": loss_hi,
+                                                 "width_max_mm": hi})
+    best = state_hi
+    best_loss = loss_hi
+    for _iteration in range(12):
+        mid = 0.5 * (lo + hi)
+        loss_mid, state_mid = loss_of(mid)
+        trace.append({"width": mid, "loss": loss_mid, "volume_ratio": state_mid["volume_ratio"]})
+        if state_mid["volume_ratio"] < min_ratio:
+            hi = mid
+            continue
+        if loss_mid >= target:
+            hi, best, best_loss = mid, state_mid, loss_mid
+        else:
+            lo = mid
+        if abs(loss_mid - target) <= 0.005:
+            break
+    body = best["body"]
+    parts = best["components"]
+    volumes = best["volumes"]
+    measurements = {
+        "affected_area": target,
+        "achieved_affected_area_fraction": float(best["contact"]["lost_fraction"]),
+        "crack_width_mm": float(best["width"]),
+        "crack_length_mm": length,
+        "crack_depth_mm": depth,
+        "contact_lost_area_mm2": float(best["contact"]["lost_area_mm2"]),
+        "lost_volume_mm3": float(source_volume - sum(volumes)),
+        "components_after": float(len(parts)),
+        "largest_component_ratio": float(best["volume_ratio"]),
+        "search_iterations": float(len(trace)),
+        "geometry_hash_unchanged": 0.0,
+        "min_thickness_mm": S.ray_thickness(body, n_samples=160, seed=13)["min_mm"],
+    }
+    details = {"sdf_pipeline": {"roi": ctx.roi_info, "spacing": ctx.spacing_info}, "search": trace,
+               "crack": {"center_mm": [float(v) for v in center],
+                         "direction": [float(v) for v in direction],
+                         "length_dir": [float(v) for v in length_dir]},
+               "components": [S.mesh_summary(p) for p in parts]}
+    realized = bool(measurements["lost_volume_mm3"] > 1e-9)
+    return DamageOutcome(mesh=body, measurements=measurements,
+                         units={"crack_width_mm": "mm", "contact_lost_area_mm2": "mm2",
+                                "lost_volume_mm3": "mm3", "min_thickness_mm": "mm"},
+                         details=details, realized=realized)
+
+
+# ---------------------------------------------------------------------------- dispatch
+
+GEOMETRY_DISPATCH: dict[str, Callable[..., DamageOutcome]] = {
+    "P01": polish_interface,
+    "P02": round_edge,
+    "P03": erode_interface,
+    "P04": chip_material,
+    "P05": remove_paint,
+    "P06": dirt_cover,
+    "P07": erode_outer,
+    "P08": crack_or_coat_loss,
+}
+
+#: S11: which backend runs a geometry axis.  ``"declared"`` (the default) follows the axis
+#: declaration of :mod:`synlab.degrade.axes` / :mod:`synlab.degrade.physical_narrowband`
+#: (``NARROWBAND = True`` for P02/P03/P04), so the two code paths that both claim to implement
+#: the same axis finally agree; ``"global_sdf"`` restores the shipped voxel-level-set path and
+#: ``"narrowband"`` forces the surface operator.  A recipe may override per call with
+#: ``recipe.grid["damage_backend"]``.  The chosen backend always reaches
+#: ``details["damage_backend"]``, so a result says which one produced it.
+NARROWBAND_BACKEND_ROUTING = "declared"
+
+
+def declared_narrowband_axis(axis_id: str) -> bool:
+    """Is ``axis_id`` declared as a narrow-band axis by ``synlab.degrade``?
+
+    Read-only: :mod:`synlab.degrade.axes` sets ``NARROWBAND = True`` on the axes whose declared
+    effect is smaller than the frozen global grid spacing and routes them to
+    :func:`synlab.degrade.physical_narrowband.run_narrowband_damage`.  An unavailable degrade
+    registry answers ``False`` (the shipped global path), never an exception.
+    """
+    try:
+        from ..degrade.registry import get_operator
+
+        return bool(getattr(get_operator(str(axis_id)), "NARROWBAND", False))
+    except Exception:  # noqa: BLE001 - no registry -> the shipped backend, recorded as such
+        return False
+
+
+def selected_backend(recipe: DamageRecipe) -> str:
+    """``"narrowband"`` or ``"global_sdf"`` for this recipe (see the module constant)."""
+    override = str((recipe.grid or {}).get("damage_backend", "") or "").strip().lower()
+    if override in ("narrowband", "global_sdf"):
+        return override
+    if NARROWBAND_BACKEND_ROUTING == "narrowband":
+        return "narrowband"
+    if NARROWBAND_BACKEND_ROUTING == "global_sdf":
+        return "global_sdf"
+    return "narrowband" if declared_narrowband_axis(recipe.axis_id) else "global_sdf"
+
+
+def _run_narrowband_as_outcome(mesh: trimesh.Trimesh, recipe: DamageRecipe, *,
+                               fragment: Any = None) -> DamageOutcome:
+    """Adapt the narrow-band backend's ``PhysicalResult`` to a :class:`DamageOutcome`.
+
+    The narrow band is a **surface** operator: it offsets the ROI vertices inward along the
+    observed normals, pins the ROI rim to zero and keeps the original triangles everywhere else,
+    so the untouched surface is never re-tessellated.  ``apply_damage`` re-derives the component
+    ledger from the returned mesh, so nothing but the mesh (and the operator's own measurements)
+    crosses this boundary.
+    """
+    from ..degrade.physical_narrowband import run_narrowband_damage
+
+    result = run_narrowband_damage(mesh, recipe, fragment=fragment, rng=None)
+    representative = next((c for c in result.components if c.is_representative),
+                          result.components[0] if result.components else None)
+    if representative is None:
+        raise SynLabError(ErrorCode.TARGET_INFEASIBLE,
+                          f"{recipe.axis_id}: the narrow-band backend returned no component",
+                          stage="physical.run_damage.narrowband")
+    measurements = {k: float(v) for k, v in (result.meta.get("measured") or {}).items()
+                    if isinstance(v, (int, float)) and not isinstance(v, bool)}
+    units = {k: str(v) for k, v in (result.meta.get("measurement_units") or {}).items()}
+    details = dict(result.meta.get("details") or {})
+    details["damage_backend"] = "degrade.physical_narrowband"
+    details["backend_selected_by"] = "physical.operators.selected_backend"
+    realized = bool(result.qa.get("realized"))
+    return DamageOutcome(mesh=representative.mesh, measurements=measurements, units=units,
+                         details=details, realized=realized,
+                         failure_code=None if realized
+                         else ErrorCode.OPERATOR_NOT_REALIZED.value)
+
+
+def run_damage(mesh: trimesh.Trimesh, recipe: DamageRecipe, *, fragment: Any = None) -> DamageOutcome:
+    """Run one level of one P axis and return the damaged body plus measured quantities.
+
+    NARROWBAND axes (S11): the declared backend of P02/P03/P04 is the surface operator, whose
+    untouched surface keeps the source triangles.  Extracting the whole body from the voxel level
+    set instead displaces the surface everywhere by the grid's own interpolation error and is what
+    ``roi_external_drift_mm`` measures -- 0.354 mm at a 1.14 mm spacing on the L0 P03 body, with
+    **no damage applied at all** (``data/a12/reports/s11_p03_drift.json``).
+    """
+    handler = GEOMETRY_DISPATCH.get(recipe.axis_id)
+    if handler is None:
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          f"{recipe.axis_id} is not a physical damage axis", stage="physical.run")
+    backend = selected_backend(recipe)
+    if backend == "narrowband" and hasattr(recipe, "level") and int(recipe.level) > 0:
+        outcome = _run_narrowband_as_outcome(mesh, recipe, fragment=fragment)
+        outcome.details.setdefault("backend_selection", {
+            "routing": NARROWBAND_BACKEND_ROUTING, "backend": backend,
+            "declared_narrowband": declared_narrowband_axis(recipe.axis_id),
+            "override": str((recipe.grid or {}).get("damage_backend", "") or "") or None})
+        return outcome
+    outcome = handler(mesh, recipe, fragment=fragment)
+    outcome.details.setdefault("damage_backend", "physical.operators.global_sdf_level_set")
+    outcome.details.setdefault("backend_selection", {
+        "routing": NARROWBAND_BACKEND_ROUTING, "backend": "global_sdf",
+        "declared_narrowband": declared_narrowband_axis(recipe.axis_id),
+        "override": str((recipe.grid or {}).get("damage_backend", "") or "") or None})
+    return outcome

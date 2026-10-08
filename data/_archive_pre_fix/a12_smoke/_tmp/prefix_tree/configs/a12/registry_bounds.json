@@ -1,0 +1,18 @@
+{
+  "schema": "synlab.registry_bounds.v1",
+  "note": "Parameter bounds handed to the Latin-hypercube sampler. Values are development starting points from plan sections 7-9 and are not measured distribution claims. The mothers module owns the authoritative per-vessel schemas; this file is a reference for sampling and the UI form defaults.",
+  "units": "mm",
+  "vessel_size_mm": {"min": 80.0, "max": 300.0},
+  "wall_thickness_mm": {"min": 2.0, "max": 10.0, "reject_below": 1.0},
+  "pattern_line_width_mm": {"min": 0.5, "max": 3.0},
+  "pattern_spacing_mm": {"min": 5.0, "max": 30.0},
+  "pattern_noise_bands": {"min": 3, "max": 5, "frequency_ratio": 2.0, "amplitude_ratio": 0.5},
+  "relief_height_mm": {"min": 0.05, "max": 0.8},
+  "engrave_depth_mm": {"min": 0.05, "max": 0.6},
+  "fracture_amplitude_mm": {"min": 0.02, "max": 0.3},
+  "fracture_wavelength_mm": {"min": 0.2, "max": 3.0},
+  "seed_count": {"min": 8, "max": 30},
+  "views_per_fragment": [12, 8, 4, 2, 1],
+  "image_long_edge_px": [1024, 768, 512, 256, 128],
+  "point_count": [8192, 4096, 2048, 1024, 512]
+}

@@ -1,0 +1,1634 @@
+{
+  "schema": "a12.evidence_index.v1",
+  "date": "2026-10-04",
+  "workspace": "relicweave-synlab",
+  "cap_bytes": 2700000,
+  "payload_bytes": 2529240,
+  "payload_cap_pass": true,
+  "evidence": [
+    {
+      "source_path": "tmp/review_20261004/implementation/appearance_finish/benchmark_argv.txt",
+      "source_sha256": "12160b55aeb4e0cb0a6fce8a7261e13b7262dfcf90b90cbfb5ee6af45503f39f",
+      "source_bytes": 104,
+      "copy_path": "copies/appearance/benchmark_argv.txt",
+      "copy_sha256": "12160b55aeb4e0cb0a6fce8a7261e13b7262dfcf90b90cbfb5ee6af45503f39f",
+      "copy_bytes": 104,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/appearance_finish/benchmark_exit_code.txt",
+      "source_sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354",
+      "source_bytes": 3,
+      "copy_path": "copies/appearance/benchmark_exit_code.txt",
+      "copy_sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354",
+      "copy_bytes": 3,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/appearance_finish/benchmark_source_sha256.json",
+      "source_sha256": "768e1b422e486020126a116ce9571f34dd2f9ee42d9a3a6e2fab69ab7640af50",
+      "source_bytes": 259,
+      "copy_path": "copies/appearance/benchmark_source_sha256.json",
+      "copy_sha256": "768e1b422e486020126a116ce9571f34dd2f9ee42d9a3a6e2fab69ab7640af50",
+      "copy_bytes": 259,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/appearance_finish/pytest_argv.txt",
+      "source_sha256": "46608784f7a172a8d87c1d452e53188efec7c678c8a8f8f23c1e90c3d6db30ab",
+      "source_bytes": 100,
+      "copy_path": "copies/appearance/pytest_argv.txt",
+      "copy_sha256": "46608784f7a172a8d87c1d452e53188efec7c678c8a8f8f23c1e90c3d6db30ab",
+      "copy_bytes": 100,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/appearance_finish/pytest_exit_code.txt",
+      "source_sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354",
+      "source_bytes": 3,
+      "copy_path": "copies/appearance/pytest_exit_code.txt",
+      "copy_sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354",
+      "copy_bytes": 3,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/appearance_finish/pytest_stdout.txt",
+      "source_sha256": "2c91283aa8beed85011506e4fae2d7a750df8428affa0bda3d2ab5775e8fe85a",
+      "source_bytes": 81,
+      "copy_path": "copies/appearance/pytest_stdout.txt",
+      "copy_sha256": "2c91283aa8beed85011506e4fae2d7a750df8428affa0bda3d2ab5775e8fe85a",
+      "copy_bytes": 81,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/appearance_finish/rank_benchmark.json",
+      "source_sha256": "c52f865ae72979715e06643bc5c0e710379e7b4cc9b0add80ae8c913b05a4275",
+      "source_bytes": 958,
+      "copy_path": "copies/appearance/rank_benchmark.json",
+      "copy_sha256": "c52f865ae72979715e06643bc5c0e710379e7b4cc9b0add80ae8c913b05a4275",
+      "copy_bytes": 958,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/appearance_finish/review_notes.md",
+      "source_sha256": "6a56ca080268d25e54bf516fbbd96c6d7ea736d588b9b815be9f64615fd64ae7",
+      "source_bytes": 3029,
+      "copy_path": "copies/appearance/review_notes.md",
+      "copy_sha256": "6a56ca080268d25e54bf516fbbd96c6d7ea736d588b9b815be9f64615fd64ae7",
+      "copy_bytes": 3029,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/appearance_finish/source_sha256.json",
+      "source_sha256": "267c16fbad5c46d0f4c363e7aead50ae5af77e9945c8e1e39ca6b1f918255f9d",
+      "source_bytes": 760,
+      "copy_path": "copies/appearance/source_sha256.json",
+      "copy_sha256": "267c16fbad5c46d0f4c363e7aead50ae5af77e9945c8e1e39ca6b1f918255f9d",
+      "copy_bytes": 760,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cad_clipped_cells/fixed8mm_singlethread_case03_native_empty_compound_policy/cad_clipped_cells_y0_SUPERSEDED_wrong_plane_uv.png",
+      "source_sha256": "084f0187c413dcdfdc558e15f359db99c13155051d528ba79f06999b42d144b0",
+      "source_bytes": 79669,
+      "copy_path": "copies/cad_clipped_cells/cad_clipped_cells_y0_SUPERSEDED_wrong_plane_uv.png",
+      "copy_sha256": "084f0187c413dcdfdc558e15f359db99c13155051d528ba79f06999b42d144b0",
+      "copy_bytes": 79669,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cad_clipped_cells/fixed8mm_singlethread_case03_native_empty_compound_policy/cad_clipped_cells_y0_ax3_corrected.png",
+      "source_sha256": "7f0e26809153e7f495f5feef46b99daf41e312428f9ff2d6c377e2deb215168f",
+      "source_bytes": 109361,
+      "copy_path": "copies/cad_clipped_cells/cad_clipped_cells_y0_ax3_corrected.png",
+      "copy_sha256": "7f0e26809153e7f495f5feef46b99daf41e312428f9ff2d6c377e2deb215168f",
+      "copy_bytes": 109361,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cad_clipped_cells/fixed8mm_singlethread_case03_native_empty_compound_policy/figure_diagnostics.json",
+      "source_sha256": "57ebc58c1abfc4f00ab0dbbd0ce42da1582bb63d4a0e298affcec08eb883158b",
+      "source_bytes": 2195,
+      "copy_path": "copies/cad_clipped_cells/figure_diagnostics.json",
+      "copy_sha256": "57ebc58c1abfc4f00ab0dbbd0ce42da1582bb63d4a0e298affcec08eb883158b",
+      "copy_bytes": 2195,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cad_clipped_cells/fixed8mm_singlethread_case03_native_empty_compound_policy/report.json",
+      "source_sha256": "3b238f471fb5047264cf17f7c0e64ebaa718feb1dc6e37c8d30dc274ad39dcf5",
+      "source_bytes": 16277,
+      "copy_path": "copies/cad_clipped_cells/report.json",
+      "copy_sha256": "3b238f471fb5047264cf17f7c0e64ebaa718feb1dc6e37c8d30dc274ad39dcf5",
+      "copy_bytes": 16277,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/deploy_finish/checks.json",
+      "source_sha256": "9f6883a6c43e48afd88040336deb9b9ef1257a7381b226af9556916833edc11c",
+      "source_bytes": 1382,
+      "copy_path": "copies/deploy/checks.json",
+      "copy_sha256": "9f6883a6c43e48afd88040336deb9b9ef1257a7381b226af9556916833edc11c",
+      "copy_bytes": 1382,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/native_contact_minimal/contact_baseline/execution.toml",
+      "source_sha256": "df0e4322d5944047e4943ba1ab25b1a2e3a447c18ac110f8e0c2e34ec15d7f7e",
+      "source_bytes": 1520,
+      "copy_path": "copies/native_contact/contact_baseline_execution.toml",
+      "copy_sha256": "df0e4322d5944047e4943ba1ab25b1a2e3a447c18ac110f8e0c2e34ec15d7f7e",
+      "copy_bytes": 1520,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/native_contact_minimal/contact_baseline/summary.toml",
+      "source_sha256": "6adf778991828a35aee38483424f46572f4eeed61f31df278a310663211cc47f",
+      "source_bytes": 2366,
+      "copy_path": "copies/native_contact/contact_baseline_summary.toml",
+      "copy_sha256": "6adf778991828a35aee38483424f46572f4eeed61f31df278a310663211cc47f",
+      "copy_bytes": 2366,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/native_contact_minimal/contact_halfdt/execution.toml",
+      "source_sha256": "a72baec6208324aaf7c374de37d921635c9064d995710093ce7f1a11a10e86c4",
+      "source_bytes": 1506,
+      "copy_path": "copies/native_contact/contact_halfdt_execution.toml",
+      "copy_sha256": "a72baec6208324aaf7c374de37d921635c9064d995710093ce7f1a11a10e86c4",
+      "copy_bytes": 1506,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/native_contact_minimal/contact_halfdt/summary.toml",
+      "source_sha256": "7b3638adb7ebc0ba7bc80c6ce2552e9d65b84391b573a2b0cac731256dd8f058",
+      "source_bytes": 2356,
+      "copy_path": "copies/native_contact/contact_halfdt_summary.toml",
+      "copy_sha256": "7b3638adb7ebc0ba7bc80c6ce2552e9d65b84391b573a2b0cac731256dd8f058",
+      "copy_bytes": 2356,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/native_contact_minimal/execution_attempts.md",
+      "source_sha256": "c27e43aea3ad6cfddd468e2974ddef1235aa30be4243350854837aee1be1f832",
+      "source_bytes": 2283,
+      "copy_path": "copies/native_contact/execution_attempts.md",
+      "copy_sha256": "c27e43aea3ad6cfddd468e2974ddef1235aa30be4243350854837aee1be1f832",
+      "copy_bytes": 2283,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/native_contact_minimal/independent_analysis.json",
+      "source_sha256": "24e7e16013dfe6963776d94c5fa90205d14fa511eb4dc9d7fd79ba2ff625539b",
+      "source_bytes": 17880,
+      "copy_path": "copies/native_contact/independent_analysis.json",
+      "copy_sha256": "24e7e16013dfe6963776d94c5fa90205d14fa511eb4dc9d7fd79ba2ff625539b",
+      "copy_bytes": 17880,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/native_contact_minimal/nocontact_control/execution.toml",
+      "source_sha256": "9b74f8ee39b9939ffa8eb45b41fc13a0bbbf51571dc88c0c7b36975f92152488",
+      "source_bytes": 1527,
+      "copy_path": "copies/native_contact/nocontact_control_execution.toml",
+      "copy_sha256": "9b74f8ee39b9939ffa8eb45b41fc13a0bbbf51571dc88c0c7b36975f92152488",
+      "copy_bytes": 1527,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/native_contact_minimal/nocontact_control/summary.toml",
+      "source_sha256": "70765bfb2b5c5050f976d810a94282f16fced16fd13c8d2a7064e240cd18c5a5",
+      "source_bytes": 2368,
+      "copy_path": "copies/native_contact/nocontact_control_summary.toml",
+      "copy_sha256": "70765bfb2b5c5050f976d810a94282f16fced16fd13c8d2a7064e240cd18c5a5",
+      "copy_bytes": 2368,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/native_contact_minimal/path_migration.toml",
+      "source_sha256": "d64d7b8216bd1f37cb1193fe3720b077f2eb4a496adc34655219315a71dd6703",
+      "source_bytes": 4386,
+      "copy_path": "copies/native_contact/path_migration.toml",
+      "copy_sha256": "d64d7b8216bd1f37cb1193fe3720b077f2eb4a496adc34655219315a71dd6703",
+      "copy_bytes": 4386,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/native_contact_minimal/preflight/execution.toml",
+      "source_sha256": "6d6735b9bacabd62ebde4e5fde8b56c0e635c3e26bf31a29575c6dc6f8b28657",
+      "source_bytes": 1471,
+      "copy_path": "copies/native_contact/preflight_execution.toml",
+      "copy_sha256": "6d6735b9bacabd62ebde4e5fde8b56c0e635c3e26bf31a29575c6dc6f8b28657",
+      "copy_bytes": 1471,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/native_contact_minimal/preflight/summary.toml",
+      "source_sha256": "99cafa27bf175ced7412e48644772ed8b5155d8c12978d883c72d5b32a9525a7",
+      "source_bytes": 2329,
+      "copy_path": "copies/native_contact/preflight_summary.toml",
+      "copy_sha256": "99cafa27bf175ced7412e48644772ed8b5155d8c12978d883c72d5b32a9525a7",
+      "copy_bytes": 2329,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/validity_finish/actualJSON.json",
+      "source_sha256": "771075044acbb9993812c10d19663890e0047ac13d5488320dc1c67bcc37b0e4",
+      "source_bytes": 20341,
+      "copy_path": "copies/validity/actualJSON.json",
+      "copy_sha256": "771075044acbb9993812c10d19663890e0047ac13d5488320dc1c67bcc37b0e4",
+      "copy_bytes": 20341,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/validity_finish/capture_actual-run.json",
+      "source_sha256": "c2e083d93cc9f86668ff184dc42a76ec1d482c86826722c0626887ad37326601",
+      "source_bytes": 226,
+      "copy_path": "copies/validity/capture_actual-run.json",
+      "copy_sha256": "c2e083d93cc9f86668ff184dc42a76ec1d482c86826722c0626887ad37326601",
+      "copy_bytes": 226,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/validity_finish/manifest.json",
+      "source_sha256": "97d6b17b083f8b90773a92a5116b72dfbb663af0dd14d5ee5362afe0b4ec131c",
+      "source_bytes": 3376,
+      "copy_path": "copies/validity/manifest.json",
+      "copy_sha256": "97d6b17b083f8b90773a92a5116b72dfbb663af0dd14d5ee5362afe0b4ec131c",
+      "copy_bytes": 3376,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/validity_finish/pytest-physical-impact-final.json",
+      "source_sha256": "c1066e12b1278a7a9a9e28167bda13cdddb8fadc88cc308a1791b57e9aec38c4",
+      "source_bytes": 214,
+      "copy_path": "copies/validity/pytest-physical-impact-final.json",
+      "copy_sha256": "c1066e12b1278a7a9a9e28167bda13cdddb8fadc88cc308a1791b57e9aec38c4",
+      "copy_bytes": 214,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/validity_finish/pytest-physical-impact-final.log",
+      "source_sha256": "d7063fb40ccf7a7f8ab91eb8eafa0df7b42244d20b31bb2d282fcc372d1f7abd",
+      "source_bytes": 668,
+      "copy_path": "copies/validity/pytest-physical-impact-final.log",
+      "copy_sha256": "d7063fb40ccf7a7f8ab91eb8eafa0df7b42244d20b31bb2d282fcc372d1f7abd",
+      "copy_bytes": 668,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/validity_finish/pytest-routing-v2.json",
+      "source_sha256": "2037294d6147f143dd72de0ec59401561c93ce317f28c038f974117f8782da61",
+      "source_bytes": 200,
+      "copy_path": "copies/validity/pytest-routing-v2.json",
+      "copy_sha256": "2037294d6147f143dd72de0ec59401561c93ce317f28c038f974117f8782da61",
+      "copy_bytes": 200,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/validity_finish/pytest-routing-v2.log",
+      "source_sha256": "9ac39834492c346b862f7e1e711e63c2804a3b2741d380fdccbd497f9cd08529",
+      "source_bytes": 30030,
+      "copy_path": "copies/validity/pytest-routing-v2.log",
+      "copy_sha256": "9ac39834492c346b862f7e1e711e63c2804a3b2741d380fdccbd497f9cd08529",
+      "copy_bytes": 30030,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/validity_finish/pytest-targeted-final.json",
+      "source_sha256": "329ecb1cec19d03c009e310c87382e3f8cc496d73bd9c5b585f744f9cd7f348a",
+      "source_bytes": 230,
+      "copy_path": "copies/validity/pytest-targeted-final.json",
+      "copy_sha256": "329ecb1cec19d03c009e310c87382e3f8cc496d73bd9c5b585f744f9cd7f348a",
+      "copy_bytes": 230,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/validity_finish/pytest-targeted-final.log",
+      "source_sha256": "19932ebea0a183b7da572b238fb5973469697826509e41c17ad341f8d17bc318",
+      "source_bytes": 81,
+      "copy_path": "copies/validity/pytest-targeted-final.log",
+      "copy_sha256": "19932ebea0a183b7da572b238fb5973469697826509e41c17ad341f8d17bc318",
+      "copy_bytes": 81,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/vf_brep_persistence/native_brep_persistence/README.md",
+      "source_sha256": "619ad023a846af606e832de75f47b29003c3d8331da9dda9c0627b1b4320f987",
+      "source_bytes": 4097,
+      "copy_path": "copies/vf_brep/README.md",
+      "copy_sha256": "619ad023a846af606e832de75f47b29003c3d8331da9dda9c0627b1b4320f987",
+      "copy_bytes": 4097,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/vf_brep_persistence/native_brep_persistence/brep_candidate_report.json",
+      "source_sha256": "6549b15e71382818f7c2c310dfc845c722e99ba72f689a5bb9c7afcf442956f4",
+      "source_bytes": 244975,
+      "copy_path": "copies/vf_brep/brep_candidate_report.json",
+      "copy_sha256": "6549b15e71382818f7c2c310dfc845c722e99ba72f689a5bb9c7afcf442956f4",
+      "copy_bytes": 244975,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/vf_brep_persistence/native_brep_persistence/finalize_report_receipt.json",
+      "source_sha256": "a260c7d1bd574cee8bf06f5240141c9275db37870bc90ed425f15e65e4f9e824",
+      "source_bytes": 635,
+      "copy_path": "copies/vf_brep/finalize_report_receipt.json",
+      "copy_sha256": "a260c7d1bd574cee8bf06f5240141c9275db37870bc90ed425f15e65e4f9e824",
+      "copy_bytes": 635,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/vf_brep_persistence/native_brep_persistence/mesh_refinement_receipt.json",
+      "source_sha256": "675b30fea5b11da4b7e3751fd91cc0e4b1ecac193b20a860afeba0e629f4cebe",
+      "source_bytes": 714,
+      "copy_path": "copies/vf_brep/mesh_refinement_receipt.json",
+      "copy_sha256": "675b30fea5b11da4b7e3751fd91cc0e4b1ecac193b20a860afeba0e629f4cebe",
+      "copy_bytes": 714,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/vf_brep_persistence/native_brep_persistence/run_receipt.json",
+      "source_sha256": "fd9255c932b3f2dd26ab148aab870ab7e446deefdf4639f497786faeb3526f47",
+      "source_bytes": 612,
+      "copy_path": "copies/vf_brep/run_receipt.json",
+      "copy_sha256": "fd9255c932b3f2dd26ab148aab870ab7e446deefdf4639f497786faeb3526f47",
+      "copy_bytes": 612,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/vf_brep_persistence/native_brep_persistence/source_and_artifact_sha256.json",
+      "source_sha256": "034110b85203086cbefbd0778e1acafb2bf01b3a80e42646894a958caa13facd",
+      "source_bytes": 7586,
+      "copy_path": "copies/vf_brep/source_and_artifact_sha256.json",
+      "copy_sha256": "034110b85203086cbefbd0778e1acafb2bf01b3a80e42646894a958caa13facd",
+      "copy_bytes": 7586,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/wall_resolution/actual_sections_h1mm_vs_h0p5mm.png",
+      "source_sha256": "e14aa92b9320d3ac14d35eb70152c6772958de64d048351b00aca49b381c5b1c",
+      "source_bytes": 267247,
+      "copy_path": "copies/wall_resolution/actual_sections_h1mm_vs_h0p5mm.png",
+      "copy_sha256": "e14aa92b9320d3ac14d35eb70152c6772958de64d048351b00aca49b381c5b1c",
+      "copy_bytes": 267247,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/wall_resolution/preflight.json",
+      "source_sha256": "a1d2742843e3dc00fed16f9e5c2904370b7f805e91e8bf1f60da2500e8933b3c",
+      "source_bytes": 1680,
+      "copy_path": "copies/wall_resolution/preflight.json",
+      "copy_sha256": "a1d2742843e3dc00fed16f9e5c2904370b7f805e91e8bf1f60da2500e8933b3c",
+      "copy_bytes": 1680,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "multiple; see sources",
+      "sources": [
+        {
+          "path": "tmp/review_20261004/implementation/wall_resolution/h1mm/report.json",
+          "sha256": "a1b3dc9406c8a3c5ce308351e2b557b1e6c2314ce94276a3ae267e6b773919a5",
+          "bytes": 294573
+        },
+        {
+          "path": "tmp/review_20261004/implementation/wall_resolution/h0.5mm/report.json",
+          "sha256": "987a489c7d8c2881f4e70d92271bf65739038f14f332de52483c0a4cedd4ecb0",
+          "bytes": 1242051
+        },
+        {
+          "path": "tmp/review_20261004/implementation/wall_resolution/run_index.json",
+          "sha256": "d566d42bcb32b4df8524008f52adfa41b3964e57a8315b2175e431dc02ae1210",
+          "bytes": 24751
+        },
+        {
+          "path": "tmp/review_20261004/implementation/wall_resolution/h1mm/pointin_exception_audit.json",
+          "sha256": "c50ec4db398c3479fc54349d110ead5135b1409147e77f59bba038d0413734a8",
+          "bytes": 1922
+        }
+      ],
+      "copy_path": "copies/wall_resolution/roi_h1_h0p5_summary.json",
+      "copy_sha256": "2a0b56b0ab094eaca30c1a472ef774ee09125b73cddd8249f12254178651c549",
+      "copy_bytes": 9343,
+      "method": "structured_field_extract; not byte-exact; full h0.5 source report omitted to meet bundle cap"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/wall_resolution/run_index.json",
+      "source_sha256": "d566d42bcb32b4df8524008f52adfa41b3964e57a8315b2175e431dc02ae1210",
+      "source_bytes": 24751,
+      "copy_path": "copies/wall_resolution/run_index.json",
+      "copy_sha256": "d566d42bcb32b4df8524008f52adfa41b3964e57a8315b2175e431dc02ae1210",
+      "copy_bytes": 24751,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/manifest.json",
+      "source_sha256": "21b563069550e2091474fe94877bd3ceaae094ac4c92aed3900ecdd94702dd68",
+      "source_bytes": 4757,
+      "copy_path": "copies/cohesive/manifest.json",
+      "copy_sha256": "21b563069550e2091474fe94877bd3ceaae094ac4c92aed3900ecdd94702dd68",
+      "copy_bytes": 4757,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "../pgfrag/experiments/cohesive_capability/run_contract.py",
+      "source_sha256": "67dd1eb98acc5f5369b9cbf1a9bfbd7f6681068172e537768e788274cb10652d",
+      "source_bytes": 29542,
+      "copy_path": "copies/cohesive/run_contract.py",
+      "copy_sha256": "67dd1eb98acc5f5369b9cbf1a9bfbd7f6681068172e537768e788274cb10652d",
+      "copy_bytes": 29542,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "../pgfrag/experiments/cohesive_capability/input/block_2x2x4mm.msh",
+      "source_sha256": "b98402c5a7b7af36b8e5e8a2a90c7db689cb1af86a089c8e1b9a0dbf07ba2638",
+      "source_bytes": 3605,
+      "copy_path": "copies/cohesive/input/block_2x2x4mm.msh",
+      "copy_sha256": "b98402c5a7b7af36b8e5e8a2a90c7db689cb1af86a089c8e1b9a0dbf07ba2638",
+      "copy_bytes": 3605,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "../pgfrag/experiments/cohesive_capability/input/material.dat",
+      "source_sha256": "c300c3091ac323eba756f2d7bfbf55e888c68d6b10f5fcb9763c0e6b6194305f",
+      "source_bytes": 291,
+      "copy_path": "copies/cohesive/input/material.dat",
+      "copy_sha256": "c300c3091ac323eba756f2d7bfbf55e888c68d6b10f5fcb9763c0e6b6194305f",
+      "copy_bytes": 291,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "../pgfrag/experiments/cohesive_capability/input/generated_geometry.json",
+      "source_sha256": "eec01312e181581c1d433b2619b6fd8a4a42677769c4dbc25053d0a2c355188b",
+      "source_bytes": 488,
+      "copy_path": "copies/cohesive/input/generated_geometry.json",
+      "copy_sha256": "eec01312e181581c1d433b2619b6fd8a4a42677769c4dbc25053d0a2c355188b",
+      "copy_bytes": 488,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/zero_load/status.json",
+      "source_sha256": "dc497526371134d38753eeea15723f29378d79a823f95397ee0209b124c1e987",
+      "source_bytes": 2992,
+      "copy_path": "copies/cohesive/cases/zero_load_status.json",
+      "copy_sha256": "dc497526371134d38753eeea15723f29378d79a823f95397ee0209b124c1e987",
+      "copy_bytes": 2992,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/modeI_dt/status.json",
+      "source_sha256": "4616bd48c93ddb35e546867022ede1b152ce75f1d40ca0309c12764ac18c0a84",
+      "source_bytes": 3167,
+      "copy_path": "copies/cohesive/cases/modeI_dt_status.json",
+      "copy_sha256": "4616bd48c93ddb35e546867022ede1b152ce75f1d40ca0309c12764ac18c0a84",
+      "copy_bytes": 3167,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/modeI_dt2/status.json",
+      "source_sha256": "123ffcedbcc8f01abe0bf5df5ab97e128ff9d42a036adba63adab20ed6195ef0",
+      "source_bytes": 3175,
+      "copy_path": "copies/cohesive/cases/modeI_dt2_status.json",
+      "copy_sha256": "123ffcedbcc8f01abe0bf5df5ab97e128ff9d42a036adba63adab20ed6195ef0",
+      "copy_bytes": 3175,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/api_semantics_review.json",
+      "source_sha256": "6d244139fe1afc7682dacab465ccdb0f0ef570121efa69545bf00ac7b6687e6c",
+      "source_bytes": 4874,
+      "copy_path": "copies/cohesive/api_semantics_review.json",
+      "copy_sha256": "6d244139fe1afc7682dacab465ccdb0f0ef570121efa69545bf00ac7b6687e6c",
+      "copy_bytes": 4874,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/runtime_install_evidence.json",
+      "source_sha256": "b27d123772c8426a24457dfa62b3e61d1b3308e5a87c293cc50f454b82e52fbf",
+      "source_bytes": 2255,
+      "copy_path": "copies/cohesive/runtime_install_evidence.json",
+      "copy_sha256": "b27d123772c8426a24457dfa62b3e61d1b3308e5a87c293cc50f454b82e52fbf",
+      "copy_bytes": 2255,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/cohesive_capability_preview.png",
+      "source_sha256": "b5bee415ee9916c4b2a98c0029fe8f6f788e009d32f57ba6bd46152169fc3638",
+      "source_bytes": 143793,
+      "copy_path": "copies/cohesive/cohesive_capability_preview.png",
+      "copy_sha256": "b5bee415ee9916c4b2a98c0029fe8f6f788e009d32f57ba6bd46152169fc3638",
+      "copy_bytes": 143793,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/modeI_dt_command.log",
+      "source_sha256": "935451edc81ffcb3ef30d4660ecbf4d8d0c051380e066fb0c00991f516c45aa0",
+      "source_bytes": 237,
+      "copy_path": "copies/cohesive/commands/modeI_dt_command.log",
+      "copy_sha256": "935451edc81ffcb3ef30d4660ecbf4d8d0c051380e066fb0c00991f516c45aa0",
+      "copy_bytes": 237,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/modeI_dt2_command.log",
+      "source_sha256": "f5c2f1b925caf31f3876fe147a9056c8fa6c311ae3b8e1241a32483ceadca558",
+      "source_bytes": 238,
+      "copy_path": "copies/cohesive/commands/modeI_dt2_command.log",
+      "copy_sha256": "f5c2f1b925caf31f3876fe147a9056c8fa6c311ae3b8e1241a32483ceadca558",
+      "copy_bytes": 238,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/zero_load_retry1_command.log",
+      "source_sha256": "4a626bedecd72589e78d4aa98502a03ff2b2612354405d31841d3f7b62108983",
+      "source_bytes": 238,
+      "copy_path": "copies/cohesive/commands/zero_load_retry1_command.log",
+      "copy_sha256": "4a626bedecd72589e78d4aa98502a03ff2b2612354405d31841d3f7b62108983",
+      "copy_bytes": 238,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/zero_load_command.log",
+      "source_sha256": "013d65bb578e9c0f49a85c4f1f2206cd8807fb42de885e41f187cbabcad8724c",
+      "source_bytes": 762,
+      "copy_path": "copies/cohesive/commands/zero_load_initial_metadata_fail.log",
+      "copy_sha256": "013d65bb578e9c0f49a85c4f1f2206cd8807fb42de885e41f187cbabcad8724c",
+      "copy_bytes": 762,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/manifest_revision_event.json",
+      "source_sha256": "4f1715bee03131778a4be8989026d80bbb5ccd60c873788ed168cbba0819901e",
+      "source_bytes": 675,
+      "copy_path": "copies/cohesive/manifest_revision_event.json",
+      "copy_sha256": "4f1715bee03131778a4be8989026d80bbb5ccd60c873788ed168cbba0819901e",
+      "copy_bytes": 675,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/native_visualization_data.json",
+      "source_sha256": "e77bbc91d721cdde65d42df3a94224e641702eac21874a998e03553364df0068",
+      "source_bytes": 49042,
+      "copy_path": "copies/cohesive/native_visualization_data.json",
+      "copy_sha256": "e77bbc91d721cdde65d42df3a94224e641702eac21874a998e03553364df0068",
+      "copy_bytes": 49042,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/preflight.json",
+      "source_sha256": "ef74e00ca3122ad75985c47cdeb09b57535f70a9f8ba5e1488fc16b1ee517fbd",
+      "source_bytes": 4322,
+      "copy_path": "copies/cohesive/preflight.json",
+      "copy_sha256": "ef74e00ca3122ad75985c47cdeb09b57535f70a9f8ba5e1488fc16b1ee517fbd",
+      "copy_bytes": 4322,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/api_probe.json",
+      "source_sha256": "8c40d5f0b14d7a0e94cdc459f6ae76e7edbe0280777cdc51082aabe97e1b0261",
+      "source_bytes": 1145,
+      "copy_path": "copies/cohesive/api_probe.json",
+      "copy_sha256": "8c40d5f0b14d7a0e94cdc459f6ae76e7edbe0280777cdc51082aabe97e1b0261",
+      "copy_bytes": 1145,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_capability/contract_review.json",
+      "source_sha256": "8990a6738c27feaf2a7001562dcd8a892a5f87866b1ef32f5e0d86f37d141eac",
+      "source_bytes": 66846,
+      "copy_path": "copies/cohesive/contract_review_extract.json",
+      "copy_sha256": "67c5bedea912328bc9e18f668c2970af758c6bc838026e82bfdcd02c00a19b7b",
+      "copy_bytes": 5913,
+      "method": "structured_extract"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_diagnostics_20261004/report.txt",
+      "source_sha256": "ca743c4d92665e2604f09366096e71d00f8c8429d265811613609c77ba12eea0",
+      "source_bytes": 1752,
+      "copy_path": "copies/cohesive_diagnostics/report.txt",
+      "copy_sha256": "ca743c4d92665e2604f09366096e71d00f8c8429d265811613609c77ba12eea0",
+      "copy_bytes": 1752,
+      "method": "byte_exact",
+      "evidence_kind": "readonly_diagnostic_report"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_diagnostics_20261004/cohesive_diagnostics.json",
+      "source_sha256": "155729813532452b49eb77d1ee6cb1bbc8e68502883473c8b791ce7e2a1cefca",
+      "source_bytes": 144879,
+      "copy_path": "copies/cohesive_diagnostics/analysis_receipt.json",
+      "copy_sha256": "9feda6e0fb86fffa7e4bdbb76cb088e847c07b55b7fff222b7fe74bfa9724309",
+      "copy_bytes": 9008,
+      "method": "structured_extract",
+      "evidence_kind": "analysis_receipt"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/pre_run_snapshot_integrity.json",
+      "source_sha256": "a160999a5a4ae9d073f71a648918530cccb999965d967a8075d07a07e89138f5",
+      "source_bytes": 7455,
+      "copy_path": "copies/cohesive_event_probe/pre_run_snapshot_integrity.json",
+      "copy_sha256": "a160999a5a4ae9d073f71a648918530cccb999965d967a8075d07a07e89138f5",
+      "copy_bytes": 7455,
+      "method": "byte_exact",
+      "evidence_kind": "pre_run_integrity"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/events.json",
+      "source_sha256": "25c1557c84cc0f6a6f7628db27c92afcd82522abc41c6598e569a53ff77a42e5",
+      "source_bytes": 262,
+      "copy_path": "copies/cohesive_event_probe/events.json",
+      "copy_sha256": "25c1557c84cc0f6a6f7628db27c92afcd82522abc41c6598e569a53ff77a42e5",
+      "copy_bytes": 262,
+      "method": "byte_exact",
+      "evidence_kind": "native_event_log"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/execution_receipt.json",
+      "source_sha256": "586cf75a2fcc1469f56498db8d1767e63e95054aa82783820691e549573c1f34",
+      "source_bytes": 1682,
+      "copy_path": "copies/cohesive_event_probe/execution_receipt.json",
+      "copy_sha256": "586cf75a2fcc1469f56498db8d1767e63e95054aa82783820691e549573c1f34",
+      "copy_bytes": 1682,
+      "method": "byte_exact",
+      "evidence_kind": "execution_receipt"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/probe_conclusion.json",
+      "source_sha256": "2f4550515aef69e19b368572ac15c9baa9cbdccba65fae7b823c02dac3058b2c",
+      "source_bytes": 1464,
+      "copy_path": "copies/cohesive_event_probe/probe_conclusion.json",
+      "copy_sha256": "2f4550515aef69e19b368572ac15c9baa9cbdccba65fae7b823c02dac3058b2c",
+      "copy_bytes": 1464,
+      "method": "byte_exact",
+      "evidence_kind": "derived_summary"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/driver_source_identity.json",
+      "source_sha256": "e6b866676e75fdebf6aa11892f42ac2d41aa46706a5f2a7261f2f9cbb257a3c2",
+      "source_bytes": 593,
+      "copy_path": "copies/cohesive_event_probe/driver_source_identity.json",
+      "copy_sha256": "e6b866676e75fdebf6aa11892f42ac2d41aa46706a5f2a7261f2f9cbb257a3c2",
+      "copy_bytes": 593,
+      "method": "byte_exact",
+      "evidence_kind": "source_identity"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/baseline_comparison.json",
+      "source_sha256": "4d19dc927b224ba552cf142fb0f3f2eff8de75157786ba8679832ded87a7c885",
+      "source_bytes": 1566,
+      "copy_path": "copies/cohesive_event_probe/baseline_comparison.json",
+      "copy_sha256": "4d19dc927b224ba552cf142fb0f3f2eff8de75157786ba8679832ded87a7c885",
+      "copy_bytes": 1566,
+      "method": "byte_exact",
+      "evidence_kind": "derived_baseline_comparison"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/phase_evidence.jsonl",
+      "source_sha256": "0b50927ea7b00ada21a3193eaac134d5a3742df95dfa60a94378787e7d7a8c57",
+      "source_bytes": 97463,
+      "copy_path": "copies/cohesive_event_probe/phase_evidence.jsonl",
+      "copy_sha256": "0b50927ea7b00ada21a3193eaac134d5a3742df95dfa60a94378787e7d7a8c57",
+      "copy_bytes": 97463,
+      "method": "byte_exact",
+      "evidence_kind": "native_phase_evidence"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/run_status.json",
+      "source_sha256": "06a52db10f3086e45034f8fb3745fc0ccb820f49a3b41fff03fad636ceb8fb37",
+      "source_bytes": 9604,
+      "copy_path": "copies/cohesive_event_probe/run_status.json",
+      "copy_sha256": "06a52db10f3086e45034f8fb3745fc0ccb820f49a3b41fff03fad636ceb8fb37",
+      "copy_bytes": 9604,
+      "method": "byte_exact",
+      "evidence_kind": "run_status"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/narrowband_diagnosis_20261004/diagnosis.json",
+      "source_bytes": 202833,
+      "source_sha256": "0cefc6abf1d5acd0aac63ed632972d84f52942ba6156b494e739bc38de1863c3",
+      "copy_path": "copies/narrowband_diagnosis/diagnosis.json",
+      "copy_bytes": 202833,
+      "copy_sha256": "0cefc6abf1d5acd0aac63ed632972d84f52942ba6156b494e739bc38de1863c3",
+      "method": "byte_exact",
+      "evidence_kind": "raw_diagnostic_json"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/derived_partial_v4/partial_bilinear_patch_review_v2.png",
+      "source_bytes": 228372,
+      "source_sha256": "07276b0d64a171e45863ff8baf6607df5afb90a3fdc9f61622f6e2f3ee257151",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/partial_bilinear_patch_review_v2.png",
+      "copy_bytes": 228372,
+      "copy_sha256": "07276b0d64a171e45863ff8baf6607df5afb90a3fdc9f61622f6e2f3ee257151",
+      "method": "byte_exact",
+      "evidence_kind": "partial_derived_review_image"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/derived_partial_v4/analysis_partial_v2.json",
+      "source_bytes": 25897,
+      "source_sha256": "a2cc0397429f2fc103eb73916aaf37c017149331a466d2c629cee3d1cb777233",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_partial_v2.json",
+      "copy_bytes": 25897,
+      "copy_sha256": "a2cc0397429f2fc103eb73916aaf37c017149331a466d2c629cee3d1cb777233",
+      "method": "byte_exact",
+      "evidence_kind": "partial_derived_analysis"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/derived_partial_v4/native_partial_history_derived_from_closed_samples_v2.npz",
+      "source_bytes": 34025,
+      "source_sha256": "bcad4586f3878bfa280fddec466d2feb9f50d179f37ac152a49823496ead3523",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/native_partial_history_derived_from_closed_samples_v2.npz",
+      "copy_bytes": 34025,
+      "copy_sha256": "bcad4586f3878bfa280fddec466d2feb9f50d179f37ac152a49823496ead3523",
+      "method": "byte_exact",
+      "evidence_kind": "partial_derived_history"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/external_execution_started_v2.json",
+      "source_bytes": 1816,
+      "source_sha256": "c862160d4bc7acf02ce49225c4dd6791f1d052f6deae63c4d3b7daf5cbd5e4ee",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/receipts/external_execution_started_v2.json",
+      "copy_bytes": 1816,
+      "copy_sha256": "c862160d4bc7acf02ce49225c4dd6791f1d052f6deae63c4d3b7daf5cbd5e4ee",
+      "method": "byte_exact",
+      "evidence_kind": "run02_start_receipt"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/external_execution_receipt_v2.json",
+      "source_bytes": 2277,
+      "source_sha256": "bbe74dc940b828cf276b2f01c50a50edfe9c11e55cf065b3739d41413e64567c",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/receipts/external_execution_receipt_v2.json",
+      "copy_bytes": 2277,
+      "copy_sha256": "bbe74dc940b828cf276b2f01c50a50edfe9c11e55cf065b3739d41413e64567c",
+      "method": "byte_exact",
+      "evidence_kind": "run02_timeout_receipt"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/freeze_receipt_v2.json",
+      "source_bytes": 6749,
+      "source_sha256": "0271daa8174719ed12bd3483335d1a024dd6ac77b305009f95bfb3c830434e62",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/receipts/freeze_receipt_v2.json",
+      "copy_bytes": 6749,
+      "copy_sha256": "0271daa8174719ed12bd3483335d1a024dd6ac77b305009f95bfb3c830434e62",
+      "method": "byte_exact",
+      "evidence_kind": "run02_freeze_receipt"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/snapshot_integrity_v2.json",
+      "source_bytes": 5993,
+      "source_sha256": "7ff69ff20e9b4cf61e3cb43772d730a58ab7a54bc9770341975a8ec534790811",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/receipts/snapshot_integrity_v2.json",
+      "copy_bytes": 5993,
+      "copy_sha256": "7ff69ff20e9b4cf61e3cb43772d730a58ab7a54bc9770341975a8ec534790811",
+      "method": "byte_exact",
+      "evidence_kind": "run02_source_integrity"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/post_timeout_process_check_v2.json",
+      "source_bytes": 584,
+      "source_sha256": "ca8f24144477083888a68d462c6a197a19e4df69309fe754b3d62773cde0af9e",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/receipts/post_timeout_process_check_v2.json",
+      "copy_bytes": 584,
+      "copy_sha256": "ca8f24144477083888a68d462c6a197a19e4df69309fe754b3d62773cde0af9e",
+      "method": "byte_exact",
+      "evidence_kind": "run02_post_timeout_check"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/run_started.json",
+      "source_bytes": 355,
+      "source_sha256": "84c9fd33deb44ee16fd19bf5fa3892649a563832ab298bcf3488142513db9812",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/receipts/run_started.json",
+      "copy_bytes": 355,
+      "copy_sha256": "84c9fd33deb44ee16fd19bf5fa3892649a563832ab298bcf3488142513db9812",
+      "method": "byte_exact",
+      "evidence_kind": "run02_start_record"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/initial_state.npz",
+      "source_bytes": 3183,
+      "source_sha256": "983d70a007050887bb06518b60d623b239ae33f9a7b1f97c4d486f54ee696c11",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/receipts/initial_state.npz",
+      "copy_bytes": 3183,
+      "copy_sha256": "983d70a007050887bb06518b60d623b239ae33f9a7b1f97c4d486f54ee696c11",
+      "method": "byte_exact",
+      "evidence_kind": "run02_initial_state"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/py_compile_execution_v2.json",
+      "source_bytes": 1808,
+      "source_sha256": "e060f99ae1e4e252485f8d407244b4714096710a9f23fcde5a4a71453bbd2a98",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/receipts/py_compile_execution_v2.json",
+      "copy_bytes": 1808,
+      "copy_sha256": "e060f99ae1e4e252485f8d407244b4714096710a9f23fcde5a4a71453bbd2a98",
+      "method": "byte_exact",
+      "evidence_kind": "run02_failed_compile_receipt"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/py_compile_execution_v2_attempt2.json",
+      "source_bytes": 1850,
+      "source_sha256": "f0c4c6340f12a778385adfd70878947a116431fcfb12c1ff6e52f1e3404ed9e3",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/receipts/py_compile_execution_v2_attempt2.json",
+      "copy_bytes": 1850,
+      "copy_sha256": "f0c4c6340f12a778385adfd70878947a116431fcfb12c1ff6e52f1e3404ed9e3",
+      "method": "byte_exact",
+      "evidence_kind": "run02_failed_compile_receipt"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/py_compile_execution_v2_exit_interpretation.json",
+      "source_bytes": 1475,
+      "source_sha256": "7d97baa1026023d7229548be1885ad485e1135a841dcdf0446b8dbed31bbfee0",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/receipts/py_compile_execution_v2_exit_interpretation.json",
+      "copy_bytes": 1475,
+      "copy_sha256": "7d97baa1026023d7229548be1885ad485e1135a841dcdf0446b8dbed31bbfee0",
+      "method": "byte_exact",
+      "evidence_kind": "run02_compile_exit_interpretation"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/py_compile_v2.stderr.txt",
+      "source_bytes": 262,
+      "source_sha256": "a8c54784028d42b0d100a0eaf6ac204a79136afa353a98fa6cacd175659b5657",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/receipts/py_compile_v2.stderr.txt",
+      "copy_bytes": 262,
+      "copy_sha256": "a8c54784028d42b0d100a0eaf6ac204a79136afa353a98fa6cacd175659b5657",
+      "method": "byte_exact",
+      "evidence_kind": "run02_compile_failure_stderr"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/derived_partial_v2/source_snapshot/analyze_intrinsic_bilinear_partial_run02_v2.py",
+      "source_bytes": 31016,
+      "source_sha256": "2355d5ccf5895ad8d2c54c10f8c1a85a272b676f8cffcccc8e880b845d0e0726",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v2/source_snapshot/analyze_intrinsic_bilinear_partial_run02_v2.py",
+      "copy_bytes": 31016,
+      "copy_sha256": "2355d5ccf5895ad8d2c54c10f8c1a85a272b676f8cffcccc8e880b845d0e0726",
+      "method": "byte_exact",
+      "evidence_kind": "failed_analysis_source_snapshot"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/derived_partial_v2/analysis_execution_receipt_v2.json",
+      "source_bytes": 1433,
+      "source_sha256": "7a96c25694ab35eeb0b3f84557ea50ef23c2a44415ff0acadfc34e07339fff74",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v2/analysis_execution_receipt_v2.json",
+      "copy_bytes": 1433,
+      "copy_sha256": "7a96c25694ab35eeb0b3f84557ea50ef23c2a44415ff0acadfc34e07339fff74",
+      "method": "byte_exact",
+      "evidence_kind": "failed_analysis_receipt"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/derived_partial_v2/analysis_execution_started_v2.json",
+      "source_bytes": 921,
+      "source_sha256": "06957550ab5a93bcb5b25f5cb1b2dd8c089f9f69c833cfc91d237db997833235",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v2/analysis_execution_started_v2.json",
+      "copy_bytes": 921,
+      "copy_sha256": "06957550ab5a93bcb5b25f5cb1b2dd8c089f9f69c833cfc91d237db997833235",
+      "method": "byte_exact",
+      "evidence_kind": "failed_analysis_start_receipt"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/derived_partial_v2/analysis_source_manifest_v2.json",
+      "source_bytes": 666,
+      "source_sha256": "1b83a1b323ae8eaed3bdec553b3b1ac4ccd1ab804fb945eadbc619efa79232f7",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v2/analysis_source_manifest_v2.json",
+      "copy_bytes": 666,
+      "copy_sha256": "1b83a1b323ae8eaed3bdec553b3b1ac4ccd1ab804fb945eadbc619efa79232f7",
+      "method": "byte_exact",
+      "evidence_kind": "failed_analysis_source_manifest"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/derived_partial_v2/analysis_v2.stderr.txt",
+      "source_bytes": 237,
+      "source_sha256": "20420f048e4681df34e669d0d4bd3f01f672af4b18adf6c9b7ab1673da661218",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v2/analysis_v2.stderr.txt",
+      "copy_bytes": 237,
+      "copy_sha256": "20420f048e4681df34e669d0d4bd3f01f672af4b18adf6c9b7ab1673da661218",
+      "method": "byte_exact",
+      "evidence_kind": "failed_analysis_stderr"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/derived_partial_v3/source_snapshot/analyze_intrinsic_bilinear_partial_run02_v3.py",
+      "source_bytes": 31016,
+      "source_sha256": "cfef0724ea383eb71af7ae9470d2bc759eb4b5a2cb1720852d0b7f636219b646",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v3/source_snapshot/analyze_intrinsic_bilinear_partial_run02_v3.py",
+      "copy_bytes": 31016,
+      "copy_sha256": "cfef0724ea383eb71af7ae9470d2bc759eb4b5a2cb1720852d0b7f636219b646",
+      "method": "byte_exact",
+      "evidence_kind": "failed_analysis_source_snapshot"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/derived_partial_v3/analysis_execution_receipt_v3.json",
+      "source_bytes": 1433,
+      "source_sha256": "273ee82b98c6e75160cf55997bc2dbbd9e3f1e5af7f3a0dd4187dd199a53f775",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v3/analysis_execution_receipt_v3.json",
+      "copy_bytes": 1433,
+      "copy_sha256": "273ee82b98c6e75160cf55997bc2dbbd9e3f1e5af7f3a0dd4187dd199a53f775",
+      "method": "byte_exact",
+      "evidence_kind": "failed_analysis_receipt"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/derived_partial_v3/analysis_execution_started_v3.json",
+      "source_bytes": 921,
+      "source_sha256": "6f2aa8706445f55cd0a6b6cfb30834496b1cd981524f55920ea752d559b851fb",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v3/analysis_execution_started_v3.json",
+      "copy_bytes": 921,
+      "copy_sha256": "6f2aa8706445f55cd0a6b6cfb30834496b1cd981524f55920ea752d559b851fb",
+      "method": "byte_exact",
+      "evidence_kind": "failed_analysis_start_receipt"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/derived_partial_v3/analysis_source_manifest_v3.json",
+      "source_bytes": 799,
+      "source_sha256": "891b2b8614f20510a046b56fa7465dcabaa1f8592b80e90b6e11705a64da9093",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v3/analysis_source_manifest_v3.json",
+      "copy_bytes": 799,
+      "copy_sha256": "891b2b8614f20510a046b56fa7465dcabaa1f8592b80e90b6e11705a64da9093",
+      "method": "byte_exact",
+      "evidence_kind": "failed_analysis_source_manifest"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/derived_partial_v3/analysis_v3.stderr.txt",
+      "source_bytes": 237,
+      "source_sha256": "85136d841b0ade041526b52b9e022b41707a2bd0eac7e0b303104b4cd60205b5",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v3/analysis_v3.stderr.txt",
+      "copy_bytes": 237,
+      "copy_sha256": "85136d841b0ade041526b52b9e022b41707a2bd0eac7e0b303104b4cd60205b5",
+      "method": "byte_exact",
+      "evidence_kind": "failed_analysis_stderr"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/source_snapshots/analysis_v4/analysis_execution_receipt_v4.json",
+      "source_bytes": 3847,
+      "source_sha256": "9ab997e967d7a80e2df3959dd9c1717cb025c9c9ce726108f6858c10e3347d0c",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v4/analysis_execution_receipt_v4.json",
+      "copy_bytes": 3847,
+      "copy_sha256": "9ab997e967d7a80e2df3959dd9c1717cb025c9c9ce726108f6858c10e3347d0c",
+      "method": "byte_exact",
+      "evidence_kind": "partial_analysis_execution_receipt"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/source_snapshots/analysis_v4/analysis_execution_started_v4.json",
+      "source_bytes": 1035,
+      "source_sha256": "fc6e622af24f41f8b3e5532a0da30f5d7cc39bdba09366bf42226f20f49452ba",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v4/analysis_execution_started_v4.json",
+      "copy_bytes": 1035,
+      "copy_sha256": "fc6e622af24f41f8b3e5532a0da30f5d7cc39bdba09366bf42226f20f49452ba",
+      "method": "byte_exact",
+      "evidence_kind": "partial_analysis_start_receipt"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/source_snapshots/analysis_v4/analysis_source_manifest_v4.json",
+      "source_bytes": 787,
+      "source_sha256": "ec516bfb19a4e365f7658f79557a4f39bdbaa39415fb10226c6e6dc79257eba4",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v4/analysis_source_manifest_v4.json",
+      "copy_bytes": 787,
+      "copy_sha256": "ec516bfb19a4e365f7658f79557a4f39bdbaa39415fb10226c6e6dc79257eba4",
+      "method": "byte_exact",
+      "evidence_kind": "partial_analysis_source_manifest"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/source_snapshots/analysis_v4/analysis_v4.stdout.txt",
+      "source_bytes": 605,
+      "source_sha256": "70a987ff92477248c2f52f0838e894ae0f75f19586b7b067933a639cc920b767",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v4/analysis_v4.stdout.txt",
+      "copy_bytes": 605,
+      "copy_sha256": "70a987ff92477248c2f52f0838e894ae0f75f19586b7b067933a639cc920b767",
+      "method": "byte_exact",
+      "evidence_kind": "partial_analysis_stdout"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/source_snapshots/analysis_v4/analysis_v4.stderr.txt",
+      "source_bytes": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "copy_path": "copies/cohesive_bilinear_patch/run02/analysis_v4/analysis_v4.stderr.txt",
+      "copy_bytes": 0,
+      "copy_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "method": "byte_exact",
+      "evidence_kind": "partial_analysis_stderr"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run01/external_execution_receipt.json",
+      "source_bytes": 459,
+      "source_sha256": "8f31b96dd204442d0610499568ddd238e7b97b86dccf02113a9ed89fcd9b62e4",
+      "copy_path": "copies/cohesive_bilinear_patch/run01/external_execution_receipt.json",
+      "copy_bytes": 459,
+      "copy_sha256": "8f31b96dd204442d0610499568ddd238e7b97b86dccf02113a9ed89fcd9b62e4",
+      "method": "byte_exact",
+      "evidence_kind": "run01_execution_receipt"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run01/run_status.json",
+      "source_bytes": 1019,
+      "source_sha256": "34146f1809498067b728e958261b3d1b06729b71b9dc3e68f958ae9a74dc99dd",
+      "copy_path": "copies/cohesive_bilinear_patch/run01/run_status.json",
+      "copy_bytes": 1019,
+      "copy_sha256": "34146f1809498067b728e958261b3d1b06729b71b9dc3e68f958ae9a74dc99dd",
+      "method": "byte_exact",
+      "evidence_kind": "run01_status"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run01/python_process_exit_code.txt",
+      "source_bytes": 2,
+      "source_sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3",
+      "copy_path": "copies/cohesive_bilinear_patch/run01/python_process_exit_code.txt",
+      "copy_bytes": 2,
+      "copy_sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3",
+      "method": "byte_exact",
+      "evidence_kind": "run01_python_exit"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run01/run_started.json",
+      "source_bytes": 352,
+      "source_sha256": "fdc9750ab92ca58ec83d836409853620cbb8f0e9f542967de70693fc8372b664",
+      "copy_path": "copies/cohesive_bilinear_patch/run01/run_started.json",
+      "copy_bytes": 352,
+      "copy_sha256": "fdc9750ab92ca58ec83d836409853620cbb8f0e9f542967de70693fc8372b664",
+      "method": "byte_exact",
+      "evidence_kind": "run01_start_record"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run01/snapshot_integrity_v1.json",
+      "source_bytes": 2123,
+      "source_sha256": "776efa8bc6867403a264e070665f53c835ee3dcece33047467fc464ae171be6b",
+      "copy_path": "copies/cohesive_bilinear_patch/run01/snapshot_integrity_v1.json",
+      "copy_bytes": 2123,
+      "copy_sha256": "776efa8bc6867403a264e070665f53c835ee3dcece33047467fc464ae171be6b",
+      "method": "byte_exact",
+      "evidence_kind": "run01_source_integrity"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run01/host_stdout.log",
+      "source_bytes": 999,
+      "source_sha256": "db0befbd18d70e12f98e44d43edcdd235c3532ff9bfacc3eb6e20aa3f6cfbc80",
+      "copy_path": "copies/cohesive_bilinear_patch/run01/host_stdout.log",
+      "copy_bytes": 999,
+      "copy_sha256": "db0befbd18d70e12f98e44d43edcdd235c3532ff9bfacc3eb6e20aa3f6cfbc80",
+      "method": "byte_exact",
+      "evidence_kind": "run01_stdout"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/preflight_dump_v3/conclusion_v3.json",
+      "source_bytes": 1247,
+      "source_sha256": "39b0bd828e9fec1a40493eaf5d0262ed7b967757dbeb5497132d69f925f12acd",
+      "copy_path": "copies/cohesive_bilinear_patch/preflight_v3/conclusion_v3.json",
+      "copy_bytes": 1247,
+      "copy_sha256": "39b0bd828e9fec1a40493eaf5d0262ed7b967757dbeb5497132d69f925f12acd",
+      "method": "byte_exact",
+      "evidence_kind": "preflight_v3_conclusion"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/preflight_dump_v3/execution_receipt_v3.json",
+      "source_bytes": 3003,
+      "source_sha256": "82573bf4fa405cb9e33d681587de6342d7f7575258615623bb746ac837f500c2",
+      "copy_path": "copies/cohesive_bilinear_patch/preflight_v3/execution_receipt_v3.json",
+      "copy_bytes": 3003,
+      "copy_sha256": "82573bf4fa405cb9e33d681587de6342d7f7575258615623bb746ac837f500c2",
+      "method": "byte_exact",
+      "evidence_kind": "preflight_v3_execution_receipt"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/preflight_dump_v3/native_dump_fields_v3.json",
+      "source_bytes": 1745,
+      "source_sha256": "2101d065f52276ca089a3b0b6ebda4ebe41a30966bf269b7edebde62d49ea477",
+      "copy_path": "copies/cohesive_bilinear_patch/preflight_v3/native_dump_fields_v3.json",
+      "copy_bytes": 1745,
+      "copy_sha256": "2101d065f52276ca089a3b0b6ebda4ebe41a30966bf269b7edebde62d49ea477",
+      "method": "byte_exact",
+      "evidence_kind": "preflight_v3_native_fields"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/preflight_dump_v3/preflight_result.json",
+      "source_bytes": 2930,
+      "source_sha256": "78c8cba68b97f112ba925597a728eac45d1be0e9974f6275a6f4e90962b52ddf",
+      "copy_path": "copies/cohesive_bilinear_patch/preflight_v3/preflight_result.json",
+      "copy_bytes": 2930,
+      "copy_sha256": "78c8cba68b97f112ba925597a728eac45d1be0e9974f6275a6f4e90962b52ddf",
+      "method": "byte_exact",
+      "evidence_kind": "preflight_v3_result"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/preflight_dump_v3/snapshot_integrity_v3.json",
+      "source_bytes": 1760,
+      "source_sha256": "b607b3472b13fff1eb0f4a679c24a6f2bb9c89c60976ca9af34cc1daa6da511e",
+      "copy_path": "copies/cohesive_bilinear_patch/preflight_v3/snapshot_integrity_v3.json",
+      "copy_bytes": 1760,
+      "copy_sha256": "b607b3472b13fff1eb0f4a679c24a6f2bb9c89c60976ca9af34cc1daa6da511e",
+      "method": "byte_exact",
+      "evidence_kind": "preflight_v3_source_integrity"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/preflight_dump_v3/partial_measurements_before_dump.json",
+      "source_bytes": 1775,
+      "source_sha256": "2369515e54fc70c05d288e894634789c731bde4395dbbdf7abc8c88f4209ff7e",
+      "copy_path": "copies/cohesive_bilinear_patch/preflight_v3/partial_measurements_before_dump.json",
+      "copy_bytes": 1775,
+      "copy_sha256": "2369515e54fc70c05d288e894634789c731bde4395dbbdf7abc8c88f4209ff7e",
+      "method": "byte_exact",
+      "evidence_kind": "preflight_v3_partial_measurements"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/preflight_dump_v3/preflight_native_state.npz",
+      "source_bytes": 2475,
+      "source_sha256": "5f2edfbf91a18e094053aae4342de51412d4e68a703b5db200bb2a7184422321",
+      "copy_path": "copies/cohesive_bilinear_patch/preflight_v3/preflight_native_state.npz",
+      "copy_bytes": 2475,
+      "copy_sha256": "5f2edfbf91a18e094053aae4342de51412d4e68a703b5db200bb2a7184422321",
+      "method": "byte_exact",
+      "evidence_kind": "preflight_v3_native_state"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/preflight_dump_v3/python_process_exit_code_v3.txt",
+      "source_bytes": 2,
+      "source_sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3",
+      "copy_path": "copies/cohesive_bilinear_patch/preflight_v3/python_process_exit_code_v3.txt",
+      "copy_bytes": 2,
+      "copy_sha256": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3",
+      "method": "byte_exact",
+      "evidence_kind": "preflight_v3_python_exit"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/preflight_dump_v3/wsl_host_exit_code_v3.txt",
+      "source_bytes": 1,
+      "source_sha256": "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35",
+      "copy_path": "copies/cohesive_bilinear_patch/preflight_v3/wsl_host_exit_code_v3.txt",
+      "copy_bytes": 1,
+      "copy_sha256": "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35",
+      "method": "byte_exact",
+      "evidence_kind": "preflight_v3_host_exit"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/preflight_dump_v3/wsl_preflight_stdout.log",
+      "source_bytes": 2539,
+      "source_sha256": "f03f36477fd8c1b67e8f58609b2de2b574d4b0e8269a918b93858aa0339c0e6c",
+      "copy_path": "copies/cohesive_bilinear_patch/preflight_v3/wsl_preflight_stdout.log",
+      "copy_bytes": 2539,
+      "copy_sha256": "f03f36477fd8c1b67e8f58609b2de2b574d4b0e8269a918b93858aa0339c0e6c",
+      "method": "byte_exact",
+      "evidence_kind": "preflight_v3_stdout"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/api_symbol_audit_v1/native_model_symbol_audit_v1.execution.json",
+      "source_bytes": 1066,
+      "source_sha256": "dab36ab63c59e4d07a22ed62167baa694d5316690f1b9faa419edc1b4b6d96ae",
+      "copy_path": "copies/cohesive_bilinear_patch/api_audit_v1/native_model_symbol_audit_v1.execution.json",
+      "copy_bytes": 1066,
+      "copy_sha256": "dab36ab63c59e4d07a22ed62167baa694d5316690f1b9faa419edc1b4b6d96ae",
+      "method": "byte_exact",
+      "evidence_kind": "api_audit_execution_receipt"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/api_symbol_audit_v1/native_model_symbol_audit_v1.json",
+      "source_bytes": 8685,
+      "source_sha256": "657f7c707304f76330d0174ef07792fb72a67a77f0944f20d82c017e5ea804a6",
+      "copy_path": "copies/cohesive_bilinear_patch/api_audit_v1/native_model_symbol_audit_v1.json",
+      "copy_bytes": 8685,
+      "copy_sha256": "657f7c707304f76330d0174ef07792fb72a67a77f0944f20d82c017e5ea804a6",
+      "method": "byte_exact",
+      "evidence_kind": "api_symbol_audit"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/narrowband_mesh64_candidate_20261004/candidate_comparison.json",
+      "source_bytes": 6150,
+      "source_sha256": "4ca288a8caaa8005572c2acb15bd059b31ccba66f07b0177cee1315f0927d12f",
+      "copy_path": "copies/narrowband_mesh64_candidate/candidate_comparison.json",
+      "copy_bytes": 6150,
+      "copy_sha256": "4ca288a8caaa8005572c2acb15bd059b31ccba66f07b0177cee1315f0927d12f",
+      "method": "byte_exact",
+      "evidence_kind": "mesh32_mesh64_comparison"
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/narrowband_mesh64_candidate_20261004/orchestrator_invocation_receipt.json",
+      "source_bytes": 1164,
+      "source_sha256": "a758003a1ea0f1207f469940a19a3c5a86dbe575eccaa44b504dd40bb5aa748d",
+      "copy_path": "copies/narrowband_mesh64_candidate/orchestrator_invocation_receipt.json",
+      "copy_bytes": 1164,
+      "copy_sha256": "a758003a1ea0f1207f469940a19a3c5a86dbe575eccaa44b504dd40bb5aa748d",
+      "method": "byte_exact",
+      "evidence_kind": "mesh32_mesh64_execution_receipt"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/explicit_spacing_fix_20261004/boundary_probe.v3.py",
+      "source_sha256": "712ea236f69d7fd058d22d81e64dc28ded1f5fe62ed49cb779954d35c7bcd73c",
+      "source_bytes": 9220,
+      "copy_path": "copies/spacing_fix_v3/boundary_probe.v3.py",
+      "copy_sha256": "712ea236f69d7fd058d22d81e64dc28ded1f5fe62ed49cb779954d35c7bcd73c",
+      "copy_bytes": 9220,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/explicit_spacing_fix_20261004/boundary_probe.v3.receipt.json",
+      "source_sha256": "969750d0a55c584ceda6c896e3830502f86dac7574d66be0f887f0b1ec8e7cb2",
+      "source_bytes": 14059,
+      "copy_path": "copies/spacing_fix_v3/boundary_probe.v3.receipt.json",
+      "copy_sha256": "969750d0a55c584ceda6c896e3830502f86dac7574d66be0f887f0b1ec8e7cb2",
+      "copy_bytes": 14059,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/explicit_spacing_fix_20261004/boundary_probe.v3.report.json",
+      "source_sha256": "b148988729df5ec34ee716b188a55ffb42521419a9865c044c84b72dfbbc4e9f",
+      "source_bytes": 11335,
+      "copy_path": "copies/spacing_fix_v3/boundary_probe.v3.report.json",
+      "copy_sha256": "b148988729df5ec34ee716b188a55ffb42521419a9865c044c84b72dfbbc4e9f",
+      "copy_bytes": 11335,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/explicit_spacing_fix_20261004/boundary_probe.v3.stdout.log",
+      "source_sha256": "d87c5fea4efd856cffc80dbdffd006bd6f60a644f00c0858673d86625cf71011",
+      "source_bytes": 9160,
+      "copy_path": "copies/spacing_fix_v3/boundary_probe.v3.stdout.log",
+      "copy_sha256": "d87c5fea4efd856cffc80dbdffd006bd6f60a644f00c0858673d86625cf71011",
+      "copy_bytes": 9160,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/explicit_spacing_fix_20261004/original.sha256.txt",
+      "source_sha256": "3921742342a68ca7d04a1cd0fac5c37a75ae9c92d9a8a96c647eda0ba45cee5f",
+      "source_bytes": 126,
+      "copy_path": "copies/spacing_fix_v3/original.sha256.txt",
+      "copy_sha256": "3921742342a68ca7d04a1cd0fac5c37a75ae9c92d9a8a96c647eda0ba45cee5f",
+      "copy_bytes": 126,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/explicit_spacing_fix_20261004/run_receipt.md",
+      "source_sha256": "e80986cbd26a9d1b2f654bd5ab0a0c53fa82a579601240a4d1f96ac9e48d63c0",
+      "source_bytes": 936,
+      "copy_path": "copies/spacing_fix_v3/run_receipt.md",
+      "copy_sha256": "e80986cbd26a9d1b2f654bd5ab0a0c53fa82a579601240a4d1f96ac9e48d63c0",
+      "copy_bytes": 936,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/explicit_spacing_fix_20261004/implementation_receipt.md",
+      "source_sha256": "c4d70f7bff948ddf6a23d2306f464edb3e93ebaebc673d390f7b20771a33602b",
+      "source_bytes": 1124,
+      "copy_path": "copies/spacing_fix_v3/implementation_receipt.md",
+      "copy_sha256": "c4d70f7bff948ddf6a23d2306f464edb3e93ebaebc673d390f7b20771a33602b",
+      "copy_bytes": 1124,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/explicit_spacing_fix_20261004/sdf.py.original",
+      "source_sha256": "186583014d706cfcc20fbefda04a0c68e427f68e3ba7187a48f9a9115ddb827f",
+      "source_bytes": 35196,
+      "copy_path": "copies/spacing_fix_v3/sdf.py.original",
+      "copy_sha256": "186583014d706cfcc20fbefda04a0c68e427f68e3ba7187a48f9a9115ddb827f",
+      "copy_bytes": 35196,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/narrowband_diagnosis_20261004/actual_mesh_boundary_projections.png",
+      "source_sha256": "9ad56c8400b159ae27fb1897fe49e1c894d42228c3ca28f07a46bc6b73ba41bf",
+      "source_bytes": 169067,
+      "copy_path": "copies/narrowband_diagnosis/actual_mesh_boundary_projections.png",
+      "copy_sha256": "9ad56c8400b159ae27fb1897fe49e1c894d42228c3ca28f07a46bc6b73ba41bf",
+      "copy_bytes": 169067,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/narrowband_diagnosis_20261004/artifact_manifest.json",
+      "source_sha256": "1630ca7db8012752bd9d20a06fcd6c16dab70ef7dd1eee66f4a653c2f7b534de",
+      "source_bytes": 4285,
+      "copy_path": "copies/narrowband_diagnosis/artifact_manifest.json",
+      "copy_sha256": "1630ca7db8012752bd9d20a06fcd6c16dab70ef7dd1eee66f4a653c2f7b534de",
+      "copy_bytes": 4285,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/narrowband_diagnosis_20261004/diagnose_narrowband.py",
+      "source_sha256": "c155c0e3274f14a47460a813bd743dc26465ea34d24ce096ce64bd43e19733e6",
+      "source_bytes": 18340,
+      "copy_path": "copies/narrowband_diagnosis/diagnose_narrowband.py",
+      "copy_sha256": "c155c0e3274f14a47460a813bd743dc26465ea34d24ce096ce64bd43e19733e6",
+      "copy_bytes": 18340,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/narrowband_diagnosis_20261004/diagnosis_notes.md",
+      "source_sha256": "7deea4d512a2cd207a6d64336f5692f88f700fce3f7aeb2ee98cd75c33aba0cc",
+      "source_bytes": 4708,
+      "copy_path": "copies/narrowband_diagnosis/diagnosis_notes.md",
+      "copy_sha256": "7deea4d512a2cd207a6d64336f5692f88f700fce3f7aeb2ee98cd75c33aba0cc",
+      "copy_bytes": 4708,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/narrowband_diagnosis_20261004/diagnosis_review.json",
+      "source_sha256": "f2ec62677699cffec764928dd1bd171a4732cc9187ede68e272e163aeefd5ca8",
+      "source_bytes": 22435,
+      "copy_path": "copies/narrowband_diagnosis/diagnosis_review.json",
+      "copy_sha256": "f2ec62677699cffec764928dd1bd171a4732cc9187ede68e272e163aeefd5ca8",
+      "copy_bytes": 22435,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/narrowband_diagnosis_20261004/diagnosis_review.pre-receipt-correction.json",
+      "source_sha256": "b57b676a0bd80db24e15f423aa2b21a539baf2c6b96ec8119f722178fed5c735",
+      "source_bytes": 21356,
+      "copy_path": "copies/narrowband_diagnosis/diagnosis_review.pre-receipt-correction.json",
+      "copy_sha256": "b57b676a0bd80db24e15f423aa2b21a539baf2c6b96ec8119f722178fed5c735",
+      "copy_bytes": 21356,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/narrowband_diagnosis_20261004/receipt_correction_derived.json",
+      "source_sha256": "05b2040a7a604da31261906cab39064f918885f0d552d299efc95a97ea8d07f6",
+      "source_bytes": 2383,
+      "copy_path": "copies/narrowband_diagnosis/receipt_correction_derived.json",
+      "copy_sha256": "05b2040a7a604da31261906cab39064f918885f0d552d299efc95a97ea8d07f6",
+      "copy_bytes": 2383,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/narrowband_diagnosis_20261004/render_boundary_png.py",
+      "source_sha256": "951487f2279f8eeb33cd64bc813002ced3e9b34e4314fe42e2b080177c09f263",
+      "source_bytes": 3541,
+      "copy_path": "copies/narrowband_diagnosis/render_boundary_png.py",
+      "copy_sha256": "951487f2279f8eeb33cd64bc813002ced3e9b34e4314fe42e2b080177c09f263",
+      "copy_bytes": 3541,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/narrowband_diagnosis_20261004/run_receipts.json",
+      "source_sha256": "abab46aecdce4576e2bbdc7ed147671d7ebcc4b1d23d2ede4d172603725322a2",
+      "source_bytes": 4190,
+      "copy_path": "copies/narrowband_diagnosis/run_receipts.json",
+      "copy_sha256": "abab46aecdce4576e2bbdc7ed147671d7ebcc4b1d23d2ede4d172603725322a2",
+      "copy_bytes": 4190,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/narrowband_diagnosis_20261004/run_receipts.pre-receipt-correction.json",
+      "source_sha256": "c93af824586d236865e96274fc0cf9919b54c8a44b5a9ebade7518407352259d",
+      "source_bytes": 3067,
+      "copy_path": "copies/narrowband_diagnosis/run_receipts.pre-receipt-correction.json",
+      "copy_sha256": "c93af824586d236865e96274fc0cf9919b54c8a44b5a9ebade7518407352259d",
+      "copy_bytes": 3067,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/narrowband_diagnosis_20261004/artifact_manifest.pre-receipt-correction.json",
+      "source_sha256": "4fe3bfdcfc5e982533892c1974dcd2d1e7c0a216cd6b73f8757bd3c41583bde4",
+      "source_bytes": 2687,
+      "copy_path": "copies/narrowband_diagnosis/artifact_manifest.pre-receipt-correction.json",
+      "copy_sha256": "4fe3bfdcfc5e982533892c1974dcd2d1e7c0a216cd6b73f8757bd3c41583bde4",
+      "copy_bytes": 2687,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/relicweave_alignment_20261004/alignment.md",
+      "source_sha256": "7ca0e1c9b32ebe8cfa2d042d106d235a7cdb0c6abe1f64420d60c2eec263aaeb",
+      "source_bytes": 13530,
+      "copy_path": "copies/alignment/alignment.md",
+      "copy_sha256": "7ca0e1c9b32ebe8cfa2d042d106d235a7cdb0c6abe1f64420d60c2eec263aaeb",
+      "copy_bytes": 13530,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03_launch_receipts/run03_final_execution_receipt.json",
+      "source_sha256": "a3cb4e89600ed72d0b698a00b2f0e158aa3b2de3472e855b0f4c50be2bd99959",
+      "source_bytes": 4690,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/run03_final_execution_receipt.json",
+      "copy_sha256": "a3cb4e89600ed72d0b698a00b2f0e158aa3b2de3472e855b0f4c50be2bd99959",
+      "copy_bytes": 4690,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03_launch_receipts/run03_post_exit_status.json",
+      "source_sha256": "a944e39562ae6561ea533db30ff7e315fade210dfffcd59d26f10557948581b1",
+      "source_bytes": 985,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/run03_post_exit_status.json",
+      "copy_sha256": "a944e39562ae6561ea533db30ff7e315fade210dfffcd59d26f10557948581b1",
+      "copy_bytes": 985,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03_launch_receipts/run03_raw_closure_receipt.json",
+      "source_sha256": "508ef32ee63b6873889297b8c18c49ebaf5a17cee0aa7a8cf9f5e3c981763306",
+      "source_bytes": 1451,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/run03_raw_closure_receipt.json",
+      "copy_sha256": "508ef32ee63b6873889297b8c18c49ebaf5a17cee0aa7a8cf9f5e3c981763306",
+      "copy_bytes": 1451,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03_launch_receipts/run03_execution_receipt.json",
+      "source_sha256": "eb22744ed3432b2019cb78d8bd6ec71c6ed64e5fb2d74818c8df5b160b3b369b",
+      "source_bytes": 1931,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/run03_execution_receipt.json",
+      "copy_sha256": "eb22744ed3432b2019cb78d8bd6ec71c6ed64e5fb2d74818c8df5b160b3b369b",
+      "copy_bytes": 1931,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03_launch_receipts/run03_wsl_stdout.log",
+      "source_sha256": "e767e51eab42638278c1d544db7c25f8ba0c295268f6ef7c55bde8839aeb06a1",
+      "source_bytes": 975,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/run03_wsl_stdout.log",
+      "copy_sha256": "e767e51eab42638278c1d544db7c25f8ba0c295268f6ef7c55bde8839aeb06a1",
+      "copy_bytes": 975,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03/run_started.json",
+      "source_sha256": "7fc31da4ab1f7ebd45b9314f0d1bf4eb13f822744b599a6b60e264298b6cc97d",
+      "source_bytes": 358,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/run_started.json",
+      "copy_sha256": "7fc31da4ab1f7ebd45b9314f0d1bf4eb13f822744b599a6b60e264298b6cc97d",
+      "copy_bytes": 358,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03/run_status.json",
+      "source_sha256": "404d93e533d2dd2df8c0c2aa7085ab1b22142dbb79ab284f16f9aa1c82a5d0ab",
+      "source_bytes": 1359,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/run_status.json",
+      "copy_sha256": "404d93e533d2dd2df8c0c2aa7085ab1b22142dbb79ab284f16f9aa1c82a5d0ab",
+      "copy_bytes": 1359,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03/python_process_exit_code.txt",
+      "source_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "source_bytes": 2,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/python_process_exit_code.txt",
+      "copy_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "copy_bytes": 2,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03/native_history_partial_or_complete.npz",
+      "source_sha256": "c68372b1a812fb9d2bd5304d2519f8ecb7d6428ff6133d41f4bbe372f6ecfa66",
+      "source_bytes": 33413,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/native_history_partial_or_complete.npz",
+      "copy_sha256": "c68372b1a812fb9d2bd5304d2519f8ecb7d6428ff6133d41f4bbe372f6ecfa66",
+      "copy_bytes": 33413,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03_analysis/run03_analysis.json",
+      "source_sha256": "99d717174a0e3067628783168dca3e3830cfece93da34fe0e01ed8c2bbf416b5",
+      "source_bytes": 21660,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/analysis/run03_analysis.json",
+      "copy_sha256": "99d717174a0e3067628783168dca3e3830cfece93da34fe0e01ed8c2bbf416b5",
+      "copy_bytes": 21660,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03_analysis/run03_bilinear_modeI_review.png",
+      "source_sha256": "fc1f3f7a66d9850c44a760dcf2868cd8cc488471629814fbc182dea88d588bf5",
+      "source_bytes": 189507,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/analysis/run03_bilinear_modeI_review.png",
+      "copy_sha256": "fc1f3f7a66d9850c44a760dcf2868cd8cc488471629814fbc182dea88d588bf5",
+      "copy_bytes": 189507,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03_analysis_receipts_v2/run03_analysis_execution_receipt.json",
+      "source_sha256": "add4f85fbc751d5a67cc3bae5c2e85a880a1d90116ea7fc93b902ecc092e0b93",
+      "source_bytes": 4438,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/analysis/run03_analysis_execution_receipt.json",
+      "copy_sha256": "add4f85fbc751d5a67cc3bae5c2e85a880a1d90116ea7fc93b902ecc092e0b93",
+      "copy_bytes": 4438,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03_analysis_receipts_v2/run03_analysis_argv_semantics_addendum.json",
+      "source_sha256": "27ac51c20e9791a671c23679c0ec4abc1325ab12cf522808fc67f312b34b633d",
+      "source_bytes": 3771,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/analysis/run03_analysis_argv_semantics_addendum.json",
+      "copy_sha256": "27ac51c20e9791a671c23679c0ec4abc1325ab12cf522808fc67f312b34b633d",
+      "copy_bytes": 3771,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03_analysis_receipts_v2/run03_analysis_source_freeze_v2_receipt.json",
+      "source_sha256": "e1c92b018f87f023d7714806348f7428846a8997fbae7b191d666a2a779ba2b3",
+      "source_bytes": 2353,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/analysis/run03_analysis_source_freeze_v2_receipt.json",
+      "copy_sha256": "e1c92b018f87f023d7714806348f7428846a8997fbae7b191d666a2a779ba2b3",
+      "copy_bytes": 2353,
+      "method": "byte_exact"
+    },
+    {
+      "source_path": "tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03_analysis_receipts_v2/run03_analysis_wrapper_prelaunch_failure.json",
+      "source_sha256": "3a914b68c72ce88aa94251333f1b207de2dd970c446a4ab543dd234cc9cde105",
+      "source_bytes": 882,
+      "copy_path": "copies/cohesive_bilinear_patch/run03/analysis/run03_analysis_wrapper_prelaunch_failure.json",
+      "copy_sha256": "3a914b68c72ce88aa94251333f1b207de2dd970c446a4ab543dd234cc9cde105",
+      "copy_bytes": 882,
+      "method": "byte_exact"
+    }
+  ],
+  "cap_scope": "Full docs/a12/evidence/20261004 tree including index files and pre-existing case03 note",
+  "oct4_tree_cap_bytes": 2700000,
+  "oct3_tree_bytes": 3631822,
+  "combined_tree_cap_bytes": 6400000,
+  "combined_tree_bytes": 6260752,
+  "combined_tree_cap_pass": true,
+  "oct4_tree_bytes": 2628930,
+  "oct4_tree_cap_pass": true,
+  "scope_note": "Spacing v3 evidence, corrected narrowband diagnostic provenance, alignment audit with DOCX/extract hash references, and closed run03 raw records plus root-reviewed derived analysis/PNG and receipts. Root-reviewed 18/18 gates pass only for controlled all-DOF Mode-I toy numerical constitutive behavior and representation. Not overall physics, free fracture, mesh-bias, R2 or PRETRAIN eligibility. Run02 remains 168/201 partial and failed/incomplete. Large raw run trace, per-point NPZ/VTK files, runtime trees and bulk data are excluded.",
+  "archives": [
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/trace.jsonl",
+      "source_bytes": 227622,
+      "source_sha256": "c96e8d632f0d6427dddb38ac1d1c3efbbab3b11220e3099db352dd49a9395dc8",
+      "archive_path": "archives/cohesive_bilinear_patch/run02/trace.jsonl.gz",
+      "archive_bytes": 15253,
+      "archive_sha256": "dcfa7209e1458ac9287cfab294389c029d9c358b9e9441fd34efd7f6d35573a9",
+      "decompressed_bytes": 227622,
+      "decompressed_sha256": "c96e8d632f0d6427dddb38ac1d1c3efbbab3b11220e3099db352dd49a9395dc8",
+      "method": "lossless_archive",
+      "evidence_kind": "run02_native_trace"
+    }
+  ],
+  "source_references": [
+    {
+      "repository": "pgfrag",
+      "commit": "8b93ef909134132fd319425bde32719a8b6f98eb",
+      "source_path": "experiments/cohesive_bilinear_patch_20261004/analyze_intrinsic_bilinear_partial_run02_v4.py",
+      "source_bytes": 31016,
+      "source_sha256": "bbc8844d6217acd18bf3b0aea1b6541b69aa165d58d3f0a948344dad0e4b2f62",
+      "git_blob_sha1": "4705fd71764d10f473a07f7d2edd3f3a8063a100",
+      "synlab_snapshot_path": "relicweave-synlab/tmp/review_20261004/implementation/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run02/source_snapshots/analysis_v4/analyze_intrinsic_bilinear_partial_run02_v4.py",
+      "snapshot_sha256": "bbc8844d6217acd18bf3b0aea1b6541b69aa165d58d3f0a948344dad0e4b2f62",
+      "method": "git_backup_reference"
+    },
+    {
+      "repository": "workspace_source_hash_only",
+      "source_path": "RelicWeave_V1.44_Optimized_Complete_Plan.docx",
+      "source_bytes": 546163,
+      "source_sha256": "4507ead923d60cc8dc20c2a31e532394f4d8ab406a5703bf09eeb606ab6f6374",
+      "copy_path": null,
+      "method": "hash_only_reference",
+      "not_copied_reason": "large source document; alignment audit retains its hash and size",
+      "referenced_by_copy_path": "copies/alignment/alignment.md",
+      "referenced_by_copy_sha256": "7ca0e1c9b32ebe8cfa2d042d106d235a7cdb0c6abe1f64420d60c2eec263aaeb"
+    },
+    {
+      "repository": "workspace_source_hash_only",
+      "source_path": "relicweave-synlab/tmp/review_20261004/implementation/relicweave_alignment_20261004/extract.txt",
+      "source_bytes": 607704,
+      "source_sha256": "63643ebe51f3b671a307cf68c7826a2a46910b08449526a447f99e8ed4f90560",
+      "copy_path": null,
+      "method": "hash_only_reference",
+      "not_copied_reason": "607704-byte extraction omitted by scope",
+      "referenced_by_copy_path": "copies/alignment/alignment.md",
+      "referenced_by_copy_sha256": "7ca0e1c9b32ebe8cfa2d042d106d235a7cdb0c6abe1f64420d60c2eec263aaeb"
+    },
+    {
+      "repository": "pgfrag",
+      "ref": "refs/heads/backup/forge-work-20261003",
+      "commit": "370246f2ccff9a2ab00127a8fc62cc49712ccb9c",
+      "source_path": "experiments/cohesive_bilinear_patch_20261004/run_intrinsic_bilinear_modeI_201_run03.py",
+      "source_bytes": 15822,
+      "source_sha256": "0f634ecac951bdd2525c433960f98bc9923cddf6fff0e74e1d453825807246fc",
+      "git_blob_sha1": "21aafaf9f635c804b27a231d67c240c20f1ab026",
+      "method": "git_backup_reference",
+      "qualification": "UNVALIDATED_TOY_CONSTITUTIVE_PATCH"
+    },
+    {
+      "repository": "pgfrag",
+      "ref": "refs/heads/backup/forge-work-20261003",
+      "commit": "370246f2ccff9a2ab00127a8fc62cc49712ccb9c",
+      "source_path": "experiments/cohesive_bilinear_patch_20261004/launch_intrinsic_bilinear_modeI_201_run03.sh",
+      "source_bytes": 501,
+      "source_sha256": "f8bb6ad15bd26928a8fd9205abfdbd8a7ea0fcb40d64a9c25e84005badd9dc9b",
+      "git_blob_sha1": "d4d19ae43d37af77b65029b5f6784d95102e04b2",
+      "method": "git_backup_reference",
+      "qualification": "UNVALIDATED_TOY_CONSTITUTIVE_PATCH"
+    },
+    {
+      "repository": "pgfrag",
+      "ref": "refs/heads/backup/forge-work-20261003",
+      "commit": "370246f2ccff9a2ab00127a8fc62cc49712ccb9c",
+      "source_path": "experiments/cohesive_bilinear_patch_20261004/manifest_bilinear_modeI_201_run03.json",
+      "source_bytes": 5116,
+      "source_sha256": "3b2cf67be3195ed0fcf49a569a2ab8fd05e2fa44f7638594567d50a0f173fae6",
+      "git_blob_sha1": "dd911538210b237c16b474450855c93ac1d93103",
+      "method": "git_backup_reference",
+      "qualification": "UNVALIDATED_TOY_CONSTITUTIVE_PATCH"
+    },
+    {
+      "repository": "pgfrag",
+      "ref": "refs/heads/backup/forge-work-20261003",
+      "commit": "370246f2ccff9a2ab00127a8fc62cc49712ccb9c",
+      "source_path": "experiments/cohesive_bilinear_patch_20261004/copy_run03_results_once.ps1",
+      "source_bytes": 1649,
+      "source_sha256": "32771e0855b3060782ea8140326e4ce8504c308770bd75e80c1ae8076b810d8a",
+      "git_blob_sha1": "67821642b9b962ce68ea9a0c90cef8e40587a4d4",
+      "method": "git_backup_reference",
+      "qualification": "UNVALIDATED_TOY_CONSTITUTIVE_PATCH"
+    },
+    {
+      "repository": "pgfrag",
+      "ref": "refs/heads/backup/forge-work-20261003",
+      "commit": "370246f2ccff9a2ab00127a8fc62cc49712ccb9c",
+      "source_path": "experiments/cohesive_bilinear_patch_20261004/analyze_intrinsic_bilinear_run03_v2.py",
+      "source_bytes": 14600,
+      "source_sha256": "5b921dd4dbf03adda0c5b5f17465400f4efe040ee36d54072b3996ce96585fb4",
+      "git_blob_sha1": "1e555abac8ab4a48cffd9255f9df69805bad45c1",
+      "method": "git_backup_reference",
+      "qualification": "UNVALIDATED_TOY_CONSTITUTIVE_PATCH"
+    }
+  ]
+}

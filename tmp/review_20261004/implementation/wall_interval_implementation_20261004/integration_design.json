@@ -1,0 +1,72 @@
+{
+  "design_id": "p03_wall_interval_integration_design_20261004",
+  "kind": "read_only_source_design",
+  "inspection_snapshot_utc": "2026-10-04T07:51:35Z",
+  "workspace": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+  "source_snapshot": {
+    "synlab/degrade/physical_narrowband.py": "47D1DC5308AEE795D49F05CB28165BBE4A940DBD27E3E3A59579BB9EB6A976EA",
+    "synlab/degrade/axes.py": "1255550FE50741C81C2C57CF1EA5B4701496E8B1E933949279E4F54D41CF0E87",
+    "synlab/degrade/narrowband.py": "31E5E44F198F357991768C2AC1EC08DF4115A5E5E5C9BADCF903F82B1F9C5A8A",
+    "synlab/physical/fields.py": "EEFAB692A109DDF027C91796D8B8AC771FAB49F99A07B51E11686E88EEAF9FD1",
+    "synlab/physical/sdf.py": "FD433876FA4DF84D2316C93DBBE521E1094241829D5FCCF93CEDEEAC02467B1D",
+    "synlab/schemas/runtime.py": "080B6E9C5ABED88873786F5DCE4D654E78072CB71E3E04106CEDA17640352609",
+    "synlab/fracture/fragment.py": "53A581C5964D7B350A6C938BB188E908ADB06E87E4114CBC5914BF6EE1E079FD",
+    "synlab/degrade/wall_intervals.py": "02799E54CD1567405B43BFBBDFD1044FED609CCFC5BE6DE88764F3544CE16693"
+  },
+  "finding": {
+    "source_mesh_available": true,
+    "final_clipped_result_mesh_available": true,
+    "trusted_source_wall_station_available": false,
+    "trusted_wall_direction_available": false,
+    "continuous_source_and_result_intervals_measurable_if_mapping_supplied": true,
+    "current_p03_interval_guard_status": "UNKNOWN",
+    "current_fail_closed_behavior": "_assemble rejects physical success unless wall_guard status is absent or literal PASS; current UNKNOWN yields realized=false, physical_acceptance=false and WALL_GUARD_UNKNOWN",
+    "reason": "Current P03 selects fracture/interface faces and the legacy probe uses their face normals. Existing face labels, fracture side, interface pairing, mother triangle ancestry and clean-truth correspondence do not encode local inner/outer wall correspondence or an across-wall material direction."
+  },
+  "call_chain": [
+    {"path": "synlab/degrade/axes.py", "lines": "567-590", "facts": ["P03 declares interface ROI", "MIN_WALL_MM=0.6", "NARROWBAND=true"]},
+    {"path": "synlab/degrade/axes.py", "lines": "384-392", "facts": ["_apply resolves fragment/recipe and calls physical_result"]},
+    {"path": "synlab/physical/fields.py", "lines": "59-82", "facts": ["interface ROI derives from interface_id/origin_kind, not wall direction"]},
+    {"path": "synlab/degrade/physical_narrowband.py", "lines": "308-338", "facts": ["P03 creates recessed body; legacy probe is diagnostic-only; final result is clipped body intersected with source"]},
+    {"path": "synlab/degrade/narrowband.py", "lines": "368-419", "facts": ["legacy probe samples ROI source points, uses source face normals, filters missing pairs, reports aggregate relative-drop statistics only; no absolute 0.6mm guard"]},
+    {"path": "synlab/degrade/physical_narrowband.py", "lines": "379-405", "facts": ["current wall guard is UNKNOWN and returned through _assemble"]},
+    {"path": "synlab/degrade/physical_narrowband.py", "lines": "106-127", "facts": ["_assemble fail-closes when guard is UNKNOWN"]},
+    {"path": "synlab/degrade/axes.py", "lines": "401-425", "facts": ["only coarse origin/interface labels may be copied when result face count happens to match; realization still requires generic QA PASS"]}
+  ],
+  "present_fields": {
+    "source_geometry": "fragment.mesh or source payload mesh",
+    "p03_roi": ["face_interface_id", "face_origin_kind"],
+    "fracture_ancestry": ["face_source_tri (mother triangle or -1)", "parent_id", "meta"],
+    "fracture_side": "face_side (+1/-1/0)",
+    "interface_pair": ["InterfacePatch.sample_points_a/b", "InterfacePatch.normals_a/b", "interface_id"],
+    "final_result_geometry": "accepted = S.intersect_with_source(body, mesh)",
+    "guard_value": "recipe.qa.min_wall_thickness_mm = 0.6 for the P03 axis"
+  },
+  "missing_fields": [
+    "versioned source-bound wall map and source geometry hash",
+    "stable requested station IDs and world-mm points on semantically classified source wall faces",
+    "trusted outward-from-material wall directions and provenance",
+    "mapping from each station to the P03 affected ROI/interface region",
+    "actual inner/outer wall correspondence or a validated material wall-direction field/semantic outer-wall classification"
+  ],
+  "minimal_future_call_site": {
+    "path": "synlab/degrade/physical_narrowband.py",
+    "after_line": 338,
+    "before_line": 379,
+    "inputs": ["source mesh", "accepted final clipped result mesh", "validated complete wall map"],
+    "function": "synlab.degrade.wall_intervals.measure_material_intervals",
+    "evidence": {
+      "direction_evidence": "WallDirectionEvidence(source in inner_outer_wall_map/material_wall_direction/classified_outer_wall_face_normal, trusted=true, convention=outward_from_source, units=mm, real provenance)",
+      "result_evidence": "ResultSubsetEvidence(relation=material_subset_of_source, trusted=true, provenance cites this exact intersection and source/result geometry hashes plus clip_info)"
+    },
+    "policy": {"min_remaining_wall_mm": 0.6, "relative_loss_threshold": 0.5, "relative_violation_budget": 0.01, "all_requested_stations_required": true},
+    "never": ["call on pre-clip body", "infer wall direction from interface face normal", "drop unknown stations", "sum across cavities/separate intervals", "map SAMPLED_PASS to generic PASS"]
+  },
+  "status_contract": {
+    "no_or_invalid_mapping": {"sampled_status": "UNKNOWN", "global_wall_status": "UNVERIFIED", "physical_qualification_status": "UNKNOWN", "physical_success": false},
+    "known_interval_violation": {"sampled_status": "SAMPLED_FAIL", "global_wall_status": "UNVERIFIED", "physical_qualification_status": "UNKNOWN"},
+    "all_requested_stations_pass": {"sampled_status": "SAMPLED_PASS", "global_wall_status": "UNVERIFIED", "physical_qualification_status": "UNKNOWN", "scope": "sampled local station set only"}
+  },
+  "rollback": "If mapping is absent, stale, incomplete, or untrusted, do not call the helper with fabricated data; preserve structured UNKNOWN and the current fail-closed physical rejection.",
+  "execution": {"production_files_written": false, "tests_run": false, "ray_or_occupancy_queries_run": false, "booleans_run": false, "solver_run": false, "git_run": false}
+}

@@ -1,0 +1,46 @@
+{
+  "task": "single approved offline conforming retessellation conversion",
+  "timestamp_utc": "2026-10-04T05:36:40.4588085Z",
+  "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+  "python_executable": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\.venv\\Scripts\\python.exe",
+  "argv": [
+    "-B",
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\conforming_retessellate_candidate.py",
+    "--execute-approved"
+  ],
+  "process_exit": 0,
+  "elapsed_seconds": 0.669056,
+  "planned_conversion_cases": 5,
+  "planned_boolean_calls": 0,
+  "actual_boolean_calls": 0,
+  "retry_count": 0,
+  "hashes_before": {
+    "manifest": "3f46fb25978ba0e1210067494c8dc538448b962c483bcc56865f93fdd1fc9391",
+    "inputs": "d80707312638ce2830847f2dc198632c5456963a6043715d27436b3db3ce6dc2",
+    "script": "6398ee6a02b010e172cd709c17403b81e868fe6784536c257976c6edb2ecaf10",
+    "authorization": "703a3ce78efbd7fea88e651877cd205a96bb036b07d2aa2b2a5914d814036de8"
+  },
+  "stdout": {
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\candidate_run.stdout.txt",
+    "sha256": "cf94d381abccba88e47c4bd5a75b63d6bb7b09cd74726580d33bb2da69d69a09",
+    "bytes": 672
+  },
+  "stderr": {
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\candidate_run.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "outputs": [
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\retessellated_candidate_report.json",
+      "sha256": "6b4078337fab9f7c0d4e4d8cdaaa2e0e4442968b4aaa5274a95a9ec1820abcba",
+      "bytes": 4273261
+    },
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\retessellated_candidate_outputs.npz",
+      "sha256": "e00404f67bf13ced471e3c7c8d0596b3b50efd4c9b17f4175142712a5e5a04a0",
+      "bytes": 154397
+    }
+  ],
+  "interpretation": "Process exit is recorded as process status only; geometry acceptance requires inspection of the saved report and arrays."
+}

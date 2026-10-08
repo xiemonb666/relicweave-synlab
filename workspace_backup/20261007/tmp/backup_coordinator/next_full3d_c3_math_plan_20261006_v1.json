@@ -1,0 +1,529 @@
+{
+  "schema": "curated_incremental_backup_plan.v1",
+  "plan_id": "next_full3d_c3_math_plan_20261006_v1",
+  "created_utc": "2026-10-06T03:23:31.0374078Z",
+  "plan_only": true,
+  "git_mutations_performed": false,
+  "copy_operations_performed": false,
+  "execution_eligibility": "DO_NOT_COPY_OR_EXECUTE_GIT_BEFORE_ROOT_REVIEWS_EXACT_PLAN_SHA",
+  "constraints": {
+    "exact_paths_only": true,
+    "per_repo_separate_commit_if_later_approved": true,
+    "no_force_add": true,
+    "no_attributes_change": true,
+    "no_persistent_git_config_change": true,
+    "no_cad_or_solver": true,
+    "source_workspace_paths_limited_to_two_explicit_review_dirs": true
+  },
+  "repo_preflight": [
+    {
+      "repo": "pgfrag",
+      "branch": "backup/forge-work-20261003",
+      "head": "a7c4699d74e341333da8d108c546cefe1bb0f052",
+      "remote_branch": "backup/forge-work-20261003",
+      "remote_head": "a7c4699d74e341333da8d108c546cefe1bb0f052",
+      "local_equals_remote": true,
+      "tracked_dirty_count": 0,
+      "staged_count": 0,
+      "untracked_and_active_wip_preserved": true
+    },
+    {
+      "repo": "vesselforge",
+      "branch": "backup/forge-work-20261003",
+      "head": "d46d8ed0075370ac1869eecb9a664411197c79b3",
+      "remote_branch": "backup/forge-work-20261003",
+      "remote_head": "d46d8ed0075370ac1869eecb9a664411197c79b3",
+      "local_equals_remote": true,
+      "tracked_dirty_count": 0,
+      "staged_count": 0,
+      "untracked_and_active_wip_preserved": true
+    }
+  ],
+  "candidate_file_count": 28,
+  "candidate_total_bytes": 0,
+  "copy_count": 23,
+  "stage_existing_count": 5,
+  "unique_destination_count": 28,
+  "groups": [
+    {
+      "id": "pg_full3d_saved_operator_run01",
+      "file_count": 4,
+      "status": "Preserve the pinned 4,661,989-byte result, source pins, execution receipt, and scoped REVIEW. Receipt/result say OK_DIAGNOSTIC_ONLY_UNQUALIFIED; no solver/CAD qualification."
+    },
+    {
+      "id": "pg_full3d_saved_array_audit",
+      "file_count": 4,
+      "status": "Independent cached-array algebra audit and spectrum graphic; PASS_SAVED_ARRAY_ALGEBRA_ONLY, no provider/assembler/solver was invoked."
+    },
+    {
+      "id": "vf_whole_body_c3_outer_math",
+      "file_count": 20,
+      "status": "Preserve five source files, final freeze, actual bounded outer-profile math run, static review, and both failed independent readback receipts. Actual run rc=0; one jar outer-apex point is a counterexample to radius>=9mm target; other full-span gates/global wall remain UNKNOWN. No CAD/STEP or physical claim."
+    }
+  ],
+  "files": [
+    {
+      "repo": "pgfrag",
+      "source_root": "workspace_root",
+      "source_path": "tmp/review_20261006/full3d_cracked_elastic_operator_20261006/SOURCE_PINS.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/SOURCE_PINS.json",
+      "operation": "copy_then_stage_exact_destination",
+      "group": "pg_full3d_saved_operator_run01",
+      "role": "source pins for the diagnostic run",
+      "bytes": 2903,
+      "sha256": "16355c781749fb4940a187afb3d985d9f1362fd3a33c1e6cc425cffdf9ed0ac7",
+      "source_tracked": false,
+      "source_head_blob_oid": null,
+      "source_porcelain": [],
+      "destination_exists_before_plan": false
+    },
+    {
+      "repo": "pgfrag",
+      "source_root": "workspace_root",
+      "source_path": "tmp/review_20261006/full3d_cracked_elastic_operator_20261006/REVIEW.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/REVIEW.md",
+      "operation": "copy_then_stage_exact_destination",
+      "group": "pg_full3d_saved_operator_run01",
+      "role": "bounded independent source/result review",
+      "bytes": 6811,
+      "sha256": "e95a3ec1b55365cc4617a6db4faddd1291f167236182996ce82ff6b5ff0fc5ce",
+      "source_tracked": false,
+      "source_head_blob_oid": null,
+      "source_porcelain": [],
+      "destination_exists_before_plan": false
+    },
+    {
+      "repo": "pgfrag",
+      "source_root": "workspace_root",
+      "source_path": "tmp/review_20261006/full3d_cracked_elastic_operator_20261006/run01/EXECUTION_RECEIPT.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/run01/EXECUTION_RECEIPT.json",
+      "operation": "copy_then_stage_exact_destination",
+      "group": "pg_full3d_saved_operator_run01",
+      "role": "actual execution receipt and source pin readback",
+      "bytes": 7682,
+      "sha256": "c8bd78e433dd2c7ad95479e29d796aa51d5a1705e7f2969ae451d3f436e93a66",
+      "source_tracked": false,
+      "source_head_blob_oid": null,
+      "source_porcelain": [],
+      "destination_exists_before_plan": false
+    },
+    {
+      "repo": "pgfrag",
+      "source_root": "workspace_root",
+      "source_path": "tmp/review_20261006/full3d_cracked_elastic_operator_20261006/run01/result.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/run01/result.json",
+      "operation": "copy_then_stage_exact_destination",
+      "group": "pg_full3d_saved_operator_run01",
+      "role": "4.66 MB saved diagnostic arrays; OK_DIAGNOSTIC_ONLY_UNQUALIFIED",
+      "bytes": 4661989,
+      "sha256": "3b31e7d40c1d8e4b5d829f0b093fee4edadc966bde4086a4b3f4ba48fdf89cd2",
+      "source_tracked": false,
+      "source_head_blob_oid": null,
+      "source_porcelain": [],
+      "destination_exists_before_plan": false
+    },
+    {
+      "repo": "pgfrag",
+      "source_root": "repo",
+      "source_path": "tmp/review_20261006/full3d_and_local_operator_independent/full3d_saved_array/audit_saved_full3d_arrays.py",
+      "destination_path": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/independent/audit_saved_full3d_arrays.py",
+      "operation": "copy_then_stage_exact_destination",
+      "group": "pg_full3d_saved_array_audit",
+      "role": "independent cached-array reconstruction script",
+      "bytes": 13704,
+      "sha256": "a35af5770fe7cd7b8f544294586e156d8dc75b9a944d07f456a2cee2da9d61d1",
+      "source_tracked": false,
+      "source_head_blob_oid": null,
+      "source_porcelain": [
+        "?? tmp/review_20261006/full3d_and_local_operator_independent/full3d_saved_array/audit_saved_full3d_arrays.py"
+      ],
+      "destination_exists_before_plan": false
+    },
+    {
+      "repo": "pgfrag",
+      "source_root": "repo",
+      "source_path": "tmp/review_20261006/full3d_and_local_operator_independent/full3d_saved_array/audit.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/independent/audit.json",
+      "operation": "copy_then_stage_exact_destination",
+      "group": "pg_full3d_saved_array_audit",
+      "role": "PASS_SAVED_ARRAY_ALGEBRA_ONLY audit; not a solver run",
+      "bytes": 4062,
+      "sha256": "658317052ab19a1e1b71782aec6b66469c9c320218850791bdc866fb68c6645b",
+      "source_tracked": false,
+      "source_head_blob_oid": null,
+      "source_porcelain": [
+        "?? tmp/review_20261006/full3d_and_local_operator_independent/full3d_saved_array/audit.json"
+      ],
+      "destination_exists_before_plan": false
+    },
+    {
+      "repo": "pgfrag",
+      "source_root": "repo",
+      "source_path": "tmp/review_20261006/full3d_and_local_operator_independent/full3d_saved_array/execution_receipt.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/independent/execution_receipt.json",
+      "operation": "copy_then_stage_exact_destination",
+      "group": "pg_full3d_saved_array_audit",
+      "role": "auditor process receipt and pinned input/source hashes",
+      "bytes": 1524,
+      "sha256": "a60f1fa2fab66d08f321cf57ff1ef93858e0d0a4803a26a10b99e8626b61c926",
+      "source_tracked": false,
+      "source_head_blob_oid": null,
+      "source_porcelain": [
+        "?? tmp/review_20261006/full3d_and_local_operator_independent/full3d_saved_array/execution_receipt.json"
+      ],
+      "destination_exists_before_plan": false
+    },
+    {
+      "repo": "pgfrag",
+      "source_root": "repo",
+      "source_path": "tmp/review_20261006/full3d_and_local_operator_independent/full3d_saved_array/spectrum.png",
+      "destination_path": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/independent/spectrum.png",
+      "operation": "copy_then_stage_exact_destination",
+      "group": "pg_full3d_saved_array_audit",
+      "role": "small independent spectrum visualization",
+      "bytes": 11994,
+      "sha256": "3ec0d7b06695f77a7f9da02f65115471e25770ea490b8a47390178a6264dfdfe",
+      "source_tracked": false,
+      "source_head_blob_oid": null,
+      "source_porcelain": [
+        "?? tmp/review_20261006/full3d_and_local_operator_independent/full3d_saved_array/spectrum.png"
+      ],
+      "destination_exists_before_plan": false
+    },
+    {
+      "repo": "vesselforge",
+      "source_root": "repo",
+      "source_path": "experiments/whole_body_c2_profiles_20261006/profile_design.py",
+      "destination_path": "experiments/whole_body_c2_profiles_20261006/profile_design.py",
+      "operation": "stage_exact_existing",
+      "group": "vf_whole_body_c3_outer_math",
+      "role": "C3 degree-seven Hermite profile design source",
+      "bytes": 3702,
+      "sha256": "057233b930a2b8e0e3ef43a3568f1cb0e6e972baed97eeeeceb6459d9de8c951",
+      "source_tracked": false,
+      "source_head_blob_oid": null,
+      "source_porcelain": [
+        "?? experiments/whole_body_c2_profiles_20261006/profile_design.py"
+      ],
+      "destination_exists_before_plan": true
+    },
+    {
+      "repo": "vesselforge",
+      "source_root": "repo",
+      "source_path": "experiments/whole_body_c2_profiles_20261006/fixed_cases.json",
+      "destination_path": "experiments/whole_body_c2_profiles_20261006/fixed_cases.json",
+      "operation": "stage_exact_existing",
+      "group": "vf_whole_body_c3_outer_math",
+      "role": "two fixed whole-body profile cases",
+      "bytes": 10633,
+      "sha256": "e1e9c3cf659dbc59d99a18c4b70694201518be4f3aba09a57806402e732cf95a",
+      "source_tracked": false,
+      "source_head_blob_oid": null,
+      "source_porcelain": [
+        "?? experiments/whole_body_c2_profiles_20261006/fixed_cases.json"
+      ],
+      "destination_exists_before_plan": true
+    },
+    {
+      "repo": "vesselforge",
+      "source_root": "repo",
+      "source_path": "experiments/whole_body_c2_profiles_20261006/DESIGN_PROPOSAL.md",
+      "destination_path": "experiments/whole_body_c2_profiles_20261006/DESIGN_PROPOSAL.md",
+      "operation": "stage_exact_existing",
+      "group": "vf_whole_body_c3_outer_math",
+      "role": "C3 outer-profile mathematical design and limits",
+      "bytes": 9667,
+      "sha256": "8b5c8b7e78c8d2e245f9ade1498e3dd3c5f69b0a7a82eaf593e3ea49b1b7dbbf",
+      "source_tracked": false,
+      "source_head_blob_oid": null,
+      "source_porcelain": [
+        "?? experiments/whole_body_c2_profiles_20261006/DESIGN_PROPOSAL.md"
+      ],
+      "destination_exists_before_plan": true
+    },
+    {
+      "repo": "vesselforge",
+      "source_root": "repo",
+      "source_path": "experiments/whole_body_c2_profiles_20261006/CONTROL_HULL_DESIGN.md",
+      "destination_path": "experiments/whole_body_c2_profiles_20261006/CONTROL_HULL_DESIGN.md",
+      "operation": "stage_exact_existing",
+      "group": "vf_whole_body_c3_outer_math",
+      "role": "rational projection and curvature bound method",
+      "bytes": 3763,
+      "sha256": "9fab758e2bc43926f6fe2e82b8ee6b65e4d3fdbaebbca8da84e29f5feb0f4a2b",
+      "source_tracked": false,
+      "source_head_blob_oid": null,
+      "source_porcelain": [
+        "?? experiments/whole_body_c2_profiles_20261006/CONTROL_HULL_DESIGN.md"
+      ],
+      "destination_exists_before_plan": true
+    },
+    {
+      "repo": "vesselforge",
+      "source_root": "repo",
+      "source_path": "experiments/whole_body_c2_profiles_20261006/diagnostic_driver_source_only.py",
+      "destination_path": "experiments/whole_body_c2_profiles_20261006/diagnostic_driver_source_only.py",
+      "operation": "stage_exact_existing",
+      "group": "vf_whole_body_c3_outer_math",
+      "role": "frozen bounded outer-profile math diagnostic driver",
+      "bytes": 19202,
+      "sha256": "d1d327f298dad639e0529edf45d4a5d4c6a6fe6b7cf7ac2773a3fcd48adb66a7",
+      "source_tracked": false,
+      "source_head_blob_oid": null,
+      "source_porcelain": [
+        "?? experiments/whole_body_c2_profiles_20261006/diagnostic_driver_source_only.py"
+      ],
+      "destination_exists_before_plan": true
+    },
+    {
+      "repo": "vesselforge",
+      "source_root": "workspace_root",
+      "source_path": "tmp/review_20261006/whole_body_c2_profiles_20261006/FREEZE_MANIFEST.json",
+      "destination_path": "docs/evidence/20261006/whole_body_c3_math/FREEZE_MANIFEST.json",
+      "operation": "copy_then_stage_exact_destination",
+      "group": "vf_whole_body_c3_outer_math",
+      "role": "source freeze for final corrected C3 driver",
+      "bytes": 1820,
+      "sha256": "4905c92d580aadd0b92d861d88fb49ab2d57ce680fbdf314ad1b47f8b8be775d",
+      "source_tracked": false,
+      "source_head_blob_oid": null,
+      "source_porcelain": [],
+      "destination_exists_before_plan": false
+    },
+    {
+      "repo": "vesselforge",
+      "source_root": "workspace_root",
+      "source_path": "tmp/review_20261006/whole_body_c2_profiles_20261006/REVIEW_PLAN.md",
+      "destination_path": "docs/evidence/20261006/whole_body_c3_math/REVIEW_PLAN.md",
+      "operation": "copy_then_stage_exact_destination",
+      "group": "vf_whole_body_c3_outer_math",
+      "role": "bounded math check plan and root-ready gate",
+      "bytes": 3045,
+      "sha256": "734be4d98d9aabc3e30e3385506a64b28cf31a376dd34e91d1b1e6538376811e",
+      "source_tracked": false,
+      "source_head_blob_oid": null,
+      "source_porcelain": [],
+      "destination_exists_before_plan": false
+    },
+    {
+      "repo": "vesselforge",
+      "source_root": "workspace_root",
+      "source_path": "tmp/review_20261006/whole_body_c2_profiles_20261006/fixed_outer_trial/execution_receipt.json",
+      "destination_path": "docs/evidence/20261006/whole_body_c3_math/actual/execution_receipt.json",
+      "operation": "copy_then_stage_exact_destination",
+      "group": "vf_whole_body_c3_outer_math",
+      "role": "actual rc 0 bounded outer-profile math execution receipt",
+      "bytes": 3562,
+      "sha256": "d943c113883fe420dbefdbe40f73825bf1a577e9e9622fe54332bb02696e1c19",
+      "source_tracked": false,
+      "source_head_blob_oid": null,
+      "source_porcelain": [],
+      "destination_exists_before_plan": false
+    },
+    {
+      "repo": "vesselforge",
+      "source_root": "workspace_root",
+      "source_path": "tmp/review_20261006/whole_body_c2_profiles_20261006/fixed_outer_trial/outer_math_diagnostic.json",
+      "destination_path": "docs/evidence/20261006/whole_body_c3_math/actual/outer_math_diagnostic.json",
+      "operation": "copy_then_stage_exact_destination",
+      "group": "vf_whole_body_c3_outer_math",
+      "role": "actual math output; includes jar point counterexample and UNKNOWN gates",
+      "bytes": 67383,
+      "sha256": "eb60138fc559d5a06ab2b4febf82fdc6654e6bbeab84f05f847c65934ffbbd4f",
+      "source_tracked": false,
+      "source_head_blob_oid": null,
+      "source_porcelain": [],
+      "destination_exists_before_plan": false
+    },
+    {
+      "repo": "vesselforge",
+      "source_root": "workspace_root",
+      "source_path": "tmp/review_20261006/whole_body_c2_profiles_20261006/fixed_outer_trial/outer_profiles_equal_rz.png",
+      "destination_path": "docs/evidence/20261006/whole_body_c3_math/actual/outer_profiles_equal_rz.png",
+      "operation": "copy_then_stage_exact_destination",
+      "group": "vf_whole_body_c3_outer_math",
+      "role": "rendered outer profile math visualization",
+      "bytes": 81163,
+      "sha256": "118fae2c92c679fcd45409462ed6638d6d4043711ae8995513e6fe7813d58eda",
+      "source_tracked": false,
+      "source_head_blob_oid": null,
+      "source_porcelain": [],
+      "destination_exists_before_plan": false
+    },
+    {
+      "repo": "vesselforge",
+      "source_root": "workspace_root",
+      "source_path": "tmp/review_20261006/whole_body_c2_profiles_20261006/fixed_outer_trial/EXECUTION_ADDENDUM.md",
+      "destination_path": "docs/evidence/20261006/whole_body_c3_math/actual/EXECUTION_ADDENDUM.md",
+      "operation": "copy_then_stage_exact_destination",
+      "group": "vf_whole_body_c3_outer_math",
+      "role": "post-run point-counterexample interpretation; no rerun",
+      "bytes": 975,
+      "sha256": "703413a36f2e7045b7ddd40e29a3678f484a16d806c6be15ebb2cdda96c376e1",
+      "source_tracked": false,
+      "source_head_blob_oid": null,
+      "source_porcelain": [],
+      "destination_exists_before_plan": false
+    },
+    {
+      "repo": "vesselforge",
+      "source_root": "workspace_root",
+      "source_path": "tmp/review_20261006/whole_body_c2_profiles_20261006/fixed_outer_trial/process_stdout.txt",
+      "destination_path": "docs/evidence/20261006/whole_body_c3_math/actual/process_stdout.txt",
+      "operation": "copy_then_stage_exact_destination",
+      "group": "vf_whole_body_c3_outer_math",
+      "role": "actual process stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_tracked": false,
+      "source_head_blob_oid": null,
+      "source_porcelain": [],
+      "destination_exists_before_plan": false
+    },
+    {
+      "repo": "vesselforge",
+      "source_root": "workspace_root",
+      "source_path": "tmp/review_20261006/whole_body_c2_profiles_20261006/fixed_outer_trial/process_stderr.txt",
+      "destination_path": "docs/evidence/20261006/whole_body_c3_math/actual/process_stderr.txt",
+      "operation": "copy_then_stage_exact_destination",
+      "group": "vf_whole_body_c3_outer_math",
+      "role": "actual process stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_tracked": false,
+      "source_head_blob_oid": null,
+      "source_porcelain": [],
+      "destination_exists_before_plan": false
+    },
+    {
+      "repo": "vesselforge",
+      "source_root": "repo",
+      "source_path": "tmp/review_20261006/whole_body_c3_independent/REVIEW.md",
+      "destination_path": "docs/evidence/20261006/whole_body_c3_math/independent_review/REVIEW.md",
+      "operation": "copy_then_stage_exact_destination",
+      "group": "vf_whole_body_c3_outer_math",
+      "role": "initial independent static C3 math review with its path blocker preserved as history",
+      "bytes": 3571,
+      "sha256": "9a7eb3f9fcc4418a2ad206db8682023cefc200b8d2e1a6c067fce028857a2c7b",
+      "source_tracked": false,
+      "source_head_blob_oid": null,
+      "source_porcelain": [
+        "?? tmp/review_20261006/whole_body_c3_independent/REVIEW.md"
+      ],
+      "destination_exists_before_plan": false
+    },
+    {
+      "repo": "vesselforge",
+      "source_root": "repo",
+      "source_path": "tmp/review_20261006/whole_body_c3_independent/REVIEW_ADDENDUM_pathfix.md",
+      "destination_path": "docs/evidence/20261006/whole_body_c3_math/independent_review/REVIEW_ADDENDUM_pathfix.md",
+      "operation": "copy_then_stage_exact_destination",
+      "group": "vf_whole_body_c3_outer_math",
+      "role": "narrow final source/freeze path correction review",
+      "bytes": 2008,
+      "sha256": "2434f35860ce9d4e7fc2aa618a1d00f7e6a8ac888e0b3998fc06c4f1933ca78a",
+      "source_tracked": false,
+      "source_head_blob_oid": null,
+      "source_porcelain": [
+        "?? tmp/review_20261006/whole_body_c3_independent/REVIEW_ADDENDUM_pathfix.md"
+      ],
+      "destination_exists_before_plan": false
+    },
+    {
+      "repo": "vesselforge",
+      "source_root": "repo",
+      "source_path": "tmp/review_20261006/whole_body_c3_independent/review.json",
+      "destination_path": "docs/evidence/20261006/whole_body_c3_math/independent_review/review.json",
+      "operation": "copy_then_stage_exact_destination",
+      "group": "vf_whole_body_c3_outer_math",
+      "role": "initial independent review machine record",
+      "bytes": 2629,
+      "sha256": "afb7a6d40532d537ffc72e54a2dbcec64531f4658c6bb1ed865cefd96c72ca03",
+      "source_tracked": false,
+      "source_head_blob_oid": null,
+      "source_porcelain": [
+        "?? tmp/review_20261006/whole_body_c3_independent/review.json"
+      ],
+      "destination_exists_before_plan": false
+    },
+    {
+      "repo": "vesselforge",
+      "source_root": "repo",
+      "source_path": "tmp/review_20261006/whole_body_c3_independent/review_final.json",
+      "destination_path": "docs/evidence/20261006/whole_body_c3_math/independent_review/review_final.json",
+      "operation": "copy_then_stage_exact_destination",
+      "group": "vf_whole_body_c3_outer_math",
+      "role": "final static math readiness findings and UNKNOWN boundaries",
+      "bytes": 2098,
+      "sha256": "d3185e1c192465367b8e6168a0fb073294e266adaf636f2426b655e3a3d73fef",
+      "source_tracked": false,
+      "source_head_blob_oid": null,
+      "source_porcelain": [
+        "?? tmp/review_20261006/whole_body_c3_independent/review_final.json"
+      ],
+      "destination_exists_before_plan": false
+    },
+    {
+      "repo": "vesselforge",
+      "source_root": "repo",
+      "source_path": "tmp/review_20261006/whole_body_c3_independent/audit_saved_output.py",
+      "destination_path": "docs/evidence/20261006/whole_body_c3_math/independent_review/audit_saved_output.py",
+      "operation": "copy_then_stage_exact_destination",
+      "group": "vf_whole_body_c3_outer_math",
+      "role": "independent output readback auditor",
+      "bytes": 17203,
+      "sha256": "176a76c90e23d7b8d0f5aa1a8428a5ed67bdff8aa3dc92c26c26b2202b67e55d",
+      "source_tracked": false,
+      "source_head_blob_oid": null,
+      "source_porcelain": [
+        "?? tmp/review_20261006/whole_body_c3_independent/audit_saved_output.py"
+      ],
+      "destination_exists_before_plan": false
+    },
+    {
+      "repo": "vesselforge",
+      "source_root": "repo",
+      "source_path": "tmp/review_20261006/whole_body_c3_independent/readback_execution_receipt.json",
+      "destination_path": "docs/evidence/20261006/whole_body_c3_math/independent_review/readback_execution_receipt.json",
+      "operation": "copy_then_stage_exact_destination",
+      "group": "vf_whole_body_c3_outer_math",
+      "role": "first independent readback attempt; failed",
+      "bytes": 729,
+      "sha256": "001c98010a786c0fc57fdba4b49e496c306260984ec424b2ad1578ae1d470e8d",
+      "source_tracked": false,
+      "source_head_blob_oid": null,
+      "source_porcelain": [
+        "?? tmp/review_20261006/whole_body_c3_independent/readback_execution_receipt.json"
+      ],
+      "destination_exists_before_plan": false
+    },
+    {
+      "repo": "vesselforge",
+      "source_root": "repo",
+      "source_path": "tmp/review_20261006/whole_body_c3_independent/readback_execution_receipt_run02.json",
+      "destination_path": "docs/evidence/20261006/whole_body_c3_math/independent_review/readback_execution_receipt_run02.json",
+      "operation": "copy_then_stage_exact_destination",
+      "group": "vf_whole_body_c3_outer_math",
+      "role": "second independent readback attempt; failed",
+      "bytes": 749,
+      "sha256": "6765e3fe3beeb0a63b1afb8781ae256a9001dc2c471ca72f9ecef9aa2a33b32a",
+      "source_tracked": false,
+      "source_head_blob_oid": null,
+      "source_porcelain": [
+        "?? tmp/review_20261006/whole_body_c3_independent/readback_execution_receipt_run02.json"
+      ],
+      "destination_exists_before_plan": false
+    }
+  ],
+  "known_claim_boundaries": [
+    "PG full3D run result is OK_DIAGNOSTIC_ONLY_UNQUALIFIED; its coefficient is prescribed manufactured data, not a solution of Ku=f. The independent audit is a cached-array algebra check only.",
+    "VF C3 run is PURE_MATH_OUTER_PROFILE_ONLY. A finite sampled point refutes one 9 mm radius target; the full-span curvature bound is unresolved for that span, the ten inner spans are not constructed, global minimum wall/nonintersection remain UNKNOWN, and CAD/STEP/solver are not part of this plan.",
+    "The C3 independent readback worker receipts show two failures. Preserve them as review-tool failures; they do not replace the original outer-math run receipt and its rc 0."
+  ],
+  "excluded_material": [
+    "No active full3D/bridge/moving-front/C3 solver or CAD source changes beyond the frozen five C3 math inputs.",
+    "No full3D mixed local-front review package, runtime/cache/vendor, large raw outputs beyond the single pinned 4,661,989-byte result, credentials, or unrelated docs.",
+    "No root-level output is modified or copied during plan preparation."
+  ],
+  "blocked_files": []
+}

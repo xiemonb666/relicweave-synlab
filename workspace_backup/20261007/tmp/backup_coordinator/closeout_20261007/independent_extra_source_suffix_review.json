@@ -1,0 +1,103 @@
+{
+  "report": "independent_extra_source_suffix_review",
+  "status": "ROOT_DECISION_REQUIRED_FOR_ONE_VENDOR_DOCUMENT_CANDIDATE",
+  "scope": {
+    "workspaceRoot": "C:\\Users\\xiemo\\Desktop\\ShardForge",
+    "repositories": ["pgfrag", "vesselforge", "relicweave-synlab"],
+    "workspaceRootExternalTreeIncluded": true,
+    "bundledPythonWithNoBytecode": true,
+    "projectImports": false,
+    "gitCommands": false,
+    "hiddenAndGitIgnoredAuthoredDirectoriesTraversed": true,
+    "buildDistTargetTraversed": true,
+    "skipped": [".git", "environments", "caches", "node_modules", "builder-declared installed runtime trees"],
+    "credentialContentsPrinted": false
+  },
+  "reviewedArtifacts": {
+    "builder": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\backup_coordinator\\closeout_20261007\\build_closeout_inventory_v2.py",
+      "bytes": 56148,
+      "sha256": "4496097836423133ae58c77af13c60e259bc94a20cab7a889e840380d8d71079"
+    },
+    "inventorySha256": "ab2ed14b7c56293106939144058233030f4a905268304191b1a6bf2de0d0197a",
+    "actionManifestSha256": "5696d603f538cfbaf0fd5a757ecf90acf84fa8464742933b90ba1bc18a064a2b"
+  },
+  "extraSuffixScan": {
+    "suffixes": [".cu", ".cuh", ".glsl", ".vert", ".frag", ".hlsl", ".comp", ".wgsl", ".tex", ".bib", ".geo", ".scad", ".osl"],
+    "zeroHitSuffixes": [".cu", ".cuh", ".glsl", ".vert", ".frag", ".hlsl", ".comp", ".wgsl", ".tex", ".geo", ".scad", ".osl"],
+    "noExtensionShebangFiles": [],
+    "hits": [
+      {
+        "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\vendor\\Peridynamics.jl\\docs\\src\\references.bib",
+        "bytes": 8547,
+        "sha256": "bc60345cdd7686900d68a4ff169f6ba5ed5b2c14b52ff747cf8c992cc7cf28e9",
+        "suffix": ".bib",
+        "inventoryEntryFound": false,
+        "actionManifestEntryFound": false,
+        "projectAuthorshipConfirmed": false,
+        "rootDecisionRequired": true
+      }
+    ]
+  },
+  "namedExternalHelpers": [
+    {
+      "sourcePath": "C:\\Users\\xiemo\\Desktop\\ShardForge\\_scratch_heads.py",
+      "exists": true,
+      "bytes": 649,
+      "sha256": "47213e8235193d066923d3b5e914d65cd016a7b79b7195085540053d02459c07",
+      "actionOperation": "copy_then_stage_exact",
+      "destinationRepo": "relicweave-synlab",
+      "destinationPath": "workspace_backup/20261007/_scratch_heads.py",
+      "destinationUnique": true,
+      "destinationWithinRepo": true,
+      "destinationExistsAtReview": false
+    },
+    {
+      "sourcePath": "C:\\Users\\xiemo\\Desktop\\ShardForge\\data\\a12_reports\\measure_rig_ladder.py",
+      "exists": true,
+      "bytes": 22489,
+      "sha256": "1735c4e60b64890dd1c2f0d730cb71df06171b553cbaf3668f6166b62dbeaf52",
+      "actionOperation": "copy_then_stage_exact",
+      "destinationRepo": "relicweave-synlab",
+      "destinationPath": "workspace_backup/20261007/data/a12_reports/measure_rig_ladder.py",
+      "destinationUnique": true,
+      "destinationWithinRepo": true,
+      "destinationExistsAtReview": false
+    },
+    {
+      "sourcePath": "C:\\Users\\xiemo\\Desktop\\ShardForge\\data\\a12_reports\\measure_wear_ladder.py",
+      "exists": true,
+      "bytes": 11223,
+      "sha256": "29f98f518a2df7e04b0595a50c404210b957cdd5f9e24fbca257e79b895285b0",
+      "actionOperation": "copy_then_stage_exact",
+      "destinationRepo": "relicweave-synlab",
+      "destinationPath": "workspace_backup/20261007/data/a12_reports/measure_wear_ladder.py",
+      "destinationUnique": true,
+      "destinationWithinRepo": true,
+      "destinationExistsAtReview": false
+    },
+    {
+      "sourcePath": "C:\\Users\\xiemo\\Desktop\\ShardForge\\data\\a12\\reports\\extract_v144.py",
+      "exists": true,
+      "bytes": 4480,
+      "sha256": "0615aa05d662e4ec9313a8dc0a7b1b3a74c8d366664682539ef1b4bcc4f14dd4",
+      "actionOperation": "copy_then_stage_exact",
+      "destinationRepo": "relicweave-synlab",
+      "destinationPath": "workspace_backup/20261007/data/a12/reports/extract_v144.py",
+      "destinationUnique": true,
+      "destinationWithinRepo": true,
+      "destinationExistsAtReview": false
+    }
+  ],
+  "archiveOverwriteRule": {
+    "reuseExistingDestinationOnlyIfSizeAndSha256Match": true,
+    "refuseMismatchedDestination": true,
+    "refuseDestinationAppearingDuringCopy": true,
+    "namedHelperCollisionsFound": false
+  },
+  "rootDecision": {
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\vendor\\Peridynamics.jl\\docs\\src\\references.bib",
+    "choice": "Include as vendored package documentation using .bib coverage or an exact-file rule and regenerate/review manifests, or explicitly keep it out of scope.",
+    "sourceOrManifestChangesMade": false
+  }
+}

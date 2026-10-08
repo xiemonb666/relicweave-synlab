@@ -1,0 +1,35 @@
+{
+  "name": "relicweave-synlab-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "A12 SynLab 合成实验室前端（U01-U12）。数据全部来自 /api/synlab 真实后端。",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "build:only": "vite build",
+    "typecheck": "tsc --noEmit",
+    "preview": "vite preview",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@rjsf/core": "^5.24.13",
+    "@rjsf/utils": "^5.24.13",
+    "@rjsf/validator-ajv8": "^5.24.13",
+    "echarts": "^5.6.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.30.0",
+    "three": "^0.180.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@types/node": "^22.15.0",
+    "@types/react": "^18.3.20",
+    "@types/react-dom": "^18.3.5",
+    "@types/three": "^0.180.0",
+    "@vitejs/plugin-react": "^4.4.1",
+    "typescript": "^5.8.3",
+    "vite": "^5.4.19"
+  }
+}

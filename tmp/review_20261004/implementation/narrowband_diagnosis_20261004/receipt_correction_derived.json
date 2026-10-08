@@ -1,0 +1,46 @@
+{
+  "schema": "a12.narrowband-receipt-correction.v1",
+  "created_utc": "2026-10-04T01:56:31.436201+00:00",
+  "kind": "derived_transcription_and_classification_correction",
+  "preserved_prior_artifacts": {
+    "diagnosis_review": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_diagnosis_20261004\\diagnosis_review.pre-receipt-correction.json",
+      "sha256": "b57b676a0bd80db24e15f423aa2b21a539baf2c6b96ec8119f722178fed5c735"
+    },
+    "run_receipts": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_diagnosis_20261004\\run_receipts.pre-receipt-correction.json",
+      "sha256": "c93af824586d236865e96274fc0cf9919b54c8a44b5a9ebade7518407352259d"
+    },
+    "artifact_manifest": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_diagnosis_20261004\\artifact_manifest.pre-receipt-correction.json",
+      "sha256": "4fe3bfdcfc5e982533892c1974dcd2d1e7c0a216cd6b73f8757bd3c41583bde4"
+    }
+  },
+  "corrections": {
+    "png_render": {
+      "argv": "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe -B .\\tmp\\review_20261004\\implementation\\narrowband_diagnosis_20261004\\render_boundary_png.py",
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+      "executable_exists_at_recording": true,
+      "exit_code": 0,
+      "receipt_kind": "derived transcription; not an original captured process receipt",
+      "no_rerun": true
+    },
+    "diagnostic_denominator": {
+      "invocations": 1,
+      "operator_cases": [
+        "P02 level 1",
+        "P03 level 1"
+      ],
+      "no_rerun": true
+    },
+    "legacy_global_sdf": {
+      "classification": "real non-volume Boolean failure; whether successful completion is contractually required is pending main review",
+      "stale_test_conclusion_removed": true
+    }
+  },
+  "new_primary_hashes_after_correction": {
+    "diagnosis_review": "f2ec62677699cffec764928dd1bd171a4732cc9187ede68e272e163aeefd5ca8",
+    "run_receipts": "abab46aecdce4576e2bbdc7ed147671d7ebcc4b1d23d2ede4d172603725322a2",
+    "diagnosis_notes": "7deea4d512a2cd207a6d64336f5692f88f700fce3f7aeb2ee98cd75c33aba0cc"
+  }
+}

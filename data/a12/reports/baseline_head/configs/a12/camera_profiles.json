@@ -1,0 +1,81 @@
+{
+  "schema": "synlab.camera_profiles.v1",
+  "note": "Virtual capture-rig profiles. No real calibration was performed on this machine, therefore every profile carries calibrated=false and STRESS_UNCALIBRATED / UNCALIBRATED status. The U position moves the camera along the optical axis and re-renders; it is never simulated with resize/crop.",
+  "rig": {
+    "kind": "phone_on_linear_rail_with_turntable",
+    "rail_axis": "camera_optical_axis",
+    "turntable": true,
+    "background": "static",
+    "note": "fixed camera + rotating object violates a single rigid scene; deployable masks must exclude background/support features"
+  },
+  "profiles": [
+    {
+      "profile_id": "GLOBAL_V1",
+      "revision": 1,
+      "tier": "GLOBAL",
+      "u_position_mm": 0.0,
+      "working_distance_mm": 420.0,
+      "focal_px_1024": 900.0,
+      "image_long_edge_px": 1024,
+      "f_number": 8.0,
+      "focus_setting": "fixed_infinity_like",
+      "focus_distance_mm": 420.0,
+      "fov_mm": [320.0, 240.0],
+      "depth_of_field_mm": [300.0, 700.0],
+      "max_travel_mm": 120.0,
+      "action_cost_seconds": 4.0,
+      "calibrated": false,
+      "calibration_refs": [],
+      "status": "STRESS_UNCALIBRATED"
+    },
+    {
+      "profile_id": "MID_V1",
+      "revision": 1,
+      "tier": "MID",
+      "u_position_mm": 60.0,
+      "working_distance_mm": 360.0,
+      "focal_px_1024": 1050.0,
+      "image_long_edge_px": 1024,
+      "f_number": 8.0,
+      "focus_setting": "fixed_mid",
+      "focus_distance_mm": 360.0,
+      "fov_mm": [250.0, 188.0],
+      "depth_of_field_mm": [260.0, 560.0],
+      "max_travel_mm": 120.0,
+      "action_cost_seconds": 8.0,
+      "calibrated": false,
+      "calibration_refs": [],
+      "status": "STRESS_UNCALIBRATED"
+    },
+    {
+      "profile_id": "LOCAL_V1",
+      "revision": 1,
+      "tier": "LOCAL",
+      "u_position_mm": 120.0,
+      "working_distance_mm": 300.0,
+      "focal_px_1024": 1260.0,
+      "image_long_edge_px": 1024,
+      "f_number": 8.0,
+      "focus_setting": "fixed_near",
+      "focus_distance_mm": 300.0,
+      "fov_mm": [180.0, 135.0],
+      "depth_of_field_mm": [200.0, 470.0],
+      "max_travel_mm": 120.0,
+      "action_cost_seconds": 8.0,
+      "calibrated": false,
+      "calibration_refs": [],
+      "status": "STRESS_UNCALIBRATED"
+    }
+  ],
+  "reachable_actions": [
+    "add_azimuth_view",
+    "add_height_view",
+    "move_u_near",
+    "move_u_mid",
+    "move_u_far",
+    "local_fracture_frame",
+    "toggle_lighting",
+    "re_clamp_flip",
+    "stop"
+  ]
+}

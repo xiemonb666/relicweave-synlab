@@ -1,0 +1,18 @@
+{
+  "note": "opaque-name map for the deployment view; contains no label and no split",
+  "rows": {
+    "LIN0000_V02_M01_PAT02_E01-m": {
+      "geometry_shard": "geometry/shard_0000.npz",
+      "obs_shard": "obs/shard_0000.tar",
+      "opaque": "24382e8df934c5d4fa362d3e",
+      "token_shard": "tokens/shard_0000.npz"
+    },
+    "LIN0000_V02_M01_PAT02_E01-p": {
+      "geometry_shard": "geometry/shard_0000.npz",
+      "obs_shard": "obs/shard_0000.tar",
+      "opaque": "99d6ba555e36f770932ded35",
+      "token_shard": "tokens/shard_0000.npz"
+    }
+  },
+  "schema": "synlab.deploy_index.v1"
+}

@@ -1,0 +1,81 @@
+{
+  "channels": [
+    "K",
+    "deployment_mask",
+    "depth_z",
+    "roi",
+    "tiles",
+    "uncertain_mask",
+    "valid",
+    "view_pos"
+  ],
+  "rows": {
+    "31968c3678914ed48b19d82e6718443c": {
+      "channels": [
+        "K",
+        "deployment_mask",
+        "depth_z",
+        "roi",
+        "tiles",
+        "uncertain_mask",
+        "valid",
+        "view_pos"
+      ],
+      "hash": "sha256:b8db5810c5c62b7a2adb5192213d693654fab36d79a5749c1620fe5f02bc21a3",
+      "shape": [
+        4,
+        192,
+        256,
+        3
+      ],
+      "shard": "obs/shard_0000.tar",
+      "view_pos_source": "T_WC[0,3]",
+      "views": 4
+    },
+    "4c0422a4f3754bd285868f54d9f7dfc8": {
+      "channels": [
+        "K",
+        "deployment_mask",
+        "depth_z",
+        "roi",
+        "tiles",
+        "uncertain_mask",
+        "valid",
+        "view_pos"
+      ],
+      "hash": "sha256:7f81d8456ea30c8bff95b5ba986297373f02344f32a5f6442a3b655ec0788089",
+      "shape": [
+        4,
+        192,
+        256,
+        3
+      ],
+      "shard": "obs/shard_0000.tar",
+      "view_pos_source": "T_WC[0,3]",
+      "views": 4
+    },
+    "f65686c4f2394288834705b142518e81": {
+      "channels": [
+        "K",
+        "deployment_mask",
+        "depth_z",
+        "roi",
+        "tiles",
+        "uncertain_mask",
+        "valid",
+        "view_pos"
+      ],
+      "hash": "sha256:e6bcf3854ea4d6efc7213cc1da8c116a5abbeb05b0ff653158ab3e1c92fc90ec",
+      "shape": [
+        4,
+        192,
+        256,
+        3
+      ],
+      "shard": "obs/shard_0000.tar",
+      "view_pos_source": "T_WC[0,3]",
+      "views": 4
+    }
+  },
+  "schema": "synlab.obs_index.v2"
+}

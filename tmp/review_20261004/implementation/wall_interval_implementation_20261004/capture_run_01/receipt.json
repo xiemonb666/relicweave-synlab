@@ -1,0 +1,31 @@
+{
+  "run_id": "wall_interval_implementation_20261004_capture_run_01",
+  "capture_directory": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_interval_implementation_20261004\\capture_run_01",
+  "python_executable": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\.venv\\Scripts\\python.exe",
+  "python_version": "Python 3.12.14",
+  "dependency_versions_argv": [
+    "-c",
+    "importlib.metadata versions: open3d, trimesh, numpy, pytest, manifold3d"
+  ],
+  "dependency_versions_output": "argv= ['-c']\r\n{'open3d': '0.19.0', 'trimesh': '5.1.0', 'numpy': '2.5.3', 'pytest': '9.1.1', 'manifold3d': '3.5.4'}",
+  "pytest_argv": [
+    ".\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/a12/operators/test_wall_intervals_20261004.py"
+  ],
+  "stdout_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_interval_implementation_20261004\\capture_run_01\\stdout.txt",
+  "stderr_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_interval_implementation_20261004\\capture_run_01\\stderr.txt",
+  "pytest_exit_code": 0,
+  "source_sha256_before": "02799E54CD1567405B43BFBBDFD1044FED609CCFC5BE6DE88764F3544CE16693",
+  "source_sha256_after": "02799E54CD1567405B43BFBBDFD1044FED609CCFC5BE6DE88764F3544CE16693",
+  "test_sha256_before": "05BB645D63F07AC39153E82F327836D16C25F0365692D7AF80771AD7B52394FA",
+  "test_sha256_after": "05BB645D63F07AC39153E82F327836D16C25F0365692D7AF80771AD7B52394FA",
+  "source_hash_unchanged": true,
+  "test_hash_unchanged": true,
+  "requested_test_count": 16,
+  "native_queries_executed": "as required by approved targeted tests",
+  "operator_or_solver": "not run",
+  "git": "not run"
+}

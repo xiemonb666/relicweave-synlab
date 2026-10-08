@@ -1,0 +1,105 @@
+{
+  "schema": "a12_claims_alignment_backup_manifest_proposal.v2",
+  "status": "PROPOSED_NOT_COPIED",
+  "repo_relative_target_root": "relicweave-synlab/docs/a12",
+  "bundle_directory": "relicweave-synlab/docs/a12/reviews/20261007",
+  "bundle_directory_exists": false,
+  "copy_actions_performed": false,
+  "git_actions_performed": false,
+  "existing_v1_manifest": {
+    "path": "tmp/review_20261007/a12_claims_alignment/BACKUP_MANIFEST_PROPOSAL.json",
+    "sha256": "3335b56c85f5f63ba9775356a9419546d80b1ae678749e56a85302530c7a50d1",
+    "overwritten": false
+  },
+  "preportable_doc_hashes": {
+    "status_md": "66920da601f36c12073451f407e323466760221cfef5efdc81a1bbae87714658",
+    "patterns_md": "cf90515b4393c6e3a138795fd62c649dbef3a95978b46b84eb1a65329c048266"
+  },
+  "document_history_verification": {
+    "new_clarification_section_removed_matches_original_snapshots": true,
+    "links_reconstructed_from_preportable_snapshots_match_final_docs": true,
+    "historical_body_text_changed": false,
+    "only_seven_links_retargeted": true
+  },
+  "portable_copy_total_bytes": 1030808,
+  "portable_copy_total_mib": 0.9831,
+  "claims_source_path": "tmp/review_20261007/a12_claims_alignment/claims.json",
+  "claims_source_sha256": "7c7d6c6c00e7086c7da1b531103cb95812b87e5befd0ae69730e1f395d482806",
+  "report_sources_verified_against_claims_json": true,
+  "production_or_report_data_modified": false,
+  "items": [
+    {
+      "item_id": "doc-status.md",
+      "operation": "edit_links_in_place",
+      "source_path": "relicweave-synlab/docs/a12/status.md",
+      "destination_path": "relicweave-synlab/docs/a12/status.md",
+      "copy": false,
+      "before_sha256": "66920da601f36c12073451f407e323466760221cfef5efdc81a1bbae87714658",
+      "after_sha256": "11ecbd79d155f01e59acd62b8c6ab3607c997c5aaddfea0ed02cf113ca1bffeb",
+      "after_bytes": 11320,
+      "original_snapshot_path": "tmp/review_20261007/a12_claims_alignment/status.md.original_3c5593d8.snapshot",
+      "original_snapshot_sha256": "3c5593d847b2638c28c409b1921c9075e823b1cc8d54a90544a52bb9ddc1f1d5",
+      "preportable_snapshot_path": "tmp/review_20261007/a12_claims_alignment/status.md.pre_portable_links_66920da6.snapshot",
+      "preportable_snapshot_sha256": "66920da601f36c12073451f407e323466760221cfef5efdc81a1bbae87714658"
+    },
+    {
+      "item_id": "doc-patterns.md",
+      "operation": "edit_links_in_place",
+      "source_path": "relicweave-synlab/docs/a12/patterns.md",
+      "destination_path": "relicweave-synlab/docs/a12/patterns.md",
+      "copy": false,
+      "before_sha256": "cf90515b4393c6e3a138795fd62c649dbef3a95978b46b84eb1a65329c048266",
+      "after_sha256": "9148882b4f60e93ea2e222a59f21cfa91d73972e394eb6e06b7d270482407c25",
+      "after_bytes": 28122,
+      "original_snapshot_path": "tmp/review_20261007/a12_claims_alignment/patterns.md.original_ca0cb226.snapshot",
+      "original_snapshot_sha256": "ca0cb226a17c1ee9950955bc2fda40827ea694b8ae7a2a92348f328dddc05311",
+      "preportable_snapshot_path": "tmp/review_20261007/a12_claims_alignment/patterns.md.pre_portable_links_cf90515b.snapshot",
+      "preportable_snapshot_sha256": "cf90515b4393c6e3a138795fd62c649dbef3a95978b46b84eb1a65329c048266"
+    },
+    {
+      "item_id": "copy-REVIEW.md",
+      "operation": "proposed_exact_byte_copy",
+      "source_path": "tmp/review_20261007/a12_claims_alignment/REVIEW.md",
+      "destination_path": "relicweave-synlab/docs/a12/reviews/20261007/REVIEW.md",
+      "copy_created": false,
+      "source_bytes": 7232,
+      "source_sha256": "881e71d0441d235b2143a1a06cf7429547892a953c2c74a951ec6161576eeeba"
+    },
+    {
+      "item_id": "copy-claims.json",
+      "operation": "proposed_exact_byte_copy",
+      "source_path": "tmp/review_20261007/a12_claims_alignment/claims.json",
+      "destination_path": "relicweave-synlab/docs/a12/reviews/20261007/claims.json",
+      "copy_created": false,
+      "source_bytes": 17991,
+      "source_sha256": "7c7d6c6c00e7086c7da1b531103cb95812b87e5befd0ae69730e1f395d482806"
+    },
+    {
+      "item_id": "copy-precision_probe_07_degrade_audit.json",
+      "operation": "proposed_exact_byte_copy",
+      "source_path": "relicweave-synlab/data/a12/reports/precision_probe_07_degrade_audit.json",
+      "destination_path": "relicweave-synlab/docs/a12/reviews/20261007/reports/precision_probe_07_degrade_audit.json",
+      "copy_created": false,
+      "source_bytes": 562921,
+      "source_sha256": "b38d7dd1cddeff2dfcc06173de44ac83eb583cab045c05d6f47aff102a9f39fb"
+    },
+    {
+      "item_id": "copy-precision_probe_09_degrade_error.json",
+      "operation": "proposed_exact_byte_copy",
+      "source_path": "relicweave-synlab/data/a12/reports/precision_probe_09_degrade_error.json",
+      "destination_path": "relicweave-synlab/docs/a12/reviews/20261007/reports/precision_probe_09_degrade_error.json",
+      "copy_created": false,
+      "source_bytes": 93604,
+      "source_sha256": "d964413f473caea5bb75ec7a7ca39c140dcd8ac38892e13ebe3247a40327987e"
+    },
+    {
+      "item_id": "copy-pattern_audit.json",
+      "operation": "proposed_exact_byte_copy",
+      "source_path": "relicweave-synlab/data/a12/reports/pattern_audit.json",
+      "destination_path": "relicweave-synlab/docs/a12/reviews/20261007/reports/pattern_audit.json",
+      "copy_created": false,
+      "source_bytes": 349060,
+      "source_sha256": "e52989f1fa25cfb47442094c3c36dccbccc8b59a10ca97c9cbf910d3071e7e71"
+    }
+  ]
+}

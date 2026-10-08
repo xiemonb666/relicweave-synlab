@@ -1,0 +1,23 @@
+{
+  "schema": "a12.conforming-retessellation-input-preparation-receipt.v1",
+  "argv": [
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\.venv\\Scripts\\python.exe",
+    "-B",
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\freeze_retessellation_inputs.py"
+  ],
+  "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+  "python_executable": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\.venv\\Scripts\\python.exe",
+  "script_sha256": "4349db698928496589d2c3ddc04ae9171e73d14602d38d5737f5e938c4d48653",
+  "started_utc": "2026-10-04T05:17:05.5848573Z",
+  "finished_utc": "2026-10-04T05:17:05.8361913Z",
+  "elapsed_seconds": 0.247,
+  "exit_code": 0,
+  "output": "{\"frozen_archive\": \"C:\\\\Users\\\\xiemo\\\\Desktop\\\\ShardForge\\\\relicweave-synlab\\\\tmp\\\\review_20261004\\\\implementation\\\\narrowband_mesh64_candidate_20261004\\\\conforming_retessellation_candidate_20261004\\\\frozen_retessellation_inputs.npz\", \"archive_sha256\": \"d80707312638ce2830847f2dc198632c5456963a6043715d27436b3db3ce6dc2\", \"manifest\": \"C:\\\\Users\\\\xiemo\\\\Desktop\\\\ShardForge\\\\relicweave-synlab\\\\tmp\\\\review_20261004\\\\implementation\\\\narrowband_mesh64_candidate_20261004\\\\conforming_retessellation_candidate_20261004\\\\frozen_retessellation_manifest.json\", \"manifest_sha256\": \"3cfd3eb41d109548fc3c1fdc1de9ea8eda0e4ef00d2beb5c2cfe13021ca3f7e5\", \"negative_control_face_id\": 4688, \"negative_control_face_area_mm2\": 0.6328125, \"negative_control_boundary_edge_count\": 3, \"candidate_source_sha256\": \"71053bd245a4ff11d9c79d4e76c27901d60e9acd8a4c896cee691da1450a6805\", \"candidate_not_executed\": true}",
+  "source_outputs_read_only": true,
+  "candidate_algorithm_executed": false,
+  "repair_calls": 0,
+  "boolean_calls": 0,
+  "tests_run": 0,
+  "frozen_archive_sha256": "d80707312638ce2830847f2dc198632c5456963a6043715d27436b3db3ce6dc2",
+  "frozen_manifest_sha256": "3cfd3eb41d109548fc3c1fdc1de9ea8eda0e4ef00d2beb5c2cfe13021ca3f7e5"
+}

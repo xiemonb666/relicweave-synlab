@@ -1,0 +1,36 @@
+{
+  "run_id": "explicit_visibility_focused_test_20261005_01",
+  "test_file": "pgfrag/experiments/explicit_visibility_20261005/test_visibility3d.py",
+  "result": {
+    "tests": 17,
+    "passed": 17,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "return_code": 0,
+    "elapsed_ms": 1436,
+    "pytest_reported_seconds": 0.20,
+    "solver": "NOT_RUN",
+    "render": "NOT_RUN"
+  },
+  "run_artifacts": [
+    {"path": "execution_receipt.json", "bytes": 1296, "sha256": "76e9afdd354c3adb958639dab1aeb29f8379ff91e3d5c0966f5808b679d5351e"},
+    {"path": "junit.xml", "bytes": 3007, "sha256": "7adfaa594402e72a11a642480876482ec0a26c66480a101234d2b98d826e9c33"},
+    {"path": "stdout.txt", "bytes": 101, "sha256": "d66657c093aeea13320c67c6f56377421940ab2c452dcf700a19d30c2b80af4d"},
+    {"path": "stderr.txt", "bytes": 0, "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+    {"path": "pre_run_pins.sha256", "bytes": 494, "sha256": "8231971126ec6d40ccb979501da927ad319c7c943e48dfbf986a870125348ba5"},
+    {"path": "post_run_pins.sha256", "bytes": 494, "sha256": "8231971126ec6d40ccb979501da927ad319c7c943e48dfbf986a870125348ba5"},
+    {"path": "run_record.md", "bytes": 776, "sha256": "6c2568376f205723ab7de3b2e5464e6616918f5b90a09c8f79b8eb23911f9f2d"}
+  ],
+  "pinned_inputs_at_run": {
+    "visibility3d.py": "9d5097ca33ce899cf788ad43ef0740a34296216a8fd7aa490868c27ffe1ebb03",
+    "test_visibility3d.py": "9fce64a01de4cee3a53b2aa560fea72360949005d88bf51c3fbf3c4ef279ff50",
+    "README.md": "d81a36b29464028f0e6ab032ac7a59c626ce4ff4a0506cce1fe4d757af4765fe"
+  },
+  "current_post_documentation_hashes": {
+    "visibility3d.py": "9d5097ca33ce899cf788ad43ef0740a34296216a8fd7aa490868c27ffe1ebb03",
+    "test_visibility3d.py": "9fce64a01de4cee3a53b2aa560fea72360949005d88bf51c3fbf3c4ef279ff50",
+    "README.md": "18c4f417ec287e6e75a81f0ddaa92bb1da53fd0bffd8a0499b9efa02f59b0b01"
+  },
+  "readme_note": "README.md was updated after this single run to record its result; source/test/README pre/post run pins remain preserved and identical."
+}

@@ -1,0 +1,10 @@
+{
+  "prior_zero_load_steps_completed": 0,
+  "retry": "one retry per already-frozen case parameters after re-freezing the corrected manifest",
+  "event": "pre-case manifest metadata correction",
+  "cause": "manifest generator omitted keys expected_insertion_facets and expected_interface_dissipation_J; runner raised KeyError before solveStep",
+  "correction": "freeze_manifest.py now writes the already-fixed interface facet count (8) and Gc*interface_area (3.04e-5 J); no mesh, material, loading, timestep, or solver setting changed",
+  "prior_status_file": "zero_load/status.json",
+  "prior_zero_load_exit": 1,
+  "prior_zero_load_elapsed_s": 0.0656232200000062
+}

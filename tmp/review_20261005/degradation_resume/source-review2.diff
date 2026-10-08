@@ -1,0 +1,596 @@
+--- a/synlab/degrade/heightgraph_certificate.py
++++ b/synlab/degrade/heightgraph_certificate.py
+@@ -24,6 +24,8 @@
+ import struct
+ from typing import Any, Iterable, Sequence
+ 
++import numpy as np
++
+ __all__ = [
+     "FacePartition",
+     "HeightGraphAxis",
+@@ -37,6 +39,8 @@
+ _Point3 = tuple[Fraction, Fraction, Fraction]
+ _DEFAULT_MAX_VERTICES = 5_000
+ _DEFAULT_MAX_FACES = 10_000
++_MAX_PAIR_CHECKS = 250_000
++_MAX_INPUT_RATIONAL_BITS = 2_048
+ _MESH_HASH_ENCODING = (
+     "SHA-256 over prefix 'synlab.heightgraph.mesh.exact-f64.v1\\0' || uint64_le(vertex_count) || "
+     "each ordered XYZ coordinate as ASCII numerator/denominator; || uint64_le(face_count) || "
+@@ -64,10 +68,10 @@
+ class RectangleDomain:
+     """Closed rectangle in the exact projected ``(u, v)`` coordinates."""
+ 
+-    u_min: int | float
+-    u_max: int | float
+-    v_min: int | float
+-    v_max: int | float
++    u_min: int | float | Fraction
++    u_max: int | float | Fraction
++    v_min: int | float | Fraction
++    v_max: int | float | Fraction
+ 
+ 
+ @dataclass(frozen=True)
+@@ -83,17 +87,20 @@
+ class MeshQualityLimits:
+     """Required quality floor/ceiling for every delivered candidate triangle."""
+ 
+-    min_q: float
+-    min_altitude_mm: float
+-    max_aspect_ratio: float
++    min_q: int | float | Fraction
++    min_altitude_mm: int | float | Fraction
++    max_aspect_ratio: int | float | Fraction
+ 
+ 
+ @dataclass(frozen=True)
+ class HeightGraphPartition:
+     """Typed proof inputs for both meshes and a bounded exact overlay.
+ 
+-    ``max_pair_checks`` bounds all same-patch and cross-patch overlay pair work. Exhausting it
+-    produces UNKNOWN. Both mesh metadata objects must declare matching ``coordinate_unit=mm`` and
++    ``max_pair_checks`` bounds all same-patch and cross-patch overlay pair work and cannot exceed
++    250,000. All domain/quality integer or Fraction inputs are limited to 2,048 numerator and
++    denominator bits. These are input and pair-count limits, not a formal bound on intermediate
++    Fraction growth or whole-call runtime. Exhausting a budget produces UNKNOWN. Both mesh metadata
++    objects must declare matching ``coordinate_unit=mm`` and
+     non-empty ``frame_id`` values identical to this shared declaration. This checks a coordinate
+     contract only; it does not authenticate the physical source. The initial implementation
+     deliberately supports only a rectangular domain.
+@@ -187,36 +194,50 @@
+     result_hash: str | None = None
+     budget: _Budget | None = None
+     try:
+-        if not isinstance(partition, HeightGraphPartition):
++        if type(partition) is not HeightGraphPartition:
+             raise _unsupported("PARTITION_TYPE_UNSUPPORTED",
+                                "partition must be HeightGraphPartition")
+-        if not isinstance(axis, HeightGraphAxis):
++        if type(axis) is not HeightGraphAxis:
+             raise _unsupported("AXIS_TYPE_UNSUPPORTED", "axis must be HeightGraphAxis")
+         _validate_axis(axis)
+         _validate_coordinate_contract(partition)
+         domain = _validate_domain(partition.domain)
+         _validate_quality_limits(partition.quality_limits)
+-        if isinstance(partition.max_pair_checks, bool) or not isinstance(
+-                partition.max_pair_checks, int) or partition.max_pair_checks < 0:
++        if (type(partition.max_pair_checks) is not int
++                or partition.max_pair_checks < 0
++                or partition.max_pair_checks > _MAX_PAIR_CHECKS):
+             raise _unsupported("PAIR_BUDGET_INVALID",
+-                               "max_pair_checks must be a non-negative integer")
++                               f"max_pair_checks must be an integer in [0, {_MAX_PAIR_CHECKS}]")
+ 
+         source_mesh = _load_mesh(source, "source")
+         source_hash = source_mesh.digest
+-        candidate_mesh = _load_mesh(candidate, "candidate")
+-        result_hash = candidate_mesh.digest
+-        _validate_mesh_coordinate_metadata(source_mesh, candidate_mesh, partition)
+-        _validate_face_partitions(source_mesh, candidate_mesh, partition)
++        _validate_source_coordinate_metadata(source_mesh, partition)
++        _validate_face_partition(source_mesh, partition.source)
+         budget = _Budget(partition.max_pair_checks)
+ 
+         source_uvh = tuple(_transform(point, axis) for point in source_mesh.vertices)
+-        candidate_uvh = tuple(_transform(point, axis) for point in candidate_mesh.vertices)
+         expected_orientation = _axis_determinant_sign(axis)
+ 
+         source_upper = _make_patch(source_mesh, partition.source.upper_faces, source_uvh,
+                                    domain, "upper", "source", expected_orientation, budget)
+         source_lower = _make_patch(source_mesh, partition.source.lower_faces, source_uvh,
+                                    domain, "lower", "source", -expected_orientation, budget)
++
++        _check_height_overlay(source_upper.triangles, source_lower.triangles,
++                              "source upper minus source lower", "positive",
++                              domain, budget, contradiction_owner="source",
++                              first_surface="source.upper", second_surface="source.lower")
++        _check_sides(source_mesh, partition.source, source_uvh, source_upper, source_lower,
++                     domain, "source", budget)
++        _validate_closed_mesh(source_mesh, partition.source, "source", axis, domain)
++
++        # Candidate-derived FAIL results are meaningful only after the source has passed every
++        # structural and positive-thickness premise of this restricted proof.
++        candidate_mesh = _load_mesh(candidate, "candidate")
++        result_hash = candidate_mesh.digest
++        _validate_mesh_coordinate_metadata(source_mesh, candidate_mesh, partition)
++        _validate_face_partition(candidate_mesh, partition.candidate)
++        candidate_uvh = tuple(_transform(point, axis) for point in candidate_mesh.vertices)
+         candidate_upper = _make_patch(candidate_mesh, partition.candidate.upper_faces,
+                                       candidate_uvh, domain, "upper", "candidate",
+                                       expected_orientation, budget)
+@@ -232,10 +253,6 @@
+                               "source lower minus candidate lower", "zero",
+                               domain, budget, contradiction_owner="candidate",
+                               first_surface="source.lower", second_surface="candidate.lower")
+-        _check_height_overlay(source_upper.triangles, source_lower.triangles,
+-                              "source upper minus source lower", "positive",
+-                              domain, budget, contradiction_owner="source",
+-                              first_surface="source.upper", second_surface="source.lower")
+         _check_height_overlay(candidate_upper.triangles, candidate_lower.triangles,
+                               "candidate upper minus candidate lower", "positive",
+                               domain, budget, contradiction_owner="candidate",
+@@ -243,12 +260,9 @@
+ 
+         _check_fixed_rim(source_upper, source_lower, source_uvh,
+                          candidate_upper, candidate_lower, candidate_uvh, domain)
+-        _check_sides(source_mesh, partition.source, source_uvh, source_upper, source_lower,
+-                     domain, "source", budget)
+         _check_sides(candidate_mesh, partition.candidate, candidate_uvh,
+                      candidate_upper, candidate_lower, domain, "candidate", budget)
+ 
+-        _validate_closed_mesh(source_mesh, partition.source, "source", axis, domain)
+         _validate_closed_mesh(candidate_mesh, partition.candidate, "candidate", axis, domain)
+         quality = _validate_candidate_quality(candidate_mesh, partition.quality_limits)
+ 
+@@ -266,6 +280,12 @@
+                 "mesh_hash_encoding": _MESH_HASH_ENCODING,
+                 "mesh_limits": {"max_vertices": _DEFAULT_MAX_VERTICES,
+                                 "max_faces": _DEFAULT_MAX_FACES},
++                "input_rational_bit_limit": _MAX_INPUT_RATIONAL_BITS,
++                "pair_count_ceiling": _MAX_PAIR_CHECKS,
++                "resource_bound_scope": (
++                    "array element caps, bounded input rationals, and bbox candidate-pair count; "
++                    "no formal bound on intermediate Fraction bit growth or whole-call runtime"
++                ),
+                 "domain_exact": [_fraction_text(value) for value in domain],
+                 "relation": "candidate_subset_of_source",
+                 "proved_inequalities": ["b_source < s_source", "b_candidate < c_candidate",
+@@ -364,28 +384,39 @@
+             "height_axis": axis.height_axis, "height_sign": axis.height_sign}
+ 
+ 
++def _check_rational_bit_limit(numerator: int, denominator: int, *, context: str) -> None:
++    if (abs(numerator).bit_length() > _MAX_INPUT_RATIONAL_BITS
++            or denominator.bit_length() > _MAX_INPUT_RATIONAL_BITS):
++        raise _unsupported(
++            "INPUT_RATIONAL_BIT_LIMIT_EXCEEDED",
++            f"{context} numerator/denominator exceeds {_MAX_INPUT_RATIONAL_BITS} bits",
++            {"context": context, "maximum_bits": _MAX_INPUT_RATIONAL_BITS},
++        )
++
++
+ def _to_fraction(value: Any, *, context: str) -> Fraction:
+-    if isinstance(value, bool):
++    if isinstance(value, np.generic):
++        value = value.item()
++    if type(value) is bool:
+         raise _unsupported("NON_NUMERIC_COORDINATE", f"boolean value in {context}")
+-    if isinstance(value, int):
++    if type(value) is Fraction:
++        _check_rational_bit_limit(value.numerator, value.denominator, context=context)
++        return value
++    if type(value) is int:
++        _check_rational_bit_limit(value, 1, context=context)
+         return Fraction(value)
+-    if not isinstance(value, float):
+-        item = getattr(value, "item", None)
+-        if callable(item):
+-            value = item()
+-    if isinstance(value, bool) or not isinstance(value, (int, float)):
++    if type(value) is not float:
+         raise _unsupported("NON_FLOAT64_COORDINATE",
+-                           f"{context} must be represented by integer/float64 values")
+-    if isinstance(value, int):
+-        return Fraction(value)
++                           f"{context} must be represented by integer, Fraction, or float64 values")
+     if not math.isfinite(value):
+         raise _unsupported("NONFINITE_COORDINATE", f"non-finite coordinate in {context}")
+     numerator, denominator = value.as_integer_ratio()
++    _check_rational_bit_limit(numerator, denominator, context=context)
+     return Fraction(numerator, denominator)
+ 
+ 
+ def _validate_domain(value: Any) -> tuple[Fraction, Fraction, Fraction, Fraction]:
+-    if not isinstance(value, RectangleDomain):
++    if type(value) is not RectangleDomain:
+         raise _unsupported("DOMAIN_TYPE_UNSUPPORTED",
+                            "only typed RectangleDomain projection domains are supported")
+     bounds = (
+@@ -400,15 +431,13 @@
+ 
+ 
+ def _validate_quality_limits(value: Any) -> None:
+-    if not isinstance(value, MeshQualityLimits):
++    if type(value) is not MeshQualityLimits:
+         raise _unsupported("QUALITY_LIMITS_REQUIRED",
+                            "typed candidate q/altitude/aspect limits are required")
+     numbers = (value.min_q, value.min_altitude_mm, value.max_aspect_ratio)
+-    if any(isinstance(number, bool) or not isinstance(number, (int, float))
+-           or (isinstance(number, float) and not math.isfinite(number))
+-           for number in numbers):
+-        raise _unsupported("QUALITY_LIMITS_INVALID", "quality limits must be finite numbers")
+-    if value.min_q <= 0.0 or value.min_altitude_mm <= 0.0 or value.max_aspect_ratio < 1.0:
++    fractions = tuple(_to_fraction(number, context=f"quality_limits[{index}]")
++                      for index, number in enumerate(numbers))
++    if (fractions[0] <= 0 or fractions[1] <= 0 or fractions[2] < 1):
+         raise _unsupported("QUALITY_LIMITS_INVALID",
+                            "min_q/min_altitude_mm must be positive and max_aspect_ratio >= 1")
+ 
+@@ -416,19 +445,13 @@
+ def _load_mesh(value: Any, name: str) -> _Mesh:
+     if value is None or not hasattr(value, "vertices") or not hasattr(value, "faces"):
+         raise _unsupported("MESH_TYPE_UNSUPPORTED", f"{name} must expose vertices and faces")
+-    raw_vertices = value.vertices
+-    raw_faces = value.faces
+-    vertex_dtype = getattr(raw_vertices, "dtype", None)
+-    face_dtype = getattr(raw_faces, "dtype", None)
+-    vertex_shape = getattr(raw_vertices, "shape", None)
+-    face_shape = getattr(raw_faces, "shape", None)
+-    _validate_mesh_array_shape(vertex_shape, "vertices", name,
+-                               _DEFAULT_MAX_VERTICES)
+-    _validate_mesh_array_shape(face_shape, "faces", name, _DEFAULT_MAX_FACES)
+-    if vertex_dtype is None or getattr(vertex_dtype, "kind", None) != "f" \
+-            or getattr(vertex_dtype, "itemsize", None) != 8:
++    raw_vertices = _base_numpy_array(value.vertices, "vertices", name)
++    raw_faces = _base_numpy_array(value.faces, "faces", name)
++    _validate_mesh_array_shape(raw_vertices, "vertices", name, _DEFAULT_MAX_VERTICES)
++    _validate_mesh_array_shape(raw_faces, "faces", name, _DEFAULT_MAX_FACES)
++    if raw_vertices.dtype.kind != "f" or raw_vertices.dtype.itemsize != 8:
+         raise _unsupported("VERTEX_DTYPE_UNSUPPORTED", f"{name} vertices must be float64")
+-    if face_dtype is None or getattr(face_dtype, "kind", None) not in ("i", "u"):
++    if raw_faces.dtype.kind not in ("i", "u") or raw_faces.dtype.itemsize > 8:
+         raise _unsupported("FACE_DTYPE_UNSUPPORTED", f"{name} faces must have integer dtype")
+     raw_metadata = getattr(value, "metadata", None)
+     if not isinstance(raw_metadata, Mapping):
+@@ -450,6 +473,9 @@
+                            f"{name} arrays could not be read: {type(exc).__name__}") from exc
+     if not isinstance(vertex_rows, list) or not vertex_rows:
+         raise _unsupported("MESH_VERTICES_INVALID", f"{name} must have vertices")
++    if len(vertex_rows) != raw_vertices.shape[0]:
++        raise _unsupported("MESH_ARRAY_SHAPE_INVALID",
++                           f"{name} vertex conversion changed the verified row count")
+     vertices_list: list[_Point3] = []
+     for index, row in enumerate(vertex_rows):
+         if not isinstance(row, (list, tuple)) or len(row) != 3:
+@@ -459,6 +485,9 @@
+                                    for x in row))  # type: ignore[arg-type]
+     if not isinstance(face_rows, list) or not face_rows:
+         raise _unsupported("MESH_FACES_INVALID", f"{name} must have faces")
++    if len(face_rows) != raw_faces.shape[0]:
++        raise _unsupported("MESH_ARRAY_SHAPE_INVALID",
++                           f"{name} face conversion changed the verified row count")
+     faces: list[tuple[int, int, int]] = []
+     for face_id, row in enumerate(face_rows):
+         if not isinstance(row, (list, tuple)) or len(row) != 3:
+@@ -480,15 +509,26 @@
+                  coordinate_unit, frame_id)
+ 
+ 
+-def _validate_mesh_array_shape(shape: Any, role: str, name: str, maximum: int) -> None:
+-    if not isinstance(shape, tuple) or len(shape) != 2:
++def _base_numpy_array(value: Any, role: str, name: str) -> np.ndarray:
++    if not isinstance(value, np.ndarray):
++        raise _unsupported("MESH_ARRAY_TYPE_UNSUPPORTED",
++                           f"{name} {role} must be a NumPy ndarray")
++    try:
++        # Call the ndarray descriptor directly to ignore subclass overrides of view/shape/dtype.
++        base_array = np.ndarray.view(value, type=np.ndarray)
++    except Exception as exc:
++        raise _unsupported("MESH_ARRAY_TYPE_UNSUPPORTED",
++                           f"{name} {role} cannot be normalized to a base ndarray: "
++                           f"{type(exc).__name__}") from exc
++    return base_array
++
++
++def _validate_mesh_array_shape(array: np.ndarray, role: str, name: str, maximum: int) -> None:
++    shape = array.shape
++    if len(shape) != 2:
+         raise _unsupported("MESH_ARRAY_SHAPE_INVALID",
+-                           f"{name} {role} must expose a rank-2 Nx3 array shape")
++                           f"{name} {role} must be a rank-2 Nx3 array")
+     rows, columns = shape
+-    if (isinstance(rows, bool) or not isinstance(rows, int)
+-            or isinstance(columns, bool) or not isinstance(columns, int)):
+-        raise _unsupported("MESH_ARRAY_SHAPE_INVALID",
+-                           f"{name} {role} dimensions must be integers")
+     if columns != 3:
+         raise _unsupported("MESH_ARRAY_SHAPE_INVALID",
+                            f"{name} {role} array must have shape Nx3")
+@@ -500,13 +540,22 @@
+             f"{name} {role} count {rows} exceeds the certificate limit {maximum}",
+             {"mesh": name, "array": role, "count": rows, "maximum": maximum},
+         )
++    maximum_bytes = maximum * 3 * 8
++    expected_bytes = rows * columns * array.dtype.itemsize
++    if array.nbytes != expected_bytes or array.nbytes > maximum_bytes:
++        raise _unsupported(
++            "MESH_ARRAY_NBYTES_INVALID",
++            f"{name} {role} logical bytes do not match its verified shape/dtype limit",
++            {"mesh": name, "array": role, "nbytes": array.nbytes,
++             "expected_nbytes": expected_bytes, "maximum_nbytes": maximum_bytes},
++        )
+ 
+ 
+ def _validate_mesh_coordinate_metadata(source: _Mesh, candidate: _Mesh,
+                                        partition: HeightGraphPartition) -> None:
++    _validate_source_coordinate_metadata(source, partition)
+     source_metadata = (source.coordinate_unit, source.frame_id)
+     candidate_metadata = (candidate.coordinate_unit, candidate.frame_id)
+-    declared_metadata = (partition.coordinate_unit, partition.frame_id)
+     if source_metadata != candidate_metadata:
+         raise _unsupported(
+             "MESH_COORDINATE_METADATA_MISMATCH",
+@@ -516,16 +565,29 @@
+              "candidate": {"coordinate_unit": candidate.coordinate_unit,
+                           "frame_id": candidate.frame_id}},
+         )
++    if candidate_metadata != (partition.coordinate_unit, partition.frame_id):
++        raise _unsupported(
++            "MESH_COORDINATE_METADATA_MISMATCH",
++            "candidate mesh metadata must match the typed partition contract",
++            {"declared": {"coordinate_unit": partition.coordinate_unit,
++                           "frame_id": partition.frame_id},
++             "candidate": {"coordinate_unit": candidate.coordinate_unit,
++                           "frame_id": candidate.frame_id}},
++        )
++
++
++def _validate_source_coordinate_metadata(mesh: _Mesh,
++                                         partition: HeightGraphPartition) -> None:
++    source_metadata = (mesh.coordinate_unit, mesh.frame_id)
++    declared_metadata = (partition.coordinate_unit, partition.frame_id)
+     if source_metadata != declared_metadata:
+         raise _unsupported(
+             "MESH_COORDINATE_METADATA_MISMATCH",
+-            "source/candidate mesh metadata must match the typed partition contract",
++            "source mesh metadata must match the typed partition contract",
+             {"declared": {"coordinate_unit": partition.coordinate_unit,
+-                          "frame_id": partition.frame_id},
+-             "source": {"coordinate_unit": source.coordinate_unit,
+-                        "frame_id": source.frame_id},
+-             "candidate": {"coordinate_unit": candidate.coordinate_unit,
+-                          "frame_id": candidate.frame_id}},
++                           "frame_id": partition.frame_id},
++             "source": {"coordinate_unit": mesh.coordinate_unit,
++                        "frame_id": mesh.frame_id}},
+         )
+ 
+ 
+@@ -551,32 +613,34 @@
+     return u, v, h
+ 
+ 
+-def _validate_face_partitions(source: _Mesh, candidate: _Mesh,
+-                              partition: HeightGraphPartition) -> None:
+-    for mesh, faceset in ((source, partition.source), (candidate, partition.candidate)):
+-        if not isinstance(faceset, FacePartition):
+-            raise _unsupported("FACE_PARTITION_TYPE_UNSUPPORTED",
+-                               f"{mesh.name} faces require typed FacePartition")
+-        groups = (faceset.upper_faces, faceset.lower_faces, faceset.side_faces)
+-        if any(not isinstance(group, tuple) for group in groups):
+-            raise _unsupported("FACE_PARTITION_NOT_IMMUTABLE",
+-                               f"{mesh.name} face role lists must be tuples")
+-        flattened: list[int] = []
+-        for role, group in zip(("upper", "lower", "side"), groups):
+-            if any(isinstance(face_id, bool) or not isinstance(face_id, int)
+-                   for face_id in group):
+-                raise _unsupported("FACE_PARTITION_INDEX_INVALID",
+-                                   f"{mesh.name} {role} face IDs must be integers")
+-            if len(set(group)) != len(group):
+-                raise _unsupported("FACE_PARTITION_DUPLICATE_ID",
+-                                   f"{mesh.name} {role} face IDs contain duplicates")
+-            if any(face_id < 0 or face_id >= len(mesh.faces) for face_id in group):
+-                raise _unsupported("FACE_PARTITION_INDEX_INVALID",
+-                                   f"{mesh.name} {role} face ID is out of range")
+-            flattened.extend(group)
+-        if len(flattened) != len(mesh.faces) or set(flattened) != set(range(len(mesh.faces))):
+-            raise _unsupported("FACE_PARTITION_INCOMPLETE",
+-                               f"{mesh.name} upper/lower/side partition must cover every face once")
++def _validate_face_partition(mesh: _Mesh, faceset: FacePartition) -> None:
++    if type(faceset) is not FacePartition:
++        raise _unsupported("FACE_PARTITION_TYPE_UNSUPPORTED",
++                           f"{mesh.name} faces require typed FacePartition")
++    groups = (faceset.upper_faces, faceset.lower_faces, faceset.side_faces)
++    if any(type(group) is not tuple for group in groups):
++        raise _unsupported("FACE_PARTITION_NOT_IMMUTABLE",
++                           f"{mesh.name} face role lists must be tuples")
++    if any(len(group) > len(mesh.faces) for group in groups):
++        raise _unsupported("FACE_PARTITION_TOO_LARGE",
++                           f"{mesh.name} face role list cannot exceed mesh face count",
++                           {"mesh": mesh.name, "max_face_ids": len(mesh.faces)})
++    flattened: list[int] = []
++    for role, group in zip(("upper", "lower", "side"), groups):
++        if any(isinstance(face_id, bool) or not isinstance(face_id, int)
++               for face_id in group):
++            raise _unsupported("FACE_PARTITION_INDEX_INVALID",
++                               f"{mesh.name} {role} face IDs must be integers")
++        if len(set(group)) != len(group):
++            raise _unsupported("FACE_PARTITION_DUPLICATE_ID",
++                               f"{mesh.name} {role} face IDs contain duplicates")
++        if any(face_id < 0 or face_id >= len(mesh.faces) for face_id in group):
++            raise _unsupported("FACE_PARTITION_INDEX_INVALID",
++                               f"{mesh.name} {role} face ID is out of range")
++        flattened.extend(group)
++    if len(flattened) != len(mesh.faces) or set(flattened) != set(range(len(mesh.faces))):
++        raise _unsupported("FACE_PARTITION_INCOMPLETE",
++                           f"{mesh.name} upper/lower/side partition must cover every face once")
+ 
+ 
+ def _make_patch(mesh: _Mesh, face_ids: tuple[int, ...], uvh: Sequence[_Point3],
+--- a/tests/a12/degrade/test_heightgraph_certificate_20261005.py
++++ b/tests/a12/degrade/test_heightgraph_certificate_20261005.py
+@@ -5,6 +5,7 @@
+ 
+ from __future__ import annotations
+ 
++from fractions import Fraction
+ from types import SimpleNamespace
+ 
+ import numpy as np
+@@ -68,12 +69,12 @@
+ 
+ 
+ def _partition(source_roles, candidate_roles, *, domain=_DOMAIN,
+-               max_pair_checks=250_000):
++               quality_limits=_QUALITY, max_pair_checks=250_000):
+     return HeightGraphPartition(
+         domain=domain,
+         source=source_roles,
+         candidate=candidate_roles,
+-        quality_limits=_QUALITY,
++        quality_limits=quality_limits,
+         coordinate_unit="mm",
+         frame_id=_FRAME_ID,
+         max_pair_checks=max_pair_checks,
+@@ -172,6 +173,21 @@
+     assert result["witness"]["first_surface"] == "source.upper"
+     assert result["witness"]["second_surface"] == "candidate.upper"
+     assert result["source_hash"] and result["result_hash"]
++
++
++def test_invalid_source_thickness_stays_unknown_before_candidate_relation():
++    source_points = [(0, 0, 0), (1, 0, 0), (1, 1, 0), (0, 1, 0),
++                     (0.5, 0.5, -3)]
++    source, source_roles = _prism(
++        source_points, [(0, 1, 4), (1, 2, 4), (2, 3, 4), (3, 0, 4)])
++    candidate, candidate_roles = _flat_square("02")
++
++    result = certify_heightgraph_subset(
++        source, candidate, _partition(source_roles, candidate_roles), _AXIS)
++
++    assert result["status"] == "UNKNOWN"
++    assert result["reasons"][0]["code"] == "SOURCE_HEIGHT_GRAPH_INVALID"
++    assert result["result_hash"] is None
+ 
+ 
+ def test_crossing_overlay_edges_can_fail_between_all_original_vertices():
+@@ -256,33 +272,53 @@
+     assert unit_result["reasons"][0]["code"] == "MESH_COORDINATE_METADATA_MISMATCH"
+ 
+ 
+-class _ShapeOnlyArray:
+-    """Array metadata stand-in that proves rejected sizes never reach tolist()."""
++class _DuckArray:
++    """A deceptive array-like which must be rejected without calling tolist()."""
+ 
+     def __init__(self, shape, dtype):
+         self.shape = shape
+         self.dtype = np.dtype(dtype)
+ 
+     def tolist(self):
+-        raise AssertionError("size/shape gates must run before allocating list copies")
++        raise AssertionError("non-ndarray inputs must be rejected before tolist()")
++
++
++class _MisleadingShapeArray(np.ndarray):
++    """An ndarray subclass with deceptive metadata; normalization must see base metadata."""
++
++    @property
++    def shape(self):
++        return (1, 3)
++
++    @property
++    def dtype(self):
++        return np.dtype(np.float64)
++
++    @property
++    def nbytes(self):
++        return 24
+ 
+ 
+ def test_mesh_shape_and_size_limits_reject_before_array_list_conversion():
+     candidate, candidate_roles = _flat_square("02")
+-    placeholder_faces = _ShapeOnlyArray((1, 3), np.int64)
+     oversized_vertices = SimpleNamespace(
+-        vertices=_ShapeOnlyArray((5_001, 3), np.float64),
+-        faces=placeholder_faces,
++        vertices=np.zeros((5_001, 3), dtype=np.float64).view(_MisleadingShapeArray),
++        faces=candidate.faces,
+         metadata=dict(_MESH_METADATA),
+     )
+     oversized_faces = SimpleNamespace(
+         vertices=candidate.vertices,
+-        faces=_ShapeOnlyArray((10_001, 3), np.int64),
++        faces=np.zeros((10_001, 3), dtype=np.int64),
+         metadata=dict(_MESH_METADATA),
+     )
+     wrong_shape = SimpleNamespace(
+-        vertices=_ShapeOnlyArray((4, 4), np.float64),
+-        faces=placeholder_faces,
++        vertices=np.zeros((4, 4), dtype=np.float64),
++        faces=candidate.faces,
++        metadata=dict(_MESH_METADATA),
++    )
++    duck_array = SimpleNamespace(
++        vertices=_DuckArray((1, 3), np.float64),
++        faces=candidate.faces,
+         metadata=dict(_MESH_METADATA),
+     )
+     partition = _partition(candidate_roles, candidate_roles)
+@@ -293,6 +329,8 @@
+         oversized_faces, candidate, partition, _AXIS)
+     shape_result = certify_heightgraph_subset(
+         wrong_shape, candidate, partition, _AXIS)
++    duck_result = certify_heightgraph_subset(
++        duck_array, candidate, partition, _AXIS)
+ 
+     assert vertex_result["status"] == "UNKNOWN"
+     assert vertex_result["reasons"][0]["code"] == "MESH_ARRAY_LIMIT_EXCEEDED"
+@@ -300,3 +338,45 @@
+     assert face_result["reasons"][0]["code"] == "MESH_ARRAY_LIMIT_EXCEEDED"
+     assert shape_result["status"] == "UNKNOWN"
+     assert shape_result["reasons"][0]["code"] == "MESH_ARRAY_SHAPE_INVALID"
++    assert duck_result["status"] == "UNKNOWN"
++    assert duck_result["reasons"][0]["code"] == "MESH_ARRAY_TYPE_UNSUPPORTED"
++
++
++def test_pair_ceiling_and_external_rational_bit_caps_fail_closed():
++    source, source_roles = _flat_square("02")
++    candidate, candidate_roles = _flat_square("13")
++
++    pair_result = certify_heightgraph_subset(
++        source, candidate,
++        _partition(source_roles, candidate_roles, max_pair_checks=250_001), _AXIS)
++    domain_result = certify_heightgraph_subset(
++        source, candidate,
++        _partition(source_roles, candidate_roles,
++                   domain=RectangleDomain(Fraction(1, 1 << 2_048), 1, 0, 1)), _AXIS)
++    integer_domain_result = certify_heightgraph_subset(
++        source, candidate,
++        _partition(source_roles, candidate_roles,
++                   domain=RectangleDomain(0, 1 << 2_048, 0, 1)), _AXIS)
++    quality_result = certify_heightgraph_subset(
++        source, candidate,
++        _partition(source_roles, candidate_roles,
++                   quality_limits=MeshQualityLimits(
++                       min_q=Fraction(1, 1 << 2_048),
++                       min_altitude_mm=1e-6, max_aspect_ratio=1_000_000)), _AXIS)
++    too_many_role_ids = FacePartition(
++        upper_faces=tuple(range(len(source.faces) + 1)),
++        lower_faces=(), side_faces=(),
++    )
++    role_result = certify_heightgraph_subset(
++        source, candidate, _partition(too_many_role_ids, candidate_roles), _AXIS)
++
++    assert pair_result["status"] == "UNKNOWN"
++    assert pair_result["reasons"][0]["code"] == "PAIR_BUDGET_INVALID"
++    assert domain_result["status"] == "UNKNOWN"
++    assert domain_result["reasons"][0]["code"] == "INPUT_RATIONAL_BIT_LIMIT_EXCEEDED"
++    assert integer_domain_result["status"] == "UNKNOWN"
++    assert integer_domain_result["reasons"][0]["code"] == "INPUT_RATIONAL_BIT_LIMIT_EXCEEDED"
++    assert quality_result["status"] == "UNKNOWN"
++    assert quality_result["reasons"][0]["code"] == "INPUT_RATIONAL_BIT_LIMIT_EXCEEDED"
++    assert role_result["status"] == "UNKNOWN"
++    assert role_result["reasons"][0]["code"] == "FACE_PARTITION_TOO_LARGE"

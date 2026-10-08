@@ -1,0 +1,6 @@
+﻿.F....                                                                   [100%]
+================================== FAILURES ===================================
+E   synlab.errors.SynLabError: [ErrorCode.CUTTER_NOT_CLOSED] (fracture.cut.verify) cutter is not watertight: 1431 edges with != 2 incident faces
+C:\Users\xiemo\Desktop\ShardForge\relicweave-synlab\synlab\fracture\cut.py:1346: synlab.errors.SynLabError: [ErrorCode.CUTTER_NOT_CLOSED] (fracture.cut.verify) cutter is not watertight: 1431 edges with != 2 incident faces
+=========================== short test summary info ===========================
+FAILED tests/a12/fracture/test_event_qa.py::test_fixture_event_passes_the_a06_thresholds[rough_shared_cut]

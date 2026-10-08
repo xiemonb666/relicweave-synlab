@@ -1,0 +1,583 @@
+diff --git a/synlab/mothers/audit.py b/synlab/mothers/audit.py
+index e571993..e47a36c 100644
+--- a/synlab/mothers/audit.py
++++ b/synlab/mothers/audit.py
+@@ -20,11 +20,11 @@ with evidence; nothing here returns an empty mesh as if it were a success.
+ 
+ from __future__ import annotations
+ 
++import time
+ from typing import Any, Sequence
+ 
+ import numpy as np
+ import trimesh
+-from scipy.spatial import cKDTree
+ 
+ from ..canonical import array_hash
+ from ..errors import ErrorCode, SynLabError
+@@ -41,204 +41,384 @@ CHECK_ORDER = (
+ 
+ 
+ # ---------------------------------------------------------------------------- geometry QA
+-def _axes_for_pair(t1: np.ndarray, t2: np.ndarray) -> np.ndarray:
+-    """(11, n, 3) candidate separating axes for ``n`` triangle pairs (may be degenerate)."""
+-    e1 = np.stack([t1[:, 1] - t1[:, 0], t1[:, 2] - t1[:, 1], t1[:, 0] - t1[:, 2]], axis=1)
+-    e2 = np.stack([t2[:, 1] - t2[:, 0], t2[:, 2] - t2[:, 1], t2[:, 0] - t2[:, 2]], axis=1)
+-    n1 = np.cross(e1[:, 0], e1[:, 1])[:, None, :]
+-    n2 = np.cross(e2[:, 0], e2[:, 1])[:, None, :]
+-    crosses = np.cross(e1[:, :, None, :], e2[:, None, :, :]).reshape(-1, 9, 3)
+-    return np.concatenate([n1, n2, crosses], axis=1)
+-
+-
+-def _interval_overlap(verts_a: np.ndarray, verts_b: np.ndarray, axes: np.ndarray,
+-                      eps: float) -> np.ndarray:
+-    """(n,) bool: projections of both triangles overlap on *every* axis by more than eps."""
+-    pa = np.einsum("nvi,nki->nvk", verts_a, axes)
+-    pb = np.einsum("nvi,nki->nvk", verts_b, axes)
+-    a_min = pa.min(axis=1)
+-    a_max = pa.max(axis=1)
+-    b_min = pb.min(axis=1)
+-    b_max = pb.max(axis=1)
+-    overlap = np.minimum(a_max, b_max) - np.maximum(a_min, b_min)
+-    axes_norm = np.linalg.norm(axes, axis=2)
+-    valid = axes_norm > 1e-9
+-    overlap = np.where(valid, overlap / np.maximum(axes_norm, 1e-12), 0.0)
+-    return np.all(np.where(valid, overlap > eps, True), axis=1)
+-
+-
+-def _coplanar_overlap(t1: np.ndarray, t2: np.ndarray, normals: np.ndarray,
+-                      eps_area_mm2: float = 1e-6) -> tuple[int, float]:
+-    """Exact 2D overlap area for coplanar triangle pairs (shapely / GEOS [R16])."""
++SELF_INTERSECTION_SEMANTICS = "nonadjacent_contact_v2"
++COPLANAR_AREA_EPS_MM2 = 1e-6
++
++
++def _open3d_module():
++    """Import Open3D lazily so an unavailable backend can fail this QA closed."""
++    import open3d as o3d
++
++    return o3d
++
++
++def _failed_intersection_report(reason: str, *, faces: int, elapsed_seconds: float = 0.0,
++                                **details: Any) -> dict[str, Any]:
++    return {
++        "ok": False,
++        "complete": False,
++        "classification_complete": False,
++        "checked_pairs": 0,
++        "candidate_pairs": 0,
++        "intersecting_pairs": 0,
++        "nonadjacent_self_contact_pairs": 0,
++        "coplanar_contact_pairs": 0,
++        "coplanar_pairs_examined": 0,
++        "coplanar_overlap_pairs": 0,
++        "coplanar_overlap_area_mm2": 0.0,
++        "faces": int(faces),
++        "reason": reason,
++        "semantic_version": SELF_INTERSECTION_SEMANTICS,
++        "elapsed_seconds": float(elapsed_seconds),
++        **details,
++    }
++
++
++def _triangle_normal(triangle: np.ndarray) -> tuple[np.ndarray, float]:
++    normal = np.cross(triangle[1] - triangle[0], triangle[2] - triangle[0])
++    norm = float(np.linalg.norm(normal))
++    return normal, norm
++
++
++def _coplanar_relation(triangle_a: np.ndarray, triangle_b: np.ndarray, normal: np.ndarray,
++                       eps_area_mm2: float = COPLANAR_AREA_EPS_MM2
++                       ) -> tuple[str, float, str | None]:
++    """Classify a coplanar Open3D pair with GEOS, returning area and relation."""
+     from shapely.geometry import Polygon
+ 
+-    overlapping = 0
+-    total_area = 0.0
+-    for i in range(len(t1)):
+-        n = normals[i]
+-        helper = np.array([1.0, 0.0, 0.0]) if abs(n[0]) < 0.9 else np.array([0.0, 1.0, 0.0])
+-        u = np.cross(n, helper)
+-        u /= max(float(np.linalg.norm(u)), 1e-12)
+-        v = np.cross(n, u)
+-        pa = Polygon(np.column_stack([t1[i] @ u, t1[i] @ v]))
+-        pb = Polygon(np.column_stack([t2[i] @ u, t2[i] @ v]))
+-        if not (pa.is_valid and pb.is_valid):
+-            continue
+-        inter = pa.intersection(pb)
+-        area = float(inter.area)
+-        if area > eps_area_mm2:
+-            overlapping += 1
+-            total_area += area
+-    return overlapping, total_area
+-
+-
+-def _candidate_pairs(tris: np.ndarray, faces: np.ndarray, *, block: int = 120_000,
+-                     max_pairs: int = 6_000_000, stage: str = "mothers.audit.self_intersection"
+-                     ) -> tuple[np.ndarray, dict[str, Any]]:
+-    """Bounded sweep that generates every pair of non-adjacent triangles that can intersect.
+-
+-    A bounding-sphere radius filter has two failure modes on real meshes: one broad cap
+-    triangle (a boolean lid, a handle root) makes the global radius meaningless, and a very
+-    thin sliver has a large bounding sphere but a tiny *axis-aligned slab*.  The sweep sorts
+-    the triangles along their widest axis and keeps a moving band of triangles whose slabs
+-    still overlap the current one, so the active set - and therefore memory - stays bounded
+-    even for those cases.  Pairs are recorded as ``(axis-aligned slab overlap) and (bounding
+-    spheres touch)``, which is a superset of the true intersections.
++    unit_normal = normal / max(float(np.linalg.norm(normal)), 1e-15)
++    helper = (np.array([1.0, 0.0, 0.0]) if abs(unit_normal[0]) < 0.9
++              else np.array([0.0, 1.0, 0.0]))
++    u = np.cross(unit_normal, helper)
++    u /= max(float(np.linalg.norm(u)), 1e-15)
++    v = np.cross(unit_normal, u)
++    polygon_a = Polygon(np.column_stack([triangle_a @ u, triangle_a @ v]))
++    polygon_b = Polygon(np.column_stack([triangle_b @ u, triangle_b @ v]))
++    if not (polygon_a.is_valid and polygon_b.is_valid):
++        return "unresolved_invalid_polygon", 0.0, None
++    intersection = polygon_a.intersection(polygon_b)
++    area = float(intersection.area)
++    if area > float(eps_area_mm2):
++        return "coplanar_positive_area_overlap", area, str(intersection.geom_type)
++    if not intersection.is_empty:
++        return "coplanar_boundary_contact", area, str(intersection.geom_type)
++    return "unresolved_open3d_geos_disagreement", area, str(intersection.geom_type)
++
++
++def _plane_cut_points(triangle: np.ndarray, plane_triangle: np.ndarray,
++                      plane_tolerance_mm: float) -> np.ndarray:
++    """Return unique points where a triangle meets another triangle's plane."""
++    normal, norm = _triangle_normal(plane_triangle)
++    if norm <= 1e-15:
++        return np.zeros((0, 3), dtype=np.float64)
++    unit_normal = normal / norm
++    signed = (triangle - plane_triangle[0]) @ unit_normal
++    points: list[np.ndarray] = []
++
++    def append(point: np.ndarray) -> None:
++        if not any(float(np.linalg.norm(point - old)) <= plane_tolerance_mm
++                   for old in points):
++            points.append(np.asarray(point, dtype=np.float64))
++
++    for left, right in ((0, 1), (1, 2), (2, 0)):
++        da, db = float(signed[left]), float(signed[right])
++        if abs(da) <= plane_tolerance_mm:
++            append(triangle[left])
++        if abs(db) <= plane_tolerance_mm:
++            append(triangle[right])
++        if (da < -plane_tolerance_mm and db > plane_tolerance_mm) or (
++                da > plane_tolerance_mm and db < -plane_tolerance_mm):
++            t = da / (da - db)
++            append(triangle[left] + t * (triangle[right] - triangle[left]))
++    return np.asarray(points, dtype=np.float64).reshape(-1, 3)
++
++
++def _barycentric_weights(triangle: np.ndarray, point: np.ndarray) -> np.ndarray | None:
++    v0 = triangle[1] - triangle[0]
++    v1 = triangle[2] - triangle[0]
++    v2 = point - triangle[0]
++    d00 = float(np.dot(v0, v0))
++    d01 = float(np.dot(v0, v1))
++    d11 = float(np.dot(v1, v1))
++    d20 = float(np.dot(v2, v0))
++    d21 = float(np.dot(v2, v1))
++    denom = d00 * d11 - d01 * d01
++    if abs(denom) <= 1e-24:
++        return None
++    w1 = (d11 * d20 - d01 * d21) / denom
++    w2 = (d00 * d21 - d01 * d20) / denom
++    return np.asarray([1.0 - w1 - w2, w1, w2], dtype=np.float64)
++
++
++def _point_at_projection(points: np.ndarray, direction: np.ndarray, projection: float
++                         ) -> np.ndarray:
++    values = points @ direction
++    order = np.argsort(values)
++    low, high = points[order[0]], points[order[-1]]
++    lo, hi = float(values[order[0]]), float(values[order[-1]])
++    if hi - lo <= 1e-15:
++        return low
++    return low + ((projection - lo) / (hi - lo)) * (high - low)
++
++
++def _classify_noncoplanar_pair(triangle_a: np.ndarray, triangle_b: np.ndarray,
++                               eps_mm: float) -> tuple[str, float | None, str | None]:
++    """Classify an Open3D hit as an interior crossing or boundary-only contact.
++
++    Open3D supplies the complete triangle intersection hit.  This helper only classifies that
++    hit by the intersection line's relative position; it is not used to find candidate pairs.
+     """
+-    centroids = tris.mean(axis=1)
+-    mins = tris.min(axis=1)
+-    maxs = tris.max(axis=1)
+-    extent = np.linalg.norm(tris - centroids[:, None, :], axis=2).max(axis=1)
+-    slab = maxs - mins
+-    axis = np.argmax(slab, axis=1)
+-    lower = mins[np.arange(len(tris)), axis]
+-    upper = maxs[np.arange(len(tris)), axis]
+-    band = np.where((axis == np.argmax(slab, axis=1)), slab.max(axis=1), slab.max(axis=1))
+-    order = np.argsort(lower, kind="stable")
+-    lower_sorted = lower[order]
+-    kept: list[np.ndarray] = []
+-    checked = 0
+-    for start in range(0, len(tris), block):
+-        stop = min(start + block, len(tris))
+-        rows: list[np.ndarray] = []
+-        cols: list[np.ndarray] = []
+-        for position in range(start, stop):
+-            index = int(order[position])
+-            reach = lower_sorted[position] + band[index]
+-            hi = int(np.searchsorted(lower_sorted, reach, side="right"))
+-            if hi <= position + 1:
+-                continue
+-            others = order[position + 1:hi]
+-            # strict per-axis slab overlap on every axis
+-            overlap = np.all((mins[others] <= maxs[index] + 1e-9)
+-                             & (maxs[others] >= mins[index] - 1e-9), axis=1)
+-            others = others[overlap]
+-            if others.size == 0:
+-                continue
+-            distance = np.linalg.norm(centroids[others] - centroids[index], axis=1)
+-            others = others[distance <= (extent[others] + extent[index])]
+-            if others.size == 0:
+-                continue
+-            left = np.full(others.size, index, dtype=np.int64)
+-            shares = ((faces[left, 0:1] == faces[others]) | (faces[left, 1:2] == faces[others])
+-                      | (faces[left, 2:3] == faces[others])).any(axis=1)
+-            others = others[~shares]
+-            if others.size == 0:
+-                continue
+-            rows.append(np.full(others.size, index, dtype=np.int64))
+-            cols.append(others)
+-            checked += int(others.size)
+-            if checked > max_pairs:
+-                raise SynLabError(
+-                    ErrorCode.MOTHER_INVALID,
+-                    f"self-intersection prefilter produced more than {max_pairs} candidate "
+-                    "pairs; mesh is pathologically dense",
+-                    stage=stage,
+-                    measurements={"faces": int(len(tris)), "candidate_pairs": checked})
+-        if rows:
+-            kept.append(np.column_stack([np.concatenate(rows), np.concatenate(cols)]))
+-    pairs = np.concatenate(kept, axis=0) if kept else np.zeros((0, 2), dtype=np.int64)
+-    report = {
+-        "faces": int(len(tris)),
+-        "candidate_pairs": int(len(pairs)),
+-        "widest_slab_mm": float(band.max()),
+-        "method": "sort along the widest slab axis, then axis-aligned slab overlap + "
+-                  "bounding-sphere overlap per candidate",
+-    }
+-    return pairs, report
++    normal_a, norm_a = _triangle_normal(triangle_a)
++    normal_b, norm_b = _triangle_normal(triangle_b)
++    if norm_a <= 1e-15 or norm_b <= 1e-15:
++        return "unresolved_degenerate_pair", None, None
++    unit_a, unit_b = normal_a / norm_a, normal_b / norm_b
++    direction = np.cross(unit_a, unit_b)
++    direction_norm = float(np.linalg.norm(direction))
++    if direction_norm <= 1e-10:
++        return "unresolved_near_parallel_pair", None, None
++    direction /= direction_norm
++    plane_tolerance = max(1e-9, min(float(eps_mm) * 0.1, 1e-5))
++    cut_a = _plane_cut_points(triangle_a, triangle_b, plane_tolerance)
++    cut_b = _plane_cut_points(triangle_b, triangle_a, plane_tolerance)
++    if cut_a.shape[0] == 0 or cut_b.shape[0] == 0:
++        return "unresolved_missing_plane_cut", None, None
++    interval_a = (float(np.min(cut_a @ direction)), float(np.max(cut_a @ direction)))
++    interval_b = (float(np.min(cut_b @ direction)), float(np.max(cut_b @ direction)))
++    lo = max(interval_a[0], interval_b[0])
++    hi = min(interval_a[1], interval_b[1])
++    overlap_length = hi - lo
++    if overlap_length < -max(float(eps_mm), 1e-8):
++        return "unresolved_open3d_plane_cut_disagreement", float(overlap_length), None
++    if overlap_length <= max(float(eps_mm), 1e-8):
++        return "nonadjacent_self_contact", max(0.0, float(overlap_length)), "point_or_short_segment"
++    midpoint_projection = 0.5 * (lo + hi)
++    point_a = _point_at_projection(cut_a, direction, midpoint_projection)
++    point_b = _point_at_projection(cut_b, direction, midpoint_projection)
++    midpoint = 0.5 * (point_a + point_b)
++    weights_a = _barycentric_weights(triangle_a, midpoint)
++    weights_b = _barycentric_weights(triangle_b, midpoint)
++    if weights_a is None or weights_b is None:
++        return "unresolved_barycentric_failure", float(overlap_length), None
++    interior_a = bool(np.all(weights_a > 1e-9) and np.all(weights_a < 1.0 - 1e-9))
++    interior_b = bool(np.all(weights_b > 1e-9) and np.all(weights_b < 1.0 - 1e-9))
++    if interior_a and interior_b:
++        return "noncoplanar_crossing", float(overlap_length), "interior_segment"
++    return "nonadjacent_self_contact", float(overlap_length), "boundary_segment"
+ 
+ 
+ def self_intersection_report(mesh: trimesh.Trimesh, *, eps_mm: float = 1e-4,
+                              max_pairs: int = 6_000_000,
+                              max_coplanar_checks: int = 1500,
+                              chunk: int = 40000) -> dict[str, Any]:
+-    """Complete non-adjacent triangle-triangle intersection scan.
+-
+-    The candidate set is every pair of non-adjacent triangles whose slabs and bounding spheres
+-    touch (see :func:`_candidate_pairs`); the separating-axis test then runs on all of them in
+-    memory-bounded blocks, followed by an exact GEOS overlap test for coplanar pairs.  The scan
+-    is complete for the triangles it reports, and the block sizes are derived from a fixed
+-    memory budget because the separating-axis test materialises ``pairs x 11 axes x 3``
+-    coordinates per block.
++    """Fail-closed non-adjacent self-contact scan backed by Open3D and GEOS.
++
++    Open3D's legacy ``get_self_intersecting_triangles`` currently scans all triangle pairs.
++    ``max_pairs`` therefore caps the *preflight work estimate* ``F*(F-1)/2`` before invoking
++    that backend, not just the number of returned hits.  The retained ``chunk`` argument is
++    for call-site compatibility; this backend does not expose chunked traversal.  Shared-index
++    face pairs are legal adjacency and are filtered.  For remaining pairs, positive-area
++    coplanar overlap and non-coplanar interior crossing are distinct counts.  A point/edge-only
++    contact between non-shared-index faces is conservatively a QA failure, exposing unwelded
++    seams or zero-thickness self-contact.  GEOS classifies coplanar overlap; if its budget or
++    any backend/classification step is incomplete, this report cannot pass.
+     """
++    started = time.perf_counter()
+     tris = np.asarray(mesh.triangles, dtype=np.float64)
+     faces = np.asarray(mesh.faces, dtype=np.int64)
+-    n = len(tris)
++    n = int(len(tris))
+     if n == 0:
+-        return {"ok": False, "checked_pairs": 0, "intersecting_pairs": 0,
+-                "reason": "empty mesh"}
+-    pairs, sweep = _candidate_pairs(tris, faces, max_pairs=max_pairs)
+-    if len(pairs) == 0:
+-        return {"ok": True, "checked_pairs": 0, "intersecting_pairs": 0,
+-                "coplanar_contact_pairs": 0, "coplanar_pairs_examined": 0,
+-                "coplanar_overlap_pairs": 0, "coplanar_overlap_area_mm2": 0.0,
+-                "complete": True, **sweep,
+-                "note": "no non-adjacent triangle pair can touch"}
+-    # the separating-axis test materialises pairs x 11 axes x 3 coordinates per block
+-    block = int(np.clip(2_000_000 // 132, 2048, int(chunk)))
+-    hits = 0
+-    coplanar_count = 0
+-    checked_coplanar = 0
+-    overlap_area = 0.0
+-    overlap_pairs = 0
+-    for start in range(0, len(pairs), block):
+-        part = pairs[start:start + block]
+-        t1 = tris[part[:, 0]]
+-        t2 = tris[part[:, 1]]
+-        axes = _axes_for_pair(t1, t2)
+-        hits += int(_interval_overlap(t1, t2, axes, eps_mm).sum())
+-        n1 = np.cross(t1[:, 1] - t1[:, 0], t1[:, 2] - t1[:, 0])
+-        n2 = np.cross(t2[:, 1] - t2[:, 0], t2[:, 2] - t2[:, 0])
+-        nn1 = n1 / np.maximum(np.linalg.norm(n1, axis=1, keepdims=True), 1e-12)
+-        nn2 = n2 / np.maximum(np.linalg.norm(n2, axis=1, keepdims=True), 1e-12)
+-        parallel = np.abs(np.einsum("ij,ij->i", nn1, nn2)) > 1.0 - 1e-6
+-        plane_gap = np.abs(np.einsum("ij,ij->i", t2[:, 0] - t1[:, 0], nn1))
+-        cop = np.nonzero(parallel & (plane_gap < eps_mm))[0]
+-        if not cop.size:
+-            continue
+-        coplanar_count += int(cop.size)
+-        # Coplanar pairs are examined *inside* the block loop with a running budget: a boolean
+-        # seam is one large coplanar contact, so keeping the pair list alive would make the
+-        # audit report itself a memory hog.
+-        room = max(0, int(max_coplanar_checks) - checked_coplanar)
+-        if not room:
++        return _failed_intersection_report("empty_mesh", faces=n,
++                                           elapsed_seconds=time.perf_counter() - started)
++    if (not np.isfinite(tris).all() or faces.shape != (n, 3)
++            or np.any(faces < 0) or np.any(faces >= len(mesh.vertices))):
++        return _failed_intersection_report(
++            "invalid_mesh_arrays", faces=n, elapsed_seconds=time.perf_counter() - started,
++            triangle_shape=list(tris.shape), face_shape=list(faces.shape))
++    if not np.isfinite(float(eps_mm)) or float(eps_mm) < 0:
++        return _failed_intersection_report(
++            "invalid_tolerance", faces=n, elapsed_seconds=time.perf_counter() - started,
++            eps_mm=eps_mm)
++
++    edge_a = tris[:, 1] - tris[:, 0]
++    edge_b = tris[:, 2] - tris[:, 0]
++    double_area = np.linalg.norm(np.cross(edge_a, edge_b), axis=1)
++    mesh_scale = max(float(np.max(np.linalg.norm(tris.reshape(-1, 3), axis=1))), 1.0)
++    degenerate = np.flatnonzero(double_area <= max(1e-15, mesh_scale * mesh_scale * 1e-15))
++    if degenerate.size:
++        return _failed_intersection_report(
++            "degenerate_triangles", faces=n, elapsed_seconds=time.perf_counter() - started,
++            degenerate_triangle_count=int(degenerate.size),
++            degenerate_triangle_indices=degenerate[:32].astype(int).tolist())
++
++    work_budget = int(max_pairs)
++    pair_work = n * (n - 1) // 2
++    if work_budget < 0 or pair_work > work_budget:
++        return _failed_intersection_report(
++            "pair_scan_budget_exceeded", faces=n,
++            elapsed_seconds=time.perf_counter() - started,
++            pair_scan_work=int(pair_work), pair_scan_budget=work_budget,
++            backend="open3d_legacy_cpu_all_pairs",
++            note="Open3D scan was not started; no spatially complete accelerated broad phase is wired")
++
++    try:
++        o3d = _open3d_module()
++        o3d_mesh = o3d.geometry.TriangleMesh(
++            o3d.utility.Vector3dVector(np.asarray(mesh.vertices, dtype=np.float64)),
++            o3d.utility.Vector3iVector(faces.astype(np.int32, copy=False)))
++        pair_array = np.asarray(o3d_mesh.get_self_intersecting_triangles(), dtype=np.int64)
++    except Exception as exc:
++        return _failed_intersection_report(
++            "backend_unavailable_or_failed", faces=n,
++            elapsed_seconds=time.perf_counter() - started,
++            backend="open3d_legacy_cpu_all_pairs",
++            backend_error=f"{type(exc).__name__}: {exc}",
++            pair_scan_work=int(pair_work), pair_scan_budget=work_budget)
++
++    if pair_array.size == 0:
++        pair_array = np.zeros((0, 2), dtype=np.int64)
++    else:
++        try:
++            pair_array = pair_array.reshape(-1, 2)
++        except ValueError:
++            return _failed_intersection_report(
++                "invalid_backend_pair_shape", faces=n,
++                elapsed_seconds=time.perf_counter() - started,
++                backend="open3d_legacy_cpu_all_pairs", backend_pair_shape=list(pair_array.shape))
++        pair_array.sort(axis=1)
++        pair_array = np.unique(pair_array, axis=0)
++    if pair_array.size and (np.any(pair_array < 0) or np.any(pair_array >= n)):
++        return _failed_intersection_report(
++            "backend_returned_invalid_pair_index", faces=n,
++            elapsed_seconds=time.perf_counter() - started,
++            backend="open3d_legacy_cpu_all_pairs", backend_pair_count=int(len(pair_array)))
++
++    pair_cap = max(0, work_budget)
++    pair_truncated = len(pair_array) > pair_cap
++    if pair_truncated:
++        pair_array = pair_array[:pair_cap]
++    if len(pair_array):
++        left_faces = faces[pair_array[:, 0]]
++        right_faces = faces[pair_array[:, 1]]
++        shares_index = ((left_faces[:, 0:1] == right_faces)
++                        | (left_faces[:, 1:2] == right_faces)
++                        | (left_faces[:, 2:3] == right_faces)).any(axis=1)
++        shared_index_pairs_filtered = int(np.count_nonzero(shares_index))
++        pairs = pair_array[~shares_index]
++    else:
++        shared_index_pairs_filtered = 0
++        pairs = pair_array
++
++    coplanar_indices: list[int] = []
++    noncoplanar_indices: list[int] = []
++    for pair_index, (ia, ib) in enumerate(pairs):
++        triangle_a, triangle_b = tris[int(ia)], tris[int(ib)]
++        normal_a, norm_a = _triangle_normal(triangle_a)
++        normal_b, norm_b = _triangle_normal(triangle_b)
++        if norm_a <= 1e-15 or norm_b <= 1e-15:
++            noncoplanar_indices.append(pair_index)
+             continue
+-        cop = cop[:room]
+-        pairs_n, area = _coplanar_overlap(t1[cop], t2[cop], nn1[cop])
+-        checked_coplanar += int(cop.shape[0])
+-        overlap_pairs += pairs_n
+-        overlap_area += area
++        unit_a, unit_b = normal_a / norm_a, normal_b / norm_b
++        parallel = abs(float(np.dot(unit_a, unit_b))) >= 1.0 - 1e-6
++        plane_gap = abs(float(np.dot(triangle_b[0] - triangle_a[0], unit_a)))
++        if parallel and plane_gap <= float(eps_mm):
++            coplanar_indices.append(pair_index)
++        else:
++            noncoplanar_indices.append(pair_index)
++
++    noncoplanar_crossings: list[dict[str, Any]] = []
++    boundary_contacts: list[dict[str, Any]] = []
++    unresolved_pairs: list[dict[str, Any]] = []
++    for pair_index in noncoplanar_indices:
++        ia, ib = (int(v) for v in pairs[pair_index])
++        relation, overlap_length, detail = _classify_noncoplanar_pair(
++            tris[ia], tris[ib], float(eps_mm))
++        item = {"faces": [ia, ib], "relation": relation,
++                "overlap_length_mm": overlap_length, "detail": detail}
++        if relation == "noncoplanar_crossing":
++            noncoplanar_crossings.append(item)
++        elif relation == "nonadjacent_self_contact":
++            boundary_contacts.append(item)
++        else:
++            unresolved_pairs.append(item)
++
++    coplanar_contact_pairs = int(len(coplanar_indices))
++    coplanar_budget = max(0, int(max_coplanar_checks))
++    coplanar_pairs_examined = min(coplanar_contact_pairs, coplanar_budget)
++    coplanar_skipped = coplanar_contact_pairs - coplanar_pairs_examined
++    coplanar_overlap_pairs = 0
++    coplanar_boundary_contacts = 0
++    coplanar_overlap_area_mm2 = 0.0
++    coplanar_details: list[dict[str, Any]] = []
++    geos_errors: list[dict[str, Any]] = []
++    for pair_index in coplanar_indices[:coplanar_pairs_examined]:
++        ia, ib = (int(v) for v in pairs[pair_index])
++        relation, area, geom_type = _coplanar_relation(
++            tris[ia], tris[ib], _triangle_normal(tris[ia])[0])
++        detail = {"faces": [ia, ib], "relation": relation,
++                  "overlap_area_mm2": float(area), "intersection_geometry": geom_type}
++        coplanar_details.append(detail)
++        if relation == "coplanar_positive_area_overlap":
++            coplanar_overlap_pairs += 1
++            coplanar_overlap_area_mm2 += float(area)
++        elif relation == "coplanar_boundary_contact":
++            coplanar_boundary_contacts += 1
++            boundary_contacts.append(detail)
++        else:
++            geos_errors.append(detail)
++
++    classification_complete = bool(not pair_truncated and coplanar_skipped == 0
++                                   and not unresolved_pairs and not geos_errors)
++    complete = classification_complete
++    has_findings = bool(noncoplanar_crossings or boundary_contacts or coplanar_overlap_pairs)
++    ok = bool(complete and not has_findings)
++    elapsed = time.perf_counter() - started
++    failures: list[str] = []
++    if noncoplanar_crossings:
++        failures.append("non-coplanar triangle interiors cross")
++    if coplanar_overlap_pairs:
++        failures.append("coplanar triangles overlap with positive area")
++    if boundary_contacts:
++        failures.append("non-shared-index triangles touch at a boundary")
++    if not complete:
++        failures.append("intersection scan or classification is incomplete")
+     return {
+-        "ok": bool(hits == 0 and overlap_pairs == 0),
++        "ok": ok,
++        "complete": complete,
++        "classification_complete": classification_complete,
++        "semantic_version": SELF_INTERSECTION_SEMANTICS,
++        "algorithm": "Open3D legacy CPU all-pairs scan + GEOS coplanar classification",
++        "backend": "open3d_legacy_cpu_all_pairs",
++        "backend_version": str(getattr(o3d, "__version__", "unknown")),
+         "checked_pairs": int(len(pairs)),
+-        "intersecting_pairs": int(hits),
+-        "coplanar_contact_pairs": int(coplanar_count),
+-        "coplanar_pairs_examined": int(checked_coplanar),
+-        "coplanar_overlap_pairs": int(overlap_pairs),
+-        "coplanar_overlap_area_mm2": float(overlap_area),
++        "candidate_pairs": int(len(pair_array)),
++        "backend_pair_count": int(len(pair_array)),
++        "shared_index_pairs_filtered": shared_index_pairs_filtered,
++        "pair_scan_work": int(pair_work),
++        "pair_scan_budget": work_budget,
++        "intersecting_pairs": int(len(noncoplanar_crossings)),
++        "nonadjacent_self_contact_pairs": int(len(boundary_contacts)),
++        "noncoplanar_crossing_pairs": noncoplanar_crossings,
++        "nonadjacent_self_contact_details": boundary_contacts,
++        "unresolved_pairs": unresolved_pairs,
++        "coplanar_contact_pairs": coplanar_contact_pairs,
++        "coplanar_pairs_examined": int(coplanar_pairs_examined - len(geos_errors)),
++        "coplanar_pairs_skipped": int(coplanar_skipped),
++        "coplanar_boundary_contact_pairs": int(coplanar_boundary_contacts),
++        "coplanar_overlap_pairs": int(coplanar_overlap_pairs),
++        "coplanar_overlap_area_mm2": float(coplanar_overlap_area_mm2),
++        "coplanar_details": coplanar_details,
++        "classification_errors": geos_errors,
+         "eps_mm": float(eps_mm),
+-        "complete": True,
+-        **sweep,
++        "coplanar_area_eps_mm2": COPLANAR_AREA_EPS_MM2,
++        "pair_budget_truncated": bool(pair_truncated),
++        "method": "Open3D GetSelfIntersectingTriangles all-pairs scan; shared-index pairs excluded; "
++                  "GEOS projects coplanar hits for positive-area classification",
++        "boundary_contact_policy": "non-shared-index point/edge/segment contacts fail QA",
++        "chunk_parameter_ignored": int(chunk),
++        "elapsed_seconds": float(elapsed),
++        "failures": failures,
++        "faces": n,
+     }
+ 
+ 

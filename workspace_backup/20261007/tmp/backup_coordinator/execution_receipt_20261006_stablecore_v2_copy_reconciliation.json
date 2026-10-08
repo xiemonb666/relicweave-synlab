@@ -1,0 +1,16 @@
+{
+  "schema": "stablecore_copy_interruption_reconciliation.v1",
+  "approved_plan_sha256": "c4af20f11b5681399ca3e42eccd85bb9daf00b0839ad1666b6b8b988678de60d",
+  "original_failure_receipt": "tmp/backup_coordinator/execution_receipt_20261006_stablecore_v2_copy_failure.json",
+  "original_failure_receipt_sha256": "76f6cb35a634df2a5b1a5819aa0ff2e50b1bf837f519e9c8374a52da7564efa1",
+  "original_receipt_claimed_completed_copy_count": 0,
+  "actual_postcheck_exact_destination_count": 1,
+  "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source/static_solve_bridge.py",
+  "bytes": 50402,
+  "sha256": "2a5d60bb77c3ea178dcda086830270262391e954513076317da6ddff7b4a42e5",
+  "source_sha256": "2a5d60bb77c3ea178dcda086830270262391e954513076317da6ddff7b4a42e5",
+  "source_destination_equal": true,
+  "interpretation": "The first destination copy completed, then PowerShell failed while constructing its in-memory receipt row because boolean literals were unquoted. No stage/commit/push occurred. Original receipt retained unchanged; this addendum records the observed exact file.",
+  "resume_policy": "Do not overwrite this destination. Re-verify exact pin and treat it as already copied; copy only the remaining approved destinations.",
+  "recorded_utc": "2026-10-06T03:53:54.9263691Z"
+}

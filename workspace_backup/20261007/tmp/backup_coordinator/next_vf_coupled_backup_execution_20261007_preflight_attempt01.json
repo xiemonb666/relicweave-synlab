@@ -1,0 +1,152 @@
+{
+  "schema": "shardforge.backup_execution.v1",
+  "plan_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\backup_coordinator\\next_vf_coupled_backup_plan_20261007.json",
+  "plan_sha256": "d0564be84a6a51887db11a3aa2410fb9f3154935adc066e1c1d5487b8fb989e7",
+  "execution_status": "preflight_copy_or_stage_failed",
+  "started_utc": "2026-10-06T19:15:02.6245351+00:00",
+  "counts": {
+    "planned_items": 43,
+    "planned_bytes": 936512,
+    "copy_count": 34,
+    "direct_stage_count": 9
+  },
+  "preflight": {},
+  "copy_receipts": [],
+  "git_command_receipts": [
+    {
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+        "-c",
+        "core.autocrlf=false",
+        "rev-parse",
+        "--show-toplevel"
+      ],
+      "returncode": 0,
+      "stdout_bytes": 41,
+      "stderr_bytes": 0,
+      "stdout_text": "C:/Users/xiemo/Desktop/ShardForge/pgfrag\n",
+      "stderr_text": "",
+      "stdout_base64": "QzovVXNlcnMveGllbW8vRGVza3RvcC9TaGFyZEZvcmdlL3BnZnJhZwo=",
+      "stderr_base64": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+        "-c",
+        "core.autocrlf=false",
+        "branch",
+        "--show-current"
+      ],
+      "returncode": 0,
+      "stdout_bytes": 27,
+      "stderr_bytes": 0,
+      "stdout_text": "backup/forge-work-20261003\n",
+      "stderr_text": "",
+      "stdout_base64": "YmFja3VwL2ZvcmdlLXdvcmstMjAyNjEwMDMK",
+      "stderr_base64": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+        "-c",
+        "core.autocrlf=false",
+        "rev-parse",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "stdout_bytes": 41,
+      "stderr_bytes": 0,
+      "stdout_text": "6aabf6191eb232b4ad446334189d15e894bc3bff\n",
+      "stderr_text": "",
+      "stdout_base64": "NmFhYmY2MTkxZWIyMzJiNGFkNDQ2MzM0MTg5ZDE1ZTg5NGJjM2JmZgo=",
+      "stderr_base64": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+        "-c",
+        "core.autocrlf=false",
+        "rev-parse",
+        "HEAD^"
+      ],
+      "returncode": 0,
+      "stdout_bytes": 41,
+      "stderr_bytes": 0,
+      "stdout_text": "c13770d7c99ae58d3b57c34b434d2eb1a743d814\n",
+      "stderr_text": "",
+      "stdout_base64": "YzEzNzcwZDdjOTlhZTU4ZDNiNTdjMzRiNDM0ZDJlYjFhNzQzZDgxNAo=",
+      "stderr_base64": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+        "-c",
+        "core.autocrlf=false",
+        "ls-remote",
+        "origin",
+        "refs/heads/backup/forge-work-20261003"
+      ],
+      "returncode": 0,
+      "stdout_bytes": 79,
+      "stderr_bytes": 0,
+      "stdout_text": "6aabf6191eb232b4ad446334189d15e894bc3bff\trefs/heads/backup/forge-work-20261003\n",
+      "stderr_text": "",
+      "stdout_base64": "NmFhYmY2MTkxZWIyMzJiNGFkNDQ2MzM0MTg5ZDE1ZTg5NGJjM2JmZglyZWZzL2hlYWRzL2JhY2t1cC9mb3JnZS13b3JrLTIwMjYxMDAzCg==",
+      "stderr_base64": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+        "-c",
+        "core.autocrlf=false",
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "returncode": 0,
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "stdout_text": "",
+      "stderr_text": "",
+      "stdout_base64": "",
+      "stderr_base64": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+        "-c",
+        "core.autocrlf=false",
+        "status",
+        "--short",
+        "--untracked-files=no"
+      ],
+      "returncode": 0,
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "stdout_text": "",
+      "stderr_text": "",
+      "stdout_base64": "",
+      "stderr_base64": ""
+    }
+  ],
+  "staged_path_checks": [],
+  "index_blob_checks": [],
+  "repositories": {},
+  "error_message": "System.Management.Automation.RuntimeException: pgfrag preflight branch/head/parent/remote/index/tracked drift",
+  "notes": [],
+  "failed_utc": "2026-10-06T19:15:05.3180350+00:00"
+}

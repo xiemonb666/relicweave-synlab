@@ -1,0 +1,173 @@
+{
+  "schema": "synlab.cohesive_contract_review_extract.v1",
+  "source_sha256": "8990a6738c27feaf2a7001562dcd8a892a5f87866b1ef32f5e0d86f37d141eac",
+  "source_bytes": 66846,
+  "manifest_sha256": "21b563069550e2091474fe94877bd3ceaae094ac4c92aed3900ecdd94702dd68",
+  "frozen_endtime_s": 0.0001,
+  "expected_full_debond_GcA_J": 3.0399999999999997e-05,
+  "cases": {
+    "zero_load": {
+      "case": "zero_load",
+      "run_status": "COMPLETED",
+      "steps_completed": 1707,
+      "endtime_reached": true,
+      "first_insertion_step": null,
+      "first_insertion_time_s": null,
+      "native_insertions": 0,
+      "api_insertions": 0,
+      "cohesive_element_count": 0,
+      "lineage_status": "EXACT_FOR_CONTRACT_MESH_FROM_NATIVE_CONNECTIVITY",
+      "paired_rest_gap_max_m": 0.0,
+      "cohesive_rest_side_area_sums_m2": [
+        0.0,
+        0.0
+      ],
+      "target_rest_area_m2_per_side": 0.0,
+      "area_relative_errors": null,
+      "outward_normal_dot_min_max": null,
+      "mass_component_sums_before_kg": [
+        4e-05,
+        4e-05,
+        4e-05
+      ],
+      "mass_component_sums_after_kg": [
+        4e-05,
+        4e-05,
+        4e-05
+      ],
+      "mass_conserved_by_component": true,
+      "energies_J": {
+        "kinetic": 0.0,
+        "potential": 0.0,
+        "dissipated": 0.0,
+        "reversible": 0.0,
+        "contact": 0.0
+      },
+      "external_work_J": 0.0,
+      "ledger_residual_J": 0.0,
+      "ledger_relative_residual": null,
+      "cohesive_dissipation_signed_J": 0.0,
+      "cohesive_dissipation_target_J": 3.0399999999999997e-05,
+      "dissipation_target_gate": "NOT_REACHED",
+      "maximum_nodal_displacement_norm_m": 0.0
+    },
+    "modeI_dt": {
+      "case": "modeI_dt",
+      "run_status": "COMPLETED",
+      "steps_completed": 1707,
+      "endtime_reached": true,
+      "first_insertion_step": 650,
+      "first_insertion_time_s": 3.807850029291154e-05,
+      "native_insertions": 8,
+      "api_insertions": 8,
+      "cohesive_element_count": 8,
+      "lineage_status": "EXACT_FOR_CONTRACT_MESH_FROM_NATIVE_CONNECTIVITY",
+      "paired_rest_gap_max_m": 0.0,
+      "cohesive_rest_side_area_sums_m2": [
+        4e-06,
+        4e-06
+      ],
+      "target_rest_area_m2_per_side": 4e-06,
+      "area_relative_errors": [
+        0.0,
+        0.0
+      ],
+      "outward_normal_dot_min_max": [
+        -1.0,
+        -1.0
+      ],
+      "mass_component_sums_before_kg": [
+        4e-05,
+        4e-05,
+        4e-05
+      ],
+      "mass_component_sums_after_kg": [
+        4e-05,
+        4e-05,
+        4e-05
+      ],
+      "mass_conserved_by_component": true,
+      "energies_J": {
+        "kinetic": 0.00035243160383350224,
+        "potential": 0.00021605427591339405,
+        "dissipated": -5.572968137645039e-05,
+        "reversible": 0.0,
+        "contact": 0.0
+      },
+      "external_work_J": 0.0005037457682805293,
+      "ledger_residual_J": -9.01043008991664e-06,
+      "ledger_relative_residual": -0.017886860113331716,
+      "cohesive_dissipation_signed_J": -5.572968137645039e-05,
+      "cohesive_dissipation_target_J": 3.0399999999999997e-05,
+      "dissipation_target_gate": "NOT_REACHED",
+      "maximum_nodal_displacement_norm_m": 3.4688948288886425e-05
+    },
+    "modeI_dt2": {
+      "case": "modeI_dt2",
+      "run_status": "COMPLETED",
+      "steps_completed": 3414,
+      "endtime_reached": true,
+      "first_insertion_step": 1297,
+      "first_insertion_time_s": 3.799062683069713e-05,
+      "native_insertions": 8,
+      "api_insertions": 8,
+      "cohesive_element_count": 8,
+      "lineage_status": "EXACT_FOR_CONTRACT_MESH_FROM_NATIVE_CONNECTIVITY",
+      "paired_rest_gap_max_m": 0.0,
+      "cohesive_rest_side_area_sums_m2": [
+        4e-06,
+        4e-06
+      ],
+      "target_rest_area_m2_per_side": 4e-06,
+      "area_relative_errors": [
+        0.0,
+        0.0
+      ],
+      "outward_normal_dot_min_max": [
+        -1.0,
+        -1.0
+      ],
+      "mass_component_sums_before_kg": [
+        4e-05,
+        4e-05,
+        4e-05
+      ],
+      "mass_component_sums_after_kg": [
+        4e-05,
+        4e-05,
+        4e-05
+      ],
+      "mass_conserved_by_component": true,
+      "energies_J": {
+        "kinetic": 0.00039400027168873345,
+        "potential": 0.00011823012955104869,
+        "dissipated": -9.726359554870569e-06,
+        "reversible": 0.0,
+        "contact": 0.0
+      },
+      "external_work_J": 0.0005013039202350114,
+      "ledger_residual_J": -1.2001214499001876e-06,
+      "ledger_relative_residual": -0.0023939997304181673,
+      "cohesive_dissipation_signed_J": -9.726359554870569e-06,
+      "cohesive_dissipation_target_J": 3.0399999999999997e-05,
+      "dissipation_target_gate": "NOT_REACHED",
+      "maximum_nodal_displacement_norm_m": 1.6668138120199364e-05
+    }
+  },
+  "dt_refinement": {
+    "same_endtime": true,
+    "coarse_signed_dissipation_J": -5.572968137645039e-05,
+    "fine_signed_dissipation_J": -9.726359554870569e-06,
+    "absolute_difference_J": 4.6003321821579815e-05,
+    "absolute_difference_over_coarse_abs": 0.8254725432724145,
+    "gate": "NOT_REACHED because neither case reached the frozen positive Gc*A dissipation target"
+  },
+  "nonclaims": {
+    "contact": "NOT_RUN",
+    "roughness": "NOT_VALIDATED",
+    "free_crack_path": "NOT_VALIDATED; only a central physical interface is enabled",
+    "real_ceramic_qualification": "NOT_VALIDATED_TOY",
+    "gpu": "UNKNOWN"
+  },
+  "curator_note": "Structured extraction; source and copy hashes are recorded in the evidence index. run_contract requests getEnergy('contact'), while reviewed MaterialCohesive source establishes 'cohesive contact'; returned semantics for 'contact' remain UNKNOWN. Raw traces/statuses are preserved separately and were not changed."
+}

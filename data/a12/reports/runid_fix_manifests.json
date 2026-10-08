@@ -1,0 +1,430 @@
+{
+  "releases": {
+    "closed_loop_store": {
+      "assets": 165,
+      "closure": {
+        "files_checked": 165,
+        "ok": true
+      },
+      "coverage": {
+        "fragment_assets_in_scope": 42,
+        "layer_combos": [
+          "L01"
+        ],
+        "ledger": {
+          "ledger_run_id": "run_852ab2a1e4c3b70f",
+          "reason": null,
+          "rows_attributed_to_this_run": 3,
+          "rows_ref": "data\\a12_exports\\closed_loop\\store\\reports\\coverage_rows.json",
+          "run_id_matches": true,
+          "summary_ref": "data\\a12_exports\\closed_loop\\store\\reports\\coverage.json",
+          "total_rows": 3
+        },
+        "lineage_count": 3,
+        "lineages": [
+          "LIN0000_V01_M01_PAT01",
+          "LIN0001_V02_M01_PAT01",
+          "LIN0002_V13_M01_PAT01"
+        ],
+        "materials": [
+          "M01"
+        ],
+        "mothers": 3,
+        "observations": 3,
+        "patterns": [
+          "PAT01"
+        ],
+        "r2_relations_in_scope": 6,
+        "relations_in_scope": 21,
+        "roles": {
+          "clean_truth": 9,
+          "feature_bundle": 21,
+          "fragment_mesh": 42,
+          "label_bundle": 21,
+          "material_profile": 3,
+          "mother_mesh": 21,
+          "obs_result": 3,
+          "pattern_channels": 3,
+          "pattern_recipe": 3,
+          "physical_component": 3,
+          "physical_truth": 9,
+          "provenance": 21,
+          "visible_labels": 6
+        },
+        "run_id": "run_852ab2a1e4c3b70f",
+        "run_id_attribution": {
+          "note": "how each asset of the scope got its meta.run_id: 'stamped_at_commit' means the module that produced it wrote the run id itself; 'stamped_by_run_attribution_repair' means the role's commit path carries no run id (material_profile / physical_component) and closed_loop attributed it from the run's own coverage row.  A scope whose repair count is larger than that is carrying a stamp written by an older, lineage-based attribution and its counts include assets of other runs: re-generate into a fresh store instead of reading them as this run's coverage",
+          "stamped_at_commit": 18,
+          "stamped_by_run_attribution_repair": 147
+        },
+        "sources": {
+          "layer_combos": "reports/coverage_rows.json, rows whose asset ids belong to this run",
+          "mothers/vessels/materials": "mother_mesh.meta.mother_id/vessel_id/material_id",
+          "patterns": "pattern_recipe.meta.family_id",
+          "r2_relations_in_scope": "label_bundle.meta.relations_json over the frozen scope, one asset per accepted lineage",
+          "roles/fragments/observations/lineages/splits": "assets.meta.run_id == run_id",
+          "run_id_attribution": "assets.meta.run_id_source"
+        },
+        "splits": {
+          "dev": 53,
+          "train": 112
+        },
+        "vessels": [
+          "V01",
+          "V02",
+          "V13"
+        ]
+      },
+      "excluded_role_reasons": {
+        "visible_labels": {
+          "QA_FAIL": [
+            "no correspondence sample is visible in any view"
+          ]
+        }
+      },
+      "gate_overrides": [],
+      "gates": {
+        "accepted_nested_100k": "PENDING",
+        "accepted_nested_10k": "PENDING",
+        "accepted_nested_50k": "PENDING",
+        "capture_profile": "PENDING",
+        "confirmation_complete": "PENDING",
+        "coordinate_contract": "PASS",
+        "core_ui_api": "PASS",
+        "coverage_12_materials": "PENDING",
+        "coverage_16_patterns": "PENDING",
+        "coverage_24_vessels": "PENDING",
+        "coverage_31_axes": "PENDING",
+        "coverage_4_backends": "PENDING",
+        "coverage_4_layers": "PENDING",
+        "fixture_contract": "PASS",
+        "fracture_operator_runs": "PASS",
+        "frozen_protocol": "PENDING",
+        "l2_qualification": "PENDING",
+        "leakage_audit": "PENDING",
+        "legal_inputs": "PENDING",
+        "loader_index_runnable": "PASS",
+        "mask_source": "PENDING",
+        "mvs_subset_real_run": "PENDING",
+        "observation_operator_runs": "PASS",
+        "operators_used_pass": "PASS",
+        "phone_rgb_mvs": "PENDING",
+        "proxy_calibration": "PENDING",
+        "read_recovery": "PASS",
+        "readonly_commit": "PASS",
+        "real_capture_dataset": "PENDING",
+        "references_loadable": "PENDING",
+        "relations_complete": "PENDING",
+        "resource_profile": "PASS",
+        "risk_calibration": "PENDING",
+        "scale_source": "PENDING",
+        "source_map": "PASS",
+        "train_dev_lineage": "PASS",
+        "training_runs": "PENDING"
+      },
+      "manifest_hash": "sha256:0792623e6b5c8c451df87949cb484bf23b7de4bc11e233bd78ce97d5029f1332",
+      "manifest_path": "data\\a12_exports\\closed_loop\\store\\releases\\rel_852ab2a1e4c3_1790909619\\manifest.json",
+      "profile": "SANDBOX_CORE",
+      "refused_gate_overrides": [],
+      "relation_status": {
+        "by_role": {
+          "clean_truth": {
+            "assets": 9,
+            "edges": 9,
+            "kinds": {
+              "R2": 6,
+              "UNKNOWN": 3
+            },
+            "reasons": {
+              "ambiguous_area_ratio>0.02": 5,
+              "below_r2_area_threshold": 3,
+              "below_tiny_area": 1,
+              "shared_new_fracture_surface": 6,
+              "structurally_valid_cut_face": 3
+            }
+          },
+          "label_bundle": {
+            "assets": 21,
+            "edges": 21,
+            "kinds": {
+              "R2": 6,
+              "UNKNOWN": 15
+            },
+            "reasons": {}
+          },
+          "physical_truth": {
+            "assets": 9,
+            "edges": 9,
+            "kinds": {
+              "R2": 6,
+              "UNKNOWN": 3
+            },
+            "reasons": {
+              "ambiguous_area_ratio>0.02": 5,
+              "below_r2_area_threshold": 3,
+              "below_tiny_area": 1,
+              "shared_new_fracture_surface": 6,
+              "structurally_valid_cut_face": 3
+            }
+          },
+          "visible_labels": {
+            "assets": 0,
+            "edges": 0,
+            "kinds": {},
+            "reasons": {}
+          }
+        },
+        "cross_check": {
+          "agree": true,
+          "clean_truth_r2": 6,
+          "label_bundle_r2": 6,
+          "note": "the label bundle is built from the clean relation graph, so the two counts have to agree; a disagreement is reported, never averaged away"
+        },
+        "kinds": {
+          "R2": 6,
+          "UNKNOWN": 15
+        },
+        "r1_edges": 0,
+        "r2_edges": 6,
+        "r2_relations_in_scope": 6,
+        "reason_histogram": {},
+        "relations_in_scope": 21,
+        "source": "label_bundle.meta.relations_json over the frozen scope, one asset per accepted lineage",
+        "tiny_edges": 0,
+        "unknown_edges": 15
+      },
+      "release_id": "rel_852ab2a1e4c3_1790909619",
+      "required_gates": [
+        "fixture_contract",
+        "coordinate_contract",
+        "source_map",
+        "readonly_commit",
+        "fracture_operator_runs",
+        "observation_operator_runs"
+      ],
+      "scope_completed": [
+        "fixture_contract",
+        "coordinate_contract",
+        "source_map",
+        "readonly_commit",
+        "fracture_operator_runs",
+        "observation_operator_runs"
+      ],
+      "scope_declaration": "SANDBOX_CORE release of the closed loop. The frozen scope is every QA_PASS asset whose meta.run_id is generation run run_852ab2a1e4c3b70f: 3 mother(s) / 1 material(s) / 1 pattern(s) / 1 layer combo(s) / 42 fragment asset(s) / 3 observation(s) over 3 accepted lineage(s); reference closure verified over 165 file(s). All 6/6 required gates of this profile are PASS. Measured relation content of that scope: 6 R2 / 0 R1 / 0 TINY_CONTACT / 15 UNKNOWN over 21 frozen relation edge(s) (label_bundle.meta.relations_json over the frozen scope, one asset per accepted lineage). This release contains 6 relation(s) with an R2 label, counted from the frozen label bundles; the pool's positives and this count are the same measurement. Every number in this declaration was recomputed from the store when the release was frozen (see coverage.sources and relation_status.by_role); it exists to validate the export / loader / release machinery end to end and states nothing the store does not carry.",
+      "scope_pending": [],
+      "visibility_status": {
+        "failures": [],
+        "source": "assets(role=visible_labels, meta.run_id == run_id).qa_status and .qa.failures as written by truth.update_visibility_truth",
+        "visible_labels_failed": 0,
+        "visible_labels_passed": 6,
+        "visible_labels_pending": 0
+      }
+    },
+    "fresh_store": {
+      "assets": 14,
+      "closure": {
+        "files_checked": 15,
+        "ok": true
+      },
+      "coverage": {
+        "fragment_assets_in_scope": 2,
+        "layer_combos": [
+          "L01"
+        ],
+        "ledger": {
+          "ledger_run_id": "run_9a5c5a39a8ada0fc",
+          "reason": null,
+          "rows_attributed_to_this_run": 1,
+          "rows_ref": "data\\a12_exports\\cl_fresh\\store\\reports\\coverage_rows.json",
+          "run_id_matches": true,
+          "summary_ref": "data\\a12_exports\\cl_fresh\\store\\reports\\coverage.json",
+          "total_rows": 1
+        },
+        "lineage_count": 1,
+        "lineages": [
+          "LIN0000_V02_M01_PAT02"
+        ],
+        "materials": [
+          "M01"
+        ],
+        "mothers": 1,
+        "observations": 1,
+        "patterns": [
+          "PAT02"
+        ],
+        "r2_relations_in_scope": 1,
+        "relations_in_scope": 1,
+        "roles": {
+          "clean_truth": 1,
+          "feature_bundle": 1,
+          "fragment_mesh": 2,
+          "label_bundle": 1,
+          "material_profile": 1,
+          "mother_mesh": 1,
+          "obs_result": 1,
+          "pattern_channels": 1,
+          "pattern_recipe": 1,
+          "physical_component": 1,
+          "physical_truth": 1,
+          "provenance": 1,
+          "visible_labels": 1
+        },
+        "run_id": "run_9a5c5a39a8ada0fc",
+        "run_id_attribution": {
+          "note": "how each asset of the scope got its meta.run_id: 'stamped_at_commit' means the module that produced it wrote the run id itself; 'stamped_by_run_attribution_repair' means the role's commit path carries no run id (material_profile / physical_component) and closed_loop attributed it from the run's own coverage row.  A scope whose repair count is larger than that is carrying a stamp written by an older, lineage-based attribution and its counts include assets of other runs: re-generate into a fresh store instead of reading them as this run's coverage",
+          "stamped_at_commit": 12,
+          "stamped_by_run_attribution_repair": 2
+        },
+        "sources": {
+          "layer_combos": "reports/coverage_rows.json, rows whose asset ids belong to this run",
+          "mothers/vessels/materials": "mother_mesh.meta.mother_id/vessel_id/material_id",
+          "patterns": "pattern_recipe.meta.family_id",
+          "r2_relations_in_scope": "label_bundle.meta.relations_json over the frozen scope, one asset per accepted lineage",
+          "roles/fragments/observations/lineages/splits": "assets.meta.run_id == run_id",
+          "run_id_attribution": "assets.meta.run_id_source"
+        },
+        "splits": {
+          "train": 14
+        },
+        "vessels": [
+          "V02"
+        ]
+      },
+      "excluded_role_reasons": {
+        "physical_result": {
+          "QA_FAIL": [
+            "NOT_WATERTIGHT"
+          ]
+        }
+      },
+      "gate_overrides": [],
+      "gates": {
+        "accepted_nested_100k": "PENDING",
+        "accepted_nested_10k": "PENDING",
+        "accepted_nested_50k": "PENDING",
+        "capture_profile": "PENDING",
+        "confirmation_complete": "PENDING",
+        "coordinate_contract": "PASS",
+        "core_ui_api": "PASS",
+        "coverage_12_materials": "PENDING",
+        "coverage_16_patterns": "PENDING",
+        "coverage_24_vessels": "PENDING",
+        "coverage_31_axes": "PENDING",
+        "coverage_4_backends": "PENDING",
+        "coverage_4_layers": "PENDING",
+        "fixture_contract": "PASS",
+        "fracture_operator_runs": "PASS",
+        "frozen_protocol": "PENDING",
+        "l2_qualification": "PENDING",
+        "leakage_audit": "PENDING",
+        "legal_inputs": "PENDING",
+        "loader_index_runnable": "PASS",
+        "mask_source": "PENDING",
+        "mvs_subset_real_run": "PENDING",
+        "observation_operator_runs": "PASS",
+        "operators_used_pass": "PASS",
+        "phone_rgb_mvs": "PENDING",
+        "proxy_calibration": "PENDING",
+        "read_recovery": "PASS",
+        "readonly_commit": "PASS",
+        "real_capture_dataset": "PENDING",
+        "references_loadable": "PENDING",
+        "relations_complete": "PENDING",
+        "resource_profile": "PASS",
+        "risk_calibration": "PENDING",
+        "scale_source": "PENDING",
+        "source_map": "PASS",
+        "train_dev_lineage": "PENDING",
+        "training_runs": "PENDING"
+      },
+      "manifest_hash": "sha256:5353b0d8ea218796e096d7e226fd03ba18a2b89deba35881a05c11462da56024",
+      "manifest_path": "data\\a12_exports\\cl_fresh\\store\\releases\\rel_9a5c5a39a8ad_1790909613\\manifest.json",
+      "profile": "SANDBOX_CORE",
+      "refused_gate_overrides": [],
+      "relation_status": {
+        "by_role": {
+          "clean_truth": {
+            "assets": 1,
+            "edges": 1,
+            "kinds": {
+              "R2": 1
+            },
+            "reasons": {
+              "shared_new_fracture_surface": 1,
+              "structurally_valid_cut_face": 1
+            }
+          },
+          "label_bundle": {
+            "assets": 1,
+            "edges": 1,
+            "kinds": {
+              "R2": 1
+            },
+            "reasons": {}
+          },
+          "physical_truth": {
+            "assets": 1,
+            "edges": 1,
+            "kinds": {
+              "R2": 1
+            },
+            "reasons": {
+              "shared_new_fracture_surface": 1,
+              "structurally_valid_cut_face": 1
+            }
+          },
+          "visible_labels": {
+            "assets": 0,
+            "edges": 0,
+            "kinds": {},
+            "reasons": {}
+          }
+        },
+        "cross_check": {
+          "agree": true,
+          "clean_truth_r2": 1,
+          "label_bundle_r2": 1,
+          "note": "the label bundle is built from the clean relation graph, so the two counts have to agree; a disagreement is reported, never averaged away"
+        },
+        "kinds": {
+          "R2": 1
+        },
+        "r1_edges": 0,
+        "r2_edges": 1,
+        "r2_relations_in_scope": 1,
+        "reason_histogram": {},
+        "relations_in_scope": 1,
+        "source": "label_bundle.meta.relations_json over the frozen scope, one asset per accepted lineage",
+        "tiny_edges": 0,
+        "unknown_edges": 0
+      },
+      "release_id": "rel_9a5c5a39a8ad_1790909613",
+      "required_gates": [
+        "fixture_contract",
+        "coordinate_contract",
+        "source_map",
+        "readonly_commit",
+        "fracture_operator_runs",
+        "observation_operator_runs"
+      ],
+      "scope_completed": [
+        "fixture_contract",
+        "coordinate_contract",
+        "source_map",
+        "readonly_commit",
+        "fracture_operator_runs",
+        "observation_operator_runs"
+      ],
+      "scope_declaration": "SANDBOX_CORE release of the closed loop. The frozen scope is every QA_PASS asset whose meta.run_id is generation run run_9a5c5a39a8ada0fc: 1 mother(s) / 1 material(s) / 1 pattern(s) / 1 layer combo(s) / 2 fragment asset(s) / 1 observation(s) over 1 accepted lineage(s); reference closure verified over 15 file(s). All 6/6 required gates of this profile are PASS. Measured relation content of that scope: 1 R2 / 0 R1 / 0 TINY_CONTACT / 0 UNKNOWN over 1 frozen relation edge(s) (label_bundle.meta.relations_json over the frozen scope, one asset per accepted lineage). This release contains 1 relation(s) with an R2 label, counted from the frozen label bundles; the pool's positives and this count are the same measurement. Every number in this declaration was recomputed from the store when the release was frozen (see coverage.sources and relation_status.by_role); it exists to validate the export / loader / release machinery end to end and states nothing the store does not carry.",
+      "scope_pending": [],
+      "visibility_status": {
+        "failures": [],
+        "source": "assets(role=visible_labels, meta.run_id == run_id).qa_status and .qa.failures as written by truth.update_visibility_truth",
+        "visible_labels_failed": 0,
+        "visible_labels_passed": 1,
+        "visible_labels_pending": 0
+      }
+    }
+  },
+  "schema": "synlab.runid_fix_manifests.v1"
+}

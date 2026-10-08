@@ -1,0 +1,14 @@
+schema: synlab.pool.v1
+pool_id: pilot_dev
+gallery_version: v1
+scope: FULL
+split: dev
+lineage_ids: []
+size_target: 1000
+exclude_training_lineages: true
+nested_sizes: [1000, 10000, 100000]
+mate_removed_variant: true
+query_per_mother: 4
+refinement_candidates: [50, 100, 200]
+top_k: [1, 5, 10, 20, 50]
+note: "Nested gallery sizes for N-curve work; 10k/100k entries require SCALE_* releases."

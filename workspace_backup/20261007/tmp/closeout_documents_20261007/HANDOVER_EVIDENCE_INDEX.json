@@ -1,0 +1,521 @@
+{
+  "schema": "handover_evidence_index.v1",
+  "handover_path": "docs/handover/20261007/HANDOVER.md",
+  "handover_sha256": "f226a153f8aed2da04e07298f1277cd74071370d52cf74a4967702c2792f7a53",
+  "records": [
+    {
+      "group": "pg_fixed_bridge",
+      "label": "source",
+      "path": "pgfrag/experiments/mixed93_actual_cohesive_bridge_20261006/run_actual_cohesive_bridge.py",
+      "bytes": 37684,
+      "sha256": "36ac1710286b0abf607bda5b1c6ffab893f8191830eae091517e2acd41d62236",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "pg_fixed_bridge",
+      "label": "case",
+      "path": "pgfrag/experiments/mixed93_actual_cohesive_bridge_20261006/case.json",
+      "bytes": 21226,
+      "sha256": "fcc4b46ed101b0f6067a9f3ec10816909c9fa931edd5a8cdde4c7f46cb3f3a71",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "pg_fixed_bridge",
+      "label": "operator",
+      "path": "pgfrag/experiments/mixed93_actual_cohesive_bridge_20261006/mixed93_actual_cohesive_bridge.py",
+      "bytes": 18537,
+      "sha256": "023d730454802ec755df41c9878744aa086cd5b97a8a88e9d5bbd4181b6f1412",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "pg_fixed_bridge",
+      "label": "result",
+      "path": "pgfrag/tmp/review_20261006/mixed93_actual_cohesive_bridge_20261006/numeric_runs/run01/result.json",
+      "bytes": 1440429,
+      "sha256": "e0819a792789fe8fdada86a75983e7cb8465c5d0aa78140ca93a84c4440159f2",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "pg_fixed_bridge",
+      "label": "independent_result",
+      "path": "pgfrag/tmp/review_20261007/mixed93_actual_cohesive_saved_independent/run02/result.json",
+      "bytes": 4846,
+      "sha256": "06c3362a3ed405edb78edf201ae2e1520054cf59ba284fe007c2b819b9763e5c",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "pg_fixed_bridge",
+      "label": "visual",
+      "path": "pgfrag/tmp/review_20261007/mixed93_actual_cohesive_saved_visual/run01/bridge_saved_diagnostic.png",
+      "bytes": 173813,
+      "sha256": "41ddd1acdcc06b0951d741906685b6ae9ea247170d8d433f8862f2a911fdfcb5",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "pg_opening_history",
+      "label": "driver",
+      "path": "pgfrag/experiments/mixed93_opening_control_20261007/run_mixed93_opening_control.py",
+      "bytes": 28851,
+      "sha256": "ba00de0d635d2daecfd113ab28c9518d196655c89406a09472fbcf0af5fcd291",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "pg_opening_history",
+      "label": "case",
+      "path": "pgfrag/experiments/mixed93_opening_control_20261007/case.json",
+      "bytes": 4271,
+      "sha256": "49bec605348679ae6fbc105c4944a08efcdfcd44ee193cbd8c8c1546161fef6c",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "pg_opening_history",
+      "label": "capture_case",
+      "path": "pgfrag/tmp/review_20261007/mixed93_opening_control_20261007/capture_CASE.json",
+      "bytes": 2489,
+      "sha256": "433b574c9f08624ef07b6c04ddb57f9fbfbe87f2856bc026ecab3dc3262992b2",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "pg_opening_history",
+      "label": "result",
+      "path": "pgfrag/tmp/review_20261007/mixed93_opening_control_20261007/run01/result.json",
+      "bytes": 1723610,
+      "sha256": "1e83ecf628db8e30066dba287fa616b2e84fb6eb467e9ebf75c1cc57b2615bbb",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "pg_opening_history",
+      "label": "independent_audit",
+      "path": "pgfrag/tmp/review_20261007/mixed93_opening_history_independent/run02/result.json",
+      "bytes": 3895,
+      "sha256": "19d3649f5e1d2d880a300151425be0212f7aecbbc76bb40fdf8d41e6f533ea79",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "pg_opening_history",
+      "label": "visual",
+      "path": "pgfrag/tmp/review_20261007/mixed93_opening_history_saved_visual/run01/opening_history_saved_diagnostic.png",
+      "bytes": 257749,
+      "sha256": "8bcea264c56920585b75737484a5bd17516006d1d186e1293285521660145ac9",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "pg_moving_front",
+      "label": "source_pins",
+      "path": "pgfrag/tmp/review_20261007/mixed93_moving_front_reanalysis_20261007/SOURCE_PINS.json",
+      "bytes": 5132,
+      "sha256": "5cafe06dda8f9704450bdff34a3d4386d03f2cad644effa6c25dfbd5f53f919c",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "pg_moving_front",
+      "label": "source",
+      "path": "pgfrag/experiments/mixed93_moving_front_reanalysis_20261007/mixed93_moving_front_reanalysis.py",
+      "bytes": 56564,
+      "sha256": "8c662a69e7b4c60b0ce70fcde2b53fd3547a23e1e00f6e19adfa2f6801b0b9c4",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "pg_moving_front",
+      "label": "case",
+      "path": "pgfrag/experiments/mixed93_moving_front_reanalysis_20261007/case.json",
+      "bytes": 16817,
+      "sha256": "f727e7b4e23f26ac7c200caf94e4e5d1e0556ecfa747c96cf617f682c7863a1e",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "pg_moving_front",
+      "label": "capture_receipt",
+      "path": "pgfrag/tmp/review_20261007/mixed93_moving_front_reanalysis_20261007/capture_once01/capture_receipt.json",
+      "bytes": 12907,
+      "sha256": "779b503781d711a6b06257cfbc72fd00938af34c315307bb2de948e6908240f3",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "pg_moving_front",
+      "label": "failure_json",
+      "path": "pgfrag/tmp/review_20261007/mixed93_moving_front_reanalysis_20261007/run01/failure.json",
+      "bytes": 19081,
+      "sha256": "9da8793fda4925014154931462a111fae0f71a35fbae6db48f9d6ac3447f2935",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "pg_moving_front",
+      "label": "failure_npz",
+      "path": "pgfrag/tmp/review_20261007/mixed93_moving_front_reanalysis_20261007/run01/failure_arrays.npz",
+      "bytes": 1770008,
+      "sha256": "8f6d3ca994d44ea5003379736ae4cd91f9c4daa98af1366c8c59c81f757c0e2f",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "pg_moving_front",
+      "label": "closeout_md",
+      "path": "pgfrag/tmp/review_20261007/mixed93_moving_front_reanalysis_20261007/CLOSEOUT.md",
+      "bytes": 2296,
+      "sha256": "43124925237edeaa988b4308d889186023a0212e47fef6b5d0830398bf914d58",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "pg_moving_front",
+      "label": "closeout_json",
+      "path": "pgfrag/tmp/review_20261007/mixed93_moving_front_reanalysis_20261007/CLOSEOUT.json",
+      "bytes": 7951,
+      "sha256": "1045ece87a3ca9cdf631967cb237fd84e7df10f67d07b40189c1b511da028656",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "pg_moving_front",
+      "label": "independent_md",
+      "path": "pgfrag/tmp/review_20261007/mixed93_moving_front_independent/SAVED_FAILURE_REVIEW.md",
+      "bytes": 3969,
+      "sha256": "7ad900056899e5f15a39da097cc6d97da0dfd4a82cacf0f025dfefc71b2f53b9",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "pg_moving_front",
+      "label": "independent_json",
+      "path": "pgfrag/tmp/review_20261007/mixed93_moving_front_independent/SAVED_FAILURE_REVIEW.json",
+      "bytes": 5291,
+      "sha256": "f2fcb37c53acd1e3b114cb8bea47f7f9debb5c602da58ac6e38d41908b3b8faa",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "pg_moving_front",
+      "label": "root_acceptance",
+      "path": "pgfrag/tmp/review_20261007/mixed93_moving_front_independent/ROOT_ACCEPTANCE.md",
+      "bytes": 898,
+      "sha256": "22705687ecb002460595f214c2b269adc63d99fa79f8513748577a598f82f693",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "vf_geometry",
+      "label": "profile_catalog",
+      "path": "vesselforge/src/vesselforge/profile_catalog.py",
+      "bytes": 16227,
+      "sha256": "e9d4bc1458a107208e537449d6526f1c0077d6d3afc6953a6200d86512f9c26f",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "vf_geometry",
+      "label": "r9_source",
+      "path": "vesselforge/experiments/curvature_constrained_meridian_20261006/curvature_constrained_meridian.py",
+      "bytes": 25753,
+      "sha256": "96875bb6592a6fd57ceef4dc326c35faeb3f96de16607faa816c7d3fed1e08ce",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "vf_geometry",
+      "label": "r9_case",
+      "path": "vesselforge/experiments/curvature_constrained_meridian_20261006/design_cases.json",
+      "bytes": 7038,
+      "sha256": "d1bb74bfc90de5937884854fd4e5e62c4dbf01f33e2f1f7be5dbf931ee35c8eb",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "vf_geometry",
+      "label": "r9_result",
+      "path": "vesselforge/tmp/review_20261006/curvature_constrained_meridian_20261006/curvature_constrained_meridian_result.json",
+      "bytes": 491496,
+      "sha256": "839c461cdf0dcae93f362ee7d80d0446cf52b6b1e1f04ed18842e17527673185",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "vf_geometry",
+      "label": "offset_source",
+      "path": "vesselforge/experiments/normal_offset_meridian_20261006/run_normal_offset_meridian_zprime_fixed.py",
+      "bytes": 14696,
+      "sha256": "ae91c04bac02e9a057e9f1a099350a34a9cb261d21c5bbd70388f931cb17cd54",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "vf_geometry",
+      "label": "offset_case",
+      "path": "vesselforge/experiments/normal_offset_meridian_20261006/case_false.json",
+      "bytes": 1674,
+      "sha256": "6ae5611616dbb1fdeeb498efc845a91a79798e0db5894e9577c4312c8a81a319",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "vf_geometry",
+      "label": "offset_result",
+      "path": "vesselforge/tmp/review_20261006/normal_offset_meridian_20261006/retry01_after_zprime_fix/normal_offset_meridian_result.json",
+      "bytes": 435804,
+      "sha256": "96ea35c44d40d12acc4b57a932ebb5194dbccdfd516b1fc2338ec58c51a9956a",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "vf_geometry",
+      "label": "strip_source",
+      "path": "vesselforge/experiments/monotone_normal_strip_certificate_20261007/monotone_normal_strip_certificate.py",
+      "bytes": 19177,
+      "sha256": "ae1d34351e113bf08f4de287468b38d5035f4bf1c75f98e3fb84d7b361c851ce",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "vf_geometry",
+      "label": "strip_case",
+      "path": "vesselforge/experiments/monotone_normal_strip_certificate_20261007/case.json",
+      "bytes": 1873,
+      "sha256": "9e7b9e7945a14b3dd45517c75a672607cf0923cdac5c723ab614fa0162fc127b",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "vf_geometry",
+      "label": "strip_result",
+      "path": "vesselforge/tmp/review_20261007/monotone_normal_strip_decision/once_capture_02_after_scope_fix/result.json",
+      "bytes": 4355,
+      "sha256": "4b7d019d2c119fb7f5db398f1205bc4830d72702f21a565a0859e1a6282335bf",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "vf_geometry",
+      "label": "strip_review",
+      "path": "vesselforge/tmp/review_20261007/monotone_normal_strip_independent/REVIEW.md",
+      "bytes": 2419,
+      "sha256": "a82d39f5df33c32a618295530ba347dfb78ea757bdbdbd178f8e9dab91da3861",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "vf_geometry",
+      "label": "wall_source",
+      "path": "vesselforge/experiments/global_wall_distance_certificate_20261007/global_wall_distance_certificate.py",
+      "bytes": 15709,
+      "sha256": "2466306decc0af17d47c71d8e66b110aa77255f8f9279b94180a86ee7029886d",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "vf_geometry",
+      "label": "wall_case",
+      "path": "vesselforge/experiments/global_wall_distance_certificate_20261007/case.json",
+      "bytes": 1043,
+      "sha256": "985b12a38a9996372a39afb700ecc413ecbb52c106f0594dc94350674b7c27d8",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "vf_geometry",
+      "label": "wall_result",
+      "path": "vesselforge/tmp/review_20261007/global_wall_distance_certificate_20261007/run01_capture/result.json",
+      "bytes": 2547,
+      "sha256": "2ed29f2581c49304581c36dfdf8fdda9d02b193c8078629202bc82bcefe727f0",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "vf_geometry",
+      "label": "wall_review",
+      "path": "vesselforge/tmp/review_20261007/global_wall_distance_independent/RESULT_REVIEW.md",
+      "bytes": 2512,
+      "sha256": "f87220d1dd6ff9fb70040a77e07278755e134ad22084b32ac08efcc625355301",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "vf_geometry",
+      "label": "native_driver",
+      "path": "vesselforge/experiments/c4_jar_native_ingress_20261007/native_c4_ingress.py",
+      "bytes": 32327,
+      "sha256": "361dac93245b10baa5d331e8d66f808b3bb0af317b8f4ac8d0f13de7acaf7f6e",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "vf_geometry",
+      "label": "native_runner",
+      "path": "vesselforge/experiments/c4_jar_native_ingress_20261007/capture_once.py",
+      "bytes": 10889,
+      "sha256": "f06787c7dd358149f701abaa14bdbfa58c6251ab73c9bc1c417542f2744b886a",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "vf_geometry",
+      "label": "native_case",
+      "path": "vesselforge/experiments/c4_jar_native_ingress_20261007/native_c4_ingress_case.json",
+      "bytes": 6136,
+      "sha256": "c440df8ff8d7cd0ec3f6d67d6ce8b566f783974bdf14cd27aafdf6203cba96be",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "vf_geometry",
+      "label": "native_pins",
+      "path": "vesselforge/tmp/review_20261007/c4_jar_native_ingress_20261007/native_source_v1/source_pins.json",
+      "bytes": 5593,
+      "sha256": "33f727be1fc4f31b84f894ac6f34c98235036fdc46ada255b87b6bf41a98bc04",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "vf_geometry",
+      "label": "native_review",
+      "path": "vesselforge/tmp/review_20261007/native_c4_source_independent/FINAL_SOURCE_REVIEW.md",
+      "bytes": 3640,
+      "sha256": "fd0499f1b70933700df3e78eb79186c3748e5f2403c5cd10bf22e6d52fcba2c2",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "vf_geometry",
+      "label": "native_review_json",
+      "path": "vesselforge/tmp/review_20261007/native_c4_source_independent/FINAL_SOURCE_REVIEW.json",
+      "bytes": 3034,
+      "sha256": "4439f8482f277ba8b7de17343e50ceab37a4294694b4e914d9fe8e7963ae6e9c",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "vf_geometry",
+      "label": "native_acceptance",
+      "path": "vesselforge/tmp/review_20261007/native_c4_source_independent/ROOT_SOURCE_ACCEPTANCE.md",
+      "bytes": 845,
+      "sha256": "cccf36d55a7a6355c53799f4dcf0fe3f86ec5057d42e5c1e4ac0cdd7b14601e6",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "pg_objectivity",
+      "label": "adapter",
+      "path": "pgfrag/experiments/mixed93_mechanics_objectivity_20261007/mechanics_objectivity_adapter.py",
+      "bytes": 20408,
+      "sha256": "6ca66a86dcf801464afc1104d69b55b3421aadda6860482bc898170ce5c253ce",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "pg_objectivity",
+      "label": "case",
+      "path": "pgfrag/experiments/mixed93_mechanics_objectivity_20261007/CASE_DRAFT.json",
+      "bytes": 4715,
+      "sha256": "a189527e639190192312dd8e9685d493f2b241aaed7680c2979e42a63390574e",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "pg_objectivity",
+      "label": "pins",
+      "path": "pgfrag/tmp/review_20261007/mixed93_mechanics_objectivity_20261007/source_pins.json",
+      "bytes": 4796,
+      "sha256": "367ca3c1dfd694a760941b42bb2b54b5f00a64560978cd11f5f1f6413d874178",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "pg_objectivity",
+      "label": "precloseout_snapshot",
+      "path": "pgfrag/tmp/review_20261007/mixed93_mechanics_objectivity_20261007/mechanics_objectivity_adapter.precloseout.snapshot.py",
+      "bytes": 20343,
+      "sha256": "f9b35bd271e1ac9e86bedb813435f3a0b9b045bc84f4b1e1e56c1f10244c346f",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "pg_objectivity",
+      "label": "acceptance_md",
+      "path": "pgfrag/tmp/review_20261007/mixed93_mechanics_objectivity_independent/NARROW_FIX_ACCEPTANCE.md",
+      "bytes": 1607,
+      "sha256": "6011faf8d255863aed384d6c51395c745d09b1f334b4d5aec85e28007350033f",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "pg_objectivity",
+      "label": "acceptance_json",
+      "path": "pgfrag/tmp/review_20261007/mixed93_mechanics_objectivity_independent/NARROW_FIX_ACCEPTANCE.json",
+      "bytes": 1685,
+      "sha256": "2c27b2a4a57bbbdcc7ab1fa2d3a77881e54b4739d474c019b27d5cf1d7269013",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "a12_and_status",
+      "label": "a12_review",
+      "path": "relicweave-synlab/docs/a12/reviews/20261007/REVIEW.md",
+      "bytes": 7232,
+      "sha256": "881e71d0441d235b2143a1a06cf7429547892a953c2c74a951ec6161576eeeba",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "a12_and_status",
+      "label": "claims",
+      "path": "relicweave-synlab/docs/a12/reviews/20261007/claims.json",
+      "bytes": 17991,
+      "sha256": "7c7d6c6c00e7086c7da1b531103cb95812b87e5befd0ae69730e1f395d482806",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "a12_and_status",
+      "label": "degrade_audit",
+      "path": "relicweave-synlab/data/a12/reports/precision_probe_07_degrade_audit.json",
+      "bytes": 562921,
+      "sha256": "b38d7dd1cddeff2dfcc06173de44ac83eb583cab045c05d6f47aff102a9f39fb",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "a12_and_status",
+      "label": "degrade_error",
+      "path": "relicweave-synlab/data/a12/reports/precision_probe_09_degrade_error.json",
+      "bytes": 93604,
+      "sha256": "d964413f473caea5bb75ec7a7ca39c140dcd8ac38892e13ebe3247a40327987e",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "a12_and_status",
+      "label": "pattern_audit",
+      "path": "relicweave-synlab/data/a12/reports/pattern_audit.json",
+      "bytes": 349060,
+      "sha256": "e52989f1fa25cfb47442094c3c36dccbccc8b59a10ca97c9cbf910d3071e7e71",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "a12_and_status",
+      "label": "pg_progress",
+      "path": "pgfrag/docs/progress/20261006_physics_core_review_addendum.md",
+      "bytes": 3962,
+      "sha256": "379c3f9079cb25aa97797ccd40a76bb2bd5c303b50ee3992b409f4c932ffd8f3",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "a12_and_status",
+      "label": "pg_progress_pins",
+      "path": "pgfrag/tmp/review_20261006/20261006_physics_core_review_addendum.pins.json",
+      "bytes": 62911,
+      "sha256": "389656a11ce48037ce1be66e86d310a235ae65b2fff5c5b63c685e8fdda80f33",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "a12_and_status",
+      "label": "pg_prior_progress_snapshot",
+      "path": "pgfrag/tmp/review_20261006/20261007_pre_actual93_cohesive_result/20261006_physics_core_review_addendum.md",
+      "bytes": 3749,
+      "sha256": "835ddf2cba9de8292de365e38560a741c3b94cd4f6f8456a6efd6e162fc5edb9",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "a12_and_status",
+      "label": "pg_prior_pins_snapshot",
+      "path": "pgfrag/tmp/review_20261006/20261007_pre_actual93_cohesive_result/20261006_physics_core_review_addendum.pins.json",
+      "bytes": 16124,
+      "sha256": "d482042473179b862b29b5225106a10d6972f5290ed3fb30dbfdbe66732eb703",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "a12_and_status",
+      "label": "readiness_md",
+      "path": "tmp/review_20261007/core_readiness_inventory/READINESS.md",
+      "bytes": 21701,
+      "sha256": "7f38cc3a9c330d646a07a108321ea528aeaa3755072943f718a9baa5b49bd939",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "a12_and_status",
+      "label": "readiness_json",
+      "path": "tmp/review_20261007/core_readiness_inventory/readiness.json",
+      "bytes": 72333,
+      "sha256": "c8459dbac69a4e5cab3c5b3dcea752805a8b605d2176512c5bdba8eee4dfd9f1",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "a12_and_status",
+      "label": "event_route",
+      "path": "pgfrag/tmp/review_20261005/free_fracture_pilot_independent_review/run03/RUN03_EXECUTION_RECORD.json",
+      "bytes": 8599,
+      "sha256": "65f01810c31798f2dbb7e041505e99617c3451e84e34c6a51b4e05e296ad271e",
+      "sha256_cited_in_handover": true
+    },
+    {
+      "group": "a12_and_status",
+      "label": "old_a12_snapshot",
+      "path": "tmp/closeout_documents_20261007/A12_HANDOVER_20261002.original.md",
+      "bytes": 15049,
+      "sha256": "c9a9950886c76ea773c53b72fec15bbce6e4e3388c361b27a295bd591c64393a",
+      "sha256_cited_in_handover": true
+    }
+  ],
+  "missing_paths": [],
+  "uncited_hashes": []
+}

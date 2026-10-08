@@ -1,0 +1,38 @@
+{
+  "freeze_id": "explicit_visibility_20261005_source_review_01",
+  "status": "SOURCE_FROZEN_ONE_FOCUSED_TEST_PASSED",
+  "files": [
+    {
+      "path": "pgfrag/experiments/explicit_visibility_20261005/visibility3d.py",
+      "sha256": "9d5097ca33ce899cf788ad43ef0740a34296216a8fd7aa490868c27ffe1ebb03"
+    },
+    {
+      "path": "pgfrag/experiments/explicit_visibility_20261005/test_visibility3d.py",
+      "sha256": "9fce64a01de4cee3a53b2aa560fea72360949005d88bf51c3fbf3c4ef279ff50"
+    },
+    {
+      "path": "pgfrag/experiments/explicit_visibility_20261005/README.md",
+      "sha256": "18c4f417ec287e6e75a81f0ddaa92bb1da53fd0bffd8a0499b9efa02f59b0b01"
+    },
+    {
+      "path": "tmp/review_20261005/explicit_visibility_20261005/SOURCE_REVIEW_PLAN.md",
+      "sha256": "00b6c73aa1be48deb0b1927502684439d301af6e9466e9e6d094f98dcb1eac1c"
+    }
+  ],
+  "verification": {
+    "source_tests": "ONE_FOCUSED_PYTEST_RUN:17_PASSED_RC0_ELAPSED_1436_MS",
+    "run_artifacts": "tmp/review_20261005/explicit_visibility_20261005/focused_test/run_20261005_01/",
+    "solver": "NOT_RUN",
+    "render": "NOT_RUN",
+    "actual_data_adapter": "NOT_CREATED"
+  },
+  "claims": {
+    "scope": "GEOMETRY_PRIMITIVE_ONLY",
+    "mechanics_qualification": "NOT_COUPLED",
+    "nucleation": "NOT_IMPLEMENTED",
+    "growth": "NOT_IMPLEMENTED",
+    "ceramic_physics": "NOT_IMPLEMENTED",
+    "spatial_derivative_or_local_stability": "NOT_ESTABLISHED",
+    "production_use": "NOT_ENABLED"
+  }
+}

@@ -1,0 +1,443 @@
+﻿{
+  "schema": "reviewed_math_execution_receipt.v1",
+  "plan_path": "tmp/backup_coordinator/next_reviewed_math_plan_20261006_v2.json",
+  "plan_sha256": "04ddf9810d14f586f8103201ae1866d6f7edf5ddabbcac10e5ad47f917a82f24",
+  "copy_receipt_path": "tmp/backup_coordinator/execution_receipt_20261006_reviewed_math_v2_copy.json",
+  "copy_receipt_sha256": "e7e0e281021200f4b3e42eef6a1294d0d2478c6744cbb2f577f7239c2d209068",
+  "copy_count": 46,
+  "copy_elapsed_ms": 168,
+  "repo_results": [
+    {
+      "push_ms": 2642,
+      "push_output": "To https://github.com/xiemonb666/pgfrag.git | 1366d87..4f02d1b HEAD -> backup/forge-work-20261003",
+      "post_remote": "4f02d1b6c6a62856432169921a1e8b10fc73d4b8",
+      "paths": 29,
+      "blobs": 29,
+      "commit": "4f02d1b6c6a62856432169921a1e8b10fc73d4b8",
+      "repo": "pgfrag",
+      "bytes": 132321,
+      "add_rc": 0,
+      "message": "backup: preserve reviewed fixed-front and LEFM math evidence",
+      "commit_ms": 121,
+      "commit_rc": 0,
+      "pre_remote": "1366d87603005e28f5797766a97087d5d8112bf0",
+      "add_ms": 46,
+      "push_rc": 0,
+      "parent": "1366d87603005e28f5797766a97087d5d8112bf0",
+      "current_branch": "backup/forge-work-20261003",
+      "current_head": "4f02d1b6c6a62856432169921a1e8b10fc73d4b8",
+      "post_tracked_dirty_count": 0,
+      "post_staged_count": 0
+    },
+    {
+      "push_ms": 3618,
+      "push_output": "To https://github.com/xiemonb666/vesselforge.git | 255e6df..38485a6 HEAD -> backup/forge-work-20261003",
+      "post_remote": "38485a60337db2707f42c40a84b1214010d0da99",
+      "paths": 18,
+      "blobs": 18,
+      "commit": "38485a60337db2707f42c40a84b1214010d0da99",
+      "repo": "vesselforge",
+      "bytes": 447460,
+      "add_rc": 0,
+      "message": "backup: preserve reviewed global B-spline math evidence",
+      "commit_ms": 114,
+      "commit_rc": 0,
+      "pre_remote": "255e6dfe869894608a5cf05e41da4fccb2042a18",
+      "add_ms": 86,
+      "push_rc": 0,
+      "parent": "255e6dfe869894608a5cf05e41da4fccb2042a18",
+      "current_branch": "backup/forge-work-20261003",
+      "current_head": "38485a60337db2707f42c40a84b1214010d0da99",
+      "post_tracked_dirty_count": 0,
+      "post_staged_count": 0
+    }
+  ],
+  "git_blob_verification": {
+    "committed_cat_file_sha256_byte_checks_passed": 47,
+    "total_bytes": 579781,
+    "exact_commit_path_sets_passed": true,
+    "pg_commit_blobs_pre_push_checked": 29,
+    "vf_commit_blobs_pre_push_checked": 18,
+    "remote_heads_verified_after_push": 2,
+    "blob_records": [
+      {
+        "sha256": "b7a1914fe3d00605203fa65468a6f67727fc0bddf7b5ef0ab6ecdeb2ea8b5890",
+        "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\audit_fixed_load_front_saved_arrays.py",
+        "git_blob": "4eccf51684049b1750d6ca6a38c90f262ca4d419",
+        "repo": "pgfrag",
+        "path": "docs/evidence/20261006/reviewed_math/fixed_load_front_saved_independent/reader/audit_fixed_load_front_saved_arrays.py",
+        "bytes": 18826
+      },
+      {
+        "sha256": "6b71f396f08fc1edcfcec0d10300859dcac219f702bf6e85c21fc16f0e2edffa",
+        "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\audit.json",
+        "git_blob": "d6c6ec98c0bdec482acbd7ac658e06d834ec613a",
+        "repo": "pgfrag",
+        "path": "docs/evidence/20261006/reviewed_math/fixed_load_front_saved_independent/actual/audit.json",
+        "bytes": 15742
+      },
+      {
+        "sha256": "c4cd96b8fac8edfdaaa04c4ad35853ff265e35de7d16120d0189ab791a04ffb1",
+        "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\audit_stdout.log",
+        "git_blob": "a8a27ad29ab0f90268b8881dc08945e859ec5fc5",
+        "repo": "pgfrag",
+        "path": "docs/evidence/20261006/reviewed_math/fixed_load_front_saved_independent/actual/audit_stdout.log",
+        "bytes": 732
+      },
+      {
+        "sha256": "35f96357573b7eaf00fe579d15688f1a8d8a677a2ca3eb6a76a6b2bc1d230967",
+        "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\execution_receipt.json",
+        "git_blob": "47c69a3041d2cad77c0d9ad9cb36879c9320ea7f",
+        "repo": "pgfrag",
+        "path": "docs/evidence/20261006/reviewed_math/fixed_load_front_saved_independent/actual/execution_receipt.json",
+        "bytes": 3635
+      },
+      {
+        "sha256": "56856775237cff11099515aec025b911b970ed43422617aaf68c25c38c812bf8",
+        "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\attempt01_failure_receipt.json",
+        "git_blob": "ca5145f02674d28548351932145c47387ce1d286",
+        "repo": "pgfrag",
+        "path": "docs/evidence/20261006/reviewed_math/fixed_load_front_saved_independent/history/attempt01_failure_receipt.json",
+        "bytes": 1088
+      },
+      {
+        "sha256": "c4cd96b8fac8edfdaaa04c4ad35853ff265e35de7d16120d0189ab791a04ffb1",
+        "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\attempt01_stdout_merged.log",
+        "git_blob": "a8a27ad29ab0f90268b8881dc08945e859ec5fc5",
+        "repo": "pgfrag",
+        "path": "docs/evidence/20261006/reviewed_math/fixed_load_front_saved_independent/history/attempt01_stdout_merged.log",
+        "bytes": 732
+      },
+      {
+        "sha256": "a611823d257c2d671880772b289bb912ab24012248016cefe784d46a54343d29",
+        "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\attempt02_stdout.log",
+        "git_blob": "fde299765a5f83b95dd4ae3347a977e8ef54f93c",
+        "repo": "pgfrag",
+        "path": "docs/evidence/20261006/reviewed_math/fixed_load_front_saved_independent/history/attempt02_stdout.log",
+        "bytes": 158
+      },
+      {
+        "sha256": "fbabc9e140bbf8dc489e9b5c945be8d03990c38a9fb13c800f56d63a448850ac",
+        "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\source_pins.json",
+        "git_blob": "8b3a246d9c7d602be2dc3819d385e14f214f27eb",
+        "repo": "pgfrag",
+        "path": "docs/evidence/20261006/reviewed_math/fixed_load_front_saved_independent/source_pins/source_pins.json",
+        "bytes": 2003
+      },
+      {
+        "sha256": "fbabc9e140bbf8dc489e9b5c945be8d03990c38a9fb13c800f56d63a448850ac",
+        "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\source_pins_attempt01.json",
+        "git_blob": "8b3a246d9c7d602be2dc3819d385e14f214f27eb",
+        "repo": "pgfrag",
+        "path": "docs/evidence/20261006/reviewed_math/fixed_load_front_saved_independent/source_pins/source_pins_attempt01.json",
+        "bytes": 2003
+      },
+      {
+        "sha256": "5ddbf72857f77d797fb63468ff2daaead2f0544186a7a007612442d8fdcdb52a",
+        "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\source_pins_attempt02.json",
+        "git_blob": "e0e6946942421cb7a401d3a72bcd54eef9b7a3a8",
+        "repo": "pgfrag",
+        "path": "docs/evidence/20261006/reviewed_math/fixed_load_front_saved_independent/source_pins/source_pins_attempt02.json",
+        "bytes": 2529
+      },
+      {
+        "sha256": "d05e3451e3d37c22534eb5ea228466bedfe34fa7d0e68335c88c48e2a56837a1",
+        "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\inspect_fixture_schema.py",
+        "git_blob": "c0b88395f9722168cf7c509120d65930920308ba",
+        "repo": "pgfrag",
+        "path": "docs/evidence/20261006/reviewed_math/fixed_load_front_saved_independent/fixture_schema/inspect_fixture_schema.py",
+        "bytes": 4872
+      },
+      {
+        "sha256": "f70c10a15a0baf346172bb42098b580cacf37859536d5ca781156fe0987e7bdb",
+        "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\fixture_schema.json",
+        "git_blob": "13dd55b1022e0cad3b5bbbdea4fb409ad0298b43",
+        "repo": "pgfrag",
+        "path": "docs/evidence/20261006/reviewed_math/fixed_load_front_saved_independent/fixture_schema/fixture_schema.json",
+        "bytes": 10712
+      },
+      {
+        "sha256": "37e84ed0ed24d2a2d28ac150d99de395ad0a2792c258bdefc249f47c623acbee",
+        "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\fixture_schema_stdout.log",
+        "git_blob": "f1104ccc9dcdb5f19e0e06c69eba4a895b5bd706",
+        "repo": "pgfrag",
+        "path": "docs/evidence/20261006/reviewed_math/fixed_load_front_saved_independent/fixture_schema/fixture_schema_stdout.log",
+        "bytes": 337
+      },
+      {
+        "sha256": "807a5aaab8c8584efaea2c8d1e188a217b462552a57be2d905695fd645e5790e",
+        "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\render_energy_spectrum.py",
+        "git_blob": "16c35c5a74d739d7b31c6e842151d3598c53bc0b",
+        "repo": "pgfrag",
+        "path": "docs/evidence/20261006/reviewed_math/fixed_load_front_saved_independent/render/render_energy_spectrum.py",
+        "bytes": 2861
+      },
+      {
+        "sha256": "126d0e81bbc022221d59cafae8a51bc70980dce22ad80840d937fa682cc910a8",
+        "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\render_stdout.log",
+        "git_blob": "666a0d639eac35673b03d8d4df7e6f4fd082dbef",
+        "repo": "pgfrag",
+        "path": "docs/evidence/20261006/reviewed_math/fixed_load_front_saved_independent/render/render_stdout.log",
+        "bytes": 86
+      },
+      {
+        "sha256": "e2cfebba1ebcf4c12ca84ace50b5479e97423e110dc7eb120985d8f070d1075d",
+        "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\spectrum_energy_ledger.png",
+        "git_blob": "029a3fa1794d3252aebf146db15ef7996b90d973",
+        "repo": "pgfrag",
+        "path": "docs/evidence/20261006/reviewed_math/fixed_load_front_saved_independent/render/spectrum_energy_ledger.png",
+        "bytes": 22196
+      },
+      {
+        "sha256": "54db1a7fd1f10298ba363bd87b8cd1502274003dc9b0fe433e82cf31c0b06f3d",
+        "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\RECEIPT_TIMING_ADDENDUM.md",
+        "git_blob": "768f3e7e5f517b24a13b70fb6bde3468ad79214a",
+        "repo": "pgfrag",
+        "path": "docs/evidence/20261006/reviewed_math/fixed_load_front_saved_independent/review/RECEIPT_TIMING_ADDENDUM.md",
+        "bytes": 1299
+      },
+      {
+        "sha256": "a03417bca03e57a053b233427a92e5ef7200195809999b4c3ed5d3ec58a686de",
+        "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\review.md",
+        "git_blob": "8017950a07df54b3d93a57691cef0c7fc9d80c7d",
+        "repo": "pgfrag",
+        "path": "docs/evidence/20261006/reviewed_math/fixed_load_front_saved_independent/review/review.md",
+        "bytes": 3334
+      },
+      {
+        "sha256": "466d0c01445f497e46a49314a03e89e92c62a204a9665cf01c3d2005f2dc99e3",
+        "source_path": "experiments\\mixed_lefm_enrichment_algebra_20261006\\mixed_enrichment_algebra.py",
+        "git_blob": "c645f3c0dce6499c2ddaaff7962d983534954387",
+        "repo": "pgfrag",
+        "path": "docs/evidence/20261006/reviewed_math/mixed_lefm_enrichment_algebra/source/mixed_enrichment_algebra.py",
+        "bytes": 11418
+      },
+      {
+        "sha256": "b0e83be0420fcd7501c4a23d2cf721517cc36490ccfea07ba7cb7929f5edf9e7",
+        "source_path": "experiments\\mixed_lefm_enrichment_algebra_20261006\\README.md",
+        "git_blob": "4d7d968a763f3d5d7de10cb63630f46af1006245",
+        "repo": "pgfrag",
+        "path": "docs/evidence/20261006/reviewed_math/mixed_lefm_enrichment_algebra/source/README.md",
+        "bytes": 2711
+      },
+      {
+        "sha256": "9ed2461fc2c8a516d450c2f0d2c59ff54b0c07f44a21293559111977639dd55b",
+        "source_path": "experiments\\mixed_lefm_enrichment_algebra_20261006\\request.schema.json",
+        "git_blob": "a636ff6b9494086a2207d329a486bb0bcf293781",
+        "repo": "pgfrag",
+        "path": "docs/evidence/20261006/reviewed_math/mixed_lefm_enrichment_algebra/source/request.schema.json",
+        "bytes": 3170
+      },
+      {
+        "sha256": "68ac722462f2afa26fee6dfba642c33d0a2ffecb7742c2c9c88d9a28c9f89f66",
+        "source_path": "experiments\\mixed_lefm_enrichment_algebra_20261006\\row.schema.json",
+        "git_blob": "a880ef0e8e033fc0ec2aa8d9e03cbe312bfe7445",
+        "repo": "pgfrag",
+        "path": "docs/evidence/20261006/reviewed_math/mixed_lefm_enrichment_algebra/source/row.schema.json",
+        "bytes": 3609
+      },
+      {
+        "sha256": "092c42080c4752b041dfc01c631c7c1e45a452ea493326e4c1958cacc5b3b5d6",
+        "source_path": "tmp\\review_20261006\\mixed_lefm_enrichment_algebra_20261006\\SOURCE_REVIEW.md",
+        "git_blob": "a8136ad45eb6d5e7b24e58217bd695b071064c24",
+        "repo": "pgfrag",
+        "path": "docs/evidence/20261006/reviewed_math/mixed_lefm_enrichment_algebra/review/SOURCE_REVIEW.md",
+        "bytes": 3239
+      },
+      {
+        "sha256": "e33846f88869a42e0f1e0675f982de5d14a85c3e82162ea76a178709168b2dcf",
+        "source_path": "tmp\\review_20261006\\mixed_lefm_enrichment_algebra_20261006\\SOURCE_PINS.json",
+        "git_blob": "d6b86e422c8b24bd99e7b867c01d4c1a665e6fa5",
+        "repo": "pgfrag",
+        "path": "docs/evidence/20261006/reviewed_math/mixed_lefm_enrichment_algebra/review/SOURCE_PINS.json",
+        "bytes": 712
+      },
+      {
+        "sha256": "9c84e09ccc4cce9c999410ae61f50d7fb0deedc3eb697cb4cd5cf0fbb182de0d",
+        "source_path": "tmp\\review_20261006\\mixed_lefm_enrichment_algebra_20261006\\arith_checker.py",
+        "git_blob": "70252c61d98a620fce352baf903dff97e1c8181f",
+        "repo": "pgfrag",
+        "path": "docs/evidence/20261006/reviewed_math/mixed_lefm_enrichment_algebra/checker/arith_checker.py",
+        "bytes": 8687
+      },
+      {
+        "sha256": "1459590a9f61b80ba5284bdc47220dccf59978f2fa74758a816e80fb44c28a06",
+        "source_path": "tmp\\review_20261006\\mixed_lefm_enrichment_algebra_20261006\\arith_checker.run_record.json",
+        "git_blob": "b783bef32c9170e74efe6a4715dbd5edd98727b1",
+        "repo": "pgfrag",
+        "path": "docs/evidence/20261006/reviewed_math/mixed_lefm_enrichment_algebra/actual/arith_checker.run_record.json",
+        "bytes": 2108
+      },
+      {
+        "sha256": "1c1bdb323682a338b1d75a9c7315a649e832b3a8b08037671af439d69588d8f2",
+        "source_path": "tmp\\review_20261006\\mixed_lefm_enrichment_algebra_20261006\\arith_checker.stdout.txt",
+        "git_blob": "76aca295fa08beb82ad9a29c3036b97bb403fa2f",
+        "repo": "pgfrag",
+        "path": "docs/evidence/20261006/reviewed_math/mixed_lefm_enrichment_algebra/actual/arith_checker.stdout.txt",
+        "bytes": 397
+      },
+      {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "source_path": "tmp\\review_20261006\\mixed_lefm_enrichment_algebra_20261006\\arith_checker.stderr.txt",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "repo": "pgfrag",
+        "path": "docs/evidence/20261006/reviewed_math/mixed_lefm_enrichment_algebra/actual/arith_checker.stderr.txt",
+        "bytes": 0
+      },
+      {
+        "sha256": "e2d978bb817fa83918d2a494e1a084863fe413b8e176411038e9a8ba757f15d9",
+        "source_path": "experiments\\global_bspline_meridian_20261006\\bspline_constraint_source.py",
+        "git_blob": "24b05f61e4bd71a5afdb3e09167a5db50630fcaf",
+        "repo": "vesselforge",
+        "path": "docs/evidence/20261006/reviewed_math/global_bspline_meridian/source/bspline_constraint_source.py",
+        "bytes": 8542
+      },
+      {
+        "sha256": "e69d7b937f1e4810e60d89852d3cf8a82a049721ea59ba04f4a03462d664e4b9",
+        "source_path": "experiments\\global_bspline_meridian_20261006\\bspline_minimum_jerk_driver.py",
+        "git_blob": "c0abc460efa37c594b5bdb3c3d872043b317cda4",
+        "repo": "vesselforge",
+        "path": "docs/evidence/20261006/reviewed_math/global_bspline_meridian/source/bspline_minimum_jerk_driver.py",
+        "bytes": 18582
+      },
+      {
+        "sha256": "47aa718e1feae7005db0b5d7fd77393c308d9d1eefa0faa43212dc077a865908",
+        "source_path": "experiments\\global_bspline_meridian_20261006\\fixed_cases.json",
+        "git_blob": "a5cabc5976d8f973502dbe0024d1b1c519e2c9cf",
+        "repo": "vesselforge",
+        "path": "docs/evidence/20261006/reviewed_math/global_bspline_meridian/source/fixed_cases.json",
+        "bytes": 5294
+      },
+      {
+        "sha256": "5eeb0b0f0fe2aeb14a143eab5646d92f3db111c074208c9e48e5e95d4ea5ce8f",
+        "source_path": "experiments\\global_bspline_meridian_20261006\\DESIGN_PROPOSAL.md",
+        "git_blob": "c5652ccbce3b6b94c221d22a3c1a6c1146c0d923",
+        "repo": "vesselforge",
+        "path": "docs/evidence/20261006/reviewed_math/global_bspline_meridian/source/DESIGN_PROPOSAL.md",
+        "bytes": 9060
+      },
+      {
+        "sha256": "06c714ff30e8f36c60e586e07670510d539b844ec434772a5d93b749612a6f65",
+        "source_path": "tmp\\review_20261006\\global_bspline_meridian_20261006\\minimum_jerk_candidate\\minimum_jerk_exact_result.json",
+        "git_blob": "c9425285f41c81a38daefe026fb3a77ee34c7e9c",
+        "repo": "vesselforge",
+        "path": "docs/evidence/20261006/reviewed_math/global_bspline_meridian/actual/minimum_jerk_exact_result.json",
+        "bytes": 129016
+      },
+      {
+        "sha256": "66dc2ef17fc276881f0714e9e99d11ccfd20498a182583aedec2e87c8f57bff0",
+        "source_path": "tmp\\review_20261006\\global_bspline_meridian_20261006\\minimum_jerk_candidate\\execution_receipt.json",
+        "git_blob": "d3a6653722c1da9ae9bc74ef4a1773f5dbd8a74b",
+        "repo": "vesselforge",
+        "path": "docs/evidence/20261006/reviewed_math/global_bspline_meridian/actual/execution_receipt.json",
+        "bytes": 5385
+      },
+      {
+        "sha256": "082cd6f1ccdd1f5604e5a9d4aa72436718908ed98e313dd813bbccdde68126bc",
+        "source_path": "tmp\\review_20261006\\global_bspline_meridian_20261006\\minimum_jerk_candidate\\minimum_jerk_outer_profiles.png",
+        "git_blob": "9911b87a04a30493efea5184ed7faa24f7ef1d7e",
+        "repo": "vesselforge",
+        "path": "docs/evidence/20261006/reviewed_math/global_bspline_meridian/actual/minimum_jerk_outer_profiles.png",
+        "bytes": 133045
+      },
+      {
+        "sha256": "d34a973bcd0075cd3f60f8b54049789a76a1fe91b26c9fae78a6acd02ad3a904",
+        "source_path": "tmp\\review_20261006\\global_bspline_meridian_20261006\\minimum_jerk_candidate\\render_receipt.json",
+        "git_blob": "b2ac37cf6b283a27f88068d351380351dc3ac390",
+        "repo": "vesselforge",
+        "path": "docs/evidence/20261006/reviewed_math/global_bspline_meridian/render_history/render_receipt.json",
+        "bytes": 5681
+      },
+      {
+        "sha256": "c5d4da1814a050ee5ff138d5bffeabe335baa58a5b67a14c48398975f3a7eb4a",
+        "source_path": "tmp\\review_20261006\\global_bspline_meridian_20261006\\minimum_jerk_candidate\\render_receipt_attempt2.json",
+        "git_blob": "29aefba46951ca2feef4b5f7b7c16ad1376665a4",
+        "repo": "vesselforge",
+        "path": "docs/evidence/20261006/reviewed_math/global_bspline_meridian/render_history/render_receipt_attempt2.json",
+        "bytes": 6082
+      },
+      {
+        "sha256": "b9e7b7c96ce389662a95c515e0b689613cdcfbcf20bb680094179bdecfabe46b",
+        "source_path": "tmp\\review_20261006\\global_bspline_meridian_20261006\\minimum_jerk_candidate\\render_receipt_attempt3.json",
+        "git_blob": "59f57f201ab7bde4f08103b1d2374f48202049fe",
+        "repo": "vesselforge",
+        "path": "docs/evidence/20261006/reviewed_math/global_bspline_meridian/render_history/render_receipt_attempt3.json",
+        "bytes": 6455
+      },
+      {
+        "sha256": "05089ba906567852c8a0911f9ecdc56a0445365f4c3f5dcd067038bfef0c80f0",
+        "source_path": "tmp\\review_20261006\\global_bspline_independent\\independent_saved_reader.py",
+        "git_blob": "cd2bed04c214508e63531f1b6c6d0097c1eec8bf",
+        "repo": "vesselforge",
+        "path": "docs/evidence/20261006/reviewed_math/global_bspline_independent/reader/independent_saved_reader.py",
+        "bytes": 17148
+      },
+      {
+        "sha256": "6c27697e002598b108824bbba17da3f83b96ab5547a6b3bf47066e9ef2d1d6ac",
+        "source_path": "tmp\\review_20261006\\global_bspline_independent\\independent_saved_audit.json",
+        "git_blob": "16cd48273ae2e9e372d3745cea8691421966497d",
+        "repo": "vesselforge",
+        "path": "docs/evidence/20261006/reviewed_math/global_bspline_independent/actual/independent_saved_audit.json",
+        "bytes": 70707
+      },
+      {
+        "sha256": "66f0b71e14286ebba8296a9368cc1cb47ec87d56df7fab1db6ca80f7df88e76d",
+        "source_path": "tmp\\review_20261006\\global_bspline_independent\\bowl_outer_only.png",
+        "git_blob": "a64c1ce8dd9852ebde3579245bb0be4986dadb7a",
+        "repo": "vesselforge",
+        "path": "docs/evidence/20261006/reviewed_math/global_bspline_independent/actual/bowl_outer_only.png",
+        "bytes": 14787
+      },
+      {
+        "sha256": "06a3746bb8d0d6c741ce6a99c3f9d963d28a8e481921c73588e6fffae1224c8e",
+        "source_path": "tmp\\review_20261006\\global_bspline_independent\\jar_outer_only.png",
+        "git_blob": "ae01f4f335113adeb63cfd0b7c24470142d5415e",
+        "repo": "vesselforge",
+        "path": "docs/evidence/20261006/reviewed_math/global_bspline_independent/actual/jar_outer_only.png",
+        "bytes": 14499
+      },
+      {
+        "sha256": "7398d14c9dd5ae27783075009033465036198dcea404630a06ac1c0de625666e",
+        "source_path": "tmp\\review_20261006\\global_bspline_independent\\independent_saved_reader.stdout.txt",
+        "git_blob": "10666c497e90dfc3ccdf98af23b175158330a0b4",
+        "repo": "vesselforge",
+        "path": "docs/evidence/20261006/reviewed_math/global_bspline_independent/runs/corrected/independent_saved_reader.stdout.txt",
+        "bytes": 160
+      },
+      {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "source_path": "tmp\\review_20261006\\global_bspline_independent\\independent_saved_reader.stderr.txt",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "repo": "vesselforge",
+        "path": "docs/evidence/20261006/reviewed_math/global_bspline_independent/runs/corrected/independent_saved_reader.stderr.txt",
+        "bytes": 0
+      },
+      {
+        "sha256": "5a552f9395f83ee8981695a2e8a1b94189040f9c67ed426c42f1111f807f8d2a",
+        "source_path": "tmp\\review_20261006\\global_bspline_independent\\independent_saved_reader.run.txt",
+        "git_blob": "2e47f41e2aa037645a9b3e27362ed39dd6438807",
+        "repo": "vesselforge",
+        "path": "docs/evidence/20261006/reviewed_math/global_bspline_independent/runs/corrected/independent_saved_reader.run.txt",
+        "bytes": 1953
+      },
+      {
+        "sha256": "20bd5f99470cb11d1e0af86cad9efbf4074e39841f91852373c6277632b52beb",
+        "source_path": "tmp\\review_20261006\\global_bspline_independent\\independent_saved_reader.run.prior.txt",
+        "git_blob": "c89a632baae3b6c9df814a1d391e0b0400cbc7fd",
+        "repo": "vesselforge",
+        "path": "docs/evidence/20261006/reviewed_math/global_bspline_independent/runs/prior/independent_saved_reader.run.prior.txt",
+        "bytes": 1064
+      },
+      {
+        "sha256": "0670bc8cc29beb3d045ec0413ff3c4f954d8588786c307f8b910fee1fef43ef7",
+        "source_path": "docs/progress/20261006_physics_core_status.md",
+        "git_blob": "b63df7277615e854e29080fd91cd1d407bd5cd8e",
+        "repo": "pgfrag",
+        "path": "docs/progress/20261006_physics_core_status.md",
+        "bytes": 3125
+      }
+    ]
+  },
+  "stage_note": "PG first validation compared backslash and slash paths and was a false mismatch after rc0 add; normalized 29-path exact set passed, then exact add was repeated and verified rc0. No unrelated path staged.",
+  "scope": "Mathematical review evidence only; no physics, CAD, manufacturing, solver, or physical PASS."
+}

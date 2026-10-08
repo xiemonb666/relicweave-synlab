@@ -1,0 +1,426 @@
+{
+  "automatic_source_equivalence": {
+    "bbox_fit": {
+      "current": {
+        "basis": "min_wall_thickness/6",
+        "budget_limited": false,
+        "budget_ok": true,
+        "criteria": {
+          "min_wall_thickness/6": 0.19999999999999998,
+          "shortest_structure/4": 2.0
+        },
+        "declared_spacing_mm": null,
+        "max_nodes": 4000000,
+        "relaxation_factor": 1.0,
+        "relaxation_steps": 0,
+        "requested_spacing_mm": null,
+        "spacing_mm": 0.19999999999999998
+      },
+      "equal": true,
+      "field_equal": {
+        "basis": true,
+        "budget_limited": true,
+        "budget_ok": true,
+        "criteria": true,
+        "declared_spacing_mm": true,
+        "max_nodes": true,
+        "relaxation_factor": true,
+        "relaxation_steps": true,
+        "requested_spacing_mm": true,
+        "spacing_mm": true
+      },
+      "keys_equal": true,
+      "kwargs": {
+        "bbox_mm": [
+          10.0,
+          10.0,
+          10.0
+        ],
+        "max_nodes": 4000000,
+        "min_wall_thickness_mm": 1.2,
+        "shortest_structure_mm": 8.0
+      },
+      "original": {
+        "basis": "min_wall_thickness/6",
+        "budget_limited": false,
+        "budget_ok": true,
+        "criteria": {
+          "min_wall_thickness/6": 0.19999999999999998,
+          "shortest_structure/4": 2.0
+        },
+        "declared_spacing_mm": null,
+        "max_nodes": 4000000,
+        "relaxation_factor": 1.0,
+        "relaxation_steps": 0,
+        "requested_spacing_mm": null,
+        "spacing_mm": 0.19999999999999998
+      }
+    },
+    "budget_relax": {
+      "current": {
+        "basis": "min_wall_thickness/6+node_budget_relaxation+node_budget_relaxation+node_budget_relaxation+node_budget_relaxation+node_budget_relaxation+node_budget_relaxation+node_budget_relaxation+node_budget_relaxation+node_budget_relaxation",
+        "budget_limited": true,
+        "budget_ok": false,
+        "criteria": {
+          "min_wall_thickness/6": 0.09999999999999999,
+          "shortest_structure/4": 0.8
+        },
+        "declared_spacing_mm": null,
+        "max_nodes": 600000,
+        "relaxation_factor": 5.1597803519999985,
+        "relaxation_steps": 9,
+        "requested_spacing_mm": null,
+        "spacing_mm": 0.5159780351999996
+      },
+      "equal": true,
+      "field_equal": {
+        "basis": true,
+        "budget_limited": true,
+        "budget_ok": true,
+        "criteria": true,
+        "declared_spacing_mm": true,
+        "max_nodes": true,
+        "relaxation_factor": true,
+        "relaxation_steps": true,
+        "requested_spacing_mm": true,
+        "spacing_mm": true
+      },
+      "keys_equal": true,
+      "kwargs": {
+        "bbox_mm": [
+          60.0,
+          40.0,
+          20.0
+        ],
+        "max_nodes": 600000,
+        "min_wall_thickness_mm": 0.6,
+        "shortest_structure_mm": 3.2
+      },
+      "original": {
+        "basis": "min_wall_thickness/6+node_budget_relaxation+node_budget_relaxation+node_budget_relaxation+node_budget_relaxation+node_budget_relaxation+node_budget_relaxation+node_budget_relaxation+node_budget_relaxation+node_budget_relaxation",
+        "budget_limited": true,
+        "budget_ok": false,
+        "criteria": {
+          "min_wall_thickness/6": 0.09999999999999999,
+          "shortest_structure/4": 0.8
+        },
+        "declared_spacing_mm": null,
+        "max_nodes": 600000,
+        "relaxation_factor": 5.1597803519999985,
+        "relaxation_steps": 9,
+        "requested_spacing_mm": null,
+        "spacing_mm": 0.5159780351999996
+      }
+    },
+    "default": {
+      "current": {
+        "basis": "default",
+        "budget_limited": false,
+        "budget_ok": true,
+        "criteria": {
+          "default": 0.5
+        },
+        "declared_spacing_mm": null,
+        "max_nodes": 4000000,
+        "relaxation_factor": 1.0,
+        "relaxation_steps": 0,
+        "requested_spacing_mm": null,
+        "spacing_mm": 0.5
+      },
+      "equal": true,
+      "field_equal": {
+        "basis": true,
+        "budget_limited": true,
+        "budget_ok": true,
+        "criteria": true,
+        "declared_spacing_mm": true,
+        "max_nodes": true,
+        "relaxation_factor": true,
+        "relaxation_steps": true,
+        "requested_spacing_mm": true,
+        "spacing_mm": true
+      },
+      "keys_equal": true,
+      "kwargs": {},
+      "original": {
+        "basis": "default",
+        "budget_limited": false,
+        "budget_ok": true,
+        "criteria": {
+          "default": 0.5
+        },
+        "declared_spacing_mm": null,
+        "max_nodes": 4000000,
+        "relaxation_factor": 1.0,
+        "relaxation_steps": 0,
+        "requested_spacing_mm": null,
+        "spacing_mm": 0.5
+      }
+    },
+    "requested_coarser": {
+      "current": {
+        "basis": "min_wall_thickness/6",
+        "budget_limited": false,
+        "budget_ok": true,
+        "criteria": {
+          "min_wall_thickness/6": 0.09999999999999999,
+          "requested": 0.8
+        },
+        "declared_spacing_mm": null,
+        "max_nodes": 4000000,
+        "relaxation_factor": 1.0,
+        "relaxation_steps": 0,
+        "requested_spacing_mm": 0.8,
+        "spacing_mm": 0.09999999999999999
+      },
+      "equal": true,
+      "field_equal": {
+        "basis": true,
+        "budget_limited": true,
+        "budget_ok": true,
+        "criteria": true,
+        "declared_spacing_mm": true,
+        "max_nodes": true,
+        "relaxation_factor": true,
+        "relaxation_steps": true,
+        "requested_spacing_mm": true,
+        "spacing_mm": true
+      },
+      "keys_equal": true,
+      "kwargs": {
+        "min_wall_thickness_mm": 0.6,
+        "requested_mm": 0.8
+      },
+      "original": {
+        "basis": "min_wall_thickness/6",
+        "budget_limited": false,
+        "budget_ok": true,
+        "criteria": {
+          "min_wall_thickness/6": 0.09999999999999999,
+          "requested": 0.8
+        },
+        "declared_spacing_mm": null,
+        "max_nodes": 4000000,
+        "relaxation_factor": 1.0,
+        "relaxation_steps": 0,
+        "requested_spacing_mm": 0.8,
+        "spacing_mm": 0.09999999999999999
+      }
+    },
+    "requested_finer": {
+      "current": {
+        "basis": "requested",
+        "budget_limited": false,
+        "budget_ok": true,
+        "criteria": {
+          "min_wall_thickness/6": 0.09999999999999999,
+          "requested": 0.05
+        },
+        "declared_spacing_mm": null,
+        "max_nodes": 4000000,
+        "relaxation_factor": 1.0,
+        "relaxation_steps": 0,
+        "requested_spacing_mm": 0.05,
+        "spacing_mm": 0.05
+      },
+      "equal": true,
+      "field_equal": {
+        "basis": true,
+        "budget_limited": true,
+        "budget_ok": true,
+        "criteria": true,
+        "declared_spacing_mm": true,
+        "max_nodes": true,
+        "relaxation_factor": true,
+        "relaxation_steps": true,
+        "requested_spacing_mm": true,
+        "spacing_mm": true
+      },
+      "keys_equal": true,
+      "kwargs": {
+        "min_wall_thickness_mm": 0.6,
+        "requested_mm": 0.05
+      },
+      "original": {
+        "basis": "requested",
+        "budget_limited": false,
+        "budget_ok": true,
+        "criteria": {
+          "min_wall_thickness/6": 0.09999999999999999,
+          "requested": 0.05
+        },
+        "declared_spacing_mm": null,
+        "max_nodes": 4000000,
+        "relaxation_factor": 1.0,
+        "relaxation_steps": 0,
+        "requested_spacing_mm": 0.05,
+        "spacing_mm": 0.05
+      }
+    },
+    "wall_and_structure": {
+      "current": {
+        "basis": "min_wall_thickness/6",
+        "budget_limited": false,
+        "budget_ok": true,
+        "criteria": {
+          "min_wall_thickness/6": 0.09999999999999999,
+          "shortest_structure/4": 0.8
+        },
+        "declared_spacing_mm": null,
+        "max_nodes": 4000000,
+        "relaxation_factor": 1.0,
+        "relaxation_steps": 0,
+        "requested_spacing_mm": null,
+        "spacing_mm": 0.09999999999999999
+      },
+      "equal": true,
+      "field_equal": {
+        "basis": true,
+        "budget_limited": true,
+        "budget_ok": true,
+        "criteria": true,
+        "declared_spacing_mm": true,
+        "max_nodes": true,
+        "relaxation_factor": true,
+        "relaxation_steps": true,
+        "requested_spacing_mm": true,
+        "spacing_mm": true
+      },
+      "keys_equal": true,
+      "kwargs": {
+        "min_wall_thickness_mm": 0.6,
+        "shortest_structure_mm": 3.2
+      },
+      "original": {
+        "basis": "min_wall_thickness/6",
+        "budget_limited": false,
+        "budget_ok": true,
+        "criteria": {
+          "min_wall_thickness/6": 0.09999999999999999,
+          "shortest_structure/4": 0.8
+        },
+        "declared_spacing_mm": null,
+        "max_nodes": 4000000,
+        "relaxation_factor": 1.0,
+        "relaxation_steps": 0,
+        "requested_spacing_mm": null,
+        "spacing_mm": 0.09999999999999999
+      }
+    }
+  },
+  "explicit_boundary": {
+    "basis": "explicit",
+    "budget_limited": false,
+    "budget_ok": false,
+    "criteria": {
+      "explicit": 0.5701,
+      "min_wall_thickness/6": 0.09999999999999999,
+      "requested": 0.9,
+      "shortest_structure/4": 0.8
+    },
+    "declared_spacing_mm": 0.5701,
+    "estimated_nodes": 314574,
+    "invalid_explicit_inputs": [
+      "nan",
+      "inf",
+      "-inf",
+      "0.0",
+      "-0.1",
+      "'nan'",
+      "'invalid'"
+    ],
+    "max_nodes": 1000,
+    "smallest_positive_spacing_mm": 5e-324,
+    "spacing_mm": 0.5701,
+    "strict_float_equal": true
+  },
+  "prior_probe_runs": [
+    {
+      "cause": "Probe assertion compared 0.6 / 6 to decimal literal 0.1 exactly.",
+      "exit_code": 1,
+      "log": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\explicit_spacing_fix_20261004\\boundary_probe.v1.log",
+      "version": "v1"
+    },
+    {
+      "cause": "A second auto spacing assertion compared 0.6 / 6 to decimal literal 0.1 exactly.",
+      "exit_code": 1,
+      "log": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\explicit_spacing_fix_20261004\\boundary_probe.v2.log",
+      "version": "v2"
+    }
+  ],
+  "probe": {
+    "argv": [
+      ".\\.venv\\Scripts\\python.exe",
+      "-B",
+      "tmp\\review_20261004\\implementation\\explicit_spacing_fix_20261004\\boundary_probe.v3.py"
+    ],
+    "exit_code": 0,
+    "machine_report": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\explicit_spacing_fix_20261004\\boundary_probe.v3.report.json",
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\explicit_spacing_fix_20261004\\boundary_probe.v3.py",
+    "sha256": "712EA236F69D7FD058D22D81E64DC28DED1F5FE62ED49CB779954D35C7BCD73C",
+    "shell_command": ".\\.venv\\Scripts\\python.exe -B tmp\\review_20261004\\implementation\\explicit_spacing_fix_20261004\\boundary_probe.v3.py",
+    "stdout_log": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\explicit_spacing_fix_20261004\\boundary_probe.v3.stdout.log"
+  },
+  "report_with_actual_grid_spacing": {
+    "basis": "explicit",
+    "budget_limited": false,
+    "criteria": {
+      "explicit": 0.5701,
+      "min_wall_thickness/6": 0.09999999999999999,
+      "requested": 0.9,
+      "shortest_structure/4": 0.8
+    },
+    "declared_honoured": false,
+    "declared_mm": 0.5701,
+    "estimated_nodes": 285048,
+    "max_nodes": 1000,
+    "realised_nodes": 64,
+    "realised_shape": [
+      4,
+      4,
+      4
+    ],
+    "realised_spacing_mm": 0.9,
+    "relaxation_factor": 1.0,
+    "relaxation_steps": 0,
+    "request_honoured": true,
+    "request_honoured_basis": "requested",
+    "requested_mm": 0.9,
+    "requested_over_realised": 0.6334444444444445,
+    "spacing_mm": 0.5701
+  },
+  "report_without_requested": {
+    "basis": "explicit",
+    "budget_limited": false,
+    "criteria": {
+      "explicit": 0.5701
+    },
+    "declared_honoured": true,
+    "declared_mm": 0.5701,
+    "estimated_nodes": 0,
+    "max_nodes": 4000000,
+    "relaxation_factor": 1.0,
+    "relaxation_steps": 0,
+    "request_honoured": true,
+    "request_honoured_basis": "declared",
+    "requested_mm": null,
+    "spacing_mm": 0.5701
+  },
+  "source": "synlab/physical/sdf.py",
+  "source_sha256": {
+    "final": "FD433876FA4DF84D2316C93DBBE521E1094241829D5FCCF93CEDEEAC02467B1D",
+    "original": "186583014D706CFCC20FBEFDA04A0C68E427F68E3BA7187A48F9A9115DDB827F"
+  },
+  "source_snapshots": {
+    "final": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\explicit_spacing_fix_20261004\\sdf.final.py",
+    "original": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\explicit_spacing_fix_20261004\\sdf.py.original"
+  },
+  "target_pytest": {
+    "argv": ".\\.venv\\Scripts\\python.exe -B -m pytest -q tests\\a12\\degrade\\test_axis_routing_audit.py::test_explicit_damage_spacing_is_honoured_verbatim tests\\a12\\degrade\\test_axis_routing_audit.py::test_negative_explicit_spacing_is_refused tests\\a12\\degrade\\test_axis_routing_audit.py::test_choose_spacing_reports_requested_vs_realised",
+    "exit_code": 0,
+    "raw_output_saved_at_execution": false,
+    "result": "3 specified tests passed",
+    "tool_output_transcription": "... [100%]",
+    "transcription_note": "This is a transcription of the functions.exec result; no separate pytest raw-output capture file was created at execution time."
+  }
+}

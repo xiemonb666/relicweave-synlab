@@ -1,0 +1,192 @@
+{
+  "status": "LAYOUT_STATIC_PASS",
+  "base": {
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\v147_user_merge_20261007\\fresh_merge_final_candidate.docx",
+    "bytes": 786143,
+    "sha256": "70aa097680aa1920528ba4b6d9646821ac78b367618c0e9b8dbc36439fa38044"
+  },
+  "final": {
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\v147_user_merge_20261007\\fresh_merge_layout_final_candidate.docx",
+    "bytes": 786150,
+    "sha256": "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d"
+  },
+  "checks": {
+    "base_70aa_sha_matches_pin": true,
+    "final_sha_matches_pin": true,
+    "same_23_part_set_and_all_22_non_document_parts_exact": true,
+    "all_relationship_parts_byte_identical": true,
+    "all_18217_wt_tokens_exact_in_order": true,
+    "all_8_status_paragraphs_exact": true,
+    "all_553_bookmarks_and_113_internal_links_exact": true,
+    "194_tables_and_only_target_row_5_to_4": true,
+    "three_row_paragraphs_cloned_after_target_table": true,
+    "cloned_paragraph_xml_exact_except_keep_flags": true,
+    "keepNext_label_and_first_explanation_keepLines_all_three": true,
+    "five_B13_reference_spacing_after_changes_100_to_20": true,
+    "paragraph_C14N_diffs_are_only_five_refs_plus_three_relocated_clones": true,
+    "all_other_body_C14N_identical": true
+  },
+  "layout_delta": {
+    "table_index": 185,
+    "source_last_row_index": 5,
+    "base_row_count": 5,
+    "final_row_count": 4,
+    "source_row_text": "Solver-native contact减少状态转换。短时断裂阶段内部接触。",
+    "source_paragraph_texts": [
+      "Solver-native contact",
+      "减少状态转换。",
+      "短时断裂阶段内部接触。"
+    ],
+    "relocated_body_paragraph_texts": [
+      "Solver-native contact",
+      "减少状态转换。",
+      "短时断裂阶段内部接触。"
+    ],
+    "keepNext": [
+      true,
+      true,
+      false
+    ],
+    "keepLines": [
+      true,
+      true,
+      true
+    ],
+    "changed_table_row_counts": [
+      {
+        "table": 185,
+        "base": 5,
+        "final": 4
+      }
+    ],
+    "B13_reference_spacing_after": {
+      "paragraphs": [
+        {
+          "paragraph_index": 2402,
+          "text": "OpenCV标定：https://docs.opencv.org/4.x/dc/dbb/tutorial_py_calibration.html 。用于内参、畸变与实际工况检查，不以一次重投影低误差代替全部成像资格。",
+          "base_after": "100",
+          "final_after": "20"
+        },
+        {
+          "paragraph_index": 2403,
+          "text": "COLMAP：https://colmap.github.io/tutorial.html 。用于传统摄影测量基线，保留原始点云、相机和尺度说明。",
+          "base_after": "100",
+          "final_after": "20"
+        },
+        {
+          "paragraph_index": 2404,
+          "text": "SAM2：https://github.com/facebookresearch/sam2 。用于人工提示辅助mask，不直接当断口自动真值；测标注耗时和漏标。",
+          "base_after": "100",
+          "final_after": "20"
+        },
+        {
+          "paragraph_index": 2405,
+          "text": "交叉偏振：https://www.edmundoptics.com/knowledge-center/application-notes/imaging/machine-vision-filter-technology/ 。用于灯前和镜头前成对偏振设计，实测减光和反光残余。",
+          "base_after": "100",
+          "final_after": "20"
+        },
+        {
+          "paragraph_index": 2406,
+          "text": "SC3336 B：https://wiki.luckfox.com/SC3336-3MP-Camera/ 。与C核工作距离、手动对焦、分辨率和畸变；像素数不替代局部清晰度。",
+          "base_after": "100",
+          "final_after": "20"
+        }
+      ],
+      "expected_change": "100 to 20 for five citation paragraphs",
+      "numeric_delta_each": -80
+    },
+    "paragraph_C14N_diff_indices": [
+      2402,
+      2403,
+      2404,
+      2405,
+      2406,
+      7287,
+      7288,
+      7289
+    ],
+    "expected_diff_indices": [
+      2402,
+      2403,
+      2404,
+      2405,
+      2406,
+      7287,
+      7288,
+      7289
+    ],
+    "body_C14N_equal_after_reversing_declared_layout_changes": true
+  },
+  "integrity": {
+    "base_wt_count": 18217,
+    "final_wt_count": 18217,
+    "base_concatenated_wt_sha256": "9a927f3f817b1f35b5b1156b4c5e56bcbdd8d3466daa3be33204afdf5d2168a8",
+    "final_concatenated_wt_sha256": "9a927f3f817b1f35b5b1156b4c5e56bcbdd8d3466daa3be33204afdf5d2168a8",
+    "status_paragraphs": [
+      {
+        "prefix": "A12.19 当前状态（2026-10-07）",
+        "base_count": 1,
+        "final_count": 1,
+        "exact": true
+      },
+      {
+        "prefix": "A12.20 当前实施与资格边界（2026-10-07）",
+        "base_count": 1,
+        "final_count": 1,
+        "exact": true
+      },
+      {
+        "prefix": "V1.47（2026-10-07）收口记录",
+        "base_count": 1,
+        "final_count": 1,
+        "exact": true
+      },
+      {
+        "prefix": "G0 当前状态（2026-10-07）",
+        "base_count": 1,
+        "final_count": 1,
+        "exact": true
+      },
+      {
+        "prefix": "G31.1 V1.47 收口核对（2026-10-07）",
+        "base_count": 1,
+        "final_count": 1,
+        "exact": true
+      },
+      {
+        "prefix": "VesselForge 当前状态（2026-10-07）",
+        "base_count": 1,
+        "final_count": 1,
+        "exact": true
+      },
+      {
+        "prefix": "PG-Frag 当前状态（2026-10-07）",
+        "base_count": 1,
+        "final_count": 1,
+        "exact": true
+      },
+      {
+        "prefix": "V1.47（2026年10月7日）为 A12、VesselForge 与 PG-Frag 的实现收口和证据归位版",
+        "base_count": 1,
+        "final_count": 1,
+        "exact": true
+      }
+    ],
+    "base_bookmarks": 553,
+    "final_bookmarks": 553,
+    "base_internal_links": 113,
+    "final_internal_links": 113,
+    "duplicate_bookmark_names": false,
+    "dangling_anchors": []
+  },
+  "package": {
+    "base_parts": 23,
+    "final_parts": 23,
+    "changed_non_document_parts": [],
+    "relationship_parts": [
+      "_rels/.rels",
+      "word/_rels/document.xml.rels",
+      "customXml/_rels/item1.xml.rels"
+    ]
+  }
+}

@@ -1,0 +1,149 @@
+{
+  "schema": "synlab.view_channel_policy.v1",
+  "note": [
+    "Which per-view observation channel may be written into which training-package view.",
+    "The exporter reads this file (or SYNLAB_VIEW_CHANNEL_POLICY) and records the resolved",
+    "policy, its source and its hash in export_manifest.json; nothing in this list is a",
+    "hardcoded literal in synlab/storage/export.py.  Membership is a *permission*, not a claim:",
+    "what a package really contains is measured by scanning the written files, and a channel that",
+    "is permitted but absent is reported as missing."
+  ],
+  "source": "raw observation arrays of obs_result (synlab/observe/routes.py:observation_to_dict)",
+  "views": {
+    "deploy": {
+      "role": "deployment",
+      "channels": [
+        {
+          "key": "tiles",
+          "source_array": "rgb",
+          "dtype": "uint8",
+          "unit": "count",
+          "reason": "the delivered RGB view itself",
+          "evidence_class": "SENSOR_PROXY"
+        },
+        {
+          "key": "valid",
+          "source_array": "deployment_mask",
+          "dtype": "bool",
+          "unit": "1",
+          "reason": "pixels a deployment profile may obtain; a real acquisition knows its own usable mask",
+          "evidence_class": "SENSOR_PROXY"
+        },
+        {
+          "key": "view_pos",
+          "source_array": "views[].u_position_mm",
+          "dtype": "float32",
+          "unit": "mm",
+          "reason": "commanded slide position of the delivered view (rig metadata, not an answer)",
+          "evidence_class": "RIG_COMMANDED"
+        },
+        {
+          "key": "depth_z",
+          "source_array": "depth_z",
+          "dtype": "float32",
+          "unit": "mm",
+          "reason": "camera z of the delivered view; a real rig with a depth sensor or MVS output provides it",
+          "evidence_class": "CAVEAT_NOT_MEASURED_ON_REAL_RIG",
+          "caveat": "on this checkout depth comes from the renderer (`renderer depth is in mm by construction`); the field is the documented rig output, its values are simulated"
+        },
+        {
+          "key": "deployment_mask",
+          "source_array": "deployment_mask",
+          "dtype": "bool",
+          "unit": "1",
+          "reason": "the deployment mask channel itself, kept beside the RGB so a consumer need not infer it",
+          "evidence_class": "SENSOR_PROXY"
+        },
+        {
+          "key": "uncertain_mask",
+          "source_array": "uncertain_mask",
+          "dtype": "bool",
+          "unit": "1",
+          "reason": "pixels that cannot be attributed to one surface (mixture / defocus / depth edge); an acquisition can estimate this",
+          "evidence_class": "CAVEAT_ESTIMATOR_REQUIRED",
+          "caveat": "on a real rig this channel is an estimate, not the renderer's exact mixed-pixel labelling"
+        },
+        {
+          "key": "roi",
+          "source_array": "roi",
+          "dtype": "bool",
+          "unit": "1",
+          "reason": "the working region of interest; acquisition-side (which part of the frame the operator targeted)",
+          "evidence_class": "SENSOR_PROXY",
+          "optional": true
+        },
+        {
+          "key": "K",
+          "source_array": "K",
+          "dtype": "float64",
+          "unit": "1",
+          "shape": [3, 3],
+          "reason": "camera intrinsics: a real acquisition is given fx/fy/cx/cy by calibration (p1163)",
+          "evidence_class": "CALIBRATED_ON_REAL_RIG",
+          "caveat": "the three camera profiles of configs/a12/camera_profiles.json are all calibrated=false / STRESS_UNCALIBRATED, so the shipped K is a declared profile, not a measured calibration"
+        }
+      ]
+    },
+    "research": {
+      "role": "research",
+      "channels": [
+        {
+          "key": "rgb_linear",
+          "source_array": "rgb_linear",
+          "dtype": "float32",
+          "unit": "1",
+          "reason": "scene-linear radiance before the ISP: a training-time analysis channel, not a delivered product"
+        },
+        {
+          "key": "id_map",
+          "source_array": "id_map",
+          "dtype": "int32",
+          "unit": "1",
+          "reason": "per-face integer label: it names the answer surface of every pixel"
+        },
+        {
+          "key": "surface_tag",
+          "source_array": "surface_tag",
+          "dtype": "int16",
+          "unit": "1",
+          "reason": "face attribute tag map: it separates original wall from new fracture surface"
+        },
+        {
+          "key": "T_WC",
+          "source_array": "T_WC",
+          "dtype": "float64",
+          "unit": "1",
+          "shape": [4, 4],
+          "reason": "the ground-truth camera pose of the view"
+        },
+        {
+          "key": "dist",
+          "source_array": "dist",
+          "dtype": "float64",
+          "unit": "1",
+          "reason": "the exact distortion coefficients the renderer applied (a calibration target, not an input)"
+        }
+      ]
+    }
+  },
+  "truth_roles": {
+    "note": [
+      "Roles whose payload is a ground-truth layer.  Their channel sets are never copied into the",
+      "deployment view: clean/physical/visible truth and the iface_*/corr_* correspondence arrays",
+      "stay on the research side, where the layered label tables consume them."
+    ],
+    "clean": ["clean_truth"],
+    "physical": ["physical_truth"],
+    "visible": ["visible_labels"],
+    "arrays_research_only": [
+      "iface_id", "iface_area_mm2", "iface_gap_p95_mm", "iface_normal_p95_deg",
+      "iface_ambiguity_ratio", "iface_offset", "iface_points_a", "iface_points_b",
+      "iface_normals_a", "iface_normals_b", "iface_common_clip_area_mm2",
+      "iface_pair_common_clip_area_mm2",
+      "corr_point_a", "corr_point_b", "corr_normal_a", "corr_normal_b", "corr_bary_a",
+      "corr_bary_b", "corr_face_a", "corr_face_b", "corr_index_a", "corr_index_b",
+      "corr_weight", "corr_residual_mm", "corr_valid", "corr_ambiguous",
+      "corr_association_code", "corr_fragment_ids", "corr_interface_id"
+    ]
+  }
+}

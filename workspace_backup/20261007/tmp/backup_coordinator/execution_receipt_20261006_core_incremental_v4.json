@@ -1,0 +1,231 @@
+﻿{
+  "schema": "core_incremental_execution_receipt.v1",
+  "plan_path": "tmp/backup_coordinator/next_core_incremental_plan_20261006_v4.json",
+  "plan_sha256": "29f6307b71bf23d5c0d227a9122f91c7e91787e71290f06209c487eb197757ce",
+  "copy_receipt_path": "tmp/backup_coordinator/execution_receipt_20261006_core_incremental_v4_copy.json",
+  "copy_receipt_sha256": "9ac01b97b319a9a0d66f9b1e7dfc7cfb0af74fcb76173a4a19740dddf0493086",
+  "repo": "pgfrag",
+  "branch": "backup/forge-work-20261003",
+  "origin": "https://github.com/xiemonb666/pgfrag.git",
+  "pre_head": "90d47aa0bebc81ff2a7a1f4303356e72e04ee704",
+  "pre_remote_head": "90d47aa0bebc81ff2a7a1f4303356e72e04ee704",
+  "copy_count": 16,
+  "copy_bytes": 655725,
+  "stage_existing_count": 1,
+  "add_command": {
+    "argv": [
+      "git",
+      "-C",
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+      "-c",
+      "core.autocrlf=false",
+      "add",
+      "--",
+      "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/source/fixed_load_front_reanalysis.py",
+      "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/source/fixed_load_front_reanalysis_case.json",
+      "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/source/README.md",
+      "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/run01/result.json",
+      "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/run01/outer_process_receipt.json",
+      "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/run01/OUTER_PROCESS_ADDENDUM.md",
+      "docs/evidence/20261006/core_incremental_review/mixed_lefm/source/mixed_lefm_field.py",
+      "docs/evidence/20261006/core_incremental_review/mixed_lefm/source/README.md",
+      "docs/evidence/20261006/core_incremental_review/mixed_lefm/source/SOURCE_REVIEW.md",
+      "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_mixed_lefm.py",
+      "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_mixed_lefm.prepatch.py",
+      "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_report.json",
+      "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_points.csv",
+      "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/mixed_displacement_quiver.png",
+      "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/execution_receipt.json",
+      "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_run.log",
+      "docs/progress/20261006_physics_core_status.md"
+    ],
+    "rc": 0,
+    "staged_path_count": 17,
+    "path_set_matches_plan": true
+  },
+  "commit_command": {
+    "argv": [
+      "git",
+      "-C",
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+      "-c",
+      "core.autocrlf=false",
+      "-c",
+      "user.name=PGFrag Maintainer",
+      "-c",
+      "user.email=pgfrag@local",
+      "commit",
+      "-m",
+      "backup: preserve fixed-front and mixed-LEFM evidence"
+    ],
+    "rc": 0,
+    "output": [
+      "[backup/forge-work-20261003 1366d87] backup: preserve fixed-front and mixed-LEFM evidence",
+      "17 files changed, 1616 insertions(+)"
+    ]
+  },
+  "commit": "1366d87603005e28f5797766a97087d5d8112bf0",
+  "parent": "90d47aa0bebc81ff2a7a1f4303356e72e04ee704",
+  "changed_path_count": 17,
+  "changed_paths": [
+    "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/source/fixed_load_front_reanalysis.py",
+    "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/source/fixed_load_front_reanalysis_case.json",
+    "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/source/README.md",
+    "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/run01/result.json",
+    "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/run01/outer_process_receipt.json",
+    "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/run01/OUTER_PROCESS_ADDENDUM.md",
+    "docs/evidence/20261006/core_incremental_review/mixed_lefm/source/mixed_lefm_field.py",
+    "docs/evidence/20261006/core_incremental_review/mixed_lefm/source/README.md",
+    "docs/evidence/20261006/core_incremental_review/mixed_lefm/source/SOURCE_REVIEW.md",
+    "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_mixed_lefm.py",
+    "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_mixed_lefm.prepatch.py",
+    "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_report.json",
+    "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_points.csv",
+    "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/mixed_displacement_quiver.png",
+    "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/execution_receipt.json",
+    "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_run.log",
+    "docs/progress/20261006_physics_core_status.md"
+  ],
+  "committed_blob_count": 17,
+  "committed_total_bytes": 658479,
+  "committed_blobs": [
+    {
+      "sha256": "9707fa3c47403e0dada8081e3fba9273249e9a05fc2055b0e3a20a69b62c952c",
+      "path": "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/source/fixed_load_front_reanalysis.py",
+      "git_blob": "2c42c292f040189cc79469507f839b83ed5435a0",
+      "bytes": 32421
+    },
+    {
+      "sha256": "8f919a55127b6f310e6f262b4a550f8daa9cd214496d824c3e1848ed0b1b46df",
+      "path": "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/source/fixed_load_front_reanalysis_case.json",
+      "git_blob": "761c118c9dade18f56cc1c0da9c3d749b17e665d",
+      "bytes": 3980
+    },
+    {
+      "sha256": "8a6c21e5c49eeb67499d04d1871187692899bc2bde79ae805e7e16801cf704a1",
+      "path": "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/source/README.md",
+      "git_blob": "e3929b8bc056ff1e98a709cf02632acd10f8d8a8",
+      "bytes": 3490
+    },
+    {
+      "sha256": "a60e51c85c26510c358ee57cafa4bfdda6ed89ea463d99bcc86551f64220732c",
+      "path": "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/run01/result.json",
+      "git_blob": "d6fea328bb793e5449c93ceecc5119f7cc43db37",
+      "bytes": 539566
+    },
+    {
+      "sha256": "2a0615a0cbfaee065669ba28cf56e0d979811acbfd377e790f65fbfd3f3e8386",
+      "path": "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/run01/outer_process_receipt.json",
+      "git_blob": "1e41a567b14a553e63954fbaa150ee6595b835b1",
+      "bytes": 4603
+    },
+    {
+      "sha256": "d12f5752fefcc702016e9a215fe8a6b9fbf9f159bfe15cc35fe681559a85ac9d",
+      "path": "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/run01/OUTER_PROCESS_ADDENDUM.md",
+      "git_blob": "5e4f36f2ca01075b9254c6f250816c5ef3413fc4",
+      "bytes": 2929
+    },
+    {
+      "sha256": "ed90063029d69649fbb8b4a0785946cfdd7e7b6a22e483513ff27f447745dacd",
+      "path": "docs/evidence/20261006/core_incremental_review/mixed_lefm/source/mixed_lefm_field.py",
+      "git_blob": "d99a2c519aa13d0b9cf9b16d52fc1c0956b9ade0",
+      "bytes": 16380
+    },
+    {
+      "sha256": "4de18376bc619a0952051c383c16ef410ec2b8a9240661aae010ab5e7632f286",
+      "path": "docs/evidence/20261006/core_incremental_review/mixed_lefm/source/README.md",
+      "git_blob": "1eca617d212ff7d51da4e6cab9428626ab67f61e",
+      "bytes": 5466
+    },
+    {
+      "sha256": "c4274c0bc398f27c47e6ee00d883444bde99e7c8443e8e01cb71a0e95dc87be8",
+      "path": "docs/evidence/20261006/core_incremental_review/mixed_lefm/source/SOURCE_REVIEW.md",
+      "git_blob": "0b26eb83ca4c51d979155d18bb5bef1af3b3771b",
+      "bytes": 3870
+    },
+    {
+      "sha256": "ed4cf862c502b9ac4a186e34af62b960497c0358bb63bb7679dca7b48a2533c7",
+      "path": "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_mixed_lefm.py",
+      "git_blob": "901d2891a2fdf85c20d7bd17b89e52b0f5aba061",
+      "bytes": 15295
+    },
+    {
+      "sha256": "d4e613d9de863036de1a69de94b3a9e2c36cb916b0e7eeda83a51b4da3fc668f",
+      "path": "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_mixed_lefm.prepatch.py",
+      "git_blob": "beaf23ad0dd191a0f8701b654d3b980533fb0e4f",
+      "bytes": 14142
+    },
+    {
+      "sha256": "bd478d0349bf70f932cdd7ed50e031e8fc7d21509f11fd7fd6d53dc134aa8b5f",
+      "path": "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_report.json",
+      "git_blob": "8b5ef0aaebfdbe714cccef5c6551829df88d00b7",
+      "bytes": 1547
+    },
+    {
+      "sha256": "f7805b4cbbb83fdb1bad996b18494d1b19edb751d17dc0a471e77eab225e8c40",
+      "path": "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_points.csv",
+      "git_blob": "b4fd0b5221bba94f95b4dde2db41fe53710ce4a9",
+      "bytes": 7909
+    },
+    {
+      "sha256": "5efb4899ad295f0bc5799ffe332ba5a0f65271eadc5dec0c1b4f1cd209ad6297",
+      "path": "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/mixed_displacement_quiver.png",
+      "git_blob": "dd69d47b22bec5f3247b7a84026ba8e3ed9be6a4",
+      "bytes": 3004
+    },
+    {
+      "sha256": "20f03a64dec14da02eb61da7f93c8d112864233a57e8a16a66bacf900d1fae68",
+      "path": "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/execution_receipt.json",
+      "git_blob": "c6628d51c8160ad327e456652a3f6dbb59e7c04a",
+      "bytes": 927
+    },
+    {
+      "sha256": "9e4908708f5d4495992f914bd44fa2ec8bec633bbaf698d18173bf3784169b03",
+      "path": "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_run.log",
+      "git_blob": "3ceec8531e563cb05028eff68d90468036105e2e",
+      "bytes": 196
+    },
+    {
+      "sha256": "8772e087de7d055c9b83206bb9ed264561da0c3381ec31353851e1a1b6d9cf2c",
+      "path": "docs/progress/20261006_physics_core_status.md",
+      "git_blob": "6cad3b860ccdcbb9ef5dcd709b93e23ebd9f5249",
+      "bytes": 2754
+    }
+  ],
+  "push_preflight": {
+    "timeout_ms": 20000,
+    "rc": 0,
+    "timed_out": false,
+    "remote_line": "90d47aa0bebc81ff2a7a1f4303356e72e04ee704 refs/heads/backup/forge-work-20261003"
+  },
+  "push_command": {
+    "argv": [
+      "git",
+      "-C",
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+      "-c",
+      "core.autocrlf=false",
+      "push",
+      "origin",
+      "HEAD:refs/heads/backup/forge-work-20261003"
+    ],
+    "rc": 0,
+    "timeout_ms": 45000,
+    "timed_out": false,
+    "output": [
+      "To https://github.com/xiemonb666/pgfrag.git",
+      "90d47aa..1366d87 HEAD -> backup/forge-work-20261003"
+    ]
+  },
+  "verified_remote_head": "1366d87603005e28f5797766a97087d5d8112bf0",
+  "verified_remote_matches_commit": true,
+  "post_remote_ls_remote_rc": 0,
+  "post_status": {
+    "tracked_dirty_count": 0,
+    "staged_count": 0
+  },
+  "scope_notes": [
+    "Fixed-front files are producer source/run01 evidence; ongoing independent fixed audit remains excluded.",
+    "Mixed LEFM evidence is a root-reviewed 54-point diagnostic scope only; it does not qualify general physics, solver, or production behavior."
+  ]
+}

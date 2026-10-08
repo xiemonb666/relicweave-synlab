@@ -1,0 +1,49 @@
+{
+  "case": "controlled_intrinsic_bilinear_modeI",
+  "version": 3,
+  "solver_steps": 0,
+  "solver_attempts": 0,
+  "source_sha256": "49ac8220a2d24bbd73ad8735a0a377a24a3e4ee92cc168471050d36c77ac732d",
+  "manifest_sha256": "cf6fe37c3fcff83dc73e7e7d5b2ff0a1b8c7cc8fdecdcc405986363584c6496a",
+  "mesh_sha256": "b98402c5a7b7af36b8e5e8a2a90c7db689cb1af86a089c8e1b9a0dbf07ba2638",
+  "material_sha256": "ad92d6449b6ecc804ca73811806706e917c43c8b05f0f50625229e494853a666",
+  "launcher_sha256": "976d40e0395cb78d86bf0373abca65118982b4f34da94d5ac063778371a21bff",
+  "snapshot_integrity_all_byte_identical": true,
+  "py_compile": {
+    "argv": "wsl.exe -d Ubuntu -- env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 /mnt/c/Users/xiemo/Desktop/ShardForge/third_party/akantu-runtime/venv/bin/python -m py_compile /mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_bilinear_patch_20261004/init_preflight_dump_v3.py",
+    "wsl_host_exit_code": 0
+  },
+  "unique_preflight": {
+    "host_argv": "wsl.exe -d Ubuntu -- /bin/bash /mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_bilinear_patch_20261004/run_preflight_dump_v3.sh",
+    "launcher_python_argv": [
+      "/mnt/c/Users/xiemo/Desktop/ShardForge/third_party/akantu-runtime/venv/bin/python",
+      "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_bilinear_patch_20261004/init_preflight_dump_v3.py"
+    ],
+    "python_process_exit_code": 2,
+    "wsl_host_exit_code": 2,
+    "powershell_tool_command_exit_code": 0,
+    "stdout": "wsl_preflight_stdout.log",
+    "raw_result": "preflight_result.json",
+    "partial_measurements": "partial_measurements_before_dump.json",
+    "native_state": "preflight_native_state.npz"
+  },
+  "geometry_and_mass_energy_gates": "ALL_PASS: physical interface8; 54 nodes/96 tets/8 cohesive; 9 exact duplicate pairs; bulk local ordinal rest map exact; cohesive side ordinal ancestry equal; input and both sides area 4e-6 m2; split 27/27; mass 4e-5 kg per DOF positive; initial kinetic/potential/dissipated/reversible/cohesive contact all zero",
+  "native_dump_call": {
+    "dumper": "cohesive elements",
+    "step": 0,
+    "fields": [
+      "opening",
+      "tractions",
+      "damage",
+      "delta max"
+    ],
+    "recursive_output_verified": true,
+    "pvtu_sha256": "ae0e4aeaf2a0f8d82f3ff26609e3b5f2d7567535728aa684a4c25dbe26f432f3",
+    "vtu_sha256": "0b49dda94118e330b8d0f9f7215c26654fe9b9ffae51d1cb649252df37803843",
+    "field_analysis": "native_dump_fields_v3.json"
+  },
+  "driver_status": "FAIL_NO_RETRY",
+  "driver_failure": "The frozen driver checked only direct children of OUT after dump and therefore missed the actual paraview/ subdirectory; recursive post-run inspection found and decoded the native cohesive output. Do not rerun or edit source.",
+  "tag_source_to_wheel_correspondence": "UNKNOWN",
+  "review_scope": "Initialization and field serialization only; not a 201-step result or constitutive acceptance."
+}

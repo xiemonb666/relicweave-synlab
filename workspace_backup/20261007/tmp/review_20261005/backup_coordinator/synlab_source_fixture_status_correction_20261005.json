@@ -1,0 +1,34 @@
+{
+  "schema": "shardforge.synlab-candidate-status-correction.v1",
+  "captured_at_utc": "2026-10-05T00:06:36.507Z",
+  "original_candidate_manifest": "tmp/review_20261005/backup_coordinator/synlab_source_fixture_candidates_20261005.json",
+  "original_candidate_manifest_sha256": "2df5be8a844822bd73d051106d4c6cc7e1fed731dc4ba90b374b45bfd644c45b",
+  "correction": {
+    "path": "relicweave-synlab/synlab/qa/source_readers/__init__.py",
+    "bytes": 300,
+    "sha256": "2d187338150a7582c6cb895cf15f8934b271c863c0a6903da5784e5f947f330b",
+    "prior_manifest_worktree_status": "clean",
+    "verified_status": "untracked and ignored",
+    "tracked": false,
+    "ignore_rule": ".gitignore:22:_*.py",
+    "root_followup_approval": "Exact git add -f authorized for this one package initializer because it is required for portable reader execution."
+  },
+  "attributes": {
+    "path": "relicweave-synlab/.gitattributes",
+    "original_bytes": 716,
+    "original_sha256": "4344ddbb2ee900faf3c9af1897ee97d5f4e3e0981b43e7e6855553df13a39ae0",
+    "appended_line": "/tests/fixtures/pgfrag/result_v1_toy_endpoint/** -text",
+    "updated_bytes": 772,
+    "updated_sha256": "1735408bb2ac0f02fb35452e5e2a3f3ac30dd971564e9e1a1dc4cf5b2ca56e88",
+    "original_bytes_preserved": true
+  },
+  "scope": {
+    "candidate_paths_unchanged": 15,
+    "force_add_paths": [
+      "relicweave-synlab/synlab/qa/source_readers/__init__.py",
+      "relicweave-synlab/tests/fixtures/pgfrag/result_v1_toy_endpoint/output/solver.stdout.log",
+      "relicweave-synlab/tests/fixtures/pgfrag/result_v1_toy_endpoint/output/solver.stderr.log"
+    ],
+    "other_ignored_paths_force_added": false
+  }
+}

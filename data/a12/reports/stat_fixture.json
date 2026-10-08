@@ -1,0 +1,174 @@
+{
+  "bootstrap": {
+    "bootstrap_sd": 0.010463852013952463,
+    "ci_high": 0.06000000000000001,
+    "ci_low": 0.019,
+    "confidence": 0.95,
+    "degenerate": null,
+    "direction": "positive",
+    "excludes_null": true,
+    "mean_delta": 0.03849999999999999,
+    "n_clusters": 5,
+    "n_observations": 12,
+    "null_delta": 0.0,
+    "ok": true,
+    "per_cluster_mean": {
+      "LIN0001_V01": 0.03,
+      "LIN0002_V01": 0.055,
+      "LIN0003_V02": 0.0125,
+      "LIN0004_V03": 0.07500000000000001,
+      "LIN0005_V04": 0.02
+    },
+    "replicates": 10000,
+    "requested_unit": "shape_lineage",
+    "statistic": "mean",
+    "unit": "shape_lineage",
+    "unit_is_shape_lineage": true
+  },
+  "bootstrap_ok": true,
+  "bootstrap_unit": "shape_lineage",
+  "checks_passed": 28,
+  "checks_total": 28,
+  "clopper_pearson": {
+    "checks": {
+      "all_events_upper_is_one": true,
+      "bound_ordering": true,
+      "n20_about_13_9_percent": true,
+      "n20_matches_closed_form": true,
+      "n29_about_9_8_percent": true,
+      "n29_matches_closed_form": true,
+      "nonzero_uses_scipy_beta": true,
+      "zero_event_table": true
+    },
+    "ok": true,
+    "scipy_beta_reference_e1_n20": 0.2161061642068473,
+    "table": {
+      "alpha": 0.05,
+      "units": {
+        "1%": 299,
+        "10%": 29,
+        "5%": 59
+      }
+    },
+    "upper_bounds": {
+      "n20_all_events": 1.0,
+      "n20_one_event": 0.2161061642068473,
+      "n20_zero_events": 0.13910834066826516,
+      "n299_zero_events": 0.009969146792899286,
+      "n29_zero_events": 0.0981446276772957,
+      "n59_zero_events": 0.049507609888227
+    }
+  },
+  "clopper_pearson_ok": true,
+  "fixture_version": "diagnostics.fixtures.v1",
+  "holm": {
+    "adjusted": {
+      "a": 0.004,
+      "b": 0.03,
+      "c": 0.08,
+      "d": 0.2
+    },
+    "alpha": 0.05,
+    "m": 4,
+    "method": "holm",
+    "n_rejected": 2,
+    "note": "family-wise correction for the registered comparisons only",
+    "ok": true,
+    "rejected": {
+      "a": true,
+      "b": true,
+      "c": false,
+      "d": false
+    }
+  },
+  "holm_ok": true,
+  "n90": {
+    "checks": {
+      "bracketed": true,
+      "external_reference_recorded": true,
+      "inside_bracket": true,
+      "no_extrapolation": true
+    },
+    "not_reached": {
+      "extrapolated": false,
+      "fraction": 0.9,
+      "measured_points": [
+        [
+          200.0,
+          0.4
+        ],
+        [
+          1000.0,
+          0.5
+        ]
+      ],
+      "metric": "CovRecall@10",
+      "n90": null,
+      "n_points": 2,
+      "reason": "the measured curve never reaches 0.9 within the measured range; no extrapolation is performed",
+      "reference_source": "external_saturation_reference",
+      "reference_value": 1.0,
+      "status": "NOT_REACHED",
+      "target_value": 0.9
+    },
+    "ok": true,
+    "reached": {
+      "at_n": {
+        "hi": {
+          "n": 4000.0,
+          "value": 0.9
+        },
+        "lo": {
+          "n": 1000.0,
+          "value": 0.75
+        }
+      },
+      "bracket": [
+        1000.0,
+        4000.0
+      ],
+      "extrapolated": false,
+      "fraction": 0.9,
+      "measured_points": [
+        [
+          200.0,
+          0.4
+        ],
+        [
+          1000.0,
+          0.75
+        ],
+        [
+          4000.0,
+          0.9
+        ]
+      ],
+      "metric": "CovRecall@10",
+      "n90": 4000.0,
+      "n_points": 3,
+      "reason": "linear interpolation strictly between two measured points",
+      "reference_source": "external_saturation_reference",
+      "reference_value": 1.0,
+      "status": "BRACKETED",
+      "target_value": 0.9
+    }
+  },
+  "n90_ok": true,
+  "notes": [
+    "primary unit is the independent shape lineage; seeds/fragments/views are repeats",
+    "Clopper-Pearson assumes the frozen binomial event model (independent conservative lineage clusters, identical per-mother query/action counts, fixed policy)",
+    "no all-zero bootstrap may be reported as passing a risk gate"
+  ],
+  "ok": true,
+  "power": {
+    "checks": {
+      "monotone_in_sigma": true,
+      "sigma_010_delta_003_about_88": true,
+      "sigma_020_delta_003_about_349": true
+    },
+    "n_sigma_0.10_delta_0.03": 88,
+    "n_sigma_0.20_delta_0.03": 349,
+    "ok": true
+  },
+  "power_ok": true
+}

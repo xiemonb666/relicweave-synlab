@@ -1,0 +1,59 @@
+{
+  "schema": "science_closed_backup_independent_postverify.v1",
+  "started_utc": "2026-10-07T02:13:40.439817+00:00",
+  "input_pins": {
+    "plan": {
+      "path": "tmp/backup_coordinator/science_closed_backup_plan_20261007.json",
+      "bytes": 106109,
+      "sha256": "f2729b22b197896906900107f2388fa3f80b1b02c6d8a856f97ebed56974da9e"
+    },
+    "receipt": {
+      "path": "tmp/backup_coordinator/science_closed_backup_execution_20261007.json",
+      "bytes": 783829,
+      "sha256": "72152fa9f79b378a02540785b3431bd4a0a12dd6cf6eb1cdc1762d64e6e79cb9"
+    }
+  },
+  "plan_totals": {
+    "file_count": 98,
+    "bytes": 2115372,
+    "copy_count": 91,
+    "direct_stage_count": 7,
+    "per_repo": {
+      "pgfrag": {
+        "file_count": 59,
+        "bytes": 1881181,
+        "copy_count": 57,
+        "direct_stage_count": 2,
+        "commit_head": "cc0e79773ce34bdebe9124d3fe60c078a85a2f5d",
+        "parent": "97d213c988323da39ddbaa9ebb2135b675190c93",
+        "paths_exact_in_receipt": true,
+        "push_returncode": 0,
+        "remote_after": "cc0e79773ce34bdebe9124d3fe60c078a85a2f5d"
+      },
+      "vesselforge": {
+        "file_count": 34,
+        "bytes": 199095,
+        "copy_count": 29,
+        "direct_stage_count": 5
+      },
+      "relicweave-synlab": {
+        "file_count": 5,
+        "bytes": 35096,
+        "copy_count": 5,
+        "direct_stage_count": 0
+      }
+    }
+  },
+  "receipt_schema": {},
+  "source_destination_checks": [],
+  "repo_checks": {},
+  "cat_file_batches": [],
+  "file_checks": [],
+  "git_commands": [],
+  "gates": {},
+  "repository_mutations_performed": false,
+  "tests_run": false,
+  "status": "FAIL",
+  "finished_utc": "2026-10-07T02:13:40.444047+00:00",
+  "failure": "receipt commit pin mismatch vesselforge"
+}

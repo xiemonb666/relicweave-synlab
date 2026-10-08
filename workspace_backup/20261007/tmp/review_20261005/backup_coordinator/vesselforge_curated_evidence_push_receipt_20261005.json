@@ -1,0 +1,154 @@
+{
+  "schema": "shardforge.git-backup-push-receipt.v1",
+  "repository": "vesselforge",
+  "branch": "backup/forge-work-20261003",
+  "parent_commit": "8da9b538e2588fe51418588cb6301c258cd5363f",
+  "commit": "87c269ff25b1060b1ad56b72fdadf7de6d4df775",
+  "commit_subject": "docs: archive geometry and local ornament evidence",
+  "remote_head_before": "8da9b538e2588fe51418588cb6301c258cd5363f",
+  "remote_head_after": "87c269ff25b1060b1ad56b72fdadf7de6d4df775",
+  "copy_plan_sha256": "fb2eff29c6205f728331132ffd7ec5c795049b8a35f944209c19c31f99431558",
+  "staged_path_count": 15,
+  "paths": [
+    {
+      "path": ".gitattributes",
+      "blob_oid": "fd49bf4c90f6c4b8ad5791c01a91dc162e8c37de",
+      "object_bytes": 534,
+      "object_sha256": "f80b2aacfd17b4440791ee63387cc3a3a34f9485b84da4d49361d4dcd07cd5be",
+      "worktree_bytes": 534,
+      "worktree_sha256": "f80b2aacfd17b4440791ee63387cc3a3a34f9485b84da4d49361d4dcd07cd5be",
+      "matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261005/backup_evidence_index_20261005.json",
+      "blob_oid": "0aa280318e29ac6d85de05230b0373a35eb723e1",
+      "object_bytes": 8037,
+      "object_sha256": "3ef3eabda5a3cc12a88db7dace6a714605e887728a6888b1078d4733d04d65b9",
+      "worktree_bytes": 8037,
+      "worktree_sha256": "3ef3eabda5a3cc12a88db7dace6a714605e887728a6888b1078d4733d04d65b9",
+      "matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261005/geometry_resume/migration_binding_result.json",
+      "blob_oid": "8354365ed9afd8b93912c43e5d84c2c4fb23f2df",
+      "object_bytes": 9614,
+      "object_sha256": "4c20e462f1acedb81ab9a1ecdd9d19a4d97359ae2d5a28456b127593d971f860",
+      "worktree_bytes": 9614,
+      "worktree_sha256": "4c20e462f1acedb81ab9a1ecdd9d19a4d97359ae2d5a28456b127593d971f860",
+      "matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261005/geometry_resume/migration_execution_receipt.json",
+      "blob_oid": "62d6bfea824b4f458e040dc8b06f61a6ed176055",
+      "object_bytes": 26915,
+      "object_sha256": "70917d5e3d32535a24b4ca145dcce16eb695914f8dedb274e621e5f2bdbb3b53",
+      "worktree_bytes": 26915,
+      "worktree_sha256": "70917d5e3d32535a24b4ca145dcce16eb695914f8dedb274e621e5f2bdbb3b53",
+      "matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261005/geometry_resume/report.md",
+      "blob_oid": "f0df05fb9f20cf79a3f50040f80dfbd6baf98e79",
+      "object_bytes": 3495,
+      "object_sha256": "800b6fad2dabff141e1eafeaee4041e18d5f1b3de3cde832bb36c8cff4dec588",
+      "worktree_bytes": 3495,
+      "worktree_sha256": "800b6fad2dabff141e1eafeaee4041e18d5f1b3de3cde832bb36c8cff4dec588",
+      "matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261005/geometry_resume/targeted_pytest_receipt.json",
+      "blob_oid": "cd5ef59127bd6d47a152ffed2503c80da7217f33",
+      "object_bytes": 2287,
+      "object_sha256": "f414b8fc112c514f9b4d0a738ace1fd2bc955c55cb01592fb7623eddaa743eea",
+      "worktree_bytes": 2287,
+      "worktree_sha256": "f414b8fc112c514f9b4d0a738ace1fd2bc955c55cb01592fb7623eddaa743eea",
+      "matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261005/geometry_resume/targeted_pytest.junit.xml",
+      "blob_oid": "a4c1fb2498480b2b38e8f684d9d0f6f6eb91f7a9",
+      "object_bytes": 9277,
+      "object_sha256": "a38b907be6d68ded885e48ca9821dd727fe6de57243086dc6ac4ab412f2673a0",
+      "worktree_bytes": 9277,
+      "worktree_sha256": "a38b907be6d68ded885e48ca9821dd727fe6de57243086dc6ac4ab412f2673a0",
+      "matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261005/ornament_resume/local_a_0p50mm_checks.json",
+      "blob_oid": "0fce597aadf048bf35ea4926d36f9f3c34293b68",
+      "object_bytes": 6103,
+      "object_sha256": "f302c9383f12a4f35481888b851c1d512fee9fe6e8966efaeceae7ca40526106",
+      "worktree_bytes": 6103,
+      "worktree_sha256": "f302c9383f12a4f35481888b851c1d512fee9fe6e8966efaeceae7ca40526106",
+      "matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261005/ornament_resume/local_a_0p50mm_flat_triangle_visual.png",
+      "blob_oid": "c466bec80f617d285f9eca8e48c71560b1909f73",
+      "object_bytes": 512146,
+      "object_sha256": "2931af31de62f710034b1d01b298357a444a3fe283231ac301e83500108ba1a0",
+      "worktree_bytes": 512146,
+      "worktree_sha256": "2931af31de62f710034b1d01b298357a444a3fe283231ac301e83500108ba1a0",
+      "matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261005/ornament_resume/local_b_0p25mm_checks.json",
+      "blob_oid": "c51139528c1cea48e64089140fa855891709c44e",
+      "object_bytes": 6110,
+      "object_sha256": "4e4c08b96bd6e7dd47a3285377979fc93fc3865a0bc1fcdd48d79397c23e14e8",
+      "worktree_bytes": 6110,
+      "worktree_sha256": "4e4c08b96bd6e7dd47a3285377979fc93fc3865a0bc1fcdd48d79397c23e14e8",
+      "matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261005/ornament_resume/local_b_0p25mm_flat_triangle_visual.png",
+      "blob_oid": "7e4a1aec753d11038f2e03db4aa439acf6e60db3",
+      "object_bytes": 675966,
+      "object_sha256": "0cbf8d44c6e19075be91882e7f95ce5fb82ff35e6b935ba98c24712c97dba565",
+      "worktree_bytes": 675966,
+      "worktree_sha256": "0cbf8d44c6e19075be91882e7f95ce5fb82ff35e6b935ba98c24712c97dba565",
+      "matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261005/ornament_resume/POST_RUN_SHA256.json",
+      "blob_oid": "e956039d853b5221868569ddfb4048ab03f49cd9",
+      "object_bytes": 3122,
+      "object_sha256": "b72ce4af2296a70b153a90aad19c6b226eed5092b2c1f28f453fcb8a640a5aad",
+      "worktree_bytes": 3122,
+      "worktree_sha256": "b72ce4af2296a70b153a90aad19c6b226eed5092b2c1f28f453fcb8a640a5aad",
+      "matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261005/ornament_resume/RESULT_SHA256.json",
+      "blob_oid": "a4771328fbf7de1295389ed2f480d6ede88357e9",
+      "object_bytes": 2149,
+      "object_sha256": "7630817c816dde8363f2660b10b77cc6a9368ef002ec4546caed7fdbf71e11ea",
+      "worktree_bytes": 2149,
+      "worktree_sha256": "7630817c816dde8363f2660b10b77cc6a9368ef002ec4546caed7fdbf71e11ea",
+      "matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261005/ornament_resume/run_receipt.json",
+      "blob_oid": "9027323f61a0af36c697150cbcab22784957bb4d",
+      "object_bytes": 802,
+      "object_sha256": "fcbc60fa0de7974bdf125a75aed725a58db3af6c813a5f9858dd09fc7e70af84",
+      "worktree_bytes": 802,
+      "worktree_sha256": "fcbc60fa0de7974bdf125a75aed725a58db3af6c813a5f9858dd09fc7e70af84",
+      "matches_worktree": true
+    },
+    {
+      "path": "docs/evidence/20261005/ornament_resume/run02_surface_ornament_fixture.png",
+      "blob_oid": "428b835fea7578d18d4f6fe9dda5d215deda3196",
+      "object_bytes": 238410,
+      "object_sha256": "3cf1026178613a74cecc5d177139c6ec25e0134deb682ad61d312eed6bd5ac17",
+      "worktree_bytes": 238410,
+      "worktree_sha256": "3cf1026178613a74cecc5d177139c6ec25e0134deb682ad61d312eed6bd5ac17",
+      "matches_worktree": true
+    }
+  ],
+  "push_result": [
+    "To https://github.com/xiemonb666/vesselforge.git",
+    "   8da9b53..87c269f  backup/forge-work-20261003 -> backup/forge-work-20261003"
+  ],
+  "exact_approved_paths_clean_after_push": true
+}

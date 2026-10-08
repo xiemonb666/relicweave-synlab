@@ -1,0 +1,162 @@
+{
+  "created_utc": "2026-10-04T09:04:10.3981750Z",
+  "purpose": "Exact backup audit for reviewed fixture-level source/test batch; no tests rerun, no integration or scientific qualification implied.",
+  "repos": [
+    {
+      "name": "VF",
+      "root": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+      "branch": "backup/forge-work-20261003",
+      "local_head": "ed185588c6ba0699a3e64d151dbaeb5eb6172064",
+      "remote_ref": "refs/heads/backup/forge-work-20261003",
+      "remote_head": "ed185588c6ba0699a3e64d151dbaeb5eb6172064",
+      "local_remote_equal": true,
+      "files": [
+        {
+          "path": "src/vesselforge/profile_catalog.py",
+          "bytes": 16195,
+          "source_sha256": "4344283912f4574dd28f3520d04e4b6d5414f37b681b29add7091cd32e44f864",
+          "git_blob": "7acabcab3d2be0713e468b5463d0643e3ba3184c",
+          "blob_matches_raw_bytes": true,
+          "previously_reviewed_test_passes": 15
+        },
+        {
+          "path": "tests/test_profile_catalog.py",
+          "bytes": 4793,
+          "source_sha256": "e1400b7ddff53a64e3dc31321481a6a2fb9e21efc1c43a4ca363eeb7e514a9dd",
+          "git_blob": "6aa8895bc6570f98e4d656a80b45aa707ffa04f5",
+          "blob_matches_raw_bytes": true,
+          "previously_reviewed_test_passes": null
+        },
+        {
+          "path": "src/vesselforge/ornament_fields.py",
+          "bytes": 22394,
+          "source_sha256": "6f9885f805f78ae4df283bbabd0e4cc1f5b8e3c2e12e606c966a06b5aff096ee",
+          "git_blob": "40bd1a3f95b44d77130047847a221c97c284cc29",
+          "blob_matches_raw_bytes": true,
+          "previously_reviewed_test_passes": 6
+        },
+        {
+          "path": "tests/test_ornament_fields.py",
+          "bytes": 7414,
+          "source_sha256": "7cec79dfce6a867d70dbfc786d3d04b38b3cece47be2f6d6fc20f3987bafc022",
+          "git_blob": "97ff47faae66a5bfaaee8e0afa2cf4ac18606124",
+          "blob_matches_raw_bytes": true,
+          "previously_reviewed_test_passes": null
+        },
+        {
+          "path": "src/vesselforge/wall_reference.py",
+          "bytes": 29780,
+          "source_sha256": "a4f06671fc138fcf6912d9d075841fa958185b44a1d9c7e93b0b62e2fe29e8c8",
+          "git_blob": "58678c76bef3ebd9e7b22ae67a5cfcb2754fd269",
+          "blob_matches_raw_bytes": true,
+          "previously_reviewed_test_passes": 11
+        },
+        {
+          "path": "tests/test_wall_reference.py",
+          "bytes": 9414,
+          "source_sha256": "d0ef04896cbfafbdf45677912607c0cc632f2d65fde2edeb99c65bf45b14aa1d",
+          "git_blob": "b36d8bb6c856f07554fc96df94994e11716054f2",
+          "blob_matches_raw_bytes": true,
+          "previously_reviewed_test_passes": null
+        }
+      ],
+      "scoped_attributes": {
+        "path": ".gitattributes",
+        "bytes": 235,
+        "working_sha256": "c7f57ec900aaae71392c769e1c8b63acc6e3ea458f1ba06988e1635ff5240bdf",
+        "git_blob": "b08d226f24746dc42c734f73172bd7bda71a6c1b"
+      },
+      "uncommitted_porcelain": [
+        "?? docs/references/",
+        "?? tmp/"
+      ]
+    },
+    {
+      "name": "SynLab",
+      "root": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+      "branch": "backup/forge-work-20261003",
+      "local_head": "6d8c4a944c9fe5d02ba4882ce8206bd59a9bc2b8",
+      "remote_ref": "refs/heads/backup/forge-work-20261003",
+      "remote_head": "6d8c4a944c9fe5d02ba4882ce8206bd59a9bc2b8",
+      "local_remote_equal": true,
+      "files": [
+        {
+          "path": "synlab/degrade/rms_fields.py",
+          "bytes": 8899,
+          "source_sha256": "2ab742cee4d18f16b2b5cb2f95df5aba183b65eda27c19a1f7ae2ba98280daac",
+          "git_blob": "3d17cf8926ada8fa7c98916fe4df9d78007878ee",
+          "blob_matches_raw_bytes": true,
+          "previously_reviewed_test_passes": 11
+        },
+        {
+          "path": "tests/a12/degrade/test_rms_fields_20261004.py",
+          "bytes": 5833,
+          "source_sha256": "7275dce5167cccf7562899415e5feb684c7b1f96fa5ccee8c89ced86933bf4d9",
+          "git_blob": "8010e12192cece2223ed24ac22f215749529c5ba",
+          "blob_matches_raw_bytes": true,
+          "previously_reviewed_test_passes": null
+        }
+      ],
+      "scoped_attributes": {
+        "path": ".gitattributes",
+        "bytes": 528,
+        "working_sha256": "1b88e2e940f26c5dd25a38d76355825167e73d57f382245356b13af5dd2967cf",
+        "git_blob": "32f1ef492adc71478bef3b05e4db561f4b3a847d"
+      },
+      "uncommitted_porcelain": [
+        "?? synlab/qa/",
+        "?? tests/a12/qa/"
+      ]
+    },
+    {
+      "name": "PG",
+      "root": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+      "branch": "backup/forge-work-20261003",
+      "local_head": "00a6bb059e0e5a97b0edf6e2d0f4d7a539bf783b",
+      "remote_ref": "refs/heads/backup/forge-work-20261003",
+      "remote_head": "00a6bb059e0e5a97b0edf6e2d0f4d7a539bf783b",
+      "local_remote_equal": true,
+      "files": [
+        {
+          "path": "src/pgfrag/bond_events.py",
+          "bytes": 34756,
+          "source_sha256": "48f2c8785527a84e5237270306fe68427be37f1e643780dd3331da51099a05db",
+          "git_blob": "f920d7a8ba4ce946c9f3ed4d3329abede22ed4aa",
+          "blob_matches_raw_bytes": true,
+          "previously_reviewed_test_passes": 19
+        },
+        {
+          "path": "tests/test_bond_events.py",
+          "bytes": 15848,
+          "source_sha256": "5e3adde115d5a4e46fb388213fc8a16197baa7c7f743a5f6e5ddec2e66f2253e",
+          "git_blob": "c8459b5f62c4f203f60ba6d8136f2f43ca37ea06",
+          "blob_matches_raw_bytes": true,
+          "previously_reviewed_test_passes": null
+        }
+      ],
+      "scoped_attributes": {
+        "path": ".gitattributes",
+        "bytes": 66,
+        "working_sha256": "506c5f7f40640e0513ea6b85a3b66a0e07da1d96b771cfcfb95861011e063d44",
+        "git_blob": "2f18f1a351a207059a0e859bf9a5243f2c5898c4"
+      },
+      "uncommitted_porcelain": [
+        "?? experiments/cohesive_bilinear_patch_20261004/analyze_intrinsic_bilinear_modeI.py",
+        "?? experiments/cohesive_bilinear_patch_20261004/analyze_intrinsic_bilinear_partial_run02_v2.py",
+        "?? experiments/cohesive_bilinear_patch_20261004/analyze_intrinsic_bilinear_partial_run02_v3.py",
+        "?? experiments/cohesive_bilinear_patch_20261004/analyze_intrinsic_bilinear_run03.py",
+        "?? experiments/cohesive_bilinear_patch_20261004/render_bilinear_patch_plots.ps1",
+        "?? experiments/pd_point_event_probe_20261004/",
+        "?? src/pgfrag/bias_protocol.py",
+        "?? src/pgfrag/energy_ledger.py",
+        "?? src/pgfrag/mesh_resolution_audit.py",
+        "?? src/pgfrag/native_point_history.py",
+        "?? tests/test_bias_protocol.py",
+        "?? tests/test_energy_ledger.py",
+        "?? tests/test_mesh_resolution_audit.py",
+        "?? tests/test_native_point_history.py",
+        "?? tmp/"
+      ]
+    }
+  ]
+}

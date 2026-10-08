@@ -1,0 +1,33 @@
+{
+  "status": "READY_FOR_ROOT_REVIEW",
+  "repository": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+  "git_head": "32454d0ac9ef3f669c1858741f3fd0b60ff53064",
+  "parent_freeze_manifest_v1": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\degradation_qa_fix\\freeze_manifest_v1.json",
+  "parent_freeze_manifest_v1_sha256": "35711A3C000A24ECFEE4CACBE99B1346DA67AC60C480AB4B3BEC08A7056DDD92",
+  "operators_original_snapshot": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\degradation_qa_fix\\source_before_v2\\operators.py",
+  "operators_original_snapshot_manifest": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\degradation_qa_fix\\source_before_v2\\manifest.json",
+  "operators_original_bytes": 74689,
+  "operators_original_sha256": "A29CFE8DB38A39EA91A75665783A8E078F35AEFBCB926193E30D0EEC2CD64C9B",
+  "prepared_diff": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\degradation_qa_fix\\prepared_diff_v2.patch",
+  "new_test_diff": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\degradation_qa_fix\\new_test_v2.diff",
+  "test_plan": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\degradation_qa_fix\\test_plan_v2.md",
+  "tests_run_for_v2": false,
+  "previous_run_01": {
+    "preserved": true,
+    "result": "FAILED: 22 passed, 4 failed, exit 1",
+    "artifacts": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\degradation_qa_fix\\run_01"
+  },
+  "changed_files": [
+    {"path": "synlab/physical/api.py", "bytes": 103943, "sha256": "4685FB7D37CDDFDD737CFD92C4021691F1A416E208163B80F5F829FC3F518EA9"},
+    {"path": "synlab/physical/operators.py", "bytes": 75911, "sha256": "AB9F1BF896553D3D3E56CA08837D515475A5E2F23659C4F01212F0EFAF90A96B"},
+    {"path": "synlab/degrade/axes.py", "bytes": 140342, "sha256": "1255550FE50741C81C2C57CF1EA5B4701496E8B1E933949279E4F54D41CF0E87"},
+    {"path": "synlab/degrade/physical_narrowband.py", "bytes": 46650, "sha256": "47D1DC5308AEE795D49F05CB28165BBE4A940DBD27E3E3A59579BB9EB6A976EA"},
+    {"path": "tests/a12/operators/test_postassembly_qa_20261003.py", "bytes": 12262, "sha256": "AC553BDB176421129EFDC70E8901D684D39DA3507476926A9D24F34EEA2164D0"},
+    {"path": "tests/a12/degrade/test_physical_acceptance_20261004.py", "bytes": 19741, "sha256": "C1637804667ED27930858583C4F14D0339F05B9D6CA0BAF1E4385366DFBD1D0F"}
+  ],
+  "review_artifacts": [
+    {"path": "prepared_diff_v2.patch", "bytes": 33824, "sha256": "83964787981D3C5C2564B5C1A4D7331B759BB883FEF6CF82044AE089A3B2E06A"},
+    {"path": "new_test_v2.diff", "bytes": 20815, "sha256": "9BFD39D9E8A8A76E71C14292777C099EED75E6CA24EECB018BFB374E83650685"},
+    {"path": "test_plan_v2.md", "bytes": 1012, "sha256": "9FCC362FF137A02F2774619FD7E9DC52B9B653B3E48A4C63680B5E8F2E6A5463"}
+  ]
+}

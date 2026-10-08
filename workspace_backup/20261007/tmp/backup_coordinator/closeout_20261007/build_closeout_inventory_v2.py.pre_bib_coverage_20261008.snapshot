@@ -1,0 +1,683 @@
+from __future__ import annotations
+import os, re, json, hashlib, subprocess
+from pathlib import Path
+from datetime import datetime, timezone
+
+ROOT=Path(r"C:\Users\xiemo\Desktop\ShardForge").resolve()
+OUT=ROOT/"tmp"/"backup_coordinator"/"closeout_20261007"
+REPOS={"pgfrag":ROOT/"pgfrag","vesselforge":ROOT/"vesselforge","relicweave-synlab":ROOT/"relicweave-synlab"}
+BRANCH="backup/forge-work-20261003"
+GIT_EXE=Path(r"C:\Users\xiemo\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\git\cmd\git.exe")
+SKIP={".git",".venv","venv","env","__pycache__",".pytest_cache",".mypy_cache",".ruff_cache",".cache","cache",".tox",".nox","node_modules","build","dist","target","site-packages","relicweave_synlab.egg-info",".next",".nuxt","coverage",".shots"}
+RUNTIMES={"third_party/akantu-runtime","third_party/blender-5.2.2-windows-x64","third_party/doc-render-runtime","third_party/pgfrag-geometry-runtime","third_party/pgfrag-runtime","third_party/vesselforge-runtime"}
+CODE={".py",".pyi",".pyx",".pxd",".jl",".r",".rmd",".m",".sh",".bash",".zsh",".ps1",".psm1",".bat",".cmd",".js",".mjs",".cjs",".ts",".tsx",".jsx",".html",".css",".scss",".sass",".c",".h",".cc",".cpp",".cxx",".hpp",".hxx",".rs",".go",".java",".kt",".kts",".cs",".php",".sql",".lua",".pl",".rb",".swift",".scala",".ex",".exs",".erl",".hrl",".f",".f90",".f95",".for",".cob",".cbl",".groovy",".gradle",".vue",".svelte",".astro",".ipynb",".svg",".patch",".diff",".mk",".cmake"}
+CONFIG={".toml",".ini",".cfg",".conf",".properties",".xml",".yml",".yaml",".lock",".jsonc",".json5"}
+DOCS={".md",".rst",".adoc"}
+NAMES={"dockerfile","makefile","justfile","procfile","gemfile","rakefile","cmakelists.txt",".editorconfig",".gitattributes",".gitignore",".dockerignore",".npmrc",".nvmrc",".pre-commit-config.yaml","requirements.txt","requirements.lock.txt","constraints.txt","manifest.toml","project.toml","pyproject.toml","cargo.toml","cargo.lock","go.mod","go.sum","package.json","package-lock.json","pnpm-lock.yaml","yarn.lock","poetry.lock","pipfile","pipfile.lock","license","license.txt","copying","copying.txt","notice","notice.txt","authors","contributors","security.md","code_of_conduct.md","contributing.md","changelog.md","readme","readme.md","agents.md","citation.cff","tox.ini","setup.cfg","setup.py"}
+LICENSE_PREFIXES=("license","licence","copying","notice","authors","contributors","third_party_notices")
+SECRET_RE=re.compile(r"(^|[/\\])(?:\.env(?:\..*)?|credentials?(?:\.[^/\\]+)?|secrets?(?:\.[^/\\]+)?|id_(?:rsa|ed25519)|[^/\\]*\.(?:pem|p12|pfx|key|keystore))(?:$|[/\\])",re.I)
+CLOSED=[
+ "pgfrag/tmp/review_20261007/mixed93_opening_history_independent",
+ "pgfrag/tmp/review_20261007/mixed93_opening_history_saved_visual",
+ "pgfrag/tmp/review_20261007/mixed93_moving_front_reanalysis_20261007",
+ "pgfrag/tmp/review_20261007/mixed93_moving_front_independent",
+ "pgfrag/tmp/review_20261007/mixed93_mechanics_objectivity_independent",
+ "pgfrag/tmp/review_20261007/mixed93_actual_cohesive_result_critic",
+ "pgfrag/tmp/review_20261007/mixed93_actual_cohesive_saved_independent",
+ "pgfrag/tmp/review_20261007/mixed93_actual_cohesive_saved_visual",
+ "pgfrag/tmp/review_20261006/fixed_load_front_saved_independent",
+ "vesselforge/tmp/review_20261007/global_wall_distance_certificate_20261007",
+ "vesselforge/tmp/review_20261007/global_wall_distance_independent",
+ "vesselforge/tmp/review_20261007/global_wall_theorem",
+ "vesselforge/tmp/review_20261007/monotone_normal_strip_decision",
+ "vesselforge/tmp/review_20261007/monotone_normal_strip_independent",
+ "vesselforge/tmp/review_20261007/native_c4_source_independent",
+ "vesselforge/tmp/review_20261006/normal_offset_saved_independent",
+ "vesselforge/tmp/review_20261006/normal_offset_saved_visual",
+]
+SELECTED_XML={
+ "relicweave-synlab/docs/a12/evidence/20261005/pg_source_reader/junit_portable_fixture.xml",
+ "relicweave-synlab/tmp/review_20261005/pg_source_reader/junit_portable_fixture.xml",
+}
+SELECTED={
+ "pgfrag/tmp/review_20261007/mixed93_moving_front_reanalysis_20261007/run01/failure_arrays.npz",
+ "pgfrag/tmp/review_20261006/tip_aligned_quadrature_study_20261006/run01/arrays.npz",
+ "pgfrag/tmp/review_20261006/mixed93_cached_lefm_solve_20261006/run01/arrays.npz",
+}
+TRACKED_REPLAY={
+ "pgfrag/docs/progress/review_artifacts/20261006/tip_aligned_quadrature_study/pg_run01/arrays.npz",
+ "pgfrag/docs/progress/review_artifacts/20261006/mixed93_cached_lefm_solve/run01/arrays.npz",
+}
+EXACT_ROOT_DOCS={
+ "pgfrag/docs/progress/20261006_physics_core_review_addendum.md",
+ "pgfrag/tmp/review_20261006/20261006_physics_core_review_addendum.pins.json",
+ "tmp/review_20261007/core_readiness_inventory/READINESS.md",
+ "tmp/review_20261007/core_readiness_inventory/readiness.json",
+}
+PINS_PATH=ROOT/"pgfrag"/"tmp"/"review_20261006"/"20261006_physics_core_review_addendum.pins.json"
+try:
+    STATUS_PINS=json.loads(PINS_PATH.read_text(encoding="utf-8"))
+    PIN_EVIDENCE={str(x.get("path","" )).replace("\\","/"):x for x in STATUS_PINS.get("evidence_files",[]) if x.get("path")}
+except Exception as _pins_error:
+    STATUS_PINS={}; PIN_EVIDENCE={}
+SCIENCE98_COORDINATOR_FILES={
+ "tmp/backup_coordinator/science_closed_backup_plan_20261007.json",
+ "tmp/backup_coordinator/science_closed_backup_plan_20261007_v2.json",
+ "tmp/backup_coordinator/science_closed_backup_execution_20261007.json",
+ "tmp/backup_coordinator/science_closed_backup_independent_20261007.json",
+ "tmp/backup_coordinator/science_closed_backup_independent_20261007.md",
+ "tmp/backup_coordinator/science_closed_backup_orchestrator_20261007.py",
+}
+ATTRIBUTE_SNAPSHOT_FILES={
+ "tmp/backup_coordinator/closeout_20261007/attribute_snapshots/pgfrag/.gitattributes",
+ "tmp/backup_coordinator/closeout_20261007/attribute_snapshots/vesselforge/.gitattributes",
+ "tmp/backup_coordinator/closeout_20261007/attribute_snapshots/relicweave-synlab/.gitattributes",
+}
+# Frozen exact QA outputs; a mismatch prevents inclusion rather than copying a later draft.
+FINAL_ROOT_DOCX_PINS={
+ "RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx":{"bytes":786150,"sha256":"883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d"},
+ "docs/handover/20261007/RelicWeave_A12_VesselForge_PGFrag_Handover_20261007.docx":{"bytes":64641,"sha256":"c8b4e57340c7c9d485aeb5c6aa298ba90ac166870c9d8d0a7d414d35051f7fd2"},
+}
+FINAL_HANDOVER_MD_PINS={
+ "docs/handover/20261007/HANDOVER.md":{"bytes":41396,"sha256":"f226a153f8aed2da04e07298f1277cd74071370d52cf74a4967702c2792f7a53"},
+}
+POST_SCAN_EXPORTS={
+ "tmp/backup_coordinator/closeout_20261007/WORKSPACE_SOURCE_MAP.json",
+ "tmp/backup_coordinator/closeout_20261007/CODE_COVERAGE.md",
+ "tmp/backup_coordinator/closeout_20261007/SUPPLEMENTARY_EXPORT_MANIFEST.json",
+}
+CANONICAL_HANDOVER_SOURCE="docs/handover/20261007/HANDOVER.md"
+CANONICAL_HANDOVER_DIR="docs/handover/20261007"
+POST_PUSH_SIDECARS={
+ "docs/handover/20261007/BACKUP_DELIVERY_RECEIPT.json",
+ "docs/handover/20261007/BACKUP_DELIVERY_RECEIPT.md",
+}
+ROOT_DOCX={"PGFrag_VesselForge_Guide_v11.docx","PGFrag_VesselForge_Guide_v12.docx","RelicWeave_V1.44_Optimized_Complete_Plan.docx","RelicWeave_V1.46_Implementation_Update_20261005.docx","RelicWeave_V1.46_A12_VesselForge_PGFrag_Integrated_NavFixed.docx","RelicWeave_V1.47.docx"}
+BACKUP_COORDINATOR_SUFFIXES={".md",".json",".toml",".yaml",".yml",".txt",".csv",".jsonl"}
+BACKUP_COORDINATOR_MAX_BYTES=5*1024*1024
+BACKUP_COORDINATOR_DYNAMIC_NAMES={
+ "inventory.json","explicit_action_manifest.json","supplementary_export_manifest.json",
+ "supplementary_exports.json","code_coverage.md","workspace_source_map.json",
+ "execution_receipt.json","backup_delivery_receipt.json","backup_delivery_receipt.md",
+}
+
+def git(repo,*args,timeout=20,input_bytes=None):
+    try:
+        p=subprocess.run([str(GIT_EXE),"-C",str(repo),*args],input=input_bytes,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=timeout,check=False)
+        return p.returncode,p.stdout,p.stderr
+    except subprocess.TimeoutExpired as e:return 124,e.stdout or b"",e.stderr or b""
+def zlist(b):return [x.decode("utf-8","surrogateescape") for x in b.split(b"\0") if x]
+def sha(p):
+    h=hashlib.sha256();n=0
+    with p.open("rb") as f:
+        for b in iter(lambda:f.read(1024*1024),b""):n+=len(b);h.update(b)
+    return n,h.hexdigest()
+def blob_oid(b):
+    h=hashlib.sha1();h.update(b"blob "+str(len(b)).encode()+b"\0");h.update(b);return h.hexdigest()
+def under(p,roots):
+    q=p.replace("\\","/").lower()
+    return any(q==r.lower() or q.startswith(r.lower().rstrip("/")+"/") for r in roots)
+def snapshot(n):
+    n=n.lower()
+    return any("."+x+"." in n for x in ("py","pyi","jl","js","mjs","ts","tsx","rs","c","h","cpp","hpp","sh","ps1","md","json","toml"))
+def secret_path(p):
+    base=p.replace("\\","/").rsplit("/",1)[-1].lower()
+    return bool(SECRET_RE.search("/"+p.replace("\\","/")+"/")) or base in {".netrc",".pypirc","service-account.json","credentials.json"}
+def is_generated(p):
+    parts=p.replace("\\","/").lower().split("/")
+    return any(x in parts for x in ("generated_data","generated-datasets","report_exports","a12_exports","pytest-tmp","pytest_tmp","outputs","output","large_results"))
+def under_backup_coordinator(p):
+    parts=p.replace("\\","/").lower().split("/")
+    return any(parts[i:i+2]==["tmp","backup_coordinator"] for i in range(max(0,len(parts)-1)))
+def backup_coordinator_record_class(p,size):
+    q=p.replace("\\","/"); norm=q.lower(); base=Path(q).name.lower(); ext=Path(base).suffix.lower()
+    if not under_backup_coordinator(q):return None
+    if base in BACKUP_COORDINATOR_DYNAMIC_NAMES or base.endswith((".writing",".partial")):return None
+    if any(part in {"execution_receipt_gitlogs","execution_gitlogs","mutation_gitlogs"} for part in norm.split("/")):return None
+    if size>BACKUP_COORDINATOR_MAX_BYTES or is_generated(q):return None
+    if ext not in BACKUP_COORDINATOR_SUFFIXES and base not in NAMES and not base.startswith(LICENSE_PREFIXES):return None
+    if ext in {".toml",".yaml",".yml"}:return "project_configuration"
+    if ext==".md":return "authored_documentation"
+    if ext in BACKUP_COORDINATOR_SUFFIXES or base in NAMES or base.startswith(LICENSE_PREFIXES):return "backup_handoff_plan_or_receipt"
+    return None
+def classify(p,size,repo_rel=None):
+    q=p.replace("\\","/"); parts=q.lower().split("/"); base=parts[-1]; ext=Path(base).suffix.lower()
+    if ext in CODE or snapshot(base):return "source_code_or_original_snapshot",True
+    if base in NAMES or base.startswith(LICENSE_PREFIXES):return "source_config_or_license",True
+    coordinator_class=backup_coordinator_record_class(q,size)
+    if coordinator_class:return coordinator_class,True
+    if repo_rel and repo_rel.replace("\\","/").lower().startswith("tmp/backup_coordinator/"):return "internal_backup_tooling_noncode",False
+    if ext==".docx":
+        if len(parts)==1 and base in {x.lower() for x in ROOT_DOCX}:return "root_reference_docx",True
+        if any(t in base for t in ("v1.47","handoff","master")):return "root_closeout_docx_pending_qa",False
+        if "v1.46" in base:return "root_closeout_reference_docx",True
+        return "renderer_or_other_docx",False
+    if ext in DOCS:return ("closed_review_documentation",True) if under(q,CLOSED) else (("generated_report_document",False) if is_generated(q) else ("authored_documentation",True))
+    if ext in {".log",".raw",".out",".stdout",".stderr"}:
+        return ("closed_review_raw_execution_record",True) if under(q,CLOSED) and size<=10*1024*1024 else ("runtime_text_output",False)
+    if ext==".xml" and q in SELECTED_XML:return "closed_review_junit_or_xml_record",True
+    if ext==".xml" and under(q,CLOSED) and size<=10*1024*1024:return "closed_review_junit_or_xml_record",True
+    if ext in CONFIG:
+        if any(x in parts for x in ("config","configs","schema","schemas","fixtures","tests","examples")):return "project_configuration_or_fixture",True
+        if ext in {".yaml",".yml"} and any(x in parts for x in ("data","metadata","report")) and not any(x in parts for x in ("config","configs","schema","schemas","fixtures","tests")):return "generated_metadata_yaml",False
+        if is_generated(q):return "generated_configlike_output",False
+        if any(x in parts for x in ("config","configs","schema","schemas",".github","fixtures","tests","examples")) or len(parts)<=2:return "project_configuration",True
+        return "unclassified_yaml_or_config",False
+    if ext==".json":
+        if under(q,CLOSED):return "closed_review_record",True
+        if any(x in parts for x in ("tests","fixtures","schemas","configs",".github","examples")):return "fixture_or_configuration_json",True
+        if is_generated(q):return "generated_json_report_or_dataset",False
+        if any(k in base for k in ("source_pin","source_freeze","manifest","case","schema","contract","design","readme","lock","index","fixture","config","policy","readiness","acceptance","receipt")):return "source_metadata_json",True
+        return "unclassified_json_output",False
+    if ext==".jsonl":return ("source_fixture_jsonl",True) if any(x in parts for x in ("tests","fixtures","schemas","configs")) else ("generated_jsonl_dataset",False)
+    if ext in {".csv",".tsv",".npy",".npz",".parquet",".arrow",".feather",".h5",".hdf5",".mat"}:
+        if q in SELECTED or q in TRACKED_REPLAY:return "selected_bounded_replay_data",True
+        if under(q,CLOSED) and ext in {".csv",".tsv"} and size<=10*1024*1024:return "closed_review_numeric_evidence",True
+        if any(x in parts for x in ("tests","fixtures","schemas")) and size<=20*1024*1024:return "small_source_test_fixture",True
+        return "generated_numeric_dataset",False
+    if ext in {".png",".jpg",".jpeg",".webp",".gif",".bmp",".tif",".tiff"}:
+        return ("closed_review_figure",True) if under(q,CLOSED) and ext==".png" and size<=5*1024*1024 else ("image_or_unreviewed_figure",False)
+    if ext==".txt":
+        if under(q,CLOSED):return "closed_review_text_record",True
+        if base.endswith(".log") or base.startswith(("stdout","stderr","pytest","run_")):return "runtime_text_output",False
+        if under(q,CLOSED):return "closed_review_record",True
+        if any(x in parts for x in ("docs","experiments","examples","tests","schemas","src","synlab","tools","scripts")):return "text_document_or_dependency",True
+        return "unclassified_text_output",False
+    return "not_in_source_scope",False
+
+def load_v1():
+    p=ROOT/"tmp"/"backup_coordinator"/"new_milestone_closed_backup_plan_20261007.json"
+    if not p.exists():return [],None
+    try:
+        d=json.loads(p.read_text(encoding="utf-8"))
+        return d.get("files",[]),sha(p)[1]
+    except Exception as e:return [],"read_error:"+type(e).__name__
+
+v1_files,v1_sha=load_v1()
+v1_by_source={}
+for old in v1_files:
+    src=old.get("source_absolute")
+    if src:v1_by_source[str(Path(src).resolve()).lower()]=old
+
+repo_state={}; repo_data={}
+for name,repo in REPOS.items():
+    def g(*args,timeout=20,input_bytes=None):return git(repo,*args,timeout=timeout,input_bytes=input_bytes)
+    rc,x,_=g("rev-parse","--show-toplevel");top=x.decode("utf-8","replace").strip() if rc==0 else None
+    rc,x,_=g("branch","--show-current");branch=x.decode("utf-8","replace").strip() if rc==0 else None
+    rc,x,_=g("rev-parse","HEAD");head=x.decode("ascii","replace").strip() if rc==0 else None
+    rc,x,_=g("rev-parse","HEAD^");parent=x.decode("ascii","replace").strip() if rc==0 else None
+    rc,x,_=g("ls-files","-z");tracked=set(zlist(x)) if rc==0 else set()
+    rc,x,_=g("ls-files","--others","--exclude-standard","-z");untracked=set(zlist(x)) if rc==0 else set()
+    rc,x,_=g("ls-files","--others","--ignored","--exclude-standard","-z");ignored=set(zlist(x)) if rc==0 else set()
+    rc,x,_=g("status","--porcelain=v1","--untracked-files=no");tracked_status=x.decode("utf-8","replace").splitlines() if rc==0 else ["status_error"]
+    modified=set()
+    for line in tracked_status:
+        if len(line)>=4:modified.add(line[3:].replace("\\","/"))
+    rc,x,_=g("diff","--cached","--name-only","-z");staged=zlist(x) if rc==0 else ["status_error"]
+    rc,x,_=g("remote","get-url","origin");remote=x.decode("utf-8","replace").strip() if rc==0 else None
+    if remote and "://" in remote and "@" in remote.split("://",1)[1]:remote=remote.split("://",1)[0]+"://[redacted]@"+remote.split("://",1)[1].split("@",1)[1]
+    lr_rc,lr,_=g("ls-remote","--heads","origin",BRANCH,timeout=12);remote_head=None
+    if lr_rc==0:
+        for line in lr.decode("ascii","replace").splitlines():
+            if line.endswith("\trefs/heads/"+BRANCH):remote_head=line.split("\t",1)[0]
+    rc,x,_=g("ls-files","--stage","-z");index={}
+    if rc==0:
+        for item in x.split(b"\0"):
+            if not item:continue
+            meta,path=item.split(b"\t",1);fields=meta.decode("ascii","replace").split()
+            if len(fields)>=3:index[path.decode("utf-8","surrogateescape")]=fields[1]
+    rc,x,_=g("ls-tree","-r","-z","--full-tree","HEAD");head_blobs={}
+    if rc==0:
+        for item in x.split(b"\0"):
+            if not item:continue
+            meta,path=item.split(b"\t",1);fields=meta.decode("ascii","replace").split()
+            if len(fields)>=3:head_blobs[path.decode("utf-8","surrogateescape")]=fields[2]
+    rc,x,_=g("config","--get","core.autocrlf");auto=x.decode("utf-8","replace").strip() if rc==0 else "unset"
+    ap=repo/".gitattributes";an,ah=sha(ap) if ap.exists() else (None,None)
+    repo_state[name]={"repo_root":str(repo),"git_toplevel":top,"branch":branch,"head":head,"parent":parent,"expected_branch":BRANCH,"branch_matches":branch==BRANCH,"origin_sanitized":remote,"remote_ls_remote_rc":lr_rc,"remote_head":remote_head,"remote_matches_head":bool(remote_head and remote_head==head),"core_autocrlf_current_config":auto,"tracked_count":len(tracked),"untracked_nonignored_count":len(untracked),"ignored_untracked_count":len(ignored),"tracked_status_lines":tracked_status,"staged_paths":staged,"tracked_index_clean":not tracked_status and not staged,"gitattributes":{"bytes":an,"sha256":ah}}
+    repo_data[name]={"tracked":tracked,"untracked":untracked,"ignored":ignored,"index":index,"head_blobs":head_blobs,"modified":modified}
+    print("preflight",name,"tracked",len(tracked),"untracked",len(untracked),"ignored",len(ignored),"head",head,"remote",remote_head,flush=True)
+
+entries=[];large=[];credential_paths=[];skipped=[];excluded_counts={};errors=[]
+README_PATH=OUT/"README.md"
+README_PRE_SCAN=sha(README_PATH)
+def add_excluded(name,rel,size,cls,status,path):
+    excluded_counts[cls]=excluded_counts.get(cls,0)+1
+    if size>50*1024*1024:large.append({"repo":name,"path":rel,"bytes":size,"flag":"over_50MiB","classification":cls})
+    if size>50*1024*1024 or cls in {"generated_metadata_yaml","generated_numeric_dataset","generated_json_report_or_dataset","renderer_or_other_docx"}:
+        entries.append({"repo":name,"source_absolute":str(path),"source_repo_relative":rel if name in REPOS else None,"source_workspace_relative":rel if name=="workspace_root_external" else None,"destination_repo":None,"destination_repo_relative":None,"operation":"exclude","classification":cls,"git_status":status,"bytes":size,"sha256":None,"review_state":"excluded"})
+
+def make_entry(path,name,rel,wsrel,size,digest,status,cls):
+    legacy=v1_by_source.get(str(path.resolve()).lower())
+    dest_repo=name if name in REPOS else "relicweave-synlab"
+    dest_rel=rel
+    op="already_on_branch" if status=="tracked" else ("stage_existing_exact_force" if status=="ignored_untracked" else "stage_existing_exact")
+    legacy_pin=None
+    if legacy:
+        dest_repo=legacy.get("repo",dest_repo);dest_rel=legacy.get("destination_repo_relative",rel)
+        legacy_pin={"bytes":legacy.get("bytes"),"sha256":legacy.get("sha256"),"prior_operation":legacy.get("operation")}
+        if legacy_pin["bytes"]!=size or legacy_pin["sha256"]!=digest:op="blocked_source_pin_drift"
+        elif dest_rel!=rel or legacy.get("operation")=="copy_exact":op="copy_then_stage_exact"
+        elif status!="tracked":op="stage_existing_exact_force" if status=="ignored_untracked" else "stage_existing_exact"
+    elif name=="workspace_root_external":
+        dest_rel="workspace_backup/20261007/"+wsrel;op="copy_then_stage_exact"
+    elif under(wsrel,CLOSED):
+        match=next((r for r in CLOSED if wsrel.lower()==r.lower() or wsrel.lower().startswith(r.lower()+"/")),None)
+        tail=wsrel[len(match):].lstrip("/") if match else path.name
+        group=match.split("/")[-1] if match else "closed_review"
+        dest_rel="docs/reviews/20261007/"+group+"/"+tail;op="copy_then_stage_exact"
+    # Existing destination only counts as reusable when exact bytes match.
+    dr=REPOS.get(dest_repo)
+    if dr and dest_rel and op not in {"blocked_source_pin_drift"} and not (name==dest_repo and (dr/Path(dest_rel)).resolve()==path.resolve()):
+        dp=dr/Path(dest_rel)
+        if dp.exists():
+            try:dn,dh=sha(dp)
+            except Exception:dn,dh=None,None
+            if dn==size and dh==digest:op="destination_already_same_bytes_stage_exact"
+            else:op="blocked_destination_collision"
+    row={"repo":name,"source_absolute":str(path),"source_repo_relative":rel if name in REPOS else None,"source_workspace_relative":wsrel if name=="workspace_root_external" else None,"destination_repo":dest_repo,"destination_repo_relative":dest_rel,"operation":op,"classification":cls,"git_status":status,"bytes":size,"sha256":digest,"legacy_v1_pin":legacy_pin,"review_state":"root_exact_manifest_review_required"}
+    # Compare worktree bytes to the current index/HEAD blob without printing source contents.
+    if name in REPOS and status in {"tracked","tracked_modified"}:
+        oid=repo_data[name]["head_blobs"].get(rel);row["git_head_blob_oid"]=oid
+        try:
+            data=path.read_bytes();raw=blob_oid(data)
+            if raw==oid:relation="raw_worktree_matches_head_blob"
+            elif blob_oid(data.replace(b"\r\n",b"\n"))==oid:relation="crlf_lf_normalization_only"
+            else:relation="other_filter_or_content_relation_unresolved"
+        except Exception as e:relation="read_error:"+type(e).__name__
+        row["worktree_raw_git_blob_oid"]=raw if "raw" in locals() else None
+        row["worktree_head_relation"]=relation
+        if oid:
+            rc,x,_=git(REPOS[name],"cat-file","-s",oid,timeout=20)
+            try:row["git_head_blob_bytes"]=int(x.decode("ascii").strip()) if rc==0 else None
+            except Exception:row["git_head_blob_bytes"]=None
+        if relation!="raw_worktree_matches_head_blob":
+            raw_dest="docs/backup/20261007/raw_source/"+rel
+            raw_target=REPOS[name]/Path(raw_dest)
+            if raw_target.exists():
+                try:rn,rh=sha(raw_target)
+                except Exception:rn,rh=None,None
+                rop="destination_already_same_bytes_stage_exact" if rn==size and rh==digest else "blocked_destination_collision"
+            else:rop="copy_then_stage_exact"
+            entries.append({"repo":name,"source_absolute":str(path),"source_repo_relative":rel,"destination_repo":name,"destination_repo_relative":raw_dest,"operation":rop,"classification":"exact_raw_worktree_snapshot_for_head_normalization_review","git_status":status,"bytes":size,"sha256":digest,"git_head_blob_oid":oid,"worktree_raw_git_blob_oid":raw if "raw" in locals() else None,"worktree_head_relation":relation,"review_state":"root_review_required_local_raw_archive"})
+    return row
+
+repo_abs={p.resolve() for p in REPOS.values()}
+def walk_files(start,repo_name=None):
+    for d,dirs,files in os.walk(start,topdown=True,followlinks=False):
+        base=Path(d); kept=[]
+        for dn in dirs:
+            child=(Path(base.relative_to(start).as_posix())/dn).as_posix()
+            if dn.lower() in SKIP:
+                skipped.append({"repo":repo_name or "workspace_root_external","path":child,"reason":"environment_build_or_cache"});continue
+            if repo_name=="relicweave-synlab" and child.replace("\\","/").lower() in RUNTIMES:
+                skipped.append({"repo":repo_name,"path":child,"reason":"vendored_runtime_or_installer"});continue
+            if repo_name is None:
+                if (base/dn).resolve() in repo_abs:continue
+                if any(child.replace("\\","/").lower()==r or child.replace("\\","/").lower().startswith(r+"/") for r in RUNTIMES):
+                    skipped.append({"repo":"workspace_root_external","path":child,"reason":"vendored_runtime_or_installer"});continue
+            kept.append(dn)
+        dirs[:]=kept
+        for fn in files:
+            p=base/fn
+            try:rel=p.relative_to(start).as_posix();size=p.stat().st_size
+            except Exception as e:errors.append({"repo":repo_name or "workspace_root_external","path":str(p),"error_type":type(e).__name__});continue
+            if p.is_symlink():continue
+            if size>50*1024*1024:large.append({"repo":repo_name or "workspace_root_external","path":rel,"bytes":size,"flag":"over_50MiB","classification":"size_only_no_hash"})
+            wsrel=(repo_name+"/"+rel) if repo_name else rel
+            wsrel_norm=wsrel.replace("\\","/")
+            status="outside_repo"
+            if repo_name:
+                sets=repo_data[repo_name]
+                status=("tracked_modified" if rel in sets["modified"] else "tracked") if rel in sets["tracked"] else ("ignored_untracked" if rel in sets["ignored"] else "untracked")
+            if secret_path(rel):
+                credential_paths.append({"repo":repo_name or "workspace_root_external","path":rel,"status":"credential_or_private_key_name","bytes":size})
+                add_excluded(repo_name or "workspace_root_external",rel,size,"credential_path_excluded",status,p);continue
+            if wsrel_norm in POST_SCAN_EXPORTS:
+                add_excluded("workspace_root_external",rel,size,"post_inventory_supplementary_export_not_in_main_manifest",status,p);continue
+            if repo_name=="relicweave-synlab" and rel.replace("\\","/") in POST_PUSH_SIDECARS:
+                add_excluded(repo_name,rel,size,"post_push_delivery_sidecar_outside_its_own_commit_set",status,p);continue
+            # Keep all authored helper code/snapshots. Preserve bounded stable plans,
+            # receipts, evidence, and configs at their original workspace paths, while
+            # excluding self-referential inventory exports and transient mutation logs.
+            coordinator_class=backup_coordinator_record_class(wsrel_norm,size)
+            coordinator_noncode=under_backup_coordinator(wsrel_norm) and Path(fn).suffix.lower() not in CODE and not snapshot(fn)
+            if coordinator_noncode and coordinator_class is None:
+                add_excluded(repo_name or "workspace_root_external",rel,size,"internal_backup_record_dynamic_or_out_of_scope",status,p);continue
+            v1=v1_by_source.get(str(p.resolve()).lower())
+            if size>50*1024*1024:
+                add_excluded(repo_name or "workspace_root_external",rel,size,"source_over_50MiB_requires_review",status,p);continue
+            cls,include=classify(wsrel,size,rel if repo_name else None)
+            if repo_name is None and wsrel_norm.startswith(CANONICAL_HANDOVER_DIR+"/") and Path(fn).suffix.lower()==".docx":
+                cls,include="final_handoff_docx_pending_qa_or_frozen",True
+            if wsrel.replace("\\","/") in EXACT_ROOT_DOCS:
+                cls,include="root_accepted_progress_or_readiness_artifact",True
+            if wsrel_norm in PIN_EVIDENCE:
+                cls,include="pinned_status_evidence_dependency",True
+            if wsrel_norm in SCIENCE98_COORDINATOR_FILES:
+                cls,include="accepted_science98_backup_record_or_tool",True
+            if wsrel_norm in ATTRIBUTE_SNAPSHOT_FILES:
+                cls,include="prechange_gitattributes_byte_snapshot",True
+            if repo_name is None and wsrel_norm in FINAL_HANDOVER_MD_PINS:
+                cls,include="root_final_handover_markdown_frozen_pin",True
+            if repo_name is None and wsrel_norm in FINAL_ROOT_DOCX_PINS:
+                cls,include="root_final_closeout_docx_frozen_pin",True
+            if coordinator_class:
+                cls,include=coordinator_class,True
+            if v1:
+                cls="preserved_prior_v1_candidate";include=True
+            if not include:
+                if cls in {"generated_metadata_yaml","generated_numeric_dataset","generated_json_report_or_dataset","renderer_or_other_docx"}:add_excluded(repo_name or "workspace_root_external",rel,size,cls,status,p)
+                continue
+            try:n,dig=sha(p)
+            except Exception as e:errors.append({"repo":repo_name or "workspace_root_external","path":rel,"error_type":type(e).__name__});continue
+            if repo_name is None and wsrel_norm in FINAL_ROOT_DOCX_PINS:
+                expected_docx=FINAL_ROOT_DOCX_PINS[wsrel_norm]
+                if n!=expected_docx.get("bytes") or dig!=expected_docx.get("sha256"):
+                    errors.append({"repo":"workspace_root_external","path":rel,"error_type":"final_docx_pin_mismatch"})
+                    continue
+            if repo_name is None and wsrel_norm in FINAL_HANDOVER_MD_PINS:
+                expected_handover=FINAL_HANDOVER_MD_PINS[wsrel_norm]
+                if n!=expected_handover.get("bytes") or dig!=expected_handover.get("sha256"):
+                    errors.append({"repo":"workspace_root_external","path":rel,"error_type":"final_handover_md_pin_mismatch"})
+                    continue
+            entries.append(make_entry(p,repo_name or "workspace_root_external",rel,wsrel,n,dig,status,cls))
+
+for name,repo in REPOS.items():
+    walk_files(repo,name)
+    print("scanned repo",name,"entries",sum(e["repo"]==name for e in entries),flush=True)
+walk_files(ROOT,None)
+print("scanned root externals; entries",sum(e["repo"]=="workspace_root_external" for e in entries),flush=True)
+
+# Handover documents keep their original root-relative mirror and also get a convenient
+# byte-identical canonical copy inside the existing SynLab repository for single-repo restore.
+for source_row in list(entries):
+    wsrel=source_row.get("source_workspace_relative")
+    if source_row.get("repo")!="workspace_root_external" or not wsrel:continue
+    wsrel=wsrel.replace("\\","/")
+    if wsrel!=CANONICAL_HANDOVER_SOURCE and not (wsrel.startswith(CANONICAL_HANDOVER_DIR+"/") and Path(wsrel).suffix.lower()==".docx"):continue
+    canonical_rel="docs/handover/20261007/"+Path(wsrel).name
+    canonical_path=REPOS["relicweave-synlab"]/Path(canonical_rel)
+    if canonical_path.exists():
+        try:cn,ch=sha(canonical_path)
+        except Exception:cn,ch=None,None
+        op="destination_already_same_bytes_stage_exact" if cn==source_row["bytes"] and ch==source_row["sha256"] else "blocked_destination_collision"
+    else:op="copy_then_stage_exact"
+    entries.append({"repo":"workspace_root_external","source_absolute":source_row["source_absolute"],"source_repo_relative":None,"source_workspace_relative":wsrel,"destination_repo":"relicweave-synlab","destination_repo_relative":canonical_rel,"operation":op,"classification":"canonical_handover_convenience_copy","git_status":"outside_repo","bytes":source_row["bytes"],"sha256":source_row["sha256"],"review_state":"root_exact_manifest_review_required","purpose":"byte-identical copy for single-SynLab checkout portability"})
+
+# One batch path-only ignore/attribute query per destination repository.
+for name,repo in REPOS.items():
+    rows=[e for e in entries if e.get("destination_repo")==name and e.get("destination_repo_relative") and e.get("operation") not in {"already_on_branch","exclude","blocked_source_pin_drift","blocked_destination_collision"}]
+    paths=sorted({e["destination_repo_relative"].replace("\\","/") for e in rows})
+    if not paths:continue
+    payload=b"\0".join(x.encode("utf-8","surrogateescape") for x in paths)+b"\0"
+    rc,out,err=git(repo,"check-ignore","--stdin","-z",timeout=30,input_bytes=payload)
+    if rc not in (0,1):raise RuntimeError(f"check-ignore failed closed for {name}: rc={rc}")
+    ignored=set(zlist(out))
+    if not ignored.issubset(set(paths)):raise RuntimeError(f"check-ignore returned an unrequested path for {name}")
+    rc_attr,out_attr,err_attr=git(repo,"check-attr","--stdin","-z","text","eol","filter",timeout=30,input_bytes=payload)
+    if rc_attr!=0:raise RuntimeError(f"check-attr failed closed for {name}: rc={rc_attr}")
+    expected_attrs={"text","eol","filter"}
+    fields=out_attr.split(b"\0")
+    if fields and fields[-1]==b"":fields.pop()
+    if len(fields)!=len(paths)*len(expected_attrs)*3:raise RuntimeError(f"check-attr returned incomplete output for {name}")
+    attrmap={};seen=set()
+    for i in range(0,len(fields),3):
+        p=fields[i].decode("utf-8","surrogateescape");a=fields[i+1].decode("ascii","replace");v=fields[i+2].decode("utf-8","replace")
+        key=(p,a)
+        if p not in set(paths) or a not in expected_attrs or key in seen:raise RuntimeError(f"check-attr returned unexpected or duplicate data for {name}")
+        seen.add(key);attrmap.setdefault(p,{})[a]=v
+    expected_pairs={(p,a) for p in paths for a in expected_attrs}
+    if seen!=expected_pairs or any(set(attrmap.get(p,{}))!=expected_attrs for p in paths):raise RuntimeError(f"check-attr results failed completeness validation for {name}")
+    repo_state[name]["destination_git_attribute_query"]={"returncode":rc_attr,"paths_checked":len(paths),"attributes_per_path":sorted(expected_attrs),"complete":True}
+    for e in rows:
+        p=e["destination_repo_relative"].replace("\\","/")
+        e["destination_ignore_status"]="ignored_exact_path_force_add_required" if p in ignored else "not_ignored_or_tracked"
+        e["destination_git_attributes"]=attrmap.get(p,{})
+        av=e["destination_git_attributes"]
+        risk=av.get("text") in {"set","auto"} or av.get("eol") not in (None,"unspecified","unset") or av.get("filter") not in (None,"unspecified","unset")
+        e["byte_preservation"]="explicit_text_or_filter_attribute_requires_raw_snapshot" if risk else "per-command_core.autocrlf=false_expected_for_new_paths"
+        if risk and e["operation"]!="destination_already_same_bytes_stage_exact":
+            raw_rel="docs/backup/20261007/raw_source/"
+            raw_rel+=("workspace_external/" if e["repo"]=="workspace_root_external" else "")
+            raw_rel+=str(e.get("source_workspace_relative") or e.get("source_repo_relative")).replace("\\","/")
+            target=REPOS[name]/Path(raw_rel)
+            if target.exists():
+                try:tn,th=sha(target)
+                except Exception:tn,th=None,None
+                rop="destination_already_same_bytes_stage_exact" if tn==e["bytes"] and th==e["sha256"] else "blocked_destination_collision"
+            else:rop="copy_then_stage_exact"
+            entries.append({"repo":e["repo"],"source_absolute":e["source_absolute"],"source_repo_relative":e.get("source_repo_relative"),"source_workspace_relative":e.get("source_workspace_relative"),"destination_repo":name,"destination_repo_relative":raw_rel,"operation":rop,"classification":"exact_raw_source_snapshot_for_text_or_filter_attribute","git_status":e["git_status"],"bytes":e["bytes"],"sha256":e["sha256"],"review_state":"root_review_required_local_raw_archive","byte_preservation":"requires_local_docs_backup_raw_source_double_star_minus_text"})
+
+# Root-accepted source/evidence additions are gathered from the explicit closure roots.
+pending_docs={
+ "fixed_delivery_receipt":"relicweave-synlab/docs/handover/20261007/BACKUP_DELIVERY_RECEIPT.json and .md; post-push sidecar outside its own recorded commit-set",
+ "handover_portable_copy":{"source":"docs/handover/20261007/HANDOVER.md plus a final .docx in the same folder if present","canonical_targets":"relicweave-synlab/docs/handover/20261007/<same-name>","original_root_relative_mirror":"relicweave-synlab/workspace_backup/20261007/docs/handover/20261007/<same-name>","purpose":"make closeout recoverable from a single SynLab checkout"},
+ "closeout_master_docx":{"path":"RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx","status":"FINAL_MASTER_FROZEN 786150B SHA883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d; rendered225pages; final visual QA authority tmp/v147_user_merge_20261007/LAYOUT_FINAL_QA_COVERAGE.json"},
+ "handoff_docx":{"path":"docs/handover/20261007/RelicWeave_A12_VesselForge_PGFrag_Handover_20261007.docx","status":"final QA output frozen and byte-pinned; included only if the final scan matches the exact pin"},
+ "V1.46_reference":"include current original V1.46 reference DOCX/MD if present; matching DOCX candidates are separately hashed",
+ "latest_progress_status":"the final progress addendum, pins JSON, READINESS.md, and readiness.json were root accepted and are forced into the scan; no status.json is asserted",
+}
+root_docx=[e for e in entries if e.get("repo")=="workspace_root_external" and str(e.get("source_workspace_relative","")).lower().endswith(".docx")]
+
+v1_reconcile=[]
+for old in v1_files:
+    p=Path(old.get("source_absolute",""));state="missing"
+    try:
+        n,h=sha(p);state="match" if n==old.get("bytes") and h==old.get("sha256") else "pin_drift"
+    except Exception:pass
+    v1_reconcile.append({"source_absolute":old.get("source_absolute"),"destination_repo":old.get("repo"),"destination_repo_relative":old.get("destination_repo_relative"),"expected_bytes":old.get("bytes"),"expected_sha256":old.get("sha256"),"current_status":state})
+
+sha_index={}
+for e in entries:
+    if e.get("repo") in REPOS and e.get("sha256"):sha_index.setdefault((e["repo"],e["sha256"]),[]).append(e.get("source_repo_relative"))
+for e in entries:
+    ws=e.get("source_workspace_relative") or ((e.get("repo","")+"/"+str(e.get("source_repo_relative",""))) if e.get("source_repo_relative") else "")
+    ws=ws.replace("\\","/")
+    if ws in SELECTED or ws in TRACKED_REPLAY:
+        e["selected_replay_input"]=True
+        e["same_repo_same_sha_paths"]=sha_index.get((e.get("repo"),e.get("sha256")),[])
+        e["selected_input_must_be_present_or_match_tracked_duplicate"]=ws in SELECTED
+unique_tracked_rows=[e for e in entries if e.get("worktree_head_relation") and not str(e.get("classification","")).startswith("exact_raw_")]
+raw_snapshot_map=[{
+ "source_path":e.get("source_repo_relative") or e.get("source_workspace_relative"),
+ "source_repo":e.get("repo"),"destination_repo":e.get("destination_repo"),
+ "destination_path":e.get("destination_repo_relative"),"bytes":e.get("bytes"),"sha256":e.get("sha256"),
+ "head_blob_oid":e.get("git_head_blob_oid"),"raw_worktree_blob_oid":e.get("worktree_raw_git_blob_oid"),"relation":e.get("worktree_head_relation"),"operation":e.get("operation")
+} for e in entries if str(e.get("classification","")).startswith("exact_raw_")]
+attr_proposals={}
+for name,state in repo_state.items():
+    ap=REPOS[name]/".gitattributes";old=ap.read_bytes() if ap.exists() else b""
+    rule=b"/docs/backup/20261007/raw_source/** -text"
+    original_path=OUT/"attribute_snapshots"/name/".gitattributes"
+    try:original_bytes,original_sha=sha(original_path)
+    except Exception:original_bytes,original_sha=None,None
+    active_text=old.decode("utf-8","replace")
+    rule_present=any(line.strip()==rule.decode("ascii") for line in active_text.splitlines())
+    relevant=[e for e in raw_snapshot_map if e.get("destination_repo")==name and str(e.get("destination_path","")).startswith("docs/backup/20261007/raw_source/")]
+    attr_proposals[name]={"current_gitattributes":{"bytes":state["gitattributes"]["bytes"],"sha256":state["gitattributes"]["sha256"]},"required_raw_snapshot_rule":rule.decode("ascii"),"required_rule_present":rule_present,"prechange_workspace_snapshot":{"path":str(original_path),"bytes":original_bytes,"sha256":original_sha},"affected_raw_snapshot_count":len(relevant),"change_authorized_by_root_for_prep":True,"changed_in_prep":True}
+
+dest_counts={}
+# If a closed review artifact was already copied into docs/reviews under identical bytes,
+# preserve the original source path as an alias to that existing canonical destination.
+for e in entries:
+    if e.get("operation")!="destination_already_same_bytes_stage_exact":continue
+    target_repo=e.get("destination_repo");target_rel=str(e.get("destination_repo_relative","")).replace("\\","/")
+    canonical=next((x for x in entries if x is not e and x.get("repo")==target_repo and x.get("source_repo_relative")==target_rel and x.get("sha256")==e.get("sha256") and x.get("bytes")==e.get("bytes")),None)
+    if canonical:
+        e["reused_existing_destination_source"]={"repo":target_repo,"path":target_rel,"operation":canonical.get("operation"),"git_head_blob_oid":canonical.get("git_head_blob_oid")}
+        e["operation"]="already_recoverable_same_bytes_destination"
+action_operations={"stage_existing_exact","stage_existing_exact_force","copy_then_stage_exact","destination_already_same_bytes_stage_exact","blocked_source_pin_drift","blocked_destination_collision","blocked_source_unavailable","blocked_destination_escape"}
+for e in entries:
+    if e.get("operation") in action_operations and e.get("destination_repo") in REPOS and e.get("destination_repo_relative"):
+        k=(e["destination_repo"],e["destination_repo_relative"].replace("\\","/").lower());dest_counts[k]=dest_counts.get(k,0)+1
+for e in entries:
+    if e.get("destination_repo") in REPOS and e.get("destination_repo_relative"):
+        k=(e["destination_repo"],e["destination_repo_relative"].replace("\\","/").lower())
+        e["destination_unique"]=True if e.get("operation") in {"already_on_branch","already_recoverable_same_bytes_destination"} else dest_counts.get(k)==1
+        rp=REPOS[e["destination_repo"]].resolve();dp=(rp/Path(e["destination_repo_relative"])).resolve()
+        try:dp.relative_to(rp);e["destination_within_repo"]=True
+        except Exception:e["destination_within_repo"]=False;e["operation"]="blocked_destination_escape"
+
+# Fresh source-pin and Git-state check at the end of the inventory pass.
+post_hash_cache={}
+for e in entries:
+    src=e.get("source_absolute");expected=e.get("sha256")
+    if not src or not expected:continue
+    key=str(Path(src).resolve()).lower()
+    if key not in post_hash_cache:
+        try:post_hash_cache[key]=sha(Path(src))
+        except Exception as ex:post_hash_cache[key]=("error",type(ex).__name__)
+    post=post_hash_cache[key]
+    if post[0]=="error":
+        e["post_scan_source_check"]={"status":"unavailable","error_type":post[1]}
+        if e.get("operation") not in {"already_on_branch","exclude"}:e["operation"]="blocked_source_unavailable"
+    else:
+        e["post_scan_source_check"]={"bytes":post[0],"sha256":post[1],"matches_inventory_pin":post[0]==e.get("bytes") and post[1]==expected}
+        if post[0]!=e.get("bytes") or post[1]!=expected:
+            e["post_scan_source_check"]["status"]="source_changed_during_inventory"
+            if e.get("operation") not in {"already_on_branch","exclude"}:e["operation"]="blocked_source_pin_drift"
+        else:e["post_scan_source_check"]["status"]="stable_through_inventory_pass"
+for name,repo in REPOS.items():
+    rc,b,_=git(repo,"branch","--show-current");branch=b.decode("utf-8","replace").strip() if rc==0 else None
+    rc,h,_=git(repo,"rev-parse","HEAD");head=h.decode("ascii","replace").strip() if rc==0 else None
+    rc,s,_=git(repo,"status","--porcelain=v1","--untracked-files=no");status=s.decode("utf-8","replace").splitlines() if rc==0 else ["status_error"]
+    rc,st,_=git(repo,"diff","--cached","--name-only","-z");staged=zlist(st) if rc==0 else ["status_error"]
+    rc,lr,_=git(repo,"ls-remote","--heads","origin",BRANCH,timeout=12);rhead=None
+    if rc==0:
+        for line in lr.decode("ascii","replace").splitlines():
+            if line.endswith("\trefs/heads/"+BRANCH):rhead=line.split("\t",1)[0]
+    repo_state[name]["final_snapshot"]={"branch":branch,"head":head,"remote_ls_remote_rc":rc,"remote_head":rhead,"remote_matches_head":bool(rhead and rhead==head),"tracked_status_lines":status,"staged_paths":staged,"tracked_index_clean":not status and not staged}
+actions=[e for e in entries if e.get("operation") not in {"already_on_branch","already_recoverable_same_bytes_destination","exclude"} and e.get("destination_repo_relative")]
+per_repo={}
+for name in list(REPOS)+["workspace_root_external"]:
+    rows=[e for e in actions if e.get("repo")==name]
+    per_repo[name]={"action_count":len(rows),"action_bytes":sum(e.get("bytes") or 0 for e in rows),"copy_count":sum(e["operation"].startswith("copy") or e["operation"]=="destination_already_same_bytes_stage_exact" for e in rows),"direct_stage_count":sum(e["operation"].startswith("stage_existing") for e in rows),"classifications":{}}
+    for e in rows:
+        c=e.get("classification","unknown");per_repo[name]["classifications"][c]=per_repo[name]["classifications"].get(c,0)+1
+large={ (x["repo"],x["path"]):x for x in large };large_list=sorted(large.values(),key=lambda x:(x["repo"],x["path"]))
+excluded_total={k:v for k,v in sorted(excluded_counts.items())}
+selected_presence={x:any(((e.get("source_workspace_relative") or ((e.get("repo","")+"/"+str(e.get("source_repo_relative",""))) if e.get("source_repo_relative") else "")).replace("\\","/")==x) for e in entries) for x in sorted(SELECTED)}
+source_rows={}
+for e in entries:
+    if e.get("repo") in REPOS and e.get("source_repo_relative"):
+        source_rows.setdefault((e["repo"],e["source_repo_relative"].replace("\\","/")),[]).append(e)
+status_evidence_closure=[]
+for ref in STATUS_PINS.get("evidence_files",[]):
+    source_path=str(ref.get("path","")).replace("\\","/")
+    repo_name,sep,repo_rel=source_path.partition("/")
+    expected_bytes=ref.get("bytes");expected_sha=ref.get("sha256")
+    if repo_name in REPOS:
+        candidate_rows=source_rows.get((repo_name,repo_rel),[])
+    else:
+        candidate_rows=[e for e in entries if e.get("repo")=="workspace_root_external" and (e.get("source_workspace_relative") or "").replace("\\","/")==source_path]
+    primary=next((e for e in candidate_rows if not str(e.get("classification","")).startswith("exact_raw_")),None)
+    raw_rows=[e for e in candidate_rows if str(e.get("classification","")).startswith("exact_raw_") and e.get("sha256")==expected_sha and e.get("bytes")==expected_bytes]
+    current_match=bool(primary and primary.get("sha256")==expected_sha and primary.get("bytes")==expected_bytes)
+    recovery=None
+    if current_match and primary.get("operation")=="already_on_branch" and primary.get("worktree_head_relation")=="raw_worktree_matches_head_blob":
+        recovery={"kind":"same_original_path_already_in_head_byte_identical","repo":repo_name,"path":repo_rel,"head_blob_oid":primary.get("git_head_blob_oid")}
+    elif current_match and raw_rows:
+        raw=raw_rows[0]
+        recovery={"kind":"exact_raw_snapshot_candidate_for_head_normalization_or_attribute","repo":raw.get("destination_repo"),"path":raw.get("destination_repo_relative"),"operation":raw.get("operation"),"sha256":raw.get("sha256"),"bytes":raw.get("bytes")}
+    elif current_match and primary and primary.get("destination_repo") and primary.get("destination_repo_relative"):
+        recovery={"kind":"same_path_or_copied_exact_candidate","repo":primary.get("destination_repo"),"path":primary.get("destination_repo_relative"),"operation":primary.get("operation"),"sha256":primary.get("sha256"),"bytes":primary.get("bytes")}
+    status_evidence_closure.append({
+      "source_path":source_path,"expected_bytes":expected_bytes,"expected_sha256":expected_sha,
+      "current_inventory_match":current_match,"current_bytes":primary.get("bytes") if primary else None,
+      "current_sha256":primary.get("sha256") if primary else None,
+      "backup_recovery_mapping":recovery,
+      "recovery_mapping_complete":bool(recovery)
+    })
+pins_bytes,pins_sha=sha(PINS_PATH) if PINS_PATH.exists() else (None,None)
+pins_self={"path":"pgfrag/tmp/review_20261006/20261006_physics_core_review_addendum.pins.json","bytes":pins_bytes,"sha256":pins_sha,"evidence_refs":len(status_evidence_closure),"all_current_refs_match":all(x["current_inventory_match"] for x in status_evidence_closure),"all_refs_have_recovery_mapping":all(x["recovery_mapping_complete"] for x in status_evidence_closure)}
+tooling_provenance={}
+if not GIT_EXE.is_file():raise RuntimeError(f"bundled Git executable missing: {GIT_EXE}")
+git_binary_bytes,git_binary_sha=sha(GIT_EXE)
+tooling_provenance["git.exe"]={"path":str(GIT_EXE),"bytes":git_binary_bytes,"sha256":git_binary_sha}
+for tool_name in ("build_closeout_inventory_v2.py","verify_manifest_readonly.py","export_frozen_maps.py","execute_closeout_backup.py","independent_postverify_all_code_backup_20261007.py"):
+    tool_path=OUT/tool_name
+    try:tn,th=sha(tool_path);tooling_provenance[tool_name]={"path":str(tool_path),"bytes":tn,"sha256":th}
+    except Exception as ex:tooling_provenance[tool_name]={"path":str(tool_path),"error_type":type(ex).__name__}
+readme_after_scan=sha(README_PATH)
+readme_entry=next((e for e in entries if e.get("source_absolute")==str(README_PATH)),None)
+if readme_after_scan!=README_PRE_SCAN or readme_entry is None or (readme_entry.get("bytes"),readme_entry.get("sha256"))!=README_PRE_SCAN:
+ errors.append({"scope":"readme_inventory_pin","path":str(README_PATH),"error":"README was not inventoried with its exact pre-scan bytes"})
+inv={
+ "schema":"codex_full_source_backup_inventory_v2",
+ "mode":"PREPARE_ONLY_NO_COPY_NO_GIT_MUTATION",
+ "created_utc":datetime.now(timezone.utc).isoformat(),
+ "workspace_root":str(ROOT),
+ "scope":"All source/code-bearing files including arbitrary code suffix snapshots, tests/fixtures, project configuration/dependency locks, authored docs/licenses, reviewed small evidence, and root-external authored source across three existing repos. External files map into SynLab workspace_backup preserving original root-relative paths. No fourth repo.",
+ "repositories":repo_state,
+ "legacy_v1":{"path":str(ROOT/"tmp"/"backup_coordinator"/"new_milestone_closed_backup_plan_20261007.json"),"sha256":v1_sha,"items":len(v1_files),"reconciliation":v1_reconcile},
+ "summary":{
+  "inventory_entries":len(entries),"action_count":len(actions),"action_bytes":sum(e.get("bytes") or 0 for e in actions),
+  "per_repo":per_repo,"large_files_over_50MiB_count":len(large_list),"credential_path_status_only_count":len(credential_paths),
+  "excluded_subtrees_count":len(skipped),"excluded_classification_counts":excluded_total,"scan_errors_count":len(errors),
+  "destination_collisions_count":sum(1 for v in dest_counts.values() if v>1),
+  "status_evidence_refs":len(status_evidence_closure),
+  "status_evidence_refs_unmatched":sum(not x["current_inventory_match"] for x in status_evidence_closure),
+  "status_evidence_refs_unmapped":sum(not x["recovery_mapping_complete"] for x in status_evidence_closure),
+  "tracked_raw_matches_head":sum(e.get("worktree_head_relation")=="raw_worktree_matches_head_blob" for e in unique_tracked_rows),
+  "tracked_crlf_only_normalized":sum(e.get("worktree_head_relation")=="crlf_lf_normalization_only" for e in unique_tracked_rows),
+  "tracked_other_or_unresolved":sum(e.get("worktree_head_relation")=="other_filter_or_content_relation_unresolved" for e in unique_tracked_rows),
+  "selected_npz_presence":selected_presence
+ },
+ "large_files_over_50MiB":large_list,
+ "status_pins_manifest":pins_self,
+ "status_evidence_dependency_closure":status_evidence_closure,
+ "inventory_tooling_provenance":tooling_provenance,
+ "git_executable":{"path":str(GIT_EXE),"bytes":git_binary_bytes,"sha256":git_binary_sha},
+ "tracked_raw_source_snapshot_map":raw_snapshot_map,
+ "credential_path_status_only":credential_paths,
+ "excluded_subtrees":skipped,
+ "excluded_classification_counts":excluded_total,
+ "scan_errors":errors,
+ "pending_documents":pending_docs,
+ "root_docx_candidates":root_docx,
+ "byte_preservation_attribute_proposals":attr_proposals,
+ "entries":entries,
+ "notes":[
+  "Tracked paths carry working-tree SHA-256/bytes and HEAD blob OID/bytes; clean tracked status is not treated as proof of raw byte identity.",
+  "Tracked worktree bytes differing only by CRLF/LF normalization are proposed as exact raw snapshots under docs/backup/20261007/raw_source/<repo-relative-path>; no original tracked HEAD is rewritten.",
+  "Explicit text/eol/filter attributes are batch-queried; affected new paths get a raw snapshot proposal. No .gitattributes mutation was made.",
+  "Selected three bounded replay NPZ paths and exactly two portable JUnit fixture XML paths must be present or demonstrably byte-identical to tracked copies; all other generated numeric datasets and non-CLOSED XML remain excluded.",
+   "Authored scripts, README, and small handoff plans/receipts under tmp/backup_coordinator are inventoried; dynamic inventory/action outputs, transient logs, generated outputs, and records over 5 MiB are excluded unless explicitly allowlisted. SCIENCE98 accepted plan versions, execution, independent reports, and orchestrator are explicit candidates.",
+  "The 100 evidence_files referenced by the frozen physics-core status pins are individually mapped to an exact existing HEAD blob, an exact planned same-path candidate, or a raw-byte snapshot candidate. A missing ref, SHA mismatch, or incomplete mapping blocks later approval.",
+  "Mutable or review-pending files require root exact-hash review before any later copy/stage; no acceptance or physics qualification is implied."
+ ],
+ "no_copy_stage_commit_push_or_persistent_git_config_mutation":True,
+ "prep_scope_mutations":["three exact .gitattributes append-only raw-source rules authorized by root; prechange bytes preserved under attribute_snapshots/<repo>/.gitattributes"]
+}
+manifest={
+ "schema":"codex_exact_backup_action_manifest_v2",
+ "mode":"PREPARE_ONLY_NOT_AUTHORIZED_FOR_COPY_OR_GIT",
+ "inventory_path":str(OUT/"inventory.json"),
+ "workspace_root":str(ROOT),
+ "branch":BRANCH,
+ "repositories":repo_state,
+ "pending_documents":pending_docs,
+ "byte_preservation_attribute_proposals":attr_proposals,
+ "candidate_actions":actions,
+ "status_pins_manifest":pins_self,
+ "status_evidence_dependency_closure":status_evidence_closure,
+ "inventory_tooling_provenance":tooling_provenance,
+ "git_executable":{"path":str(GIT_EXE),"bytes":git_binary_bytes,"sha256":git_binary_sha},
+ "tracked_raw_source_snapshot_map":raw_snapshot_map,
+ "source_aliases_to_existing_byte_identical_destinations":[e for e in entries if e.get("operation")=="already_recoverable_same_bytes_destination"],
+ "summary":{"candidate_action_count":len(actions),"candidate_action_bytes":sum(e.get("bytes") or 0 for e in actions),"per_repo":per_repo,"destinations_unique":not any(v>1 for v in dest_counts.values()),"selected_npz_presence":selected_presence,"status_evidence_refs":len(status_evidence_closure),"status_evidence_refs_unmatched":sum(not x["current_inventory_match"] for x in status_evidence_closure),"status_evidence_refs_unmapped":sum(not x["recovery_mapping_complete"] for x in status_evidence_closure),"mutations_performed":False}
+}
+ip=OUT/"inventory.json";ip.write_text(json.dumps(inv,ensure_ascii=True,indent=2)+"\n",encoding="utf-8")
+manifest["inventory_sha256"]=hashlib.sha256(ip.read_bytes()).hexdigest()
+mp=OUT/"explicit_action_manifest.json";mp.write_text(json.dumps(manifest,ensure_ascii=True,indent=2)+"\n",encoding="utf-8")
+# README is finalized and pinned before scanning; never rewrite it after inventory collection.
+print(json.dumps({
+ "out":str(OUT),"entries":len(entries),"actions":len(actions),"action_bytes":sum(e.get("bytes") or 0 for e in actions),
+ "per_repo":per_repo,"large_files":len(large_list),"credential_paths_status_only":len(credential_paths),
+ "skipped_subtrees":len(skipped),"excluded_counts":excluded_total,"errors":errors,
+ "v1_items":len(v1_files),"v1_pin_drift":sum(x["current_status"]!="match" for x in v1_reconcile),
+ "selected_npz_presence":selected_presence,
+ "tracked_relations":{"raw_match":inv["summary"]["tracked_raw_matches_head"],"crlf_only":inv["summary"]["tracked_crlf_only_normalized"],"other":inv["summary"]["tracked_other_or_unresolved"]},
+ "inventory_sha256":manifest["inventory_sha256"],"action_manifest_sha256":hashlib.sha256(mp.read_bytes()).hexdigest()
+},ensure_ascii=True))

@@ -1,0 +1,184 @@
+{
+  "schema": "independent_pre_final_source_audit_v1",
+  "review_date": "2026-10-08",
+  "status": "PRE_FINAL_HISTORICAL_SNAPSHOT_WITH_KNOWN_BLOCKER",
+  "final_backup_approval": false,
+  "scope": "Read-only source/inventory coverage review. No project execution, copy, Git mutation, or post-push verification.",
+  "inputs": {
+    "prior_inventory": {
+      "sha256": "5afe5b96fb14cf242ec2cce730a802fa8b8ceb32c335de77f1ba55ca9cef14c7",
+      "bytes": 25130379
+    },
+    "prior_action_manifest": {
+      "sha256": "49feb8117dac2e44e8f383b35c8a56a3b9e5d1cb62450470db4b479f5ce55814",
+      "bytes": 10479945
+    },
+    "builder": {
+      "path": "tmp/backup_coordinator/closeout_20261007/build_closeout_inventory_v2.py",
+      "sha256": "ae69f1ab9c0dda710cf1c9875295d185f81eeca9c7b38d0b1db1c6e7e5f5cd14",
+      "bytes": 56155
+    }
+  },
+  "inventory_snapshot": {
+    "entries": 24594,
+    "actions": 6707,
+    "action_bytes": 145256308,
+    "actions_by_repo": {
+      "PG": 1585,
+      "VesselForge": 428,
+      "SynLab": 3878,
+      "workspace_root_external_evidence": 816
+    },
+    "source_rehash": {
+      "checked": 6707,
+      "matching": 6707,
+      "mismatches": 0
+    },
+    "evidence_refs": {
+      "checked": 100,
+      "matching": 100,
+      "candidate_action": 92,
+      "unchanged_tracked_head": 7,
+      "byte_identical_existing_alias": 1,
+      "unmatched": 0,
+      "unmapped": 0
+    }
+  },
+  "ignored_destination_blocker": {
+    "required_force_paths": 5085,
+    "marked_force_stage": 4279,
+    "incorrectly_marked_copy_without_force": 806,
+    "result": "BLOCKED_FOR_THIS_HISTORICAL_MANIFEST",
+    "reason": "Frozen executor requires operation suffix _force for ignored destinations.",
+    "affected_raw_snapshot_types": [
+      "three .gitattributes pre-change snapshots",
+      "SynLab docs/a12/HANDOVER.md pre-change snapshot"
+    ],
+    "later_manifest_must_be_rechecked": true
+  },
+  "build_dist_target_scan": {
+    "files_seen": 80,
+    "code_or_snapshot_candidates": 75,
+    "build_lib_source_items_byte_identical": 72,
+    "breakdown": {
+      "python_modules": 7,
+      "vendored_julia_files": 63,
+      "patch_or_fixture_scripts": 2
+    },
+    "other_build_lib_metadata_files_matching_sources": 5,
+    "frontend_dist_generated_assets": 3,
+    "frontend_source_and_configuration_present": true,
+    "target_files": 0,
+    "unique_authored_source_omission_found": false
+  },
+  "vendored_bibliography": {
+    "path": "pgfrag/vendor/Peridynamics.jl/docs/src/references.bib",
+    "bytes": 8547,
+    "sha256": "bc60345cdd7686900d68a4ff169f6ba5ed5b2c14b52ff747cf8c992cc7cf28e9",
+    "head_and_worktree_blob_oid": "b48ce660daaacaf2602474496a8376ff6a5baf3c",
+    "disposition": "unchanged tracked vendored dependency reference"
+  },
+  "raw_source_and_attributes": {
+    "mappings": 90,
+    "destination_actions": 90,
+    "crlf_lf_normalization_only": 86,
+    "unresolved_content_or_filter_relation": 4,
+    "source_destination_raw_bytes_hashes_match": true,
+    "destination_attributes": {
+      "text": "unset",
+      "eol": "unspecified",
+      "filter": "unspecified"
+    },
+    "gitattributes_snapshots": [
+      {
+        "repo": "PG",
+        "old_bytes": 1011,
+        "current_bytes": 1054
+      },
+      {
+        "repo": "VesselForge",
+        "old_bytes": 534,
+        "current_bytes": 577
+      },
+      {
+        "repo": "SynLab",
+        "old_bytes": 809,
+        "current_bytes": 852
+      }
+    ],
+    "exact_appended_rule_bytes": 43,
+    "rule": "/docs/backup/20261007/raw_source/** -text",
+    "raw_snapshot_force_add_blocker_is_included_above": true
+  },
+  "supplementary_contract": {
+    "exact_roles": [
+      {
+        "role": "coverage_export",
+        "destination": "relicweave-synlab/docs/handover/20261007/CODE_COVERAGE.md"
+      },
+      {
+        "role": "source_map",
+        "destination": "relicweave-synlab/workspace_backup/20261007/WORKSPACE_SOURCE_MAP.json"
+      },
+      {
+        "role": "frozen_control_copy",
+        "destination": "relicweave-synlab/docs/backup/20261007/CONTROL_ACTION_MANIFEST.json"
+      }
+    ],
+    "check_ignore_no_index_returncodes": [
+      1,
+      1,
+      1
+    ],
+    "ignored": false,
+    "ordinary_copy_stage_only": true,
+    "final_tuples_must_be_rechecked": true
+  },
+  "document_qa_inputs": [
+    {
+      "path": "RelicWeave_V1.47.docx",
+      "bytes": 779513,
+      "sha256": "41f1254e40a2ecabdcfa1c6583af2fce0ae1b0ab980d5f9179bbaf687b7be64b"
+    },
+    {
+      "path": "RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx",
+      "bytes": 786150,
+      "sha256": "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d"
+    },
+    {
+      "path": "HANDOVER.docx",
+      "bytes": 64641,
+      "sha256": "c8b4e57340c7c9d485aeb5c6aa298ba90ac166870c9d8d0a7d414d35051f7fd2"
+    },
+    {
+      "path": "HANDOVER.md",
+      "bytes": 41396,
+      "sha256": "f226a153f8aed2da04e07298f1277cd74071370d52cf74a4967702c2792f7a53"
+    },
+    {
+      "path": "LAYOUT_FINAL_QA_COVERAGE.json",
+      "bytes": 119386,
+      "sha256": "8692754e75ab91e7ef823f7501343bb476731923922c46b4bfa3679edc4b0f52",
+      "status": "PASS_238_PAGES"
+    },
+    {
+      "path": "LAYOUT_FINAL_QA_COVERAGE.md",
+      "bytes": 1446,
+      "sha256": "0afa2d5c500a0a01a5b7008673dac2f18d0afb59129bc9a17e1c6da0482fdeb5"
+    }
+  ],
+  "credential_scan_observation": {
+    "final_inventory_scan_complete": false,
+    "frozen_executor_had_one_public_aws_documentation_example_match": true,
+    "path_line_rule_count_only": true,
+    "secret_value_recorded": false,
+    "sample_sha256": "1a5d44a2dca19669d72edf4c4f1c27c4c1ca4b4408fbb17f6ce4ad452d78ddb3",
+    "root_confirmed_public_example": true
+  },
+  "pending_gates": [
+    "review regenerated final inventory and action manifest",
+    "review final credential scan",
+    "review exact supplementary source/destination tuples and hashes",
+    "post-push verification only after explicit root GO and exact pins"
+  ]
+}

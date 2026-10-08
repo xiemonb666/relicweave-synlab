@@ -1,0 +1,3904 @@
+{
+ "paragraphs": 1807,
+ "tables": 128,
+ "headings": [
+  {
+   "idx": 0,
+   "p_index": 1,
+   "block": 1,
+   "level": 0,
+   "style": "Title",
+   "text": "缀衡 RelicWeave 项目完整方案"
+  },
+  {
+   "idx": 1,
+   "p_index": 2,
+   "block": 2,
+   "level": 0,
+   "style": "Subtitle",
+   "text": "V1.44 统一评价合同与可调近远采集台完整实施版 2026年10月1日"
+  },
+  {
+   "idx": 2,
+   "p_index": 7,
+   "block": 7,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "文档导航"
+  },
+  {
+   "idx": 3,
+   "p_index": 86,
+   "block": 86,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "1 文档体系与现行口径"
+  },
+  {
+   "idx": 4,
+   "p_index": 91,
+   "block": 92,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "1.1 阶段命名统一"
+  },
+  {
+   "idx": 5,
+   "p_index": 94,
+   "block": 96,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "1.2 当前事实台账"
+  },
+  {
+   "idx": 6,
+   "p_index": 97,
+   "block": 100,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "2 合并主线与边界"
+  },
+  {
+   "idx": 7,
+   "p_index": 101,
+   "block": 104,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "2.1 比赛必须实现与论文需要证明"
+  },
+  {
+   "idx": 8,
+   "p_index": 104,
+   "block": 108,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "2.2 内部指标合同"
+  },
+  {
+   "idx": 9,
+   "p_index": 107,
+   "block": 112,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "2.2.1 单一评测公式与完整分母"
+  },
+  {
+   "idx": 10,
+   "p_index": 111,
+   "block": 116,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "2.3 创新收敛与止损"
+  },
+  {
+   "idx": 11,
+   "p_index": 115,
+   "block": 120,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "3 四份岗位执行正文"
+  },
+  {
+   "idx": 12,
+   "p_index": 118,
+   "block": 123,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "4 模型架构与实验实施"
+  },
+  {
+   "idx": 13,
+   "p_index": 120,
+   "block": 125,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "A1 职责与可以立即启动的工作"
+  },
+  {
+   "idx": 14,
+   "p_index": 124,
+   "block": 130,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "A2 旧模型怎样重构"
+  },
+  {
+   "idx": 15,
+   "p_index": 129,
+   "block": 135,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A2.1 最小函数合同"
+  },
+  {
+   "idx": 16,
+   "p_index": 131,
+   "block": 138,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "A3 输入与表示合同"
+  },
+  {
+   "idx": 17,
+   "p_index": 136,
+   "block": 144,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A3.1 可变长度与活跃证据预算"
+  },
+  {
+   "idx": 18,
+   "p_index": 140,
+   "block": 148,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "A4 推荐静态主干的逐模块设计"
+  },
+  {
+   "idx": 19,
+   "p_index": 142,
+   "block": 150,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A4.1 感知编码器"
+  },
+  {
+   "idx": 20,
+   "p_index": 145,
+   "block": 153,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A4.2 观测质量与可见性"
+  },
+  {
+   "idx": 21,
+   "p_index": 148,
+   "block": 156,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A4.3 初检"
+  },
+  {
+   "idx": 22,
+   "p_index": 152,
+   "block": 160,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A4.4 局部双线性关系基线"
+  },
+  {
+   "idx": 23,
+   "p_index": 156,
+   "block": 164,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A4.5 局部交互主干"
+  },
+  {
+   "idx": 24,
+   "p_index": 160,
+   "block": 168,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A4.6 观察不足与反证分开"
+  },
+  {
+   "idx": 25,
+   "p_index": 163,
+   "block": 172,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A4.7 可选3D分支"
+  },
+  {
+   "idx": 26,
+   "p_index": 166,
+   "block": 175,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A4.8 输出与停止"
+  },
+  {
+   "idx": 27,
+   "p_index": 169,
+   "block": 178,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A4.9 输入来源与局部证据验收"
+  },
+  {
+   "idx": 28,
+   "p_index": 173,
+   "block": 182,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "A5 训练方式与损失推进"
+  },
+  {
+   "idx": 29,
+   "p_index": 179,
+   "block": 189,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A5.0 三种标签贯通损失与输出"
+  },
+  {
+   "idx": 30,
+   "p_index": 181,
+   "block": 192,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A5.1 可直接照着实现的训练伪代码"
+  },
+  {
+   "idx": 31,
+   "p_index": 196,
+   "block": 207,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A5.2 配置和运行顺序模板"
+  },
+  {
+   "idx": 32,
+   "p_index": 200,
+   "block": 211,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A5.3 困难负例与query级校准"
+  },
+  {
+   "idx": 33,
+   "p_index": 204,
+   "block": 215,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "A6 循环Transformer、CTM与创新机制长期维护区"
+  },
+  {
+   "idx": 34,
+   "p_index": 219,
+   "block": 231,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A6.1 研究定位：CTM 是实现基底，创新是“如何让证据逐步改变候选假设”"
+  },
+  {
+   "idx": 35,
+   "p_index": 223,
+   "block": 236,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A6.2 外部论文底层思想与本项目的再推导"
+  },
+  {
+   "idx": 36,
+   "p_index": 226,
+   "block": 240,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A6.3 Evidence-Deliberative CTM：把“连续思考”改造成任务内的证据审议"
+  },
+  {
+   "idx": 37,
+   "p_index": 232,
+   "block": 247,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A6.4 几何侧创新：让“哪里传播”由断口结构而不是 token 次序决定"
+  },
+  {
+   "idx": 38,
+   "p_index": 235,
+   "block": 251,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A6.5 质量、反证与记忆：让模型知道什么可信、什么需要纠错、什么不能遗忘"
+  },
+  {
+   "idx": 39,
+   "p_index": 238,
+   "block": 255,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A6.6 候选搜索与“多重思考”机制"
+  },
+  {
+   "idx": 40,
+   "p_index": 241,
+   "block": 259,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A6.7 高风险高收益创新候选"
+  },
+  {
+   "idx": 41,
+   "p_index": 244,
+   "block": 263,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A6.8 统一架构草案：CTM 承载机制，而不是成为创新本身"
+  },
+  {
+   "idx": 42,
+   "p_index": 248,
+   "block": 267,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A6.9 创新候选总表（长期维护区，允许持续追加，不覆盖历史条目）"
+  },
+  {
+   "idx": 43,
+   "p_index": 251,
+   "block": 271,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A6.10 未来创新保留槽与登记模板"
+  },
+  {
+   "idx": 44,
+   "p_index": 255,
+   "block": 276,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A6.11 CVPR 主线的最终收敛方式"
+  },
+  {
+   "idx": 45,
+   "p_index": 258,
+   "block": 279,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A6.12 最小实验矩阵与防“拼模型”规则"
+  },
+  {
+   "idx": 46,
+   "p_index": 261,
+   "block": 283,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A6.13 最小循环机制的可实现合同"
+  },
+  {
+   "idx": 47,
+   "p_index": 271,
+   "block": 293,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "A7 主动补采 自监督与强化学习"
+  },
+  {
+   "idx": 48,
+   "p_index": 272,
+   "block": 294,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A7.1 先用手机做有效性试验"
+  },
+  {
+   "idx": 49,
+   "p_index": 275,
+   "block": 297,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A7.2 独立动作接口"
+  },
+  {
+   "idx": 50,
+   "p_index": 278,
+   "block": 300,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A7.3 单步效用学习"
+  },
+  {
+   "idx": 51,
+   "p_index": 281,
+   "block": 303,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A7.4 自监督任务"
+  },
+  {
+   "idx": 52,
+   "p_index": 284,
+   "block": 306,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A7.5 多步RL的进入条件"
+  },
+  {
+   "idx": 53,
+   "p_index": 288,
+   "block": 310,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A7.6 固定图库与变化候选的奖励"
+  },
+  {
+   "idx": 54,
+   "p_index": 292,
+   "block": 314,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "A8 实验主线与执行卡"
+  },
+  {
+   "idx": 55,
+   "p_index": 295,
+   "block": 317,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "EXP00 旧基线和评测正确性"
+  },
+  {
+   "idx": 56,
+   "p_index": 298,
+   "block": 320,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "EXP01 真实输入资格与静态基线"
+  },
+  {
+   "idx": 57,
+   "p_index": 301,
+   "block": 323,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "EXP02 初检和候选上限"
+  },
+  {
+   "idx": 58,
+   "p_index": 304,
+   "block": 326,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "EXP03 局部互补主方法"
+  },
+  {
+   "idx": 59,
+   "p_index": 307,
+   "block": 329,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "EXP04 循环与重读"
+  },
+  {
+   "idx": 60,
+   "p_index": 310,
+   "block": 332,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "EXP05 质量 缺失与开放库"
+  },
+  {
+   "idx": 61,
+   "p_index": 313,
+   "block": 335,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "EXP06 人工补采与动态灯光收益"
+  },
+  {
+   "idx": 62,
+   "p_index": 316,
+   "block": 338,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "EXP07 自监督 单步与多步策略"
+  },
+  {
+   "idx": 63,
+   "p_index": 319,
+   "block": 341,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "EXP08 规模与独立确认"
+  },
+  {
+   "idx": 64,
+   "p_index": 322,
+   "block": 344,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "EXP09 工作流和现场"
+  },
+  {
+   "idx": 65,
+   "p_index": 325,
+   "block": 347,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "A9 结果归档与常见失败处理"
+  },
+  {
+   "idx": 66,
+   "p_index": 327,
+   "block": 349,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A9.1 指标手算与失败标签"
+  },
+  {
+   "idx": 67,
+   "p_index": 332,
+   "block": 355,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "A10 推进路径 学习与交接"
+  },
+  {
+   "idx": 68,
+   "p_index": 337,
+   "block": 361,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "A11 参考技术与阅读入口"
+  },
+  {
+   "idx": 69,
+   "p_index": 341,
+   "block": 366,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A11.1 最近工作与公平对照"
+  },
+  {
+   "idx": 70,
+   "p_index": 346,
+   "block": 372,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "A12 可控合成碎片实验室、大规模预训练与退化诊断平台（长期维护区）"
+  },
+  {
+   "idx": 71,
+   "p_index": 349,
+   "block": 375,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A12.1 研究定位：把“合成数据”升级为可控实验仪器"
+  },
+  {
+   "idx": 72,
+   "p_index": 351,
+   "block": 378,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A12.2 总体系统：一份“干净世界真值”派生无限可控观测"
+  },
+  {
+   "idx": 73,
+   "p_index": 354,
+   "block": 382,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A12.3 参数化器型生成器：不要只做“十几个固定模型”"
+  },
+  {
+   "idx": 74,
+   "p_index": 357,
+   "block": 386,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A12.4 连续纹样与材质生成：纹样必须先属于完整器物，再随碎裂继承"
+  },
+  {
+   "idx": 75,
+   "p_index": 360,
+   "block": 389,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A12.5 碎裂、断口真值与可控磨损"
+  },
+  {
+   "idx": 76,
+   "p_index": 363,
+   "block": 393,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A12.6 统一质量等级与特权诊断"
+  },
+  {
+   "idx": 77,
+   "p_index": 367,
+   "block": 398,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A12.7 数据与真值合同：合成数据必须能直接进入现有 ObsPack/FeaturePack 流水线"
+  },
+  {
+   "idx": 78,
+   "p_index": 370,
+   "block": 402,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A12.8 训练价值来自“关系规模”，不只来自碎片数量"
+  },
+  {
+   "idx": 79,
+   "p_index": 373,
+   "block": 406,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A12.9 大规模预训练：先学碎片结构，再用真实数据校准域"
+  },
+  {
+   "idx": 80,
+   "p_index": 376,
+   "block": 410,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A12.10 数据量×质量×算法三维诊断：决定下一阶段资源到底投到哪里"
+  },
+  {
+   "idx": 81,
+   "p_index": 379,
+   "block": 415,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A12.11 用合成世界专门验证 CTM 与当前创新机制"
+  },
+  {
+   "idx": 82,
+   "p_index": 382,
+   "block": 419,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A12.12 Sim-to-Real：合成预训练必须为真实数据服务"
+  },
+  {
+   "idx": 83,
+   "p_index": 386,
+   "block": 423,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A12.13 MVP 与扩展路线：先把可控性做对，再追求“看起来像真实”"
+  },
+  {
+   "idx": 84,
+   "p_index": 388,
+   "block": 426,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A12.14 运行、存储与规模控制"
+  },
+  {
+   "idx": 85,
+   "p_index": 391,
+   "block": 429,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A12.15 验收、止损与论文边界"
+  },
+  {
+   "idx": 86,
+   "p_index": 395,
+   "block": 433,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "A12.16 本支线创新保留区：允许以后持续追加，不覆盖旧条目"
+  },
+  {
+   "idx": 87,
+   "p_index": 398,
+   "block": 437,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "5 数据采集与标注实施"
+  },
+  {
+   "idx": 88,
+   "p_index": 400,
+   "block": 439,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "B1 职责与立即启动清单"
+  },
+  {
+   "idx": 89,
+   "p_index": 404,
+   "block": 444,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "B2 样品与真值准备"
+  },
+  {
+   "idx": 90,
+   "p_index": 408,
+   "block": 448,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "B2.1 邻接GT操作"
+  },
+  {
+   "idx": 91,
+   "p_index": 413,
+   "block": 454,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "B2.2 完整邻片集合闭合SOP"
+  },
+  {
+   "idx": 92,
+   "p_index": 419,
+   "block": 460,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "B3 必须采到的数据"
+  },
+  {
+   "idx": 93,
+   "p_index": 423,
+   "block": 465,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "B4 手机加转盘首版SOP"
+  },
+  {
+   "idx": 94,
+   "p_index": 424,
+   "block": 466,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "B4.1 拍摄前"
+  },
+  {
+   "idx": 95,
+   "p_index": 428,
+   "block": 470,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "B4.2 每片实际拍摄顺序"
+  },
+  {
+   "idx": 96,
+   "p_index": 439,
+   "block": 482,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "B4.3 质量分档与重复"
+  },
+  {
+   "idx": 97,
+   "p_index": 442,
+   "block": 485,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "B5 打光与偏振数据SOP"
+  },
+  {
+   "idx": 98,
+   "p_index": 447,
+   "block": 490,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "B6 字段 目录与增量交付"
+  },
+  {
+   "idx": 99,
+   "p_index": 453,
+   "block": 497,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "B6.1 输入来源与近远元数据"
+  },
+  {
+   "idx": 100,
+   "p_index": 456,
+   "block": 500,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "B7 划分 开放库与泄漏审计"
+  },
+  {
+   "idx": 101,
+   "p_index": 461,
+   "block": 505,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "B7.1 科学资格与产品提交分母"
+  },
+  {
+   "idx": 102,
+   "p_index": 463,
+   "block": 507,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "B8 三级质量验收"
+  },
+  {
+   "idx": 103,
+   "p_index": 467,
+   "block": 512,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "B9 可选3D与闭合网格资格"
+  },
+  {
+   "idx": 104,
+   "p_index": 471,
+   "block": 516,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "B9.1 实拍MVS与代理扫描校准"
+  },
+  {
+   "idx": 105,
+   "p_index": 474,
+   "block": 519,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "B10 主动补采与视图库建设"
+  },
+  {
+   "idx": 106,
+   "p_index": 479,
+   "block": 524,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "B11 手机到DIY的阶段路线"
+  },
+  {
+   "idx": 107,
+   "p_index": 482,
+   "block": 528,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "B12 每周路径 学习与交接"
+  },
+  {
+   "idx": 108,
+   "p_index": 486,
+   "block": 533,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "B13 技术参考"
+  },
+  {
+   "idx": 109,
+   "p_index": 493,
+   "block": 540,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "6 DIY采集台软硬件实施"
+  },
+  {
+   "idx": 110,
+   "p_index": 496,
+   "block": 543,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "C1 职责与当前能并行做的事"
+  },
+  {
+   "idx": 111,
+   "p_index": 500,
+   "block": 548,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "C2 分阶段目标与采购顺序"
+  },
+  {
+   "idx": 112,
+   "p_index": 503,
+   "block": 552,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "C3 开发板与相机选型"
+  },
+  {
+   "idx": 113,
+   "p_index": 510,
+   "block": 560,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "C3.1 镜头与工作距离验收"
+  },
+  {
+   "idx": 114,
+   "p_index": 514,
+   "block": 564,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "C3.2 工作距离与实际分辨率"
+  },
+  {
+   "idx": 115,
+   "p_index": 519,
+   "block": 570,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "C4 机械布局与运动设计"
+  },
+  {
+   "idx": 116,
+   "p_index": 526,
+   "block": 578,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "C4.1 沿光轴U近远滑台"
+  },
+  {
+   "idx": 117,
+   "p_index": 532,
+   "block": 584,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "C4.2 电动U升级与重复定位"
+  },
+  {
+   "idx": 118,
+   "p_index": 534,
+   "block": 586,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "C5 四区白光与偏振结构"
+  },
+  {
+   "idx": 119,
+   "p_index": 542,
+   "block": 595,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "C5.1 证据灯态与重建灯态分组"
+  },
+  {
+   "idx": 120,
+   "p_index": 544,
+   "block": 597,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "C6 BOM与三档预算"
+  },
+  {
+   "idx": 121,
+   "p_index": 549,
+   "block": 604,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "C6.1 三档交付与预算核实"
+  },
+  {
+   "idx": 122,
+   "p_index": 552,
+   "block": 607,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "C7 电气与最终接线"
+  },
+  {
+   "idx": 123,
+   "p_index": 559,
+   "block": 615,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "C8 固件实施与状态机"
+  },
+  {
+   "idx": 124,
+   "p_index": 565,
+   "block": 621,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "C8.1 U控制与人工任务"
+  },
+  {
+   "idx": 125,
+   "p_index": 567,
+   "block": 623,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "C9 命令 摄像与文件闭环"
+  },
+  {
+   "idx": 126,
+   "p_index": 573,
+   "block": 630,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "C10 模型到可达动作的连接"
+  },
+  {
+   "idx": 127,
+   "p_index": 578,
+   "block": 635,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "C10.1 分辨率工作档与收益"
+  },
+  {
+   "idx": 128,
+   "p_index": 581,
+   "block": 638,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "C11 搭建与验收顺序"
+  },
+  {
+   "idx": 129,
+   "p_index": 592,
+   "block": 650,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "C11.1 HW-U完整验收卡"
+  },
+  {
+   "idx": 130,
+   "p_index": 594,
+   "block": 652,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "C12 常见问题与恢复"
+  },
+  {
+   "idx": 131,
+   "p_index": 599,
+   "block": 657,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "C13 比赛外观与展示"
+  },
+  {
+   "idx": 132,
+   "p_index": 602,
+   "block": 660,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "C14 每周推进与学习作品"
+  },
+  {
+   "idx": 133,
+   "p_index": 606,
+   "block": 665,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "C15 官方技术入口"
+  },
+  {
+   "idx": 134,
+   "p_index": 613,
+   "block": 672,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "7 前后端与展示集成实施"
+  },
+  {
+   "idx": 135,
+   "p_index": 615,
+   "block": 674,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "D1 职责与立即启动任务"
+  },
+  {
+   "idx": 136,
+   "p_index": 619,
+   "block": 679,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "D2 技术栈与目录"
+  },
+  {
+   "idx": 137,
+   "p_index": 623,
+   "block": 683,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "D3 元数据账本与文件事务"
+  },
+  {
+   "idx": 138,
+   "p_index": 627,
+   "block": 688,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "D4 后端API与适配合同"
+  },
+  {
+   "idx": 139,
+   "p_index": 632,
+   "block": 694,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "D5 状态机与并发"
+  },
+  {
+   "idx": 140,
+   "p_index": 637,
+   "block": 699,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "D5.1 近远证据提交事务"
+  },
+  {
+   "idx": 141,
+   "p_index": 639,
+   "block": 701,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "D6 页面与比赛视觉"
+  },
+  {
+   "idx": 142,
+   "p_index": 640,
+   "block": 702,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "D6.1 数据录入与QA页"
+  },
+  {
+   "idx": 143,
+   "p_index": 643,
+   "block": 705,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "D6.2 候选证据页"
+  },
+  {
+   "idx": 144,
+   "p_index": 646,
+   "block": 708,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "D6.3 补采与设备页"
+  },
+  {
+   "idx": 145,
+   "p_index": 649,
+   "block": 711,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "D6.4 展示原则"
+  },
+  {
+   "idx": 146,
+   "p_index": 652,
+   "block": 714,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "D7 首版与后续版本路线"
+  },
+  {
+   "idx": 147,
+   "p_index": 655,
+   "block": 718,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "D8 必测用例"
+  },
+  {
+   "idx": 148,
+   "p_index": 658,
+   "block": 722,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "D9 离线发布与演示流程"
+  },
+  {
+   "idx": 149,
+   "p_index": 664,
+   "block": 728,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "D10 用户价值测试与成本"
+  },
+  {
+   "idx": 150,
+   "p_index": 668,
+   "block": 732,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "D10.1 完整工作流与成本分母"
+  },
+  {
+   "idx": 151,
+   "p_index": 671,
+   "block": 735,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "D11 每周路径 学习与交接"
+  },
+  {
+   "idx": 152,
+   "p_index": 675,
+   "block": 740,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "D12 参考入口"
+  },
+  {
+   "idx": 153,
+   "p_index": 682,
+   "block": 747,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "8 大家从现在并行推进"
+  },
+  {
+   "idx": 154,
+   "p_index": 685,
+   "block": 751,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "8.1 第一周逐日启动"
+  },
+  {
+   "idx": 155,
+   "p_index": 688,
+   "block": 755,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "8.2 滚动六周计划"
+  },
+  {
+   "idx": 156,
+   "p_index": 691,
+   "block": 759,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "8.3 四次联调里程碑"
+  },
+  {
+   "idx": 157,
+   "p_index": 696,
+   "block": 764,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "8.4 统一范围 工时与GPU日历"
+  },
+  {
+   "idx": 158,
+   "p_index": 704,
+   "block": 775,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "9 共享协议与单一事实台账"
+  },
+  {
+   "idx": 159,
+   "p_index": 709,
+   "block": 781,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "9.1 共同必须遵守的边界"
+  },
+  {
+   "idx": 160,
+   "p_index": 712,
+   "block": 784,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "9.2 决策与降级"
+  },
+  {
+   "idx": 161,
+   "p_index": 714,
+   "block": 787,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "10 国赛与CVPR交付计划"
+  },
+  {
+   "idx": 162,
+   "p_index": 720,
+   "block": 793,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "11 本次归位与历史记录"
+  },
+  {
+   "idx": 163,
+   "p_index": 726,
+   "block": 800,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "12 本版主要来源与复用边界"
+  },
+  {
+   "idx": 164,
+   "p_index": 732,
+   "block": 806,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "历史附录使用说明"
+  },
+  {
+   "idx": 165,
+   "p_index": 736,
+   "block": 810,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "附录A X系列实验执行卡与历史结论"
+  },
+  {
+   "idx": 166,
+   "p_index": 738,
+   "block": 812,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "K 逐项实验执行卡与结论 X01—X13-A-R已补录"
+  },
+  {
+   "idx": 167,
+   "p_index": 740,
+   "block": 814,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "X01 公共资产 许可 标签与泄漏审计"
+  },
+  {
+   "idx": 168,
+   "p_index": 748,
+   "block": 822,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "X02 历史候选基线复现与查询级重评"
+  },
+  {
+   "idx": 169,
+   "p_index": 756,
+   "block": 830,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "X03 早期软路由与真邻片存活"
+  },
+  {
+   "idx": 170,
+   "p_index": 764,
+   "block": 838,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "X04 断口实例与标签上界"
+  },
+  {
+   "idx": 171,
+   "p_index": 772,
+   "block": 846,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "X05 候选证据单模态与组合消融"
+  },
+  {
+   "idx": 172,
+   "p_index": 780,
+   "block": 854,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "X06 公开几何合成的2D证据与真实2D边界"
+  },
+  {
+   "idx": 173,
+   "p_index": 789,
+   "block": 863,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "X07 磨损 风化 崩缺与缺口"
+  },
+  {
+   "idx": 174,
+   "p_index": 799,
+   "block": 873,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "X07-COVER 独立遮挡检索实验"
+  },
+  {
+   "idx": 175,
+   "p_index": 808,
+   "block": 882,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "X08 低质量3D和缺模态鲁棒性"
+  },
+  {
+   "idx": 176,
+   "p_index": 818,
+   "block": 892,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "X08A-Q 干净表现约束下的三维退化排序"
+  },
+  {
+   "idx": 177,
+   "p_index": 827,
+   "block": 901,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "X09 模型容量与邻接互补表示"
+  },
+  {
+   "idx": 178,
+   "p_index": 833,
+   "block": 907,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "X10 上下文与真实纹样可选分支"
+  },
+  {
+   "idx": 179,
+   "p_index": 839,
+   "block": 913,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "X11 真邻片缺席与安全拒识"
+  },
+  {
+   "idx": 180,
+   "p_index": 845,
+   "block": 919,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "X12 库规模和专家检查负担"
+  },
+  {
+   "idx": 181,
+   "p_index": 851,
+   "block": 925,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "X13 跨母体 跨材料与外部公开域"
+  },
+  {
+   "idx": 182,
+   "p_index": 857,
+   "block": 931,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "X13-A 原冻结D0归档门实验"
+  },
+  {
+   "idx": 183,
+   "p_index": 864,
+   "block": 938,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "X13-A-R 限定输入例外后公开新对象资格实验"
+  },
+  {
+   "idx": 184,
+   "p_index": 871,
+   "block": 945,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "X14 公开数据与早期真实试点联合审计及扩建决策"
+  },
+  {
+   "idx": 185,
+   "p_index": 877,
+   "block": 951,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "X15 现有手机前期真实试点与后续DIY采集台数据阶段"
+  },
+  {
+   "idx": 186,
+   "p_index": 884,
+   "block": 958,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "X16 已入选候选的可选虚拟对齐"
+  },
+  {
+   "idx": 187,
+   "p_index": 890,
+   "block": 964,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "附录B E系列结论卡与解释边界"
+  },
+  {
+   "idx": 188,
+   "p_index": 892,
+   "block": 966,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "E01 H690 Stage 1 公开数据审计"
+  },
+  {
+   "idx": 189,
+   "p_index": 899,
+   "block": 973,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "E02 H690 Stage 2 MASK与基础2D证据"
+  },
+  {
+   "idx": 190,
+   "p_index": 906,
+   "block": 980,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "E03 H690 Stage 3 DINO × LBP互补性"
+  },
+  {
+   "idx": 191,
+   "p_index": 914,
+   "block": 988,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "E04 P0 专家证据单通道体检"
+  },
+  {
+   "idx": 192,
+   "p_index": 921,
+   "block": 995,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "E05 P1 Group-aware LTR"
+  },
+  {
+   "idx": 193,
+   "p_index": 929,
+   "block": 1003,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "E06 SfS++ Stage 4 Step 1 3D高信息证据词典"
+  },
+  {
+   "idx": 194,
+   "p_index": 936,
+   "block": 1010,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "E07 SfS++ Stage 4 Step 2 新3D进入主任务"
+  },
+  {
+   "idx": 195,
+   "p_index": 943,
+   "block": 1017,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "E08 SfS++ Stage 5 Step 1 低质量3D压力测试"
+  },
+  {
+   "idx": 196,
+   "p_index": 951,
+   "block": 1025,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "E09 SfS++ Stage 5 Step 2 剩余错误审计 / Gate A"
+  },
+  {
+   "idx": 197,
+   "p_index": 958,
+   "block": 1032,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "E10 S6.1 Same-Vessel多任务 / 门控"
+  },
+  {
+   "idx": 198,
+   "p_index": 965,
+   "block": 1039,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "E11 S6.2 Breaking Bad Global PointNet / Max-pool"
+  },
+  {
+   "idx": 199,
+   "p_index": 973,
+   "block": 1047,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "E12 H2-1 Local Fracture Correspondence"
+  },
+  {
+   "idx": 200,
+   "p_index": 980,
+   "block": 1054,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "E13 TECH-018 Corr R@5指标规格审计"
+  },
+  {
+   "idx": 201,
+   "p_index": 987,
+   "block": 1061,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "E14 H2-D Signal Sufficiency Audit"
+  },
+  {
+   "idx": 202,
+   "p_index": 994,
+   "block": 1068,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "E15 H2-E R1 Loss Coupling消融"
+  },
+  {
+   "idx": 203,
+   "p_index": 1001,
+   "block": 1075,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "E16 R2a Privileged Assembled-Space Teacher"
+  },
+  {
+   "idx": 204,
+   "p_index": 1008,
+   "block": 1082,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "E17 R2b-0 Pose Sensitivity"
+  },
+  {
+   "idx": 205,
+   "p_index": 1015,
+   "block": 1089,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "E18 R2b-0.5 Assembly-State Factorization"
+  },
+  {
+   "idx": 206,
+   "p_index": 1022,
+   "block": 1096,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "E19 R2b-1 Coarse Relative Placement Predictor"
+  },
+  {
+   "idx": 207,
+   "p_index": 1029,
+   "block": 1103,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "E20 R2c-0 Global3D + Fracture-local3D Sufficiency"
+  },
+  {
+   "idx": 208,
+   "p_index": 1036,
+   "block": 1110,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "附录C1 早期基线与特征实验详细记录"
+  },
+  {
+   "idx": 209,
+   "p_index": 1038,
+   "block": 1112,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "早期专家特征实验归档 现行结论见K节"
+  },
+  {
+   "idx": 210,
+   "p_index": 1042,
+   "block": 1117,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "与纯2D DINO基线的实测对照"
+  },
+  {
+   "idx": 211,
+   "p_index": 1045,
+   "block": 1121,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "P1 Group-aware LTR 修正版结果 2026-09-20"
+  },
+  {
+   "idx": 212,
+   "p_index": 1050,
+   "block": 1127,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "H690 Stage 3 DINO × LBP 2D互补性与收口"
+  },
+  {
+   "idx": 213,
+   "p_index": 1053,
+   "block": 1131,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "SfS++ Stage 4 Step 1 3D高信息证据词典"
+  },
+  {
+   "idx": 214,
+   "p_index": 1058,
+   "block": 1137,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "SfS++ Stage 4 Step 2 新3D证据没有转化为主任务增益"
+  },
+  {
+   "idx": 215,
+   "p_index": 1061,
+   "block": 1140,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "SfS++ Stage 5 Step 1 低质量3D压力测试与Q2工程下限"
+  },
+  {
+   "idx": 216,
+   "p_index": 1064,
+   "block": 1143,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "SfS++ Stage 5 Step 2 剩余错误审计与 Gate A 正式通过"
+  },
+  {
+   "idx": 217,
+   "p_index": 1067,
+   "block": 1146,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "Stage 6收口 多任务、global max-pool与H2-1均未突破，转入H2-D根因审计"
+  },
+  {
+   "idx": 218,
+   "p_index": 1071,
+   "block": 1150,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "附录C2 H2与R2机制实验详细记录"
+  },
+  {
+   "idx": 219,
+   "p_index": 1073,
+   "block": 1152,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "H2-D 最终结论与 H2-E R1 瓶颈从“loss”上移到“输入空间 / assembly state”"
+  },
+  {
+   "idx": 220,
+   "p_index": 1075,
+   "block": 1154,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "H2-E R1 GPU全量结果 同设备、seed 0、15 epochs"
+  },
+  {
+   "idx": 221,
+   "p_index": 1079,
+   "block": 1159,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "当前最强机制证据 assembled-space aggregate geometry"
+  },
+  {
+   "idx": 222,
+   "p_index": 1083,
+   "block": 1163,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "H2-E R2a Oracle/Privileged Assembled-Space Teacher 上界诊断 COMPLETE"
+  },
+  {
+   "idx": 223,
+   "p_index": 1085,
+   "block": 1165,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "H2-E R2a结果 Privileged Assembly/Proximity Upper Bound"
+  },
+  {
+   "idx": 224,
+   "p_index": 1090,
+   "block": 1171,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "H2-E R2b-0 位姿扰动敏感度审计 COMPLETE / GO"
+  },
+  {
+   "idx": 225,
+   "p_index": 1094,
+   "block": 1176,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "H2-E R2b-0.5 装配态因子化审计 COMPLETE"
+  },
+  {
+   "idx": 226,
+   "p_index": 1099,
+   "block": 1182,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "Stage-0刚体不变性与实现审计"
+  },
+  {
+   "idx": 227,
+   "p_index": 1101,
+   "block": 1184,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "H2-E R2b-1 Coarse Relative Placement Predictor COMPLETE / P3 REPRESENTATION BOTTLENECK"
+  },
+  {
+   "idx": 228,
+   "p_index": 1105,
+   "block": 1189,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "关键控制、上界重标定与下一步"
+  },
+  {
+   "idx": 229,
+   "p_index": 1107,
+   "block": 1191,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "V1.05 历史状态表 现行状态见文首"
+  },
+  {
+   "idx": 230,
+   "p_index": 1112,
+   "block": 1197,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "附录C3 R2a冻结实验臂与解释矩阵"
+  },
+  {
+   "idx": 231,
+   "p_index": 1114,
+   "block": 1199,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "冻结实验臂"
+  },
+  {
+   "idx": 232,
+   "p_index": 1117,
+   "block": 1203,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "评价口径与不可变约束"
+  },
+  {
+   "idx": 233,
+   "p_index": 1120,
+   "block": 1206,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "结果解释矩阵"
+  },
+  {
+   "idx": 234,
+   "p_index": 1122,
+   "block": 1209,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "R2b与Physics/CTM的新连接"
+  },
+  {
+   "idx": 235,
+   "p_index": 1125,
+   "block": 1212,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "附录C4 H690与异构数据历史记录"
+  },
+  {
+   "idx": 236,
+   "p_index": 1127,
+   "block": 1214,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "自建数据分层 手机早期试点先行，DIY采集台与大规模扩建另过门"
+  },
+  {
+   "idx": 237,
+   "p_index": 1130,
+   "block": 1218,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "可复现的公开数据实验基座 2026-09-21历史截面"
+  },
+  {
+   "idx": 238,
+   "p_index": 1132,
+   "block": 1220,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "H690 大辛庄公开数据 Stage 1 / Stage 2 / Stage 3 已完成"
+  },
+  {
+   "idx": 239,
+   "p_index": 1141,
+   "block": 1232,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "异构公开数据分模块预训练 + 私有多模态联合适配"
+  },
+  {
+   "idx": 240,
+   "p_index": 1147,
+   "block": 1239,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "附录D 采集与重建工程参考"
+  },
+  {
+   "idx": 241,
+   "p_index": 1149,
+   "block": 1241,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "3D重建质量强化专项 从“视觉漂亮”升级为“可测量、可重复、可用于匹配”"
+  },
+  {
+   "idx": 242,
+   "p_index": 1177,
+   "block": 1274,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "附录E 全文修订映射与内容归位"
+  },
+  {
+   "idx": 243,
+   "p_index": 1180,
+   "block": 1278,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "附录F 原方案参考资料与版本线索"
+  },
+  {
+   "idx": 244,
+   "p_index": 1241,
+   "block": 1339,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "历史参考来源补录"
+  },
+  {
+   "idx": 245,
+   "p_index": 1243,
+   "block": 1341,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "16.2 本版核验来源"
+  },
+  {
+   "idx": 246,
+   "p_index": 1255,
+   "block": 1353,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "24 新增技术来源与交付边界"
+  },
+  {
+   "idx": 247,
+   "p_index": 1275,
+   "block": 1373,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "25.11 新增参考技术与论文"
+  },
+  {
+   "idx": 248,
+   "p_index": 1282,
+   "block": 1380,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "27.10 新增参考技术与论文"
+  },
+  {
+   "idx": 249,
+   "p_index": 1291,
+   "block": 1389,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "附录G 可控合成碎片实验室完整实现方法"
+  },
+  {
+   "idx": 250,
+   "p_index": 1295,
+   "block": 1393,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G1 实验室要实现的功能与完成标准"
+  },
+  {
+   "idx": 251,
+   "p_index": 1299,
+   "block": 1398,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G2 选用的算法与软件路线"
+  },
+  {
+   "idx": 252,
+   "p_index": 1304,
+   "block": 1404,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G3 合成数据的种类和计数方式"
+  },
+  {
+   "idx": 253,
+   "p_index": 1308,
+   "block": 1409,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G4 器型 材质 纹样 碎裂与退化的覆盖规划"
+  },
+  {
+   "idx": 254,
+   "p_index": 1313,
+   "block": 1415,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G5 从空目录建立环境与代码工程"
+  },
+  {
+   "idx": 255,
+   "p_index": 1332,
+   "block": 1434,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G6 数据合同 坐标 权限和划分"
+  },
+  {
+   "idx": 256,
+   "p_index": 1333,
+   "block": 1435,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G6.1 六种数据包和最低字段"
+  },
+  {
+   "idx": 257,
+   "p_index": 1336,
+   "block": 1439,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G6.2 坐标合同"
+  },
+  {
+   "idx": 258,
+   "p_index": 1340,
+   "block": 1443,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G6.3 划分"
+  },
+  {
+   "idx": 259,
+   "p_index": 1343,
+   "block": 1446,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G6.4 导出数组的形状和空值规则"
+  },
+  {
+   "idx": 260,
+   "p_index": 1346,
+   "block": 1450,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G7 参数化完整器物生成的具体方法"
+  },
+  {
+   "idx": 261,
+   "p_index": 1347,
+   "block": 1451,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G7.1 旋转体及有厚度的壳体"
+  },
+  {
+   "idx": 262,
+   "p_index": 1354,
+   "block": 1458,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G7.2 非旋转变化与非器皿形状"
+  },
+  {
+   "idx": 263,
+   "p_index": 1357,
+   "block": 1461,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G7.3 防止生成器只制造重复形状"
+  },
+  {
+   "idx": 264,
+   "p_index": 1359,
+   "block": 1463,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G7.4 二十四种器物怎样生成"
+  },
+  {
+   "idx": 265,
+   "p_index": 1363,
+   "block": 1468,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G7.5 多材质与层结构的具体实现"
+  },
+  {
+   "idx": 266,
+   "p_index": 1372,
+   "block": 1478,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G8 连续纹样与断面材质的具体方法"
+  },
+  {
+   "idx": 267,
+   "p_index": 1380,
+   "block": 1486,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G8.1 十六类纹样生成算法"
+  },
+  {
+   "idx": 268,
+   "p_index": 1382,
+   "block": 1489,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G8.2 纹样连续与几何位移"
+  },
+  {
+   "idx": 269,
+   "p_index": 1385,
+   "block": 1492,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G8.3 最小可执行算法逻辑"
+  },
+  {
+   "idx": 270,
+   "p_index": 1397,
+   "block": 1504,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G8.4 复杂纹样的最小实现步骤"
+  },
+  {
+   "idx": 271,
+   "p_index": 1401,
+   "block": 1508,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G9 首选碎裂算法 共享非平面界面切割"
+  },
+  {
+   "idx": 272,
+   "p_index": 1402,
+   "block": 1509,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G9.1 一次切割怎样保证两侧互补"
+  },
+  {
+   "idx": 273,
+   "p_index": 1410,
+   "block": 1517,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G9.2 多片碎裂与大小分布"
+  },
+  {
+   "idx": 274,
+   "p_index": 1414,
+   "block": 1521,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G9.3 粗糙曲面与封闭刀具体的构造"
+  },
+  {
+   "idx": 275,
+   "p_index": 1420,
+   "block": 1527,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "G9.4 断面最小结构与网格预算"
+  },
+  {
+   "idx": 276,
+   "p_index": 1422,
+   "block": 1529,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G10 多块分区与二次破碎的扩展方法"
+  },
+  {
+   "idx": 277,
+   "p_index": 1423,
+   "block": 1530,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G10.1 统一Voronoi分区"
+  },
+  {
+   "idx": 278,
+   "p_index": 1426,
+   "block": 1533,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G10.2 壳体感知的分区"
+  },
+  {
+   "idx": 279,
+   "p_index": 1428,
+   "block": 1535,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G10.3 破裂事件不改变划分"
+  },
+  {
+   "idx": 280,
+   "p_index": 1430,
+   "block": 1537,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G10.4 Power分区和共享形变的实现顺序"
+  },
+  {
+   "idx": 281,
+   "p_index": 1435,
+   "block": 1542,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G11 物理碎裂插件及其适用限制"
+  },
+  {
+   "idx": 282,
+   "p_index": 1443,
+   "block": 1550,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G12 邻接真值 局部对应和损伤后的标签"
+  },
+  {
+   "idx": 283,
+   "p_index": 1444,
+   "block": 1551,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G12.1 R0 R1 R2的自动生成"
+  },
+  {
+   "idx": 284,
+   "p_index": 1447,
+   "block": 1554,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G12.2 局部对应"
+  },
+  {
+   "idx": 285,
+   "p_index": 1452,
+   "block": 1559,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G12.3 历史相邻和当前可拼合必须分开"
+  },
+  {
+   "idx": 286,
+   "p_index": 1455,
+   "block": 1562,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "G12.4 互补法向与三层对应时序"
+  },
+  {
+   "idx": 287,
+   "p_index": 1457,
+   "block": 1564,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G13 实物磨损和老化的实现"
+  },
+  {
+   "idx": 288,
+   "p_index": 1458,
+   "block": 1565,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G13.1 断口从粗糙到平滑"
+  },
+  {
+   "idx": 289,
+   "p_index": 1461,
+   "block": 1568,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G13.2 缺角与材料损失"
+  },
+  {
+   "idx": 290,
+   "p_index": 1464,
+   "block": 1571,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G13.3 不可逆退化的单调性"
+  },
+  {
+   "idx": 291,
+   "p_index": 1467,
+   "block": 1574,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G13.4 局部SDF侵蚀和缺角实现"
+  },
+  {
+   "idx": 292,
+   "p_index": 1471,
+   "block": 1578,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "G13.5 共享低通的诊断边界与守卫"
+  },
+  {
+   "idx": 293,
+   "p_index": 1473,
+   "block": 1580,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G14 相机 多视角及断口局部成像"
+  },
+  {
+   "idx": 294,
+   "p_index": 1474,
+   "block": 1581,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G14.1 相机与可达视角"
+  },
+  {
+   "idx": 295,
+   "p_index": 1478,
+   "block": 1585,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G14.2 渲染通道与标签"
+  },
+  {
+   "idx": 296,
+   "p_index": 1484,
+   "block": 1591,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G14.3 手机级成像退化"
+  },
+  {
+   "idx": 297,
+   "p_index": 1487,
+   "block": 1594,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "G14.4 与U近远台一致的相机档"
+  },
+  {
+   "idx": 298,
+   "p_index": 1489,
+   "block": 1596,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G15 深度 点云 网格和照片重建"
+  },
+  {
+   "idx": 299,
+   "p_index": 1490,
+   "block": 1597,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G15.1 三条几何生成路线"
+  },
+  {
+   "idx": 300,
+   "p_index": 1493,
+   "block": 1601,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G15.2 部分点云生成与退化"
+  },
+  {
+   "idx": 301,
+   "p_index": 1499,
+   "block": 1607,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G15.3 实际MVS子集"
+  },
+  {
+   "idx": 302,
+   "p_index": 1503,
+   "block": 1611,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G16 三十一条可独立控制的退化轴"
+  },
+  {
+   "idx": 303,
+   "p_index": 1508,
+   "block": 1617,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "G16.1 G08伪表面与伪连接算子"
+  },
+  {
+   "idx": 304,
+   "p_index": 1510,
+   "block": 1619,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G17 配对质量阶梯与可重放退化recipe"
+  },
+  {
+   "idx": 305,
+   "p_index": 1519,
+   "block": 1629,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G18 关系数据 困难负例和候选库"
+  },
+  {
+   "idx": 306,
+   "p_index": 1520,
+   "block": 1630,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G18.1 不物化全库两两组合"
+  },
+  {
+   "idx": 307,
+   "p_index": 1523,
+   "block": 1633,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G18.2 难例必须有明确构造原因"
+  },
+  {
+   "idx": 308,
+   "p_index": 1526,
+   "block": 1637,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G18.3 防止难例挖掘引入答案"
+  },
+  {
+   "idx": 309,
+   "p_index": 1529,
+   "block": 1640,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "G18.4 大库尾部难例与曝光"
+  },
+  {
+   "idx": 310,
+   "p_index": 1531,
+   "block": 1642,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G19 主动补采与循环推理的episode环境"
+  },
+  {
+   "idx": 311,
+   "p_index": 1537,
+   "block": 1649,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G20 接入现有模型与分阶段预训练"
+  },
+  {
+   "idx": 312,
+   "p_index": 1538,
+   "block": 1650,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G20.1 输出兼容的观测"
+  },
+  {
+   "idx": 313,
+   "p_index": 1541,
+   "block": 1653,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G20.2 五种预训练任务"
+  },
+  {
+   "idx": 314,
+   "p_index": 1544,
+   "block": 1657,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G20.3 预训练课程与迁移"
+  },
+  {
+   "idx": 315,
+   "p_index": 1547,
+   "block": 1660,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "G20.4 初始化与训练公平性"
+  },
+  {
+   "idx": 316,
+   "p_index": 1550,
+   "block": 1664,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G21 数据量 质量 算法与真实迁移的实验设计"
+  },
+  {
+   "idx": 317,
+   "p_index": 1551,
+   "block": 1665,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G21.1 最小实验矩阵"
+  },
+  {
+   "idx": 318,
+   "p_index": 1554,
+   "block": 1669,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G21.2 指标与统计单位"
+  },
+  {
+   "idx": 319,
+   "p_index": 1557,
+   "block": 1672,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G21.3 判断资源应该投到哪里"
+  },
+  {
+   "idx": 320,
+   "p_index": 1560,
+   "block": 1675,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "G21.4 功效 风险上界 搜索与临界点"
+  },
+  {
+   "idx": 321,
+   "p_index": 1565,
+   "block": 1680,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G22 CPU GPU和训练吞吐优化"
+  },
+  {
+   "idx": 322,
+   "p_index": 1566,
+   "block": 1681,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G22.1 单机资源配置"
+  },
+  {
+   "idx": 323,
+   "p_index": 1569,
+   "block": 1685,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G22.2 几何生成优化"
+  },
+  {
+   "idx": 324,
+   "p_index": 1576,
+   "block": 1692,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G22.3 渲染优化"
+  },
+  {
+   "idx": 325,
+   "p_index": 1579,
+   "block": 1695,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G22.4 数据加载与训练优化"
+  },
+  {
+   "idx": 326,
+   "p_index": 1582,
+   "block": 1698,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G22.5 用实测时延估算总工期"
+  },
+  {
+   "idx": 327,
+   "p_index": 1585,
+   "block": 1701,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "G22.6 1000片精度与资源基准"
+  },
+  {
+   "idx": 328,
+   "p_index": 1589,
+   "block": 1705,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G23 存储组织 压缩和容量预算"
+  },
+  {
+   "idx": 329,
+   "p_index": 1590,
+   "block": 1706,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G23.1 按数据访问方式选择格式"
+  },
+  {
+   "idx": 330,
+   "p_index": 1593,
+   "block": 1710,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G23.2 十万片预算示例"
+  },
+  {
+   "idx": 331,
+   "p_index": 1598,
+   "block": 1716,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G23.3 目录与生命周期"
+  },
+  {
+   "idx": 332,
+   "p_index": 1611,
+   "block": 1729,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G24 数值精度和存储量化"
+  },
+  {
+   "idx": 333,
+   "p_index": 1616,
+   "block": 1735,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G25 任务调度 断点恢复和可复现性"
+  },
+  {
+   "idx": 334,
+   "p_index": 1617,
+   "block": 1736,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G25.1 随机种子和任务身份"
+  },
+  {
+   "idx": 335,
+   "p_index": 1635,
+   "block": 1754,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G25.2 有效提交与失败恢复"
+  },
+  {
+   "idx": 336,
+   "p_index": 1642,
+   "block": 1761,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G25.3 版本更新"
+  },
+  {
+   "idx": 337,
+   "p_index": 1645,
+   "block": 1764,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G26 完整实验室的操作界面与接口"
+  },
+  {
+   "idx": 338,
+   "p_index": 1650,
+   "block": 1770,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G27 从零到完整版本的逐阶段实施"
+  },
+  {
+   "idx": 339,
+   "p_index": 1651,
+   "block": 1771,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G27.1 必做功能不在MVP终止"
+  },
+  {
+   "idx": 340,
+   "p_index": 1655,
+   "block": 1776,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G27.2 第一个可执行闭环"
+  },
+  {
+   "idx": 341,
+   "p_index": 1662,
+   "block": 1783,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G27.3 扩容闸门"
+  },
+  {
+   "idx": 342,
+   "p_index": 1664,
+   "block": 1785,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G28 完整版本的验收矩阵"
+  },
+  {
+   "idx": 343,
+   "p_index": 1669,
+   "block": 1791,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G29 常见故障与排错顺序"
+  },
+  {
+   "idx": 344,
+   "p_index": 1672,
+   "block": 1795,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G30 运行配置 接口合同和算法骨架"
+  },
+  {
+   "idx": 345,
+   "p_index": 1673,
+   "block": 1796,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G30.1 配置示例"
+  },
+  {
+   "idx": 346,
+   "p_index": 1718,
+   "block": 1841,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G30.2 模块接口"
+  },
+  {
+   "idx": 347,
+   "p_index": 1730,
+   "block": 1853,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G30.3 共享切割与最终GT骨架"
+  },
+  {
+   "idx": 348,
+   "p_index": 1756,
+   "block": 1879,
+   "level": 2,
+   "style": "SYN Subsection",
+   "text": "G30.4 拟实现CLI的执行顺序"
+  },
+  {
+   "idx": 349,
+   "p_index": 1769,
+   "block": 1892,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G31 完整实验室的交付文件与实施检查单"
+  },
+  {
+   "idx": 350,
+   "p_index": 1773,
+   "block": 1897,
+   "level": 1,
+   "style": "SYN Section",
+   "text": "G32 算法与软件的官方资料"
+  },
+  {
+   "idx": 351,
+   "p_index": 1784,
+   "block": 1908,
+   "level": 1,
+   "style": "Heading 1",
+   "text": "附录H V1.44统一实施合同与问题验收"
+  },
+  {
+   "idx": 352,
+   "p_index": 1786,
+   "block": 1910,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "H1 完整交付与状态"
+  },
+  {
+   "idx": 353,
+   "p_index": 1789,
+   "block": 1914,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "H2 单一合同与命名"
+  },
+  {
+   "idx": 354,
+   "p_index": 1792,
+   "block": 1918,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "H3 实施依赖与签收"
+  },
+  {
+   "idx": 355,
+   "p_index": 1795,
+   "block": 1922,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "H4 U近远分辨率执行规则"
+  },
+  {
+   "idx": 356,
+   "p_index": 1798,
+   "block": 1925,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "H5 确认 风险与成本签收"
+  },
+  {
+   "idx": 357,
+   "p_index": 1802,
+   "block": 1929,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "H6 24项修订与实际验收索引"
+  },
+  {
+   "idx": 358,
+   "p_index": 1805,
+   "block": 1933,
+   "level": 2,
+   "style": "Heading 2",
+   "text": "H7 交付与启动"
+  }
+ ],
+ "tables_meta": [
+  {
+   "t": 1,
+   "after_p": 87,
+   "block": 88,
+   "section": "1 文档体系与现行口径",
+   "rows": 5,
+   "cols": 4
+  },
+  {
+   "t": 2,
+   "after_p": 91,
+   "block": 93,
+   "section": "1.1 阶段命名统一",
+   "rows": 9,
+   "cols": 4
+  },
+  {
+   "t": 3,
+   "after_p": 94,
+   "block": 97,
+   "section": "1.2 当前事实台账",
+   "rows": 8,
+   "cols": 3
+  },
+  {
+   "t": 4,
+   "after_p": 101,
+   "block": 105,
+   "section": "2.1 比赛必须实现与论文需要证明",
+   "rows": 8,
+   "cols": 3
+  },
+  {
+   "t": 5,
+   "after_p": 104,
+   "block": 109,
+   "section": "2.2 内部指标合同",
+   "rows": 11,
+   "cols": 3
+  },
+  {
+   "t": 6,
+   "after_p": 122,
+   "block": 128,
+   "section": "A1 职责与可以立即启动的工作",
+   "rows": 7,
+   "cols": 4
+  },
+  {
+   "t": 7,
+   "after_p": 129,
+   "block": 136,
+   "section": "A2.1 最小函数合同",
+   "rows": 8,
+   "cols": 3
+  },
+  {
+   "t": 8,
+   "after_p": 132,
+   "block": 140,
+   "section": "A3 输入与表示合同",
+   "rows": 8,
+   "cols": 3
+  },
+  {
+   "t": 9,
+   "after_p": 160,
+   "block": 169,
+   "section": "A4.6 观察不足与反证分开",
+   "rows": 5,
+   "cols": 3
+  },
+  {
+   "t": 10,
+   "after_p": 174,
+   "block": 184,
+   "section": "A5 训练方式与损失推进",
+   "rows": 5,
+   "cols": 3
+  },
+  {
+   "t": 11,
+   "after_p": 179,
+   "block": 190,
+   "section": "A5.0 三种标签贯通损失与输出",
+   "rows": 5,
+   "cols": 3
+  },
+  {
+   "t": 12,
+   "after_p": 214,
+   "block": 226,
+   "section": "A6 循环Transformer、CTM与创新机制长期维护区",
+   "rows": 5,
+   "cols": 3
+  },
+  {
+   "t": 13,
+   "after_p": 221,
+   "block": 234,
+   "section": "A6.1 研究定位：CTM 是实现基底，创新是“如何让证据逐步改变候选假设”",
+   "rows": 6,
+   "cols": 3
+  },
+  {
+   "t": 14,
+   "after_p": 224,
+   "block": 238,
+   "section": "A6.2 外部论文底层思想与本项目的再推导",
+   "rows": 7,
+   "cols": 4
+  },
+  {
+   "t": 15,
+   "after_p": 230,
+   "block": 245,
+   "section": "A6.3 Evidence-Deliberative CTM：把“连续思考”改造成任务内的证据审议",
+   "rows": 7,
+   "cols": 4
+  },
+  {
+   "t": 16,
+   "after_p": 233,
+   "block": 249,
+   "section": "A6.4 几何侧创新：让“哪里传播”由断口结构而不是 token 次序决定",
+   "rows": 6,
+   "cols": 4
+  },
+  {
+   "t": 17,
+   "after_p": 236,
+   "block": 253,
+   "section": "A6.5 质量、反证与记忆：让模型知道什么可信、什么需要纠错、什么不能遗忘",
+   "rows": 7,
+   "cols": 3
+  },
+  {
+   "t": 18,
+   "after_p": 239,
+   "block": 257,
+   "section": "A6.6 候选搜索与“多重思考”机制",
+   "rows": 7,
+   "cols": 3
+  },
+  {
+   "t": 19,
+   "after_p": 242,
+   "block": 261,
+   "section": "A6.7 高风险高收益创新候选",
+   "rows": 7,
+   "cols": 4
+  },
+  {
+   "t": 20,
+   "after_p": 249,
+   "block": 269,
+   "section": "A6.9 创新候选总表（长期维护区，允许持续追加，不覆盖历史条目）",
+   "rows": 32,
+   "cols": 4
+  },
+  {
+   "t": 21,
+   "after_p": 252,
+   "block": 273,
+   "section": "A6.10 未来创新保留槽与登记模板",
+   "rows": 6,
+   "cols": 6
+  },
+  {
+   "t": 22,
+   "after_p": 258,
+   "block": 280,
+   "section": "A6.12 最小实验矩阵与防“拼模型”规则",
+   "rows": 8,
+   "cols": 4
+  },
+  {
+   "t": 23,
+   "after_p": 330,
+   "block": 353,
+   "section": "A9.1 指标手算与失败标签",
+   "rows": 11,
+   "cols": 3
+  },
+  {
+   "t": 24,
+   "after_p": 332,
+   "block": 356,
+   "section": "A10 推进路径 学习与交接",
+   "rows": 6,
+   "cols": 4
+  },
+  {
+   "t": 25,
+   "after_p": 338,
+   "block": 363,
+   "section": "A11 参考技术与阅读入口",
+   "rows": 15,
+   "cols": 3
+  },
+  {
+   "t": 26,
+   "after_p": 341,
+   "block": 367,
+   "section": "A11.1 最近工作与公平对照",
+   "rows": 5,
+   "cols": 3
+  },
+  {
+   "t": 27,
+   "after_p": 350,
+   "block": 377,
+   "section": "A12.1 研究定位：把“合成数据”升级为可控实验仪器",
+   "rows": 6,
+   "cols": 4
+  },
+  {
+   "t": 28,
+   "after_p": 353,
+   "block": 381,
+   "section": "A12.2 总体系统：一份“干净世界真值”派生无限可控观测",
+   "rows": 7,
+   "cols": 4
+  },
+  {
+   "t": 29,
+   "after_p": 355,
+   "block": 384,
+   "section": "A12.3 参数化器型生成器：不要只做“十几个固定模型”",
+   "rows": 6,
+   "cols": 4
+  },
+  {
+   "t": 30,
+   "after_p": 362,
+   "block": 392,
+   "section": "A12.5 碎裂、断口真值与可控磨损",
+   "rows": 6,
+   "cols": 4
+  },
+  {
+   "t": 31,
+   "after_p": 364,
+   "block": 395,
+   "section": "A12.6 统一质量等级与特权诊断",
+   "rows": 8,
+   "cols": 3
+  },
+  {
+   "t": 32,
+   "after_p": 368,
+   "block": 400,
+   "section": "A12.7 数据与真值合同：合成数据必须能直接进入现有 ObsPack/FeaturePack 流水线",
+   "rows": 8,
+   "cols": 4
+  },
+  {
+   "t": 33,
+   "after_p": 371,
+   "block": 404,
+   "section": "A12.8 训练价值来自“关系规模”，不只来自碎片数量",
+   "rows": 7,
+   "cols": 4
+  },
+  {
+   "t": 34,
+   "after_p": 374,
+   "block": 408,
+   "section": "A12.9 大规模预训练：先学碎片结构，再用真实数据校准域",
+   "rows": 9,
+   "cols": 4
+  },
+  {
+   "t": 35,
+   "after_p": 377,
+   "block": 412,
+   "section": "A12.10 数据量×质量×算法三维诊断：决定下一阶段资源到底投到哪里",
+   "rows": 8,
+   "cols": 4
+  },
+  {
+   "t": 36,
+   "after_p": 378,
+   "block": 414,
+   "section": "A12.10 数据量×质量×算法三维诊断：决定下一阶段资源到底投到哪里",
+   "rows": 7,
+   "cols": 3
+  },
+  {
+   "t": 37,
+   "after_p": 380,
+   "block": 417,
+   "section": "A12.11 用合成世界专门验证 CTM 与当前创新机制",
+   "rows": 8,
+   "cols": 4
+  },
+  {
+   "t": 38,
+   "after_p": 386,
+   "block": 424,
+   "section": "A12.13 MVP 与扩展路线：先把可控性做对，再追求“看起来像真实”",
+   "rows": 7,
+   "cols": 4
+  },
+  {
+   "t": 39,
+   "after_p": 397,
+   "block": 436,
+   "section": "A12.16 本支线创新保留区：允许以后持续追加，不覆盖旧条目",
+   "rows": 6,
+   "cols": 4
+  },
+  {
+   "t": 40,
+   "after_p": 401,
+   "block": 441,
+   "section": "B1 职责与立即启动清单",
+   "rows": 7,
+   "cols": 3
+  },
+  {
+   "t": 41,
+   "after_p": 409,
+   "block": 450,
+   "section": "B2.1 邻接GT操作",
+   "rows": 5,
+   "cols": 3
+  },
+  {
+   "t": 42,
+   "after_p": 419,
+   "block": 461,
+   "section": "B3 必须采到的数据",
+   "rows": 9,
+   "cols": 3
+  },
+  {
+   "t": 43,
+   "after_p": 436,
+   "block": 479,
+   "section": "B4.2 每片实际拍摄顺序",
+   "rows": 6,
+   "cols": 3
+  },
+  {
+   "t": 44,
+   "after_p": 448,
+   "block": 492,
+   "section": "B6 字段 目录与增量交付",
+   "rows": 12,
+   "cols": 3
+  },
+  {
+   "t": 45,
+   "after_p": 464,
+   "block": 509,
+   "section": "B8 三级质量验收",
+   "rows": 11,
+   "cols": 3
+  },
+  {
+   "t": 46,
+   "after_p": 479,
+   "block": 525,
+   "section": "B11 手机到DIY的阶段路线",
+   "rows": 7,
+   "cols": 4
+  },
+  {
+   "t": 47,
+   "after_p": 482,
+   "block": 529,
+   "section": "B12 每周路径 学习与交接",
+   "rows": 6,
+   "cols": 3
+  },
+  {
+   "t": 48,
+   "after_p": 497,
+   "block": 545,
+   "section": "C1 职责与当前能并行做的事",
+   "rows": 7,
+   "cols": 3
+  },
+  {
+   "t": 49,
+   "after_p": 500,
+   "block": 549,
+   "section": "C2 分阶段目标与采购顺序",
+   "rows": 7,
+   "cols": 4
+  },
+  {
+   "t": 50,
+   "after_p": 505,
+   "block": 555,
+   "section": "C3 开发板与相机选型",
+   "rows": 3,
+   "cols": 4
+  },
+  {
+   "t": 51,
+   "after_p": 515,
+   "block": 566,
+   "section": "C3.2 工作距离与实际分辨率",
+   "rows": 6,
+   "cols": 4
+  },
+  {
+   "t": 52,
+   "after_p": 520,
+   "block": 572,
+   "section": "C4 机械布局与运动设计",
+   "rows": 7,
+   "cols": 3
+  },
+  {
+   "t": 53,
+   "after_p": 536,
+   "block": 589,
+   "section": "C5 四区白光与偏振结构",
+   "rows": 6,
+   "cols": 3
+  },
+  {
+   "t": 54,
+   "after_p": 544,
+   "block": 598,
+   "section": "C6 BOM与三档预算",
+   "rows": 19,
+   "cols": 3
+  },
+  {
+   "t": 55,
+   "after_p": 545,
+   "block": 600,
+   "section": "C6 BOM与三档预算",
+   "rows": 5,
+   "cols": 3
+  },
+  {
+   "t": 56,
+   "after_p": 554,
+   "block": 610,
+   "section": "C7 电气与最终接线",
+   "rows": 9,
+   "cols": 3
+  },
+  {
+   "t": 57,
+   "after_p": 568,
+   "block": 625,
+   "section": "C9 命令 摄像与文件闭环",
+   "rows": 9,
+   "cols": 3
+  },
+  {
+   "t": 58,
+   "after_p": 589,
+   "block": 647,
+   "section": "C11 搭建与验收顺序",
+   "rows": 9,
+   "cols": 3
+  },
+  {
+   "t": 59,
+   "after_p": 602,
+   "block": 661,
+   "section": "C14 每周推进与学习作品",
+   "rows": 6,
+   "cols": 3
+  },
+  {
+   "t": 60,
+   "after_p": 616,
+   "block": 676,
+   "section": "D1 职责与立即启动任务",
+   "rows": 7,
+   "cols": 3
+  },
+  {
+   "t": 61,
+   "after_p": 623,
+   "block": 684,
+   "section": "D3 元数据账本与文件事务",
+   "rows": 12,
+   "cols": 3
+  },
+  {
+   "t": 62,
+   "after_p": 628,
+   "block": 690,
+   "section": "D4 后端API与适配合同",
+   "rows": 15,
+   "cols": 3
+  },
+  {
+   "t": 63,
+   "after_p": 652,
+   "block": 715,
+   "section": "D7 首版与后续版本路线",
+   "rows": 6,
+   "cols": 3
+  },
+  {
+   "t": 64,
+   "after_p": 655,
+   "block": 719,
+   "section": "D8 必测用例",
+   "rows": 13,
+   "cols": 3
+  },
+  {
+   "t": 65,
+   "after_p": 671,
+   "block": 736,
+   "section": "D11 每周路径 学习与交接",
+   "rows": 6,
+   "cols": 3
+  },
+  {
+   "t": 66,
+   "after_p": 683,
+   "block": 749,
+   "section": "8 大家从现在并行推进",
+   "rows": 8,
+   "cols": 4
+  },
+  {
+   "t": 67,
+   "after_p": 686,
+   "block": 753,
+   "section": "8.1 第一周逐日启动",
+   "rows": 8,
+   "cols": 5
+  },
+  {
+   "t": 68,
+   "after_p": 688,
+   "block": 756,
+   "section": "8.2 滚动六周计划",
+   "rows": 7,
+   "cols": 4
+  },
+  {
+   "t": 69,
+   "after_p": 697,
+   "block": 766,
+   "section": "8.4 统一范围 工时与GPU日历",
+   "rows": 7,
+   "cols": 5
+  },
+  {
+   "t": 70,
+   "after_p": 699,
+   "block": 769,
+   "section": "8.4 统一范围 工时与GPU日历",
+   "rows": 5,
+   "cols": 3
+  },
+  {
+   "t": 71,
+   "after_p": 700,
+   "block": 771,
+   "section": "8.4 统一范围 工时与GPU日历",
+   "rows": 7,
+   "cols": 3
+  },
+  {
+   "t": 72,
+   "after_p": 705,
+   "block": 777,
+   "section": "9 共享协议与单一事实台账",
+   "rows": 7,
+   "cols": 3
+  },
+  {
+   "t": 73,
+   "after_p": 712,
+   "block": 785,
+   "section": "9.2 决策与降级",
+   "rows": 10,
+   "cols": 3
+  },
+  {
+   "t": 74,
+   "after_p": 720,
+   "block": 794,
+   "section": "11 本次归位与历史记录",
+   "rows": 11,
+   "cols": 3
+  },
+  {
+   "t": 75,
+   "after_p": 1039,
+   "block": 1114,
+   "section": "早期专家特征实验归档 现行结论见K节",
+   "rows": 8,
+   "cols": 5
+  },
+  {
+   "t": 76,
+   "after_p": 1042,
+   "block": 1118,
+   "section": "与纯2D DINO基线的实测对照",
+   "rows": 10,
+   "cols": 4
+  },
+  {
+   "t": 77,
+   "after_p": 1046,
+   "block": 1123,
+   "section": "P1 Group-aware LTR 修正版结果 2026-09-20",
+   "rows": 7,
+   "cols": 3
+  },
+  {
+   "t": 78,
+   "after_p": 1051,
+   "block": 1129,
+   "section": "H690 Stage 3 DINO × LBP 2D互补性与收口",
+   "rows": 5,
+   "cols": 6
+  },
+  {
+   "t": 79,
+   "after_p": 1054,
+   "block": 1133,
+   "section": "SfS++ Stage 4 Step 1 3D高信息证据词典",
+   "rows": 7,
+   "cols": 5
+  },
+  {
+   "t": 80,
+   "after_p": 1075,
+   "block": 1155,
+   "section": "H2-E R1 GPU全量结果 同设备、seed 0、15 epochs",
+   "rows": 5,
+   "cols": 5
+  },
+  {
+   "t": 81,
+   "after_p": 1086,
+   "block": 1167,
+   "section": "H2-E R2a结果 Privileged Assembly/Proximity Upper Bound",
+   "rows": 5,
+   "cols": 8
+  },
+  {
+   "t": 82,
+   "after_p": 1091,
+   "block": 1173,
+   "section": "H2-E R2b-0 位姿扰动敏感度审计 COMPLETE / GO",
+   "rows": 5,
+   "cols": 6
+  },
+  {
+   "t": 83,
+   "after_p": 1095,
+   "block": 1178,
+   "section": "H2-E R2b-0.5 装配态因子化审计 COMPLETE",
+   "rows": 7,
+   "cols": 4
+  },
+  {
+   "t": 84,
+   "after_p": 1102,
+   "block": 1186,
+   "section": "H2-E R2b-1 Coarse Relative Placement Predictor COMPLETE / P3 REPRESENTATION BOTTLENECK",
+   "rows": 7,
+   "cols": 2
+  },
+  {
+   "t": 85,
+   "after_p": 1109,
+   "block": 1194,
+   "section": "V1.05 历史状态表 现行状态见文首",
+   "rows": 19,
+   "cols": 3
+  },
+  {
+   "t": 86,
+   "after_p": 1114,
+   "block": 1200,
+   "section": "冻结实验臂",
+   "rows": 5,
+   "cols": 3
+  },
+  {
+   "t": 87,
+   "after_p": 1120,
+   "block": 1207,
+   "section": "结果解释矩阵",
+   "rows": 5,
+   "cols": 3
+  },
+  {
+   "t": 88,
+   "after_p": 1127,
+   "block": 1215,
+   "section": "自建数据分层 手机早期试点先行，DIY采集台与大规模扩建另过门",
+   "rows": 9,
+   "cols": 2
+  },
+  {
+   "t": 89,
+   "after_p": 1134,
+   "block": 1223,
+   "section": "H690 大辛庄公开数据 Stage 1 / Stage 2 / Stage 3 已完成",
+   "rows": 5,
+   "cols": 6
+  },
+  {
+   "t": 90,
+   "after_p": 1136,
+   "block": 1226,
+   "section": "H690 大辛庄公开数据 Stage 1 / Stage 2 / Stage 3 已完成",
+   "rows": 6,
+   "cols": 3
+  },
+  {
+   "t": 91,
+   "after_p": 1137,
+   "block": 1228,
+   "section": "H690 大辛庄公开数据 Stage 1 / Stage 2 / Stage 3 已完成",
+   "rows": 3,
+   "cols": 1
+  },
+  {
+   "t": 92,
+   "after_p": 1143,
+   "block": 1235,
+   "section": "异构公开数据分模块预训练 + 私有多模态联合适配",
+   "rows": 7,
+   "cols": 4
+  },
+  {
+   "t": 93,
+   "after_p": 1151,
+   "block": 1244,
+   "section": "3D重建质量强化专项 从“视觉漂亮”升级为“可测量、可重复、可用于匹配”",
+   "rows": 5,
+   "cols": 4
+  },
+  {
+   "t": 94,
+   "after_p": 1153,
+   "block": 1247,
+   "section": "3D重建质量强化专项 从“视觉漂亮”升级为“可测量、可重复、可用于匹配”",
+   "rows": 4,
+   "cols": 4
+  },
+  {
+   "t": 95,
+   "after_p": 1160,
+   "block": 1255,
+   "section": "3D重建质量强化专项 从“视觉漂亮”升级为“可测量、可重复、可用于匹配”",
+   "rows": 4,
+   "cols": 4
+  },
+  {
+   "t": 96,
+   "after_p": 1166,
+   "block": 1262,
+   "section": "3D重建质量强化专项 从“视觉漂亮”升级为“可测量、可重复、可用于匹配”",
+   "rows": 6,
+   "cols": 4
+  },
+  {
+   "t": 97,
+   "after_p": 1170,
+   "block": 1267,
+   "section": "3D重建质量强化专项 从“视觉漂亮”升级为“可测量、可重复、可用于匹配”",
+   "rows": 7,
+   "cols": 4
+  },
+  {
+   "t": 98,
+   "after_p": 1178,
+   "block": 1276,
+   "section": "附录E 全文修订映射与内容归位",
+   "rows": 16,
+   "cols": 3
+  },
+  {
+   "t": 99,
+   "after_p": 1296,
+   "block": 1395,
+   "section": "G1 实验室要实现的功能与完成标准",
+   "rows": 8,
+   "cols": 3
+  },
+  {
+   "t": 100,
+   "after_p": 1300,
+   "block": 1400,
+   "section": "G2 选用的算法与软件路线",
+   "rows": 12,
+   "cols": 3
+  },
+  {
+   "t": 101,
+   "after_p": 1305,
+   "block": 1406,
+   "section": "G3 合成数据的种类和计数方式",
+   "rows": 25,
+   "cols": 3
+  },
+  {
+   "t": 102,
+   "after_p": 1309,
+   "block": 1411,
+   "section": "G4 器型 材质 纹样 碎裂与退化的覆盖规划",
+   "rows": 8,
+   "cols": 3
+  },
+  {
+   "t": 103,
+   "after_p": 1333,
+   "block": 1436,
+   "section": "G6.1 六种数据包和最低字段",
+   "rows": 7,
+   "cols": 3
+  },
+  {
+   "t": 104,
+   "after_p": 1343,
+   "block": 1447,
+   "section": "G6.4 导出数组的形状和空值规则",
+   "rows": 9,
+   "cols": 3
+  },
+  {
+   "t": 105,
+   "after_p": 1359,
+   "block": 1464,
+   "section": "G7.4 二十四种器物怎样生成",
+   "rows": 13,
+   "cols": 3
+  },
+  {
+   "t": 106,
+   "after_p": 1364,
+   "block": 1470,
+   "section": "G7.5 多材质与层结构的具体实现",
+   "rows": 13,
+   "cols": 3
+  },
+  {
+   "t": 107,
+   "after_p": 1380,
+   "block": 1487,
+   "section": "G8.1 十六类纹样生成算法",
+   "rows": 17,
+   "cols": 3
+  },
+  {
+   "t": 108,
+   "after_p": 1490,
+   "block": 1598,
+   "section": "G15.1 三条几何生成路线",
+   "rows": 4,
+   "cols": 3
+  },
+  {
+   "t": 109,
+   "after_p": 1504,
+   "block": 1613,
+   "section": "G16 三十一条可独立控制的退化轴",
+   "rows": 32,
+   "cols": 4
+  },
+  {
+   "t": 110,
+   "after_p": 1511,
+   "block": 1621,
+   "section": "G17 配对质量阶梯与可重放退化recipe",
+   "rows": 7,
+   "cols": 3
+  },
+  {
+   "t": 111,
+   "after_p": 1523,
+   "block": 1634,
+   "section": "G18.2 难例必须有明确构造原因",
+   "rows": 9,
+   "cols": 3
+  },
+  {
+   "t": 112,
+   "after_p": 1532,
+   "block": 1644,
+   "section": "G19 主动补采与循环推理的episode环境",
+   "rows": 6,
+   "cols": 3
+  },
+  {
+   "t": 113,
+   "after_p": 1541,
+   "block": 1654,
+   "section": "G20.2 五种预训练任务",
+   "rows": 6,
+   "cols": 3
+  },
+  {
+   "t": 114,
+   "after_p": 1547,
+   "block": 1661,
+   "section": "G20.4 初始化与训练公平性",
+   "rows": 5,
+   "cols": 3
+  },
+  {
+   "t": 115,
+   "after_p": 1551,
+   "block": 1666,
+   "section": "G21.1 最小实验矩阵",
+   "rows": 9,
+   "cols": 3
+  },
+  {
+   "t": 116,
+   "after_p": 1567,
+   "block": 1683,
+   "section": "G22.1 单机资源配置",
+   "rows": 8,
+   "cols": 3
+  },
+  {
+   "t": 117,
+   "after_p": 1590,
+   "block": 1707,
+   "section": "G23.1 按数据访问方式选择格式",
+   "rows": 8,
+   "cols": 3
+  },
+  {
+   "t": 118,
+   "after_p": 1594,
+   "block": 1712,
+   "section": "G23.2 十万片预算示例",
+   "rows": 13,
+   "cols": 3
+  },
+  {
+   "t": 119,
+   "after_p": 1612,
+   "block": 1731,
+   "section": "G24 数值精度和存储量化",
+   "rows": 7,
+   "cols": 3
+  },
+  {
+   "t": 120,
+   "after_p": 1646,
+   "block": 1766,
+   "section": "G26 完整实验室的操作界面与接口",
+   "rows": 7,
+   "cols": 3
+  },
+  {
+   "t": 121,
+   "after_p": 1652,
+   "block": 1773,
+   "section": "G27.1 必做功能不在MVP终止",
+   "rows": 13,
+   "cols": 3
+  },
+  {
+   "t": 122,
+   "after_p": 1665,
+   "block": 1787,
+   "section": "G28 完整版本的验收矩阵",
+   "rows": 17,
+   "cols": 3
+  },
+  {
+   "t": 123,
+   "after_p": 1669,
+   "block": 1792,
+   "section": "G29 常见故障与排错顺序",
+   "rows": 14,
+   "cols": 3
+  },
+  {
+   "t": 124,
+   "after_p": 1769,
+   "block": 1893,
+   "section": "G31 完整实验室的交付文件与实施检查单",
+   "rows": 11,
+   "cols": 3
+  },
+  {
+   "t": 125,
+   "after_p": 1786,
+   "block": 1911,
+   "section": "H1 完整交付与状态",
+   "rows": 6,
+   "cols": 3
+  },
+  {
+   "t": 126,
+   "after_p": 1789,
+   "block": 1915,
+   "section": "H2 单一合同与命名",
+   "rows": 9,
+   "cols": 3
+  },
+  {
+   "t": 127,
+   "after_p": 1792,
+   "block": 1919,
+   "section": "H3 实施依赖与签收",
+   "rows": 10,
+   "cols": 3
+  },
+  {
+   "t": 128,
+   "after_p": 1803,
+   "block": 1931,
+   "section": "H6 24项修订与实际验收索引",
+   "rows": 25,
+   "cols": 3
+  }
+ ]
+}

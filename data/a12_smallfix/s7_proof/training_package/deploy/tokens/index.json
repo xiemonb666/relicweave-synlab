@@ -1,0 +1,36 @@
+{
+  "encoder_id": "identity_rgb_blockmean",
+  "rows": {
+    "LIN0000_V01_M01_PAT01_E01-m": {
+      "opaque": "c7381df5d84b25fac9e8eb2b",
+      "shard": "tokens/shard_0000.npz",
+      "token_dim": 256,
+      "tokens": 192,
+      "tokens_hash": "sha256:a6ab70e3ebe4d1d64681e1e89c24609cdbb2aba384621ff0389fa868fb6449e6"
+    },
+    "LIN0001_V02_M01_PAT01_E01-m": {
+      "opaque": "56af3b4c1137751192c649b4",
+      "shard": "tokens/shard_0000.npz",
+      "token_dim": 256,
+      "tokens": 192,
+      "tokens_hash": "sha256:c8aa1aa4f806e9767647717a02cc04cfc37ae6451b7cc7eaec5976a50a6bfa4f"
+    },
+    "LIN0002_V13_M01_PAT01_E01-m": {
+      "opaque": "e6b794e0386608bbd20b509b",
+      "shard": "tokens/shard_0000.npz",
+      "token_dim": 256,
+      "tokens": 192,
+      "tokens_hash": "sha256:d6bfb04d4e02bc49e54b27fb3d2d41935ac24260b6e3ce452ed823150ee89520"
+    }
+  },
+  "schema": "synlab.token_index.v1",
+  "token_dim": 256,
+  "token_input": "coarse TOKEN_BLOCK x TOKEN_BLOCK block mean per view (real, rank-1 by construction); kept for provenance, not a 256-dim feature",
+  "token_layout": "per-token sub-grid block means (identity, no learned weights)",
+  "token_policy_id": "obspack_rgb_blockmean_v1",
+  "token_sub_grid": [
+    16,
+    16
+  ],
+  "tokens_per_view": 48
+}

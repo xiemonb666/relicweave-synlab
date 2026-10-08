@@ -1,0 +1,1422 @@
+{
+  "status": "STATIC_PASS_WITH_REVIEWED_SCOPE_EXCEPTIONS",
+  "status_note": "Read-only static review of the frozen final candidate. The 14 source clarifications and eight later planning refinements are enumerated with exact text; three superseded old planning tables and nine superseded overview/planning paragraphs are listed explicitly. Rendering remains a separate main-agent gate.",
+  "source_hashes_and_bytes": {
+    "user": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\RelicWeave_V1.47.docx",
+      "bytes": 779513,
+      "sha256": "41f1254e40a2ecabdcfa1c6583af2fce0ae1b0ab980d5f9179bbaf687b7be64b"
+    },
+    "v146": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\RelicWeave_V1.46_A12_VesselForge_PGFrag_Integrated_NavFixed.docx",
+      "bytes": 733634,
+      "sha256": "15978a3956fa33e8048cc54c1dad6878a7e19d9c71b84415dcaf8732f041a3b4"
+    },
+    "frozen_current": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\closeout_documents_20261007\\master_v147_frozen_candidate_9af0efe877115200dd99bbcf8f24f3124e2932245d71795fc00252d08e278436.docx",
+      "bytes": 734565,
+      "sha256": "9af0efe877115200dd99bbcf8f24f3124e2932245d71795fc00252d08e278436"
+    },
+    "candidate": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\v147_user_merge_20261007\\fresh_merge_final_candidate.docx",
+      "bytes": 786143,
+      "sha256": "70aa097680aa1920528ba4b6d9646821ac78b367618c0e9b8dbc36439fa38044"
+    },
+    "previous_candidate": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\v147_user_merge_20261007\\fresh_merge_candidate.docx",
+      "bytes": 785707,
+      "sha256": "2bcfc83635976f609f55d995fc67d6e8ee6c3e47b2ff39bc9826bdff4071e219"
+    }
+  },
+  "hash_pins": {
+    "user": true,
+    "v146": true,
+    "frozen_current": true,
+    "candidate_matches_final_proof": true,
+    "previous_candidate_matches_source_proof": true,
+    "candidate_matches_parent_notice": true
+  },
+  "package": {
+    "parts": 23,
+    "part_names_same_as_frozen": true,
+    "changed_non_document_parts": [],
+    "all_relationship_targets_same_as_frozen": true,
+    "relationship_parts_byte_identical": {
+      "_rels/.rels": true,
+      "word/_rels/document.xml.rels": true,
+      "customXml/_rels/item1.xml.rels": true
+    },
+    "style_header_footer_byte_identical": {
+      "word/styles.xml": true,
+      "word/header1.xml": true,
+      "word/header2.xml": true,
+      "word/header3.xml": true,
+      "word/footer1.xml": true,
+      "word/footer2.xml": true,
+      "word/footer3.xml": true
+    }
+  },
+  "protected_eight_paragraphs": [
+    {
+      "label": "A12.19 当前状态（2026-10-07）",
+      "source_count": 1,
+      "candidate_count": 1,
+      "exact_text_unchanged": true,
+      "source_sha256": "276ad664f2dd7d6f1ddced6771137db96a7d896b18e4947b70111072e7b18b90",
+      "candidate_sha256": "276ad664f2dd7d6f1ddced6771137db96a7d896b18e4947b70111072e7b18b90",
+      "source_text": "A12.19 当前状态（2026-10-07）：本节所列 Release 能力仍是目标接口与验收清单，不代表已完成发布。当前 31 个退化轴、155 个档位/检查组合属于软件 QA；其中 9 个轴有测量记录、36 个非零级别，均来自 1 个母体且未校准。16 个纹样族 ID 尚无经历史样式验证的族，12 个材料 ID 尚无经物理校准的材料。端到端检索收益、真实迁移、真实样本需求下降和规模交付均未建立，完整物理合格包为 0。负责人给出的工程进度估计仍为 PG-Frag 25–35%、VesselForge 30–40%、A12 30–40%；这些比例是工程判断，不代表物理准确度或资格覆盖率。",
+      "candidate_text": "A12.19 当前状态（2026-10-07）：本节所列 Release 能力仍是目标接口与验收清单，不代表已完成发布。当前 31 个退化轴、155 个档位/检查组合属于软件 QA；其中 9 个轴有测量记录、36 个非零级别，均来自 1 个母体且未校准。16 个纹样族 ID 尚无经历史样式验证的族，12 个材料 ID 尚无经物理校准的材料。端到端检索收益、真实迁移、真实样本需求下降和规模交付均未建立，完整物理合格包为 0。负责人给出的工程进度估计仍为 PG-Frag 25–35%、VesselForge 30–40%、A12 30–40%；这些比例是工程判断，不代表物理准确度或资格覆盖率。"
+    },
+    {
+      "label": "A12.20 当前实施与资格边界（2026-10-07）",
+      "source_count": 1,
+      "candidate_count": 1,
+      "exact_text_unchanged": true,
+      "source_sha256": "a6ab19cadd4238abc223a4859f81e6126dc94b660c910dee7271fcd9da7da50e",
+      "candidate_sha256": "a6ab19cadd4238abc223a4859f81e6126dc94b660c910dee7271fcd9da7da50e",
+      "source_text": "A12.20 当前实施与资格边界（2026-10-07）：独立仓库、公共合同与可替换后端是架构边界；局部源代码接受或诊断 toy 不等于完整实现或项目资格。PG-Frag 的固定界面与开口控制仍未形成断口分离；moving-front 在合同字段错误处停止。VesselForge 尚无历史器型、生产几何、唇口或实体全局壁厚资格。A12 仍承担观测、权限、关系、训练与诊断编排，不复制两个子项目的内核。",
+      "candidate_text": "A12.20 当前实施与资格边界（2026-10-07）：独立仓库、公共合同与可替换后端是架构边界；局部源代码接受或诊断 toy 不等于完整实现或项目资格。PG-Frag 的固定界面与开口控制仍未形成断口分离；moving-front 在合同字段错误处停止。VesselForge 尚无历史器型、生产几何、唇口或实体全局壁厚资格。A12 仍承担观测、权限、关系、训练与诊断编排，不复制两个子项目的内核。"
+    },
+    {
+      "label": "V1.47（2026-10-07）收口记录",
+      "source_count": 1,
+      "candidate_count": 1,
+      "exact_text_unchanged": true,
+      "source_sha256": "3d518fa013cfb06bbee95a9af117f37dcb268bce565e31cc5b9e1ae93ab1ecfc",
+      "candidate_sha256": "3d518fa013cfb06bbee95a9af117f37dcb268bce565e31cc5b9e1ae93ab1ecfc",
+      "source_text": "V1.47（2026-10-07）收口记录：本次更新实施状态、证据边界与后续资格门，并在不改历史文字、数值或导航的前提下修复缺失的东亚字体映射、A12.17 第 39 表深色表头字色及活动版本页眉/日期页脚；未新增模型成绩或完整物理合格包。moving-front 单次运行因审计字段错配在 wrench/KKT/G 前停止，未重试；objectivity 与 native C4 均为经独立审阅接受的 SOURCE_ONLY；VesselForge 解析/几何证据和 A12 软件 QA 仍未达到生产或物理资格。V1.46 全文及导航保持原样，历史指标、FAIL、STOP 与 NOT_ESTABLISHED 判决不变。备份交付回执固定于 `relicweave-synlab/docs/handover/20261007/BACKUP_DELIVERY_RECEIPT.json`；该后置 sidecar 将记录最终三仓 HEAD 与文件清单，不写入本记录以避免循环引用。",
+      "candidate_text": "V1.47（2026-10-07）收口记录：本次更新实施状态、证据边界与后续资格门，并在不改历史文字、数值或导航的前提下修复缺失的东亚字体映射、A12.17 第 39 表深色表头字色及活动版本页眉/日期页脚；未新增模型成绩或完整物理合格包。moving-front 单次运行因审计字段错配在 wrench/KKT/G 前停止，未重试；objectivity 与 native C4 均为经独立审阅接受的 SOURCE_ONLY；VesselForge 解析/几何证据和 A12 软件 QA 仍未达到生产或物理资格。V1.46 全文及导航保持原样，历史指标、FAIL、STOP 与 NOT_ESTABLISHED 判决不变。备份交付回执固定于 `relicweave-synlab/docs/handover/20261007/BACKUP_DELIVERY_RECEIPT.json`；该后置 sidecar 将记录最终三仓 HEAD 与文件清单，不写入本记录以避免循环引用。"
+    },
+    {
+      "label": "G0 当前状态（2026-10-07）",
+      "source_count": 1,
+      "candidate_count": 1,
+      "exact_text_unchanged": true,
+      "source_sha256": "1087bbf92b126d3f8b223897931e630ec6f109444a951443d954b3424c4ce703",
+      "candidate_sha256": "1087bbf92b126d3f8b223897931e630ec6f109444a951443d954b3424c4ce703",
+      "source_text": "G0 当前状态（2026-10-07）：本规则已明确底层内核归属，但当前只是局部实现与来源证据归位，不表示端到端 Asset→Job/Result→Release 链路已完整验收。PG-Frag bridge/opening 是诊断 toy；moving-front 因审计字段错配停止。VesselForge native C4 仅完成 driver/runner 来源审阅，未运行 CAD 或 STEP，也没有实体级 wall/lip 结论。",
+      "candidate_text": "G0 当前状态（2026-10-07）：本规则已明确底层内核归属，但当前只是局部实现与来源证据归位，不表示端到端 Asset→Job/Result→Release 链路已完整验收。PG-Frag bridge/opening 是诊断 toy；moving-front 因审计字段错配停止。VesselForge native C4 仅完成 driver/runner 来源审阅，未运行 CAD 或 STEP，也没有实体级 wall/lip 结论。"
+    },
+    {
+      "label": "G31.1 V1.47 收口核对（2026-10-07）",
+      "source_count": 1,
+      "candidate_count": 1,
+      "exact_text_unchanged": true,
+      "source_sha256": "1c5e7989c8b6db5f9fcbe4a21deb91e3166fd5e526e1d38bdedcf83bd93c34ad",
+      "candidate_sha256": "1c5e7989c8b6db5f9fcbe4a21deb91e3166fd5e526e1d38bdedcf83bd93c34ad",
+      "source_text": "G31.1 V1.47 收口核对（2026-10-07）：本节列出的专项签收项目仍是待完成的资格门。当前 31 轴与 155 项 QA 记录没有替代逐档物理校准；16 个纹样族 ID 没有历史样式验证；原方案所列四个必做碎裂后端、完整三方发布谱系、真实检索对照和规模资源实测仍未整体签收。局部来源审阅、几何证明和诊断运行仅按各自范围记录，不晋级为完整程序或物理资格。",
+      "candidate_text": "G31.1 V1.47 收口核对（2026-10-07）：本节列出的专项签收项目仍是待完成的资格门。当前 31 轴与 155 项 QA 记录没有替代逐档物理校准；16 个纹样族 ID 没有历史样式验证；原方案所列四个必做碎裂后端、完整三方发布谱系、真实检索对照和规模资源实测仍未整体签收。局部来源审阅、几何证明和诊断运行仅按各自范围记录，不晋级为完整程序或物理资格。"
+    },
+    {
+      "label": "VesselForge 当前状态（2026-10-07）",
+      "source_count": 1,
+      "candidate_count": 1,
+      "exact_text_unchanged": true,
+      "source_sha256": "18b53438fc04127b5155d67667841f38bb4b723419417dfd3c97e98220d76e22",
+      "candidate_sha256": "18b53438fc04127b5155d67667841f38bb4b723419417dfd3c97e98220d76e22",
+      "source_text": "VesselForge 当前状态（2026-10-07）：已有 bowl/beaker/jar 三个解析参数族、两个默认 CAD 实例，以及局部二维几何候选与理想曲线距离证据；仍有 0 个经历史参考验证的器型族、0 个经资格确认的生产实体和 0 个校准材料/真实纹样外观。最新 native C4 来源审阅为 SOURCE_ACCEPTED，仅接受源代码合同，CAD/STEP 未运行。",
+      "candidate_text": "VesselForge 当前状态（2026-10-07）：已有 bowl/beaker/jar 三个解析参数族、两个默认 CAD 实例，以及局部二维几何候选与理想曲线距离证据；仍有 0 个经历史参考验证的器型族、0 个经资格确认的生产实体和 0 个校准材料/真实纹样外观。最新 native C4 来源审阅为 SOURCE_ACCEPTED，仅接受源代码合同，CAD/STEP 未运行。"
+    },
+    {
+      "label": "PG-Frag 当前状态（2026-10-07）",
+      "source_count": 1,
+      "candidate_count": 1,
+      "exact_text_unchanged": true,
+      "source_sha256": "fdaed6f32dce42275c768a92b71c423e7ba99d6a1dd5a5bb50960f87b3fdc19f",
+      "candidate_sha256": "fdaed6f32dce42275c768a92b71c423e7ba99d6a1dd5a5bb50960f87b3fdc19f",
+      "source_text": "PG-Frag 当前状态（2026-10-07）：固定裂面 virgin elastic bridge 与开口历史控制均为诊断 toy，未证明裂纹增长或碎片分离。12 状态轨迹中 step_index=0..7 均非全点损伤；step_index=6 的 D 范围为 0–1，step_index=7 为 2/3–1；仅 step_index=8..11（第 9–12 个状态）全点 D=1。bulk 仍承载，未形成 fragment disconnect。moving-front 唯一获准尝试因 schema 字段错配失败并按单次失败规则停止；没有 wrench、KKT、G 或 primary result。当前证据不构成材料校准、方向/网格偏差收敛、动态多接触或完整三维物理断裂资格。后续算法方向采用连续 MLS 与 support-topology-restricted H/front PU enrichment，停止将 Bool-only 作为主路线；这是基于有限裂片两侧可见支撑集突变和 ghost-jump 反例的工程路线修正，不是已证明的新颖性或物理资格。",
+      "candidate_text": "PG-Frag 当前状态（2026-10-07）：固定裂面 virgin elastic bridge 与开口历史控制均为诊断 toy，未证明裂纹增长或碎片分离。12 状态轨迹中 step_index=0..7 均非全点损伤；step_index=6 的 D 范围为 0–1，step_index=7 为 2/3–1；仅 step_index=8..11（第 9–12 个状态）全点 D=1。bulk 仍承载，未形成 fragment disconnect。moving-front 唯一获准尝试因 schema 字段错配失败并按单次失败规则停止；没有 wrench、KKT、G 或 primary result。当前证据不构成材料校准、方向/网格偏差收敛、动态多接触或完整三维物理断裂资格。后续算法方向采用连续 MLS 与 support-topology-restricted H/front PU enrichment，停止将 Bool-only 作为主路线；这是基于有限裂片两侧可见支撑集突变和 ghost-jump 反例的工程路线修正，不是已证明的新颖性或物理资格。"
+    },
+    {
+      "label": "V1.47（2026年10月7日）为 A12、VesselForge 与 PG-Frag 的实现收口和证据归位版",
+      "source_count": 1,
+      "candidate_count": 1,
+      "exact_text_unchanged": true,
+      "source_sha256": "f25cecb49e34995952355c22a366e72c0d67ea160e9ec0531f3991c64ac675fe",
+      "candidate_sha256": "f25cecb49e34995952355c22a366e72c0d67ea160e9ec0531f3991c64ac675fe",
+      "source_text": "V1.47（2026年10月7日）为 A12、VesselForge 与 PG-Frag 的实现收口和证据归位版：维持三项目的独立边界，补入本轮实现状态、诊断证据及资格缺口。PG-Frag 当前仅有 virgin elastic 固定裂面 bridge 与未形成断开的开口历史 toy；12 状态中 step_index=0..7 尚非全点损伤（step_index=7 的 D 范围为 2/3–1），只有 step_index=8..11 全点 D=1，但 bulk 仍承载。moving-front 单次运行因审计字段错配在 wrench、KKT、G 之前停止。VesselForge 证据限于解析族、几何候选、条件证明、理想曲线距离和来源审阅；A12 计数仍以软件 QA 与未校准数据为主。本次未新增模型成绩或完整物理合格包；历史指标、FAIL、STOP、NOT_ESTABLISHED 判决和既有导航继续保留。",
+      "candidate_text": "V1.47（2026年10月7日）为 A12、VesselForge 与 PG-Frag 的实现收口和证据归位版：维持三项目的独立边界，补入本轮实现状态、诊断证据及资格缺口。PG-Frag 当前仅有 virgin elastic 固定裂面 bridge 与未形成断开的开口历史 toy；12 状态中 step_index=0..7 尚非全点损伤（step_index=7 的 D 范围为 2/3–1），只有 step_index=8..11 全点 D=1，但 bulk 仍承载。moving-front 单次运行因审计字段错配在 wrench、KKT、G 之前停止。VesselForge 证据限于解析族、几何候选、条件证明、理想曲线距离和来源审阅；A12 计数仍以软件 QA 与未校准数据为主。本次未新增模型成绩或完整物理合格包；历史指标、FAIL、STOP、NOT_ESTABLISHED 判决和既有导航继续保留。"
+    }
+  ],
+  "source_user_paragraph_retention": {
+    "source_paragraphs": 7462,
+    "candidate_paragraphs": 7485,
+    "matched_in_order": 7462,
+    "unmatched_source_paragraphs": [],
+    "all_source_paragraphs_retained_exactly_in_order": true
+  },
+  "source_clarifications_14": {
+    "declared_count": 14,
+    "checks": [
+      {
+        "label": "scope and priority",
+        "anchor": "V1.47采用“现行执行正文覆盖过时规划、历史证据只增不改”",
+        "text": "本轮范围仅为V1.47文档收口、研究候选转移与可行性审阅，不启动新开发、运行或新增数值结论。新列为P0的研究候选只表示后续研究优先级，不覆盖当前PG-Frag、VesselForge与A12的物理实现、资格和资源优先级，也不自动重开已停止工作；重新进入开发须由用户明确发起，并另行冻结范围与证据门槛。",
+        "source_anchor_indices": [
+          179
+        ],
+        "previous_exact_text_indices": [
+          182
+        ],
+        "final_exact_text_indices": [
+          182
+        ],
+        "final_refinement_patches": [],
+        "verified": true
+      },
+      {
+        "label": "closed-gallery metrics",
+        "anchor": "对query q定义V_G(q)",
+        "text": "分母边界补充：只有|V_G(q)|>0时才按常规闭合集合定义报告成员召回；此时若预测集合为空，Recall=0、Precision=NA、F1=0。若|V_G(q)|=0，应单独报告member-absent判定、false-inclusion数量/率及abstention；真值与预测都为空只记为correct-empty，不能把Precision、Recall或F1伪记为1。开世界样本及未通过完整工作流资格的样本分开计数，不并入Level 3闭合集合主分母。汇总按器物等权宏平均，区间按独立器物聚类估计；query加权均值仅作补充。",
+        "source_anchor_indices": [
+          313
+        ],
+        "previous_exact_text_indices": [
+          317
+        ],
+        "final_exact_text_indices": [],
+        "final_refinement_patches": [
+          {
+            "label": "2.2.2 object-equal macro and cluster CI",
+            "paragraph_index": 317,
+            "old_contains_clarification": true,
+            "final_text_exact": true
+          }
+        ],
+        "verified": true
+      },
+      {
+        "label": "membership versus R2 closure",
+        "anchor": "R1是“同器物且无直接历史断裂接触”",
+        "text": "此处member_set闭合仅指冻结图库G中、排除query自身后，同一器物的已入库成员集合已闭合；不要求把所有物理上遗失或未采集的碎片补回。未入库碎片去向作为解释与审计元数据记录。成员集合闭合和R2直接邻接图闭合分别审核，R2漏边不改变member set，也不把缺失R2自动标成R1。",
+        "source_anchor_indices": [
+          2153
+        ],
+        "previous_exact_text_indices": [
+          2170
+        ],
+        "final_exact_text_indices": [
+          2170
+        ],
+        "final_refinement_patches": [],
+        "verified": true
+      },
+      {
+        "label": "offline truth and relation ontology",
+        "anchor": "最终 A—C 是 R1、R2 还是 UNKNOWN",
+        "text": "历史断裂/邻接真值只可作为离线训练标签、损失、按母体分组的split审计及评测标签；推理时只可使用合法ObsPack。GT标签用于离线监督是允许的，但GT pose、motherID、true relation graph与TruthPack不能进入在线特征、memory或candidate generator。provenance ID用于审计和去相关，不作为身份特征；姿态字段记录predicted_pose_hat及其不确定性。UNKNOWN表示认识论上的证据不足/拒判，不是第四种物理关系；应保持P_R2≤P_same，缺少R2证据不能推出R1。",
+        "source_anchor_indices": [
+          1107
+        ],
+        "previous_exact_text_indices": [
+          1113
+        ],
+        "final_exact_text_indices": [],
+        "final_refinement_patches": [
+          {
+            "label": "A6.16 relation algebra clarification",
+            "paragraph_index": 1113,
+            "old_contains_clarification": true,
+            "final_text_exact": true
+          }
+        ],
+        "verified": true
+      },
+      {
+        "label": "hard negatives and abstention",
+        "anchor": "R2 更依赖断口局部互补、接触几何",
+        "text": "硬负例应覆盖同纹样、同模具或同批次但属于不同器物的样本，并把边界含混的候选组成ambiguity group，证据不足时允许UNKNOWN/拒判。材质、风格或形状先验只提供兼容性，不单独构成同一器物身份的充分证明。",
+        "source_anchor_indices": [
+          1155
+        ],
+        "previous_exact_text_indices": [
+          1163
+        ],
+        "final_exact_text_indices": [
+          1163
+        ],
+        "final_refinement_patches": [],
+        "verified": true
+      },
+      {
+        "label": "revision and calibration",
+        "anchor": "这条创新线最大的风险不是“能不能利用正确 R2”",
+        "text": "belief revision只更新模型当前posterior或候选状态，不改写历史GT事实。只有GT复核或新碎裂事件/叶片谱系的新label_version可以改变事实，并保留旧版本与来源。校准posterior必须使用冻结DEV校准器并报告coverage-risk；posterior本身不等同置信区间。模型间一致或跨轮稳定属于相关输出，单独稳定不构成新增独立证据，也不能触发不可撤销写入。",
+        "source_anchor_indices": [
+          1174
+        ],
+        "previous_exact_text_indices": [
+          1183
+        ],
+        "final_exact_text_indices": [
+          1183
+        ],
+        "final_refinement_patches": [],
+        "verified": true
+      },
+      {
+        "label": "Oracle diagnostic and feasibility",
+        "anchor": "训练不得从一开始就把完整 UA-IFRMN 端到端同时打开",
+        "text": "Oracle-R2是特权离线诊断条件，用于检查已知关系上下文是否有信息；它不是严格的信息论上界，也不是可部署性能。比较时尽量匹配候选集合、上下文数量/质量与预算，并加入shuffle-neighbor对照及可行时的等量GT-R1对照。真实合格数据与闭合GT足以先做静态/上下文信息测试；物理pack只作为物理合成或物理预训练主张的门槛。",
+        "source_anchor_indices": [
+          1200
+        ],
+        "previous_exact_text_indices": [
+          1210
+        ],
+        "final_exact_text_indices": [],
+        "final_refinement_patches": [
+          {
+            "label": "A6.20 mandatory Oracle controls",
+            "paragraph_index": 1210,
+            "old_contains_clarification": true,
+            "final_text_exact": true
+          }
+        ],
+        "verified": true
+      },
+      {
+        "label": "B1/B2 decision gate",
+        "anchor": "A6.21 必做实验矩阵：先证明“邻片上下文有信息”",
+        "text": "B1 Scalar Feedback必须保留为基线；只有在匹配的特权上下文已显示正向信息时，B2 Latent Feedback才可继续作为机制测试，不能要求B1先取得正收益。若Oracle/对照因标注容量或协议不足无法判读，应记录为资源STOP或未决，不外推为“关系上下文普遍没有信息”。",
+        "source_anchor_indices": [
+          1232
+        ],
+        "previous_exact_text_indices": [
+          1243
+        ],
+        "final_exact_text_indices": [
+          1243
+        ],
+        "final_refinement_patches": [],
+        "verified": true
+      },
+      {
+        "label": "EXP12 corruption protocol",
+        "anchor": "EXP12 R2→R1关系上下文与错误传播",
+        "text": "腐化率是预注册的压力测试配方，不是现实错误率估计。按错误类型和分母分别报告漏掉真R2、误报R2、typed relation互换、错误成员纳入/遗漏及来源相关错误；另用留出预测误差率和回放来源相关性描述真实误差。加入空R2 seed下回退静态基线、成员误纳/漏纳注入、coverage-risk与端到端成本。0/5/10/20/30%仅表示压力配方，不得表述为已知现实发生率。",
+        "source_anchor_indices": [
+          1507
+        ],
+        "previous_exact_text_indices": [
+          1520
+        ],
+        "final_exact_text_indices": [
+          1520
+        ],
+        "final_refinement_patches": [],
+        "verified": true
+      },
+      {
+        "label": "historical truth and physical events",
+        "anchor": "每个release必须同时提供传统算法合法输入",
+        "text": "退化评测分开两条轨道：固定观测的合成扰动/历史GT回放用于配对诊断；真实磨损、材料流失、新崩边、二次断裂、事件变化与fragment leaf lineage作为新的物理事件/版本记录。后者更新current_fit_valid、evidence_visible和current-leaf relations，并保留历史R2事实及其版本，不以当前状态覆盖历史邻接真值。",
+        "source_anchor_indices": [
+          2089
+        ],
+        "previous_exact_text_indices": [
+          2105
+        ],
+        "final_exact_text_indices": [],
+        "final_refinement_patches": [
+          {
+            "label": "A12.21 fixed-observation and degradation semantics",
+            "paragraph_index": 2105,
+            "old_contains_clarification": true,
+            "final_text_exact": true
+          }
+        ],
+        "verified": true
+      },
+      {
+        "label": "bounded token bank",
+        "anchor": "Step 0 — 编码而不压扁：对 query 和候选库生成 Fragment Token Bank",
+        "text": "Fragment Token Bank应采用磁盘/CPU缓存并按query初检后的Top-K候选按需读取局部token；不把全gallery的局部token bank常驻GPU，也不构造全库N×N关系张量。",
+        "source_anchor_indices": [
+          1098
+        ],
+        "previous_exact_text_indices": [
+          1103
+        ],
+        "final_exact_text_indices": [
+          1103
+        ],
+        "final_refinement_patches": [],
+        "verified": true
+      },
+      {
+        "label": "bounded inference cost",
+        "anchor": "单一 P(R2) 只表达最终置信度",
+        "text": "推理资源须预先限定K、局部token数L、迭代数、假设数与重读半径，并报告单query P95时延、峰值VRAM/RAM和端到端FLOPs。RTX 5090规格不能代替目标负载实测；当前吞吐量仍未测，故资源可行性保持未确立。",
+        "source_anchor_indices": [
+          1128
+        ],
+        "previous_exact_text_indices": [
+          1135
+        ],
+        "final_exact_text_indices": [
+          1135
+        ],
+        "final_refinement_patches": [],
+        "verified": true
+      },
+      {
+        "label": "primary-source corrections",
+        "anchor": "来源分为两类：会议／期刊正式论文用于建立强对照",
+        "text": "版本/venue校正：SARe采用arXiv v2标题“Structure-Aware Generative 3D Fragment Reassembly”，其方法描述对应query-aligned局部几何、task-native结构监督与point flow、几何验证及重采样；GARF若按ICCV 2025 proceedings引用，应写two-session flow matching，即one-step initialization加multi-step refinement，不沿用更早预印本把one-step preassembly当作完整推理过程。TORA标注为ECCV 2026 accepted，MV-RoMa为CVPR 2026 accepted，Coconut以COLM 2025 accepted为当前venue（ICLR workshop仅作历史补充）。这些来源只提供方法灵感，不证明UA-IFRMN、RelicWeave的性能、SOTA或新颖性。来源入口：SARe https://arxiv.org/abs/2603.21611v2；GARF https://openaccess.thecvf.com/content/ICCV2025/papers/Li_GARF_Learning_Generalizable_3D_Reassembly_for_Real-World_Fractures_ICCV_2025_paper.pdf；TORA https://arxiv.org/abs/2604.04050；MV-RoMa https://arxiv.org/abs/2603.27542；Coconut https://arxiv.org/abs/2412.06769v4。",
+        "source_anchor_indices": [
+          1357
+        ],
+        "previous_exact_text_indices": [
+          1369
+        ],
+        "final_exact_text_indices": [
+          1369
+        ],
+        "final_refinement_patches": [],
+        "verified": true
+      },
+      {
+        "label": "D6.5 action and claim boundary",
+        "anchor": "用户接受/驳回某成员后生成新的revision",
+        "text": "结果页还应能请求补采/重拍、标记证据不足、显示预算耗尽并STOP；每次revision均保留理由与来源。Level 3未通过独立资格门前，所有成员输出保持研究模式候选，不得显示为已完成修复或已认证的器物成员集合。",
+        "source_anchor_indices": [
+          2948
+        ],
+        "previous_exact_text_indices": [
+          2966
+        ],
+        "final_exact_text_indices": [
+          2966
+        ],
+        "final_refinement_patches": [],
+        "verified": true
+      }
+    ],
+    "exact_in_previous_candidate": 14,
+    "retained_exact_in_final": 10,
+    "superseded_by_final_exact_patches": 4,
+    "all_14_verified_as_retained_or_refined": true
+  },
+  "final_planning_refinements_8": {
+    "previous_paragraph_count": 7485,
+    "final_paragraph_count": 7485,
+    "actual_changed_paragraph_indices": [
+      317,
+      1112,
+      1113,
+      1114,
+      1132,
+      1210,
+      2105,
+      2168
+    ],
+    "declared_changed_paragraph_indices": [
+      317,
+      1112,
+      1113,
+      1114,
+      1132,
+      1210,
+      2105,
+      2168
+    ],
+    "changed_indices_exactly_declared": true,
+    "patches": [
+      {
+        "label": "B2.3 closed gallery membership",
+        "paragraph_index": 2168,
+        "old_text_exact_in_previous": true,
+        "new_text_exact_in_final": true,
+        "old": "Level 3评测要求每个eligible object拥有member_manifest：object_id、全部已入库fragment_id、已知missing_fragment/碎屑去向、member_set_complete、R2边集合、R1定义域、UNKNOWN/争议关系、复核者、label_version与hash。V_G(q)从该manifest派生，不能从模型结果反推。若某母体只知道若干邻接但不知道是否还有同器物碎片遗失或未入库，则只能参加Level 1/2的限定评测，不能进入完整成员恢复主分母。",
+        "new": "Level 3评测要求每个eligible object拥有member_manifest：object_id、全部已入库fragment_id、已知missing_fragment/碎屑去向、member_set_complete、R2边集合、R1定义域、UNKNOWN/争议关系、复核者、label_version与hash。V_G(q)从该manifest派生，不能从模型结果反推。仅当冻结图库G内的member归属尚未闭合时，母体才排除Level 3完整成员恢复主分母；原器物仍有碎片遗失或未入库不会自动排除，只须把已知去向作为审计信息记录。"
+      },
+      {
+        "label": "A6.16 offline truth boundary",
+        "paragraph_index": 1112,
+        "old_text_exact_in_previous": true,
+        "new_text_exact_in_final": true,
+        "old": "UA-IFRMN 必须显式尊重现行标签定义：R2 是原碎裂事件当前叶子片间的直接历史邻接，R1 是同器物但无直接历史断裂接触。因此，A—B 为 R2、B—C 为 R2，并不能推出 A—C 为 R2；它只能为 “A 与 C 属于同一器物” 提供强结构证据。最终 A—C 是 R1、R2 还是 UNKNOWN，仍要由直接接触证据和历史邻接真值判定。",
+        "new": "UA-IFRMN 必须显式尊重现行标签定义：R2 是原碎裂事件当前叶子片间的直接历史邻接，R1 是同器物但无直接历史断裂接触。因此，A—B 为 R2、B—C 为 R2，并不能推出 A—C 为 R2；它只能为 “A 与 C 属于同一器物” 提供强结构证据。最终A—C的R0/R1/R2物理关系后验及独立UNKNOWN/abstention，仅在线由合法观测形成；历史邻接真值只作离线标签与评测，不进入在线推理。"
+      },
+      {
+        "label": "A6.16 relation algebra clarification",
+        "paragraph_index": 1113,
+        "old_text_exact_in_previous": true,
+        "new_text_exact_in_final": true,
+        "old": "历史断裂/邻接真值只可作为离线训练标签、损失、按母体分组的split审计及评测标签；推理时只可使用合法ObsPack。GT标签用于离线监督是允许的，但GT pose、motherID、true relation graph与TruthPack不能进入在线特征、memory或candidate generator。provenance ID用于审计和去相关，不作为身份特征；姿态字段记录predicted_pose_hat及其不确定性。UNKNOWN表示认识论上的证据不足/拒判，不是第四种物理关系；应保持P_R2≤P_same，缺少R2证据不能推出R1。",
+        "new": "历史断裂/邻接真值只可作为离线训练标签、损失、按母体分组的split审计及评测标签；推理时只可使用合法ObsPack并产生预测关系后验或UNKNOWN/abstention。GT标签用于离线监督是允许的，但GT pose、motherID、true relation graph与TruthPack不能进入在线特征、memory或candidate generator。provenance ID用于审计和去相关，不作为身份特征；姿态字段记录predicted_pose_hat及其不确定性。UNKNOWN是独立的认识论拒判状态，不是第四种物理关系；物理关系后验只覆盖R0/R1/R2，保持P_R2≤P_same，缺少R2证据不能推出R1。同一器物same-vessel身份在闭合成员集合中构成等价/传递关系；直接邻接R2和同器物非邻接R1各自都不具传递性。下表是预测边的soft belief推理，不是历史GT事实或硬合并。"
+      },
+      {
+        "label": "A6.16 table heading",
+        "paragraph_index": 1114,
+        "old_text_exact_in_previous": true,
+        "new_text_exact_in_final": true,
+        "old": "关系组合",
+        "new": "预测关系组合"
+      },
+      {
+        "label": "A6.17 typed relation posterior",
+        "paragraph_index": 1132,
+        "old_text_exact_in_previous": true,
+        "new_text_exact_in_final": true,
+        "old": "研究实现上建议把 same-vessel 与 direct-contact 解耦成两个相关但不同的头：P_same(i,j) 表示器物身份兼容，P_R2(i,j) 表示直接历史邻接；随后由 typed relation head 在 R0/R1/R2/UNKNOWN 上给出最终分布。这样多跳图只影响 P_same 或 vessel compatibility，不会错误地让 R2 具备传递性。",
+        "new": "研究实现上建议把 same-vessel 与 direct-contact 解耦成两个相关但不同的头：P_same(i,j) 表示器物身份兼容，P_R2(i,j) 表示直接历史邻接；随后由typed relation head输出R0/R1/R2物理关系后验，并将认识论UNKNOWN/abstention作为独立拒判状态。这样多跳图只影响 P_same 或 vessel compatibility，不会错误地让 R2 具备传递性。"
+      },
+      {
+        "label": "A12.21 fixed-observation and degradation semantics",
+        "paragraph_index": 2105,
+        "old_text_exact_in_previous": true,
+        "new_text_exact_in_final": true,
+        "old": "退化评测分开两条轨道：固定观测的合成扰动/历史GT回放用于配对诊断；真实磨损、材料流失、新崩边、二次断裂、事件变化与fragment leaf lineage作为新的物理事件/版本记录。后者更新current_fit_valid、evidence_visible和current-leaf relations，并保留历史R2事实及其版本，不以当前状态覆盖历史邻接真值。",
+        "new": "退化评测分开两条轨道：固定物理碎片及历史GT，仅改变观测条件，用于配对诊断；真实磨损、材料流失、新崩边、二次断裂、事件变化与fragment leaf lineage作为新的物理事件/版本记录。后者更新current_fit_valid、evidence_visible和current-leaf relations，并保留历史R2事实及其版本，不以当前状态覆盖历史邻接真值。D1–D4在物理量映射完成并校准前仅为压力配方/强度档，不得称为轻度或严重真实磨损或真实年代等级；D5是独立真实域确认，不是同一有序严重度轴的第五级。31条退化轴QA状态维持UNCAL。"
+      },
+      {
+        "label": "2.2.2 object-equal macro and cluster CI",
+        "paragraph_index": 317,
+        "old_text_exact_in_previous": true,
+        "new_text_exact_in_final": true,
+        "old": "分母边界补充：只有|V_G(q)|>0时才按常规闭合集合定义报告成员召回；此时若预测集合为空，Recall=0、Precision=NA、F1=0。若|V_G(q)|=0，应单独报告member-absent判定、false-inclusion数量/率及abstention；真值与预测都为空只记为correct-empty，不能把Precision、Recall或F1伪记为1。开世界样本及未通过完整工作流资格的样本分开计数，不并入Level 3闭合集合主分母。汇总按器物等权宏平均，区间按独立器物聚类估计；query加权均值仅作补充。",
+        "new": "分母边界补充：只有|V_G(q)|>0时才按常规闭合集合定义报告成员召回；此时若预测集合为空，Recall=0、Precision=NA、F1=0。若|V_G(q)|=0，应单独报告member-absent判定、false-inclusion数量/率及abstention；真值与预测都为空只记为correct-empty，不能把Precision、Recall或F1伪记为1。开世界样本及未通过完整工作流资格的样本分开计数，不并入Level 3闭合集合主分母。汇总先在每个器物内对query等权平均，再对器物等权宏平均；区间按独立器物聚类估计，若同批次或来源相关则按更高层来源簇估计。query加权均值仅作补充。"
+      },
+      {
+        "label": "A6.20 mandatory Oracle controls",
+        "paragraph_index": 1210,
+        "old_text_exact_in_previous": true,
+        "new_text_exact_in_final": true,
+        "old": "Oracle-R2是特权离线诊断条件，用于检查已知关系上下文是否有信息；它不是严格的信息论上界，也不是可部署性能。比较时尽量匹配候选集合、上下文数量/质量与预算，并加入shuffle-neighbor对照及可行时的等量GT-R1对照。真实合格数据与闭合GT足以先做静态/上下文信息测试；物理pack只作为物理合成或物理预训练主张的门槛。",
+        "new": "Oracle-R2是特权离线诊断条件，用于检查已知关系上下文是否有信息；它不是严格的信息论上界，也不是可部署性能。比较必须匹配candidate pool、context count、quality、fields、budget与source correlation，并加入shuffle-neighbor对照及可行时的等量GT-R1对照；无法匹配则标为未决、不可归因。真实合格数据与闭合GT足以先做静态/上下文信息测试；物理pack只作为物理合成或物理预训练主张的门槛。"
+      }
+    ],
+    "all_eight_exact_old_new_patches_verified": true
+  },
+  "new_headings_and_navigation": {
+    "source_bookmarks": 520,
+    "candidate_bookmark_starts": 553,
+    "candidate_bookmark_ends": 553,
+    "original_id_name_pairs_preserved": true,
+    "unique_new_heading_count": 33,
+    "all_33_new_headings_present_once": true,
+    "each_new_heading_has_one_unique_bookmark_and_link": true,
+    "duplicate_bookmark_names": [],
+    "duplicate_bookmark_ids": [],
+    "bookmark_start_end_id_mismatch": [],
+    "candidate_anchor_links": 113,
+    "old_internal_link_multiplicity_preserved": true,
+    "dangling_or_ambiguous_internal_links": [],
+    "new_heading_navigation": [
+      {
+        "heading": "1.3 V1.47信息优先级与历史数据保护规则",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_1_3"
+        ],
+        "anchor_link_counts": {
+          "RW147_1_3": 1
+        }
+      },
+      {
+        "heading": "2.0 最新统一任务定义：从邻片检索到整器物成员恢复",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_2_0"
+        ],
+        "anchor_link_counts": {
+          "RW147_2_0": 1
+        }
+      },
+      {
+        "heading": "2.2.2 器物成员恢复指标、完整分母与退化曲线",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_2_2_2"
+        ],
+        "anchor_link_counts": {
+          "RW147_2_2_2": 1
+        }
+      },
+      {
+        "heading": "2.4 痛点、应用价值与“为什么需要AI”的边界",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_2_4"
+        ],
+        "anchor_link_counts": {
+          "RW147_2_4": 1
+        }
+      },
+      {
+        "heading": "A6.14 2025–2026 近邻任务与跨领域前沿工作增补参考池",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_A6_14"
+        ],
+        "anchor_link_counts": {
+          "RW147_A6_14": 1
+        }
+      },
+      {
+        "heading": "A6.15 新核心候选：Uncertainty-Aware Iterative Fragment Relational Memory Network（UA-IFRMN）",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_A6_15"
+        ],
+        "anchor_link_counts": {
+          "RW147_A6_15": 1
+        }
+      },
+      {
+        "heading": "A6.15.1 UA-IFRMN 的一次完整推理循环",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_A6_15_1"
+        ],
+        "anchor_link_counts": {
+          "RW147_A6_15_1": 1
+        }
+      },
+      {
+        "heading": "A6.16 从 R2 到 R1 的关系代数：允许“身份传播”，禁止“邻接传播”",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_A6_16"
+        ],
+        "anchor_link_counts": {
+          "RW147_A6_16": 1
+        }
+      },
+      {
+        "heading": "A6.17 为什么不能只把“邻片概率”喂回去：Scalar Feedback、Latent Feedback 与多假设记忆",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_A6_17"
+        ],
+        "anchor_link_counts": {
+          "RW147_A6_17": 1
+        }
+      },
+      {
+        "heading": "A6.18 双记忆与器物潜变量：R2 Local Memory × Vessel Identity Memory",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_A6_18"
+        ],
+        "anchor_link_counts": {
+          "RW147_A6_18": 1
+        }
+      },
+      {
+        "heading": "A6.19 错误传播控制：Predict → Verify → Soft Write → Reread → Revise",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_A6_19"
+        ],
+        "anchor_link_counts": {
+          "RW147_A6_19": 1
+        }
+      },
+      {
+        "heading": "A6.20 训练路线：Oracle 关系上限 → 预测关系闭环 → 人工腐化鲁棒性",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_A6_20"
+        ],
+        "anchor_link_counts": {
+          "RW147_A6_20": 1
+        }
+      },
+      {
+        "heading": "A6.20.1 候选损失项：先作为可拆卸假设，不一次全部启用",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_A6_20_1"
+        ],
+        "anchor_link_counts": {
+          "RW147_A6_20_1": 1
+        }
+      },
+      {
+        "heading": "A6.21 必做实验矩阵：先证明“邻片上下文有信息”，再证明“新机制能安全利用它”",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_A6_21"
+        ],
+        "anchor_link_counts": {
+          "RW147_A6_21": 1
+        }
+      },
+      {
+        "heading": "A6.22 可形成的研究主张与明确禁写项",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_A6_22"
+        ],
+        "anchor_link_counts": {
+          "RW147_A6_22": 1
+        }
+      },
+      {
+        "heading": "A6.23 创新账本增补：UA-IFRMN 关系记忆路线",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_A6_23"
+        ],
+        "anchor_link_counts": {
+          "RW147_A6_23": 1
+        }
+      },
+      {
+        "heading": "A6.24 本次增补的外部来源与复现优先级",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_A6_24"
+        ],
+        "anchor_link_counts": {
+          "RW147_A6_24": 1
+        }
+      },
+      {
+        "heading": "A6.25 Whole-Vessel Membership Recovery：从一块碎片恢复整个器物成员集合",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_A6_25"
+        ],
+        "anchor_link_counts": {
+          "RW147_A6_25": 1
+        }
+      },
+      {
+        "heading": "A6.26 High-Degradation Robust Retrieval：高磨损、风化与部分观测下的鲁棒碎片检索",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_A6_26"
+        ],
+        "anchor_link_counts": {
+          "RW147_A6_26": 1
+        }
+      },
+      {
+        "heading": "A6.27 统一论文路线：共享一个问题族，不把所有创新强塞进一篇论文",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_A6_27"
+        ],
+        "anchor_link_counts": {
+          "RW147_A6_27": 1
+        }
+      },
+      {
+        "heading": "A6.28 顶会级研究门槛与禁止性表述",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_A6_28"
+        ],
+        "anchor_link_counts": {
+          "RW147_A6_28": 1
+        }
+      },
+      {
+        "heading": "EXP10 高磨损/风化鲁棒性基准",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_EXP10"
+        ],
+        "anchor_link_counts": {
+          "RW147_EXP10": 1
+        }
+      },
+      {
+        "heading": "EXP11 整器物成员恢复（Vessel Membership Recovery）",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_EXP11"
+        ],
+        "anchor_link_counts": {
+          "RW147_EXP11": 1
+        }
+      },
+      {
+        "heading": "EXP12 R2→R1关系上下文与错误传播",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_EXP12"
+        ],
+        "anchor_link_counts": {
+          "RW147_EXP12": 1
+        }
+      },
+      {
+        "heading": "A12.21 V1.47退化性能曲线：把SyntheticLab变成“物理退化压力测试仪”",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_A12_21"
+        ],
+        "anchor_link_counts": {
+          "RW147_A12_21": 1
+        }
+      },
+      {
+        "heading": "A12.22 Whole-Vessel Episode Generator：为整器物成员恢复生成完整关系世界",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_A12_22"
+        ],
+        "anchor_link_counts": {
+          "RW147_A12_22": 1
+        }
+      },
+      {
+        "heading": "A12.23 Synthetic-to-Real与数据充分性：最终只以真实域收益决定扩容",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_A12_23"
+        ],
+        "anchor_link_counts": {
+          "RW147_A12_23": 1
+        }
+      },
+      {
+        "heading": "B2.3 器物成员集合GT与关系闭合",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_B2_3"
+        ],
+        "anchor_link_counts": {
+          "RW147_B2_3": 1
+        }
+      },
+      {
+        "heading": "D6.5 器物成员恢复页（V1.47新增）",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_D6_5"
+        ],
+        "anchor_link_counts": {
+          "RW147_D6_5": 1
+        }
+      },
+      {
+        "heading": "D10.2 应用价值、社会价值与AI必要性的证据矩阵",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_D10_2"
+        ],
+        "anchor_link_counts": {
+          "RW147_D10_2": 1
+        }
+      },
+      {
+        "heading": "10.1 竞赛方向：用“真痛点→真操作→真改进”组织叙事",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_10_1"
+        ],
+        "anchor_link_counts": {
+          "RW147_10_1": 1
+        }
+      },
+      {
+        "heading": "10.2 论文方向：一套数据底座，多条可独立收敛的研究问题",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_10_2"
+        ],
+        "anchor_link_counts": {
+          "RW147_10_2": 1
+        }
+      },
+      {
+        "heading": "10.3 竞赛与论文共享的证据底座，但结论严格分开",
+        "candidate_heading_count": 1,
+        "bookmark_names": [
+          "RW147_10_3"
+        ],
+        "anchor_link_counts": {
+          "RW147_10_3": 1
+        }
+      }
+    ]
+  },
+  "historical_text": {
+    "v146_paragraphs": 6846,
+    "candidate_paragraphs": 7485,
+    "unmatched_v146_paragraphs_in_order": [
+      {
+        "v146_paragraph_index": 1,
+        "classification": "superseded V1.46 version label",
+        "text": "V1.46 A12双子基础设施整合版 2026年10月5日"
+      },
+      {
+        "v146_paragraph_index": 2,
+        "classification": "superseded overview/mission summary",
+        "text": "我们研究低质量部分观测下的碎片邻接候选检索。系统从真实碎片照片出发，在混合碎片库中提出值得人工核验的邻片候选；证据不足时，提出有成本约束的补采建议或停止推荐。比赛交付可运行、可恢复的辅助系统，研究交付能够经独立对照验证的方法机制。"
+      },
+      {
+        "v146_paragraph_index": 5,
+        "classification": "superseded A12/VesselForge/PG-Frag architecture summary",
+        "text": "本版在V1.45基础上将A12进一步重构为“合成实验编排与研究层”，正式接入两个可独立演化的三维基础设施子项目：VesselForge负责完整器物、语义纹样、材质与Physics-Ready资产，PG-Frag负责材料/事件驱动的损伤、裂纹、碎裂、断面与碎片动力学。A12不再把器型几何内核和断裂求解器写死在自身代码中，而通过版本化Asset/Job/Result合同调用两个子项目，再完成磨损、成像/重建退化、ObsPack适配、关系采样、预训练与瓶颈诊断。原V1.45的历史数值、FAIL、STOP与NOT_ESTABLISHED判决不变；新增架构与子项目方案仍须按各自Benchmark验收。"
+      },
+      {
+        "v146_paragraph_index": 88,
+        "classification": "superseded document-contents and appendix summary",
+        "text": "本文件包含总纲、四岗位完整执行正文、软硬件、联调、验收、完整合成实验室、历史附录以及两个独立三维基础设施子项目方案，现行版本统一V1.46。A12给出合成实验编排、预训练与诊断总览；附录G规定A12编排层、退化层、数据与训练流程；附录I规定VesselForge完整方案；附录J规定PG-Frag完整方案；附录H继续保留V1.44问题修订与验收索引。原历史数值、FAIL、STOP和旧协议保留，不能按新口径直接改写。"
+      },
+      {
+        "v146_paragraph_index": 179,
+        "classification": "reframed research-question overview",
+        "text": "主问题是给定真实可获得的观测、候选检查预算和误导风险，如何找回邻片并识别观察不足。输入包括整片2D、断口2D和质量信息；合格3D、可信上下文是可选增强。输出包括有序候选、来源可追溯的证据、待核验状态、补采或停止原因。"
+      },
+      {
+        "v146_paragraph_index": 2459,
+        "classification": "superseded manual-evaluation planning paragraph",
+        "text": "比较人工流程、人工加简单候选及人工加新方法证据三种条件。不同难度匹配任务随机交叉分配，避免同一人重复同题记忆优势。记录正确判断耗时、看过候选数、误配漏配、补拍和退出。"
+      },
+      {
+        "v146_paragraph_index": 2750,
+        "classification": "superseded competition-delivery planning paragraph",
+        "text": "比赛主交付包括真实新查询流程、原图与GT审计、稳定基线或成立的新方法、风险与不足、补采增强、四人操作、离线恢复、实测价值和明确适用域。自动采集台、3D、RL及CTM不全部列为最低交付。"
+      },
+      {
+        "v146_paragraph_index": 2751,
+        "classification": "superseded paper-delivery planning paragraph",
+        "text": "论文主交付包括科学问题、最接近工作、同输入强基线、独立主结果、机制消融、质量与缺失、开放库、成本、失败及复现。METHOD-H1局部互补或METHOD-H3候选条件补采选择证据较强者为核心，架构复杂度不是必要条件。"
+      },
+      {
+        "v146_paragraph_index": 2802,
+        "classification": "updated appendix/workstream navigation note",
+        "text": "以下A至F为原实验及工程历史，Q等级、指标、阈值、模型名、资源和判决按当时协议解释，不直接与V1.45合并。当前新工作用第4至9章、G与H，不恢复归档未定义编号或旧门。"
+      }
+    ],
+    "unexplained_unmatched_paragraphs": [],
+    "numeric_or_result_marker_exceptions_outside_opening_summaries": [],
+    "v146_table_count": 176,
+    "candidate_table_count": 194,
+    "unmatched_v146_tables_in_order": [
+      {
+        "v146_table_index": 4,
+        "classification": "superseded competition-versus-paper delivery planning table",
+        "signature": [
+          [
+            "能力",
+            "比赛系统的内部必做交付",
+            "若作为论文主张需要的证据"
+          ],
+          [
+            "输入与数据",
+            "新样品登记、手机采集、质量检查、真实邻接依据",
+            "母体隔离、标签审计和独立确认集"
+          ],
+          [
+            "候选链",
+            "全库初检、局部精排、证据卡和版本日志",
+            "同输入强基线及端到端公平对照"
+          ],
+          [
+            "可靠输出",
+            "不强迫确定拼合，展示不足、拒识和人工核验",
+            "mate-present覆盖与mate-absent风险同时报告"
+          ],
+          [
+            "补采",
+            "基础版可人工执行建议；自动台列增强交付",
+            "等照片和等时间下分别优于强补采基线"
+          ],
+          [
+            "主干创新",
+            "部署真实验证较好的稳定模型",
+            "互补、可观测性或证据重读的可归因机制增益"
+          ],
+          [
+            "现场与产品",
+            "离线运行、异常恢复、四人交接、真实耗时",
+            "工程表现不能代替方法新颖性"
+          ],
+          [
+            "用户价值",
+            "实测候选检查量与完整任务时间",
+            "参与者、任务与对照公开，避免只报列表缩减"
+          ]
+        ]
+      },
+      {
+        "v146_table_index": 5,
+        "classification": "superseded metric target/decision-threshold planning table",
+        "signature": [
+          [
+            "指标",
+            "定义与适用范围",
+            "目标或判定方式"
+          ],
+          [
+            "any@50",
+            "有邻片查询中至少一名真邻片进入初检50池",
+            "正常质量内部目标宏值0.95，连同区间报告"
+          ],
+          [
+            "Hit@10",
+            "前10中至少一名库内真邻片",
+            "比赛准备目标正常质量宏值0.90，95%下界0.85"
+          ],
+          [
+            "低质Hit@10",
+            "日常低质查询对清晰库，独立母体",
+            "内部目标0.85，达不到则缩小适用范围"
+          ],
+          [
+            "CovRecall@10",
+            "前10找回库内真邻片的比例",
+            "与Hit单列，不低于冻结强基线"
+          ],
+          [
+            "新方法主比较",
+            "同查询同库相对验证集选出的强基线",
+            "开发起点为增益3个百分点且对象簇CI下界大于0"
+          ],
+          [
+            "干净性能守卫",
+            "新方法相对同池强基线",
+            "下降不超过2个百分点，阈值先冻结"
+          ],
+          [
+            "无邻片误导",
+            "mate-absent查询被接受推荐的比例",
+            "目标不超过5%，95%上界目标不超过10%"
+          ],
+          [
+            "有邻片接受覆盖",
+            "mate-present中被系统接受输出的比例",
+            "目标至少80%，不能靠全拒绝换低风险"
+          ],
+          [
+            "现场流程",
+            "新查询采集到结果的完整彩排",
+            "20次至少19次完成，仅作为彩排目标"
+          ],
+          [
+            "工作流价值",
+            "包括拍摄、补拍、检查的总任务时间",
+            "中位用时减少30%为内部目标，正确性不恶化"
+          ]
+        ]
+      },
+      {
+        "v146_table_index": 43,
+        "classification": "superseded data-acquisition contents/invalid-handling planning table",
+        "signature": [
+          [
+            "数据",
+            "必须内容",
+            "不合格处理"
+          ],
+          [
+            "整片",
+            "正面、反面、侧壁、轮廓及断口概览",
+            "缺面标未观察，补拍或限定用途"
+          ],
+          [
+            "断口",
+            "实际断裂表面、两侧壁、厚度变化、边缘",
+            "没拍到断裂面不能用于局部关系主测试"
+          ],
+          [
+            "连续线索",
+            "可见纹饰延续、凹槽、曲率变化和薄壁交界",
+            "没有该线索如实记，不生成伪纹饰"
+          ],
+          [
+            "质量配对",
+            "同片清晰、日常和差质量真实观察",
+            "不以压缩副本代替独立实拍"
+          ],
+          [
+            "重复会话",
+            "重新装夹后的身份、时间和参数",
+            "新session，不沿用旧位姿"
+          ],
+          [
+            "相机与尺度",
+            "镜头、分辨率、曝光信息、标定工况、实测比例尺",
+            "无尺度仍可2D，关闭毫米几何"
+          ],
+          [
+            "关系证据",
+            "已确认邻接及难负例、争议记录",
+            "UNKNOWN不用于确定性关系评测"
+          ],
+          [
+            "失败与成本",
+            "模糊图、高光图、重拍、操作及等待时间",
+            "不删失败以提高采集成功率"
+          ]
+        ]
+      }
+    ],
+    "unmatched_v146_tables_by_exact_cell_text_count": 3,
+    "all_other_v146_tables_exact_and_in_order": true
+  },
+  "INNO_32_to_45": [
+    {
+      "id": "INNO-32",
+      "user_rows": 1,
+      "candidate_rows": 1,
+      "candidate_cells": [
+        [
+          "INNO-32",
+          "UA-IFRMN：Uncertainty-Aware Iterative Fragment Relational Memory Network。",
+          "P0 核心",
+          "RESEARCH_CANDIDATE"
+        ]
+      ],
+      "status_tokens": [
+        "RESEARCH_CANDIDATE"
+      ],
+      "candidate_or_idea_only": true
+    },
+    {
+      "id": "INNO-33",
+      "user_rows": 1,
+      "candidate_rows": 1,
+      "candidate_cells": [
+        [
+          "INNO-33",
+          "Contact-Conditioned Identity Expansion：用高置信 R2 局部接触结构作为 R1 同器物身份扩展条件。",
+          "P0 核心",
+          "RESEARCH_CANDIDATE"
+        ]
+      ],
+      "status_tokens": [
+        "RESEARCH_CANDIDATE"
+      ],
+      "candidate_or_idea_only": true
+    },
+    {
+      "id": "INNO-34",
+      "user_rows": 1,
+      "candidate_rows": 1,
+      "candidate_cells": [
+        [
+          "INNO-34",
+          "Soft Typed Relation Graph Memory：R0/R1/R2/UNKNOWN + latent + quality + provenance 的可修正关系图。",
+          "P0 核心",
+          "RESEARCH_CANDIDATE"
+        ]
+      ],
+      "status_tokens": [
+        "RESEARCH_CANDIDATE"
+      ],
+      "candidate_or_idea_only": true
+    },
+    {
+      "id": "INNO-35",
+      "user_rows": 1,
+      "candidate_rows": 1,
+      "candidate_cells": [
+        [
+          "INNO-35",
+          "Latent Relation Feedback：反馈连续 relation latent，而非只反馈 P(R2) 标量。",
+          "P1 高潜",
+          "RESEARCH_CANDIDATE"
+        ]
+      ],
+      "status_tokens": [
+        "RESEARCH_CANDIDATE"
+      ],
+      "candidate_or_idea_only": true
+    },
+    {
+      "id": "INNO-36",
+      "user_rows": 1,
+      "candidate_rows": 1,
+      "candidate_cells": [
+        [
+          "INNO-36",
+          "Dual Relational Memory：R2 Local Memory + Vessel Identity Memory 分工。",
+          "P0 架构",
+          "RESEARCH_CANDIDATE"
+        ]
+      ],
+      "status_tokens": [
+        "RESEARCH_CANDIDATE"
+      ],
+      "candidate_or_idea_only": true
+    },
+    {
+      "id": "INNO-37",
+      "user_rows": 1,
+      "candidate_rows": 1,
+      "candidate_cells": [
+        [
+          "INNO-37",
+          "Reversible Joint Reread：新证据进入后联合重读受影响子图，允许旧边降权／撤销／改型。",
+          "P0 可靠性",
+          "RESEARCH_CANDIDATE"
+        ]
+      ],
+      "status_tokens": [
+        "RESEARCH_CANDIDATE"
+      ],
+      "candidate_or_idea_only": true
+    },
+    {
+      "id": "INNO-38",
+      "user_rows": 1,
+      "candidate_rows": 1,
+      "candidate_cells": [
+        [
+          "INNO-38",
+          "Soft Multi-Hypothesis Vessel Memory：高不确定时保留多个关系／器物假设，避免早期单路径塌缩。",
+          "P2 储备",
+          "IDEA"
+        ]
+      ],
+      "status_tokens": [
+        "IDEA"
+      ],
+      "candidate_or_idea_only": true
+    },
+    {
+      "id": "INNO-39",
+      "user_rows": 1,
+      "candidate_rows": 1,
+      "candidate_cells": [
+        [
+          "INNO-39",
+          "Relation Composition Regularization：R2 多跳只提升 same-vessel belief，不错误传播 R2 类型。",
+          "P1 高潜",
+          "RESEARCH_CANDIDATE"
+        ]
+      ],
+      "status_tokens": [
+        "RESEARCH_CANDIDATE"
+      ],
+      "candidate_or_idea_only": true
+    },
+    {
+      "id": "INNO-40",
+      "user_rows": 1,
+      "candidate_rows": 1,
+      "candidate_cells": [
+        [
+          "INNO-40",
+          "Oracle-to-Predicted Relation Curriculum：GT R2 → 混合 memory → predicted R2 的课程训练。",
+          "P1 训练",
+          "RESEARCH_CANDIDATE"
+        ]
+      ],
+      "status_tokens": [
+        "RESEARCH_CANDIDATE"
+      ],
+      "candidate_or_idea_only": true
+    },
+    {
+      "id": "INNO-41",
+      "user_rows": 1,
+      "candidate_rows": 1,
+      "candidate_cells": [
+        [
+          "INNO-41",
+          "Relation Corruption Robustness Curriculum：按错边率与错边类型系统训练 memory-as-evidence 而非 memory-as-truth。",
+          "P0 可靠性",
+          "RESEARCH_CANDIDATE"
+        ]
+      ],
+      "status_tokens": [
+        "RESEARCH_CANDIDATE"
+      ],
+      "candidate_or_idea_only": true
+    },
+    {
+      "id": "INNO-42",
+      "user_rows": 1,
+      "candidate_rows": 1,
+      "candidate_cells": [
+        [
+          "INNO-42",
+          "Vessel Latent / Missing Slots：从已知碎片形成器物级潜变量，并显式保留未知／缺失结构。",
+          "P1 高风险高收益",
+          "IDEA"
+        ]
+      ],
+      "status_tokens": [
+        "IDEA"
+      ],
+      "candidate_or_idea_only": true
+    },
+    {
+      "id": "INNO-43",
+      "user_rows": 1,
+      "candidate_rows": 1,
+      "candidate_cells": [
+        [
+          "INNO-43",
+          "Fragment Local Vocabulary Set-to-Set Rerank：用局部 token 集合／OT或Chamfer类集合距离增强 R1 精排。",
+          "P2 储备",
+          "IDEA"
+        ]
+      ],
+      "status_tokens": [
+        "IDEA"
+      ],
+      "candidate_or_idea_only": true
+    },
+    {
+      "id": "INNO-44",
+      "user_rows": 1,
+      "candidate_rows": 1,
+      "candidate_cells": [
+        [
+          "INNO-44",
+          "Complementarity-Aware R2 Verifier：相同表面形状 + 相反体积占据 + 接触／穿透约束的高成本物理核验。",
+          "P1 可靠性",
+          "RESEARCH_CANDIDATE"
+        ]
+      ],
+      "status_tokens": [
+        "RESEARCH_CANDIDATE"
+      ],
+      "candidate_or_idea_only": true
+    },
+    {
+      "id": "INNO-45",
+      "user_rows": 1,
+      "candidate_rows": 1,
+      "candidate_cells": [
+        [
+          "INNO-45",
+          "Topology/Relation Distillation：从 geometry/contact-centric 3D teacher 蒸馏关系结构到主干。",
+          "P2 储备",
+          "IDEA"
+        ]
+      ],
+      "status_tokens": [
+        "IDEA"
+      ],
+      "candidate_or_idea_only": true
+    }
+  ],
+  "TRELLIS_2": {
+    "user_rows": [
+      {
+        "table": 160,
+        "row": 7,
+        "cells": [
+          "TRELLIS.2 等生成式 3D",
+          "前沿候选",
+          "能产生复杂拓扑和高多样性的长尾资产，并包含 PBR 表达。",
+          "结果不保证物理可用、尺度/壁厚/拓扑/封闭性需后处理，算力较高。",
+          "灵感/长尾几何提案或参考资产生成，不能直接替代 physics-ready pipeline。"
+        ],
+        "breaks": 0
+      }
+    ],
+    "frozen_rows": [
+      {
+        "table": 142,
+        "row": 7,
+        "cells": [
+          "TRELLIS.2 等生成式 3D",
+          "前沿候选",
+          "能产生复杂拓扑和高多样性的长尾资产，并包含 PBR 表达。",
+          "结果不保证物理可用、尺度/壁厚/拓扑/封闭性需后处理，算力较高。",
+          "灵感/长尾几何提案或参考资产生成，不能直接替代 physics-ready pipeline。"
+        ],
+        "breaks": 0
+      }
+    ],
+    "candidate_rows": [
+      {
+        "table": 160,
+        "row": 7,
+        "cells": [
+          "TRELLIS.2 等生成式 3D",
+          "前沿候选",
+          "能产生复杂拓扑和高多样性的长尾资产，并包含 PBR 表达。",
+          "结果不保证物理可用、尺度/壁厚/拓扑/封闭性需后处理，算力较高。",
+          "灵感/长尾几何提案或参考资产生成，不能直接替代 physics-ready pipeline。"
+        ],
+        "breaks": 3
+      }
+    ],
+    "exactly_one_each": true,
+    "cell_text_exact_user": true,
+    "cell_text_exact_frozen": true,
+    "break_delta_document_vs_frozen": 3,
+    "break_delta_trellis_row": 3,
+    "exactly_three_new_breaks_all_in_trellis": true
+  },
+  "table_geometry_fixedgrid_guard": {
+    "user_tables": 194,
+    "candidate_tables": 194,
+    "geometry_diffs": [],
+    "all_geometry_unchanged": true
+  },
+  "font_and_header_fixes": {
+    "Noto_Sans_SC_eastAsia_mappings": 17350,
+    "table55_dark_header_rows": [
+      {
+        "table": 55,
+        "cells": [
+          {
+            "text": "功能域",
+            "fills": [
+              "263C50"
+            ],
+            "colors": [
+              "FFFFFF"
+            ]
+          },
+          {
+            "text": "责任项目 / 默认接口",
+            "fills": [
+              "263C50"
+            ],
+            "colors": [
+              "FFFFFF"
+            ]
+          },
+          {
+            "text": "详细实施位置",
+            "fills": [
+              "263C50"
+            ],
+            "colors": [
+              "FFFFFF"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "proof_and_changelog": {
+    "final_proof_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\v147_user_merge_20261007\\fresh_merge_FINAL_SOURCECHECK.json",
+    "final_proof_sha256": "fe6c5d1693af7c5596ee9805fc354bef73fe4c593c1ac5c5401a7dca658ed019",
+    "final_proof_candidate_hash_matches_observed": true,
+    "source_proof_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\v147_user_merge_20261007\\fresh_merge_SOURCECHECK.json",
+    "source_proof_sha256": "3dc2acd854fd36b089863f0b7d2cb870fe81d070882063241b5d4c54f7e995f4",
+    "source_proof_clarification_count": 14,
+    "source_proof_previous_candidate_hash_matches_observed": true,
+    "changelog_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\v147_user_merge_20261007\\fresh_merge_FINAL_CHANGELOG.md",
+    "changelog_sha256": "cefa4b14f6bb40243d7d9aaabb499975b427f0cfd638dc2b794081acb5694e2b",
+    "changelog_text": "# Final V1.47 candidate changelog\n\nApplied the requested last narrow wording pass to planning sections only. The exact old/new paragraph text and changed paragraph indices are in fresh_merge_FINAL_PATCHLIST.md.\n\nCloseout status, historical record, full current p5 summary, package relationships, bookmarks, navigation, and manual TRELLIS.2 breaks were rechecked. No experiment, rendering, promotion, or source-document edit was performed.\n\nTemporary-helper note: fresh_merge_inspect.py was overwritten during this turn's extraction checks. Its prior byte count and hash were not snapshotted, so they are unknown; the helper was not reconstructed. This does not affect the candidate or source DOCX files.\n"
+  },
+  "checks": {
+    "source_hashes_match_expected": true,
+    "final_candidate_matches_final_proof": true,
+    "previous_candidate_matches_initial_source_proof": true,
+    "eight_closeout_status_paragraphs_exact": true,
+    "all_14_clarifications_preserved_or_superseded_by_exact_final_patches": true,
+    "all_user_paragraphs_exactly_retained_in_order_before_final_patchset": true,
+    "final_text_changes_are_exactly_the_eight_declared_patches": true,
+    "all_33_new_headings_uniquely_bookmarked_linked": true,
+    "original_520_bookmark_pairs_preserved": true,
+    "old_internal_links_preserved_no_dangling": true,
+    "old_relationships_preserved": true,
+    "historical_v146_unmatched_paragraphs_all_reviewed_planning_or_overview": true,
+    "all_nonplanning_v146_tables_preserved_in_order": true,
+    "INNO_32_45_not_promoted": true,
+    "TRELLIS_text_exact_three_breaks": true,
+    "no_fixedgrid_or_width_change": true,
+    "current_styles_headers_footers_preserved": true,
+    "candidate_Noto_font_mapping_present": true
+  }
+}

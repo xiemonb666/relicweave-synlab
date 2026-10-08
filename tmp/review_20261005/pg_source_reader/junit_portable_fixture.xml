@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="19" time="1.995" timestamp="2026-10-05T07:40:55.593739+08:00" hostname="XieMo"><testcase classname="tests.a12.qa.test_pgfrag_source_reader_20261005" name="test_actual_pgfrag_v1_is_source_bound_and_stays_diagnostic_only" time="0.111"><failure message="NameError: name 'result_raw' is not defined">def test_actual_pgfrag_v1_is_source_bound_and_stays_diagnostic_only() -&gt; None:
+        report = read_pgfrag_result(
+            _ACTUAL_OUTPUT,
+            expected_result_sha256=_FIXTURE_RESULT_SHA256,
+            job_path=_FIXTURE_JOB,
+            expected_job_sha256=_FIXTURE_JOB_SHA256,
+        )
+    
+        assert report["schema"] == "synlab.pgfrag.source_read.v1"
+        assert report["status"] == "PG_DIAGNOSTIC_ONLY"
+        assert report["scope"] == "PG_DIAGNOSTIC_ONLY"
+        assert report["fixture_context"]["initial_condition_kind"] == "uniform_box_bar_fixture"
+        assert report["row_counts"]["point_rows"] == 576
+        assert report["row_counts"]["bond_state_rows"] == 20_780
+        assert report["row_counts"]["broken_bond_rows"] == 5_236
+        for component in ("points", "bonds", "components"):
+            assert report["source_binding"]["components"][component]["bytes_verified"] is True
+            assert report["source_binding"]["components"][component]["rows_compared"] &gt; 0
+        assert report["source_binding"]["components"]["points"]["files"]["points.csv"]["sha256_verified"] is True
+        assert report["job_source"]["status"] == "SOURCE_VERIFIED"
+        assert report["job_source"]["job_id_match"] is True
+        assert report["job_source"]["sha256_match"] is True
+        assert report["result_source"]["external_sha256_verified"] is True
+&gt;       assert report["result_source"]["bytes_read"] == len(result_raw)
+                                                            ^^^^^^^^^^
+E       NameError: name 'result_raw' is not defined
+
+tests\a12\qa\test_pgfrag_source_reader_20261005.py:142: NameError</failure></testcase><testcase classname="tests.a12.qa.test_pgfrag_source_reader_20261005" name="test_reader_compares_caller_rows_only_after_exact_typed_match" time="0.372" /><testcase classname="tests.a12.qa.test_pgfrag_source_reader_20261005" name="test_caller_row_value_mismatch_fails_while_preserving_source_evidence" time="0.241" /><testcase classname="tests.a12.qa.test_pgfrag_source_reader_20261005" name="test_result_checksum_is_only_external_when_explicitly_matched" time="0.120" /><testcase classname="tests.a12.qa.test_pgfrag_source_reader_20261005" name="test_hash_mismatch_is_not_hidden_by_manifest_declaration" time="0.044" /><testcase classname="tests.a12.qa.test_pgfrag_source_reader_20261005" name="test_dictionary_unit_must_be_explicit_and_match_si_source" time="0.017" /><testcase classname="tests.a12.qa.test_pgfrag_source_reader_20261005" name="test_dictionary_frame_mismatch_fails_closed" time="0.017" /><testcase classname="tests.a12.qa.test_pgfrag_source_reader_20261005" name="test_points_components_id_rosters_must_be_complete_unique_and_equal" time="0.106" /><testcase classname="tests.a12.qa.test_pgfrag_source_reader_20261005" name="test_bond_endpoint_orphan_is_rejected" time="0.127" /><testcase classname="tests.a12.qa.test_pgfrag_source_reader_20261005" name="test_broken_bond_lengths_must_match_inactive_state_rows" time="0.170" /><testcase classname="tests.a12.qa.test_pgfrag_source_reader_20261005" name="test_nonfinite_csv_numeric_is_rejected_even_with_updated_hash" time="0.021" /><testcase classname="tests.a12.qa.test_pgfrag_source_reader_20261005" name="test_empty_main_csv_is_incomplete_not_a_zero_point_result" time="0.017" /><testcase classname="tests.a12.qa.test_pgfrag_source_reader_20261005" name="test_huge_declared_point_count_is_rejected_before_roster_construction" time="0.012" /><testcase classname="tests.a12.qa.test_pgfrag_source_reader_20261005" name="test_header_only_broken_and_isolated_tables_require_zero_controls" time="0.011" /><testcase classname="tests.a12.qa.test_pgfrag_source_reader_20261005" name="test_header_only_broken_table_fails_when_source_has_inactive_bonds" time="0.101" /><testcase classname="tests.a12.qa.test_pgfrag_source_reader_20261005" name="test_job_hash_and_id_are_verified_from_explicit_source_bytes" time="0.145" /><testcase classname="tests.a12.qa.test_pgfrag_source_reader_20261005" name="test_job_declaration_cannot_override_source_hash_mismatch" time="0.128" /><testcase classname="tests.a12.qa.test_pgfrag_source_reader_20261005" name="test_output_path_traversal_is_rejected" time="0.011" /><testcase classname="tests.a12.qa.test_pgfrag_source_reader_20261005" name="test_duplicate_json_keys_are_rejected_without_parser_details" time="0.003" /></testsuite></testsuites>

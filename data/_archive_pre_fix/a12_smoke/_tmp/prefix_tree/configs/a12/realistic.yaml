@@ -1,0 +1,185 @@
+schema: synlab.v3
+# ---------------------------------------------------------------------------
+# 真实感（capture-style）生成配置 —— 让合成观测尽量接近"真实可采集的数据"
+#
+# 与 configs/a12/next_experiment.yaml 的关系
+#   * 冻结基线不动；本文件是其**派生**：除 observation / storage / notes 三块外，
+#     dataset / sampling / pattern / fracture / physical / resources / quality 与基线逐字相同。
+#     这不是风格偏好：`synlab.pipeline.plan_generation` 的母体序列只由 master_seed、
+#     vessel/material/pattern/layer 列表与 target_mothers 决定，因此只要这三者与基线相同，
+#     **lineage i 就是同一块母体**（同器型/材料/纹样/参数），本库与 data/a12 的第 i 条谱系
+#     可以直接对照——这是本轮 A/B 对照成立的前提（实测见
+#     data/a12/reports/realistic_pilot.json 的 control_geometry_hash 对比）。
+#
+# 本文件打开的"真实感"项（逐条给出真实字段依据）
+#
+#   (1) observation.routes: [proxy_scan] -> [photo_mvs]
+#       三路线里 photo_mvs 才是"真实采集风格"：渲染图 + 部署掩码 + 初始内参估计作为**唯一**
+#       输入交给真实 pycolmap（SfM → undistort → 稠密/稀疏深度），真值位姿/深度/尺度一律不进
+#       (synlab/observe/routes.py::route_photo_mvs, ROUTE_SPECS[photo_mvs])。实测可跑：
+#       docs/a12/observe_evidence.md / tests/a12/observe/run_mvs_evidence.py（pycolmap 3.11.1）。
+#
+#   (2) observation.renderer: auto -> blender
+#       auto 走进程内软件光栅器；blender 走真实 Cycles 子进程（BLENDER_BIN 指向
+#       third_party/blender-5.2.2-windows-x64/blender.exe，`synlab doctor` 实测
+#       backend:blender_render = PASS）。真实渲染带来的是线性 RGB 之外的真实光传输、深度 Z pass、
+#       per-face ID / surface_tag AOV、occlusion 与 uncertain 通道（synlab/observe/blender.py）。
+#
+#   (3) 真实退化：成像链（I 轴）按 synlab/observe/realism.py 的 AXIS_LEVELS 落档
+#       配置 schema（synlab/schemas/spec.py::ObservationConfig，extra="forbid"）**没有**成像链字段，
+#       因此 I 轴档位由 synlab/observe/realism.py 声明（档位数值逐字来自已注册轴：
+#       I01 psf 0/0.5/1/2/4 px、I03 photon_gain 0/16000/8000/4000/1000 与 read_sigma
+#       0/0.002/0.004/0.008/0.016、I04 曝光 0/0.5/1/1.5/2 EV、I05 白平衡偏差
+#       0/0.025/0.05/0.1/0.2、I10 JPEG 质量 100/90/75/60/40），**level 0 = 真恒等**
+#       （construction 断言 ImagingSpec.is_identity()，见 realism.imaging_spec_for）。
+#       本配置采用 level 1 作为"真实感基线"：半像素 PSF + ISO 级光子增益 16000/读出 0.002 +
+#       +0.5EV 自动曝光 + 2.5% 白平衡偏差 + JPEG q90 交付。
+#       几何（G 轴）在 photo_mvs 下**由构造真实存在**而不是注入：G07 标定由 COLMAP 自估、
+#       G02 稀疏三角化、G03 覆盖空洞、G06 任意尺度——每条都在观测里可读回
+#       （realism.GEOMETRY_BY_CONSTRUCTION 给出读取字段）。
+#
+#   (4) 相机档：CAM_MID_V3（真实标定参数：K + OpenCV 畸变 k1=-0.033…，f/2.2）
+#       ⚠ Blender worker 渲染理想针孔，**拒绝**带畸变的帧（synlab/observe/blender.py::build_config）。
+#       本轮采用**显式** distortion_policy=undistort：渲染标称 K 的去畸变针孔相机，交付帧声明
+#       dist=None 并把 undistorted_from/provenance 写进观测（不许静默忽略；policy=error 的拒绝路径
+#       由 tests/a12/observe/test_realism_*.py 覆盖）。政策未声明时 realism 直接抛
+#       EXPERIMENT_PROTOCOL_VIOLATION，不存在"默认选一个"。
+#       ⚠ 残留乐观：这是"渲染针孔"而不是"渲染畸变图再做 cv2.undistort"，因此没有真实去畸变的
+#       重采样/边缘损失；该差异已实测记录在 docs/a12/realism_gap.md。
+#
+#   (5) storage.root -> data/a12_realistic：新库，旧库 data/a12 只读不改。
+#
+#   (6) 运行标记：真实感运行在 store 的 run record 里写 realism=realistic_capture_style +
+#       完整档位表（synlab/observe/realism.py::run_tag），并用**实测字段**做程序化判别
+#       （realism.realism_tags / is_realistic_capture：route=photo_mvs、renderer=BLENDER_CYCLES、
+#        交付 JPEG → ISP_PROXY/JPEG_PROXY 标签、逐轴档位可读回）。
+#       ⚠ 诚实说明：data_semantics / obs_semantics 两个键由冻结管线对**新旧数据一视同仁**地写入
+#       （obs_semantics 在被 observe 之后由 _stamp_obs_semantics 覆盖为 physical_side_v2），
+#       因此它们**不能**单独区分新旧数据；真正的判别量是上面那组实测字段 + run record。
+#
+# 本配置**仍然不像真实**的地方（不可由合成侧补齐，详见 docs/a12/realism_gap.md）
+#   * 无实拍：data_scope=SYNTHETIC，real_calibration_ok=false，所有相机档 calibrated=false
+#     （calibration_status=UNCALIBRATED / STRESS_UNCALIBRATED）——没有靶标图、没有实测内参。
+#   * 真值/尺度：photo_mvs 交付 scale_valid=false（SfM 任意单位，无可用尺度源）。
+#   * 光照/材质/纹理：仍是参数化场景（DefaultLightSpec + 程序化 albedo/roughness），
+#     没有真实光照环境、没有真实材质测量、没有真实表面纹理照片。
+#   * 稠密 MVS：本机 pycolmap 3.11.1 无 PatchMatch，稠密阶段为稀疏深度先验
+#     （route_status=MVS_NOT_AVAILABLE，如实记录）。
+# ---------------------------------------------------------------------------
+data_scope: SYNTHETIC
+release_profile: PILOT
+experiment_purpose: DEVELOPMENT
+master_seed: 20261001
+units: mm
+# 路线声明与 observation.routes 必须一致（GenerationSpec._cross_checks）。
+input_profile: PHONE_RGB
+observation_route: photo_mvs
+integration:
+  mode: standalone
+  feature_schema: a12.obs.v1
+  external_contract_ref: null
+implementation:
+  policy: open_source_first
+  reuse_manifest_ref: docs/a12/reuse_manifest.json
+  require_poc_before_custom: true
+  require_gap_evidence: true
+dataset:
+  # 与基线同值（120）是**必需**的，不是沿用：plan_generation 的参数采样依赖
+  # _sample_parameter_sets(vessels, count, rng) 的 count，取 120 才能让 lineage i 与
+  # data/a12 的第 i 条谱系落在同一母体上（本库与旧库可直接对照）。本轮只执行其中 2 条，
+  # 执行清单见 data/a12/reports/realistic_pilot.json。
+  target_mothers: 120
+  target_fragments_estimate: 240
+  shape_lineage_split: {train: 0.8, dev: 0.1, confirm: 0.1}
+  split_before_generation: true
+  replacement_fractures_share_lineage: true
+  include_all_components: true
+  debris_policy: quarantine_and_record
+  vessel_ids: [V01, V02, V03, V04, V05, V06, V07, V08, V09, V10, V11, V12,
+               V13, V14, V15, V16, V17, V18, V19, V20, V21, V22, V23, V24]
+  material_ids: [M01, M02, M03, M04, M05, M06, M07, M08, M09, M10, M11, M12]
+  pattern_ids: [PAT01, PAT02, PAT03, PAT04, PAT05, PAT06, PAT07, PAT08,
+                PAT09, PAT10, PAT11, PAT12, PAT13, PAT14, PAT15, PAT16]
+  layer_combo_ids: [L01, L02, L03, L04]
+  parameter_bounds_ref: configs/a12/registry_bounds.json
+sampling:
+  method: latin_hypercube
+  quota_policy: registry_balanced
+  seed_stride: 1
+  sobol_power_of_two: true
+pattern:
+  coordinate_space: mother_surface_mm
+  periodic_azimuth: true
+  geometry_before_fracture: true
+  antialias: analytic_or_mipmap
+  height_policy: none
+fracture:
+  # 与基线同值（实测：rough 在 0.01mm 预算下 realized_error_mm≈0.226 ⇒ PRECISION_NOT_REALIZED）。
+  backend: plane_shared_cut
+  target_piece_range: [2, 4]
+  min_feature_wavelength_mm: 0.24
+  shared_surface_max_error_mm: 0.01
+  max_attempts: 3
+  secondary_probability: 0.0
+  keep_parent_history: true
+  rough_amplitude_mm: [0.02, 0.3]
+  seed_count_range: [12, 28]
+physical:
+  recipe_registry_ref: configs/a12/physical_recipes.json
+  preserve_clean_assets: true
+  recipes: [P03_depth_light, P01_polish_mid]
+observation:
+  # 真实采集风格：PHONE_RGB 输入 + pycolmap 真实 SfM（真值位姿/深度/尺度不进）
+  input_profile: PHONE_RGB
+  routes: [photo_mvs]
+  views_per_fragment: 12
+  image_long_edge_px: 1024
+  point_count: 8192
+  # 相机档注册表（档位与畸变在 synlab/cameras/profiles.py 的 CAM_GLOBAL/MID/LOCAL_V3 中，
+  # 交付分辨率由本文件 image_long_edge_px 与该注册表的 fov 比例决定）。
+  camera_profile_ref: configs/a12/camera_profiles.json
+  # 观测 payload 对每一视图都写 rgb/rgb_linear/depth_z/id_map/surface_tag/掩码/K/T_WC，
+  # 因此"所有视图的深度"事实上都已物化（写的值与事实一致）。
+  persist_depth: all
+  persist_view_geometry: true
+  persist_fused_geometry: true
+  truth_channels_role: research_label_only
+  # 真实 Cycles 子进程渲染（doctor 实测 PASS）。blender 请求不会被静默降级为光栅器：
+  # 无二进制时 resolve_render_backend 抛 ENV_CAPABILITY_MISSING。
+  renderer: blender
+resources:
+  cpu_workers: 2
+  threads_per_worker: 2
+  cpu_rss_budget_gb: 30
+  gpu_device: 0
+  gpu_concurrency: 1
+  gpu_budget_gb: 26
+  disk_soft_fraction: 0.70
+  disk_restrict_fraction: 0.80
+  disk_stop_fraction: 0.90
+  reserve_temp_peak: true
+storage:
+  # 新库：真实感数据与旧 data/a12 物理隔离，旧库不动。
+  root: data/a12_realistic
+  database: data/a12_realistic/metadata.sqlite
+  shard_target_mb: 512
+  mutable_release: false
+quality:
+  protocol_ref: configs/a12/qa_protocol_v1.json
+  fail_closed: true
+  freeze_before_confirmation: true
+degraded_recipe_refs:
+  # 仓库现存的两个 paired recipe（basis_policy: paired_across_levels），与基线一致地引用；
+  # 它们覆盖 P03 / P02 / I01 / G08 四轴。本轮另有 5 个 I 轴（I01/I03/I04/I05/I10）在
+  # 观测阶段按 realism.AXIS_LEVELS 落档（含 level 0 真恒等），因为本构建的批量生成路径
+  # **未接入** degrade recipe（synlab/pipeline.py 不读 degraded_recipe_refs；见
+  # docs/a12/realism_gap.md 第 12 条）。
+  - configs/a12/degrade_recipes/paired_plane_levels.yaml
+  - configs/a12/degrade_recipes/paired_edgewear_blur_bump.yaml
+notes: >-
+  真实感派生配置（EXECUTED：本轮按本文件真实产数据，命令/退出码/每阶段耗时/观测产物/
+  与 ideal_visible 的对照差异见 data/a12/reports/realistic_pilot.json 与
+  docs/a12/realism_gap.md）。相对基线只改 observation（photo_mvs + blender + 真实退化 +
+  带畸变相机档的显式 undistort 政策）、storage（新库 data/a12_realistic）与 notes；
+  其余逐字相同以保证 lineage i 与旧库同母体。仍不像真实的部分（无实拍标定、无真实光照/
+  材质/纹理、无真实尺度、稠密 MVS 为稀疏先验）逐条列在 realism_gap.md 并给出补齐条件。

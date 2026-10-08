@@ -1,0 +1,168 @@
+{
+  "background_linear": [
+    0.02,
+    0.02,
+    0.025
+  ],
+  "camera": {
+    "K": [
+      [
+        87.57894736842105,
+        0.0,
+        63.5
+      ],
+      [
+        0.0,
+        87.57894736842105,
+        47.5
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "T_WC": [
+      [
+        -0.9999782161473134,
+        0.004894312611654629,
+        -0.00442864933092973,
+        0.0
+      ],
+      [
+        0.006223991874143108,
+        0.9225650874888398,
+        -0.3857912923743355,
+        84.19035512031975
+      ],
+      [
+        0.00219753406971234,
+        -0.38581045223110383,
+        -0.9225754526288045,
+        203.25349715248308
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "convention": "opencv_pixel_center_0_0",
+    "dist": null,
+    "far_mm": 1000000.0,
+    "focus_distance_mm": 220.0,
+    "image_size": [
+      128,
+      96
+    ],
+    "model": "PINHOLE",
+    "near_mm": 1.0
+  },
+  "checks": {
+    "camera_uv_tol_px": 0.1,
+    "depth_pack_range_mm": 100000.0,
+    "face_order_tol_mm": 0.01,
+    "raycast_depth_tol_mm": 0.5,
+    "raycast_samples": 1500
+  },
+  "depth_pack_range_mm": 100000.0,
+  "light": {
+    "ambient": [
+      0.3,
+      0.3,
+      0.33
+    ],
+    "color": [
+      2.35,
+      2.25,
+      2.1
+    ],
+    "direction": [
+      -0.3505437645797537,
+      -0.6209632401127066,
+      -0.7010875291595074
+    ]
+  },
+  "linearity_probes": [],
+  "objects": [
+    {
+      "axis": {
+        "forward": "NEGATIVE_Y",
+        "up": "Z"
+      },
+      "is_target": true,
+      "labels": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\data\\a12_realistic\\reports\\blender\\_work\\pytest_realism_CAM_MID_V3#v00_CAM_MID_V3#v00_20261003-114726_1e5ad9cc\\target_labels.npz",
+      "mesh": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\data\\a12_realistic\\reports\\blender\\_work\\pytest_realism_CAM_MID_V3#v00_CAM_MID_V3#v00_20261003-114726_1e5ad9cc\\target.ply",
+      "mesh_format": "ply",
+      "name": "target",
+      "object_pose_T_WO": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "pass_index": 1
+    }
+  ],
+  "output_dir": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\data\\a12_realistic\\reports\\blender\\_work\\pytest_realism_CAM_MID_V3#v00_CAM_MID_V3#v00_20261003-114726_1e5ad9cc",
+  "provenance": {
+    "albedo_source_kind": "SENSOR_SIM",
+    "requested_by": "synlab.observe.blender.render_view_blender",
+    "source_kind": "SENSOR_SIM"
+  },
+  "render": {
+    "aa_geometry_samples": 32,
+    "compute_device_type": "AUTO",
+    "denoise": false,
+    "denoiser": "OPENIMAGEDENOISE",
+    "device": "CPU",
+    "filter_width": 1.5,
+    "geometry_filter_width": 0.01,
+    "geometry_max_bounces": 0,
+    "geometry_samples": 1,
+    "gpu_device_index": null,
+    "gpu_require": false,
+    "max_bounces": 4,
+    "samples": 32,
+    "seed": 20261001
+  },
+  "resolution": [
+    128,
+    96
+  ],
+  "schema": "rws.blender.render.config/1",
+  "uncertain": {
+    "coc_px_threshold": 1000000.0,
+    "depth_edge_tol_mm": 0.25,
+    "f_number": 2.2,
+    "focus_distance_mm": 220.0,
+    "motion_amplitude_px": 0.0
+  },
+  "view_id": "CAM_MID_V3#v00",
+  "write": {
+    "exr": true,
+    "npy": true,
+    "previews": true
+  }
+}

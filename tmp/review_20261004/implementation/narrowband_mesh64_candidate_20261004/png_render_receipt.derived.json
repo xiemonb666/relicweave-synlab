@@ -1,0 +1,60 @@
+{
+  "schema": "a12.narrowband-mesh64-png-render-receipt.v1",
+  "derived_from": "render_comparison.py",
+  "fix": "Boundary edges selected with per-unique-edge counts (counts == 1), correcting the original inverse-index length mismatch.",
+  "argv": [
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+    "-B",
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\render_comparison_derived_20261004.py"
+  ],
+  "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+  "python_executable": "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+  "renderer_sha256": "47c5324eb561afc60ad4f3093963e3ea37feb004f0db4745385eddd51582edd3",
+  "inputs": [
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\candidate_comparison.json",
+      "sha256": "4ca288a8caaa8005572c2acb15bd059b31ccba66f07b0177cee1315f0927d12f"
+    },
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\result_P02_mesh32.json",
+      "sha256": "c96bdf65ad974fc1f67bbbec3e02b34ed20cceffb7675753ca308f332a24cc13"
+    },
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\result_P02_mesh64.json",
+      "sha256": "a83611485e8421f34a6a06eb7c93d0fe10d7315fbcb3844f46227873ac634102"
+    },
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\result_P03_mesh32.json",
+      "sha256": "4b474791b0a3766c79ffc0cc24176295d2197812b056bdcdc8ce7c65f8038c1f"
+    },
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\result_P03_mesh64.json",
+      "sha256": "6d70315a32f3a72937629d18bded04416f0d8d547a408eb7947dd45e37a286dd"
+    },
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\output_P02_mesh32.npz",
+      "sha256": "39331608f36996993d53297630aa560359c410106690effe55ef97aa31325e43"
+    },
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\output_P02_mesh64.npz",
+      "sha256": "27e46b8c5fdf6ac9b8de14d183895041c4a66a6064c1396b6d559861eb5a88bf"
+    },
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\output_P03_mesh32.npz",
+      "sha256": "d65680234558ba0889072f980b8e6dd125765c3f3370cf58c68e13551fd15af3"
+    },
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\output_P03_mesh64.npz",
+      "sha256": "c17b5cd641fa054cef01f36c860c0ae792d2ffdd76ba67d39ffbb3ec1dc48ab8"
+    }
+  ],
+  "started_utc": "2026-10-04T04:49:02.3837278Z",
+  "finished_utc": "2026-10-04T04:49:04.7615960Z",
+  "elapsed_seconds": 2.375,
+  "exit_code": 0,
+  "output": "{\"output\": \"C:\\\\Users\\\\xiemo\\\\Desktop\\\\ShardForge\\\\relicweave-synlab\\\\tmp\\\\review_20261004\\\\implementation\\\\narrowband_mesh64_candidate_20261004\\\\mesh32_mesh64_topology_projections.png\", \"bytes\": 1972473}",
+  "png_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\mesh32_mesh64_topology_projections.png",
+  "png_bytes": 1972473,
+  "png_sha256": "d89fbb1c669b952e3b16a5003c5f8243dc57a6cd5e095fe3c1e4c0a1324780b5",
+  "source": "Rendered from saved worker JSON and output NPZ files only; no mesh construction or Boolean."
+}

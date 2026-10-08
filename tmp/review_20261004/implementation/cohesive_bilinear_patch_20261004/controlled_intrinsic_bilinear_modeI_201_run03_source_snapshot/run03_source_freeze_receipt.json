@@ -1,0 +1,63 @@
+{
+  "status": "SOURCE_FROZEN_OUTPUT_ABSENT_NOT_STARTED",
+  "solver_started": false,
+  "run_id": "controlled_intrinsic_bilinear_modeI_201_run03",
+  "native_out_wsl": "/home/xiemo/cohesive_bilinear_patch_20261004/controlled_intrinsic_bilinear_modeI_201_run03",
+  "native_out_windows_unc": "\\\\wsl.localhost\\Ubuntu\\home\\xiemo\\cohesive_bilinear_patch_20261004\\controlled_intrinsic_bilinear_modeI_201_run03",
+  "native_out_parent": "/home/xiemo/cohesive_bilinear_patch_20261004",
+  "native_out_test_path_before_freeze": false,
+  "native_out_test_path_after_freeze": false,
+  "native_out_test_path_after_receipt": false,
+  "snapshot_absolute_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_bilinear_patch_20261004\\controlled_intrinsic_bilinear_modeI_201_run03_source_snapshot",
+  "snapshot_parent": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_bilinear_patch_20261004",
+  "snapshot_is_outside_native_solver_out": true,
+  "review_copy_absolute_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\cohesive_bilinear_patch_20261004\\controlled_intrinsic_bilinear_modeI_201_run03",
+  "review_copy_is_outside_native_solver_out": true,
+  "native_mount_observation": [
+    "absent",
+    "/ /dev/sdd ext4",
+    "/mnt/c C:\\ 9p"
+  ],
+  "native_mount_command_exit": 0,
+  "source_freeze_items": [
+    {
+      "sha256": "0f634ecac951bdd2525c433960f98bc9923cddf6fff0e74e1d453825807246fc",
+      "bytes": 15822,
+      "relative_path": "run_intrinsic_bilinear_modeI_201_run03.py"
+    },
+    {
+      "sha256": "f8bb6ad15bd26928a8fd9205abfdbd8a7ea0fcb40d64a9c25e84005badd9dc9b",
+      "bytes": 501,
+      "relative_path": "launch_intrinsic_bilinear_modeI_201_run03.sh"
+    },
+    {
+      "sha256": "3b2cf67be3195ed0fcf49a569a2ab8fd05e2fa44f7638594567d50a0f173fae6",
+      "bytes": 5116,
+      "relative_path": "manifest_bilinear_modeI_201_run03.json"
+    },
+    {
+      "sha256": "b63cf69a1dce0045ad17e2d04e7ad37429d02f3b152d195818b9ce2f722830f3",
+      "bytes": 4211,
+      "relative_path": "parse_cohesive_vtu.py"
+    },
+    {
+      "sha256": "b98402c5a7b7af36b8e5e8a2a90c7db689cb1af86a089c8e1b9a0dbf07ba2638",
+      "bytes": 3605,
+      "relative_path": "input/block_2x2x4mm.msh"
+    },
+    {
+      "sha256": "ad92d6449b6ecc804ca73811806706e917c43c8b05f0f50625229e494853a666",
+      "bytes": 423,
+      "relative_path": "input/material.dat"
+    },
+    {
+      "sha256": "32771e0855b3060782ea8140326e4ce8504c308770bd75e80c1ae8076b810d8a",
+      "bytes": 1649,
+      "relative_path": "copy_run03_results_once.ps1"
+    }
+  ],
+  "prior_prep_attempt": "One preparation-only script stopped on an incorrectly nested mesh/material fingerprint assertion before manifest/snapshot creation; driver/launcher were retained and byte-compared against the exact expected v2 path transformations. No solver or native output started.",
+  "run02_unchanged": true,
+  "input_mesh_material_and_all_solver_controls_unchanged": true,
+  "output_only_environment_change": "native WSL ext4 /home OUT path; run id/manifest/source/launcher path references updated"
+}

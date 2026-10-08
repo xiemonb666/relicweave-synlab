@@ -1,0 +1,179 @@
+{
+  "schema": "independent_backup_postverify_v1",
+  "status": "PASS_CORRECTED_POSTVERIFY_PRIOR_CHECKER_FAILURES_RETAINED",
+  "started_utc": "2026-10-06T19:39:12.472952+00:00",
+  "finished_utc": "2026-10-06T19:39:12.502464+00:00",
+  "scope": "Read-only postverification of the frozen 43-file backup; no Git command or file/blob audit was rerun in this correction.",
+  "input_pins": {
+    "plan": {
+      "path": "tmp/backup_coordinator/next_vf_coupled_backup_plan_20261007.json",
+      "sha256": "d0564be84a6a51887db11a3aa2410fb9f3154935adc066e1c1d5487b8fb989e7",
+      "bytes": 36744
+    },
+    "execution_receipt": {
+      "path": "tmp/backup_coordinator/next_vf_coupled_backup_execution_20261007.json",
+      "sha256": "32f8e57bda700e169c56720f0885f64499c543841e4f063f7fefbc88e3b0b35e",
+      "bytes": 8113293
+    }
+  },
+  "preserved_prior_audits": {
+    "attempt01_initial_fail": {
+      "json_path": "tmp/backup_coordinator/next_vf_coupled_backup_independent_20261007_attempt01_preserved/initial_failed_audit.json",
+      "json_sha256": "41e3028b5daa9b962862fb7cbc185c599ad570b840f37ab31c460c3094ae7e43",
+      "json_bytes": 80835,
+      "md_path": "tmp/backup_coordinator/next_vf_coupled_backup_independent_20261007_attempt01_preserved/initial_failed_audit.md",
+      "md_sha256": "07f65d89219feed3e483ce217c2424df6cd74eaf4be7797dab652c80dceae5b1",
+      "md_bytes": 1008,
+      "status": "FAIL_READ_ONLY_POSTVERIFY",
+      "failure_count": 43,
+      "failure_check": "index_receipt_status"
+    },
+    "attempt02_checker_schema_fail": {
+      "json_path": "tmp/backup_coordinator/next_vf_coupled_backup_independent_20261007_attempt02_preserved/checker_failed_audit.json",
+      "json_sha256": "f362535f1c9d2ec7ee5745d77df44abeaef60fe9aa9f6ed4c9a37e0387aecaee",
+      "json_bytes": 22431,
+      "md_path": "tmp/backup_coordinator/next_vf_coupled_backup_independent_20261007_attempt02_preserved/checker_failed_audit.md",
+      "md_sha256": "9d04ab2f9bc8ef5b0f8b9d7ca496f935e0a5f6e845b86376ec00d63b40cb80f3",
+      "md_bytes": 1239,
+      "status": "FAIL_CORRECTED_POSTVERIFY",
+      "failure_count": 44,
+      "cause": "Reviewer correction queried incompatible file-row aliases; original evidence was not rerun."
+    }
+  },
+  "cached_evidence_reuse": {
+    "initial_audit_json_sha256": "41e3028b5daa9b962862fb7cbc185c599ad570b840f37ab31c460c3094ae7e43",
+    "file_rows_reused": 43,
+    "all_43_three_way_equal": true,
+    "all_43_plan_matches": true,
+    "full_blob_audit_repeated": false,
+    "Git_commands_rerun": false,
+    "source_prepost_stable": true,
+    "destination_prepost_stable": true
+  },
+  "receipt_recheck": {
+    "records": 86,
+    "paths": 43,
+    "detailed_rc0_rows": 43,
+    "compact_passed_rows": 43,
+    "rule": "For this receipt, each path has exactly one detailed row with index_entry_returncode=0 and cat_file_returncode=0 plus one compact summary row with passed=true; the compact row does not declare command returncodes.",
+    "all_metadata_matches_plan": true
+  },
+  "plan_totals": {
+    "files": 43,
+    "bytes": 936512,
+    "per_repo": {
+      "pgfrag": {
+        "files": 15,
+        "bytes": 636690
+      },
+      "vesselforge": {
+        "files": 28,
+        "bytes": 299822
+      }
+    }
+  },
+  "repositories": {
+    "pgfrag": {
+      "branch": "backup/forge-work-20261003",
+      "head": "97d213c988323da39ddbaa9ebb2135b675190c93",
+      "parent": "6aabf6191eb232b4ad446334189d15e894bc3bff",
+      "changed_path_count": 15,
+      "changed_paths_exact": true,
+      "bytes": 636690,
+      "remote_ref": "refs/heads/backup/forge-work-20261003",
+      "remote_head": "97d213c988323da39ddbaa9ebb2135b675190c93",
+      "remote_matches_head": true,
+      "index_clean": true,
+      "tracked_worktree_clean": true,
+      "tracked_status_count": 0,
+      "untracked_all_files_count_preserved": 1642,
+      "raw_push_capture": {
+        "returncode": 0,
+        "stdout_bytes": 0,
+        "stderr_bytes": 100,
+        "stderr_sha256": "e42b0c5e1b4315c392a761952ee34f54975f1b319d6e7328a1afefde3b6d247e",
+        "success_ref_line_present": true
+      }
+    },
+    "vesselforge": {
+      "branch": "backup/forge-work-20261003",
+      "head": "f75c1a464e5806268cf2d5e09fcd3b833c2c19df",
+      "parent": "8acff8ac7db9cf212ed87ede3054a8311b69cc3a",
+      "changed_path_count": 28,
+      "changed_paths_exact": true,
+      "bytes": 299822,
+      "remote_ref": "refs/heads/backup/forge-work-20261003",
+      "remote_head": "f75c1a464e5806268cf2d5e09fcd3b833c2c19df",
+      "remote_matches_head": true,
+      "index_clean": true,
+      "tracked_worktree_clean": true,
+      "tracked_status_count": 0,
+      "untracked_all_files_count_preserved": 736,
+      "raw_push_capture": {
+        "returncode": 0,
+        "stdout_bytes": 0,
+        "stderr_bytes": 105,
+        "stderr_sha256": "d5f1c8a00b5750d5e91eacf160203d53e43490bce6b7838a66337c04676dbaef",
+        "success_ref_line_present": true
+      }
+    }
+  },
+  "final_gates": {
+    "plan_receipt_pins": true,
+    "43_source_destination_HEAD_blobs_equal_plan": true,
+    "index_receipt_43_detailed_rc0_plus_43_compact_pass": true,
+    "exact_15_pgfrag_and_28_vesselforge_commit_paths": true,
+    "both_remote_heads_match_commits": true,
+    "both_index_and_tracked_worktrees_clean": true,
+    "both_raw_push_captures_successful": true,
+    "source_and_destination_prepost_stable": true,
+    "untracked_worktree_content_preserved": true
+  },
+  "producer_attempt_history": [
+    {
+      "attempt": 1,
+      "status": "preflight_copy_or_stage_failed",
+      "repository_mutation": "none",
+      "cause": "preflight comparison normalized actual Git path but not the plan path; read-only false alarm",
+      "error_excerpt": "System.Management.Automation.RuntimeException: pgfrag preflight branch/head/parent/remote/index/tracked drift",
+      "error_sha256": "838efb9ec6cbc8da4e6a37f2570aa63cf3f8c79d7f9cf0346d022379ae0e74c9",
+      "preserved_failure_receipt_sha256": null,
+      "resumed_from_stage_snapshot_sha256": null
+    },
+    {
+      "attempt": 2,
+      "status": "preflight_copy_or_stage_failed",
+      "repository_mutation": "none",
+      "cause": "PowerShell receipt update indexed a PSCustomObject; preflight checks passed but failed before file mutations",
+      "error_excerpt": "System.Management.Automation.RuntimeException: Unable to index into an object of type \"System.Management.Automation.PSObject\".\r\n   at System.Management.Automation.ExceptionHandlingOps.CheckActionPreference(FunctionContext funcContext, Exception exception)\r\n   at System.Management.Automation.Interpreter.ActionCallInstruction`2.Run(InterpretedFrame frame)\r\n   at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame)\r\n   at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame)",
+      "error_sha256": "9aa649b82fd097919b610c9c6da31031a660c6499f357e43983195054c6c9f7b",
+      "preserved_failure_receipt_sha256": null,
+      "resumed_from_stage_snapshot_sha256": null
+    },
+    {
+      "attempt": 3,
+      "status": "read_only_precommit_guard_false_alarm",
+      "repository_mutation": "none; approved files were already copied and staged in the prior checkpoint",
+      "cause": "git status --short included the plan's expected staged additions; the corrected guard checks unstaged diff and exact cached paths",
+      "error_excerpt": "RuntimeError('pgfrag has unrelated tracked worktree changes: A  docs/progress/review_artifacts/20261007/mls_rotation_covariance/SOURCE_READY.json\\nA  docs/progress/review_artifacts/20261007/mls_rotation_covariance/focused_run01/ROOT_GO_RECORD.json\\nA  docs/progress/review_artifacts/20261007/mls_rotation_covariance/focused_run01/outer_run_receipt.json\\nA  docs/progress/review_artifacts/20261007/mls_rotation_covariance/focused_run01/result.json\\nA  docs/progress/review_artifacts/20261007/mls_rotation_covariance/focused_run01/stderr.raw\\nA  docs/progress/review_artifacts/20261007/mls_rotation_covariance/focused_run01/stdout.raw\\nA  experiments/mixed93_actual_cohesive_bridge_20261006/case.json\\n",
+      "error_sha256": "396f7d3fc71394d8a499500125ab8bde6a8a5a80b3c6479c3418a38f2577ede0",
+      "preserved_failure_receipt_sha256": "d93fbe8350249a9947effcd7a68af1089c4598f1f283147c51338749cb686e1e",
+      "resumed_from_stage_snapshot_sha256": "3268496203a1a2a1e6d8412f30a88b02a8b44e0c6026f38ac71c5f622b57bb84"
+    }
+  ],
+  "history_notes": [
+    "Attempt01 failed only because its checker incorrectly required command-returncode keys on both receipt row types; all 43 compact summaries omit those keys, while every detailed row has both return codes 0.",
+    "Attempt02 correction failed because the checker used aliases that do not match the initial audit's actual file_checks schema. Its JSON and Markdown are preserved verbatim.",
+    "The producer retained three failed attempts before completion; their causes and no-mutation status are carried forward from the captured execution receipt. The completed backup is independently postverified and is not being represented as a failure-free process."
+  ],
+  "repository_mutations_performed_by_this_review": false,
+  "tests_run": false,
+  "review_runtime": {
+    "python_executable": "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+    "flags": [
+      "-B",
+      "-"
+    ],
+    "script_mode": "inline stdlib-only correction using cached JSON; no git subprocesses"
+  }
+}

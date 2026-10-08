@@ -1,0 +1,90 @@
+{
+  "schema": "relicweave.chain.audit.execution_receipt.v1",
+  "scope": "Small static audit over explicit JSON references only; no solver, synthesis, package payload scan, or exporter integration.",
+  "sha256": {
+    "auditor_source": "relicweave-synlab/synlab/qa/forge_chain_audit.py",
+    "auditor_source_digest": "6a02483758a4d77e0ed15538c9c6d7114251d52ae34ca86c5c6e7cfd0de79279",
+    "test_source": "relicweave-synlab/tests/a12/qa/test_forge_chain_audit_20261004.py",
+    "test_source_digest": "58fe78a9c5a78bbd4a22809a25488399af0e40f08fc227827ccb86449601cd66",
+    "current_chain_input": "tmp/review_20261004/implementation/forge_chain_audit_20261004/current_chain_input.json",
+    "current_chain_input_digest": "6f8c23b64601ab6aad0bb0ee1f3c271802c9bf1eb8a43db895faaa4226ea234e",
+    "current_chain_audit": "tmp/review_20261004/implementation/forge_chain_audit_20261004/current_chain_audit.json",
+    "current_chain_audit_digest": "c1e3c53998552f388346fa514b7c9092562e070f82d6e400025975dde4288422"
+  },
+  "current_chain_result": {
+    "status": "INCOMPLETE",
+    "structural_completeness": "INCOMPLETE",
+    "evidence_reference_completeness": "INCOMPLETE",
+    "science_qualification": "SCIENCE_UNVERIFIED",
+    "physics_qualified": false,
+    "pretrain_qualified": false,
+    "gap_count": 29,
+    "gap_report": "tmp/review_20261004/implementation/forge_chain_audit_20261004/current_chain_audit.json"
+  },
+  "verified_explicit_source_references": {
+    "parent_asset_manifest": {
+      "path": "relicweave-synlab/tmp/review_20261003/implementation/vf/artifacts/four_bands_brep_semantics1_final/manifest.json",
+      "sha256": "3a2640a3e98f777af3e3cd6c1c9b3cdf488df423b25255539e9181cd0b515832",
+      "status": "HASH_VERIFIED_JSON_READ"
+    },
+    "native_job": {
+      "path": "relicweave-synlab/tmp/review_20261003/implementation/pg/jobs/osb_fracture_branch_001/job.json",
+      "sha256": "83af8ea8cb0fd204ab288841fd87382c9dae77ec1cfb5dc9d0c925d610d430d1",
+      "status": "HASH_VERIFIED_JSON_READ"
+    },
+    "native_result": {
+      "path": "relicweave-synlab/tmp/review_20261003/implementation/pg/jobs/osb_fracture_branch_001/output/result.json",
+      "sha256": "b3fb84f20d409f4a4dca0b34ffd8b95a07b7c7944b8b6ecd70100b0b5b17dc20",
+      "status": "HASH_VERIFIED_JSON_READ"
+    },
+    "dataset_export_manifest": {
+      "path": "relicweave-synlab/data/a12_exports/experiment_ready/training_package/export_manifest.json",
+      "sha256": "07700a460589d325e2029f0522b73261043eb5c2031f4f3ee4c51c663aa585e9",
+      "status": "HASH_VERIFIED_JSON_READ"
+    },
+    "degradation_index": {
+      "path": "relicweave-synlab/data/a12_exports/experiment_ready/training_package/degrade/index.json",
+      "sha256": "9d44852b7fffed7e7a7605a02316538b490631ffdff3664334c6d131ecdc1dac",
+      "status": "HASH_VERIFIED_JSON_READ"
+    },
+    "feature_policy": {
+      "path": "relicweave-synlab/synlab/schemas/view_channels.json",
+      "sha256": "84aaa8f72179b0d059f6afb88d2655f9761b96401193c52c3b78c699f0e88e7f",
+      "status": "HASH_VERIFIED_JSON_READ"
+    }
+  },
+  "executions": [
+    {
+      "kind": "static_current_chain_audit",
+      "workdir": "C:/Users/xiemo/Desktop/ShardForge",
+      "argv": [
+        ".\\relicweave-synlab\\.venv\\Scripts\\python.exe",
+        ".\\relicweave-synlab\\synlab\\qa\\forge_chain_audit.py",
+        "--root",
+        ".",
+        "--input",
+        "tmp/review_20261004/implementation/forge_chain_audit_20261004/current_chain_input.json",
+        "--output",
+        "tmp/review_20261004/implementation/forge_chain_audit_20261004/current_chain_audit.json"
+      ],
+      "exit_code": 0,
+      "raw_stdout": "{\"status\": \"INCOMPLETE\", \"science\": \"SCIENCE_UNVERIFIED\", \"physics_qualified\": false, \"pretrain_qualified\": false, \"gap_count\": 29, \"output\": \"C:\\\\Users\\\\xiemo\\\\Desktop\\\\ShardForge\\\\tmp\\\\review_20261004\\\\implementation\\\\forge_chain_audit_20261004\\\\current_chain_audit.json\"}\r\n",
+      "raw_stderr": ""
+    },
+    {
+      "kind": "targeted_pytest_module",
+      "workdir": "C:/Users/xiemo/Desktop/ShardForge/relicweave-synlab",
+      "argv": [
+        ".venv\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/a12/qa/test_forge_chain_audit_20261004.py"
+      ],
+      "exit_code": 0,
+      "test_cases": 8,
+      "raw_stdout": "........ [100%]\r\n",
+      "raw_stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,319 @@
+{
+  "schema": "curated_incremental_backup_plan.v1",
+  "plan_id": "next_vf_owner_fix_incremental_plan_20261006_v1",
+  "created_local": "2026-10-06",
+  "plan_only": true,
+  "git_mutations_performed": false,
+  "root_exact_plan_review_required_before_copy_or_git_write": true,
+  "branch_target": "backup/forge-work-20261003",
+  "constraints": {
+    "max_candidate_files": 40,
+    "exact_paths_only": true,
+    "no_force_add": true,
+    "no_attributes_change": true,
+    "no_persistent_git_config_change": true,
+    "no_commit_or_push_until_root_approval": true,
+    "per_command_core_autocrlf_false_recommended": true
+  },
+  "repo_preflight": {
+    "vesselforge": {
+      "branch": "backup/forge-work-20261003",
+      "local_head": "fa644922fa7753a6f60a4b44eaea45b6835a0da6",
+      "origin_url": "https://github.com/xiemonb666/vesselforge.git",
+      "remote_branch": "backup/forge-work-20261003",
+      "remote_head": "fa644922fa7753a6f60a4b44eaea45b6835a0da6",
+      "local_equals_remote": true,
+      "tracked_worktree_clean": true,
+      "index_clean": true,
+      "tracked_status_lines": 0,
+      "untracked_inventory": "not enumerated; only exact candidate paths inspected"
+    }
+  },
+  "candidate_file_count": 9,
+  "candidate_total_bytes": 75429,
+  "unique_destination_count": 9,
+  "files": [
+    {
+      "id": "owner_fix_source",
+      "group": "vf_global_two_cap_owner_fix",
+      "repo": "vesselforge",
+      "source_path": "experiments/global_two_cap_mesh_candidate_20261005/candidate_owner_fix.py",
+      "destination_path": "experiments/global_two_cap_mesh_candidate_20261005/candidate_owner_fix.py",
+      "operation": "stage_exact_existing",
+      "role": "owner-lookup correction only; no generated mesh",
+      "bytes": 45058,
+      "sha256": "e79e7f9ce1661e0d2c3b649b222c2875d144e280701a9e953b7fc8bddde185a4",
+      "source_tracked": false,
+      "source_porcelain": [
+        "?? experiments/global_two_cap_mesh_candidate_20261005/candidate_owner_fix.py"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/global_two_cap_mesh_candidate_20261005/candidate_owner_fix.py: text: unspecified",
+        "experiments/global_two_cap_mesh_candidate_20261005/candidate_owner_fix.py: eol: unspecified",
+        "experiments/global_two_cap_mesh_candidate_20261005/candidate_owner_fix.py: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "owner_fix_contract",
+      "group": "vf_global_two_cap_owner_fix",
+      "repo": "vesselforge",
+      "source_path": "experiments/global_two_cap_mesh_candidate_20261005/candidate_contract_owner_fix.json",
+      "destination_path": "experiments/global_two_cap_mesh_candidate_20261005/candidate_contract_owner_fix.json",
+      "operation": "stage_exact_existing",
+      "role": "candidate contract for source fix",
+      "bytes": 8558,
+      "sha256": "81e60e51f3c1732ab389cdbf97ed7179082b913c3a6cef380bd05485d885a15a",
+      "source_tracked": false,
+      "source_porcelain": [
+        "?? experiments/global_two_cap_mesh_candidate_20261005/candidate_contract_owner_fix.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/global_two_cap_mesh_candidate_20261005/candidate_contract_owner_fix.json: text: unspecified",
+        "experiments/global_two_cap_mesh_candidate_20261005/candidate_contract_owner_fix.json: eol: unspecified",
+        "experiments/global_two_cap_mesh_candidate_20261005/candidate_contract_owner_fix.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "owner_fix_freeze",
+      "group": "vf_global_two_cap_owner_fix",
+      "repo": "vesselforge",
+      "source_path": "experiments/global_two_cap_mesh_candidate_20261005/SOURCE_FREEZE_owner_fix.json",
+      "destination_path": "experiments/global_two_cap_mesh_candidate_20261005/SOURCE_FREEZE_owner_fix.json",
+      "operation": "stage_exact_existing",
+      "role": "historical source freeze and exact pins; status remains pre-review",
+      "bytes": 6643,
+      "sha256": "29beabbda63c8e6c6ca08234fb0f529da67227a475edb8b1cc664923801c9df6",
+      "source_tracked": false,
+      "source_porcelain": [
+        "?? experiments/global_two_cap_mesh_candidate_20261005/SOURCE_FREEZE_owner_fix.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/global_two_cap_mesh_candidate_20261005/SOURCE_FREEZE_owner_fix.json: text: unspecified",
+        "experiments/global_two_cap_mesh_candidate_20261005/SOURCE_FREEZE_owner_fix.json: eol: unspecified",
+        "experiments/global_two_cap_mesh_candidate_20261005/SOURCE_FREEZE_owner_fix.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "owner_lookup_toy_source",
+      "group": "vf_global_two_cap_owner_fix",
+      "repo": "vesselforge",
+      "source_path": "experiments/global_two_cap_mesh_candidate_20261005/owner_lookup_toy_check.py",
+      "destination_path": "experiments/global_two_cap_mesh_candidate_20261005/owner_lookup_toy_check.py",
+      "operation": "stage_exact_existing",
+      "role": "two-parent toy check source; candidate main not invoked",
+      "bytes": 1565,
+      "sha256": "579062c68de79d94f174cdb0130856f73f8c3171637657298021712ca1b861c7",
+      "source_tracked": false,
+      "source_porcelain": [
+        "?? experiments/global_two_cap_mesh_candidate_20261005/owner_lookup_toy_check.py"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/global_two_cap_mesh_candidate_20261005/owner_lookup_toy_check.py: text: unspecified",
+        "experiments/global_two_cap_mesh_candidate_20261005/owner_lookup_toy_check.py: eol: unspecified",
+        "experiments/global_two_cap_mesh_candidate_20261005/owner_lookup_toy_check.py: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "owner_lookup_toy_receipt",
+      "group": "vf_global_two_cap_owner_fix",
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261005/global_two_cap_mesh_candidate/owner_fix_two_parent_toy_check.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/global_two_cap_owner_fix/owner_fix_two_parent_toy_check.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "toy check PASS receipt; does not generate or qualify mesh",
+      "bytes": 1200,
+      "sha256": "9c25c6b2758f6c88a5518eb317f3e11c05b3ab86f8f1a7445d25b9c6815ffe7e",
+      "source_tracked": false,
+      "source_porcelain": [
+        "?? tmp/review_20261005/global_two_cap_mesh_candidate/owner_fix_two_parent_toy_check.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/global_two_cap_owner_fix/owner_fix_two_parent_toy_check.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/global_two_cap_owner_fix/owner_fix_two_parent_toy_check.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/global_two_cap_owner_fix/owner_fix_two_parent_toy_check.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "retained_run01_failure_receipt",
+      "group": "vf_global_two_cap_owner_fix",
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261005/global_two_cap_mesh_candidate/run01_two_cap/run_receipt.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/global_two_cap_owner_fix/retained_run01/run_receipt.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "retain original pre-fix failed run evidence",
+      "bytes": 1757,
+      "sha256": "34eec1b7328dd52854c91efd09f02886d10c4e0b66b2fbba1bf68d2a77e5a2d6",
+      "source_tracked": false,
+      "source_porcelain": [
+        "?? tmp/review_20261005/global_two_cap_mesh_candidate/run01_two_cap/run_receipt.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/global_two_cap_owner_fix/retained_run01/run_receipt.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/global_two_cap_owner_fix/retained_run01/run_receipt.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/global_two_cap_owner_fix/retained_run01/run_receipt.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "retained_run01_failure_snapshot",
+      "group": "vf_global_two_cap_owner_fix",
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261005/global_two_cap_mesh_candidate/run01_failure_snapshot_before_owner_fix.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/global_two_cap_owner_fix/retained_run01/run01_failure_snapshot_before_owner_fix.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "retained failure snapshot; pins the original CandidateUnknown failure",
+      "bytes": 4034,
+      "sha256": "6147032b20e2a6987dbe6cd54329b32b2a0f76462611602907d5aa03743fe90b",
+      "source_tracked": false,
+      "source_porcelain": [
+        "?? tmp/review_20261005/global_two_cap_mesh_candidate/run01_failure_snapshot_before_owner_fix.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/global_two_cap_owner_fix/retained_run01/run01_failure_snapshot_before_owner_fix.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/global_two_cap_owner_fix/retained_run01/run01_failure_snapshot_before_owner_fix.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/global_two_cap_owner_fix/retained_run01/run01_failure_snapshot_before_owner_fix.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "owner_fix_static_critique",
+      "group": "vf_global_two_cap_owner_fix",
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261005/global_two_cap_independent_source/OWNER_FIX_STATIC_REVIEW.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/global_two_cap_owner_fix/source_critics/OWNER_FIX_STATIC_REVIEW.md",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "independent static review of narrow fix",
+      "bytes": 2987,
+      "sha256": "664c6c7e12987a7603e6a879678be40bccc1f9d5e92d0146cee765565121822a",
+      "source_tracked": false,
+      "source_porcelain": [
+        "?? tmp/review_20261005/global_two_cap_independent_source/OWNER_FIX_STATIC_REVIEW.md"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/global_two_cap_owner_fix/source_critics/OWNER_FIX_STATIC_REVIEW.md: text: unspecified",
+        "docs/evidence/20261006/core_incremental/global_two_cap_owner_fix/source_critics/OWNER_FIX_STATIC_REVIEW.md: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/global_two_cap_owner_fix/source_critics/OWNER_FIX_STATIC_REVIEW.md: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "failure_call_graph_critique",
+      "group": "vf_global_two_cap_owner_fix",
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261005/global_two_cap_independent_source/FAILURE_CALL_GRAPH_REVIEW.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/global_two_cap_owner_fix/source_critics/FAILURE_CALL_GRAPH_REVIEW.md",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "independent failure call-graph critique; preserves prior blocking diagnosis",
+      "bytes": 3627,
+      "sha256": "78fdcd157997a4c14c11f86638ba97a7e73976945aa7f16ddeeb9a191e64b127",
+      "source_tracked": false,
+      "source_porcelain": [
+        "?? tmp/review_20261005/global_two_cap_independent_source/FAILURE_CALL_GRAPH_REVIEW.md"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/global_two_cap_owner_fix/source_critics/FAILURE_CALL_GRAPH_REVIEW.md: text: unspecified",
+        "docs/evidence/20261006/core_incremental/global_two_cap_owner_fix/source_critics/FAILURE_CALL_GRAPH_REVIEW.md: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/global_two_cap_owner_fix/source_critics/FAILURE_CALL_GRAPH_REVIEW.md: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    }
+  ],
+  "source_pin_verification": [
+    {
+      "path": "candidate_owner_fix.py",
+      "expected_sha256": "e79e7f9ce1661e0d2c3b649b222c2875d144e280701a9e953b7fc8bddde185a4",
+      "actual_sha256": "e79e7f9ce1661e0d2c3b649b222c2875d144e280701a9e953b7fc8bddde185a4",
+      "match": true
+    },
+    {
+      "path": "candidate_contract_owner_fix.json",
+      "expected_sha256": "81e60e51f3c1732ab389cdbf97ed7179082b913c3a6cef380bd05485d885a15a",
+      "actual_sha256": "81e60e51f3c1732ab389cdbf97ed7179082b913c3a6cef380bd05485d885a15a",
+      "match": true
+    },
+    {
+      "path": "owner_lookup_toy_check.py",
+      "expected_sha256": "579062c68de79d94f174cdb0130856f73f8c3171637657298021712ca1b861c7",
+      "actual_sha256": "579062c68de79d94f174cdb0130856f73f8c3171637657298021712ca1b861c7",
+      "match": true
+    },
+    {
+      "path": "owner_fix_two_parent_toy_check.json",
+      "expected_sha256": "9c25c6b2758f6c88a5518eb317f3e11c05b3ab86f8f1a7445d25b9c6815ffe7e",
+      "actual_sha256": "9c25c6b2758f6c88a5518eb317f3e11c05b3ab86f8f1a7445d25b9c6815ffe7e",
+      "match": true
+    },
+    {
+      "path": "run01_failure_snapshot_before_owner_fix.json",
+      "expected_sha256": "6147032b20e2a6987dbe6cd54329b32b2a0f76462611602907d5aa03743fe90b",
+      "actual_sha256": "6147032b20e2a6987dbe6cd54329b32b2a0f76462611602907d5aa03743fe90b",
+      "match": true
+    }
+  ],
+  "all_selected_pins_match": true,
+  "source_freeze_status": "SOURCE_ONLY_AWAITING_ROOT_REVIEW",
+  "source_freeze_scope_note": "Historical source-only freeze was prepared before root review; parent has since accepted only the owner-lookup fix and bounded two-parent toy result for backup. This is not mesh-generation or production qualification.",
+  "observed_scope": {
+    "toy_status": "PASS; 0.0191 seconds; candidate main not invoked",
+    "toy_candidate_main_invoked": false,
+    "run01_failure": "CandidateUnknown: barycentric coordinates escaped their source simplex",
+    "production_integration": false,
+    "candidate_mesh_generation_in_source_freeze": false,
+    "run02_currently_excluded": true
+  },
+  "deferred_groups_and_material": [
+    "Actual run02 owner-fix execution artifacts, candidate arrays/NPZ, PNGs, focused_checks_owner_fix.py, and run_candidate_owner_fix_once.py are excluded pending separate root review.",
+    "SOURCE_REVIEW_owner_fix.md and predecessor SOURCE_FREEZE.json are omitted from this minimal bundle; the owner-fix freeze itself records their pins/history.",
+    "No full mesh generation, mesh-quality or CAD/solver qualification is asserted."
+  ],
+  "new_bytes_within_10MiB": true,
+  "file_count_within_40": true,
+  "validation_evidence": {
+    "toy_result": {
+      "status": "PASS",
+      "candidate_main_invoked": false,
+      "mesh_generation_invoked": false,
+      "elapsed_seconds": 0.019079399993643165
+    },
+    "retained_run01": {
+      "status": "UNKNOWN_OR_FAIL",
+      "error_type": "CandidateUnknown",
+      "error": "barycentric coordinates escaped their source simplex",
+      "generation_invoked": true,
+      "automatic_retry": false
+    },
+    "qualification": "source fix and bounded toy only; no candidate mesh generation or mesh-quality/CAD/solver/physics qualification"
+  }
+}

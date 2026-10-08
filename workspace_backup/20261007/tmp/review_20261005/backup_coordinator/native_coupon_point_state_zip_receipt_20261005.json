@@ -1,0 +1,26 @@
+{
+  "created_utc": "2026-10-05T05:33:17.7635283Z",
+  "purpose": "bounded lossless ZIP preparation only; no repository copy or Git action",
+  "status": "failed",
+  "archive_path": "tmp/review_20261005/backup_coordinator/native_coupon_point_state_baseline_dt_half_20261005.zip",
+  "compression": "System.IO.Compression.ZipArchive CompressionLevel.Optimal (DEFLATE)",
+  "cap_bytes_exclusive": 52428800,
+  "entries": [
+    {
+      "path": "pgfrag/experiments/free_evolution_coupon_20261005/run_attempt_01/results/point_state_history.f64le",
+      "source_bytes": 37044000,
+      "source_sha256": "0f436e4d8cabd29f3f634334e2d1e00e920be098cafaea8a1e0a9df2b221be77",
+      "compressed_entry_bytes": null
+    },
+    {
+      "path": "pgfrag/experiments/free_evolution_coupon_dt_half_20261005/run_attempt_01/results/point_state_history.f64le",
+      "source_bytes": 73332000,
+      "source_sha256": "674a8b00ba433bdca840384a6e6cd9437fe78fbbdfeabc0293151322170e367c",
+      "compressed_entry_bytes": null
+    }
+  ],
+  "archive_bytes": 66309906,
+  "archive_sha256": "277dd7f175899360cd7002cde638a5fc598b5f36100395dfacf0b56596b00789",
+  "elapsed_seconds": 1.774,
+  "failure": "Archive exceeded strict 50 MiB cap: 66309906"
+}

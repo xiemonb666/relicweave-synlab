@@ -1,0 +1,36 @@
+﻿EEEEEEEEEEE                                                              [100%]
+=================================== ERRORS ====================================
+__________ ERROR at setup of test_cutter_is_a_closed_positive_solid ___________
+E   synlab.errors.SynLabError: [ErrorCode.CUTTER_NOT_CLOSED] (fracture.cut.verify) cutter is not watertight: 6442 edges with != 2 incident faces
+_ ERROR at setup of test_realized_interpolation_error_stays_inside_the_frozen_budget _
+E   synlab.errors.SynLabError: [ErrorCode.CUTTER_NOT_CLOSED] (fracture.cut.verify) cutter is not watertight: 6442 edges with != 2 incident faces
+_ ERROR at setup of test_the_cell_demand_is_predicted_before_the_expensive_build _
+E   synlab.errors.SynLabError: [ErrorCode.CUTTER_NOT_CLOSED] (fracture.cut.verify) cutter is not watertight: 6442 edges with != 2 incident faces
+_ ERROR at setup of test_shared_surface_is_exactly_flat_away_from_the_material _
+E   synlab.errors.SynLabError: [ErrorCode.CUTTER_NOT_CLOSED] (fracture.cut.verify) cutter is not watertight: 6442 edges with != 2 incident faces
+___________ ERROR at setup of test_event_passes_every_a06_threshold ___________
+E   synlab.errors.SynLabError: [ErrorCode.CUTTER_NOT_CLOSED] (fracture.cut.verify) cutter is not watertight: 6442 edges with != 2 incident faces
+___________ ERROR at setup of test_fragments_do_not_self_intersect ____________
+E   synlab.errors.SynLabError: [ErrorCode.CUTTER_NOT_CLOSED] (fracture.cut.verify) cutter is not watertight: 6442 edges with != 2 incident faces
+_ ERROR at setup of test_morphology_parameters_reach_the_interfaces_and_the_fragments _
+E   synlab.errors.SynLabError: [ErrorCode.CUTTER_NOT_CLOSED] (fracture.cut.verify) cutter is not watertight: 6442 edges with != 2 incident faces
+_ ERROR at setup of test_measured_roughness_is_positive_and_consistent_with_the_request _
+E   synlab.errors.SynLabError: [ErrorCode.CUTTER_NOT_CLOSED] (fracture.cut.verify) cutter is not watertight: 6442 edges with != 2 incident faces
+_ ERROR at setup of test_conjugate_faces_are_the_same_surface_with_opposite_normals _
+E   synlab.errors.SynLabError: [ErrorCode.CUTTER_NOT_CLOSED] (fracture.cut.verify) cutter is not watertight: 6442 edges with != 2 incident faces
+_ ERROR at setup of test_interface_faces_are_labelled_and_are_the_measured_surface _
+E   synlab.errors.SynLabError: [ErrorCode.CUTTER_NOT_CLOSED] (fracture.cut.verify) cutter is not watertight: 6442 edges with != 2 incident faces
+___ ERROR at setup of test_cell_demand_estimator_is_monotone_in_the_relief ____
+E   synlab.errors.SynLabError: [ErrorCode.CUTTER_NOT_CLOSED] (fracture.cut.verify) cutter is not watertight: 6442 edges with != 2 incident faces
+=========================== short test summary info ===========================
+ERROR tests/a12/fracture/test_morphology_event.py::test_cutter_is_a_closed_positive_solid
+ERROR tests/a12/fracture/test_morphology_event.py::test_realized_interpolation_error_stays_inside_the_frozen_budget
+ERROR tests/a12/fracture/test_morphology_event.py::test_the_cell_demand_is_predicted_before_the_expensive_build
+ERROR tests/a12/fracture/test_morphology_event.py::test_shared_surface_is_exactly_flat_away_from_the_material
+ERROR tests/a12/fracture/test_morphology_event.py::test_event_passes_every_a06_threshold
+ERROR tests/a12/fracture/test_morphology_event.py::test_fragments_do_not_self_intersect
+ERROR tests/a12/fracture/test_morphology_event.py::test_morphology_parameters_reach_the_interfaces_and_the_fragments
+ERROR tests/a12/fracture/test_morphology_event.py::test_measured_roughness_is_positive_and_consistent_with_the_request
+ERROR tests/a12/fracture/test_morphology_event.py::test_conjugate_faces_are_the_same_surface_with_opposite_normals
+ERROR tests/a12/fracture/test_morphology_event.py::test_interface_faces_are_labelled_and_are_the_measured_surface
+ERROR tests/a12/fracture/test_morphology_event.py::test_cell_demand_estimator_is_monotone_in_the_relief

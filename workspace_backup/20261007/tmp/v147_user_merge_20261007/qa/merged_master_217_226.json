@@ -1,0 +1,131 @@
+{
+  "source_docx": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\v147_user_merge_20261007\\fresh_merge_final_candidate.docx",
+  "source_sha256": "70aa097680aa1920528ba4b6d9646821ac78b367618c0e9b8dbc36439fa38044",
+  "source_sha256_matches_expected": true,
+  "expected_source_sha256": "70aa097680aa1920528ba4b6d9646821ac78b367618c0e9b8dbc36439fa38044",
+  "render_directory": "tmp/v147_user_merge_20261007/fresh_merge_final_render",
+  "render_dimensions_px": [1547, 2002],
+  "range": {
+    "start": 217,
+    "end": 226
+  },
+  "inspection_method": "Each PNG was inspected with view_image(detail=original); apparent viewport clipping was checked in full-page views. No contact sheet or OCR substitution.",
+  "summary": {
+    "inspected_pages": 10,
+    "passed_pages": 8,
+    "issue_pages": [220, 221],
+    "issue_count": 1
+  },
+  "issues": [
+    {
+      "id": "issue-1",
+      "pages": [220, 221],
+      "location": "Page 220 bottom immediately above the footer; continuation at page 221 top after the running header.",
+      "description": "The list label “Solver-native contact” is isolated at the bottom of page 220. Its description, “减少状态转换。短时断裂阶段内部接触。”, begins on page 221. This is an orphaned list label across the page break."
+    }
+  ],
+  "pages": [
+    {
+      "page": 217,
+      "png_path": "tmp/v147_user_merge_20261007/fresh_merge_final_render/page-217.png",
+      "png_sha256": "eef968d3b636abfb8a4b3e038b28762451683234a293e693d530bb6ca9651e31",
+      "inspected": true,
+      "status": "pass",
+      "issues": [],
+      "visual_note": "J9 architecture tree and input-contract table are readable; borders, heading spacing, and footer are clear."
+    },
+    {
+      "page": 218,
+      "png_path": "tmp/v147_user_merge_20261007/fresh_merge_final_render/page-218.png",
+      "png_sha256": "30556610fb8e050154312c8e6952c460b77605c26fc2cf46d23d56f7c7d34844",
+      "inspected": true,
+      "status": "pass",
+      "issues": [],
+      "visual_note": "J10 comparison table is fully legible; rows and columns stay within bounds, with footer visible."
+    },
+    {
+      "page": 219,
+      "png_path": "tmp/v147_user_merge_20261007/fresh_merge_final_render/page-219.png",
+      "png_sha256": "9fbc3845293dfc31c3261325b0723723ac86306277314a2beae3a4bb2be67ed1",
+      "inspected": true,
+      "status": "pass",
+      "issues": [],
+      "visual_note": "J11 table, following paragraph, J12 heading, and material table are readable. The last table cell continues as “统计。” on page 220 and remains clear."
+    },
+    {
+      "page": 220,
+      "png_path": "tmp/v147_user_merge_20261007/fresh_merge_final_render/page-220.png",
+      "png_sha256": "e08f835bc43747030ad81c22538706634ccc2ca623f78ace0d436660a54c97f2",
+      "inspected": true,
+      "status": "issue",
+      "issues": [
+        {
+          "id": "issue-1",
+          "location": "Bottom of page, immediately above the footer.",
+          "description": "“Solver-native contact” is left alone; its description starts at the top of page 221."
+        }
+      ],
+      "visual_note": "The material-table continuation, callout, and J13 flow are readable. One list label is orphaned across the page break."
+    },
+    {
+      "page": 221,
+      "png_path": "tmp/v147_user_merge_20261007/fresh_merge_final_render/page-221.png",
+      "png_sha256": "33c27388801363b5f1ade76d3c96f776c6eb1dfe66b3c97651ea784bf0423056",
+      "inspected": true,
+      "status": "issue",
+      "issues": [
+        {
+          "id": "issue-1",
+          "location": "Top of page, directly below the running header.",
+          "description": "The text “减少状态转换。短时断裂阶段内部接触。” continues the isolated “Solver-native contact” label from page 220."
+        }
+      ],
+      "visual_note": "The continuation is readable; remaining J14/J15 content and footer are clear."
+    },
+    {
+      "page": 222,
+      "png_path": "tmp/v147_user_merge_20261007/fresh_merge_final_render/page-222.png",
+      "png_sha256": "b9dbeea69b3f3650e25110022eb2ab28601ccc8dfeb7c1426ed6a31fb55cc8f0",
+      "inspected": true,
+      "status": "pass",
+      "issues": [],
+      "visual_note": "Architecture tree continuation, J16.1 bullets, and J17 asset tree are readable; no clipping or footer collision."
+    },
+    {
+      "page": 223,
+      "png_path": "tmp/v147_user_merge_20261007/fresh_merge_final_render/page-223.png",
+      "png_sha256": "29f764034584c894e9a91f5165a0f76018e795b040139ab5b00c1dcdcb1266b4",
+      "inspected": true,
+      "status": "pass",
+      "issues": [],
+      "visual_note": "J17 continuation, J18 rules table, and J19 roadmap table are legible; table edges and footer are clear."
+    },
+    {
+      "page": 224,
+      "png_path": "tmp/v147_user_merge_20261007/fresh_merge_final_render/page-224.png",
+      "png_sha256": "fca355a062f52ee5168ea19bdc784528c83a4bb33ed4188ad9d9a58f33b2f57e",
+      "inspected": true,
+      "status": "pass",
+      "issues": [],
+      "visual_note": "J20 metric tables and the first portion of the J21 table are readable; no row or heading collisions."
+    },
+    {
+      "page": 225,
+      "png_path": "tmp/v147_user_merge_20261007/fresh_merge_final_render/page-225.png",
+      "png_sha256": "51b2ba0c3a962c074aeaa268df9c63ce0295a05f058c460a67be90cfef50417e",
+      "inspected": true,
+      "status": "pass",
+      "issues": [],
+      "visual_note": "J21 continuation has a repeated table header. References R1–R11 and their wrapped URLs are readable; footer is visible."
+    },
+    {
+      "page": 226,
+      "png_path": "tmp/v147_user_merge_20261007/fresh_merge_final_render/page-226.png",
+      "png_sha256": "f3557c2683a73c070217e194b3936be514121715eb948284ae84756c6d04f60e",
+      "inspected": true,
+      "status": "pass",
+      "issues": [],
+      "visual_note": "References R12–R25 and closing text are readable; long URLs wrap within the page and the complete footer is visible."
+    }
+  ]
+}

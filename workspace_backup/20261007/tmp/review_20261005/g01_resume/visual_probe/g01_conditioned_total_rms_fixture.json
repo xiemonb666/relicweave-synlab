@@ -1,0 +1,291 @@
+{
+  "artifact": "A12 G01 conditioned_total_rms synthetic visual probe",
+  "artifact_hashes": {
+    "input_output_hashes_use": "canonical little-endian float64 bytes with shape/kind prefix",
+    "npz_file": "g01_conditioned_total_rms_fixture.npz",
+    "npz_sha256": "e477e9f0909442a82a03e2aeea80d4dd50d229bfc5b8195b97b7a4b18a5f89c3"
+  },
+  "input_dictionary": {
+    "api_call": {
+      "arguments_shared": {
+        "axis_id": "G01",
+        "commit": false,
+        "variant": "conditioned_total_rms"
+      },
+      "function": "synlab.degrade.api.apply_axis",
+      "levels_targets": [
+        {
+          "level": 1,
+          "target_rms_mm": 0.05
+        },
+        {
+          "level": 3,
+          "target_rms_mm": 0.5
+        }
+      ]
+    },
+    "basis": {
+      "axis_id": "G01",
+      "basis_id": "01558d5dfde93e656bda8accd0350484",
+      "basis_rng_outlier_sample_sha256_not_claimed": null,
+      "master_seed": 20261005,
+      "per_level_rng_note": "G01 derives apply randomness from basis id plus level; outlier realizations may differ by level",
+      "same_basis_object_used_for_both_levels": true,
+      "seed_ref": "[20261005,\"a12-g01-visual-probe-20261005\",\"plane-grid-20x20-fixed\",\"G01\",\"conditioned_total_rms\"]",
+      "variant": "conditioned_total_rms"
+    },
+    "context": {
+      "axis_id": "G01",
+      "fragment_id": "plane-grid-20x20-fixed",
+      "lineage_id": "a12-g01-visual-probe-20261005",
+      "master_seed": 20261005,
+      "source_content_hash": "sha256:47609f0d436b4b52549b68b5f846a67573a52556f9d131a1739e8218e4510afe",
+      "source_kind": "GEOMETRY"
+    },
+    "fixture_geometry": {
+      "coarse_field_formula": "sin(2*pi*x/22)*cos(2*pi*y/18)",
+      "coarse_field_sha256": "abca1459ba848897fedbc663c23030e00b7a8ee1635583100fc79eef04902602",
+      "field_payload_override": "analytical synthetic coarse_field and weights replace sampled basis payload values",
+      "normal": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "outlier_probability": 0.02,
+      "shape": "20x20 planar grid; z=0 mm; x,y=-9.5..9.5 mm at 1 mm spacing",
+      "weight_formula": "0.70+0.40*(0.5+0.5*cos(2*pi*x/40))+0.15*(0.5+0.5*sin(2*pi*y/33))",
+      "weight_sha256": "e4cbf63f558af05d044c123808653d720dec1a6ab5e61658277651a2383cb171"
+    },
+    "source_bundle": {
+      "asset_id": null,
+      "content_hash": "sha256:47609f0d436b4b52549b68b5f846a67573a52556f9d131a1739e8218e4510afe",
+      "fragment_id": "plane-grid-20x20-fixed",
+      "frame": "world",
+      "frames": [],
+      "lineage_id": "a12-g01-visual-probe-20261005",
+      "meta": {
+        "fixture": "synthetic-only",
+        "master_seed": 20261005
+      },
+      "normals_sha256": "0e07e6c7fc07f5991160f7eb7f03ce032393a93ab34700850a22fa0f51fafe67",
+      "payload_keys": [
+        "frames",
+        "normals",
+        "points"
+      ],
+      "point_count": 400,
+      "points_sha256": "8c95b478017ddcce386583732cf1f220fc83a5171f9140a006311ff3d8892bc3",
+      "role": "visual-probe-observed-geometry",
+      "schema": "a12-g01-visual-fixture-v1",
+      "source_kind": "GEOMETRY",
+      "unit": "mm"
+    }
+  },
+  "interpretation_limits": [
+    "Conditioned exact scalar-field RMS is a deterministic rescale of a frozen full field, including sampled outliers.",
+    "The two level RNG derivations can produce different outlier labels; these outputs do not establish same-field monotonic behavior.",
+    "This synthetic fixture does not establish real-phone calibration or independent Gaussian noise.",
+    "All 400 points are retained in NPZ and plots; plots do not interpolate or suppress tail points.",
+    "The visible spatial bands come from the fixed analytical sine fixture; they are not a model of real reconstruction or sensor noise."
+  ],
+  "levels": {
+    "005": {
+      "absolute_displacement_quantiles_mm": {
+        "p00": 7.411945692662852e-19,
+        "p100": 0.2154173051838969,
+        "p50": 0.03499761515931366,
+        "p90": 0.07604875889524708,
+        "p95": 0.08286404650519602,
+        "p99": 0.1276565124592195,
+        "p99_9": 0.20199060056430293
+      },
+      "absolute_peak_mm": 0.2154173051838969,
+      "actual_delivered_coordinate_rms_mm_npz_independent": 0.05,
+      "actual_delivered_point_coordinate_rms_mm_api": 0.05,
+      "api_measured": {
+        "applied_rms_mm": 0.05,
+        "audit_reference_available": 0.0,
+        "outlier_fraction": 0.02
+      },
+      "api_realized": true,
+      "conditioning": {
+        "condition_mask_scope": "all_points",
+        "condition_mask_sha256": "a7bf3a4738657e5bd48016f76edd74078392368adfbdf98a70625e35e8888c65",
+        "conditioned_field_peak_abs_mm": 0.2154173051838969,
+        "conditioned_field_rms_mm": 0.05,
+        "delivery_status": "EXACT",
+        "distribution_note": "Conditioned exact RMS comes from deterministic scalar rescaling of this frozen field; it does not preserve a strict independent-Gaussian model. Real-phone noise calibration is not claimed.",
+        "field_status": "EXACT",
+        "outlier_count": 8,
+        "outlier_fraction_count_over_points": 0.02,
+        "outlier_fraction_reported_by_api": 0.02,
+        "outlier_labels_exported": false,
+        "outlier_mask_sha256": "f4f2a543b4569bbb22d1a6ea4316ee8a65e23ca062004172a1cfc2e348720554",
+        "point_count": 400,
+        "real_phone_noise_calibration": "NOT_CLAIMED",
+        "rms_definition": "sqrt(mean(displacement_mm ** 2)); uncentered scalar displacement over requested mask samples that are finite",
+        "scale_factor": 0.9179551653912885
+      },
+      "coordinate_vector_rms_mm_independent": 0.05,
+      "delivered_minus_target_rms_mm": 0.0,
+      "delivered_minus_target_rms_mm_api": 0.0,
+      "delivered_minus_target_rms_mm_npz_independent": 0.0,
+      "delta_xyz_sha256": "65189a1623a6341ff42a5927ac8854b3b24825e1a6bcfb576768aba00576b8ca",
+      "level": 1,
+      "output_points_sha256": "eae3698d4cbe6d73f8596afbeee908732807ab8916133a0408e20e3710e18cc6",
+      "raw_field": {
+        "full_values_exported": false,
+        "meaning": "full pre-conditioning scalar delta, including sampled outliers; hash/statistics only",
+        "outlier_labels_exported": false,
+        "peak_abs_mm": null,
+        "peak_abs_status": "UNKNOWN_NOT_EXPORTED",
+        "rms_mm_from_calibration": 0.05446889116712683,
+        "sha256_from_calibration": "a21222e110bb294d79be11cc86c9058bd7842843568515385e423b91aef92f94"
+      },
+      "result_hash": "sha256:8ef24825966aba23b95a0ba107ade1fed34d985ec218145ad8a256d8ec824431",
+      "signed_displacement_quantiles_mm": {
+        "p00": -0.2154173051838969,
+        "p100": 0.18176641641298477,
+        "p50": -7.787822282942066e-19,
+        "p90": 0.06676206248058274,
+        "p95": 0.07600616798847964,
+        "p99": 0.08851477265856528,
+        "p99_9": 0.17490440699536489
+      },
+      "signed_normal_displacement_sha256": "d2984a6760024c090ab730c565367d2aad3870a714f728de7594a16e28763cb4",
+      "signed_normal_rms_mm_independent": 0.05,
+      "source_hash": "sha256:47609f0d436b4b52549b68b5f846a67573a52556f9d131a1739e8218e4510afe",
+      "tail_counts": {
+        "abs_gt_1_target": {
+          "count": 147,
+          "fraction": 0.3675
+        },
+        "abs_gt_2_target": {
+          "count": 6,
+          "fraction": 0.015
+        },
+        "abs_gt_3_target": {
+          "count": 3,
+          "fraction": 0.0075
+        },
+        "abs_gt_5_target": {
+          "count": 0,
+          "fraction": 0.0
+        }
+      },
+      "target_rms_mm": 0.05
+    },
+    "050": {
+      "absolute_displacement_quantiles_mm": {
+        "p00": 7.169481773164607e-18,
+        "p100": 2.710439262325714,
+        "p50": 0.3379599969885977,
+        "p90": 0.7430256490577302,
+        "p95": 0.8015334916144412,
+        "p99": 1.336986637639513,
+        "p99_9": 2.523373445645969
+      },
+      "absolute_peak_mm": 2.710439262325714,
+      "actual_delivered_coordinate_rms_mm_npz_independent": 0.5,
+      "actual_delivered_point_coordinate_rms_mm_api": 0.5000000000000001,
+      "api_measured": {
+        "applied_rms_mm": 0.5000000000000001,
+        "audit_reference_available": 0.0,
+        "outlier_fraction": 0.0225
+      },
+      "api_realized": true,
+      "conditioning": {
+        "condition_mask_scope": "all_points",
+        "condition_mask_sha256": "a7bf3a4738657e5bd48016f76edd74078392368adfbdf98a70625e35e8888c65",
+        "conditioned_field_peak_abs_mm": 2.710439262325714,
+        "conditioned_field_rms_mm": 0.5000000000000001,
+        "delivery_status": "EXACT",
+        "distribution_note": "Conditioned exact RMS comes from deterministic scalar rescaling of this frozen field; it does not preserve a strict independent-Gaussian model. Real-phone noise calibration is not claimed.",
+        "field_status": "EXACT",
+        "outlier_count": 9,
+        "outlier_fraction_count_over_points": 0.0225,
+        "outlier_fraction_reported_by_api": 0.0225,
+        "outlier_labels_exported": false,
+        "outlier_mask_sha256": "368ceb675b6a73d2849027b3f0462cd30cad89296117a4824b2cd7eb62d493ac",
+        "point_count": 400,
+        "real_phone_noise_calibration": "NOT_CLAIMED",
+        "rms_definition": "sqrt(mean(displacement_mm ** 2)); uncentered scalar displacement over requested mask samples that are finite",
+        "scale_factor": 0.887926477034228
+      },
+      "coordinate_vector_rms_mm_independent": 0.5,
+      "delivered_minus_target_rms_mm": 1.1102230246251565e-16,
+      "delivered_minus_target_rms_mm_api": 1.1102230246251565e-16,
+      "delivered_minus_target_rms_mm_npz_independent": 0.0,
+      "delta_xyz_sha256": "6899d914c6182d29496338e3c73084a416cea62ccdab67057501fb09ae8c1ff0",
+      "level": 3,
+      "output_points_sha256": "fba46bcddcd2e76255798b6473210d8ff38b94c259cf28856dd8e517ec4a1c10",
+      "raw_field": {
+        "full_values_exported": false,
+        "meaning": "full pre-conditioning scalar delta, including sampled outliers; hash/statistics only",
+        "outlier_labels_exported": false,
+        "peak_abs_mm": null,
+        "peak_abs_status": "UNKNOWN_NOT_EXPORTED",
+        "rms_mm_from_calibration": 0.5631096863673386,
+        "sha256_from_calibration": "78d785f724943990c1e14dbb25494e63520be2a90952190b0614be3452f5d360"
+      },
+      "result_hash": "sha256:4218dc82e3961e59e38c0a9162105cb41749e09aed901db49f8dba9c214413b2",
+      "signed_displacement_quantiles_mm": {
+        "p00": -2.2416026290431454,
+        "p100": 2.710439262325714,
+        "p50": -1.854950057566825e-17,
+        "p90": 0.6441358674727353,
+        "p95": 0.7333153744519232,
+        "p99": 0.8362172049564828,
+        "p99_9": 2.4039478164027175
+      },
+      "signed_normal_displacement_sha256": "3e81f5994794c680390588ed5710f8e4f87edb078927d406ab227ec39fe94dc3",
+      "signed_normal_rms_mm_independent": 0.5,
+      "source_hash": "sha256:47609f0d436b4b52549b68b5f846a67573a52556f9d131a1739e8218e4510afe",
+      "tail_counts": {
+        "abs_gt_1_target": {
+          "count": 136,
+          "fraction": 0.34
+        },
+        "abs_gt_2_target": {
+          "count": 7,
+          "fraction": 0.0175
+        },
+        "abs_gt_3_target": {
+          "count": 3,
+          "fraction": 0.0075
+        },
+        "abs_gt_5_target": {
+          "count": 1,
+          "fraction": 0.0025
+        }
+      },
+      "target_rms_mm": 0.5
+    }
+  },
+  "plot_outputs": [
+    "g01_conditioned_total_rms_3d.png",
+    "g01_conditioned_total_rms_displacements.png"
+  ],
+  "report_correction": {
+    "actual_coordinate_rms_independently_recomputed": true,
+    "correction_method": "read-only NPZ coordinate recomputation; no operator invocation",
+    "outlier_fraction_corrected_from_count_over_point_count_and_api_measurement": true,
+    "raw_peak_relabelled_as_unknown_because_raw_values_were_not_exported": true,
+    "source_receipt": "g01_conditioned_total_rms_fixture_original.json",
+    "source_receipt_sha256": "28b7b42eb88853b6c26b70c2fde0e19c1c81cc1e0278359a82bb709b3996430e"
+  },
+  "runtime": {
+    "numpy": "2.5.3",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.14 (main, Sep  1 2026, 14:17:39) [MSC v.1944 64 bit (AMD64)]",
+    "python_executable": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\.venv\\Scripts\\python.exe",
+    "python_implementation": "CPython"
+  },
+  "scope": "small deterministic fixture; no real-phone calibration claim",
+  "source_sha256": {
+    "axes.py": "910959444244bff3ab096a89c051b28e7b6ae97122433f560f8c1d95a87c74da",
+    "ops_geometry.py": "725a4f7b85319314ed438ec9701e3d6c4bc6f0181dcdc07b07115bb2ee255bf2",
+    "rms_fields.py": "2ab742cee4d18f16b2b5cb2f95df5aba183b65eda27c19a1f7ae2ba98280daac",
+    "test_g01_total_rms_20261005.py": "b3e881555fb226a6a9ab6a9ef60a40117e844a50637405ec31e18753c0d76afc"
+  }
+}

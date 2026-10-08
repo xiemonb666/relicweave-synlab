@@ -1,0 +1,18 @@
+{
+  "action": "back up current audit.py and restore only the worktree file bytes from the requested baseline; no index or commit changes",
+  "relative_path": "synlab/mothers/audit.py",
+  "baseline_short": "139a5d5",
+  "baseline_commit": "139a5d507df623c4402d0f8ccff26de8548b42cd",
+  "current_backup": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261003\\pgfrag\\pending_audit_patch\\audit.py.current.py",
+  "baseline_backup": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261003\\pgfrag\\pending_audit_patch\\audit.py.baseline_139a5d5.py",
+  "diff_backup": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261003\\pgfrag\\pending_audit_patch\\audit.py.diff_from_139a5d5.patch",
+  "current_sha256_before_restore": "0b61ee919a2012dea8a8fead8d4f15f0d3cc599d1d5b1044aaf41b70f05a4aac",
+  "baseline_sha256": "8b2351d92508dfceeccccd8d562bf1b29ed5cab5300098e26084c2b8a7dcc960",
+  "diff_sha256": "583f4f963a48e023a1efa4f201c07f9c302a2b3f80a21c1541819669120cfc3a",
+  "diff_bytes": 28766,
+  "restored_sha256": "8b2351d92508dfceeccccd8d562bf1b29ed5cab5300098e26084c2b8a7dcc960",
+  "restored_matches_baseline_bytes": true,
+  "restored_git_blob_oid": "e571993d3980acc2319fe8921394e8221e6b53ec",
+  "baseline_git_blob_oid": "e571993d3980acc2319fe8921394e8221e6b53ec",
+  "restored_git_blob_matches_baseline": true
+}

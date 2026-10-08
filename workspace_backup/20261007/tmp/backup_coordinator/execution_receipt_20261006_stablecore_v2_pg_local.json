@@ -1,0 +1,626 @@
+{
+  "schema": "stablecore_repo_execution_receipt.v1",
+  "plan_path": "tmp/backup_coordinator/next_stablecore_backup_plan_20261006_v2.json",
+  "plan_sha256": "c4af20f11b5681399ca3e42eccd85bb9daf00b0839ad1666b6b8b988678de60d",
+  "repo": "pgfrag",
+  "branch": "backup/forge-work-20261003",
+  "pre_head": "1bc1a48f6f9bb1cfe93adb05b877d735132f4df7",
+  "pre_remote_head": "1bc1a48f6f9bb1cfe93adb05b877d735132f4df7",
+  "copy_receipt": "tmp/backup_coordinator/execution_receipt_20261006_stablecore_v2_copy.json",
+  "copy_reconciliation": "tmp/backup_coordinator/execution_receipt_20261006_stablecore_v2_copy_reconciliation.json",
+  "add_command": {
+    "argv": [
+      "git",
+      "-C",
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+      "-c",
+      "core.autocrlf=false",
+      "add",
+      "--",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source/static_solve_bridge.py",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source/static_solve_case.json",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source/README.md",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source_snapshot_before_run02/static_solve_bridge.py",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source_snapshot_before_run02/static_solve_case.json",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source_snapshot_before_run02/PINS.json",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run_record.json",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/run_receipt.json",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/outer_stdout.bin",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/outer_stderr.bin",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/outer_execution_receipt.json",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/child_stdout.bin",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/child_stderr.bin",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/static_solve_bridge_result.json",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/run_receipt.json",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/outer_stdout.bin",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/outer_stderr.bin",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/outer_execution_receipt.json",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/child_stdout.bin",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/child_stderr.bin",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/source/full3d_consistent_mass_replay.py",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/source/fixed_case.json",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/source/README.md",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/SOURCE_FREEZE.json",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/stdout.log",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/stderr.log",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/preauth_fixed_case.json",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/mass_result.json",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/mass_matrix.csv",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/execution_receipt.json",
+      "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/audit_cached_arrays.py",
+      "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/audit_result.json",
+      "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/outer_run_receipt.json",
+      "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/mass_spectrum_rigid_kinetic.png",
+      "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/bridge_strain_stress_scatter.png"
+    ],
+    "rc": 0,
+    "output": [],
+    "staged_path_count": 35,
+    "staged_paths": [
+      "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/audit_cached_arrays.py",
+      "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/audit_result.json",
+      "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/bridge_strain_stress_scatter.png",
+      "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/mass_spectrum_rigid_kinetic.png",
+      "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/outer_run_receipt.json",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/execution_receipt.json",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/mass_matrix.csv",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/mass_result.json",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/preauth_fixed_case.json",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/stderr.log",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/stdout.log",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/SOURCE_FREEZE.json",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/source/fixed_case.json",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/source/full3d_consistent_mass_replay.py",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/source/README.md",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run_record.json",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/child_stderr.bin",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/child_stdout.bin",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/outer_execution_receipt.json",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/outer_stderr.bin",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/outer_stdout.bin",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/run_receipt.json",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/child_stderr.bin",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/child_stdout.bin",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/outer_execution_receipt.json",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/outer_stderr.bin",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/outer_stdout.bin",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/run_receipt.json",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/static_solve_bridge_result.json",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source_snapshot_before_run02/PINS.json",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source_snapshot_before_run02/static_solve_bridge.py",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source_snapshot_before_run02/static_solve_case.json",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source/README.md",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source/static_solve_bridge.py",
+      "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source/static_solve_case.json"
+    ],
+    "index_blob_count": 35,
+    "index_blobs": [
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source/static_solve_bridge.py",
+        "bytes": 50402,
+        "sha256": "2a5d60bb77c3ea178dcda086830270262391e954513076317da6ddff7b4a42e5",
+        "git_blob": "f922e4f97123d85d39e9961aee4e990706c371fc"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source/static_solve_case.json",
+        "bytes": 6639,
+        "sha256": "08af8e11fff102c52dbc40ceb43ad610faad3c4462f1492739d2f5e198378728",
+        "git_blob": "2d9d6fbc762244e726b152fdb585da7a8831e29a"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source/README.md",
+        "bytes": 5748,
+        "sha256": "024b55cbf8cde715aaaa786dedc4e81c25fbb4c04ec8d2912fa7ea07ba60a411",
+        "git_blob": "076bd555f6af6cd2283722bc1b0cce8142a845ed"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source_snapshot_before_run02/static_solve_bridge.py",
+        "bytes": 50247,
+        "sha256": "cb9e802bfbb25d0a5ae9dbbaf67952dfd71fb64757f35e2765da79f838c5be5f",
+        "git_blob": "2cb0989e120c1848fac357bb4d1d032119a2c4dc"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source_snapshot_before_run02/static_solve_case.json",
+        "bytes": 6173,
+        "sha256": "59e853f28f8ed194c21982f08183306a492ba8b594f91c3f54fdde05443e825e",
+        "git_blob": "b21f7d161c952701011de443ebcf9a356788bee6"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source_snapshot_before_run02/PINS.json",
+        "bytes": 725,
+        "sha256": "4e7945c08de0019f1b09aa685949bf9c93102ff0a6343459b446be78c3278247",
+        "git_blob": "da18555160b37d49f2e45f0e1de07c4f9a823d4d"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run_record.json",
+        "bytes": 9981,
+        "sha256": "b0ee4ccdc012898cfe8ac8eff88d07c7e1587930b9c9f16ea32b2c953cac5188",
+        "git_blob": "19cb93422686b5de106628d1d39b017529eb00d8"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/run_receipt.json",
+        "bytes": 657,
+        "sha256": "c0aa65d49dfa59f3f99a32d2ad3fda781d3639a882785136ea23ee6d5f8a17e1",
+        "git_blob": "9594a9cbe661bb1a51ec559eb6c0d3687c8d0dd7"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/outer_stdout.bin",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/outer_stderr.bin",
+        "bytes": 167,
+        "sha256": "5ffc5c6c505ec8a989eee357354513e797cd9bccf73662056fe42fb7e8edd20d",
+        "git_blob": "5186abe2f8d3846e83778f0a705efcd0bedd468c"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/outer_execution_receipt.json",
+        "bytes": 2060,
+        "sha256": "b48282c2325c6982f7e04b0523bed3a96b1f3f5cef16d8e0556af8db6b98bcfa",
+        "git_blob": "919b04d8b39793f3ccd9b2b761742dbb897aa659"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/child_stdout.bin",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/child_stderr.bin",
+        "bytes": 178,
+        "sha256": "5e50d26f6582c306f41cddd02ce91a579ffc29d7272062f16c8254af85e089bd",
+        "git_blob": "e3f6e0866ca78dce1830c7b1066e51599de0e23c"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/static_solve_bridge_result.json",
+        "bytes": 129942,
+        "sha256": "ef66783e2961dd77f34785a99e1b397210ccc0beb6e8fa2979678aa4992a0ce3",
+        "git_blob": "326fc1bdb713d06944c759367a60834bf006302e"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/run_receipt.json",
+        "bytes": 842,
+        "sha256": "1786bc8cf81e5a2c5fb87b2af83979a0b736c42f207d350e300d19c7e5aa356f",
+        "git_blob": "9117524d18f9f08a3b8894be85d0eef271e9072c"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/outer_stdout.bin",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/outer_stderr.bin",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/outer_execution_receipt.json",
+        "bytes": 2143,
+        "sha256": "e9589175cbe76739c75d04e56a774aff032a85b80a52300640c2ffc0afde1296",
+        "git_blob": "b50909063e3e88c19809f7a6cb0ac0dc667855a4"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/child_stdout.bin",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/child_stderr.bin",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/source/full3d_consistent_mass_replay.py",
+        "bytes": 20402,
+        "sha256": "d97833c56099059b36ae91332a8bab7188c3be6b64ca433c108845701aaf657e",
+        "git_blob": "81a6b22a3b0c9e8db3ac2397426238f2903814c8"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/source/fixed_case.json",
+        "bytes": 4387,
+        "sha256": "a4780655f0bf78a55576bf3f63eb75aa133a065b50a104683df614d92218570a",
+        "git_blob": "7873e14ddffd5b2b76a276ef31cbb6d0b34881a7"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/source/README.md",
+        "bytes": 2771,
+        "sha256": "3eaa28a6358e6c568210415879639830f7dba31efb2a1982b2154ab2c4cff489",
+        "git_blob": "0a0adff48569d613d1ea7c74ac9abc8a19908179"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/SOURCE_FREEZE.json",
+        "bytes": 3166,
+        "sha256": "126169c09fe13fd0a3d994743c200d4d5ed059c99e242b6788282e0a48055ffb",
+        "git_blob": "c3bd8cfdb43a51da8010f463a55decffaa745d84"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/stdout.log",
+        "bytes": 378,
+        "sha256": "6a8c48bab6b303877dac018c2c82c5147b7b23d524703caf48f0633df3d7966a",
+        "git_blob": "5d0cc5047ad77f58de68ffc8392becfec243bc20"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/preauth_fixed_case.json",
+        "bytes": 4388,
+        "sha256": "63d79cf73ec364086970cf4a08d69dac54da2a016d0ef46071243b718e2c355c",
+        "git_blob": "27114a3156d32d0ecfb3092f1d0cde64c8e1317b"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/mass_result.json",
+        "bytes": 506138,
+        "sha256": "326df86f867eec47141fce58a748eb68403853adce3a2d8b3b59d8f992ff15e1",
+        "git_blob": "be59a4aab536bd724edbf53cbf6817abda9eafa8"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/mass_matrix.csv",
+        "bytes": 291275,
+        "sha256": "fc1f78f45c091d7f203e54c5e6aa10b34974525f777bd3ea2143b6a9c40f3241",
+        "git_blob": "3ef4f9e8269229a6dd2a6ba897c9757a57e8f55d"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/execution_receipt.json",
+        "bytes": 20367,
+        "sha256": "c8b8b5e45251ca8dfa36f1d8db5c6cfb309b25f7528103871cdb17e6b37686bc",
+        "git_blob": "b78e54b519277c68e564ab8ba58da9c4c215acf4"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/audit_cached_arrays.py",
+        "bytes": 18908,
+        "sha256": "d4c107cea4963a041f58be1ba076ce28762dad883935c28f3c672d8a6c296e50",
+        "git_blob": "7495e29f3eca534b3e3f1e2bf2f81f8809b54390"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/audit_result.json",
+        "bytes": 9344,
+        "sha256": "41e35d8bb50478ba19cd91a87337ec38bed9cf32f6626808bb7912ef386c12c9",
+        "git_blob": "1dac8aec213edd65ec42c1b0d61557cba8c5d36d"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/outer_run_receipt.json",
+        "bytes": 4182,
+        "sha256": "0bf5a9dc428baa7c6a7128fbddef4d9afd51f8e4b8ff419260cd00d9cdd04070",
+        "git_blob": "f6412ba07a7ce0c509e34a48ffc75e746f3c3f38"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/mass_spectrum_rigid_kinetic.png",
+        "bytes": 40193,
+        "sha256": "1317db03b8e262383a14459727492f0760d5aa7c807ecfed38117391cae02e22",
+        "git_blob": "4407b1427dcb000fc7931ca7c3d2a0cf54e562bb"
+      },
+      {
+        "path": "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/bridge_strain_stress_scatter.png",
+        "bytes": 36269,
+        "sha256": "bb7fcda00ba3e9a755b731fecdfa44042ef8c9e71a2c9f487d8b22b8539e816a",
+        "git_blob": "a69f9b4ee802b9c8e496a8f90186b51d9f2f96bf"
+      }
+    ]
+  },
+  "commit_command": {
+    "argv": [
+      "git",
+      "-C",
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+      "-c",
+      "core.autocrlf=false",
+      "-c",
+      "user.name=PGFrag Maintainer",
+      "-c",
+      "user.email=pgfrag@local",
+      "commit",
+      "-m",
+      "backup: preserve stable Full3D bridge diagnostics",
+      "-m",
+      "Preserve the frozen bridge source and run history, including run01 CHILD_FAILED rc=2 and run02 CHILD_OK rc=0, the consistent-mass replay, and the independent cached-array review. The mass output remains MASS_MATRIX_PASS_UNQUALIFIED with rho=1 kg/m3 toy data and uncalibrated synthetic E. The bridge audit remains SOLVED_DIAGNOSTIC_ONLY_UNQUALIFIED; its reported 16.14% pseudo-normal-stress caveat is retained. These artifacts do not qualify physical behavior, material properties, solver integration, or a production pipeline."
+    ],
+    "rc": 0,
+    "output": [
+      "[backup/forge-work-20261003 90d47aa] backup: preserve stable Full3D bridge diagnostics",
+      " 35 files changed, 32211 insertions(+)",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/audit_cached_arrays.py",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/audit_result.json",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/bridge_strain_stress_scatter.png",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/mass_spectrum_rigid_kinetic.png",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/outer_run_receipt.json",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/SOURCE_FREEZE.json",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/execution_receipt.json",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/mass_matrix.csv",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/mass_result.json",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/preauth_fixed_case.json",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/stderr.log",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/stdout.log",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/source/README.md",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/source/fixed_case.json",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/source/full3d_consistent_mass_replay.py",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/child_stderr.bin",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/child_stdout.bin",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/outer_execution_receipt.json",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/outer_stderr.bin",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/outer_stdout.bin",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/run_receipt.json",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/child_stderr.bin",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/child_stdout.bin",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/outer_execution_receipt.json",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/outer_stderr.bin",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/outer_stdout.bin",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/run_receipt.json",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/static_solve_bridge_result.json",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run_record.json",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source/README.md",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source/static_solve_bridge.py",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source/static_solve_case.json",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source_snapshot_before_run02/PINS.json",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source_snapshot_before_run02/static_solve_bridge.py",
+      " create mode 100644 docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source_snapshot_before_run02/static_solve_case.json"
+    ]
+  },
+  "commit": "90d47aa0bebc81ff2a7a1f4303356e72e04ee704",
+  "parent": "1bc1a48f6f9bb1cfe93adb05b877d735132f4df7",
+  "changed_paths": [
+    "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/audit_cached_arrays.py",
+    "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/audit_result.json",
+    "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/bridge_strain_stress_scatter.png",
+    "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/mass_spectrum_rigid_kinetic.png",
+    "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/outer_run_receipt.json",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/execution_receipt.json",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/mass_matrix.csv",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/mass_result.json",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/preauth_fixed_case.json",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/stderr.log",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/stdout.log",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/SOURCE_FREEZE.json",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/source/fixed_case.json",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/source/full3d_consistent_mass_replay.py",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/source/README.md",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run_record.json",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/child_stderr.bin",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/child_stdout.bin",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/outer_execution_receipt.json",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/outer_stderr.bin",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/outer_stdout.bin",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/run_receipt.json",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/child_stderr.bin",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/child_stdout.bin",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/outer_execution_receipt.json",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/outer_stderr.bin",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/outer_stdout.bin",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/run_receipt.json",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/static_solve_bridge_result.json",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source_snapshot_before_run02/PINS.json",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source_snapshot_before_run02/static_solve_bridge.py",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source_snapshot_before_run02/static_solve_case.json",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source/README.md",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source/static_solve_bridge.py",
+    "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source/static_solve_case.json"
+  ],
+  "changed_path_count": 35,
+  "committed_blob_count": 35,
+  "committed_blobs": [
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source/static_solve_bridge.py",
+      "bytes": 50402,
+      "sha256": "2a5d60bb77c3ea178dcda086830270262391e954513076317da6ddff7b4a42e5",
+      "git_blob": "f922e4f97123d85d39e9961aee4e990706c371fc"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source/static_solve_case.json",
+      "bytes": 6639,
+      "sha256": "08af8e11fff102c52dbc40ceb43ad610faad3c4462f1492739d2f5e198378728",
+      "git_blob": "2d9d6fbc762244e726b152fdb585da7a8831e29a"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source/README.md",
+      "bytes": 5748,
+      "sha256": "024b55cbf8cde715aaaa786dedc4e81c25fbb4c04ec8d2912fa7ea07ba60a411",
+      "git_blob": "076bd555f6af6cd2283722bc1b0cce8142a845ed"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source_snapshot_before_run02/static_solve_bridge.py",
+      "bytes": 50247,
+      "sha256": "cb9e802bfbb25d0a5ae9dbbaf67952dfd71fb64757f35e2765da79f838c5be5f",
+      "git_blob": "2cb0989e120c1848fac357bb4d1d032119a2c4dc"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source_snapshot_before_run02/static_solve_case.json",
+      "bytes": 6173,
+      "sha256": "59e853f28f8ed194c21982f08183306a492ba8b594f91c3f54fdde05443e825e",
+      "git_blob": "b21f7d161c952701011de443ebcf9a356788bee6"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source_snapshot_before_run02/PINS.json",
+      "bytes": 725,
+      "sha256": "4e7945c08de0019f1b09aa685949bf9c93102ff0a6343459b446be78c3278247",
+      "git_blob": "da18555160b37d49f2e45f0e1de07c4f9a823d4d"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run_record.json",
+      "bytes": 9981,
+      "sha256": "b0ee4ccdc012898cfe8ac8eff88d07c7e1587930b9c9f16ea32b2c953cac5188",
+      "git_blob": "19cb93422686b5de106628d1d39b017529eb00d8"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/run_receipt.json",
+      "bytes": 657,
+      "sha256": "c0aa65d49dfa59f3f99a32d2ad3fda781d3639a882785136ea23ee6d5f8a17e1",
+      "git_blob": "9594a9cbe661bb1a51ec559eb6c0d3687c8d0dd7"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/outer_stdout.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/outer_stderr.bin",
+      "bytes": 167,
+      "sha256": "5ffc5c6c505ec8a989eee357354513e797cd9bccf73662056fe42fb7e8edd20d",
+      "git_blob": "5186abe2f8d3846e83778f0a705efcd0bedd468c"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/outer_execution_receipt.json",
+      "bytes": 2060,
+      "sha256": "b48282c2325c6982f7e04b0523bed3a96b1f3f5cef16d8e0556af8db6b98bcfa",
+      "git_blob": "919b04d8b39793f3ccd9b2b761742dbb897aa659"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/child_stdout.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/child_stderr.bin",
+      "bytes": 178,
+      "sha256": "5e50d26f6582c306f41cddd02ce91a579ffc29d7272062f16c8254af85e089bd",
+      "git_blob": "e3f6e0866ca78dce1830c7b1066e51599de0e23c"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/static_solve_bridge_result.json",
+      "bytes": 129942,
+      "sha256": "ef66783e2961dd77f34785a99e1b397210ccc0beb6e8fa2979678aa4992a0ce3",
+      "git_blob": "326fc1bdb713d06944c759367a60834bf006302e"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/run_receipt.json",
+      "bytes": 842,
+      "sha256": "1786bc8cf81e5a2c5fb87b2af83979a0b736c42f207d350e300d19c7e5aa356f",
+      "git_blob": "9117524d18f9f08a3b8894be85d0eef271e9072c"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/outer_stdout.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/outer_stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/outer_execution_receipt.json",
+      "bytes": 2143,
+      "sha256": "e9589175cbe76739c75d04e56a774aff032a85b80a52300640c2ffc0afde1296",
+      "git_blob": "b50909063e3e88c19809f7a6cb0ac0dc667855a4"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/child_stdout.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/child_stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/source/full3d_consistent_mass_replay.py",
+      "bytes": 20402,
+      "sha256": "d97833c56099059b36ae91332a8bab7188c3be6b64ca433c108845701aaf657e",
+      "git_blob": "81a6b22a3b0c9e8db3ac2397426238f2903814c8"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/source/fixed_case.json",
+      "bytes": 4387,
+      "sha256": "a4780655f0bf78a55576bf3f63eb75aa133a065b50a104683df614d92218570a",
+      "git_blob": "7873e14ddffd5b2b76a276ef31cbb6d0b34881a7"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/source/README.md",
+      "bytes": 2771,
+      "sha256": "3eaa28a6358e6c568210415879639830f7dba31efb2a1982b2154ab2c4cff489",
+      "git_blob": "0a0adff48569d613d1ea7c74ac9abc8a19908179"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/SOURCE_FREEZE.json",
+      "bytes": 3166,
+      "sha256": "126169c09fe13fd0a3d994743c200d4d5ed059c99e242b6788282e0a48055ffb",
+      "git_blob": "c3bd8cfdb43a51da8010f463a55decffaa745d84"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/stdout.log",
+      "bytes": 378,
+      "sha256": "6a8c48bab6b303877dac018c2c82c5147b7b23d524703caf48f0633df3d7966a",
+      "git_blob": "5d0cc5047ad77f58de68ffc8392becfec243bc20"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/preauth_fixed_case.json",
+      "bytes": 4388,
+      "sha256": "63d79cf73ec364086970cf4a08d69dac54da2a016d0ef46071243b718e2c355c",
+      "git_blob": "27114a3156d32d0ecfb3092f1d0cde64c8e1317b"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/mass_result.json",
+      "bytes": 506138,
+      "sha256": "326df86f867eec47141fce58a748eb68403853adce3a2d8b3b59d8f992ff15e1",
+      "git_blob": "be59a4aab536bd724edbf53cbf6817abda9eafa8"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/mass_matrix.csv",
+      "bytes": 291275,
+      "sha256": "fc1f78f45c091d7f203e54c5e6aa10b34974525f777bd3ea2143b6a9c40f3241",
+      "git_blob": "3ef4f9e8269229a6dd2a6ba897c9757a57e8f55d"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/execution_receipt.json",
+      "bytes": 20367,
+      "sha256": "c8b8b5e45251ca8dfa36f1d8db5c6cfb309b25f7528103871cdb17e6b37686bc",
+      "git_blob": "b78e54b519277c68e564ab8ba58da9c4c215acf4"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/audit_cached_arrays.py",
+      "bytes": 18908,
+      "sha256": "d4c107cea4963a041f58be1ba076ce28762dad883935c28f3c672d8a6c296e50",
+      "git_blob": "7495e29f3eca534b3e3f1e2bf2f81f8809b54390"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/audit_result.json",
+      "bytes": 9344,
+      "sha256": "41e35d8bb50478ba19cd91a87337ec38bed9cf32f6626808bb7912ef386c12c9",
+      "git_blob": "1dac8aec213edd65ec42c1b0d61557cba8c5d36d"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/outer_run_receipt.json",
+      "bytes": 4182,
+      "sha256": "0bf5a9dc428baa7c6a7128fbddef4d9afd51f8e4b8ff419260cd00d9cdd04070",
+      "git_blob": "f6412ba07a7ce0c509e34a48ffc75e746f3c3f38"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/mass_spectrum_rigid_kinetic.png",
+      "bytes": 40193,
+      "sha256": "1317db03b8e262383a14459727492f0760d5aa7c807ecfed38117391cae02e22",
+      "git_blob": "4407b1427dcb000fc7931ca7c3d2a0cf54e562bb"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/bridge_strain_stress_scatter.png",
+      "bytes": 36269,
+      "sha256": "bb7fcda00ba3e9a755b731fecdfa44042ef8c9e71a2c9f487d8b22b8539e816a",
+      "git_blob": "a69f9b4ee802b9c8e496a8f90186b51d9f2f96bf"
+    }
+  ],
+  "post_status": {
+    "tracked_dirty": 0,
+    "staged": 0
+  },
+  "push_pending": true
+}

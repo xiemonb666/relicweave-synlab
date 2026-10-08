@@ -1,0 +1,507 @@
+{
+  "schema": "synlab.a12.capture_contract.v1",
+  "title": "V1.44 扫描台采集契约（机器可读）",
+  "generated_from": {
+    "docx": "RelicWeave_V1.44_Optimized_Complete_Plan.docx",
+    "deep_read": "docs/a12/v144_project_core.md",
+    "evidence_root": "data/a12/reports",
+    "note": "本文件只做结构化，不新增文档未写的硬件要求。字段来源一律给 source 指针。"
+  },
+  "source_pointer_convention": {
+    "format": "T###/p####",
+    "meaning": "T### = docx body 顺序第 ### 个表格（1 基）；p#### = docx body 顺序第 #### 个段落（1 基）。全文档 128 表 / 1807 段。",
+    "locator": "按 body 顺序遍历 w:p/w:tbl 即可复现编号；同一编号在本文件与 data/a12/reports/tables/t001-t128.md 一致。",
+    "verified_against": "data/a12/reports/docx_structural_check.json（表数 128、段数 1807、标题 357）"
+  },
+  "confidence_vocabulary": {
+    "documented": "文档明写，可直接作为要求引用",
+    "documented_candidate": "文档明写但自我标注为候选/起点/非冻结门，须实测后再冻结",
+    "documented_not_guaranteed": "文档明写为不可能或不承诺（拿不到项）",
+    "unspecified": "文档未明确；本契约给出的值来自 fallback_mainstream，属于我们的假设，不是文档要求"
+  },
+
+  "camera": {
+    "node_a_detail": {
+      "board": { "spec": "Luckfox Pico RV1103", "source": "p0504", "note": "C3 选型：官方兼容组合先验证" },
+      "sensor_module": { "spec": "SC3336 B (SC3336B)", "source": "p0504", "vendor_page": "https://wiki.luckfox.com/SC3336-3MP-Camera/", "source_url": "p0607" },
+      "resolution_nominal_px": { "spec": [2304, 1296], "source": "p0504", "note": "标称值；采图适配器必须验证实际输出 2304×1296 或当前真实分辨率（p0509）" },
+      "focus_mode": { "spec": "manual_focus", "source": "p0504", "note": "[CREF1] 厂家标明手动对焦；成像资格由本项目测试（p0607）" },
+      "shutter": { "spec": "rolling_shutter", "source": "p0504", "note": "文档明写滚动快门" },
+      "fov_h_deg": { "spec": 84.0, "qualifier": "约", "source": "p0504", "note": "水平视场约 84 度；C3.2 表按 84 度与 2304 横像素的理想针孔计算" },
+      "pixel_count_is_not_resolution": { "spec": "约 300 万像素仅说明采样数量，不保证断口实际分辨率", "source": "p0504" },
+      "role": { "spec": "断口边缘、凹槽和局部疑点", "mount": "轻量升降滑架", "source": "t050" },
+      "first_version_limit": { "spec": "手动对焦，自动动作限于清晰工作范围", "source": "t050" }
+    },
+    "node_b_overview": {
+      "role": { "spec": "整片、纹饰、样品定位和补充角度", "position": "固定斜上方约30至45度", "source": "t050" },
+      "source": "t050",
+      "status": "可选升级（双节点 1435 元档），非基础必配",
+      "hard_sync_stereo": { "spec": false, "source": "t050", "statement": "两路依次拍摄，不宣称硬同步双目" }
+    },
+    "lens": {
+      "spec": "unspecified",
+      "source": "全文未给出镜头型号或焦距；C3.1 只说按实测距离、焦点、景深和 ROI 验收",
+      "fallback_mainstream": {
+        "value": "SC3336B 原厂 M12 定焦模组（约 f=3.6mm 等效），或兼容可调焦 M12 镜头",
+        "assumption": true,
+        "disclaimer": "这是我们为可执行性补的兜底默认值，文档未要求；C3.2 只允许“必要时验证兼容窄视场或可调焦镜头”。"
+      },
+      "change_rule": { "spec": "物理更换镜头、焦段或近摄附件产生新的 calibration_id", "source": "p0427" }
+    }
+  },
+
+  "working_distance_and_resolution": {
+    "acceptance_distances_cm": { "spec": [10, 15, 20, 25], "source": "p0511", "note": "C3.1 从 10、15、20、25cm 测起" },
+    "closeup_local_cm": { "spec": [5, 10], "source": "p0511", "qualifier": "机械安全且能对焦时再测试 5 至 10cm 局部近摄" },
+    "distances_are_starting_points": { "spec": "不假定最近位置可用；逐距离检查焦点、中心／边缘及不同深度", "source": "p0511" },
+    "ideal_pinhole_formula": { "spec": "d_ideal = a × N_x / [2 p × tan(FOV_h/2)]", "source": "p0518", "note": "只生成距离候选，再受焦点、景深、覆盖、净空与质量约束" },
+    "resolution_table": {
+      "unit": "mm/px",
+      "computed_by": "按 84 度视场与 2304 横像素的理想针孔计算；近摄与畸变须实测",
+      "source": "t051",
+      "rows": [
+        { "distance_mm": 50,  "ideal_horizontal_coverage_mm": 90.0,  "mm_per_px": 0.039, "structure_0p2mm_px": 5.12 },
+        { "distance_mm": 100, "ideal_horizontal_coverage_mm": 180.1, "mm_per_px": 0.078, "structure_0p2mm_px": 2.56 },
+        { "distance_mm": 150, "ideal_horizontal_coverage_mm": 270.1, "mm_per_px": 0.117, "structure_0p2mm_px": 1.71 },
+        { "distance_mm": 200, "ideal_horizontal_coverage_mm": 360.2, "mm_per_px": 0.156, "structure_0p2mm_px": 1.28 },
+        { "distance_mm": 250, "ideal_horizontal_coverage_mm": 450.2, "mm_per_px": 0.195, "structure_0p2mm_px": 1.02 }
+      ]
+    },
+    "structure_sampling_targets": {
+      "pilot_start": { "spec": "0.2mm 结构 ≥4 像素", "source": "p0517", "qualifier": "pilot 采样起点，不是识别定理" },
+      "detail_goal": { "spec": "6 至 8 像素", "source": "p0517", "qualifier": "细节候选目标" },
+      "explicit_denial": { "spec": "不是 0.2mm 测量精度承诺；真实最小结构由样片和误差干预确定", "source": "p0517" }
+    },
+    "auxiliary_scenario": { "spec": "覆盖 100mm 时 0.043mm/px 只是算术情景", "source": "p0512" },
+    "must_report_separately": { "spec": ["采样 px_per_mm", "可辨结构尺寸 r_eff_mm", "毫米测量误差", "检索收益"], "source": "p0515" },
+    "resolution_profiles": {
+      "ids": { "spec": ["GLOBAL", "MID", "LOCAL"], "source": "p0580", "note": "提供实测档，动作只选档位ID" },
+      "profile_fields": {
+        "spec": ["camera", "镜头", "输出分辨率", "focus_setting", "U距离区间", "Z／俯仰／装夹", "灯态", "实测px_per_mm", "r_eff_mm", "有效ROI", "景深覆盖", "曝光", "calibration_rev", "QA"],
+        "source": "p0579"
+      },
+      "intrinsics_update_rule": { "spec": "固定焦点 U 移动更新外参；镜头或焦点变化验证／更新内参", "source": "p0579" },
+      "position_rule": { "spec": "位置无可信测量则标估计，不用于精确物理残差", "source": "p0579" }
+    },
+    "depth_of_field_mm": {
+      "spec": "unspecified",
+      "source": "文档只把景深列为必须实测/必须检查的项（p0504/p0511/p0515/p0518/p0533/p0579），未给任何数值",
+      "fallback_mainstream": {
+        "value": "近摄 5–10cm 档按 ~±3–8mm 可用景深设计；断口采集宁可稍远拍高分辨率再裁 ROI",
+        "assumption": true,
+        "disclaimer": "兜底假设，不是文档要求。文档只写了定性规则：'宁可稍远拍高分辨率再裁 ROI，也不要让前缘/后缘大面积离焦'（p1159）。"
+      },
+      "documented_qualitative_rule": { "spec": "近摄不要无限贴近；断口需要足够景深", "source": "p1159" }
+    }
+  },
+
+  "lighting": {
+    "config": {
+      "spec": "四组同色温白光灯位于左、右、前上方和后上方，单独开关或调光",
+      "source": "p0535"
+    },
+    "selection_rule": { "spec": "先选低压同批白光，标称 CRI 不低于 90 作为候选，实际用色卡及样片检查", "source": "p0535" },
+    "control": { "spec": "灯控使用额定电流足够且 3.3V 输入能可靠导通的 MOS 模块，GPIO 只发控制信号", "source": "p0535" },
+    "real_capture_light_modes": {
+      "spec": ["WHITE_DIFFUSE", "LEFT_GRAZE", "RIGHT_GRAZE", "CROSS_POL", "NORMAL_REFLECT"],
+      "count": 5,
+      "source": "t053",
+      "definitions": [
+        { "mode": "WHITE_DIFFUSE", "setup": "多灯均匀白光，灯前偏振可移开", "use": "轮廓、颜色和基础纹饰" },
+        { "mode": "LEFT_GRAZE", "setup": "左侧低角度灯", "use": "断口起伏和裂纹" },
+        { "mode": "RIGHT_GRAZE", "setup": "右侧低角度灯", "use": "验证另一方向纹理与阴影" },
+        { "mode": "CROSS_POL", "setup": "灯前与镜头前偏振轴交叉调整", "use": "降低部分釉面高光" },
+        { "mode": "NORMAL_REFLECT", "setup": "普通白光观察", "use": "保留光泽等材质证据" }
+      ]
+    },
+    "light_mode_grouping_rule": { "spec": "2D 可切掠光、普通光、交叉偏振补充信息。MVS 子组保持已验证的灯态、曝光与焦点，保存 camera_group_id；切灯或改焦点分组重建并明确内参共享资格", "source": "p0543" },
+    "color_temperature_K": {
+      "spec": "unspecified",
+      "source": "全文只说“同色温白光”“同批白光”，未给任何开尔文数值（p0535）",
+      "fallback_mainstream": {
+        "value": "5500–6500 K 高显色白光",
+        "assumption": true,
+        "disclaimer": "兜底假设，不是文档要求。文档只要求四灯同色温、CRI≥90 候选并用色卡核对。"
+      }
+    },
+    "polarizer": {
+      "modes_documented": { "spec": ["CROSS_POL 灯前与镜头前偏振轴交叉", "灯前偏振可移开"], "source": "t053" },
+      "polarizer_auto": { "spec": false, "source": "p0577", "note": "capabilities 含 polarizer_auto；手动偏振不冒充自动" },
+      "angle_cmd_vs_measured": { "spec": "无角传感器的实测角为 null（capture 扩展约束）", "source": "t044" }
+    },
+    "photometric_stereo_normals": {
+      "spec": false,
+      "source": "p096",
+      "statement": "Local refine 只写“MVS低频深度 + 可选 Photometric Stereo 法向/normal-guided refinement”；光度立体法向在文档中始终是**可选**，不是采集台保证的能力"
+    }
+  },
+
+  "mechanics": {
+    "envelope_start_mm": { "spec": [450, 350, 450], "source": "p0520", "qualifier": "以约 450×350×450mm 外形为布局起点，按实测视场、近远行程与净空修订" },
+    "rotation_axis": {
+      "drive": { "spec": "低压双极步进＋同步带或联轴器，独立承载轴承", "source": "t052" },
+      "requirements": { "spec": "负载、偏心、跳动和回差实测", "source": "t052" },
+      "auto_in_base": { "spec": true, "source": "t054", "note": "基础合计语义＝旋转Z自动＋必配手动U" }
+    },
+    "z_axis": {
+      "spec": "完整丝杆导轨模组，有效行程150至200mm",
+      "source": "t052",
+      "requirement": "导轨承受侧向力，不只买丝杆",
+      "auto_in_base": { "spec": true, "source": "t054" }
+    },
+    "u_axis_near_far": {
+      "spec": "基础必配手动光轴导轨，约150mm，预留100至200mm适配",
+      "source": "t052",
+      "travel_mm_nominal": 150,
+      "travel_mm_reserved_range": [100, 200],
+      "requirements": { "spec": "丝杆、刻度、锁紧、止挡；焦点与净空验收", "source": "t052" },
+      "what_moves": { "spec": "整个相机模组及镜头一起移动", "source": "p0005" },
+      "motorization_in_base": { "spec": false, "source": "t054", "note": "U 手动为必配；U 电动为升级项（+150 元，累计 1585）" }
+    },
+    "pitch_axis": {
+      "base": { "spec": "基础版锁紧支架", "source": "t052" },
+      "upgrade": { "spec": "位置舵机＋支撑轴承", "source": "t052" },
+      "requirement": { "spec": "转轴靠近相机重心，不靠舵机轴单独承载", "source": "t052" }
+    },
+    "left_right": { "spec": "横梁长孔或手动滑移，固定后登记；不作为基础版自动能力", "source": "t052" },
+    "sample_holder": { "spec": "软垫三点托架，可更换；不压断口，不遮主要观察面", "source": "t052" },
+    "clearance_mm": {
+      "spec": 20,
+      "source": "p0531",
+      "qualifier": "相机前沿净空 20mm 仅是候选守卫，按实物尺度冻结",
+      "field_rule": { "spec": "与光学工作距离分字段", "source": "p0531" }
+    },
+    "repeat_position_error_p95_mm": {
+      "spec": 0.5,
+      "source": "p0533",
+      "qualifier": "P95 位置误差 0.5mm 仅候选，按景深与密度收紧",
+      "restated_in_H4": { "spec": "150mm行程、20mm净空、0.5mm重复误差、0.2mm示例结构是测试候选，按实物和任务冻结，不写成已测", "source": "p1796" }
+    },
+    "zero_return_test": { "spec": "每轴10次进退回零，测刻度、画面漂移、清晰度及耗时", "source": "p0533" },
+    "no_encoder": { "spec": "无编码器位置为开环估计；回报 commanded_position 及 position_estimated=true，不伪称实测位置", "source": "p0533/p0563" },
+    "command_units": { "spec": "目标为绝对位置，通信可采用旋转毫度和直线微米整数，内部步数映射保存取整余量", "source": "p0563" },
+    "calibration_rev_rule": { "spec": "移动支架或装夹更新 rig_calibration_rev", "source": "p0531" },
+    "continuous_unlimited_rotation": {
+      "spec": false,
+      "source": "p0432/p1156",
+      "statement": "文档要求“手动转到下一方位，等待画面稳定，检查后拍摄；不边转边拍”，且 Global 3D 不采用单圈 360° 作为正式采集，改为 3–4 层环绕轨道"
+    }
+  },
+
+  "budget_cny": {
+    "base": { "spec": 1195, "source": "t054/p0495", "semantics": "旋转Z自动＋必配手动U" },
+    "dual_node": { "spec": 1435, "source": "t055/p0495", "semantics": "第二固定概览节点 +240" },
+    "enhanced": { "spec": 1800, "source": "t055/p0495/p0547" },
+    "hard_cap": { "spec": 2000, "source": "p0005/p0495/p0550" },
+    "is_engineering_quota_not_quote": { "spec": "均为工程额度，规格与价格须核实；额度不是商家报价", "source": "p0005/p0550" },
+    "bom_base_lines": {
+      "source": "t054",
+      "currency": "CNY",
+      "rows": [
+        { "item": "相机节点", "config": "RV1103＋SC3336 B、存储卡和线材1套", "quota": 220 },
+        { "item": "ESP32", "config": "准确板版号1块", "quota": 25 },
+        { "item": "驱动及散热", "config": "基础旋转、Z两路", "quota": 20 },
+        { "item": "旋转机构", "config": "电机、承载轴承、传动、盘", "quota": 90 },
+        { "item": "Z完整模组", "config": "导轨、丝杆、螺母、滑块、电机", "quota": 170 },
+        { "item": "U近远＋俯仰支架", "config": "手动导轨、丝杆／手轮、刻度、锁紧、止挡", "quota": 145 },
+        { "item": "框架底板", "config": "型材、角件、底板", "quota": 100 },
+        { "item": "分区照明", "config": "4灯、MOS、柔光", "quota": 85 },
+        { "item": "偏振", "config": "膜、镜头片和框", "quota": 35 },
+        { "item": "供电", "config": "成品12V＋稳定5V", "quota": 50 },
+        { "item": "限位急停", "config": "开关、反馈、安装", "quota": 25 },
+        { "item": "线材辅料", "config": "保险、端子、线束、紧固", "quota": 40 },
+        { "item": "外观", "config": "板、背景、标识", "quota": 45 },
+        { "item": "软托标定", "config": "标尺、靶和夹具", "quota": 25 },
+        { "item": "Z防坠", "config": "配重或机械防坠", "quota": 20 },
+        { "item": "零件小计", "config": "自装配、复用电脑及工具", "quota": 1095 },
+        { "item": "运费返工", "config": "预留", "quota": 100 },
+        { "item": "基础合计", "config": "旋转Z自动＋必配手动U", "quota": 1195 }
+      ]
+    },
+    "deferral_priority": { "spec": "实际超额先延期第二节点、自动俯仰或U电机，保留单节点旋转Z自动＋U手动细调；限位、防坠、线束保护和清晰度资格不删", "source": "p0547" }
+  },
+
+  "image_and_metadata": {
+    "capture_record_min_fields": {
+      "spec": ["capture_id", "session_id", "fragment_id", "surface_id", "path", "sha256", "device_id", "calibration_id", "quality_tier", "timestamp"],
+      "source": "t044",
+      "constraint": "整片surface_id可null"
+    },
+    "capture_extension_fields": {
+      "spec": ["width", "height", "exposure_s", "iso", "focus_mode", "light_mode", "polarizer_state", "angle_cmd_deg", "angle_measured_deg"],
+      "source": "t044",
+      "constraint": "无角传感器的实测角为null"
+    },
+    "byte_verification_rule": { "spec": "采图适配器必须验证实际输出 2304乘1296 或当前真实分辨率，支持的曝光、增益、白平衡和对焦模式，原图字节与时间。不能把传感器3MP但默认1080p视频截图写成3MP原图", "source": "p0509" },
+    "original_immutability": { "spec": "保留原图、固定灯态／曝光／焦点的MVS子组、raw点云mesh和processed版本", "source": "p0472" },
+    "postprocess_must_not_overwrite": { "spec": "高光移动、自动曝光漂移、后处理覆盖原图 列为主要失败模式", "source": "t095" }
+  },
+
+  "calibration": {
+    "intrinsics": {
+      "spec": ["fx", "fy", "cx", "cy", "畸变参数"],
+      "source": "p1163",
+      "rule": "每一种稳定镜头/分辨率/对焦距离工况都要保存独立相机标定（fx/fy/cx/cy + 畸变参数）。同一工况可以共享或强约束内参，但焦距、镜头或近摄距离明显变化时禁止盲目共享。"
+    },
+    "per_stable_condition": { "spec": "每种稳定镜头／分辨率／对焦距离工况一份标定；标定工况记入质量配对要求", "source": "p1163/p0427" },
+    "intrinsics_profile_id": { "spec": "存在；rig_service 把 ActionProposal 映射到已验收的 intrinsics_profile_id", "source": "p0574/p0638" },
+    "rig_calibration_rev": { "spec": "存在；移动支架或装夹更新 rig_calibration_rev", "source": "p0531" },
+    "calibration_id": { "spec": "存在；物理更换镜头、焦段或近摄附件产生新的 calibration_id；相机参数变化新建工况和标定ID", "source": "p0427/t045" },
+    "px_per_mm": { "spec": "存在（实测，非标称）；resolution_profile 必含实测 px_per_mm 与 r_eff_mm", "source": "p0579/p0515" },
+    "working_distance_mm": { "spec": "存在；光学工作距离注明测法", "source": "p0511" },
+    "u_cmd_mm_u_scale_read_mm_u_encoder_mm": {
+      "spec": "存在三类位置字段：命令位置、估计位置和实测位置分别记录",
+      "source": "p0591",
+      "field_naming_note": "u_cmd_mm / u_scale_read_mm / u_encoder_mm 是本契约对 p0563+p0577+p0591 三处口径的**合并命名**；文档原文只说 commanded_position / position_estimated / 实测位置与“刻度读数来源”并存，未给这三个确切字段名。命名属工程约定。",
+      "null_rule": "无编码器则实测字段null，命令角／步数为估计"
+    },
+    "focus_setting_id": { "spec": "存在；capabilities 含 focus_settings，ActionProposal 含 focus_setting_id", "source": "p0577/p0638" },
+    "clearance_mm": { "spec": 20, "source": "p0531", "note": "与光学工作距离分字段" },
+    "distortion_order": {
+      "spec": "unspecified",
+      "source": "文档只要求“畸变参数”与“畸变”逐工况标定（p1163/p0579/t096），未给畸变模型或阶数",
+      "fallback_mainstream": {
+        "value": "Brown–Conrady：k1, k2, p1, p2（必要时 k3），即 OpenCV 5 参标准模型",
+        "assumption": true,
+        "disclaimer": "兜底假设，不是文档要求。"
+      }
+    },
+    "scale_reference": {
+      "spec": "每次正式采集必须包含可追溯尺度基准（高精度标尺、AprilTag/ArUco/coded target或标定板），并在重建后自动检查绝对尺度漂移",
+      "source": "p1163"
+    },
+    "scale_drift_metric": { "spec": "已知标尺/marker尺寸与重建尺寸偏差；每次采集必报", "source": "t097" },
+    "global_vs_local_calibration": { "spec": "若近摄导致明显 focus breathing，应把 Global 与 Fracture 近摄视为两套独立标定工况，而不是强行共享一套内参", "source": "p1155" }
+  },
+
+  "capture_checklist": {
+    "whole_fragment_2d": {
+      "spec": "正面、反面、侧壁、轮廓及断口概览",
+      "count_range": [6, 10],
+      "source": "t042/p0429-p0431",
+      "note": "文档给的必需内容名目；6–10 是 8 步 SOP 中概览+近摄+补充角度的自然下限/上限区间，属本契约给出的计数映射，不是文档明写的数字门。",
+      "count_confidence": "unspecified_count",
+      "fail_rule": "缺面标未观察，补拍或限定用途"
+    },
+    "fracture_local_2d": {
+      "spec": "逐真实断口多角度近摄；实际断裂表面、两侧壁、厚度变化、边缘",
+      "effective_directions_per_fracture": [3, 6],
+      "source": "t042/p0431/p0881",
+      "count_confidence": "unspecified_count",
+      "count_note": "文档明写“每个真实断口多角度近摄”与“逐断口采近摄”，未给每断口张数；3–6 有效方向是本契约的补齐计数目标。",
+      "fail_rule": "没拍到断裂面不能用于局部关系主测试"
+    },
+    "identity_audit_photo": {
+      "spec": "每组/片 1 组：核对 fragment_id 并拍身份审计照 + 标尺",
+      "source": "p0429/t042(DATA-01 打印ID卡、标尺、标定板)",
+      "fail_rule": "身份混号 → 整个可疑批次隔离，实物重新核对"
+    },
+    "quality_pairs": {
+      "spec": "同片清晰、日常和差质量真实观察",
+      "tiers": ["clear", "daily", "poor"],
+      "min_sessions_per_tier": 2,
+      "source": "t042/p0880/p1170",
+      "count_confidence": "unspecified_count",
+      "count_note": "文档明写三档真实观察与“清晰、日常、差质量三档并至少两次重复”（X15-P0），未给“每档≥2会话”的正式门；本契约把它写为每档 ≥2 会话（重复观测不等于独立样本）。",
+      "forbidden": "不以压缩副本代替独立实拍"
+    },
+    "repeat_session": { "spec": "重新装夹后的身份、时间和参数；新session，不沿用旧位姿", "source": "t042" },
+    "global_3d": {
+      "frames_per_fragment": [120, 240],
+      "shell_layers": [3, 4],
+      "overlap_pct": [75, 85],
+      "source": "t095/p1156",
+      "qualifier": "候选起始范围（非冻结门）",
+      "qc": ["全视角注册率", "track length", "重投影误差", "覆盖热图"],
+      "failure_modes": ["单圈欠约束", "底部缺失", "背景抢特征", "镜头切换"]
+    },
+    "fracture_local_3d": {
+      "frames_per_fracture": [60, 150],
+      "coverage": "小半球多倾角覆盖",
+      "tilt_steps_deg": [-40, -30, -20, -10, 10, 20, 30, 40],
+      "source": "t095/p1157",
+      "qualifier": "数量不是硬门，最终由 coverage、repeat error 和下游 registration 增益决定",
+      "qc": ["局部覆盖", "有效深度比例", "法向稳定性", "重复扫描误差"],
+      "failure_modes": ["景深不足", "釉面高光", "纹理稀少", "局部遮挡"]
+    },
+    "point_cloud": {
+      "points_per_sample_range": [2048, 8192],
+      "two_clouds": ["整片", "断口ROI"],
+      "source": "p1496",
+      "rule": "记录实际有效点数；不足时 valid mask 和点权重保持真实，不重复填点伪装有效密度"
+    },
+    "mvs_subset": {
+      "mothers": 20,
+      "fragments": 400,
+      "frames_per_fragment_range": [30, 120],
+      "stratification": ["素面", "釉面", "薄片", "近摄", "支撑遮挡"],
+      "source": "p1500/p0473",
+      "rule": "全部尝试入分母；不把 12 帧训练预算当 MVS 保证；固定灯态曝光焦点，改焦点分相机组"
+    },
+    "repeat_scan_qc": {
+      "min_independent_scans": 3,
+      "reclamp_preferred": true,
+      "source": "p1170",
+      "rule": "同一碎片/同一断口至少做3次独立采集与重建（最好重新装夹），用刚性 registration 对齐后比较几何"
+    },
+    "sop_order": {
+      "source": "p0429-p0436",
+      "steps": [
+        "核对 fragment_id 并拍身份审计照",
+        "固定样片，停止转盘后拍正面、反面和侧壁概览",
+        "标记可辨断口及遮挡位置，逐断口采近摄",
+        "手动转到下一方位，等待画面稳定，检查后拍摄；不边转边拍",
+        "对凹槽、薄壁交界、纹饰跨缝和明显高光位置增加斜角或侧光观察",
+        "支撑遮面时人工翻面或换支撑，建立新 session",
+        "现场放大检查关键区域，失焦、遮挡或曝光失败立刻重拍",
+        "导入原图，确认落盘与 ID，填写覆盖、质量和成本，再处理下一片"
+      ]
+    },
+    "auto_flip": {
+      "spec": false,
+      "source": "p0434/t045",
+      "statement": "支撑遮面时人工翻面或换支撑并建立新 session；文档只写人工翻面，无自动翻面能力"
+    },
+    "per_fragment_capture_time_s": {
+      "spec": "unspecified",
+      "source": "文档要求测量并记录“每片采集/计算时间”“动作时间”“耗时”“P95时延”（p0881/p0580/p0680/p0661），但未给任何数值门",
+      "fallback_mainstream": {
+        "value": "整片 2D 一组 8–15 min（含装夹、U 手动调焦、锁紧、QA）；Global 3D 一组 30–60 min；Fracture-local 3D 每断口 15–30 min",
+        "assumption": true,
+        "disclaimer": "纯兜底估算，供排期用；文档明确要求以实测 p95 替换。"
+      }
+    }
+  },
+
+  "mask_and_quality": {
+    "region_mask": {
+      "spec": "片体和区域分割 mask，整数 ID，无损",
+      "source": "t101(D09)/t117",
+      "id_regions": ["内外壁", "断面", "支撑", "无效区"],
+      "lossless_rule": "整数ID无有损压缩；ROI优先坐标按需crop",
+      "render_rule": { "spec": "区域 mask 优先使用无阴影、无色彩管理和无抗锯齿混色的整数 ID 通道或独立标签渲染；检查 PNG 中 ID 严格可恢复。Cryptomatte 等方式可作为替换，但先验收边界像素", "source": "p1481" },
+      "null_rule": { "spec": "缺视图用 presence；不塞一张零图假装已拍摄", "source": "t104" }
+    },
+    "quality_vector_8": {
+      "spec": ["blur", "exposure", "coverage", "occlusion", "reconstruction_confidence", "point_density", "normal_stability", "curvature_stability"],
+      "count": 8,
+      "source": "p0236",
+      "rule": "质量建模建议从单一 q∈[0,1] 提升为特征级可靠性向量；质量头只描述“这份证据有多可用”，不得直接借 R2 标签把“邻接”偷换成“清晰”",
+      "storage": { "spec": "每视图和每区域命名的 float32 向量；每项附 valid 及来源为 OBS_EST 或 GT_ORACLE", "source": "t104" },
+      "permission": { "spec": "质量标签与邻接标签分离；可观察质量输入 + 独立 oracle 诊断，字段权限分离", "source": "t032/t101(D16)" }
+    },
+    "degradation_vector_D": {
+      "spec": ["fracture_smoothing", "edge_rounding", "fracture_missing", "texture_loss", "blur", "glare", "exposure", "view_coverage", "point_dropout", "mesh_holes", "depth_noise", "normal_noise", "curvature_noise", "calibration_error"],
+      "count": 14,
+      "source": "p0365",
+      "rule": "每个分量保留物理或数值单位、随机种子和操作顺序。不要只存一个 quality=0.7"
+    },
+    "acceptance_levels": {
+      "Q1": { "spec": "现场验收：照片解码、身份对应、关键断口可见、明显失焦高光不过关", "source": "p0464" },
+      "Q2": { "spec": "当日入库：图与mask、ID引用、哈希、关系对称、单位和版本一致", "source": "p0464" },
+      "Q3": { "spec": "研究验收：split隔离、关系完整性、确认封存和指标分母可追溯", "source": "p0464" }
+    },
+    "quality_3d_floor_q2_equivalent": {
+      "valid_point_fraction_min_pct": 50,
+      "sigma_max_mm": 0.2,
+      "max_holes": 2,
+      "hole_radius_max_mm": 3,
+      "label": "Q2 当量",
+      "source": "unspecified_exact",
+      "source_note": "文档未给这一组确切阈值。文档给出的相邻口径为：G16 轴分层（G01 深度误差 RMS 0–1mm 分层、G02 点云 8192→512 点、G03 局部覆盖 100→20%）、t093 要求 Fracture-local 必报“局部surface repeat error、normal repeatability、coverage、边界误差、真实邻片闭合残差”、t097 要求每次采集必报 Scale drift 与 Coverage/confidence。本组 ≥50% 有效点 / σ≤0.2mm / ≤2 个 r≤3mm 孔洞 是**本契约提出的 Q2 当量下限**，属补齐方案，不是文档明写的门。",
+      "confidence": "assumption"
+    },
+    "bright_wall_depth_shortage": { "spec": "薄壁景深不足 → 多斜角和经过验证的距离采集；可见区域与失焦区域分开", "source": "t045" }
+  },
+
+  "ledger": {
+    "file_classes": {
+      "count": 11,
+      "spec": ["objects.csv", "fragments.csv", "surfaces.jsonl", "captures.jsonl", "relations.csv", "queries.csv", "geometry.jsonl", "transitions.jsonl", "manifests.jsonl", "cost_log.csv", "capture扩展"],
+      "source": "t044",
+      "note": "t044 表共 12 行 = 表头 + 11 个条目（10 个文件 + capture 扩展）。capture 扩展是本契约的命名，文档在 t044 中作为独立行给出 width…angle_measured_deg 9 个字段。",
+      "fields": [
+        { "file": "objects.csv", "min_fields": ["object_id", "family_id", "material", "source", "permission_id", "split"], "constraint": "母体与近重复组一致划分" },
+        { "file": "fragments.csv", "min_fields": ["fragment_id", "object_id", "bag_id", "surface_ids", "size_mm"], "constraint": "唯一实物身份，尺寸可null" },
+        { "file": "surfaces.jsonl", "min_fields": ["surface_id", "fragment_id", "view_ids", "visibility", "occlusion_reason", "mask_paths"], "constraint": "observed／partial／not_observed" },
+        { "file": "captures.jsonl", "min_fields": ["capture_id", "session_id", "fragment_id", "surface_id", "path", "sha256", "device_id", "calibration_id", "quality_tier", "timestamp"], "constraint": "整片surface_id可null" },
+        { "file": "capture扩展", "min_fields": ["width", "height", "exposure_s", "iso", "focus_mode", "light_mode", "polarizer_state", "angle_cmd_deg", "angle_measured_deg"], "constraint": "无角传感器的实测角为null" },
+        { "file": "relations.csv", "min_fields": ["frag_a", "surface_a", "frag_b", "surface_b", "label", "evidence_paths", "reviewers", "label_version"], "constraint": "对称，UNKNOWN不自动转负" },
+        { "file": "queries.csv", "min_fields": ["query_id", "capture_ids", "gallery_version", "mate_status", "gt_relation_version"], "constraint": "GT字段仅评测进程使用" },
+        { "file": "geometry.jsonl", "min_fields": ["geometry_id", "fragment_id", "path", "unit", "frame_id", "transform", "method", "config_hash", "qc"], "constraint": "原始与展示几何分开" },
+        { "file": "transitions.jsonl", "min_fields": ["episode_id", "step_id", "observation_revision", "action", "next_capture_id", "duration_ms", "failure_code", "policy_version"], "constraint": "成功与失败动作都记录" },
+        { "file": "manifests.jsonl", "min_fields": ["path", "size_bytes", "sha256", "schema_version", "created_at"], "constraint": "相对路径，哈希对应当前字节" },
+        { "file": "cost_log.csv", "min_fields": ["task_id", "operator", "start", "end", "action", "result", "failure_reason"], "constraint": "人时、机器时和墙钟分开" }
+      ]
+    },
+    "full_data_chain": {
+      "source": "p0459/p0472/p1156/p1163/t093/t096/t097/t104/p0638",
+      "items": [
+        "原始图（不可变，原图字节与时间校验）",
+        "mask（整数 ID，无损，PNG/RLE）",
+        "内外参（K 3×3、pose 4×4；相机原始与 crop 后内参分别存）",
+        "标定版本（calibration_id / intrinsics_profile_id / rig_calibration_rev）",
+        "sparse（SfM：reprojection error、track length、triangulation angle）",
+        "depth（float32 或定义 scale 的 uint16，先区分相机 z 和光线距离，invalid mask 独立）",
+        "normal（观测估计单位法向 + normal_valid + 估计邻域与误差）",
+        "dense cloud（含 depth confidence；coverage 与有效像素比例）",
+        "raw mesh 与 processed mesh（原始与展示几何分开，补洞版单独标记）",
+        "Global↔Local 变换（局部 mesh 刚性回挂 global；同时保留独立 local 原始结果；fusion residual、scale consistency、变换版本）",
+        "scale（可追溯尺度基准 + scale drift 每次采集必报）",
+        "coverage + confidence（每个 surface instance 必报，区分“没看到”与“确实没有结构”）",
+        "QC（Q1/Q2/Q3、重复扫描 repeat error、下游保留率）"
+      ]
+    },
+    "file_transaction": { "spec": "原图上传先写临时文件，确认字节、尺寸、hash和身份后原子重命名，再提交数据库。任一步失败标失败或待恢复，不留下saved但文件不存在的记录", "source": "p0625" },
+    "gt_isolation": { "spec": "GT存独立标注／评测目录和权限边界。公开查询界面和算法输入不返回 object_id、完整装配或 relations", "source": "p0626" }
+  },
+
+  "tool_capabilities_contract": {
+    "source": "p0577",
+    "fields": ["axes_mode", "theta／z／u范围", "resolution_profiles", "focus_settings", "camera_ids", "light_modes", "polarizer_auto", "capture_auto", "homed", "calibration_rev", "wiring_rev", "position_source"],
+    "maual_and_auto_must_not_be_conflated": "手动近远或偏振不冒充自动；无编码器则实测字段null，命令角／步数为估计"
+  },
+
+  "action_proposal": {
+    "note": "文档两处字段集不一致，必须人工裁决（见 docs/a12/rig_contract.md 人工裁决清单 #1）。本契约两个都保留，不擅自合并。",
+    "set_A_p0276": {
+      "source": "p0276",
+      "fields": ["query_id", "evidence_revision", "action_id", "target_region", "camera_id", "目标姿态或相对转角", "light_mode", "预期成本", "理由"]
+    },
+    "set_B_p0638": {
+      "source": "p0638",
+      "fields": ["u_profile_id", "distance_mode", "focus_setting_id", "intrinsics_profile_id", "expected_roi"]
+    },
+    "union_used_by_rig_service": {
+      "source": "p0574",
+      "fields": ["pose_id", "u_profile_id", "light_mode", "intrinsics_profile_id"],
+      "rule": "rig_service 把它们映射到已经验收的 pose_id、u_profile_id、light_mode 及 intrinsics_profile_id；未合格动作屏蔽，U 手动时产生人员任务而非电机命令"
+    }
+  },
+
+  "explicitly_unavailable": {
+    "note": "文档明写拿不到或明确不承诺的项；合成侧不得声称拥有这些能力的等价物（可作为超实物域的上界仿真）。",
+    "items": [
+      { "capability": "光度立体法向（photometric stereo normals）", "available": false, "source": "p096", "statement": "只写“可选 Photometric Stereo 法向/normal-guided refinement”，非保证能力" },
+      { "capability": "自动偏振角（polarizer_auto）", "available": false, "source": "p0577", "statement": "capabilities 含 polarizer_auto 字段；手动偏振不冒充自动" },
+      { "capability": "0.1mm 绝对精度", "available": false, "source": "p0517/p0473", "statement": "不是 0.2mm 测量精度承诺；无可信参考不虚报毫米误差，只给可核重复一致性" },
+      { "capability": "硬同步双目", "available": false, "source": "t050", "statement": "两路依次拍摄，不宣称硬同步双目" },
+      { "capability": "可靠深度", "available": false, "source": "t073/p0473", "statement": "3D不合格 → 关模态走经验证 2D，不填 0 分" },
+      { "capability": "无限连续旋转", "available": false, "source": "p0432/p1156", "statement": "不边转边拍；Global 3D 不采用单圈360°为正式采集" },
+      { "capability": "自动翻面", "available": false, "source": "p0434", "statement": "支撑遮面时人工翻面或换支撑，建立新 session" },
+      { "capability": "出土上下文", "available": false, "source": "t101(D23)/p1146/p0412", "statement": "出土上下文只是“受限的模拟出土上下文”，有缺失冲突和噪声，不能等价母体 ID；真实侧“坑位/层位只有真实可信字段时才使用”；模型输入不包含母体ID、袋号" },
+      { "capability": "结构光扫描", "available": false, "source": "全文命中 0 处", "statement": "文档全文未出现结构光/structured light；不得作为采集台能力或合成侧对标项引入（见人工裁决清单）" }
+    ]
+  },
+
+  "unspecified_with_fallback": {
+    "note": "文档未明确项集中登记。以下每条的 fallback 都是**我们的假设**，不是文档要求；一旦文档有明确值或实测值，以实测替换。",
+    "items": [
+      { "field": "lens_model_and_focal_length", "reason": "全文未给镜头型号或焦距", "fallback_mainstream": "SC3336B 原厂 M12 定焦（约 f=3.6mm 等效）或兼容可调焦 M12", "differs_from_document": false },
+      { "field": "distortion_model_order", "reason": "只要求“畸变参数”，未给模型与阶数", "fallback_mainstream": "Brown–Conrady k1,k2,p1,p2(,k3)", "differs_from_document": false },
+      { "field": "depth_of_field_mm", "reason": "景深被列为必测项但无数值", "fallback_mainstream": "近摄 5–10cm 档按 ~±3–8mm 可用景深设计", "differs_from_document": false },
+      { "field": "color_temperature_K", "reason": "只说同色温白光与 CRI≥90 候选", "fallback_mainstream": "5500–6500 K 高显色白光", "differs_from_document": false },
+      { "field": "per_fragment_capture_time_s", "reason": "要求实测但无数值门", "fallback_mainstream": "整片 2D 8–15 min；Global 3D 30–60 min；Fracture-local 每断口 15–30 min", "differs_from_document": false }
+    ]
+  }
+}

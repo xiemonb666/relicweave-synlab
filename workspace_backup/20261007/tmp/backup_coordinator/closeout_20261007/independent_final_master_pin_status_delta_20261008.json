@@ -1,0 +1,65 @@
+{
+  "unchanged_reviewed_artifacts": {
+    "postverify_helper": {
+      "bytes": 51017,
+      "sha256": "7706e133102aaa4d47360e3e792d8ff21305267968a3d346119d7a836cef95ba"
+    },
+    "executor": {
+      "bytes": 69359,
+      "sha256": "9a27e1a9980fb99c144ee3dd63fe3c38405aa9b78eb03179c3ebceaba7cc1306"
+    },
+    "readme": {
+      "bytes": 4566,
+      "sha256": "c64dafaafbcc1b95752cde84c3f3be012f8feb90e0509333e4d1de65129f8d5b"
+    }
+  },
+  "review_mode": "source_only",
+  "git_mutation_performed": false,
+  "reviewed_date": "2026-10-08",
+  "document_qa_performed": false,
+  "delta_record": {
+    "previous_pin_delta_md_sha256": "25b14a2d233f9cba25d67f729f460c0a9b654ebf38f54b5d0e737a57b0c5d398",
+    "md_path": "tmp/backup_coordinator/closeout_20261007/final_master_pin_status_delta_20261008.md",
+    "json_path": "tmp/backup_coordinator/closeout_20261007/final_master_pin_status_delta_20261008.json",
+    "previous_pin_delta_json_sha256": "d8a7118c5882b397f593579afeeb40a82e8d784480e513834f937a2e535e895f",
+    "md_sha256": "b8a39063bd5bcaf64297b50eda8979e75a830ae1eb2f07a7ebe4f0dd5537d985",
+    "json_sha256": "993967e5b33d5b837f72de258dccffcc5499afdd74160146e2182738521f9564"
+  },
+  "status": "PASS_DELTA_ONLY",
+  "coordinator_aborted_help_record": {
+    "stdout_stderr": "not preserved per delta JSON",
+    "inventory_output_nonoverwrite": "reported by coordinator, not independently verified in this review",
+    "state": "ABORTED_NOT_FINAL"
+  },
+  "limitation": "Pass applies only to the exact builder source delta and unchanged-file pins; it does not establish inventory completion or visual QA.",
+  "git_commands_run": false,
+  "execution_performed": false,
+  "credential_scan_performed": false,
+  "builder": {
+    "reconstructed_pin_only": {
+      "bytes": 56118,
+      "matches_claimed": true,
+      "sha256": "2cfeaa37b3afc1a4896dda8f071dcf4cd6f5b9a74dbcbfd3e5b30e90d6658581"
+    },
+    "qa_authority_existence_independently_checked": false,
+    "qa_result_claimed": false,
+    "bytes": 56148,
+    "path": "tmp/backup_coordinator/closeout_20261007/build_closeout_inventory_v2.py",
+    "new_pin_row_occurrences": 1,
+    "status_literal": "FINAL_MASTER_FROZEN 786150B SHA883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d; rendered225pages; final visual QA authority tmp/v147_user_merge_20261007/LAYOUT_FINAL_QA_COVERAGE.json",
+    "sha256": "4496097836423133ae58c77af13c60e259bc94a20cab7a889e840380d8d71079",
+    "reconstructed_original": {
+      "bytes": 55967,
+      "matches_claimed": true,
+      "sha256": "741319d107112aa2e06a4639a673b0000c2e1422aba907a2360ad4962d599d34"
+    },
+    "master_pin": {
+      "bytes": 786150,
+      "path": "RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx",
+      "sha256": "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d"
+    },
+    "new_status_literal_occurrences": 1
+  },
+  "schema": "independent_final_master_pin_status_delta_review_v1",
+  "inventory_build_performed": false
+}

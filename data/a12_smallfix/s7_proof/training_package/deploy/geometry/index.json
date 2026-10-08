@@ -1,0 +1,57 @@
+{
+  "arrays": [
+    "points",
+    "normals",
+    "point_valid",
+    "normal_valid",
+    "scale_valid",
+    "frame_id"
+  ],
+  "frame_id": {
+    "definition": "the delivered view whose rendered depth_z agrees with the point reprojected through K and T_WC; -1 = no delivered view explains the point",
+    "measured": {
+      "match_fraction": 0.9793354273433625,
+      "matched": 5924,
+      "points": 6049
+    },
+    "sources": [
+      "T_WC+K+depth_z"
+    ],
+    "tolerance_mm": 5.0,
+    "unit": "1 (index of a delivered view inside the fragment)",
+    "unmatched_marker": -1
+  },
+  "rows": {
+    "LIN0000_V01_M01_PAT01_E01-m": {
+      "frame_id_match_fraction": 0.998468606431853,
+      "frame_id_source": "T_WC+K+depth_z",
+      "frame_id_unmatched": 2,
+      "frames": 4,
+      "n_points": 1306,
+      "opaque": "c7381df5d84b25fac9e8eb2b",
+      "points_hash": "sha256:1b573366d9c15e211144f0c7e896131a58ebb5e70bb881019e4775fb15381c0b",
+      "shard": "geometry/shard_0000.npz"
+    },
+    "LIN0001_V02_M01_PAT01_E01-m": {
+      "frame_id_match_fraction": 1.0,
+      "frame_id_source": "T_WC+K+depth_z",
+      "frame_id_unmatched": 0,
+      "frames": 4,
+      "n_points": 585,
+      "opaque": "56af3b4c1137751192c649b4",
+      "points_hash": "sha256:4a568449a3297aae5ff3cb61bc3cbf4d45412158d68115fc306db123ef496bae",
+      "shard": "geometry/shard_0000.npz"
+    },
+    "LIN0002_V13_M01_PAT01_E01-m": {
+      "frame_id_match_fraction": 0.9704184704184704,
+      "frame_id_source": "T_WC+K+depth_z",
+      "frame_id_unmatched": 123,
+      "frames": 4,
+      "n_points": 4158,
+      "opaque": "e6b794e0386608bbd20b509b",
+      "points_hash": "sha256:1af10fb51ef8e0b790beb70489232168d8ddb98fa39ba01fd17adb2e88e35be9",
+      "shard": "geometry/shard_0000.npz"
+    }
+  },
+  "schema": "synlab.geometry_index.v1"
+}

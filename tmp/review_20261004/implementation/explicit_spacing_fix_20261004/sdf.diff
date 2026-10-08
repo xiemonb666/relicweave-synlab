@@ -1,0 +1,72 @@
+--- original/synlab/physical/sdf.py
++++ current/synlab/physical/sdf.py
+@@ -108,13 +108,20 @@
+                    requested_mm: float | None = None, max_nodes: int = 4_000_000,
+                    bbox_mm: tuple[float, float, float] | None = None,
+                    explicit_mm: float | None = None) -> dict[str, Any]:
+-    """Initial spacing = min(wall/6, structure/4) with an explicit node budget (plan 12.1).
++    """Choose an initial spacing with an explicit node budget (plan 12.1).
+ 
+     ``explicit_mm`` (S12) is the **declarable** form of the decision: it is used verbatim and the
+     node budget is then *reported*, never applied -- so a recipe can ask for a spacing and get
+     exactly it, while :func:`spacing_budget_report` says how many nodes that costs.  Without it
+     the shipped rule applies: the budget relaxes the spacing by 1.2x per step and the returned
+     ``basis`` carries ``+node_budget_relaxation``.
++
++    ``criteria`` keeps the wall, structure, and requested values as diagnostics when an explicit
++    spacing is selected.  ``budget_limited`` means the chosen spacing was actually coarsened by
++    the automatic budget relaxation.  ``budget_ok`` reports whether the initial chosen spacing
++    fits the budget estimate; for an explicit spacing this is checked against the declared value.
++    If ``bbox_mm`` is omitted, the legacy ``budget_ok=True`` is retained because no estimate can
++    be made; it does not establish that the budget is satisfied.
+ 
+     S12 measured the silent case this makes visible: a P03 recipe *requested* 0.95018 mm
+     (``min_wall_thickness/6``) and the 600 000-node budget returned **1.1402 mm** (a 20 % coarser
+@@ -122,11 +129,18 @@
+     1.1402; requesting 0.5701 landed on 1.1822).
+     """
+     candidates: list[tuple[str, float]] = []
+-    explicit = None if explicit_mm is None else float(explicit_mm)
++    explicit = None
++    if explicit_mm is not None:
++        try:
++            explicit = float(explicit_mm)
++        except (TypeError, ValueError, OverflowError):
++            raise SynLabError(ErrorCode.SCHEMA_INVALID,
++                              f"damage_spacing_mm must be finite and > 0, got {explicit_mm!r}",
++                              stage="physical.sdf.choose_spacing")
+     if explicit is not None:
+-        if not (explicit > 0.0):
++        if not math.isfinite(explicit) or explicit <= 0.0:
+             raise SynLabError(ErrorCode.SCHEMA_INVALID,
+-                              f"damage_spacing_mm must be > 0, got {explicit_mm!r}",
++                              f"damage_spacing_mm must be finite and > 0, got {explicit_mm!r}",
+                               stage="physical.sdf.choose_spacing")
+         candidates.append(("explicit", explicit))
+     if min_wall_thickness_mm and min_wall_thickness_mm > 0:
+@@ -137,8 +151,12 @@
+         candidates.append(("requested", float(requested_mm)))
+     if not candidates:
+         candidates.append(("default", 0.5))
+-    spacing = min(value for _, value in candidates)
+-    basis = min(candidates, key=lambda kv: kv[1])[0]
++    if explicit is not None:
++        spacing = explicit
++        basis = "explicit"
++    else:
++        spacing = min(value for _, value in candidates)
++        basis = min(candidates, key=lambda kv: kv[1])[0]
+     budget_ok = True
+     relaxation_steps = 0
+     budget_limited = False
+@@ -150,6 +168,10 @@
+             budget_ok = False
+             budget_limited = True
+             basis += "+node_budget_relaxation"
++    elif bbox_mm is not None:
++        extent = np.asarray(bbox_mm, dtype=np.float64)
++        estimated_nodes = float(np.prod(np.ceil(extent / spacing) + 3))
++        budget_ok = bool(estimated_nodes <= max_nodes)
+     requested = None if requested_mm is None else float(requested_mm)
+     return {"spacing_mm": float(spacing), "basis": basis, "budget_ok": budget_ok,
+             "criteria": {name: float(value) for name, value in candidates},

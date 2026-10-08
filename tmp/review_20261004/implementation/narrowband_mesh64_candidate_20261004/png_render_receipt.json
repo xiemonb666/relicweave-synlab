@@ -1,0 +1,58 @@
+{
+  "schema": "a12.narrowband-mesh64-png-render-receipt.v1",
+  "argv": [
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+    "-B",
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\render_comparison.py"
+  ],
+  "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+  "python_executable": "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+  "renderer_sha256": "e34819857e7c83893a0d43f4894cd29032a9e813b271e76ed5f3144009893bee",
+  "inputs": [
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\candidate_comparison.json",
+      "sha256": "4ca288a8caaa8005572c2acb15bd059b31ccba66f07b0177cee1315f0927d12f"
+    },
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\result_P02_mesh32.json",
+      "sha256": "c96bdf65ad974fc1f67bbbec3e02b34ed20cceffb7675753ca308f332a24cc13"
+    },
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\result_P02_mesh64.json",
+      "sha256": "a83611485e8421f34a6a06eb7c93d0fe10d7315fbcb3844f46227873ac634102"
+    },
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\result_P03_mesh32.json",
+      "sha256": "4b474791b0a3766c79ffc0cc24176295d2197812b056bdcdc8ce7c65f8038c1f"
+    },
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\result_P03_mesh64.json",
+      "sha256": "6d70315a32f3a72937629d18bded04416f0d8d547a408eb7947dd45e37a286dd"
+    },
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\output_P02_mesh32.npz",
+      "sha256": "39331608f36996993d53297630aa560359c410106690effe55ef97aa31325e43"
+    },
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\output_P02_mesh64.npz",
+      "sha256": "27e46b8c5fdf6ac9b8de14d183895041c4a66a6064c1396b6d559861eb5a88bf"
+    },
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\output_P03_mesh32.npz",
+      "sha256": "d65680234558ba0889072f980b8e6dd125765c3f3370cf58c68e13551fd15af3"
+    },
+    {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\output_P03_mesh64.npz",
+      "sha256": "c17b5cd641fa054cef01f36c860c0ae792d2ffdd76ba67d39ffbb3ec1dc48ab8"
+    }
+  ],
+  "started_utc": "2026-10-04T04:47:50.3479501Z",
+  "finished_utc": "2026-10-04T04:47:50.8911607Z",
+  "elapsed_seconds": 0.541,
+  "exit_code": 1,
+  "output": "Traceback (most recent call last):\r\n  File \"C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\render_comparison.py\", line 118, in <module>\r\n    main()\r\n  File \"C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\render_comparison.py\", line 104, in main\r\n    panel(ax, vertices, faces, stage,\r\n  File \"C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\render_comparison.py\", line 38, in panel\r\n    edges, boundary = unique_edges(faces)\r\n                      ^^^^^^^^^^^^^^^^^^^\r\n  File \"C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\render_comparison.py\", line 28, in unique_edges\r\n    return unique, unique[counts[inverse] == 1]\r\n                   ~~~~~~^^^^^^^^^^^^^^^^^^^^^^\r\nIndexError: boolean index did not match indexed array along axis 0; size of axis is 8211 but size of corresponding boolean axis is 16422",
+  "png_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\mesh32_mesh64_topology_projections.png",
+  "png_bytes": null,
+  "png_sha256": null,
+  "source": "Rendered from saved worker JSON and output NPZ files only; no mesh construction or Boolean."
+}

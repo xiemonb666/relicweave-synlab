@@ -1,0 +1,27 @@
+Exception in thread Thread-3 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\xiemo\.dsh\dsh-runtimes\dsh-primary-runtime\dependencies\python\Lib\threading.py", line 1075, in _bootstrap_inner
+    self.run()
+  File "C:\Users\xiemo\.dsh\dsh-runtimes\dsh-primary-runtime\dependencies\python\Lib\threading.py", line 1012, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\xiemo\.dsh\dsh-runtimes\dsh-primary-runtime\dependencies\python\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'gbk' codec can't decode byte 0x94 in position 1561: illegal multibyte sequence
+{
+  "ready": true,
+  "checked_at": 1790918438.990659,
+  "config": "configs/a12/realistic.yaml",
+  "n_modules": 175,
+  "syntax_problems": [],
+  "modules_changed_during_probe": [],
+  "quiet_seconds": 20.0,
+  "plan": {
+    "planned": 120,
+    "spec_hash": "sha256:6512bbce6ad6eea0ca257c66e309a7402bb585f90b13e7f3ebb748862e63986c",
+    "job_id": "job_47c5c2ba5897b4fd0752938c",
+    "load_all_errors": {}
+  },
+  "plan_error": null,
+  "code_digest": "sha256:bd62544284a133ef37f254d55e565571b31c79bd0fd6391c015883dbd140d2bc"
+}

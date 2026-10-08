@@ -1,0 +1,47 @@
+{
+  "arrays": [
+    "points",
+    "normals",
+    "point_valid",
+    "normal_valid",
+    "scale_valid",
+    "frame_id"
+  ],
+  "frame_id": {
+    "definition": "the delivered view whose rendered depth_z agrees with the point reprojected through K and T_WC; -1 = no delivered view explains the point",
+    "measured": {
+      "match_fraction": 1.0,
+      "matched": 1897,
+      "points": 1897
+    },
+    "sources": [
+      "T_WC+K+depth_z"
+    ],
+    "tolerance_mm": 5.0,
+    "unit": "1 (index of a delivered view inside the fragment)",
+    "unmatched_marker": -1
+  },
+  "rows": {
+    "LIN0000_V02_M01_PAT02_E01-m": {
+      "frame_id_match_fraction": 1.0,
+      "frame_id_source": "T_WC+K+depth_z",
+      "frame_id_unmatched": 0,
+      "frames": 4,
+      "n_points": 915,
+      "opaque": "24382e8df934c5d4fa362d3e",
+      "points_hash": "sha256:2cd0506f991ec863c5246673ca6c03f57546c5506788d1ab97664c3602df7bf4",
+      "shard": "geometry/shard_0000.npz"
+    },
+    "LIN0000_V02_M01_PAT02_E01-p": {
+      "frame_id_match_fraction": 1.0,
+      "frame_id_source": "T_WC+K+depth_z",
+      "frame_id_unmatched": 0,
+      "frames": 4,
+      "n_points": 982,
+      "opaque": "99d6ba555e36f770932ded35",
+      "points_hash": "sha256:4c90dad03e45becf4e0cc97fdf30f6bdeed446a888fe1445ecdddf24c58e8604",
+      "shard": "geometry/shard_0000.npz"
+    }
+  },
+  "schema": "synlab.geometry_index.v1"
+}

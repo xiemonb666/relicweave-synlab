@@ -1,0 +1,582 @@
+{
+  "schema": "shardforge.curated_backup_plan.v1",
+  "plan_id": "next_vf_coupled_backup_plan_20261007",
+  "created_utc": "2026-10-07T03:00:40.4895541+08:00",
+  "workspace_root": "C:\\Users\\xiemo\\Desktop\\ShardForge",
+  "status": "SOURCE_ONLY_PLAN_NO_COPY_NO_GIT_MUTATION",
+  "copy_performed": false,
+  "git_stage_performed": false,
+  "commit_performed": false,
+  "push_performed": false,
+  "repositories": {
+    "pgfrag": {
+      "git_toplevel": "C:/Users/xiemo/Desktop/ShardForge/pgfrag",
+      "branch": "backup/forge-work-20261003",
+      "head": "6aabf6191eb232b4ad446334189d15e894bc3bff",
+      "parent": "c13770d7c99ae58d3b57c34b434d2eb1a743d814",
+      "remote": "origin",
+      "remote_ref": "refs/heads/backup/forge-work-20261003",
+      "remote_head": "6aabf6191eb232b4ad446334189d15e894bc3bff",
+      "index_clean": true,
+      "tracked_worktree_clean": true,
+      "staged_path_count": 0,
+      "tracked_status_count": 0
+    },
+    "vesselforge": {
+      "git_toplevel": "C:/Users/xiemo/Desktop/ShardForge/vesselforge",
+      "branch": "backup/forge-work-20261003",
+      "head": "8acff8ac7db9cf212ed87ede3054a8311b69cc3a",
+      "parent": "f34800e69b83277cff14629f6b1cd386872d8ef8",
+      "remote": "origin",
+      "remote_ref": "refs/heads/backup/forge-work-20261003",
+      "remote_head": "8acff8ac7db9cf212ed87ede3054a8311b69cc3a",
+      "index_clean": true,
+      "tracked_worktree_clean": true,
+      "staged_path_count": 0,
+      "tracked_status_count": 0
+    }
+  },
+  "totals": {
+    "file_count": 43,
+    "bytes": 936512,
+    "copy_count": 34,
+    "direct_stage_count": 9,
+    "per_repo": {
+      "pgfrag": {
+        "file_count": 15,
+        "bytes": 636690,
+        "copy_count": 6,
+        "direct_stage_count": 9
+      },
+      "vesselforge": {
+        "file_count": 28,
+        "bytes": 299822,
+        "copy_count": 28,
+        "direct_stage_count": 0
+      }
+    }
+  },
+  "notes": [
+    "Prior accepted batch remains PG 6aabf6191eb232b4ad446334189d15e894bc3bff and VF 8acff8ac7db9cf212ed87ede3054a8311b69cc3a; both existing backup branches and remotes match at plan creation.",
+    "The VF source scope preserves the accepted independent reader and original plus layout_fixed_01 saved Local2D preview runs, including historical pins, renderer/runner source snapshots, receipts, start records, raw logs and PNGs. The already-backed-up normal_offset_meridian numeric failure/result paths are not repeated.",
+    "The PG direct-stage subset is the fixed-case/worker/supervisor plus legacy static checker. Its rotation cohort has one accepted 64-query, five-check focused diagnostic with actual root-go and run receipts; it supports provider coordinate covariance only, not admission or bias qualification.",
+    "Do not infer material, physical fracture, global-wall, or full fracture qualification from these source and diagnostic backups.",
+    "Only this JSON and its adjacent README are created by this preparation step."
+  ],
+  "exclusions": [
+    "PG NUMERIC_SOURCE_PINS and phase-dependent numeric review docs: pending phase freeze; inventoried separately only.",
+    "PG new actual cohesive numeric result/source freeze/external capture: not included until generated, frozen and accepted.",
+    "PG progress status draft and currently active cohesive numeric run: excluded.",
+    "Vesselforge prior 58-item failure/result evidence: already committed in the previous batch and not duplicated.",
+    "Unrelated runtime/cache files, credentials, DOCX, broad tmp trees, tests/reruns, active numerical work and other WIP."
+  ],
+  "pending_candidates": [
+    {
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\tmp\\review_20261006\\mixed93_actual_cohesive_bridge_20261006\\NUMERIC_SOURCE_PINS.json",
+      "workspace_relative": "pgfrag/tmp/review_20261006/mixed93_actual_cohesive_bridge_20261006/NUMERIC_SOURCE_PINS.json",
+      "bytes": 7145,
+      "sha256": "f10c95d0943ee0d2fd5020e4bfddba91c9f4af4f182d2849769dc664cc7d6140",
+      "status": "pending_phase_freeze_not_in_files",
+      "reason": "Mutable authorization pins; owner may still update. Inventory only, not in executable files."
+    },
+    {
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\tmp\\review_20261006\\mixed93_actual_cohesive_bridge_20261006\\NUMERIC_SOURCE_README.md",
+      "workspace_relative": "pgfrag/tmp/review_20261006/mixed93_actual_cohesive_bridge_20261006/NUMERIC_SOURCE_README.md",
+      "bytes": 3192,
+      "sha256": "124a012d43cd643a7e490ae3d6fb1e2399f17368182988bfbf5fb07297783f76",
+      "status": "pending_phase_freeze_not_in_files",
+      "reason": "Source-facing numerical README; defer until the authorization-pin phase is frozen."
+    },
+    {
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\tmp\\review_20261006\\mixed93_actual_cohesive_bridge_source_independent\\SOURCE_NUMERIC_REVIEW.md",
+      "workspace_relative": "pgfrag/tmp/review_20261006/mixed93_actual_cohesive_bridge_source_independent/SOURCE_NUMERIC_REVIEW.md",
+      "bytes": 3795,
+      "sha256": "17235d953b78d798e10d6c57f90e3a044365d744d6a9139796ebb2eff7a90a77",
+      "status": "pending_phase_freeze_not_in_files",
+      "reason": "Numeric source review candidate; defer until phase freeze."
+    },
+    {
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\tmp\\review_20261006\\mixed93_actual_cohesive_bridge_source_independent\\SOURCE_NUMERIC_REVIEW.json",
+      "workspace_relative": "pgfrag/tmp/review_20261006/mixed93_actual_cohesive_bridge_source_independent/SOURCE_NUMERIC_REVIEW.json",
+      "bytes": 3208,
+      "sha256": "738216516a014357e51b836db5011a40532898aa3fff8bc019d94faafa217d12",
+      "status": "pending_phase_freeze_not_in_files",
+      "reason": "Numeric source review machine record; defer until phase freeze."
+    }
+  ],
+  "files": [
+    {
+      "repo": "pgfrag",
+      "group": "mixed93_actual_cohesive_bridge_closed_source",
+      "operation": "stage_existing_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\mixed93_actual_cohesive_bridge_20261006\\run_actual_cohesive_bridge.py",
+      "source_repo_relative": "experiments/mixed93_actual_cohesive_bridge_20261006/run_actual_cohesive_bridge.py",
+      "destination_repo_relative": "experiments/mixed93_actual_cohesive_bridge_20261006/run_actual_cohesive_bridge.py",
+      "destination_preflight": "untracked_not_ignored_same_path",
+      "bytes": 37684,
+      "sha256": "36ac1710286b0abf607bda5b1c6ffab893f8191830eae091517e2acd41d62236"
+    },
+    {
+      "repo": "pgfrag",
+      "group": "mixed93_actual_cohesive_bridge_closed_source",
+      "operation": "stage_existing_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\mixed93_actual_cohesive_bridge_20261006\\run_actual_cohesive_bridge_once.py",
+      "source_repo_relative": "experiments/mixed93_actual_cohesive_bridge_20261006/run_actual_cohesive_bridge_once.py",
+      "destination_repo_relative": "experiments/mixed93_actual_cohesive_bridge_20261006/run_actual_cohesive_bridge_once.py",
+      "destination_preflight": "untracked_not_ignored_same_path",
+      "bytes": 10889,
+      "sha256": "99341a82fa1cbe4192fcac3bf76030e7d094c254606414753c80de6e31a3fba9"
+    },
+    {
+      "repo": "pgfrag",
+      "group": "mixed93_actual_cohesive_bridge_closed_source",
+      "operation": "stage_existing_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\mixed93_actual_cohesive_bridge_20261006\\case.json",
+      "source_repo_relative": "experiments/mixed93_actual_cohesive_bridge_20261006/case.json",
+      "destination_repo_relative": "experiments/mixed93_actual_cohesive_bridge_20261006/case.json",
+      "destination_preflight": "untracked_not_ignored_same_path",
+      "bytes": 21226,
+      "sha256": "fcc4b46ed101b0f6067a9f3ec10816909c9fa931edd5a8cdde4c7f46cb3f3a71"
+    },
+    {
+      "repo": "pgfrag",
+      "group": "mixed93_actual_cohesive_bridge_closed_source",
+      "operation": "stage_existing_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\mixed93_actual_cohesive_bridge_20261006\\mixed93_actual_cohesive_bridge.py",
+      "source_repo_relative": "experiments/mixed93_actual_cohesive_bridge_20261006/mixed93_actual_cohesive_bridge.py",
+      "destination_repo_relative": "experiments/mixed93_actual_cohesive_bridge_20261006/mixed93_actual_cohesive_bridge.py",
+      "destination_preflight": "untracked_not_ignored_same_path",
+      "bytes": 18537,
+      "sha256": "023d730454802ec755df41c9878744aa086cd5b97a8a88e9d5bbd4181b6f1412"
+    },
+    {
+      "repo": "pgfrag",
+      "group": "mls_rotation_covariance_64_queries_5_checks",
+      "operation": "stage_existing_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\mls_rotation_covariance_20261007\\mls_rotation_covariance.py",
+      "source_repo_relative": "experiments/mls_rotation_covariance_20261007/mls_rotation_covariance.py",
+      "destination_repo_relative": "experiments/mls_rotation_covariance_20261007/mls_rotation_covariance.py",
+      "destination_preflight": "untracked_not_ignored_same_path",
+      "bytes": 6888,
+      "sha256": "431efad4df87d127853c2d970724fc8931ec9dbb1323ac31dab7f3a2ff212e40"
+    },
+    {
+      "repo": "pgfrag",
+      "group": "mls_rotation_covariance_64_queries_5_checks",
+      "operation": "stage_existing_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\mls_rotation_covariance_20261007\\test_mls_rotation_covariance.py",
+      "source_repo_relative": "experiments/mls_rotation_covariance_20261007/test_mls_rotation_covariance.py",
+      "destination_repo_relative": "experiments/mls_rotation_covariance_20261007/test_mls_rotation_covariance.py",
+      "destination_preflight": "untracked_not_ignored_same_path",
+      "bytes": 2496,
+      "sha256": "3c02f4da5096712deea95050f370d7215d8e37081a39330a4cc68624914b03f1"
+    },
+    {
+      "repo": "pgfrag",
+      "group": "mls_rotation_covariance_64_queries_5_checks",
+      "operation": "stage_existing_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\mls_rotation_covariance_20261007\\case.json",
+      "source_repo_relative": "experiments/mls_rotation_covariance_20261007/case.json",
+      "destination_repo_relative": "experiments/mls_rotation_covariance_20261007/case.json",
+      "destination_preflight": "untracked_not_ignored_same_path",
+      "bytes": 2380,
+      "sha256": "0ef1a0c1e8626c3bfe2d62be10ae02663eb4b78462584e1c04906572da8638ae"
+    },
+    {
+      "repo": "pgfrag",
+      "group": "mls_rotation_covariance_64_queries_5_checks",
+      "operation": "stage_existing_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\mls_rotation_covariance_20261007\\source_pins.json",
+      "source_repo_relative": "experiments/mls_rotation_covariance_20261007/source_pins.json",
+      "destination_repo_relative": "experiments/mls_rotation_covariance_20261007/source_pins.json",
+      "destination_preflight": "untracked_not_ignored_same_path",
+      "bytes": 774,
+      "sha256": "ee85968da09410751879a9aa679662578bbaa81f16723da89d335080508bb0a0"
+    },
+    {
+      "repo": "pgfrag",
+      "group": "mls_rotation_covariance_64_queries_5_checks",
+      "operation": "stage_existing_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\mls_rotation_covariance_20261007\\README.md",
+      "source_repo_relative": "experiments/mls_rotation_covariance_20261007/README.md",
+      "destination_repo_relative": "experiments/mls_rotation_covariance_20261007/README.md",
+      "destination_preflight": "untracked_not_ignored_same_path",
+      "bytes": 2789,
+      "sha256": "bc4b94102d9d4eee2fb29b255968e6ed4eea07dce7e3e81f5c44e79d1fbc973d"
+    },
+    {
+      "repo": "pgfrag",
+      "group": "mls_rotation_covariance_64_queries_5_checks",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\tmp\\review_20261007\\mls_rotation_covariance_20261007\\SOURCE_READY.json",
+      "source_repo_relative": "tmp/review_20261007/mls_rotation_covariance_20261007/SOURCE_READY.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mls_rotation_covariance/SOURCE_READY.json",
+      "destination_preflight": "absent_destination",
+      "bytes": 4771,
+      "sha256": "68e3dea7c9efe596acf6e2d58691978f90cad572cd38951586971b0a9d441883"
+    },
+    {
+      "repo": "pgfrag",
+      "group": "mls_rotation_covariance_64_queries_5_checks",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\tmp\\review_20261007\\mls_rotation_covariance_20261007\\focused_run01\\ROOT_GO_RECORD.json",
+      "source_repo_relative": "tmp/review_20261007/mls_rotation_covariance_20261007/focused_run01/ROOT_GO_RECORD.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mls_rotation_covariance/focused_run01/ROOT_GO_RECORD.json",
+      "destination_preflight": "absent_destination",
+      "bytes": 2100,
+      "sha256": "782ab10ae5dc9a9b68ca2013fb7dca0416f74c6786c2552549852cbd70516065"
+    },
+    {
+      "repo": "pgfrag",
+      "group": "mls_rotation_covariance_64_queries_5_checks",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\tmp\\review_20261007\\mls_rotation_covariance_20261007\\focused_run01\\result.json",
+      "source_repo_relative": "tmp/review_20261007/mls_rotation_covariance_20261007/focused_run01/result.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mls_rotation_covariance/focused_run01/result.json",
+      "destination_preflight": "absent_destination",
+      "bytes": 522583,
+      "sha256": "d83b579a9e906da1a255035708dc0acea2709e2fa391494c93b67546d26e47f3"
+    },
+    {
+      "repo": "pgfrag",
+      "group": "mls_rotation_covariance_64_queries_5_checks",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\tmp\\review_20261007\\mls_rotation_covariance_20261007\\focused_run01\\outer_run_receipt.json",
+      "source_repo_relative": "tmp/review_20261007/mls_rotation_covariance_20261007/focused_run01/outer_run_receipt.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mls_rotation_covariance/focused_run01/outer_run_receipt.json",
+      "destination_preflight": "absent_destination",
+      "bytes": 3465,
+      "sha256": "3f28dd49e7e7c82482b29a895583d6c53bb9fd94b69c2deecb956ecad48b2028"
+    },
+    {
+      "repo": "pgfrag",
+      "group": "mls_rotation_covariance_64_queries_5_checks",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\tmp\\review_20261007\\mls_rotation_covariance_20261007\\focused_run01\\stdout.raw",
+      "source_repo_relative": "tmp/review_20261007/mls_rotation_covariance_20261007/focused_run01/stdout.raw",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mls_rotation_covariance/focused_run01/stdout.raw",
+      "destination_preflight": "absent_destination",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "repo": "pgfrag",
+      "group": "mls_rotation_covariance_64_queries_5_checks",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\tmp\\review_20261007\\mls_rotation_covariance_20261007\\focused_run01\\stderr.raw",
+      "source_repo_relative": "tmp/review_20261007/mls_rotation_covariance_20261007/focused_run01/stderr.raw",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mls_rotation_covariance/focused_run01/stderr.raw",
+      "destination_preflight": "absent_destination",
+      "bytes": 108,
+      "sha256": "d0f9a479b7829427ff9a5a578e8fa0163470a5fe1e85d3f6edcbed814623cb37"
+    },
+    {
+      "repo": "vesselforge",
+      "group": "normal_offset_saved_independent_reader",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\tmp\\review_20261006\\normal_offset_saved_independent\\check_saved_offset.py",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_saved_independent/check_saved_offset.py",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_saved_independent/check_saved_offset.py",
+      "destination_preflight": "absent_destination",
+      "bytes": 12876,
+      "sha256": "fdd95596fa76aa5f8d431cbd0efde3a1d4907a3af5fb1b45eb62453fbe7e9a70"
+    },
+    {
+      "repo": "vesselforge",
+      "group": "normal_offset_saved_independent_reader",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\tmp\\review_20261006\\normal_offset_saved_independent\\case_falsepins.json",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_saved_independent/case_falsepins.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_saved_independent/case_falsepins.json",
+      "destination_preflight": "absent_destination",
+      "bytes": 5412,
+      "sha256": "d2be178a0af9a7a0e3b1083d662da768922879630247eb29bad4268671f753c9"
+    },
+    {
+      "repo": "vesselforge",
+      "group": "normal_offset_saved_independent_reader",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\tmp\\review_20261006\\normal_offset_saved_independent\\README.md",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_saved_independent/README.md",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_saved_independent/README.md",
+      "destination_preflight": "absent_destination",
+      "bytes": 2340,
+      "sha256": "7669238d23e8865372ab5138a5201d8edb5d51f01deaf870182f4e9a1903c898"
+    },
+    {
+      "repo": "vesselforge",
+      "group": "normal_offset_saved_independent_reader",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\tmp\\review_20261006\\normal_offset_saved_independent\\once_capture_01\\run_receipt.json",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_saved_independent/once_capture_01/run_receipt.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_saved_independent/once_capture_01/run_receipt.json",
+      "destination_preflight": "absent_destination",
+      "bytes": 7207,
+      "sha256": "9667c38e0f0de6e85f2f8e781b48b270035c1303accf8a13d095787e2a7ad8cb"
+    },
+    {
+      "repo": "vesselforge",
+      "group": "normal_offset_saved_independent_reader",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\tmp\\review_20261006\\normal_offset_saved_independent\\once_capture_01\\stderr.bin",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_saved_independent/once_capture_01/stderr.bin",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_saved_independent/once_capture_01/stderr.bin",
+      "destination_preflight": "absent_destination",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "repo": "vesselforge",
+      "group": "normal_offset_saved_independent_reader",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\tmp\\review_20261006\\normal_offset_saved_independent\\once_capture_01\\stdout.bin",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_saved_independent/once_capture_01/stdout.bin",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_saved_independent/once_capture_01/stdout.bin",
+      "destination_preflight": "absent_destination",
+      "bytes": 3016,
+      "sha256": "440f079df68473e5ec109e38912914e2295ebdd826b66a2e0a1d5d35a0549bd7"
+    },
+    {
+      "repo": "vesselforge",
+      "group": "normal_offset_saved_visual_original_run",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\tmp\\review_20261006\\normal_offset_saved_visual\\false_pins.json",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_saved_visual/false_pins.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/false_pins.json",
+      "destination_preflight": "absent_destination",
+      "bytes": 6303,
+      "sha256": "1bf50d2233ab3f80599db96a70249a92a31229244362007c514d68e893f5f10d"
+    },
+    {
+      "repo": "vesselforge",
+      "group": "normal_offset_saved_visual_original_run",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\tmp\\review_20261006\\normal_offset_saved_visual\\false_pins.pre_budget_fix.json",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_saved_visual/false_pins.pre_budget_fix.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/false_pins.pre_budget_fix.json",
+      "destination_preflight": "absent_destination",
+      "bytes": 4595,
+      "sha256": "ac2224f90afd0853d63e6b0d2c7701d53a1426b9a5b65e2a21f16ee633bf3b36"
+    },
+    {
+      "repo": "vesselforge",
+      "group": "normal_offset_saved_visual_original_run",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\tmp\\review_20261006\\normal_offset_saved_visual\\false_pins.pre_render_go.json",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_saved_visual/false_pins.pre_render_go.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/false_pins.pre_render_go.json",
+      "destination_preflight": "absent_destination",
+      "bytes": 5790,
+      "sha256": "4da0dd0e0c42e5487ad72bd90795bf5b0c74b5ad55c8d72d0196dbbef9e79701"
+    },
+    {
+      "repo": "vesselforge",
+      "group": "normal_offset_saved_visual_original_run",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\tmp\\review_20261006\\normal_offset_saved_visual\\false_pins.pre_retry01_snapshot.json",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_saved_visual/false_pins.pre_retry01_snapshot.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/false_pins.pre_retry01_snapshot.json",
+      "destination_preflight": "absent_destination",
+      "bytes": 2439,
+      "sha256": "16ff475882b4adc1aebd0ee77882996b547c9b632426795c38d73b691936e8ac"
+    },
+    {
+      "repo": "vesselforge",
+      "group": "normal_offset_saved_visual_original_run",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\tmp\\review_20261006\\normal_offset_saved_visual\\normal_offset_local_2d_preview.png",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_saved_visual/normal_offset_local_2d_preview.png",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/normal_offset_local_2d_preview.png",
+      "destination_preflight": "absent_destination",
+      "bytes": 95621,
+      "sha256": "a748dbf7833b777cee4359d2ff06d4e58f4efa304c7c6eb049a3a01da244f5dc"
+    },
+    {
+      "repo": "vesselforge",
+      "group": "normal_offset_saved_visual_original_run",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\tmp\\review_20261006\\normal_offset_saved_visual\\render_receipt.json",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_saved_visual/render_receipt.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/render_receipt.json",
+      "destination_preflight": "absent_destination",
+      "bytes": 4014,
+      "sha256": "c2a70ffed1d252dbd74538ffba6b96c29147dacf49c24833e1a272b99411d8a8"
+    },
+    {
+      "repo": "vesselforge",
+      "group": "normal_offset_saved_visual_original_run",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\tmp\\review_20261006\\normal_offset_saved_visual\\render_saved_local_normal_offset.pre_retry01_snapshot.py",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_saved_visual/render_saved_local_normal_offset.pre_retry01_snapshot.py",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/render_saved_local_normal_offset.pre_retry01_snapshot.py",
+      "destination_preflight": "absent_destination",
+      "bytes": 5897,
+      "sha256": "3aa1b890b665ec2e2c7ae6b064de67131bac708318fc374403c5ca94b7ccf786"
+    },
+    {
+      "repo": "vesselforge",
+      "group": "normal_offset_saved_visual_original_run",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\tmp\\review_20261006\\normal_offset_saved_visual\\render_saved_local_normal_offset.py",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_saved_visual/render_saved_local_normal_offset.py",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/render_saved_local_normal_offset.py",
+      "destination_preflight": "absent_destination",
+      "bytes": 6065,
+      "sha256": "b19b1ae570340ac9c8fce5717e241b76407d02c16dcc612dd22dc05e0a4209e6"
+    },
+    {
+      "repo": "vesselforge",
+      "group": "normal_offset_saved_visual_original_run",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\tmp\\review_20261006\\normal_offset_saved_visual\\render_started.json",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_saved_visual/render_started.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/render_started.json",
+      "destination_preflight": "absent_destination",
+      "bytes": 1430,
+      "sha256": "26da7fd08c61146659871f7a0ce8f3cce48bb7613b93777f6b1f2a6a612e2bc4"
+    },
+    {
+      "repo": "vesselforge",
+      "group": "normal_offset_saved_visual_original_run",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\tmp\\review_20261006\\normal_offset_saved_visual\\render_stderr.raw.bin",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_saved_visual/render_stderr.raw.bin",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/render_stderr.raw.bin",
+      "destination_preflight": "absent_destination",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "repo": "vesselforge",
+      "group": "normal_offset_saved_visual_original_run",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\tmp\\review_20261006\\normal_offset_saved_visual\\render_stdout.raw.bin",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_saved_visual/render_stdout.raw.bin",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/render_stdout.raw.bin",
+      "destination_preflight": "absent_destination",
+      "bytes": 518,
+      "sha256": "9f36dcd5e896b46efc10b72ca9cc895419219f91fcb02af5184b97c2a1b4c442"
+    },
+    {
+      "repo": "vesselforge",
+      "group": "normal_offset_saved_visual_original_run",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\tmp\\review_20261006\\normal_offset_saved_visual\\run_saved_visual_once.pre_budget_fix.py",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_saved_visual/run_saved_visual_once.pre_budget_fix.py",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/run_saved_visual_once.pre_budget_fix.py",
+      "destination_preflight": "absent_destination",
+      "bytes": 3803,
+      "sha256": "4494492cc491e2d80ca63b270162f5852214dd4863c10e2f583ca5969b0746fe"
+    },
+    {
+      "repo": "vesselforge",
+      "group": "normal_offset_saved_visual_original_run",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\tmp\\review_20261006\\normal_offset_saved_visual\\run_saved_visual_once.py",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_saved_visual/run_saved_visual_once.py",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/run_saved_visual_once.py",
+      "destination_preflight": "absent_destination",
+      "bytes": 5116,
+      "sha256": "e97703080a9c8cd217758292e4280a3fa8d16b9da731551a3626455a21810bcb"
+    },
+    {
+      "repo": "vesselforge",
+      "group": "normal_offset_saved_visual_layout_fixed_01",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\tmp\\review_20261006\\normal_offset_saved_visual\\layout_fixed_01\\false_pins.json",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_saved_visual/layout_fixed_01/false_pins.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/layout_fixed_01/false_pins.json",
+      "destination_preflight": "absent_destination",
+      "bytes": 7811,
+      "sha256": "63cac9b0285debdf34cfb2aeecd27d755b1e25c714b35cc8bf4fb319f374e9ae"
+    },
+    {
+      "repo": "vesselforge",
+      "group": "normal_offset_saved_visual_layout_fixed_01",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\tmp\\review_20261006\\normal_offset_saved_visual\\layout_fixed_01\\false_pins.pre_GO.json",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_saved_visual/layout_fixed_01/false_pins.pre_GO.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/layout_fixed_01/false_pins.pre_GO.json",
+      "destination_preflight": "absent_destination",
+      "bytes": 7303,
+      "sha256": "e1eb0ed5de03dc311a6b01fe2ea929123bb5e904fb424c43fa9fb65648f4d2ae"
+    },
+    {
+      "repo": "vesselforge",
+      "group": "normal_offset_saved_visual_layout_fixed_01",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\tmp\\review_20261006\\normal_offset_saved_visual\\layout_fixed_01\\normal_offset_local_2d_preview.png",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_saved_visual/layout_fixed_01/normal_offset_local_2d_preview.png",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/layout_fixed_01/normal_offset_local_2d_preview.png",
+      "destination_preflight": "absent_destination",
+      "bytes": 94774,
+      "sha256": "3c203448680974afd391117382073a1e869fb9a4c6bc985d7de8e52a1d06dcfb"
+    },
+    {
+      "repo": "vesselforge",
+      "group": "normal_offset_saved_visual_layout_fixed_01",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\tmp\\review_20261006\\normal_offset_saved_visual\\layout_fixed_01\\render_receipt.json",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_saved_visual/layout_fixed_01/render_receipt.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/layout_fixed_01/render_receipt.json",
+      "destination_preflight": "absent_destination",
+      "bytes": 4133,
+      "sha256": "fed68c780c4d5eede7f88279c020eb33834a7b5e1895954acae8b308f2cab803"
+    },
+    {
+      "repo": "vesselforge",
+      "group": "normal_offset_saved_visual_layout_fixed_01",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\tmp\\review_20261006\\normal_offset_saved_visual\\layout_fixed_01\\render_saved_local_normal_offset.py",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_saved_visual/layout_fixed_01/render_saved_local_normal_offset.py",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/layout_fixed_01/render_saved_local_normal_offset.py",
+      "destination_preflight": "absent_destination",
+      "bytes": 6227,
+      "sha256": "f00a162fcc8540b81478af6f2349ee5062ae31235c7e5f3dedf0dc45549bcbca"
+    },
+    {
+      "repo": "vesselforge",
+      "group": "normal_offset_saved_visual_layout_fixed_01",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\tmp\\review_20261006\\normal_offset_saved_visual\\layout_fixed_01\\render_started.json",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_saved_visual/layout_fixed_01/render_started.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/layout_fixed_01/render_started.json",
+      "destination_preflight": "absent_destination",
+      "bytes": 1481,
+      "sha256": "87362136e9dafbbf3d15db5cfd94b86ca842176f3b3e499ee5bdf03447ba0e92"
+    },
+    {
+      "repo": "vesselforge",
+      "group": "normal_offset_saved_visual_layout_fixed_01",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\tmp\\review_20261006\\normal_offset_saved_visual\\layout_fixed_01\\render_stderr.raw.bin",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_saved_visual/layout_fixed_01/render_stderr.raw.bin",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/layout_fixed_01/render_stderr.raw.bin",
+      "destination_preflight": "absent_destination",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "repo": "vesselforge",
+      "group": "normal_offset_saved_visual_layout_fixed_01",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\tmp\\review_20261006\\normal_offset_saved_visual\\layout_fixed_01\\render_stdout.raw.bin",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_saved_visual/layout_fixed_01/render_stdout.raw.bin",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/layout_fixed_01/render_stdout.raw.bin",
+      "destination_preflight": "absent_destination",
+      "bytes": 535,
+      "sha256": "06ab725b48cc8b10cabe5216c65f39a0aa835d3a60fa4d45bf59b5d9f5f52366"
+    },
+    {
+      "repo": "vesselforge",
+      "group": "normal_offset_saved_visual_layout_fixed_01",
+      "operation": "copy_then_stage_exact",
+      "source_absolute": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\tmp\\review_20261006\\normal_offset_saved_visual\\layout_fixed_01\\run_saved_visual_once.py",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_saved_visual/layout_fixed_01/run_saved_visual_once.py",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/layout_fixed_01/run_saved_visual_once.py",
+      "destination_preflight": "absent_destination",
+      "bytes": 5116,
+      "sha256": "8b5da0e25a04dd86c201b56bcd847bfe248c1c71d1d125f53147d9913d8c5377"
+    }
+  ]
+}

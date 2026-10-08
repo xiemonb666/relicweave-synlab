@@ -1,0 +1,323 @@
+{
+  "schema": "curated_backup_execution_postverification.v1",
+  "plan_path": "tmp/backup_coordinator/next_full3d_c3_math_plan_20261006_v3.json",
+  "plan_sha256": "0c48c401552ac30e6dc031e74c8277b468be7734436379c9a8368875253dc565",
+  "approved_scope": "exact 33 plan entries only; 28 copy destinations and 5 stage-existing entries; separate PG and VF commits/pushes",
+  "total_files": 33,
+  "total_bytes": 4959663.0,
+  "repo_results": [
+    {
+      "repo": "pgfrag",
+      "branch": "backup/forge-work-20261003",
+      "pre_head": "a7c4699d74e341333da8d108c546cefe1bb0f052",
+      "commit": "1bc1a48f6f9bb1cfe93adb05b877d735132f4df7",
+      "parent": "a7c4699d74e341333da8d108c546cefe1bb0f052",
+      "remote_branch": "backup/forge-work-20261003",
+      "remote_head": "1bc1a48f6f9bb1cfe93adb05b877d735132f4df7",
+      "changed_paths": [
+        "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/independent/audit_saved_full3d_arrays.py",
+        "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/independent/audit.json",
+        "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/independent/execution_receipt.json",
+        "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/independent/spectrum.png",
+        "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/REVIEW.md",
+        "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/run01/EXECUTION_RECEIPT.json",
+        "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/run01/result.json",
+        "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/SOURCE_PINS.json"
+      ],
+      "changed_path_count": 8,
+      "tracked_clean": true,
+      "add_rc": 0,
+      "commit_rc": 0,
+      "push_rc": 0,
+      "push_output": [
+        "To https://github.com/xiemonb666/pgfrag.git",
+        "   a7c4699..1bc1a48  HEAD -> backup/forge-work-20261003"
+      ],
+      "git_blob_count": 8
+    },
+    {
+      "repo": "vesselforge",
+      "branch": "backup/forge-work-20261003",
+      "pre_head": "d46d8ed0075370ac1869eecb9a664411197c79b3",
+      "commit": "586fa80e7bea0fc4895d1078e72611c74992dbd0",
+      "parent": "d46d8ed0075370ac1869eecb9a664411197c79b3",
+      "remote_branch": "backup/forge-work-20261003",
+      "remote_head": "586fa80e7bea0fc4895d1078e72611c74992dbd0",
+      "changed_paths": [
+        "docs/evidence/20261006/whole_body_c3_math/actual/EXECUTION_ADDENDUM.md",
+        "docs/evidence/20261006/whole_body_c3_math/actual/execution_receipt.json",
+        "docs/evidence/20261006/whole_body_c3_math/actual/outer_math_diagnostic.json",
+        "docs/evidence/20261006/whole_body_c3_math/actual/outer_profiles_equal_rz.png",
+        "docs/evidence/20261006/whole_body_c3_math/actual/process_stderr.txt",
+        "docs/evidence/20261006/whole_body_c3_math/actual/process_stdout.txt",
+        "docs/evidence/20261006/whole_body_c3_math/FREEZE_MANIFEST.json",
+        "docs/evidence/20261006/whole_body_c3_math/independent_review/audit_saved_output.py",
+        "docs/evidence/20261006/whole_body_c3_math/independent_review/readback_execution_receipt_run02.json",
+        "docs/evidence/20261006/whole_body_c3_math/independent_review/readback_execution_receipt_run03.json",
+        "docs/evidence/20261006/whole_body_c3_math/independent_review/readback_execution_receipt.json",
+        "docs/evidence/20261006/whole_body_c3_math/independent_review/readback_run03_stderr.txt",
+        "docs/evidence/20261006/whole_body_c3_math/independent_review/readback_run03_stdout.txt",
+        "docs/evidence/20261006/whole_body_c3_math/independent_review/REVIEW_ADDENDUM_pathfix.md",
+        "docs/evidence/20261006/whole_body_c3_math/independent_review/review_final.json",
+        "docs/evidence/20261006/whole_body_c3_math/independent_review/review.json",
+        "docs/evidence/20261006/whole_body_c3_math/independent_review/REVIEW.md",
+        "docs/evidence/20261006/whole_body_c3_math/independent_review/saved_readback.json",
+        "docs/evidence/20261006/whole_body_c3_math/independent_review/saved_readback.md",
+        "docs/evidence/20261006/whole_body_c3_math/REVIEW_PLAN.md",
+        "experiments/whole_body_c2_profiles_20261006/CONTROL_HULL_DESIGN.md",
+        "experiments/whole_body_c2_profiles_20261006/DESIGN_PROPOSAL.md",
+        "experiments/whole_body_c2_profiles_20261006/diagnostic_driver_source_only.py",
+        "experiments/whole_body_c2_profiles_20261006/fixed_cases.json",
+        "experiments/whole_body_c2_profiles_20261006/profile_design.py"
+      ],
+      "changed_path_count": 25,
+      "tracked_clean": true,
+      "add_rc": 0,
+      "commit_rc": 0,
+      "push_rc": 0,
+      "push_output": [
+        "To https://github.com/xiemonb666/vesselforge.git",
+        "   d46d8ed..586fa80  HEAD -> backup/forge-work-20261003"
+      ],
+      "git_blob_count": 25
+    }
+  ],
+  "committed_blob_verification": [
+    {
+      "repo": "pgfrag",
+      "path": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/SOURCE_PINS.json",
+      "bytes": 2903,
+      "sha256": "16355c781749fb4940a187afb3d985d9f1362fd3a33c1e6cc425cffdf9ed0ac7",
+      "git_blob": "0670ad0df6c2be51a7eefa092d258756aa30f334"
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/REVIEW.md",
+      "bytes": 6811,
+      "sha256": "e95a3ec1b55365cc4617a6db4faddd1291f167236182996ce82ff6b5ff0fc5ce",
+      "git_blob": "6ec576c6cd81eac30b726034236feb84b9acddcc"
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/run01/EXECUTION_RECEIPT.json",
+      "bytes": 7682,
+      "sha256": "c8bd78e433dd2c7ad95479e29d796aa51d5a1705e7f2969ae451d3f436e93a66",
+      "git_blob": "cc602721de5959262410651f80a9543a40ef4848"
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/run01/result.json",
+      "bytes": 4661989,
+      "sha256": "3b31e7d40c1d8e4b5d829f0b093fee4edadc966bde4086a4b3f4ba48fdf89cd2",
+      "git_blob": "4b41208dbc6b5fb57aac261449c0e19270bdc7be"
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/independent/audit_saved_full3d_arrays.py",
+      "bytes": 13704,
+      "sha256": "a35af5770fe7cd7b8f544294586e156d8dc75b9a944d07f456a2cee2da9d61d1",
+      "git_blob": "4613a0486cae9cde93a29809bbee3c2b245824f3"
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/independent/audit.json",
+      "bytes": 4062,
+      "sha256": "658317052ab19a1e1b71782aec6b66469c9c320218850791bdc866fb68c6645b",
+      "git_blob": "31a6addaa98959173e338e7167ad1f7700f29c24"
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/independent/execution_receipt.json",
+      "bytes": 1524,
+      "sha256": "a60f1fa2fab66d08f321cf57ff1ef93858e0d0a4803a26a10b99e8626b61c926",
+      "git_blob": "5a0d78db79c25a02f03673de31aa036955b30d2d"
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs/evidence/20261006/core_incremental/full3d_cracked_elastic_operator/independent/spectrum.png",
+      "bytes": 11994,
+      "sha256": "3ec0d7b06695f77a7f9da02f65115471e25770ea490b8a47390178a6264dfdfe",
+      "git_blob": "57c3db07bd862e0680cec486d6103231eaa72704"
+    },
+    {
+      "repo": "vesselforge",
+      "path": "experiments/whole_body_c2_profiles_20261006/profile_design.py",
+      "bytes": 3702,
+      "sha256": "057233b930a2b8e0e3ef43a3568f1cb0e6e972baed97eeeeceb6459d9de8c951",
+      "git_blob": "ed54841806b36ff2d5dfd819a2499cfc6e199d2c"
+    },
+    {
+      "repo": "vesselforge",
+      "path": "experiments/whole_body_c2_profiles_20261006/fixed_cases.json",
+      "bytes": 10633,
+      "sha256": "e1e9c3cf659dbc59d99a18c4b70694201518be4f3aba09a57806402e732cf95a",
+      "git_blob": "e6b0bf339ce182242965b1a54033028c358fbe8d"
+    },
+    {
+      "repo": "vesselforge",
+      "path": "experiments/whole_body_c2_profiles_20261006/DESIGN_PROPOSAL.md",
+      "bytes": 9667,
+      "sha256": "8b5c8b7e78c8d2e245f9ade1498e3dd3c5f69b0a7a82eaf593e3ea49b1b7dbbf",
+      "git_blob": "1956c65a3bcd9efab38c893d46a18b203dda83af"
+    },
+    {
+      "repo": "vesselforge",
+      "path": "experiments/whole_body_c2_profiles_20261006/CONTROL_HULL_DESIGN.md",
+      "bytes": 3763,
+      "sha256": "9fab758e2bc43926f6fe2e82b8ee6b65e4d3fdbaebbca8da84e29f5feb0f4a2b",
+      "git_blob": "cb806f8cd12401a46a702afa8d53eeae72529421"
+    },
+    {
+      "repo": "vesselforge",
+      "path": "experiments/whole_body_c2_profiles_20261006/diagnostic_driver_source_only.py",
+      "bytes": 19202,
+      "sha256": "d1d327f298dad639e0529edf45d4a5d4c6a6fe6b7cf7ac2773a3fcd48adb66a7",
+      "git_blob": "cba6e6de90176d7f0676b7a6b45b2f01fe8193e6"
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs/evidence/20261006/whole_body_c3_math/FREEZE_MANIFEST.json",
+      "bytes": 1820,
+      "sha256": "4905c92d580aadd0b92d861d88fb49ab2d57ce680fbdf314ad1b47f8b8be775d",
+      "git_blob": "370f042ecf93a4e54bd84dc731b3bdb90342da30"
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs/evidence/20261006/whole_body_c3_math/REVIEW_PLAN.md",
+      "bytes": 3045,
+      "sha256": "734be4d98d9aabc3e30e3385506a64b28cf31a376dd34e91d1b1e6538376811e",
+      "git_blob": "8b3c58b8a3ceb277f28a37ce6d91be956b2d9372"
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs/evidence/20261006/whole_body_c3_math/actual/execution_receipt.json",
+      "bytes": 3562,
+      "sha256": "d943c113883fe420dbefdbe40f73825bf1a577e9e9622fe54332bb02696e1c19",
+      "git_blob": "883f562137597f2539df1684f26369642b579206"
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs/evidence/20261006/whole_body_c3_math/actual/outer_math_diagnostic.json",
+      "bytes": 67383,
+      "sha256": "eb60138fc559d5a06ab2b4febf82fdc6654e6bbeab84f05f847c65934ffbbd4f",
+      "git_blob": "70d8e38266a9c44c0493ccdbfc72957e5a9d68e9"
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs/evidence/20261006/whole_body_c3_math/actual/outer_profiles_equal_rz.png",
+      "bytes": 81163,
+      "sha256": "118fae2c92c679fcd45409462ed6638d6d4043711ae8995513e6fe7813d58eda",
+      "git_blob": "e7e334c5eb4585080926b9393ff33fe1e2fd264c"
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs/evidence/20261006/whole_body_c3_math/actual/EXECUTION_ADDENDUM.md",
+      "bytes": 975,
+      "sha256": "703413a36f2e7045b7ddd40e29a3678f484a16d806c6be15ebb2cdda96c376e1",
+      "git_blob": "18e8feb037cbf47f5af5f74f05acdc5846302bdb"
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs/evidence/20261006/whole_body_c3_math/actual/process_stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs/evidence/20261006/whole_body_c3_math/actual/process_stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs/evidence/20261006/whole_body_c3_math/independent_review/REVIEW.md",
+      "bytes": 3571,
+      "sha256": "9a7eb3f9fcc4418a2ad206db8682023cefc200b8d2e1a6c067fce028857a2c7b",
+      "git_blob": "33097fd732876a3bff937299f338b624ddea3a05"
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs/evidence/20261006/whole_body_c3_math/independent_review/REVIEW_ADDENDUM_pathfix.md",
+      "bytes": 2008,
+      "sha256": "2434f35860ce9d4e7fc2aa618a1d00f7e6a8ac888e0b3998fc06c4f1933ca78a",
+      "git_blob": "cc0632cebe35effb4941e8b12eb8d447a2a5e872"
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs/evidence/20261006/whole_body_c3_math/independent_review/review.json",
+      "bytes": 2629,
+      "sha256": "afb7a6d40532d537ffc72e54a2dbcec64531f4658c6bb1ed865cefd96c72ca03",
+      "git_blob": "76d84646c428b89270b0a00a2a129a14b510ac3a"
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs/evidence/20261006/whole_body_c3_math/independent_review/review_final.json",
+      "bytes": 2098,
+      "sha256": "d3185e1c192465367b8e6168a0fb073294e266adaf636f2426b655e3a3d73fef",
+      "git_blob": "525a6381d62a481c57d9a72f5290a6f7bd2e2cab"
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs/evidence/20261006/whole_body_c3_math/independent_review/audit_saved_output.py",
+      "bytes": 17216,
+      "sha256": "a9dca7c268405d6799890d68acfe1e8c62167a1067d9afe66d601181c1eca8cc",
+      "git_blob": "d8fc5e0c4a499447a765dc620a030bc7228a9885"
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs/evidence/20261006/whole_body_c3_math/independent_review/readback_execution_receipt.json",
+      "bytes": 729,
+      "sha256": "001c98010a786c0fc57fdba4b49e496c306260984ec424b2ad1578ae1d470e8d",
+      "git_blob": "d7bfa310c1461a55ff4dc765bc818a778068a428"
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs/evidence/20261006/whole_body_c3_math/independent_review/readback_execution_receipt_run02.json",
+      "bytes": 749,
+      "sha256": "6765e3fe3beeb0a63b1afb8781ae256a9001dc2c471ca72f9ecef9aa2a33b32a",
+      "git_blob": "11b1d11397451f20a1df57e5c102c33eef545af1"
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs/evidence/20261006/whole_body_c3_math/independent_review/saved_readback.json",
+      "bytes": 10441,
+      "sha256": "acd364da2d22e82a49666e3ddb701e382c6008cb5d4ea523d916a82a624416bd",
+      "git_blob": "76e0c328864a7c008b9a2afc5d256de078ca9316"
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs/evidence/20261006/whole_body_c3_math/independent_review/saved_readback.md",
+      "bytes": 3004,
+      "sha256": "29a147afe185a4ef96571ef6d0eed9c73a1db7bcf2f4e8f0f3ec69d2f0e8db93",
+      "git_blob": "a658dc393dee6b6e4f104b2fc3aab4de5940c129"
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs/evidence/20261006/whole_body_c3_math/independent_review/readback_execution_receipt_run03.json",
+      "bytes": 1008,
+      "sha256": "1e3ebaf504bdccedef4b1c44d74caf0f94f13c7c362dac8412751c09a795463a",
+      "git_blob": "a0e03aac42fa6ced5344fb18be4078624f9518cf"
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs/evidence/20261006/whole_body_c3_math/independent_review/readback_run03_stdout.txt",
+      "bytes": 626,
+      "sha256": "5159ffc3497d02a79d7e04af17f366308f999c47bea9ddf2180e36bc064ba977",
+      "git_blob": "90c881c0a0534cb2392d348abae0ae8f029ab71c"
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs/evidence/20261006/whole_body_c3_math/independent_review/readback_run03_stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    }
+  ],
+  "scope_notes": [
+    "PG Full3D result is a saved diagnostic array receipt: OK_DIAGNOSTIC_ONLY_UNQUALIFIED; independent check is cached-array algebra only, not solver/physical qualification.",
+    "VF C3 outer-profile math run rc=0; independent saved readback retains run01/run02 failures and run03 success. Pointwise 9 mm radius target is violated at jar apex-to-shoulder t=1/4; span-level/global wall remain UNKNOWN; inner profile is unconstructed. No CAD/STEP/physical qualification."
+  ],
+  "final_verified_utc": "2026-10-06T03:36:22.1543314Z"
+}

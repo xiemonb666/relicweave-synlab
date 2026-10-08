@@ -1,0 +1,175 @@
+{
+  "schema": "independent_full_code_backup_path_review_addendum_v1",
+  "status": "PRE_GO_CURRENT_DRAFT_REVIEW_NOT_FINAL_MANIFEST_AUDIT",
+  "reviewed_on": "2026-10-07",
+  "source_versions_read_without_execution_before_generated_manifest": [
+    {
+      "path": "tmp/backup_coordinator/closeout_20261007/build_closeout_inventory_v2.py",
+      "bytes": 28036,
+      "lines": 420,
+      "sha256": "c1c2477550892a0b95b347d604608b310a2b90fa1a4defe24b1fab90c4f99452"
+    },
+    {
+      "path": "tmp/backup_coordinator/closeout_20261007/verify_manifest_readonly.py",
+      "bytes": 2202,
+      "sha256": "f04f83e940fb8db7ba2b549c0146106db38000d7b2ceccc763cd7392a4c3ce4f"
+    }
+  ],
+  "reviewed_scope": {
+    "inventory_or_verifier_executed": false,
+    "project_source_or_data_payloads_read": false,
+    "source_destination_or_raw_head_blob_hashes_computed": false,
+    "copy_or_repository_mutation_performed": false,
+    "generated_inventory_present_at_final_check": true,
+    "generated_action_manifest_present_at_final_check": true,
+    "path_inventory_count_under_recorded_exclusions": 45317,
+    "tracked_status_observation": {
+      "pgfrag": "clean output from git status --short --untracked-files=no",
+      "vesselforge": "clean output from git status --short --untracked-files=no",
+      "relicweave-synlab": "M docs/a12/HANDOVER.md; reviewer did not edit this file and its origin is unknown"
+    }
+  },
+  "generated_artifacts_observed": {
+    "inventory": {
+      "path": "tmp/backup_coordinator/closeout_20261007/inventory.json",
+      "bytes": 21572712,
+      "sha256": "6c404f53a900b681782a135c134a25833a5acde2fcbc4af62c97afcfb9dc7801",
+      "created_local": "2026-10-07T12:35:25+08:00",
+      "schema": "codex_full_source_backup_inventory_v2",
+      "entry_count": 23638,
+      "action_count": 5909
+    },
+    "action_manifest": {
+      "path": "tmp/backup_coordinator/closeout_20261007/explicit_action_manifest.json",
+      "bytes": 7574492,
+      "sha256": "baf5b8d548c33cadbfa405827efbf14c7c3b9f3f71d1ae66a49dbce04b0b9115",
+      "created_local": "2026-10-07T12:35:25+08:00"
+    },
+    "latest_builder_observation": {
+      "path": "tmp/backup_coordinator/closeout_20261007/build_closeout_inventory_v2.py",
+      "bytes": 38257,
+      "sha256": "f9addfaf0555ccf1fc70521cf20efdebda9f5bf1504702a3575387350ea6f1aa",
+      "last_write_local": "2026-10-07T12:42:12+08:00",
+      "inventory_has_builder_source_sha256": false,
+      "effect": "The current builder changed after the manifest was created; the generated files are not bound to the current builder bytes."
+    }
+  },
+  "actual_manifest_path_coverage_checks": {
+    "method": "stdlib PowerShell JSON parsing and case-insensitive path membership only; no source file content read and no Git/blob readback",
+    "confirmed_present_in_inventory_and_action_manifest": [
+      "all 3 selected replay NPZ paths; summary selected_npz_presence is true for all three",
+      "workspace _scratch_heads.py and the three data/**/*.py scripts",
+      "the five root reference DOCX documents",
+      "sample frozen/original/baseline source suffix files",
+      "named VF native-C4, monotone-strip, global-wall-distance and PG moving-front review JSON"
+    ],
+    "confirmed_present_in_inventory_but_no_action_because_already_on_branch": [
+      "relicweave-synlab/tests/fixtures/pgfrag/result_v1_toy_endpoint/output/result.json",
+      "relicweave-synlab/tests/fixtures/pgfrag/result_v1_toy_endpoint/output/data_dictionary.json",
+      "relicweave-synlab/tests/fixtures/pgfrag/result_v1_toy_endpoint/output/bond_states.csv"
+    ],
+    "confirmed_absent_from_inventory_and_action_manifest": [
+      "tmp/backup_coordinator/science_closed_backup_plan_20261007.json",
+      "tmp/backup_coordinator/science_closed_backup_plan_20261007_v2.json",
+      "relicweave-synlab/docs/handover/20261007/BACKUP_DELIVERY_RECEIPT.json",
+      "relicweave-synlab/docs/handover/20261007/BACKUP_DELIVERY_RECEIPT.md"
+    ],
+    "conflict": "RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx is an action in the generated manifest although pending_documents says the closeout master is awaiting final QA/freeze and should not pin a draft.",
+    "scope_limit": "This was a sample path-membership inspection of the generated JSON, not an exhaustive review of all 23,638 inventory entries or any source/destination/HEAD-byte verification."
+  },
+  "resolved_by_v2_source_review": [
+    {
+      "topic": "project DOCX discovery",
+      "evidence": "V2 has an explicit root DOCX allowlist for Guide v11/v12, V1.44, V1.46 update, and integrated V1.46 document; unrelated renderer DOCX are excluded."
+    },
+    {
+      "topic": "source snapshots with suffixes",
+      "evidence": "V2 detects source-extension tokens followed by another dot, including .py.original, .py.damaged.bak, and .py.baseline_139a5d5.py."
+    },
+    {
+      "topic": "selected bounded PG replay arrays",
+      "evidence": "V2 compares workspace-relative paths such as pgfrag/tmp/... against its selected set, unlike the repo-relative comparison in the first draft."
+    },
+    {
+      "topic": "workspace-root runtime bundles",
+      "evidence": "V2 prunes six named third_party runtime/install trees in the workspace-external walk while retaining repository vendored source candidates."
+    },
+    {
+      "topic": "JSON test fixtures",
+      "evidence": "V2 checks tests/fixtures before generated-path exclusion for JSON; it also raises the numeric test-fixture size threshold from 1 MiB to 5 MiB, covering the observed 1,095,598-byte bond_states.csv."
+    },
+    {
+      "topic": "review roots",
+      "evidence": "V2 adds PG mixed93_moving_front_independent and VF native-C4, monotone-normal-strip, global-wall-distance, and normal-offset review roots."
+    },
+    {
+      "topic": "root workspace authored scripts",
+      "evidence": "V2 retains source code and suffix snapshots from tmp/backup_coordinator rather than pruning the whole subtree."
+    }
+  ],
+  "remaining_coverage_or_verification_gaps": [
+    {
+      "id": "handoff_backup_coordinator_records",
+      "severity": "high",
+      "evidence": "V2 continues before classification for non-code/non-snapshot files below tmp/backup_coordinator. The handoff plan/receipt/review JSON there are therefore excluded, including any root-required small records. The named review roots do not change this branch order.",
+      "required_action": "Add an exact list for handoff-referenced small plans/receipts/reviews, or record a per-path root disposition; do not bulk-include raw command logs by default."
+    },
+    {
+      "id": "generated_manifest_source_binding_and_draft_docx_conflict",
+      "severity": "high",
+      "evidence": "The inventory and action manifest were written at 12:35:25 local. The builder file was modified afterward (latest observed 12:42:12 local), the inventory has no builder_source_sha256 field, and the V1.47 closeout DOCX is an action even though pending_documents says the closeout master is not frozen and drafts should not be pinned.",
+      "required_action": "Freeze and hash the builder and its inputs, regenerate only when root authorizes, bind the exact builder SHA in the inventory, and remove or explicitly authorize the draft DOCX before any execution GO."
+    },
+    {
+      "id": "backup_delivery_sidecar_missing",
+      "severity": "high",
+      "evidence": "pending_documents names relicweave-synlab/docs/handover/20261007/BACKUP_DELIVERY_RECEIPT.json and .md, but both paths are absent from the generated inventory and action manifest.",
+      "required_action": "Add and verify those handoff-referenced sidecars if the user/root requires them in the archive; record the final committed-path boundary accurately."
+    },
+    {
+      "id": "fixture_size_and_config_precedence",
+      "severity": "medium",
+      "evidence": "Numeric fixtures over 5 MiB still fall through to generated numeric exclusion. In V2 CONFIG classification, is_generated() precedes tests/fixtures inclusion, so YAML/config fixtures below output(s) remain excluded.",
+      "required_action": "Prioritize recognized fixture paths in every relevant branch and mark larger fixtures for explicit review instead of silently treating them as generated data."
+    },
+    {
+      "id": "review_json_outside_current_roots",
+      "severity": "medium",
+      "evidence": "Generic review/receipt/result JSON outside CLOSED roots, test/fixture directories, or known basename tokens still falls through to unclassified JSON exclusion. V1.46 filename search found no Markdown file; literal 3mm path search found no match.",
+      "required_action": "Compare final candidates against the handoff path list; bind any V1.46 Markdown and differently named 3mm/front artifacts explicitly."
+    },
+    {
+      "id": "snapshot_overinclusion",
+      "severity": "medium",
+      "evidence": "The broad suffix predicate also treats any *.py.txt or similar as source snapshot. Path-only examples include truth_test_relations.py.txt and inspection_command.py.txt; content was not read.",
+      "required_action": "Review these rows individually to distinguish authored source copies from generated logs/inspection transcripts."
+    },
+    {
+      "id": "proposed_verifier_incomplete",
+      "severity": "high",
+      "evidence": "verify_manifest_readonly.py hashes source rows and checks destination containment/duplicate paths only. It does not read or hash destination bytes, inspect Git HEAD blobs, verify exact commit pathsets/parents/remotes, or include already_on_branch rows when its input is the v2 action manifest candidate_actions array.",
+      "required_action": "Do not use it as the final backup postverify gate. A separately approved read-only postverify must compare raw source, destination, and raw HEAD blob SHA/bytes for every approved path, including tracked paths, and check exact commits/pathsets/remote refs/index cleanliness."
+    },
+    {
+      "id": "inventory_oid_is_index_oid",
+      "severity": "high",
+      "evidence": "In V2 make_entry(), git_head_blob_oid is populated from git ls-files --stage (the index stage object ID); cat-file -s is then run on that OID. That is not a direct git ls-tree HEAD blob lookup.",
+      "required_action": "For final HEAD comparison, map exact paths using git ls-tree -r -z HEAD, then read raw blobs with git cat-file blob by OID. Keep source/index/HEAD relationships distinct."
+    },
+    {
+      "id": "v1_46_markdown_path_unknown",
+      "severity": "medium",
+      "evidence": "The current V2 DOCX allowlist contains the V1.46 update DOCX and integrated V1.46 DOCX, but path-only search found no V1.46-named Markdown.",
+      "required_action": "Root should bind the requested Markdown reference path before freeze."
+    }
+  ],
+  "final_gate": {
+    "ready_for_execution_or_postverification": false,
+    "reason": "A manifest is present, but it is not bound to the current builder bytes, omits named handoff records, contains a pending DOCX action, and the proposed verifier does not check destination or HEAD bytes. No root GO was present.",
+    "must_not_claim": [
+      "comprehensive final source coverage",
+      "source/destination/HEAD byte identity",
+      "remote branch or exact committed pathset verification"
+    ]
+  }
+}

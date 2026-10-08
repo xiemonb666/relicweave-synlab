@@ -1,0 +1,403 @@
+"""Fail-closed physical acceptance and truth propagation regressions (2026-10-04)."""
+
+from __future__ import annotations
+
+from types import SimpleNamespace
+
+import numpy as np
+import pytest
+import trimesh
+
+import synlab.degrade.physical_narrowband as narrowband_physical
+import synlab.physical.api as physical_api
+from synlab.degrade.axes import _FragmentView
+from synlab.degrade.registry import AXIS_REGISTRY
+from synlab.degrade.sources import KIND_PHYSICAL, SourceBundle
+from synlab.errors import SynLabError
+from synlab.physical import fields
+from synlab.physical.recipe import DamageOutcome, DamageRecipe
+from synlab.schemas.runtime import (ORIGIN_INTERFACE, ORIGIN_MOTHER_SURFACE,
+                                    PhysicalComponent, PhysicalResult)
+from synlab.storage.mesh_io import with_face_attrs
+
+
+SEED = 20261004
+_MISSING = object()
+
+
+def _fixture():
+    mesh = trimesh.creation.box(extents=(8.0, 8.0, 2.4))
+    centers = np.asarray(mesh.triangles_center, dtype=np.float64)
+    normals = np.asarray(mesh.face_normals, dtype=np.float64)
+    interface = normals[:, 2] > 0.9
+    origin = np.full(len(mesh.faces), ORIGIN_MOTHER_SURFACE, dtype=np.uint8)
+    interface_id = np.full(len(mesh.faces), -1, dtype=np.int32)
+    origin[interface] = ORIGIN_INTERFACE
+    interface_id[interface] = 1
+    with_face_attrs(mesh, origin_kind=origin, interface_id=interface_id)
+    layer = interface.copy()
+    substrate = np.tile(np.array([0.57, 0.50, 0.40], dtype=np.float32),
+                        (len(mesh.faces), 1))
+    albedo = substrate.copy()
+    albedo[layer] = np.array([0.78, 0.20, 0.11], dtype=np.float32)
+    appearance = {
+        "texel_albedo": albedo,
+        "texel_substrate_albedo": substrate,
+        "texel_area_mm2": np.asarray(mesh.area_faces, dtype=np.float64),
+        "texel_layer": layer.astype(np.int32),
+        "texel_roughness": np.full(len(mesh.faces), 0.62, dtype=np.float32),
+        "texel_positions": centers.copy(),
+        "pattern_region": layer.copy(),
+        "interface_region": interface.copy(),
+    }
+    fragment = _FragmentView(mesh, "acceptance_probe", meta={
+        "material_id": "M03", "appearance": appearance,
+    }, face_attrs={"origin_kind": origin, "interface_id": interface_id})
+    clean_truth = SimpleNamespace(mother_id="M_probe", event_id="E_probe", version=1)
+    source = SourceBundle(
+        source_kind=KIND_PHYSICAL,
+        payload={"mesh": mesh, "fragment": fragment, "appearance": appearance,
+                "clean_truth": clean_truth},
+        role="probe", schema="probe", unit="mm", frame="F_mm",
+        lineage_id="acceptance-probe", fragment_id="acceptance_probe",
+        meta={"material_id": "M03", "master_seed": SEED},
+    )
+    return mesh, fragment, source, clean_truth, appearance
+
+
+def _axis_recipe(axis_id: str, level: int, fragment, source):
+    operator = AXIS_REGISTRY.get(axis_id)
+    variant = operator.default_variant
+    basis = operator.sample_basis(
+        {"source": source, "lineage_id": source.lineage_id,
+         "fragment_id": source.fragment_id, "master_seed": SEED},
+        np.random.default_rng(SEED), variant)
+    return operator.recipe(level=level, variant=variant,
+                           params=operator.params_for(level, variant), basis=basis,
+                           fragment=fragment, source=source)
+
+
+def _component(mesh: trimesh.Trimesh, component_id: str = "probe#c0"):
+    return PhysicalComponent(
+        component_id=component_id, clean_fragment_id="probe", mesh=mesh,
+        volume_mm3=float(mesh.volume), is_representative=True, meta={})
+
+
+def _p03_recipe(depth: float = 0.1) -> DamageRecipe:
+    field_payload = fields.FourierField.sample_frozen(
+        np.random.default_rng(SEED), scale_mm=6.0, field_id="P03_acceptance_probe").payload()
+    return DamageRecipe(
+        axis_id="P03", variant="smooth_recession_field", level=1,
+        params={"depth_mm": depth, "corr_length_mm": 6.0}, roi={"kind": "all"},
+        basis={"field": field_payload, "seed": SEED},
+        qa={"min_wall_thickness_mm": 0.6}, meta={"thickness_samples": 8},
+    )
+
+
+def test_operator_effect_with_postassembly_failure_is_not_accepted_or_labeled(monkeypatch):
+    mesh, fragment, _source, clean_truth, _appearance = _fixture()
+    delivered = mesh.copy()
+    delivered.apply_translation([0.01, 0.0, 0.0])
+    updater_calls = []
+
+    import synlab.truth.api as truth_api
+
+    monkeypatch.setattr(truth_api, "update_residual_truth",
+                        lambda clean, result: updater_calls.append((clean, result)))
+    monkeypatch.setattr(physical_api.OPS, "run_damage", lambda *args, **kwargs: DamageOutcome(
+        mesh=delivered, measurements={"lost_volume_mm3": 0.1}, realized=True))
+    monkeypatch.setattr(physical_api, "assemble_damage_bodies",
+                        lambda damaged, **kwargs: ([damaged], {}))
+    monkeypatch.setattr(physical_api, "attach_face_provenance",
+                        lambda *args, **kwargs: {"attached": False, "reason": "controlled test"})
+    monkeypatch.setattr(physical_api, "_postassembly_physical_qa",
+                        lambda *args, **kwargs: {"status": "FAIL",
+                                                 "failure_codes": ["TEST_ENTITY_QA_FAIL"]})
+
+    result = physical_api.apply_damage(
+        clean_truth, fragment,
+        DamageRecipe(axis_id="P02", variant="sdf_fillet", level=1,
+                     params={"recession_strength": 0.5}), rng=None)
+
+    assert result.qa["operator_effect_realized"] is True
+    assert result.qa["realized"] is False
+    assert result.qa["physical_acceptance"] is False
+    assert result.qa["status"] == "FAIL"
+    assert result.physical_truth is None
+    assert result.meta["physical_truth_status"] == "SKIPPED_PHYSICAL_QA_FAILURE"
+    assert updater_calls == []
+
+
+@pytest.mark.parametrize(("status", "acceptance", "failure_code", "wall_guard_status"), [
+    ("FAIL", False, "WALL_GUARD_UNKNOWN", "UNKNOWN"),
+    ("PASS", False, "PHYSICAL_ACCEPTANCE_FALSE", "PASS"),
+])
+def test_narrowband_adapter_preserves_raw_effect_without_accepting_backend_qa(
+        monkeypatch, status, acceptance, failure_code, wall_guard_status):
+    mesh, fragment, _source, clean_truth, _appearance = _fixture()
+    recipe = DamageRecipe(axis_id="P02", variant="sdf_fillet", level=1,
+                          params={"recession_strength": 0.5})
+    component = _component(mesh)
+    backend_result = PhysicalResult(
+        mother_id="M_probe", clean_ref="M_probe:E_probe:v1", event_id="E_probe",
+        recipe_id="P02:adapter:L1", version=1, components=[component],
+        lost_volume_mm3=0.0, lost_volume_ratio=0.0,
+        representative_map={"probe": component.component_id}, physical_truth=None,
+        qa={"status": status, "level": 1, "realized": True,
+            "operator_effect_realized": True, "physical_acceptance": acceptance,
+            "failure_code": failure_code,
+            "failure_codes": [failure_code], "wall_guard_status": wall_guard_status},
+        meta={"declared": recipe.declared(), "axis_id": "P02", "variant": "sdf_fillet",
+              "level": 1, "measured": {}, "measurement_units": {},
+              "details": {"wall_guard": {"status": wall_guard_status}}},
+    )
+    monkeypatch.setattr(narrowband_physical, "run_narrowband_damage",
+                        lambda *args, **kwargs: backend_result)
+    monkeypatch.setattr(physical_api, "_postassembly_physical_qa", lambda *args, **kwargs: {
+        "status": "PASS", "failure_codes": [], "checks": {}})
+
+    result = physical_api.apply_damage(clean_truth, fragment, recipe, rng=None)
+
+    assert result.qa["operator_effect_realized"] is True
+    assert result.qa["realized"] is False
+    assert result.qa["physical_acceptance"] is False
+    assert result.qa["status"] == "FAIL"
+    assert result.qa["failure_code"] == failure_code
+    backend_qa = result.meta["details"]["backend_physical_qa"]
+    assert backend_qa["status"] == status
+    assert backend_qa["operator_effect_realized"] is True
+    assert backend_qa["realized"] is True
+    assert backend_qa["physical_acceptance"] is acceptance
+    assert backend_qa["failure_code"] == failure_code
+    assert backend_qa["wall_guard_status"] == wall_guard_status
+    assert backend_qa["failure_codes"] == [failure_code]
+    assert result.physical_truth is None
+
+
+@pytest.mark.parametrize("status", ["FAIL", "UNKNOWN", "PASS"])
+def test_physical_axis_override_cannot_revive_failed_or_unaccepted_qa(monkeypatch, status):
+    _mesh, fragment, source, clean_truth, _appearance = _fixture()
+    operator = AXIS_REGISTRY.get("P04")
+    recipe = _axis_recipe("P04", 1, fragment, source)
+    fake = PhysicalResult(
+        mother_id="M_probe", clean_ref="M_probe:E_probe:v1", event_id="E_probe",
+        recipe_id="P04:test:L1", version=1, components=[_component(fragment.mesh)],
+        lost_volume_mm3=0.1, lost_volume_ratio=0.001,
+        representative_map={"probe": "probe#c0"}, physical_truth=None,
+        qa={"status": status, "level": 1, "realized": True,
+            "physical_acceptance": False},
+        meta={"declared": recipe.declared(), "axis_id": "P04", "variant": "contact_loss",
+              "level": 1, "measured": {"contact_loss_target": 0.25,
+                                         "achieved_contact_loss": 0.25,
+                                         "lost_volume_mm3": 0.1},
+              "details": {}, "ledger": {}, "measurement_units": {},
+              "physical_truth_status": "SKIPPED_PHYSICAL_QA_FAILURE"},
+    )
+    monkeypatch.setattr(operator, "physical_result",
+                        lambda _recipe, _fragment, _clean: fake)
+
+    output = operator._apply(source, 1, operator.params_for(1, operator.default_variant),
+                             recipe.basis, operator.default_variant)
+
+    assert output.meta["realized"] is False
+    assert output.meta["realized_basis"] == "PHYSICAL_QA_FAILURE"
+    assert output.payload["clean_truth"] is clean_truth
+    assert output.meta["physical_audit"]["status"] == status
+
+
+def test_truth_update_is_skipped_when_explicit_acceptance_is_false(monkeypatch):
+    mesh, _fragment, _source, clean_truth, _appearance = _fixture()
+    updater_calls = []
+
+    import synlab.truth.api as truth_api
+
+    monkeypatch.setattr(truth_api, "update_residual_truth",
+                        lambda clean, result: updater_calls.append((clean, result)))
+    result = PhysicalResult(
+        mother_id="M_probe", clean_ref="M_probe:E_probe:v1", event_id="E_probe",
+        recipe_id="P06:test:L1", version=1, components=[_component(mesh)],
+        lost_volume_mm3=0.0, lost_volume_ratio=0.0,
+        representative_map={"probe": "probe#c0"}, physical_truth=None,
+        qa={"status": "PASS", "level": 1, "realized": True,
+            "physical_acceptance": False}, meta={})
+
+    physical_api._attach_physical_truth(result, clean_truth)
+
+    assert result.physical_truth is None
+    assert result.meta["physical_truth_status"] == "SKIPPED_PHYSICAL_QA_FAILURE"
+    assert updater_calls == []
+
+
+@pytest.mark.parametrize(("status", "acceptance", "failure_code"), [
+    (None, _MISSING, "PHYSICAL_RESULT_QA_NOT_PASS"),
+    ("UNKNOWN", _MISSING, "PHYSICAL_RESULT_QA_NOT_PASS"),
+    ("PASS", False, "PHYSICAL_RESULT_ACCEPTANCE_FAILED"),
+    ("PASS", None, "PHYSICAL_RESULT_ACCEPTANCE_FAILED"),
+])
+def test_audit_rejects_missing_unknown_or_explicitly_false_physical_acceptance(
+        monkeypatch, status, acceptance, failure_code):
+    mesh, _fragment, _source, _clean_truth, _appearance = _fixture()
+    component = _component(mesh)
+    components, representative_map, ledger = physical_api.register_components(
+        [mesh], clean_fragment_id="probe", source_volume_mm3=float(mesh.volume))
+    del component, representative_map
+    result = PhysicalResult(
+        mother_id="M_probe", clean_ref="M_probe:E_probe:v1", event_id="E_probe",
+        recipe_id="P06:audit:L1", version=1, components=components,
+        lost_volume_mm3=0.0, lost_volume_ratio=0.0,
+        representative_map={"probe": components[0].component_id}, physical_truth=None,
+        qa={"ledger": {"outside_tol_mm": 1e-3}},
+        meta={"declared": {"axis_id": "P06", "variant": "dirt_appearance", "level": 1,
+                            "touches_geometry": False},
+              "axis_id": "P06", "variant": "dirt_appearance", "level": 1,
+              "appearance": {"texel_albedo": np.ones((1, 3), dtype=np.float32)},
+              "geometry_changed": False,
+              "source_geometry_hash": physical_api._geometry_hash(mesh),
+              "ledger": ledger, "measured": {"appearance_effect": 1.0}})
+    if status is not None:
+        result.qa["status"] = status
+    if acceptance is not _MISSING:
+        result.qa["physical_acceptance"] = acceptance
+    monkeypatch.setattr(physical_api, "subset_outside_stats", lambda *args, **kwargs: {
+        "max_outside_mm": 0.0, "outside_fraction": 0.0, "samples": 10,
+        "outside_points": 0, "p99_outside_mm": 0.0, "approx_open3d": None})
+    monkeypatch.setattr(physical_api.S, "ray_thickness", lambda *args, **kwargs: {"min_mm": 1.0})
+
+    audit = physical_api.audit_physical(result, mesh)
+
+    assert audit["status"] == "FAIL"
+    assert failure_code in audit["failure_codes"]
+    assert audit["checks"]["reported_physical_acceptance"]["pass"] is False
+
+
+def test_valid_p06_and_level_zero_identity_remain_accepted(monkeypatch):
+    mesh, fragment, source, clean_truth, appearance = _fixture()
+    original_albedo = np.array(appearance["texel_albedo"], copy=True)
+    updater_calls = []
+    expected_truth = object()
+
+    import synlab.truth.api as truth_api
+
+    def update_truth(clean, result):
+        updater_calls.append((clean, result))
+        return expected_truth
+
+    monkeypatch.setattr(truth_api, "update_residual_truth", update_truth)
+    p06 = _axis_recipe("P06", 2, fragment, source)
+    p06_result = physical_api.apply_damage(clean_truth, fragment, p06, rng=None)
+
+    assert p06_result.qa["status"] == "PASS"
+    assert p06_result.qa["realized"] is True
+    assert p06_result.qa["physical_acceptance"] is True
+    assert p06_result.physical_truth is expected_truth
+    assert updater_calls == [(clean_truth, p06_result)]
+    assert bool(p06_result.meta["appearance"]["dirt_mask"].any())
+    assert np.array_equal(appearance["texel_albedo"], original_albedo)
+
+    identity = physical_api.apply_damage(
+        clean_truth, fragment, DamageRecipe(axis_id="P02", variant="sdf_fillet", level=0),
+        rng=None)
+    assert identity.components[0].mesh is mesh
+    assert identity.qa["bytes_identical"] is True
+    assert identity.qa["status"] == "PASS"
+    assert identity.qa["realized"] is True
+    assert identity.qa["physical_acceptance"] is True
+
+
+def test_inverted_level_zero_source_is_not_reported_as_realized():
+    mesh, _fragment, _source, clean_truth, _appearance = _fixture()
+    mesh.invert()
+    fragment = _FragmentView(mesh, "inverted")
+
+    result = physical_api.apply_damage(
+        clean_truth, fragment, DamageRecipe(axis_id="P02", variant="sdf_fillet", level=0),
+        rng=None)
+
+    assert result.qa["status"] == "FAIL"
+    assert result.qa["realized"] is False
+    assert result.qa["physical_acceptance"] is False
+
+
+def test_p03_missing_wall_instrument_stays_unknown_even_if_legacy_probe_looks_safe(monkeypatch):
+    source = trimesh.creation.box(extents=(8.0, 8.0, 2.4))
+    accepted = trimesh.creation.box(extents=(7.8, 7.8, 2.4))
+    recipe = _p03_recipe()
+    fragment = _FragmentView(source, "p03_probe")
+    monkeypatch.setattr(narrowband_physical.F, "roi_faces", lambda mesh, fragment, spec: (
+        np.arange(len(mesh.faces), dtype=np.int64), {"roi_kind": "controlled_all"}))
+    monkeypatch.setattr(narrowband_physical.NB, "recessed_body", lambda *args, **kwargs: (
+        accepted.copy(), {"vertex_depth_field": np.full(len(source.vertices), 0.1),
+                          "rim_vertices_pinned": 0, "roi_vertices": len(source.vertices)}))
+    monkeypatch.setattr(narrowband_physical.NB, "assert_watertight",
+                        lambda *args, **kwargs: {"watertight": True})
+    monkeypatch.setattr(narrowband_physical.NB, "paired_thickness", lambda *args, **kwargs: {
+        "min_damaged_mm": 0.9, "min_source_mm": 1.0, "max_drop_mm": 0.1,
+        "violation_fraction": 0.0})
+    monkeypatch.setattr(narrowband_physical.S, "intersect_with_source", lambda body, clean: (
+        accepted.copy(), {"clipped_volume_mm3": 0.0}))
+    monkeypatch.setattr(narrowband_physical, "_sampled_vertex_surface_distance", lambda *args: {
+        "status": "UNKNOWN", "requested_samples": 4, "finite_samples": 0,
+        "missing_samples": 4, "max_mm": None, "mean_mm": None})
+    monkeypatch.setattr(narrowband_physical, "_inside_mask", lambda *args, **kwargs: {
+        "max_outside_mm": 0.0})
+    monkeypatch.setattr(narrowband_physical, "_drift_measurements", lambda *args, **kwargs: {
+        "roi_external_drift_mm": 0.0, "roi_external_drift_samples": 1.0,
+        "roi_external_drift_moved_samples": 0.0})
+    monkeypatch.setattr(physical_api, "_postassembly_physical_qa", lambda *args, **kwargs: {
+        "status": "PASS", "failure_codes": [], "checks": {}})
+
+    result = narrowband_physical._erode_interface(source, recipe, fragment=fragment)
+
+    wall = result.meta["details"]["wall_guard"]
+    probe = result.meta["details"]["narrowband"]["legacy_paired_thickness_probe"]
+    assert wall["status"] == "UNKNOWN"
+    assert wall["required_min_wall_thickness_mm"] == pytest.approx(0.6)
+    assert probe["valid_for_wall_guard"] is False
+    assert probe["status"] == "LEGACY_INVALID_FOR_WALL"
+    assert result.qa["operator_effect_realized"] is True
+    assert result.qa["status"] == "FAIL"
+    assert result.qa["wall_guard_status"] == "UNKNOWN"
+    assert "WALL_GUARD_UNKNOWN" in result.qa["failure_codes"]
+    assert result.qa["realized"] is False
+    assert result.qa["physical_acceptance"] is False
+    assert result.meta["measured"]["planned_max_recession_mm"] == pytest.approx(0.1)
+    assert result.meta["measured"]["applied_depth_mm"] == pytest.approx(0.1)
+    diagnostic = result.meta["details"]["narrowband"][
+        "sampled_source_vertex_to_result_surface_distance"]
+    assert diagnostic["status"] == "UNKNOWN"
+    assert diagnostic["max_mm"] is None
+    for forbidden in ("measured_max_recession_mm", "measured_max_vertex_shift_mm",
+                      "measured_mean_vertex_shift_mm", "min_thickness_mm",
+                      "thickness_guard_satisfied"):
+        assert forbidden not in result.meta["measured"]
+
+
+def test_p03_nan_depth_is_rejected_before_native_geometry_operator(monkeypatch):
+    source = trimesh.creation.box(extents=(8.0, 8.0, 2.4))
+    called = []
+    monkeypatch.setattr(narrowband_physical.NB, "recessed_body",
+                        lambda *args, **kwargs: called.append(True))
+
+    with pytest.raises(SynLabError, match="depth_mm must be finite"):
+        narrowband_physical._erode_interface(source, _p03_recipe(float("nan")))
+
+    assert called == []
+
+
+def test_p03_partial_unsigned_surface_distance_is_unknown_not_zero(monkeypatch):
+    source = trimesh.creation.box(extents=(8.0, 8.0, 2.4))
+
+    class Scene:
+        def unsigned_distance(self, points):
+            return np.array([0.0, np.inf, 0.25, np.nan, 0.5, 0.0, 0.1, np.inf])
+
+    monkeypatch.setattr(narrowband_physical.S, "scene_for", lambda _mesh: Scene())
+    measured = narrowband_physical._sampled_vertex_surface_distance(
+        source, source.copy(), np.full(len(source.vertices), 0.1))
+
+    assert measured["status"] == "UNKNOWN"
+    assert measured["requested_samples"] == len(source.vertices)
+    assert measured["finite_samples"] == 5
+    assert measured["missing_samples"] == 3
+    assert measured["max_mm"] is None
+    assert measured["mean_mm"] is None

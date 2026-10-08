@@ -1,0 +1,177 @@
+{
+  "schema": "shardforge.synlab-source-fixture-push-receipt.v1",
+  "captured_at_utc": "2026-10-05T00:16:09.615Z",
+  "approved_manifest_path": "tmp/review_20261005/backup_coordinator/synlab_source_fixture_candidates_20261005.json",
+  "approved_manifest_sha256": "2df5be8a844822bd73d051106d4c6cc7e1fed731dc4ba90b374b45bfd644c45b",
+  "status_correction_path": "tmp/review_20261005/backup_coordinator/synlab_source_fixture_status_correction_20261005.json",
+  "status_correction_sha256": "914cb273fe6855da216c3a2ebe26f1d1cf9ca1681a96eb1db190f51bc30abcdb",
+  "repo": "relicweave-synlab",
+  "branch": "backup/forge-work-20261003",
+  "commit": "b1099e4c714baff56083570883b44fee45e110f9",
+  "parent": "2a1660304a7895fb8cf9bac931ee016112beb420",
+  "remote_branch_head": "b1099e4c714baff56083570883b44fee45e110f9",
+  "remote_push_verified": true,
+  "commit_subject": "Add bounded PG result reader and diagnostic fixture",
+  "commit_body": "Preserve the portable result-v1 reader, its focused A12 test, and the byte-identical toy endpoint fixture. Apply a narrow -text rule to this fixture only.\n\nThe evidence covers 19 distinct cases: 18 passed in the full run; the one initial failure passed on targeted retry. The initial failure record is retained. This fixture remains PG_DIAGNOSTIC_ONLY and does not qualify the full chain, fracture behavior, or physics.",
+  "commit_identity": "A12 SynLab <synlab@local>",
+  "committed_path_count": 16,
+  "committed_paths": [
+    ".gitattributes",
+    "synlab/qa/source_readers/__init__.py",
+    "synlab/qa/source_readers/pgfrag_result.py",
+    "tests/a12/qa/test_pgfrag_source_reader_20261005.py",
+    "tests/fixtures/pgfrag/result_v1_toy_endpoint/README.md",
+    "tests/fixtures/pgfrag/result_v1_toy_endpoint/job.json",
+    "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/bond_states.csv",
+    "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/broken_bonds.csv",
+    "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/components.csv",
+    "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/data_dictionary.json",
+    "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/isolated_points.csv",
+    "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/points.csv",
+    "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/result.json",
+    "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/solver.stderr.log",
+    "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/solver.stdout.log",
+    "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/summary.toml"
+  ],
+  "files": [
+    {
+      "path": "synlab/qa/source_readers/__init__.py",
+      "bytes": 300,
+      "sha256": "2d187338150a7582c6cb895cf15f8934b271c863c0a6903da5784e5f947f330b",
+      "git_blob_sha1": "1df630261200620a3aa948bda0b668791e23ff9f"
+    },
+    {
+      "path": "synlab/qa/source_readers/pgfrag_result.py",
+      "bytes": 40405,
+      "sha256": "ed1d72f0bd25d2962217e88a226d2a72706c013c7087465b53bb9ca04116bd9e",
+      "git_blob_sha1": "498f1029c1c2b77f11b5a572db9337f53003a190"
+    },
+    {
+      "path": "tests/a12/qa/test_pgfrag_source_reader_20261005.py",
+      "bytes": 15514,
+      "sha256": "0071ad62a7d6780771923cba0da01bde4326e390732ba371e703825fd8640c54",
+      "git_blob_sha1": "7a5aa87c2c7e13902144ef546b80cbdee0f68956"
+    },
+    {
+      "path": "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/result.json",
+      "bytes": 8258,
+      "sha256": "b3fb84f20d409f4a4dca0b34ffd8b95a07b7c7944b8b6ecd70100b0b5b17dc20",
+      "git_blob_sha1": "f8b6cad863f729d4169f3523b141ac1843550bae"
+    },
+    {
+      "path": "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/bond_states.csv",
+      "bytes": 1095598,
+      "sha256": "2ba477c6c915f9eefdb141eb6f203b30b50fc99f6d93df0145a096771e143d3d",
+      "git_blob_sha1": "5190c96ae5123464f5743531282e77f1b43ace56"
+    },
+    {
+      "path": "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/broken_bonds.csv",
+      "bytes": 249045,
+      "sha256": "4d9d79764b3e228ab63b5ebb250c92643e7df5951e91fb6d01442ba83724a870",
+      "git_blob_sha1": "a91de8a08bc2021d05a59f525b9723c6d946170d"
+    },
+    {
+      "path": "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/components.csv",
+      "bytes": 27275,
+      "sha256": "b3ac06b6d86a44465650f9528fd0e1064fd7b76008f19ea3740fdae4ec7a1fa6",
+      "git_blob_sha1": "c74a6204702685e1d2cedbde8efcadfa916976e5"
+    },
+    {
+      "path": "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/data_dictionary.json",
+      "bytes": 11063,
+      "sha256": "0e0a2d1d39986fa2e676deb182c529237c9c72e86d99ff85e18f06ccd50d73e0",
+      "git_blob_sha1": "8b24a2edd8d7adfd1077c9ba06479e60918fc009"
+    },
+    {
+      "path": "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/isolated_points.csv",
+      "bytes": 41,
+      "sha256": "d0bb697a4412b470be2d5ff0fdafeef8de814f94847f0ad4569de9dfe52cd0a7",
+      "git_blob_sha1": "32c9196ce91888b3411e44d67dcdff96d71f4bbb"
+    },
+    {
+      "path": "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/points.csv",
+      "bytes": 135416,
+      "sha256": "f78180800aa39702b31d60f2e523cb5a3fc13339644d86826c39bb9acd250edf",
+      "git_blob_sha1": "84ed73a4d81d07628cef9dd372e11c398af58cb9"
+    },
+    {
+      "path": "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/solver.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/solver.stdout.log",
+      "bytes": 102,
+      "sha256": "1a0884a22e1fa4f29ec378599d63682393a50e00c29fc21c914228d53dd6d695",
+      "git_blob_sha1": "43ba06b042937d1c84f4130e7ce1cb8fd88fee87"
+    },
+    {
+      "path": "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/summary.toml",
+      "bytes": 1771,
+      "sha256": "337cd21c83446c0099207efdf51754ae89303baae2f883c21c2674e1c921d0bb",
+      "git_blob_sha1": "b738027507263d018ee8b475f4769a7e9de66936"
+    },
+    {
+      "path": "tests/fixtures/pgfrag/result_v1_toy_endpoint/job.json",
+      "bytes": 949,
+      "sha256": "83af8ea8cb0fd204ab288841fd87382c9dae77ec1cfb5dc9d0c925d610d430d1",
+      "git_blob_sha1": "0926bcc89ad83d60ac9df330268fd905af95b6e9"
+    },
+    {
+      "path": "tests/fixtures/pgfrag/result_v1_toy_endpoint/README.md",
+      "bytes": 838,
+      "sha256": "4b9beb4d2d0277def9faf8ba97b312406cf941287d770c0e433673146c12ba2c",
+      "git_blob_sha1": "590affec787936baeab3c7d8169d0805c06d3ed7"
+    }
+  ],
+  "git_attributes": {
+    "path": ".gitattributes",
+    "bytes": 772,
+    "sha256": "1735408bb2ac0f02fb35452e5e2a3f3ac30dd971564e9e1a1dc4cf5b2ca56e88",
+    "git_blob_sha1": "d501e8bb2ec9587012c513e129d6931c0f30aa94",
+    "appended_rule": "/tests/fixtures/pgfrag/result_v1_toy_endpoint/** -text",
+    "original_worktree_prefix_bytes": 716,
+    "original_worktree_prefix_sha256": "4344ddbb2ee900faf3c9af1897ee97d5f4e3e0981b43e7e6855553df13a39ae0",
+    "parent_blob_bytes": 707,
+    "parent_blob_sha256": "4de57fa02f90df79de474d4bd99b59e642ae95779020b5f0b7cd8c9a30a7302a",
+    "semantic_existing_rules_preserved": true
+  },
+  "force_added_exact_paths": [
+    "synlab/qa/source_readers/__init__.py",
+    "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/solver.stderr.log",
+    "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/solver.stdout.log"
+  ],
+  "status_correction": {
+    "path": "synlab/qa/source_readers/__init__.py",
+    "was_untracked_ignored": true,
+    "ignore_rule": ".gitignore:22:_*.py",
+    "root_exact_force_add_authorized": true
+  },
+  "validation": {
+    "distinct_cases": 19,
+    "full_run_passed_cases": 18,
+    "corrected_node_retry_passed": true,
+    "initial_full_run_failure_record_preserved": true,
+    "coordinator_reran_tests": false,
+    "fixture_total_bytes": 1530356,
+    "fixture_byte_identity_verified": true
+  },
+  "excluded_unstaged_active_paths": [
+    "synlab/qa/forge_chain_audit.py",
+    "docs/a12/chain_source_reader_dispatch_20261005.md",
+    "synlab/degrade/heightgraph_certificate.py",
+    "tests/a12/degrade/test_heightgraph_certificate_20261005.py",
+    "tests/a12/qa/test_forge_chain_source_dispatch_20261005.py",
+    "all tmp review evidence",
+    "external integrated DOCX"
+  ],
+  "no_force_push": true,
+  "git_configuration_changed": false,
+  "per_command_settings": [
+    "core.autocrlf=false for exact-byte staging",
+    "existing repository commit identity per invocation"
+  ],
+  "staged_paths_after_push": [],
+  "selected_worktree_changes_after_push": []
+}

@@ -1,0 +1,1067 @@
+﻿{
+  "schema": "reviewed_math_copy_receipt.v1",
+  "plan": "tmp/backup_coordinator/next_reviewed_math_plan_20261006_v2.json",
+  "plan_sha256": "04ddf9810d14f586f8103201ae1866d6f7edf5ddabbcac10e5ad47f917a82f24",
+  "preflight": [
+    {
+      "repo": "pgfrag",
+      "branch": "backup/forge-work-20261003",
+      "head": "1366d87603005e28f5797766a97087d5d8112bf0",
+      "origin": "https://github.com/xiemonb666/pgfrag.git",
+      "remote_head": "1366d87603005e28f5797766a97087d5d8112bf0",
+      "ls_remote_rc": 0,
+      "ls_remote_elapsed_ms": 1990,
+      "tracked_dirty": [
+        " M docs/progress/20261006_physics_core_status.md"
+      ],
+      "staged_count": 0
+    },
+    {
+      "repo": "vesselforge",
+      "branch": "backup/forge-work-20261003",
+      "head": "255e6dfe869894608a5cf05e41da4fccb2042a18",
+      "origin": "https://github.com/xiemonb666/vesselforge.git",
+      "remote_head": "255e6dfe869894608a5cf05e41da4fccb2042a18",
+      "ls_remote_rc": 0,
+      "ls_remote_elapsed_ms": 2061,
+      "tracked_dirty": [],
+      "staged_count": 0
+    }
+  ],
+  "source_prechecks": [
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\audit_fixed_load_front_saved_arrays.py",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\reader\\audit_fixed_load_front_saved_arrays.py",
+      "sha256": "b7a1914fe3d00605203fa65468a6f67727fc0bddf7b5ef0ab6ecdeb2ea8b5890",
+      "bytes": 18826,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\audit.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\actual\\audit.json",
+      "sha256": "6b71f396f08fc1edcfcec0d10300859dcac219f702bf6e85c21fc16f0e2edffa",
+      "bytes": 15742,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\audit_stdout.log",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\actual\\audit_stdout.log",
+      "sha256": "c4cd96b8fac8edfdaaa04c4ad35853ff265e35de7d16120d0189ab791a04ffb1",
+      "bytes": 732,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\execution_receipt.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\actual\\execution_receipt.json",
+      "sha256": "35f96357573b7eaf00fe579d15688f1a8d8a677a2ca3eb6a76a6b2bc1d230967",
+      "bytes": 3635,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\attempt01_failure_receipt.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\history\\attempt01_failure_receipt.json",
+      "sha256": "56856775237cff11099515aec025b911b970ed43422617aaf68c25c38c812bf8",
+      "bytes": 1088,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\attempt01_stdout_merged.log",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\history\\attempt01_stdout_merged.log",
+      "sha256": "c4cd96b8fac8edfdaaa04c4ad35853ff265e35de7d16120d0189ab791a04ffb1",
+      "bytes": 732,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\attempt02_stdout.log",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\history\\attempt02_stdout.log",
+      "sha256": "a611823d257c2d671880772b289bb912ab24012248016cefe784d46a54343d29",
+      "bytes": 158,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\source_pins.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\source_pins\\source_pins.json",
+      "sha256": "fbabc9e140bbf8dc489e9b5c945be8d03990c38a9fb13c800f56d63a448850ac",
+      "bytes": 2003,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\source_pins_attempt01.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\source_pins\\source_pins_attempt01.json",
+      "sha256": "fbabc9e140bbf8dc489e9b5c945be8d03990c38a9fb13c800f56d63a448850ac",
+      "bytes": 2003,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\source_pins_attempt02.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\source_pins\\source_pins_attempt02.json",
+      "sha256": "5ddbf72857f77d797fb63468ff2daaead2f0544186a7a007612442d8fdcdb52a",
+      "bytes": 2529,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\inspect_fixture_schema.py",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\fixture_schema\\inspect_fixture_schema.py",
+      "sha256": "d05e3451e3d37c22534eb5ea228466bedfe34fa7d0e68335c88c48e2a56837a1",
+      "bytes": 4872,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\fixture_schema.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\fixture_schema\\fixture_schema.json",
+      "sha256": "f70c10a15a0baf346172bb42098b580cacf37859536d5ca781156fe0987e7bdb",
+      "bytes": 10712,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\fixture_schema_stdout.log",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\fixture_schema\\fixture_schema_stdout.log",
+      "sha256": "37e84ed0ed24d2a2d28ac150d99de395ad0a2792c258bdefc249f47c623acbee",
+      "bytes": 337,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\render_energy_spectrum.py",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\render\\render_energy_spectrum.py",
+      "sha256": "807a5aaab8c8584efaea2c8d1e188a217b462552a57be2d905695fd645e5790e",
+      "bytes": 2861,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\render_stdout.log",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\render\\render_stdout.log",
+      "sha256": "126d0e81bbc022221d59cafae8a51bc70980dce22ad80840d937fa682cc910a8",
+      "bytes": 86,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\spectrum_energy_ledger.png",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\render\\spectrum_energy_ledger.png",
+      "sha256": "e2cfebba1ebcf4c12ca84ace50b5479e97423e110dc7eb120985d8f070d1075d",
+      "bytes": 22196,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\RECEIPT_TIMING_ADDENDUM.md",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\review\\RECEIPT_TIMING_ADDENDUM.md",
+      "sha256": "54db1a7fd1f10298ba363bd87b8cd1502274003dc9b0fe433e82cf31c0b06f3d",
+      "bytes": 1299,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\review.md",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\review\\review.md",
+      "sha256": "a03417bca03e57a053b233427a92e5ef7200195809999b4c3ed5d3ec58a686de",
+      "bytes": 3334,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments\\mixed_lefm_enrichment_algebra_20261006\\mixed_enrichment_algebra.py",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\source\\mixed_enrichment_algebra.py",
+      "sha256": "466d0c01445f497e46a49314a03e89e92c62a204a9665cf01c3d2005f2dc99e3",
+      "bytes": 11418,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments\\mixed_lefm_enrichment_algebra_20261006\\README.md",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\source\\README.md",
+      "sha256": "b0e83be0420fcd7501c4a23d2cf721517cc36490ccfea07ba7cb7929f5edf9e7",
+      "bytes": 2711,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments\\mixed_lefm_enrichment_algebra_20261006\\request.schema.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\source\\request.schema.json",
+      "sha256": "9ed2461fc2c8a516d450c2f0d2c59ff54b0c07f44a21293559111977639dd55b",
+      "bytes": 3170,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments\\mixed_lefm_enrichment_algebra_20261006\\row.schema.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\source\\row.schema.json",
+      "sha256": "68ac722462f2afa26fee6dfba642c33d0a2ffecb7742c2c9c88d9a28c9f89f66",
+      "bytes": 3609,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\mixed_lefm_enrichment_algebra_20261006\\SOURCE_REVIEW.md",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\review\\SOURCE_REVIEW.md",
+      "sha256": "092c42080c4752b041dfc01c631c7c1e45a452ea493326e4c1958cacc5b3b5d6",
+      "bytes": 3239,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\mixed_lefm_enrichment_algebra_20261006\\SOURCE_PINS.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\review\\SOURCE_PINS.json",
+      "sha256": "e33846f88869a42e0f1e0675f982de5d14a85c3e82162ea76a178709168b2dcf",
+      "bytes": 712,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\mixed_lefm_enrichment_algebra_20261006\\arith_checker.py",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\checker\\arith_checker.py",
+      "sha256": "9c84e09ccc4cce9c999410ae61f50d7fb0deedc3eb697cb4cd5cf0fbb182de0d",
+      "bytes": 8687,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\mixed_lefm_enrichment_algebra_20261006\\arith_checker.run_record.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\actual\\arith_checker.run_record.json",
+      "sha256": "1459590a9f61b80ba5284bdc47220dccf59978f2fa74758a816e80fb44c28a06",
+      "bytes": 2108,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\mixed_lefm_enrichment_algebra_20261006\\arith_checker.stdout.txt",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\actual\\arith_checker.stdout.txt",
+      "sha256": "1c1bdb323682a338b1d75a9c7315a649e832b3a8b08037671af439d69588d8f2",
+      "bytes": 397,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\mixed_lefm_enrichment_algebra_20261006\\arith_checker.stderr.txt",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\actual\\arith_checker.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "experiments\\global_bspline_meridian_20261006\\bspline_constraint_source.py",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\source\\bspline_constraint_source.py",
+      "sha256": "e2d978bb817fa83918d2a494e1a084863fe413b8e176411038e9a8ba757f15d9",
+      "bytes": 8542,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "experiments\\global_bspline_meridian_20261006\\bspline_minimum_jerk_driver.py",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\source\\bspline_minimum_jerk_driver.py",
+      "sha256": "e69d7b937f1e4810e60d89852d3cf8a82a049721ea59ba04f4a03462d664e4b9",
+      "bytes": 18582,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "experiments\\global_bspline_meridian_20261006\\fixed_cases.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\source\\fixed_cases.json",
+      "sha256": "47aa718e1feae7005db0b5d7fd77393c308d9d1eefa0faa43212dc077a865908",
+      "bytes": 5294,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "experiments\\global_bspline_meridian_20261006\\DESIGN_PROPOSAL.md",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\source\\DESIGN_PROPOSAL.md",
+      "sha256": "5eeb0b0f0fe2aeb14a143eab5646d92f3db111c074208c9e48e5e95d4ea5ce8f",
+      "bytes": 9060,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp\\review_20261006\\global_bspline_meridian_20261006\\minimum_jerk_candidate\\minimum_jerk_exact_result.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\actual\\minimum_jerk_exact_result.json",
+      "sha256": "06c714ff30e8f36c60e586e07670510d539b844ec434772a5d93b749612a6f65",
+      "bytes": 129016,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp\\review_20261006\\global_bspline_meridian_20261006\\minimum_jerk_candidate\\execution_receipt.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\actual\\execution_receipt.json",
+      "sha256": "66dc2ef17fc276881f0714e9e99d11ccfd20498a182583aedec2e87c8f57bff0",
+      "bytes": 5385,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp\\review_20261006\\global_bspline_meridian_20261006\\minimum_jerk_candidate\\minimum_jerk_outer_profiles.png",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\actual\\minimum_jerk_outer_profiles.png",
+      "sha256": "082cd6f1ccdd1f5604e5a9d4aa72436718908ed98e313dd813bbccdde68126bc",
+      "bytes": 133045,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp\\review_20261006\\global_bspline_meridian_20261006\\minimum_jerk_candidate\\render_receipt.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\render_history\\render_receipt.json",
+      "sha256": "d34a973bcd0075cd3f60f8b54049789a76a1fe91b26c9fae78a6acd02ad3a904",
+      "bytes": 5681,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp\\review_20261006\\global_bspline_meridian_20261006\\minimum_jerk_candidate\\render_receipt_attempt2.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\render_history\\render_receipt_attempt2.json",
+      "sha256": "c5d4da1814a050ee5ff138d5bffeabe335baa58a5b67a14c48398975f3a7eb4a",
+      "bytes": 6082,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp\\review_20261006\\global_bspline_meridian_20261006\\minimum_jerk_candidate\\render_receipt_attempt3.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\render_history\\render_receipt_attempt3.json",
+      "sha256": "b9e7b7c96ce389662a95c515e0b689613cdcfbcf20bb680094179bdecfabe46b",
+      "bytes": 6455,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp\\review_20261006\\global_bspline_independent\\independent_saved_reader.py",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_independent\\reader\\independent_saved_reader.py",
+      "sha256": "05089ba906567852c8a0911f9ecdc56a0445365f4c3f5dcd067038bfef0c80f0",
+      "bytes": 17148,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp\\review_20261006\\global_bspline_independent\\independent_saved_audit.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_independent\\actual\\independent_saved_audit.json",
+      "sha256": "6c27697e002598b108824bbba17da3f83b96ab5547a6b3bf47066e9ef2d1d6ac",
+      "bytes": 70707,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp\\review_20261006\\global_bspline_independent\\bowl_outer_only.png",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_independent\\actual\\bowl_outer_only.png",
+      "sha256": "66f0b71e14286ebba8296a9368cc1cb47ec87d56df7fab1db6ca80f7df88e76d",
+      "bytes": 14787,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp\\review_20261006\\global_bspline_independent\\jar_outer_only.png",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_independent\\actual\\jar_outer_only.png",
+      "sha256": "06a3746bb8d0d6c741ce6a99c3f9d963d28a8e481921c73588e6fffae1224c8e",
+      "bytes": 14499,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp\\review_20261006\\global_bspline_independent\\independent_saved_reader.stdout.txt",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_independent\\runs\\corrected\\independent_saved_reader.stdout.txt",
+      "sha256": "7398d14c9dd5ae27783075009033465036198dcea404630a06ac1c0de625666e",
+      "bytes": 160,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp\\review_20261006\\global_bspline_independent\\independent_saved_reader.stderr.txt",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_independent\\runs\\corrected\\independent_saved_reader.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp\\review_20261006\\global_bspline_independent\\independent_saved_reader.run.txt",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_independent\\runs\\corrected\\independent_saved_reader.run.txt",
+      "sha256": "5a552f9395f83ee8981695a2e8a1b94189040f9c67ed426c42f1111f807f8d2a",
+      "bytes": 1953,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp\\review_20261006\\global_bspline_independent\\independent_saved_reader.run.prior.txt",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_independent\\runs\\prior\\independent_saved_reader.run.prior.txt",
+      "sha256": "20bd5f99470cb11d1e0af86cad9efbf4074e39841f91852373c6277632b52beb",
+      "bytes": 1064,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "docs/progress/20261006_physics_core_status.md",
+      "destination_path": "docs/progress/20261006_physics_core_status.md",
+      "sha256": "0670bc8cc29beb3d045ec0413ff3c4f954d8588786c307f8b910fee1fef43ef7",
+      "bytes": 3125,
+      "operation": "stage_existing_no_copy_exact"
+    }
+  ],
+  "copy_count": 46,
+  "copy_elapsed_ms": 168,
+  "copied_files": [
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\audit_fixed_load_front_saved_arrays.py",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\reader\\audit_fixed_load_front_saved_arrays.py",
+      "sha256": "b7a1914fe3d00605203fa65468a6f67727fc0bddf7b5ef0ab6ecdeb2ea8b5890",
+      "bytes": 18826
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\audit.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\actual\\audit.json",
+      "sha256": "6b71f396f08fc1edcfcec0d10300859dcac219f702bf6e85c21fc16f0e2edffa",
+      "bytes": 15742
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\audit_stdout.log",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\actual\\audit_stdout.log",
+      "sha256": "c4cd96b8fac8edfdaaa04c4ad35853ff265e35de7d16120d0189ab791a04ffb1",
+      "bytes": 732
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\execution_receipt.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\actual\\execution_receipt.json",
+      "sha256": "35f96357573b7eaf00fe579d15688f1a8d8a677a2ca3eb6a76a6b2bc1d230967",
+      "bytes": 3635
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\attempt01_failure_receipt.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\history\\attempt01_failure_receipt.json",
+      "sha256": "56856775237cff11099515aec025b911b970ed43422617aaf68c25c38c812bf8",
+      "bytes": 1088
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\attempt01_stdout_merged.log",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\history\\attempt01_stdout_merged.log",
+      "sha256": "c4cd96b8fac8edfdaaa04c4ad35853ff265e35de7d16120d0189ab791a04ffb1",
+      "bytes": 732
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\attempt02_stdout.log",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\history\\attempt02_stdout.log",
+      "sha256": "a611823d257c2d671880772b289bb912ab24012248016cefe784d46a54343d29",
+      "bytes": 158
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\source_pins.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\source_pins\\source_pins.json",
+      "sha256": "fbabc9e140bbf8dc489e9b5c945be8d03990c38a9fb13c800f56d63a448850ac",
+      "bytes": 2003
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\source_pins_attempt01.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\source_pins\\source_pins_attempt01.json",
+      "sha256": "fbabc9e140bbf8dc489e9b5c945be8d03990c38a9fb13c800f56d63a448850ac",
+      "bytes": 2003
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\source_pins_attempt02.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\source_pins\\source_pins_attempt02.json",
+      "sha256": "5ddbf72857f77d797fb63468ff2daaead2f0544186a7a007612442d8fdcdb52a",
+      "bytes": 2529
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\inspect_fixture_schema.py",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\fixture_schema\\inspect_fixture_schema.py",
+      "sha256": "d05e3451e3d37c22534eb5ea228466bedfe34fa7d0e68335c88c48e2a56837a1",
+      "bytes": 4872
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\fixture_schema.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\fixture_schema\\fixture_schema.json",
+      "sha256": "f70c10a15a0baf346172bb42098b580cacf37859536d5ca781156fe0987e7bdb",
+      "bytes": 10712
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\fixture_schema_stdout.log",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\fixture_schema\\fixture_schema_stdout.log",
+      "sha256": "37e84ed0ed24d2a2d28ac150d99de395ad0a2792c258bdefc249f47c623acbee",
+      "bytes": 337
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\render_energy_spectrum.py",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\render\\render_energy_spectrum.py",
+      "sha256": "807a5aaab8c8584efaea2c8d1e188a217b462552a57be2d905695fd645e5790e",
+      "bytes": 2861
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\render_stdout.log",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\render\\render_stdout.log",
+      "sha256": "126d0e81bbc022221d59cafae8a51bc70980dce22ad80840d937fa682cc910a8",
+      "bytes": 86
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\spectrum_energy_ledger.png",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\render\\spectrum_energy_ledger.png",
+      "sha256": "e2cfebba1ebcf4c12ca84ace50b5479e97423e110dc7eb120985d8f070d1075d",
+      "bytes": 22196
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\RECEIPT_TIMING_ADDENDUM.md",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\review\\RECEIPT_TIMING_ADDENDUM.md",
+      "sha256": "54db1a7fd1f10298ba363bd87b8cd1502274003dc9b0fe433e82cf31c0b06f3d",
+      "bytes": 1299
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\fixed_load_front_saved_independent\\review.md",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\review\\review.md",
+      "sha256": "a03417bca03e57a053b233427a92e5ef7200195809999b4c3ed5d3ec58a686de",
+      "bytes": 3334
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments\\mixed_lefm_enrichment_algebra_20261006\\mixed_enrichment_algebra.py",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\source\\mixed_enrichment_algebra.py",
+      "sha256": "466d0c01445f497e46a49314a03e89e92c62a204a9665cf01c3d2005f2dc99e3",
+      "bytes": 11418
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments\\mixed_lefm_enrichment_algebra_20261006\\README.md",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\source\\README.md",
+      "sha256": "b0e83be0420fcd7501c4a23d2cf721517cc36490ccfea07ba7cb7929f5edf9e7",
+      "bytes": 2711
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments\\mixed_lefm_enrichment_algebra_20261006\\request.schema.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\source\\request.schema.json",
+      "sha256": "9ed2461fc2c8a516d450c2f0d2c59ff54b0c07f44a21293559111977639dd55b",
+      "bytes": 3170
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments\\mixed_lefm_enrichment_algebra_20261006\\row.schema.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\source\\row.schema.json",
+      "sha256": "68ac722462f2afa26fee6dfba642c33d0a2ffecb7742c2c9c88d9a28c9f89f66",
+      "bytes": 3609
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\mixed_lefm_enrichment_algebra_20261006\\SOURCE_REVIEW.md",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\review\\SOURCE_REVIEW.md",
+      "sha256": "092c42080c4752b041dfc01c631c7c1e45a452ea493326e4c1958cacc5b3b5d6",
+      "bytes": 3239
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\mixed_lefm_enrichment_algebra_20261006\\SOURCE_PINS.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\review\\SOURCE_PINS.json",
+      "sha256": "e33846f88869a42e0f1e0675f982de5d14a85c3e82162ea76a178709168b2dcf",
+      "bytes": 712
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\mixed_lefm_enrichment_algebra_20261006\\arith_checker.py",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\checker\\arith_checker.py",
+      "sha256": "9c84e09ccc4cce9c999410ae61f50d7fb0deedc3eb697cb4cd5cf0fbb182de0d",
+      "bytes": 8687
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\mixed_lefm_enrichment_algebra_20261006\\arith_checker.run_record.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\actual\\arith_checker.run_record.json",
+      "sha256": "1459590a9f61b80ba5284bdc47220dccf59978f2fa74758a816e80fb44c28a06",
+      "bytes": 2108
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\mixed_lefm_enrichment_algebra_20261006\\arith_checker.stdout.txt",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\actual\\arith_checker.stdout.txt",
+      "sha256": "1c1bdb323682a338b1d75a9c7315a649e832b3a8b08037671af439d69588d8f2",
+      "bytes": 397
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp\\review_20261006\\mixed_lefm_enrichment_algebra_20261006\\arith_checker.stderr.txt",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\actual\\arith_checker.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "experiments\\global_bspline_meridian_20261006\\bspline_constraint_source.py",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\source\\bspline_constraint_source.py",
+      "sha256": "e2d978bb817fa83918d2a494e1a084863fe413b8e176411038e9a8ba757f15d9",
+      "bytes": 8542
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "experiments\\global_bspline_meridian_20261006\\bspline_minimum_jerk_driver.py",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\source\\bspline_minimum_jerk_driver.py",
+      "sha256": "e69d7b937f1e4810e60d89852d3cf8a82a049721ea59ba04f4a03462d664e4b9",
+      "bytes": 18582
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "experiments\\global_bspline_meridian_20261006\\fixed_cases.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\source\\fixed_cases.json",
+      "sha256": "47aa718e1feae7005db0b5d7fd77393c308d9d1eefa0faa43212dc077a865908",
+      "bytes": 5294
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "experiments\\global_bspline_meridian_20261006\\DESIGN_PROPOSAL.md",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\source\\DESIGN_PROPOSAL.md",
+      "sha256": "5eeb0b0f0fe2aeb14a143eab5646d92f3db111c074208c9e48e5e95d4ea5ce8f",
+      "bytes": 9060
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp\\review_20261006\\global_bspline_meridian_20261006\\minimum_jerk_candidate\\minimum_jerk_exact_result.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\actual\\minimum_jerk_exact_result.json",
+      "sha256": "06c714ff30e8f36c60e586e07670510d539b844ec434772a5d93b749612a6f65",
+      "bytes": 129016
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp\\review_20261006\\global_bspline_meridian_20261006\\minimum_jerk_candidate\\execution_receipt.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\actual\\execution_receipt.json",
+      "sha256": "66dc2ef17fc276881f0714e9e99d11ccfd20498a182583aedec2e87c8f57bff0",
+      "bytes": 5385
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp\\review_20261006\\global_bspline_meridian_20261006\\minimum_jerk_candidate\\minimum_jerk_outer_profiles.png",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\actual\\minimum_jerk_outer_profiles.png",
+      "sha256": "082cd6f1ccdd1f5604e5a9d4aa72436718908ed98e313dd813bbccdde68126bc",
+      "bytes": 133045
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp\\review_20261006\\global_bspline_meridian_20261006\\minimum_jerk_candidate\\render_receipt.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\render_history\\render_receipt.json",
+      "sha256": "d34a973bcd0075cd3f60f8b54049789a76a1fe91b26c9fae78a6acd02ad3a904",
+      "bytes": 5681
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp\\review_20261006\\global_bspline_meridian_20261006\\minimum_jerk_candidate\\render_receipt_attempt2.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\render_history\\render_receipt_attempt2.json",
+      "sha256": "c5d4da1814a050ee5ff138d5bffeabe335baa58a5b67a14c48398975f3a7eb4a",
+      "bytes": 6082
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp\\review_20261006\\global_bspline_meridian_20261006\\minimum_jerk_candidate\\render_receipt_attempt3.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\render_history\\render_receipt_attempt3.json",
+      "sha256": "b9e7b7c96ce389662a95c515e0b689613cdcfbcf20bb680094179bdecfabe46b",
+      "bytes": 6455
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp\\review_20261006\\global_bspline_independent\\independent_saved_reader.py",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_independent\\reader\\independent_saved_reader.py",
+      "sha256": "05089ba906567852c8a0911f9ecdc56a0445365f4c3f5dcd067038bfef0c80f0",
+      "bytes": 17148
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp\\review_20261006\\global_bspline_independent\\independent_saved_audit.json",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_independent\\actual\\independent_saved_audit.json",
+      "sha256": "6c27697e002598b108824bbba17da3f83b96ab5547a6b3bf47066e9ef2d1d6ac",
+      "bytes": 70707
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp\\review_20261006\\global_bspline_independent\\bowl_outer_only.png",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_independent\\actual\\bowl_outer_only.png",
+      "sha256": "66f0b71e14286ebba8296a9368cc1cb47ec87d56df7fab1db6ca80f7df88e76d",
+      "bytes": 14787
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp\\review_20261006\\global_bspline_independent\\jar_outer_only.png",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_independent\\actual\\jar_outer_only.png",
+      "sha256": "06a3746bb8d0d6c741ce6a99c3f9d963d28a8e481921c73588e6fffae1224c8e",
+      "bytes": 14499
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp\\review_20261006\\global_bspline_independent\\independent_saved_reader.stdout.txt",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_independent\\runs\\corrected\\independent_saved_reader.stdout.txt",
+      "sha256": "7398d14c9dd5ae27783075009033465036198dcea404630a06ac1c0de625666e",
+      "bytes": 160
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp\\review_20261006\\global_bspline_independent\\independent_saved_reader.stderr.txt",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_independent\\runs\\corrected\\independent_saved_reader.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp\\review_20261006\\global_bspline_independent\\independent_saved_reader.run.txt",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_independent\\runs\\corrected\\independent_saved_reader.run.txt",
+      "sha256": "5a552f9395f83ee8981695a2e8a1b94189040f9c67ed426c42f1111f807f8d2a",
+      "bytes": 1953
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp\\review_20261006\\global_bspline_independent\\independent_saved_reader.run.prior.txt",
+      "destination_path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_independent\\runs\\prior\\independent_saved_reader.run.prior.txt",
+      "sha256": "20bd5f99470cb11d1e0af86cad9efbf4074e39841f91852373c6277632b52beb",
+      "bytes": 1064
+    }
+  ],
+  "postcopy_all_47_pins_match": true,
+  "postcopy_pins": [
+    {
+      "repo": "pgfrag",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\reader\\audit_fixed_load_front_saved_arrays.py",
+      "sha256": "b7a1914fe3d00605203fa65468a6f67727fc0bddf7b5ef0ab6ecdeb2ea8b5890",
+      "bytes": 18826,
+      "source_still_matches": true
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\actual\\audit.json",
+      "sha256": "6b71f396f08fc1edcfcec0d10300859dcac219f702bf6e85c21fc16f0e2edffa",
+      "bytes": 15742,
+      "source_still_matches": true
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\actual\\audit_stdout.log",
+      "sha256": "c4cd96b8fac8edfdaaa04c4ad35853ff265e35de7d16120d0189ab791a04ffb1",
+      "bytes": 732,
+      "source_still_matches": true
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\actual\\execution_receipt.json",
+      "sha256": "35f96357573b7eaf00fe579d15688f1a8d8a677a2ca3eb6a76a6b2bc1d230967",
+      "bytes": 3635,
+      "source_still_matches": true
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\history\\attempt01_failure_receipt.json",
+      "sha256": "56856775237cff11099515aec025b911b970ed43422617aaf68c25c38c812bf8",
+      "bytes": 1088,
+      "source_still_matches": true
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\history\\attempt01_stdout_merged.log",
+      "sha256": "c4cd96b8fac8edfdaaa04c4ad35853ff265e35de7d16120d0189ab791a04ffb1",
+      "bytes": 732,
+      "source_still_matches": true
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\history\\attempt02_stdout.log",
+      "sha256": "a611823d257c2d671880772b289bb912ab24012248016cefe784d46a54343d29",
+      "bytes": 158,
+      "source_still_matches": true
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\source_pins\\source_pins.json",
+      "sha256": "fbabc9e140bbf8dc489e9b5c945be8d03990c38a9fb13c800f56d63a448850ac",
+      "bytes": 2003,
+      "source_still_matches": true
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\source_pins\\source_pins_attempt01.json",
+      "sha256": "fbabc9e140bbf8dc489e9b5c945be8d03990c38a9fb13c800f56d63a448850ac",
+      "bytes": 2003,
+      "source_still_matches": true
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\source_pins\\source_pins_attempt02.json",
+      "sha256": "5ddbf72857f77d797fb63468ff2daaead2f0544186a7a007612442d8fdcdb52a",
+      "bytes": 2529,
+      "source_still_matches": true
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\fixture_schema\\inspect_fixture_schema.py",
+      "sha256": "d05e3451e3d37c22534eb5ea228466bedfe34fa7d0e68335c88c48e2a56837a1",
+      "bytes": 4872,
+      "source_still_matches": true
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\fixture_schema\\fixture_schema.json",
+      "sha256": "f70c10a15a0baf346172bb42098b580cacf37859536d5ca781156fe0987e7bdb",
+      "bytes": 10712,
+      "source_still_matches": true
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\fixture_schema\\fixture_schema_stdout.log",
+      "sha256": "37e84ed0ed24d2a2d28ac150d99de395ad0a2792c258bdefc249f47c623acbee",
+      "bytes": 337,
+      "source_still_matches": true
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\render\\render_energy_spectrum.py",
+      "sha256": "807a5aaab8c8584efaea2c8d1e188a217b462552a57be2d905695fd645e5790e",
+      "bytes": 2861,
+      "source_still_matches": true
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\render\\render_stdout.log",
+      "sha256": "126d0e81bbc022221d59cafae8a51bc70980dce22ad80840d937fa682cc910a8",
+      "bytes": 86,
+      "source_still_matches": true
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\render\\spectrum_energy_ledger.png",
+      "sha256": "e2cfebba1ebcf4c12ca84ace50b5479e97423e110dc7eb120985d8f070d1075d",
+      "bytes": 22196,
+      "source_still_matches": true
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\review\\RECEIPT_TIMING_ADDENDUM.md",
+      "sha256": "54db1a7fd1f10298ba363bd87b8cd1502274003dc9b0fe433e82cf31c0b06f3d",
+      "bytes": 1299,
+      "source_still_matches": true
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\fixed_load_front_saved_independent\\review\\review.md",
+      "sha256": "a03417bca03e57a053b233427a92e5ef7200195809999b4c3ed5d3ec58a686de",
+      "bytes": 3334,
+      "source_still_matches": true
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\source\\mixed_enrichment_algebra.py",
+      "sha256": "466d0c01445f497e46a49314a03e89e92c62a204a9665cf01c3d2005f2dc99e3",
+      "bytes": 11418,
+      "source_still_matches": true
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\source\\README.md",
+      "sha256": "b0e83be0420fcd7501c4a23d2cf721517cc36490ccfea07ba7cb7929f5edf9e7",
+      "bytes": 2711,
+      "source_still_matches": true
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\source\\request.schema.json",
+      "sha256": "9ed2461fc2c8a516d450c2f0d2c59ff54b0c07f44a21293559111977639dd55b",
+      "bytes": 3170,
+      "source_still_matches": true
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\source\\row.schema.json",
+      "sha256": "68ac722462f2afa26fee6dfba642c33d0a2ffecb7742c2c9c88d9a28c9f89f66",
+      "bytes": 3609,
+      "source_still_matches": true
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\review\\SOURCE_REVIEW.md",
+      "sha256": "092c42080c4752b041dfc01c631c7c1e45a452ea493326e4c1958cacc5b3b5d6",
+      "bytes": 3239,
+      "source_still_matches": true
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\review\\SOURCE_PINS.json",
+      "sha256": "e33846f88869a42e0f1e0675f982de5d14a85c3e82162ea76a178709168b2dcf",
+      "bytes": 712,
+      "source_still_matches": true
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\checker\\arith_checker.py",
+      "sha256": "9c84e09ccc4cce9c999410ae61f50d7fb0deedc3eb697cb4cd5cf0fbb182de0d",
+      "bytes": 8687,
+      "source_still_matches": true
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\actual\\arith_checker.run_record.json",
+      "sha256": "1459590a9f61b80ba5284bdc47220dccf59978f2fa74758a816e80fb44c28a06",
+      "bytes": 2108,
+      "source_still_matches": true
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\actual\\arith_checker.stdout.txt",
+      "sha256": "1c1bdb323682a338b1d75a9c7315a649e832b3a8b08037671af439d69588d8f2",
+      "bytes": 397,
+      "source_still_matches": true
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\mixed_lefm_enrichment_algebra\\actual\\arith_checker.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "source_still_matches": true
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\source\\bspline_constraint_source.py",
+      "sha256": "e2d978bb817fa83918d2a494e1a084863fe413b8e176411038e9a8ba757f15d9",
+      "bytes": 8542,
+      "source_still_matches": true
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\source\\bspline_minimum_jerk_driver.py",
+      "sha256": "e69d7b937f1e4810e60d89852d3cf8a82a049721ea59ba04f4a03462d664e4b9",
+      "bytes": 18582,
+      "source_still_matches": true
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\source\\fixed_cases.json",
+      "sha256": "47aa718e1feae7005db0b5d7fd77393c308d9d1eefa0faa43212dc077a865908",
+      "bytes": 5294,
+      "source_still_matches": true
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\source\\DESIGN_PROPOSAL.md",
+      "sha256": "5eeb0b0f0fe2aeb14a143eab5646d92f3db111c074208c9e48e5e95d4ea5ce8f",
+      "bytes": 9060,
+      "source_still_matches": true
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\actual\\minimum_jerk_exact_result.json",
+      "sha256": "06c714ff30e8f36c60e586e07670510d539b844ec434772a5d93b749612a6f65",
+      "bytes": 129016,
+      "source_still_matches": true
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\actual\\execution_receipt.json",
+      "sha256": "66dc2ef17fc276881f0714e9e99d11ccfd20498a182583aedec2e87c8f57bff0",
+      "bytes": 5385,
+      "source_still_matches": true
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\actual\\minimum_jerk_outer_profiles.png",
+      "sha256": "082cd6f1ccdd1f5604e5a9d4aa72436718908ed98e313dd813bbccdde68126bc",
+      "bytes": 133045,
+      "source_still_matches": true
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\render_history\\render_receipt.json",
+      "sha256": "d34a973bcd0075cd3f60f8b54049789a76a1fe91b26c9fae78a6acd02ad3a904",
+      "bytes": 5681,
+      "source_still_matches": true
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\render_history\\render_receipt_attempt2.json",
+      "sha256": "c5d4da1814a050ee5ff138d5bffeabe335baa58a5b67a14c48398975f3a7eb4a",
+      "bytes": 6082,
+      "source_still_matches": true
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_meridian\\render_history\\render_receipt_attempt3.json",
+      "sha256": "b9e7b7c96ce389662a95c515e0b689613cdcfbcf20bb680094179bdecfabe46b",
+      "bytes": 6455,
+      "source_still_matches": true
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_independent\\reader\\independent_saved_reader.py",
+      "sha256": "05089ba906567852c8a0911f9ecdc56a0445365f4c3f5dcd067038bfef0c80f0",
+      "bytes": 17148,
+      "source_still_matches": true
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_independent\\actual\\independent_saved_audit.json",
+      "sha256": "6c27697e002598b108824bbba17da3f83b96ab5547a6b3bf47066e9ef2d1d6ac",
+      "bytes": 70707,
+      "source_still_matches": true
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_independent\\actual\\bowl_outer_only.png",
+      "sha256": "66f0b71e14286ebba8296a9368cc1cb47ec87d56df7fab1db6ca80f7df88e76d",
+      "bytes": 14787,
+      "source_still_matches": true
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_independent\\actual\\jar_outer_only.png",
+      "sha256": "06a3746bb8d0d6c741ce6a99c3f9d963d28a8e481921c73588e6fffae1224c8e",
+      "bytes": 14499,
+      "source_still_matches": true
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_independent\\runs\\corrected\\independent_saved_reader.stdout.txt",
+      "sha256": "7398d14c9dd5ae27783075009033465036198dcea404630a06ac1c0de625666e",
+      "bytes": 160,
+      "source_still_matches": true
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_independent\\runs\\corrected\\independent_saved_reader.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "source_still_matches": true
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_independent\\runs\\corrected\\independent_saved_reader.run.txt",
+      "sha256": "5a552f9395f83ee8981695a2e8a1b94189040f9c67ed426c42f1111f807f8d2a",
+      "bytes": 1953,
+      "source_still_matches": true
+    },
+    {
+      "repo": "vesselforge",
+      "path": "docs\\evidence\\20261006\\reviewed_math\\global_bspline_independent\\runs\\prior\\independent_saved_reader.run.prior.txt",
+      "sha256": "20bd5f99470cb11d1e0af86cad9efbf4074e39841f91852373c6277632b52beb",
+      "bytes": 1064,
+      "source_still_matches": true
+    },
+    {
+      "repo": "pgfrag",
+      "path": "docs/progress/20261006_physics_core_status.md",
+      "sha256": "0670bc8cc29beb3d045ec0413ff3c4f954d8588786c307f8b910fee1fef43ef7",
+      "bytes": 3125,
+      "source_still_matches": true
+    }
+  ]
+}

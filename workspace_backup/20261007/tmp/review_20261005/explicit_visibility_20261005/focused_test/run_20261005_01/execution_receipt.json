@@ -1,0 +1,26 @@
+{
+  "run_id": "explicit_visibility_focused_test_20261005_01",
+  "argv": [
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\.venv\\Scripts\\python.exe",
+    "-B",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "pgfrag/experiments/explicit_visibility_20261005/test_visibility3d.py",
+    "--junitxml=tmp\\review_20261005\\explicit_visibility_20261005\\focused_test\\run_20261005_01\\junit.xml"
+  ],
+  "start_utc": "2026-10-05T10:44:42.8113302+00:00",
+  "end_utc": "2026-10-05T10:44:44.2516973+00:00",
+  "elapsed_ms": 1436,
+  "return_code": 0,
+  "source_tests": "ONE_FOCUSED_PYTEST_RUN",
+  "solver": "NOT_RUN",
+  "render": "NOT_RUN",
+  "stdout_file": "tmp\\review_20261005\\explicit_visibility_20261005\\focused_test\\run_20261005_01\\stdout.txt",
+  "stderr_file": "tmp\\review_20261005\\explicit_visibility_20261005\\focused_test\\run_20261005_01\\stderr.txt",
+  "junit_file": "tmp\\review_20261005\\explicit_visibility_20261005\\focused_test\\run_20261005_01\\junit.xml",
+  "pre_run_pins_file": "tmp\\review_20261005\\explicit_visibility_20261005\\focused_test\\run_20261005_01\\pre_run_pins.sha256",
+  "post_run_pins_file": "tmp\\review_20261005\\explicit_visibility_20261005\\focused_test\\run_20261005_01\\post_run_pins.sha256"
+}

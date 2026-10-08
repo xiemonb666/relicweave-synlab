@@ -1,0 +1,42 @@
+{
+  "rows": {
+    "31968c3678914ed48b19d82e6718443c": {
+      "shard": "tokens/shard_0000.npz",
+      "tile_shape": [
+        4,
+        192,
+        256
+      ],
+      "token_dim": 256,
+      "tokens": 192,
+      "tokens_hash": "sha256:d6bfb04d4e02bc49e54b27fb3d2d41935ac24260b6e3ce452ed823150ee89520",
+      "views": 4
+    },
+    "4c0422a4f3754bd285868f54d9f7dfc8": {
+      "shard": "tokens/shard_0000.npz",
+      "tile_shape": [
+        4,
+        192,
+        256
+      ],
+      "token_dim": 256,
+      "tokens": 192,
+      "tokens_hash": "sha256:c8aa1aa4f806e9767647717a02cc04cfc37ae6451b7cc7eaec5976a50a6bfa4f",
+      "views": 4
+    },
+    "f65686c4f2394288834705b142518e81": {
+      "shard": "tokens/shard_0000.npz",
+      "tile_shape": [
+        4,
+        192,
+        256
+      ],
+      "token_dim": 256,
+      "tokens": 192,
+      "tokens_hash": "sha256:a6ab70e3ebe4d1d64681e1e89c24609cdbb2aba384621ff0389fa868fb6449e6",
+      "views": 4
+    }
+  },
+  "schema": "synlab.token_index.v2",
+  "token_dim": 256
+}

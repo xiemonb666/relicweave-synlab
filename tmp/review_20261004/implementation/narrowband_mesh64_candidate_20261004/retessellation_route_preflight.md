@@ -1,0 +1,32 @@
+# Conforming retessellation route preflight
+
+This is a read-only inspection of the four saved raw/clean Boolean output archives. It did not run a repair, Boolean, production operator, or test. Mesh64 gave the same seven degenerate triangles as Mesh32, so further precision or epsilon tuning is not supported by these two cases.
+
+## Observed geometry
+
+Across P02/P03 and Mesh32/Mesh64, the raw native Boolean output has zero boundary edges, zero nonmanifold edges, seven degenerate faces at the `height=1e-12 mm` criterion, zero minimum face area, positive signed volume, and `watertight=true`. The existing `clean_mesh` removes exactly seven faces, then reports 21 boundary edges and `is_volume=false`. No `fix_winding` or `fix_inversion` stage closes those edges.
+
+Every degenerate face has three distinct vertex indices and a zero area. For all seven loops, the points lie at one fixed `x`, `y=9 mm`, with `z=-1.6, -1.5, -1.3 mm` (Mesh32 coordinates carry float32 roundoff, but the measured perpendicular distance to the long edge is exactly `0.0 mm`; Mesh64 also reports `0.0 mm`). The middle point is strictly interior at normalized edge parameter `t≈0.6666666667`. The corresponding edge spans are 0.3 mm long and split into 0.2 and 0.1 mm.
+
+For each loop, raw edge incidence is two on the long edge and each short span. The opposite face of the long edge has positive area about 0.1125 mm²; the faces across the two short spans have positive areas about 0.075 and 0.0375 mm². Thus the saved arrays support a local long-edge/short-edge T-junction: the same surface line is represented once as a long edge and elsewhere as two edges split at an already-existing collinear vertex.
+
+After `clean_mesh` drops a degenerate face, its long and two short edges each become boundary edges. The 21 clean boundary edges are exactly the union of the three indexed edges of the seven removed zero-area faces. They form zero-area collinear cycles; this audit found no positive-area face being removed or positive-area patch being inserted. This is a topological boundary failure, not evidence of a measured positive-area crack.
+
+P02 raw-output degenerate face rows are `1589, 1669, 1915, 1991, 4261, 4337, 4605` for both precision paths. P03 rows are `1585, 1661, 1907, 1979, 4249, 4321, 4589` for both paths. The P02 signed raw-to-clean volume difference is 0 for Mesh32 and about `+2.27e-13 mm³` for Mesh64; P03 is 0 for both. These signed-volume observations show that deletion did not materially change volume here; they do not make the open cleaned meshes valid.
+
+## Provenance and API limits
+
+The saved output archives contain `raw_vertices`, `raw_faces`, `clean_vertices`, `clean_faces`, `native_vertex_properties`, and `native_tri_verts`. They preserve raw output face row IDs, but the worker did not serialize Manifold `face_id`, `run_index`, `run_original_id`, `run_transform`, or `run_flags`; source-versus-candidate operand face provenance is therefore unavailable for these completed Booleans. The installed Mesh64 API exposes those metadata fields, and `to_mesh64()` documents input-mesh relations, but their values cannot be reconstructed from the saved arrays. A later native-output audit should preserve these fields and map them cautiously; this is not required to establish the edge-span topology found here.
+
+Relevant implementation references: `synlab/physical/sdf.py:457` (`clean_mesh`), `synlab/physical/sdf.py:463` (degenerate-face filtering), `compare_mesh32_mesh64.py:131` (stage-by-stage trace), `compare_mesh32_mesh64.py:138` (same filter), `compare_mesh32_mesh64.py:294` (`to_mesh64`), and `compare_mesh32_mesh64.py:295-296` (only vertex coordinates and triangle indices retained). The three geometry-affecting SDF functions compared against the saved pre-fix snapshot (`clean_mesh`, `intersect_with_source`, `boolean_op`) have identical AST bodies.
+
+## Minimum offline candidate acceptance plan (not executed)
+
+1. Read only the four existing `output_*.npz` raw arrays and their matching worker JSON; do not call Boolean, rebuild the operators, or modify production code. Work on fresh in-memory copies and write to a new candidate folder.
+2. Preflight every proposed degenerate face. Require exactly three distinct vertices, zero area, exact collinearity within the strict floating-point predicate recorded from frozen coordinates, a strictly interior middle vertex on the longest edge, exactly one positive-area neighbor on the long edge and each short span, and no reused/conflicting long-edge neighbor face. Reject ambiguous rows.
+3. For each qualified loop, split only the positive-area long-edge neighbor at the already-existing middle vertex into two orientation-preserving child faces. Then remove only the corresponding zero-area face. Do not move/create vertices, fill positive-area holes, delete components, call mesh healing, or normalize signed volume. Record each output face as either unchanged, split from its parent output-face row, or removed with the exact zero-area reason.
+4. Include a negative control derived from a saved raw archive with one positive-area triangle removed. The candidate must reject it because its additional three boundary edges are not explained by eligible zero-area loops; it must not cap or otherwise alter that positive-area opening.
+5. Accept a case only if the modified mesh has zero boundary and nonmanifold edges, zero degenerates, remains a positive signed-volume volume, and matches its raw signed volume and surface area within `max(1e-10 mm³, 1e-12 relative)` for volume and an equivalently stated floating-point tolerance for area. Vertex arrays must be byte-identical. Component count and winding must be preserved. Independently verify exact local triangle-union equality across each split face and that no unrelated face row changed.
+6. Evaluate all four saved raw outputs once in the same offline script; save candidate arrays, lineage, eligibility/rejection reasons, per-stage metrics, negative-control rejection, exact argv/runtime/exit, and a local before/after boundary PNG. No additional Boolean or retessellation tuning run is included.
+
+This route is a narrowly grounded mesh-conformance candidate, not proof of production correctness, physical wall thickness, crack propagation, or general Boolean behavior. Root approval is still required before the candidate transformation is run.

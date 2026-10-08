@@ -1,0 +1,48 @@
+{
+  "case": "controlled_intrinsic_bilinear_modeI",
+  "version": 2,
+  "root_authorized_revision": "Only removed createGroupsFromMeshData; mesh.read + already-verified elementGroups() path. Version-1 failed evidence retained.",
+  "py_compile": {
+    "argv": "wsl.exe -d Ubuntu -- env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 /mnt/c/Users/xiemo/Desktop/ShardForge/third_party/akantu-runtime/venv/bin/python -m py_compile /mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_bilinear_patch_20261004/init_preflight_meshread_v2.py",
+    "host_exit_code": 0
+  },
+  "unique_preflight": {
+    "argv": "wsl.exe -d Ubuntu -- env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 /mnt/c/Users/xiemo/Desktop/ShardForge/third_party/akantu-runtime/venv/bin/python /mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_bilinear_patch_20261004/init_preflight_meshread_v2.py",
+    "solver_steps": 0,
+    "solver_attempts": 0,
+    "host_exit_code": 1,
+    "script_failure_code": 2
+  },
+  "status": "FAIL_NO_RETRY",
+  "actual_physical_groups": [
+    {
+      "name": "body",
+      "element_count": 96
+    },
+    {
+      "name": "bottom",
+      "element_count": 8
+    },
+    {
+      "name": "interface",
+      "element_count": 8
+    },
+    {
+      "name": "top",
+      "element_count": 8
+    }
+  ],
+  "interface_group_element_count": 8,
+  "init_full": true,
+  "native_count_guard": "Passed by control flow: execution reached material getter after exact expected (54 nodes, 96 bulk tets, 8 cohesive) guard.",
+  "exact_bulk_local_ordinal_rest_map": "Passed by control flow before getter failure.",
+  "cohesive_side_ordinal_ancestry": "Passed by control flow before getter failure.",
+  "duplicated_pair_count": "UNKNOWN; len==9 gate not reached.",
+  "side_area_gate": "UNKNOWN; areas were computed, tolerance check not reached.",
+  "native_opening_traction_mass_energy": "UNKNOWN; getMaterial(1) returned generic Material without getOpening; failure before evidence save.",
+  "failure": "AttributeError(\"'akantu.py11_akantu.Material' object has no attribute 'getOpening'\")",
+  "raw_failure": "preflight_result.json",
+  "snapshot_integrity_all_identical": true,
+  "source_sha256": "574fa3cd3a01dbfcefa0418102c852711c8dae8d56880e0c39091d7a2c1009ac",
+  "manifest_sha256": "aa2d014490a373b387c42454ceb065cfcb2fa032d70cba59282f0d51ec003ede"
+}

@@ -1,0 +1,3614 @@
+{
+  "schema": "v147_layout_final_qa_coverage.v1",
+  "status": "BLOCKED_MISMATCHES",
+  "layout_final_qa_pass": false,
+  "aggregation_gates": {
+    "root_confirmed_final_qa_all_groups_ready": true,
+    "root_content_review_accepted": true,
+    "root_separate_layout_final_qa_go": true,
+    "oldbase_qa_used_for_new_master_acceptance": false
+  },
+  "layout_final_candidate": {
+    "source_docx": {
+      "path": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_candidate.docx",
+      "bytes": 786150,
+      "sha256": "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d"
+    },
+    "render_directory": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render",
+    "render_png_count": 225,
+    "expected_page_range": [
+      1,
+      225
+    ],
+    "qa_group_count": 13,
+    "qa_groups": [
+      {
+        "range": [
+          1,
+          18
+        ],
+        "json": {
+          "path": "tmp/v147_user_merge_20261007/qa/layout_master_001_018.json",
+          "bytes": 10212,
+          "sha256": "04eb8970aaca355ea915759a5bda1dccbd12f334a87d308e9cc73c72c665f59b"
+        },
+        "markdown": {
+          "path": "tmp/v147_user_merge_20261007/qa/layout_master_001_018.md",
+          "bytes": 4416,
+          "sha256": "67590b3fc06f27d1d58ceda66b3b0be23f0031c674ec8d98f2e3016fdff17022"
+        },
+        "source_sha256_binding": [
+          "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d"
+        ],
+        "pages_expected": 18,
+        "pages_inspected_true": 18,
+        "png_sha256_matches": 18,
+        "clean_pass_pages": 18,
+        "declared_top_level_issues": 0,
+        "inspection_method_individually_at_original_detail": true
+      },
+      {
+        "range": [
+          19,
+          36
+        ],
+        "json": {
+          "path": "tmp/v147_user_merge_20261007/qa/layout_master_019_036.json",
+          "bytes": 8705,
+          "sha256": "69490fa57a07b45009000aecc8599167164e030887f02e42df017c39b5d73478"
+        },
+        "markdown": {
+          "path": "tmp/v147_user_merge_20261007/qa/layout_master_019_036.md",
+          "bytes": 3947,
+          "sha256": "426f123606dcb25a3b812d7ad5deae69852c64dc852b2725dec433861301bf5b"
+        },
+        "source_sha256_binding": [
+          "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d"
+        ],
+        "pages_expected": 18,
+        "pages_inspected_true": 18,
+        "png_sha256_matches": 18,
+        "clean_pass_pages": 18,
+        "declared_top_level_issues": 0,
+        "inspection_method_individually_at_original_detail": true
+      },
+      {
+        "range": [
+          37,
+          54
+        ],
+        "json": {
+          "path": "tmp/v147_user_merge_20261007/qa/layout_master_037_054.json",
+          "bytes": 9325,
+          "sha256": "bc5c3ca8b2b65afd06d25c851042c84bd0f160502a5c968dc3b1c18556252622"
+        },
+        "markdown": {
+          "path": "tmp/v147_user_merge_20261007/qa/layout_master_037_054.md",
+          "bytes": 4434,
+          "sha256": "20662130341c9831a1a4c52409d22dea3079625514872c38030e596f19983b36"
+        },
+        "source_sha256_binding": [
+          "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d"
+        ],
+        "pages_expected": 18,
+        "pages_inspected_true": 18,
+        "png_sha256_matches": 18,
+        "clean_pass_pages": 18,
+        "declared_top_level_issues": 0,
+        "inspection_method_individually_at_original_detail": true
+      },
+      {
+        "range": [
+          55,
+          72
+        ],
+        "json": {
+          "path": "tmp/v147_user_merge_20261007/qa/layout_master_055_072.json",
+          "bytes": 7601,
+          "sha256": "33fe3d8ac8fec2d79ac006fa2ffc781478bf595d69aee9dfa50d67ecab42bdf2"
+        },
+        "markdown": {
+          "path": "tmp/v147_user_merge_20261007/qa/layout_master_055_072.md",
+          "bytes": 4178,
+          "sha256": "ffb4dee75e941255763ad9d3ad910c8de621d623841dca2bd87aabcd520aa070"
+        },
+        "source_sha256_binding": [
+          "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d"
+        ],
+        "pages_expected": 18,
+        "pages_inspected_true": 18,
+        "png_sha256_matches": 18,
+        "clean_pass_pages": 18,
+        "declared_top_level_issues": 0,
+        "inspection_method_individually_at_original_detail": true
+      },
+      {
+        "range": [
+          73,
+          90
+        ],
+        "json": {
+          "path": "tmp/v147_user_merge_20261007/qa/layout_master_073_090.json",
+          "bytes": 8330,
+          "sha256": "b08de12537f3d4de36847e47ad552e3230e19327453bbb2f2940a5730f8dc7f2"
+        },
+        "markdown": {
+          "path": "tmp/v147_user_merge_20261007/qa/layout_master_073_090.md",
+          "bytes": 4089,
+          "sha256": "0a6116da766aa9652543f0ea6b37dbb9a582a75f620df6b486e0237b5864ee81"
+        },
+        "source_sha256_binding": [
+          "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d"
+        ],
+        "pages_expected": 18,
+        "pages_inspected_true": 18,
+        "png_sha256_matches": 18,
+        "clean_pass_pages": 18,
+        "declared_top_level_issues": 0,
+        "inspection_method_individually_at_original_detail": true
+      },
+      {
+        "range": [
+          91,
+          108
+        ],
+        "json": {
+          "path": "tmp/v147_user_merge_20261007/qa/layout_master_091_108.json",
+          "bytes": 7874,
+          "sha256": "d380d200a87142276132104921113538eacaa844a41881bf2359a8c4dff5b6be"
+        },
+        "markdown": {
+          "path": "tmp/v147_user_merge_20261007/qa/layout_master_091_108.md",
+          "bytes": 3854,
+          "sha256": "5cb37ff4818a0175e585eb2f72a8a3fef266320ff917cc6abb108ee37538ed0f"
+        },
+        "source_sha256_binding": [
+          "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d"
+        ],
+        "pages_expected": 18,
+        "pages_inspected_true": 18,
+        "png_sha256_matches": 18,
+        "clean_pass_pages": 18,
+        "declared_top_level_issues": 0,
+        "inspection_method_individually_at_original_detail": true
+      },
+      {
+        "range": [
+          109,
+          126
+        ],
+        "json": {
+          "path": "tmp/v147_user_merge_20261007/qa/layout_master_109_126.json",
+          "bytes": 8307,
+          "sha256": "7f165689c1cc2909ea7c1d8e8b724624eee5b48e33156e5046ef72da1442778b"
+        },
+        "markdown": {
+          "path": "tmp/v147_user_merge_20261007/qa/layout_master_109_126.md",
+          "bytes": 3829,
+          "sha256": "cd79d62616bc8c3a06061ff688cef4292f70e0ec953282242fac2881e7c31369"
+        },
+        "source_sha256_binding": [
+          "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d"
+        ],
+        "pages_expected": 18,
+        "pages_inspected_true": 18,
+        "png_sha256_matches": 18,
+        "clean_pass_pages": 18,
+        "declared_top_level_issues": 0,
+        "inspection_method_individually_at_original_detail": true
+      },
+      {
+        "range": [
+          127,
+          144
+        ],
+        "json": {
+          "path": "tmp/v147_user_merge_20261007/qa/layout_master_127_144.json",
+          "bytes": 9922,
+          "sha256": "2e4fee94a42394721c8a3174960fc6ca658e5d3440f53276b192fdae93936074"
+        },
+        "markdown": {
+          "path": "tmp/v147_user_merge_20261007/qa/layout_master_127_144.md",
+          "bytes": 3862,
+          "sha256": "3bb78384e729be2d194b7b2853cf6a5ca918b4de7dc633c3cb8665df46607332"
+        },
+        "source_sha256_binding": [
+          "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d"
+        ],
+        "pages_expected": 18,
+        "pages_inspected_true": 18,
+        "png_sha256_matches": 18,
+        "clean_pass_pages": 18,
+        "declared_top_level_issues": 0,
+        "inspection_method_individually_at_original_detail": true
+      },
+      {
+        "range": [
+          145,
+          162
+        ],
+        "json": {
+          "path": "tmp/v147_user_merge_20261007/qa/layout_master_145_162.json",
+          "bytes": 8668,
+          "sha256": "5241261e20494961d878baf46627fcf6665c31f55f8be6ff3d448a3abf8be090"
+        },
+        "markdown": {
+          "path": "tmp/v147_user_merge_20261007/qa/layout_master_145_162.md",
+          "bytes": 3937,
+          "sha256": "f686b090b15ff8c222f3877d1209fa2b338d7e0770d4d332026e98295e4bcb02"
+        },
+        "source_sha256_binding": [
+          "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d"
+        ],
+        "pages_expected": 18,
+        "pages_inspected_true": 18,
+        "png_sha256_matches": 18,
+        "clean_pass_pages": 18,
+        "declared_top_level_issues": 0,
+        "inspection_method_individually_at_original_detail": true
+      },
+      {
+        "range": [
+          163,
+          180
+        ],
+        "json": {
+          "path": "tmp/v147_user_merge_20261007/qa/layout_master_163_180.json",
+          "bytes": 9415,
+          "sha256": "6ab67870dc9b48ba0eb208979d3eea3187a69b9b6504e96c1f3b9769dbdad9cb"
+        },
+        "markdown": {
+          "path": "tmp/v147_user_merge_20261007/qa/layout_master_163_180.md",
+          "bytes": 4459,
+          "sha256": "5fc963e5fd97d6724cfa1266f56fd437d4a90585382a618754cd14cb4130bece"
+        },
+        "source_sha256_binding": [
+          "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d"
+        ],
+        "pages_expected": 18,
+        "pages_inspected_true": 18,
+        "png_sha256_matches": 18,
+        "clean_pass_pages": 18,
+        "declared_top_level_issues": 0,
+        "inspection_method_individually_at_original_detail": true
+      },
+      {
+        "range": [
+          181,
+          198
+        ],
+        "json": {
+          "path": "tmp/v147_user_merge_20261007/qa/layout_master_181_198.json",
+          "bytes": 7865,
+          "sha256": "1185d3137584dd6dfc3ed3329a2589b7246cb6d41a0418670ce41487c2a6138e"
+        },
+        "markdown": {
+          "path": "tmp/v147_user_merge_20261007/qa/layout_master_181_198.md",
+          "bytes": 3463,
+          "sha256": "ea9738c2a6a65b6983022db984df7c0f5178a26bca1537cd3e61a949da222ad9"
+        },
+        "source_sha256_binding": [
+          "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d"
+        ],
+        "pages_expected": 18,
+        "pages_inspected_true": 18,
+        "png_sha256_matches": 18,
+        "clean_pass_pages": 18,
+        "declared_top_level_issues": 0,
+        "inspection_method_individually_at_original_detail": true
+      },
+      {
+        "range": [
+          199,
+          216
+        ],
+        "json": {
+          "path": "tmp/v147_user_merge_20261007/qa/layout_master_199_216.json",
+          "bytes": 9337,
+          "sha256": "58d3e84a872a36d1d3ac264f83e95085f6f3dafcb2802bf3508e006cd0e6df23"
+        },
+        "markdown": {
+          "path": "tmp/v147_user_merge_20261007/qa/layout_master_199_216.md",
+          "bytes": 3692,
+          "sha256": "129abadb4ea1b4d758b67e0e94e8af2953e22fad1aeded4982e505200ca2df56"
+        },
+        "source_sha256_binding": [
+          "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d"
+        ],
+        "pages_expected": 18,
+        "pages_inspected_true": 18,
+        "png_sha256_matches": 18,
+        "clean_pass_pages": 18,
+        "declared_top_level_issues": 0,
+        "inspection_method_individually_at_original_detail": true
+      },
+      {
+        "range": [
+          217,
+          225
+        ],
+        "json": {
+          "path": "tmp/v147_user_merge_20261007/qa/layout_master_217_225.json",
+          "bytes": 4664,
+          "sha256": "3fe9df709c44b38824996bc761401b0d952948f2128fdbd176a6bf2b45c42c30"
+        },
+        "markdown": {
+          "path": "tmp/v147_user_merge_20261007/qa/layout_master_217_225.md",
+          "bytes": 2865,
+          "sha256": "46cf1c50d72d439944e7a4efc1894f16e6868b6f4d61e180d8c6462bcd41d38b"
+        },
+        "source_sha256_binding": [
+          "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d"
+        ],
+        "pages_expected": 9,
+        "pages_inspected_true": 9,
+        "png_sha256_matches": 9,
+        "clean_pass_pages": 9,
+        "declared_top_level_issues": 0,
+        "inspection_method_individually_at_original_detail": true
+      }
+    ],
+    "page_row_count": 225,
+    "unique_page_count": 225,
+    "pages_inspected_true": 225,
+    "png_sha256_matches": 225,
+    "clean_pass_pages": 225,
+    "page_png_sha256": [
+      {
+        "page": 1,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-1.png",
+        "png_bytes": 743265,
+        "png_sha256": "a9129161297bcb7a26d4145e708a0ed0bb566e19d88a37b3e19945866524189a",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 2,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-2.png",
+        "png_bytes": 361825,
+        "png_sha256": "4c0e510a8f1348ffa17ee0165c2e6a0c8c4d84c09c8e480313d3b00040beb562",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 3,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-3.png",
+        "png_bytes": 343774,
+        "png_sha256": "6d6f867ee6c889c238b39faf31889d2a18eaa441d12a73ce6649a5530c22e4c9",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 4,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-4.png",
+        "png_bytes": 524423,
+        "png_sha256": "a743783794f5935d0b93bb595555614cbaa6968c302f88efb0eee3b2f5afffc6",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 5,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-5.png",
+        "png_bytes": 511932,
+        "png_sha256": "da70a9d9bd5a73ea7c38732e9f026635f580c76977487c0404a18acab4c34def",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 6,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-6.png",
+        "png_bytes": 633315,
+        "png_sha256": "c8184f33433b15873d4dba06c2ee9dd29b3da92168c8ec9c70909a0543b45830",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 7,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-7.png",
+        "png_bytes": 472752,
+        "png_sha256": "ffb9155dcd873cb7d8b7816135d05610912cf94c974ab607f0de854fcd0b556f",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 8,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-8.png",
+        "png_bytes": 489113,
+        "png_sha256": "b4e295fdf4670ed759720ddcb8e2cd6d8e98bdf58924b4c59b1991a97040f3ce",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 9,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-9.png",
+        "png_bytes": 608297,
+        "png_sha256": "427414db1777d7dabaeeca589a0b5de5533002103ea4d6ac1a18576be6599b77",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 10,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-10.png",
+        "png_bytes": 722920,
+        "png_sha256": "8c2b3294acea64d8db768bae5f6e8d38f29a684fc92b49b44d795ab99d31ec8d",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 11,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-11.png",
+        "png_bytes": 74125,
+        "png_sha256": "fa8bbf6740711621909948daedb8a415800f04bba4f13f38a235e8abced39538",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 12,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-12.png",
+        "png_bytes": 580503,
+        "png_sha256": "f58f2a17e0b84c3f053d9e16a42703f39281e8271b7c21685fcd2bef7cd484c2",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 13,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-13.png",
+        "png_bytes": 463087,
+        "png_sha256": "d2d7de1cc765756575b47711d1f15dd83681bca601936ebe826c4664d3dedd13",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 14,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-14.png",
+        "png_bytes": 659068,
+        "png_sha256": "f8eeb4334e6cb4e99f5027cf7c2ac6abdf06e7485a78018e49f110719da906cd",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 15,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-15.png",
+        "png_bytes": 679016,
+        "png_sha256": "be37d45135b5361e84861c5cbbc6fa2c3d03e91a781812c38887a3696ff34303",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 16,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-16.png",
+        "png_bytes": 573624,
+        "png_sha256": "6217364cf755128390322d59c7d75b13bb340e52ff8b15721becf97ffe49bbcf",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 17,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-17.png",
+        "png_bytes": 539882,
+        "png_sha256": "74904305fb5d6cf2751ad651c6f4564b09bd1cde88f67ca2482fa0904623bb53",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 18,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-18.png",
+        "png_bytes": 610270,
+        "png_sha256": "bd84969ed903e27838a4275d80f98ae49c26fe67f311742ee166db3b64929563",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 19,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-19.png",
+        "png_bytes": 714645,
+        "png_sha256": "c9eedc1da80f8ad92a8f1e889dbb9a2f07dc73047dc28fc7c39bf23e4debeb83",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 20,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-20.png",
+        "png_bytes": 657666,
+        "png_sha256": "bc1acab464004390619a6908a9a8d0a43e127cf63861777928e66b0feaff134d",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 21,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-21.png",
+        "png_bytes": 641185,
+        "png_sha256": "ae234738af5da3919df0ebefc4ebd682b00c4f72244448edea41de83956b98f2",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 22,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-22.png",
+        "png_bytes": 624297,
+        "png_sha256": "e81cc09466b693fda92fdd4b6b566356504734352d48b999053feb288cab545b",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 23,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-23.png",
+        "png_bytes": 617646,
+        "png_sha256": "95cb7a5acd9f8069a58971195247db5bac6f16625ad780315e9b7d738e6e63fd",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 24,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-24.png",
+        "png_bytes": 652261,
+        "png_sha256": "640067bc038a3a57b91b4531ed2b4091a2d0f0add3afb4308d5c48e4ed315838",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 25,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-25.png",
+        "png_bytes": 506953,
+        "png_sha256": "14016fe6b50b18b248c36f07b80654b8037469d25442008f295d9a88f788420f",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 26,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-26.png",
+        "png_bytes": 474393,
+        "png_sha256": "cc54b26f28c876b7787f6019f4a0b35a5ca46cb8d06b6032be976c845a114723",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 27,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-27.png",
+        "png_bytes": 597401,
+        "png_sha256": "8cda41deeeeba06a36b8d374f721a765c101e15d53983b558c050cebc86c8e46",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 28,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-28.png",
+        "png_bytes": 646424,
+        "png_sha256": "666afb4465f218d7d3fb520cf113efb7fad074b2c352bdff183329563e0aa630",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 29,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-29.png",
+        "png_bytes": 744173,
+        "png_sha256": "a1efd6891255783c891de9095b73df62a696b31a261527cd773dd38344b27056",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 30,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-30.png",
+        "png_bytes": 761080,
+        "png_sha256": "7d762b7b25dd1221ca43abad4cc2259f02d3e7f313fa03f74f79c7c9e1eef303",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 31,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-31.png",
+        "png_bytes": 817001,
+        "png_sha256": "db3ff30a9ec707af888d2db04de336a71a2864bfbeb6a0e70e090b577b504ee8",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 32,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-32.png",
+        "png_bytes": 680671,
+        "png_sha256": "6230691ce5f4de1a0d7f1321bcf468857d236833fe2599726fd2aa7e1b9d7a38",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 33,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-33.png",
+        "png_bytes": 737994,
+        "png_sha256": "dd4244918df0930d2944aa40fdc61ac4377a774337a2f2b5b9f5be8754031ad1",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 34,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-34.png",
+        "png_bytes": 692611,
+        "png_sha256": "86fb0d481e1451eba670b6414eff033405aa30044b13abb8a17f12870a1cec9d",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 35,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-35.png",
+        "png_bytes": 717847,
+        "png_sha256": "5c89fe7ddeaa2138aa0761f20420a08348b22862fb52baa7aadcca8b15fa2f1e",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 36,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-36.png",
+        "png_bytes": 604874,
+        "png_sha256": "9bf2719100fdbd2dba14605a5f5092e42e9a0c8246cb492bedf57b479eb4f643",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 37,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-37.png",
+        "png_bytes": 664144,
+        "png_sha256": "5b4911d2c4877851f97da6dc358423eef82e2ad8608cd09de137fa8eee8d1d72",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 38,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-38.png",
+        "png_bytes": 597500,
+        "png_sha256": "1d89a23cdfbfdde20bde7e9fb3af1a4d9cd75b3000dc6ca4e3f5103aa7740868",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 39,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-39.png",
+        "png_bytes": 575437,
+        "png_sha256": "dbc252d588acac30486c031e4d02791cad91520af26c236f31e6e793707e04e9",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 40,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-40.png",
+        "png_bytes": 506234,
+        "png_sha256": "23ba15229e66d244641d92708f3ca969ff70c3b314f768e19ee705418d87f35e",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 41,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-41.png",
+        "png_bytes": 546453,
+        "png_sha256": "fa72005df552543f0f4f834b2049faa70f3bcc0cf6e348a7cbc1af1c792ac19c",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 42,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-42.png",
+        "png_bytes": 642242,
+        "png_sha256": "a2b3c808228122deaa2fa45fa3bffded0118d14fe76af9d6d07d08c1bc141636",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 43,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-43.png",
+        "png_bytes": 669643,
+        "png_sha256": "f4101e12b33f8fdfee877957dd103502398b65f736d10e52b17863d21982c166",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 44,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-44.png",
+        "png_bytes": 621253,
+        "png_sha256": "b34edc2719c4b2f2d51dd0df81400a432d60ea4eb3d30a8a99f284c87497e93d",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 45,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-45.png",
+        "png_bytes": 721000,
+        "png_sha256": "371ec5f1be39516a1492ea949840a1a5102f27afa3458308a2936728ea5490e1",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 46,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-46.png",
+        "png_bytes": 589948,
+        "png_sha256": "321754a9ce2eaeee48b00263e585ccda18bbfce7ef988212a536baa80358b2c9",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 47,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-47.png",
+        "png_bytes": 537000,
+        "png_sha256": "65f2ad2a93b8935873b5bcf1bfb444e417ad9e569ec8ffc5e7403af3056c7d17",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 48,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-48.png",
+        "png_bytes": 586219,
+        "png_sha256": "a875889a204663f5a8572ff2999b2f2fbfd8c41731e228b5d5fac537543065f5",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 49,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-49.png",
+        "png_bytes": 758146,
+        "png_sha256": "f46df953418fc7f13509609c9a0c2660f7aca143bf1da10cae6762babce75c51",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 50,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-50.png",
+        "png_bytes": 592861,
+        "png_sha256": "55cec7a56384727ae4f86cf6b9f639db5ca3852da5936baa05a1adcc9edb4d4d",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 51,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-51.png",
+        "png_bytes": 726410,
+        "png_sha256": "87202855d5fc4d5d144dc9602725668326c5f118056af5fad96244edd002cfe8",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 52,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-52.png",
+        "png_bytes": 600632,
+        "png_sha256": "815126dafb5fb2152726ceb7e19b9fa33f6504d1f39e86e53b696dc209e1f8f4",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 53,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-53.png",
+        "png_bytes": 628716,
+        "png_sha256": "6f9508ea2484e5ab6a1a9b7ba972b4933bed57df9553ffac29f580cce3fc168d",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 54,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-54.png",
+        "png_bytes": 554692,
+        "png_sha256": "62922345850b80392fed02f6a61d0e924edcff4d16608c2836a955c89813291f",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 55,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-55.png",
+        "png_bytes": 598542,
+        "png_sha256": "2571c2c872859a2293cc29c3f042fa436ccafd68d8b9bf9f8ce161a2638b2234",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 56,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-56.png",
+        "png_bytes": 596672,
+        "png_sha256": "6f9346236b0ad838c81f5c88f8602dc3f57616ac9024760891271ca03cd6288a",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 57,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-57.png",
+        "png_bytes": 723265,
+        "png_sha256": "bd0311fbd297d1fa606ae804e7cd39495de004d93ba00c884a5cd77334236c51",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 58,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-58.png",
+        "png_bytes": 504443,
+        "png_sha256": "6d3af8e461ff4f5a2492075560fe909de41905ed89df81fe63182ffc17573a48",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 59,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-59.png",
+        "png_bytes": 759862,
+        "png_sha256": "862a26c711f7e553f3a2715bfffcf9668dc5bda8c34feffece21a8a91689d20f",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 60,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-60.png",
+        "png_bytes": 760794,
+        "png_sha256": "8515830ed06d40c72386b8f57857476704621b2b449af855f4f7e6605c91b398",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 61,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-61.png",
+        "png_bytes": 572284,
+        "png_sha256": "08983ba2a2be3d231a51174ee969cafdd7a4636a972ddee60e621f65896bbc71",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 62,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-62.png",
+        "png_bytes": 657304,
+        "png_sha256": "f7aeab84ab250b17bc9e2ee2bc68659b931362d5dce74bc53bd306b2acc60a46",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 63,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-63.png",
+        "png_bytes": 527767,
+        "png_sha256": "918168db665cd1625f5b3fc2c67d2a247298b465a8f0883ec200d615bf7f260f",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 64,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-64.png",
+        "png_bytes": 626669,
+        "png_sha256": "a389470d5122f0be0c4913ef9897a28811311fcc5bcd4c09ba16605b582a7713",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 65,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-65.png",
+        "png_bytes": 480592,
+        "png_sha256": "9cb3b84817f737df10d533fcaa132023d6043a6a480699bab514a6bfcf288a84",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 66,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-66.png",
+        "png_bytes": 621272,
+        "png_sha256": "a04eecb581d99268cd1383f0141628b5a6b0d1d7db0e9e860eb807653fa3eccf",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 67,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-67.png",
+        "png_bytes": 642993,
+        "png_sha256": "8df88ffc11b97ede20e5c22a28b1d08d9d4f91e6307667ba9b45752c33a2f1c4",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 68,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-68.png",
+        "png_bytes": 541943,
+        "png_sha256": "6617733c1ff50477151a2b23409758a134a5a4d15955557b9a17d78a1daaa47a",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 69,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-69.png",
+        "png_bytes": 544304,
+        "png_sha256": "766291a45636d9f37a1a462b1c297e82ab9d80e41e0677578a68f7213d77fcaa",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 70,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-70.png",
+        "png_bytes": 651304,
+        "png_sha256": "3fc9efaf765ffbfcdd83a9621a0c76338b09c7f13bd91c8fe3e1ce9c533cfcf7",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 71,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-71.png",
+        "png_bytes": 547537,
+        "png_sha256": "1ddef2944a26870e518678bdf71dca1330ef927cbeb734fecc34f06ad6c779fe",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 72,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-72.png",
+        "png_bytes": 672232,
+        "png_sha256": "41f2bd6e7d494025c72ab0f1aec99c1f1603e088b2f9e26d5b28053354baae65",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 73,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-73.png",
+        "png_bytes": 587592,
+        "png_sha256": "41bfc0531561d77175171fcfbbaef0e75b559037ae61c890e2bcfa7d4c3a77ae",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 74,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-74.png",
+        "png_bytes": 425484,
+        "png_sha256": "f3ef8eb5693c741931c295ca06bf3a4788ce8b2e5b306ca160d4b3bbbdb51be3",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 75,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-75.png",
+        "png_bytes": 564276,
+        "png_sha256": "5d112329f98f8b1256fb6cb4535150bfa3e12224f0d6d0bd27b8a42daaad57b2",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 76,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-76.png",
+        "png_bytes": 545204,
+        "png_sha256": "d428e7fdda77ac1cd00a12e157dd81d1eb23c44de1d267d74b712f24448d0671",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 77,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-77.png",
+        "png_bytes": 583523,
+        "png_sha256": "fb6e46700bd09a9f381a9e3bcb49727deb32338027575ad2b6d391286bdfb2af",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 78,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-78.png",
+        "png_bytes": 598330,
+        "png_sha256": "9f59ddee940de92e3552943b780ef009d4a6d6e3dd6aff266766ac7e4ed6b5a2",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 79,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-79.png",
+        "png_bytes": 356050,
+        "png_sha256": "742a4f31de76c932da53f3fb887e73bd076dffbfa753075323710cb7a6e2d8da",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 80,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-80.png",
+        "png_bytes": 522985,
+        "png_sha256": "d367ab687d0905121aeaa27fba602414a8efaad12d8c8baf182f1444d24c61cf",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 81,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-81.png",
+        "png_bytes": 457776,
+        "png_sha256": "1eeb6e40bb553d7c8e8d1bfe1edc1fb459e03c40685627a64f2c8763f0bfd187",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 82,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-82.png",
+        "png_bytes": 508572,
+        "png_sha256": "fffeaf49fd4f7407a92ae45361e320842726f7bdc07433c7dd61bdde0fe276ec",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 83,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-83.png",
+        "png_bytes": 632925,
+        "png_sha256": "15a33fc9a3a432a69e77f30c8d19e53f123071281700848f30f06467c5345f44",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 84,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-84.png",
+        "png_bytes": 461453,
+        "png_sha256": "adee63cea5d890dc8144abffa6b7ca5101cb1ea2388ced42e2b692a6b1145b3d",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 85,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-85.png",
+        "png_bytes": 734890,
+        "png_sha256": "e4b66c6e8891c982c340bf396995537879a425baa6ee4eca88dfbeea806ef4b6",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 86,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-86.png",
+        "png_bytes": 520660,
+        "png_sha256": "0ddae61b172ebcf2621a18f9758707e98ca580b9f307b7cf89c64e63c98397c6",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 87,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-87.png",
+        "png_bytes": 534332,
+        "png_sha256": "d2b278fc32ffbf44bcd9fe371c840cf4fe0476f27c023113c599931cc2e64683",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 88,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-88.png",
+        "png_bytes": 516725,
+        "png_sha256": "4fb4eeb8686a9479486a0ea44eeda3a384071425294284d5b637e9a1232e4b1d",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 89,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-89.png",
+        "png_bytes": 480961,
+        "png_sha256": "9b63540dba946beb516b675d750f7a258835918ab0e5f95817aec13db44a06c5",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 90,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-90.png",
+        "png_bytes": 532469,
+        "png_sha256": "dde93b743809e6e037afa9b2f3d0563853ef06a675d9e2b92a94a94c08ffdd1a",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 91,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-91.png",
+        "png_bytes": 683709,
+        "png_sha256": "6f45b94599b7062827e1f9adb05bd63ecfeb9db8baec4addf8e31cd161619e4b",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 92,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-92.png",
+        "png_bytes": 599163,
+        "png_sha256": "adddeaacf9c7c20fed704620cebc7637d0668497b0d11f5d135033fa14fd1a3a",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 93,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-93.png",
+        "png_bytes": 766816,
+        "png_sha256": "3b53c79580e19270f6e80f5bce785d14990f787731c564a123ca07471ca66e60",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 94,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-94.png",
+        "png_bytes": 704766,
+        "png_sha256": "74c447390736c61a956be1013b9c5e9dd427f3f852af27590e84607f3b4c5bfc",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 95,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-95.png",
+        "png_bytes": 798961,
+        "png_sha256": "32ec66db69e3c528610600a1a8f176af2eb1849edb0dee6bb137dd7ae5134f46",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 96,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-96.png",
+        "png_bytes": 746805,
+        "png_sha256": "d2d331ef38da61275399b7abc5cad6686690454560fc0d6ad6b47ae46611949b",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 97,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-97.png",
+        "png_bytes": 750086,
+        "png_sha256": "13f7acf5546c67b016820902ce45b4bf08175f682921eaf38369b94f1f051440",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 98,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-98.png",
+        "png_bytes": 826327,
+        "png_sha256": "dcb81fe7d69c1f7dd168882f5c3dd1e7fec587991ee7c9ed37d63ac60def35e0",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 99,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-99.png",
+        "png_bytes": 793644,
+        "png_sha256": "02f9937f5a222361db5a36690ca8835a945f64102a890e78976d5b5032cfbbf2",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 100,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-100.png",
+        "png_bytes": 793894,
+        "png_sha256": "252999a01aa4d41361fdb95959dc83dbf74aeb409395511144163ae7502482ba",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 101,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-101.png",
+        "png_bytes": 792233,
+        "png_sha256": "4b38631722b1b81d3b4564b3f209e33d43d18ee6e1380eb39244cd364d388ad7",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 102,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-102.png",
+        "png_bytes": 878860,
+        "png_sha256": "fe04fe3d82d52843b49b4ddef0b49875d80944217bac3cea4fccdcd0bf844a59",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 103,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-103.png",
+        "png_bytes": 816983,
+        "png_sha256": "f9ab4f1619b88ca404b14504f567f566192618eae6e7aa8e0c81897eee39905c",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 104,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-104.png",
+        "png_bytes": 601990,
+        "png_sha256": "c5381361fcf8f21bc7562b9678a694ed378b4a17a06e85173e15c859ed9d5aba",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 105,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-105.png",
+        "png_bytes": 755484,
+        "png_sha256": "70b59e17152787868d973a53659348e8fd613d1b0b34347af873d686ad36b83c",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 106,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-106.png",
+        "png_bytes": 899558,
+        "png_sha256": "83cb54d7bd10a71054ec57686e4e32b48799372316b87800a7476a9465b70c1a",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 107,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-107.png",
+        "png_bytes": 822521,
+        "png_sha256": "12ac56108588b617132f98666c32bbceb2ccdc6a6adff5afa05afdda98fc6812",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 108,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-108.png",
+        "png_bytes": 628803,
+        "png_sha256": "93d94a412e174b7b2a086dc99e32f75bc8111e1f856456df5c4e746d7148d54c",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 109,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-109.png",
+        "png_bytes": 514096,
+        "png_sha256": "6b41ac9453c4ce2c405847df859321e35865de9a6f27f2f7a7abef9b939d6df1",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 110,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-110.png",
+        "png_bytes": 509297,
+        "png_sha256": "d06f8244f84c4707044b4a1b0c7eb7f4eef525cedb07e8ad5721af36b5cd1aef",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 111,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-111.png",
+        "png_bytes": 541230,
+        "png_sha256": "1ff3995505976ce3437284168bdd06e3f736cbbf300071bfe22c063e5aca6bd0",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 112,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-112.png",
+        "png_bytes": 462054,
+        "png_sha256": "62ff78c7e27abca2b6f8e31fdffd24f968b95f0322bd4237025e7c2ce89714d4",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 113,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-113.png",
+        "png_bytes": 477641,
+        "png_sha256": "2d442698f89eb0643144a21a2d105bd533294ef42b7a84b96527f89a5b056576",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 114,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-114.png",
+        "png_bytes": 618770,
+        "png_sha256": "788ac10c17d68bd55f10e814d92114e65af90351f876c17fa21e2d27d411f16d",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 115,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-115.png",
+        "png_bytes": 414293,
+        "png_sha256": "b9ec9814246ec6c13468370f1671073be86099b35b86896d47ec38b86693c77c",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 116,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-116.png",
+        "png_bytes": 401683,
+        "png_sha256": "33290121093f73b8b1b7e1f94db51a13760c6cdbd7ff3d8893d7f62b18de2fba",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 117,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-117.png",
+        "png_bytes": 492275,
+        "png_sha256": "d91c5d732ff55e0687ef43ab2d7d7efa6ad778dda782b97d845c31733ad3c99f",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 118,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-118.png",
+        "png_bytes": 490895,
+        "png_sha256": "2b77f4ce57524b3ef3da3eb9de447015fb943be791535e0d51beb3f994f7bb17",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 119,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-119.png",
+        "png_bytes": 791678,
+        "png_sha256": "9f8e20b6aa39e6f78c80b164cc853beec27e731a9c083f92852d945d1573523d",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 120,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-120.png",
+        "png_bytes": 494172,
+        "png_sha256": "df390b0bbf157f598300e1c05d04320a2d3b527f3ccb27805188c6191e90e39a",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 121,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-121.png",
+        "png_bytes": 618650,
+        "png_sha256": "f7faddf023adafffb5bbf5bc07e1ac4631629fc0314af2768baa6cf4cfac2d29",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 122,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-122.png",
+        "png_bytes": 484521,
+        "png_sha256": "69fa1e469bafdaf1947c3ab0ea5804cec9319f28f73e54230145bb4950001ba8",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 123,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-123.png",
+        "png_bytes": 575731,
+        "png_sha256": "eac3bf2484b57caf9b797e0b7271fed419aaba3bcbb4c378e256b42e0345e567",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 124,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-124.png",
+        "png_bytes": 451095,
+        "png_sha256": "a6f94b676776796a5d2a666ffb2e9e9f9c5985fc384bda618adf466b435c8fbf",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 125,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-125.png",
+        "png_bytes": 398972,
+        "png_sha256": "330610750387fc4f8ede2bd9b33cafbac76937bfab25a90d9a0c7ab1e8244d41",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 126,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-126.png",
+        "png_bytes": 469186,
+        "png_sha256": "f6ba63a3f6b5ed899e3a9327fcb851be4a1365d9cac8b1b8a8aa40a8a4937234",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 127,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-127.png",
+        "png_bytes": 528276,
+        "png_sha256": "1a263a0674d029505aee64c89ebcdb913615935e7c085e96c5b9330e5656fd34",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 128,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-128.png",
+        "png_bytes": 593517,
+        "png_sha256": "fa0ab8966973d5f094c6c8ce724129b9e4695fc1da6929896f096c1f812c0375",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 129,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-129.png",
+        "png_bytes": 633805,
+        "png_sha256": "c39b24027e4472905fa6ef65d1f68c53859451acee00757438b5ca6f26f2edad",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 130,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-130.png",
+        "png_bytes": 722397,
+        "png_sha256": "373139cd9714ed4802902fccc9464d2cc72c9ffdfc4d3883e2453d3e5b8f9d7f",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 131,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-131.png",
+        "png_bytes": 589612,
+        "png_sha256": "867c812d22cb016d248424890089dfe83cc749dc7f3df359a736389adfe2beec",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 132,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-132.png",
+        "png_bytes": 691927,
+        "png_sha256": "c923552f7838e836d6e7965197f03ae0890c9ed4e6976311abeb9a7ef938f8e1",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 133,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-133.png",
+        "png_bytes": 525815,
+        "png_sha256": "3d1e929beb596d042effd1ad66ef68eda9e105211165019938fdfafa22df765a",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 134,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-134.png",
+        "png_bytes": 650255,
+        "png_sha256": "bd15a1de98c6fdf3a05c7a06a099508cdd4bffb4ecdaf5d47643fcac3194145f",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 135,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-135.png",
+        "png_bytes": 516194,
+        "png_sha256": "0180895c1caa5f2805db257d3ab3f54832e56834661c7a8a6bb7a8d2a551e865",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 136,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-136.png",
+        "png_bytes": 629629,
+        "png_sha256": "dc8a63714a691926f35c4d65ad810eb6f926db4087392a32eaef531a6497448b",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 137,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-137.png",
+        "png_bytes": 630587,
+        "png_sha256": "7fe2104737881b9af5cae4c50f275848d14b03ee9e7b5ab704f9c0a284401575",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 138,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-138.png",
+        "png_bytes": 731122,
+        "png_sha256": "60370f5565f0b83ba094eb8aa52ef9544f14e0d8d0efdd915ce1fca428cddcf2",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 139,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-139.png",
+        "png_bytes": 568431,
+        "png_sha256": "a79624f2b7548815e3c4edc3a871b662169eb74f7c9c2a2f26fa424409796d50",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 140,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-140.png",
+        "png_bytes": 583035,
+        "png_sha256": "3892799e38dde2ab51fe6dabc47d7928a2062ef7f283c19e33f1e78cec3a175f",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 141,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-141.png",
+        "png_bytes": 585760,
+        "png_sha256": "c2f4b5725e45bf1cd1e9e4c2d0905e6c073b5c689ef71c136ed2a4c25f44e61d",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 142,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-142.png",
+        "png_bytes": 597797,
+        "png_sha256": "0bc6e1a26ec3286dfc60d331f954abd7ca95120029c3f8fc896e45661dea0352",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 143,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-143.png",
+        "png_bytes": 721144,
+        "png_sha256": "de5b0049b904964e4b2da22b12d5d37ad49c8cbf634bb8bb736dce4914f60119",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 144,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-144.png",
+        "png_bytes": 567756,
+        "png_sha256": "7f055d182b50524eb3cff74809ea2a97877238e981b57fc9f7e5af3cbd76f71b",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 145,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-145.png",
+        "png_bytes": 657489,
+        "png_sha256": "f2fc9287fb69d790a8b7e44815fbacc963cd294ab710175d82a6077431d02444",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 146,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-146.png",
+        "png_bytes": 575186,
+        "png_sha256": "bc2a6c32b84fc4477f2d50b40cb0bec9c22fc1b4185a41b48052a33aacf82e6c",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 147,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-147.png",
+        "png_bytes": 697067,
+        "png_sha256": "40f9bb8d56a60104952586ed24fc314c63389bec4ac66a1baac79c8fe87ec346",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 148,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-148.png",
+        "png_bytes": 369997,
+        "png_sha256": "74e554e46e352656fb5f90a8e0e9f5565447a26ecc012a33743d9f78f04bbe27",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 149,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-149.png",
+        "png_bytes": 345286,
+        "png_sha256": "49a274030f57c26f5b80b4666075e88e2c7579a80cc7f986685c9ed4341731f0",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 150,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-150.png",
+        "png_bytes": 528162,
+        "png_sha256": "139d451466f88517054cf9b80e6cd13b17ec1e0f1cb515a074bff5be72998b92",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 151,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-151.png",
+        "png_bytes": 623173,
+        "png_sha256": "931ea915a404d6e1d8f48e7660b280926649474be1a21cc248d0a0f5e9c07744",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 152,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-152.png",
+        "png_bytes": 691176,
+        "png_sha256": "561bd8b37ea11e7cd1e814e448ffdd209e681e3ad6c4c307948d9219a6224545",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 153,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-153.png",
+        "png_bytes": 685263,
+        "png_sha256": "e839727322761779276fde319ea5ee8f769bfc2edfaa599d9d08d59e7a3d4fbf",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 154,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-154.png",
+        "png_bytes": 743868,
+        "png_sha256": "e8262b2ea2149bb5cb7d7787cab3d3a62f0c9fe22b46affd72e7c2109d52d287",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 155,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-155.png",
+        "png_bytes": 549476,
+        "png_sha256": "9de626d019e8cec2de1ce0c37d39d9aa7c1a10ddb4c89915549394f37c96fd53",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 156,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-156.png",
+        "png_bytes": 704001,
+        "png_sha256": "307faadab3fd26fe7658f4fc4af7da155488dbbcf4016ce430713e04a73fe7f5",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 157,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-157.png",
+        "png_bytes": 736059,
+        "png_sha256": "8e5a5d9c2c1954aef061eb96eccb5f03f057b9041d8a5a9b0419aa114cf430cf",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 158,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-158.png",
+        "png_bytes": 707639,
+        "png_sha256": "3b0825c1a1d9a6497e82e32dbc92a07fc5ce91248e6d6cee84175eeb574a88a4",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 159,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-159.png",
+        "png_bytes": 705430,
+        "png_sha256": "65dcea678b7f6c75df728ceb8e86ea498bf6cb51c007aaf13c7c8c46373e2ef9",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 160,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-160.png",
+        "png_bytes": 740716,
+        "png_sha256": "25fee8a2bd68495236f9e8445498f5126bb723fe6413ff6452174e3e0c16c18d",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 161,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-161.png",
+        "png_bytes": 662193,
+        "png_sha256": "a89560818e229cf449450c3517e08cbeb17d2d06e51f949d65e0e279b33d74df",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 162,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-162.png",
+        "png_bytes": 765345,
+        "png_sha256": "3e77e2b08230708b48991b15c1a21889991f03ffde744bc3028a36cd9f7f0fb9",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 163,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-163.png",
+        "png_bytes": 717036,
+        "png_sha256": "b2240f7efeaf6df35181f1c3f972b6f5dc610c0f88d2183c6237a5ca85bd3443",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 164,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-164.png",
+        "png_bytes": 746847,
+        "png_sha256": "073158e9ab7a73a19bec1c679b531a74f888cbb622e1ebfb0ff4f3480e8b15c7",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 165,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-165.png",
+        "png_bytes": 708197,
+        "png_sha256": "7b2f07787e3b738d35a5ef0c5cf829f394d7ee8356d8a3c566cd0e180210210e",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 166,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-166.png",
+        "png_bytes": 687473,
+        "png_sha256": "b7b996210d8b0d1f3c4e282915913a21c955b9b05fb7ccc0d410908a5424e4c7",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 167,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-167.png",
+        "png_bytes": 710844,
+        "png_sha256": "31dd52008915fd292fe59862611ca220a1aeaf70df470183b5179d3a7ee0fae8",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 168,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-168.png",
+        "png_bytes": 700265,
+        "png_sha256": "44f4b943f3c79566f234da287775aef15930e27374b4814591225f3be58398d6",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 169,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-169.png",
+        "png_bytes": 694859,
+        "png_sha256": "258efb473392c4402d04098807d7ff8863feca49c7d8c5905ddf3c0d7248aea4",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 170,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-170.png",
+        "png_bytes": 580373,
+        "png_sha256": "3d18e1d136f42f9219362ea7ce95425c7c0dead490b819a3cf535d07b48ed6de",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 171,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-171.png",
+        "png_bytes": 679986,
+        "png_sha256": "a1f5373a17b84835752574a3891b8480ea4ed2b38d0bf74a707d480f90be6a1c",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 172,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-172.png",
+        "png_bytes": 554118,
+        "png_sha256": "6d21c86a5f7bc3d479bec125054bec6ac16e574102d858fd1d5f3734ce642e79",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 173,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-173.png",
+        "png_bytes": 638310,
+        "png_sha256": "fc3ff4706ccc6f1f561fd46e3c5197b614c689be36e76a7624e95251264aa069",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 174,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-174.png",
+        "png_bytes": 694878,
+        "png_sha256": "bd2dfba08fa7120a521974d3d25568a8dc63c690747993661f954177e92d7b51",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 175,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-175.png",
+        "png_bytes": 581748,
+        "png_sha256": "aa2730db8a5d42f7b777d301e385e42da1f536ecf5f37b8acb48fb8f9a66f646",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 176,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-176.png",
+        "png_bytes": 567278,
+        "png_sha256": "4e274ebccf2dd7b645e020f1f48806c9d9b2cbd7da337be550855df73c55fe86",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 177,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-177.png",
+        "png_bytes": 738105,
+        "png_sha256": "bf4aa9ca4e0c86d202cab50f064433df90fdd792367ce5fc8aea6eaccc324a61",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 178,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-178.png",
+        "png_bytes": 571461,
+        "png_sha256": "1c30341e760c4e344178cc9a4dc6448f81c6f4a57f1d819f206fc554be748392",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 179,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-179.png",
+        "png_bytes": 761290,
+        "png_sha256": "c0271eb7a0d0c295bf48608820fc863f2b5c8e843580045d480687371f0f856d",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 180,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-180.png",
+        "png_bytes": 585430,
+        "png_sha256": "e5c2f986bdef396802580136029ec37187b5a6fa51acdf53b2a3b55b87f1880a",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 181,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-181.png",
+        "png_bytes": 648653,
+        "png_sha256": "96a865e29d6823987ab9ed9289b657e9000a049d72f444ebefe936a410903d0b",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 182,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-182.png",
+        "png_bytes": 682050,
+        "png_sha256": "2526a7c0e95e226e7c1c725c86c29f95015c73bd29812b62adcc570ea2572164",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 183,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-183.png",
+        "png_bytes": 579253,
+        "png_sha256": "8882a160c294889b364b8ecceb44d36c7367398e588c532bbd77b84c821d2b51",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 184,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-184.png",
+        "png_bytes": 560793,
+        "png_sha256": "41c89f77fe71e753f26415ea3d6e66e8415002a6ca57b9d2bb00bb58bfe5fb40",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 185,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-185.png",
+        "png_bytes": 523266,
+        "png_sha256": "914ac71d1a3291f3f387043f4c7a5692a39548d3e16c3023e16d4e3d5e20e577",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 186,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-186.png",
+        "png_bytes": 639265,
+        "png_sha256": "b3dfa9109161bf2d887606654061c03f2c6491f6becacff7817de9b489149d5c",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 187,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-187.png",
+        "png_bytes": 507888,
+        "png_sha256": "e26fc3a036c03d9d9286fa9fcc842060c4b44a51c300752099e5c6d814ee4363",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 188,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-188.png",
+        "png_bytes": 654764,
+        "png_sha256": "af3a8ec32b962100583928f9048df214397ae1db8619bebd598cff46bdbaebfe",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 189,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-189.png",
+        "png_bytes": 488672,
+        "png_sha256": "25b6ca6ce8243afbc6667a8012178b64128dec32ede3718d09a871f2db38daf7",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 190,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-190.png",
+        "png_bytes": 261260,
+        "png_sha256": "4872caac8e22b722d54cd1436dd999a403a9e9da603ca2236cf1733a15b75ab8",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 191,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-191.png",
+        "png_bytes": 426606,
+        "png_sha256": "0e9f069b75e675237be7500cf1e32b4bd04410cee4fde5731b2e15fdd065474f",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 192,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-192.png",
+        "png_bytes": 337447,
+        "png_sha256": "eb4b3951abaef7646ace728d7bd55652bea8a3cd7ce4dc0350662c09421ea2c8",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 193,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-193.png",
+        "png_bytes": 419465,
+        "png_sha256": "d270d6cc4a88090622ffd53e133052dd9f5de44787ff3f3fb964caaf63eb0f14",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 194,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-194.png",
+        "png_bytes": 453996,
+        "png_sha256": "2e8c17ca7fd91fef9718a6f8c60cb812791b71e248bfb1aa6449d30afbb6855b",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 195,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-195.png",
+        "png_bytes": 681092,
+        "png_sha256": "85b4b3a6043abab20b9b9c074fb3d415569f11e5328c6511c3ccaf05668570a5",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 196,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-196.png",
+        "png_bytes": 523648,
+        "png_sha256": "281ce82da28ca454417c008a04abb2d905d1a8711edd51d87690ef9e015cb1eb",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 197,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-197.png",
+        "png_bytes": 458865,
+        "png_sha256": "3092e698247155a8f81d7ec93eb94f56c92b8924f2ba621ae504b61d60ea2481",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 198,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-198.png",
+        "png_bytes": 619029,
+        "png_sha256": "5ea045e410a0e525ecb857f61474d1b5f33bd7584f9f6e7a57c05d1162687d89",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 199,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-199.png",
+        "png_bytes": 553061,
+        "png_sha256": "faae4b585fa2c555081d7f45ff881bc22e1b36a308f16caed7a0d1fe6abb17c3",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 200,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-200.png",
+        "png_bytes": 614804,
+        "png_sha256": "7ed179a24aa54b5c1a7a59757877f8c9ca7abea9c14835e4a64f66d66957b7ab",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 201,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-201.png",
+        "png_bytes": 602332,
+        "png_sha256": "664d9dca5ddcafd17bb495d9624640b4cf7edeece51b9be3eee4271866a50a65",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 202,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-202.png",
+        "png_bytes": 558924,
+        "png_sha256": "d31af9c75f689b5b5086cc2e79b4928e00a0df57ac832d05f85211dd9153bc50",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 203,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-203.png",
+        "png_bytes": 482296,
+        "png_sha256": "cfb1cbf4ef0491659d30c2c17ec16052250a62550f30422578e4148ce9afb7f3",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 204,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-204.png",
+        "png_bytes": 492503,
+        "png_sha256": "94c5e5aa773c66564b811e6ff75a0cf3bd90c3016279e47c0f62cb6707f9adaa",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 205,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-205.png",
+        "png_bytes": 431156,
+        "png_sha256": "dfdf61ea22b049bd847f083333a50431a0c54301519350277e7ca44f19559bc5",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 206,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-206.png",
+        "png_bytes": 405735,
+        "png_sha256": "785ab326ce76cc528fc5266207e09c10babd4565400148964587637b922afc9a",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 207,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-207.png",
+        "png_bytes": 252720,
+        "png_sha256": "f15b842f3f30d74b701dfe09c33b1d550820b26aa91c7f4aae3232e4c1815043",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 208,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-208.png",
+        "png_bytes": 285266,
+        "png_sha256": "fbcb8eaabf91edd686fd0cde82dede2712a8b4e84fa3cd8cc1ccfd32f8147494",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 209,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-209.png",
+        "png_bytes": 392741,
+        "png_sha256": "7d6bf932c44dcd3118c7055646a121ec0887e7b40eff56212e28c9a60e0e6aae",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 210,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-210.png",
+        "png_bytes": 348843,
+        "png_sha256": "4f4dbe88e92d73f6879654432b4abdb88090954f18317f01f0079a450bfa2858",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 211,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-211.png",
+        "png_bytes": 459251,
+        "png_sha256": "3d9371e903256e82c3e675bf7d6cc3638a96b74abb8df6f55c781d4873dbf577",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 212,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-212.png",
+        "png_bytes": 313768,
+        "png_sha256": "d66be8555e7416ab5bc25aaf27eaea7fd982c91477ec8f9165812db67fd81b43",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 213,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-213.png",
+        "png_bytes": 600282,
+        "png_sha256": "f8a216ddb6ed372dea54b136768b630b742e7051e9ec47ce6ec4b1ef2e7cb2de",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 214,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-214.png",
+        "png_bytes": 621518,
+        "png_sha256": "92ada5e9cd2a789668344a0b58a593dccfe2f82361d7eaaebf22b5f4052b482f",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 215,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-215.png",
+        "png_bytes": 573493,
+        "png_sha256": "1f1ef641d2e9d84791340d62feaff33a838ef16e652d837ed0fd83c2c4359cd4",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 216,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-216.png",
+        "png_bytes": 347508,
+        "png_sha256": "8240ffaa910b0a9ea13183f8d0dbde0979452a2f19af8f9e9b769aef478c9590",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 217,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-217.png",
+        "png_bytes": 444854,
+        "png_sha256": "e3f90d89d175ca83a855ca5e346801473cfc758450591e9d4f97597f200b8d67",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 218,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-218.png",
+        "png_bytes": 461430,
+        "png_sha256": "db93f5bc446d07032df3774c6391fe6d179294259787cf8874c86f444b5b42d5",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 219,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-219.png",
+        "png_bytes": 297127,
+        "png_sha256": "68dab205e9e629562524e61f1e7f8a2a065cab3dd891b5217fe907f517c275a4",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 220,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-220.png",
+        "png_bytes": 449239,
+        "png_sha256": "8429a079ed831d8dfe27d10bffed4e836201601f20ebf2101b4958f20eb80dab",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 221,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-221.png",
+        "png_bytes": 241130,
+        "png_sha256": "c2d0b58b5b1a2748c885cd374eba948ba241abb10d7a8b62ab74bcb8f74b9bf4",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 222,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-222.png",
+        "png_bytes": 425553,
+        "png_sha256": "63b25e1b4b94e386e427f6882b89eeee0c5d0f099b584fb189a3ce646d2a1c31",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 223,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-223.png",
+        "png_bytes": 328509,
+        "png_sha256": "03a444eb88dde5374e9c717998ba6a742012578a6a781cf5e793c4447e254eb7",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 224,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-224.png",
+        "png_bytes": 445448,
+        "png_sha256": "04d404e50aacccc7c4d8e00ea198ac98ca808881edfeec232a5b7c1769bff256",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      },
+      {
+        "page": 225,
+        "png": "tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/page-225.png",
+        "png_bytes": 490822,
+        "png_sha256": "de7c1dc2e6fb512419a1f97ed49bddff02d0c11e940459a1ccb4c4db040be74e",
+        "dimensions_px": [
+          1547,
+          2002
+        ],
+        "inspected": true,
+        "status": "pass",
+        "issue_count": 0
+      }
+    ]
+  },
+  "layout_static_proof": {
+    "markdown": {
+      "path": "tmp/v147_user_merge_20261007/independent_layout_final.md",
+      "bytes": 1564,
+      "sha256": "f175c95444430b6cad296bca29c43b5e86807da77a6260866d3eabbc14541b7e"
+    },
+    "json": {
+      "path": "tmp/v147_user_merge_20261007/independent_layout_final.json",
+      "bytes": 6272,
+      "sha256": "4102d0446b5bb09113334e639e78e347c448c3566dcb58e52c51c4ec8d7013c6"
+    },
+    "status": "LAYOUT_STATIC_PASS",
+    "base": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\v147_user_merge_20261007\\fresh_merge_final_candidate.docx",
+      "bytes": 786143,
+      "sha256": "70aa097680aa1920528ba4b6d9646821ac78b367618c0e9b8dbc36439fa38044"
+    },
+    "base_docx_actual": {
+      "path": "tmp/v147_user_merge_20261007/fresh_merge_final_candidate.docx",
+      "bytes": 786143,
+      "sha256": "70aa097680aa1920528ba4b6d9646821ac78b367618c0e9b8dbc36439fa38044"
+    },
+    "final": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\v147_user_merge_20261007\\fresh_merge_layout_final_candidate.docx",
+      "bytes": 786150,
+      "sha256": "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d"
+    },
+    "required_checks_passed": 14,
+    "required_checks_expected": 14,
+    "ordered_wt_tokens_base_and_final": [
+      18217,
+      18217
+    ],
+    "status_paragraph_count": 8,
+    "parts_base_and_final": [
+      23,
+      23
+    ],
+    "layout_delta": {
+      "table_index": 185,
+      "rows_base_to_final": [
+        5,
+        4
+      ],
+      "reference_spacing_changes": 5,
+      "body_c14n_equal_after_reversing_declared_layout_changes": true
+    }
+  },
+  "root_content_review": {
+    "accepted_by_root": true,
+    "acceptance_basis": "Root's explicit root-content-review-accepted GO; accepted semantic qualification is inherited from the reviewed 70aa source proof.",
+    "accepted_semantic_base_proof": {
+      "markdown": {
+        "path": "tmp/v147_user_merge_20261007/independent_merged_static.md",
+        "bytes": 4020,
+        "sha256": "636b8b2fc5bccfa673f13fe6032cd1061037f42bea355dd1be49d783bae4c16e"
+      },
+      "json": {
+        "path": "tmp/v147_user_merge_20261007/independent_merged_static.json",
+        "bytes": 71166,
+        "sha256": "ec8017b65c1f43d11981853aefc4b8ae398c9b4762214adc69ac55fd58814f03"
+      },
+      "status": "STATIC_PASS_WITH_REVIEWED_SCOPE_EXCEPTIONS",
+      "accepted_candidate": {
+        "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\v147_user_merge_20261007\\fresh_merge_final_candidate.docx",
+        "bytes": 786143,
+        "sha256": "70aa097680aa1920528ba4b6d9646821ac78b367618c0e9b8dbc36439fa38044"
+      },
+      "static_check_count": 18,
+      "all_static_checks_pass": true,
+      "reviewed_scope_exceptions_retained": true,
+      "root_acceptance": "inherited from explicit root content-review acceptance gate for the 70aa semantic base"
+    },
+    "root_independently_reviewed_pages": [
+      68,
+      69,
+      219,
+      220,
+      183,
+      184,
+      191,
+      192
+    ],
+    "continuation_decision": "The root accepted the complete natural continuation path in the 181-198 group after reviewing the retained pre-decision snapshot and final report.",
+    "pre_root_decision_snapshot": {
+      "markdown": {
+        "path": "tmp/v147_user_merge_20261007/qa/layout_master_181_198.review_before_root_decision.md",
+        "bytes": 3135,
+        "sha256": "6beebd9767ad4bfb7879dbd006953a0e75305f20354b4218361560e30cbfd345"
+      },
+      "json": {
+        "path": "tmp/v147_user_merge_20261007/qa/layout_master_181_198.review_before_root_decision.json",
+        "bytes": 7062,
+        "sha256": "4aceeba0a90e0841295a772d76a94e7b67b6523aadcd13193633df40dfb05917"
+      }
+    }
+  },
+  "handover_qa_reused_without_rerender": {
+    "source_docx": {
+      "path": "docs/handover/20261007/RelicWeave_A12_VesselForge_PGFrag_Handover_20261007.docx",
+      "bytes": 64641,
+      "sha256": "c8b4e57340c7c9d485aeb5c6aa298ba90ac166870c9d8d0a7d414d35051f7fd2"
+    },
+    "source_docx_expected_sha256": "c8b4e57340c7c9d485aeb5c6aa298ba90ac166870c9d8d0a7d414d35051f7fd2",
+    "source_markdown": {
+      "path": "docs/handover/20261007/HANDOVER.md",
+      "bytes": 41396,
+      "sha256": "f226a153f8aed2da04e07298f1277cd74071370d52cf74a4967702c2792f7a53"
+    },
+    "source_markdown_expected_sha256": "f226a153f8aed2da04e07298f1277cd74071370d52cf74a4967702c2792f7a53",
+    "render_directory": "tmp/closeout_documents_20261007/handover_render",
+    "page_png_count": 13,
+    "pages_covered": 13,
+    "unique_pages": 13,
+    "png_sha256_matches": 13,
+    "page5_correction": {
+      "addendum_json": {
+        "path": "tmp/closeout_documents_20261007/qa/final_handover_001_007.addendum.json",
+        "bytes": 1484,
+        "sha256": "3a925697b50afbf1ca65b235ec8d738deeb5221c93fdaf0c90e10f4add8a882a"
+      },
+      "addendum_markdown": {
+        "path": "tmp/closeout_documents_20261007/qa/final_handover_001_007.addendum.md",
+        "bytes": 1213,
+        "sha256": "cbd8092254f5a1ddb9c00832fa4ec53ace80a485178997a23005dbc15cad1f75"
+      },
+      "actual_png": {
+        "path": "tmp/closeout_documents_20261007/handover_render/page-5.png",
+        "bytes": 568866,
+        "sha256": "d656e6be095b5553befec8606d14acb760101ecf9b3932e25a95e8315550f33c",
+        "dimensions_px": [
+          1547,
+          2002
+        ]
+      },
+      "final_status": "PASS",
+      "final_issue_count": 0,
+      "original_reports_overwritten": false,
+      "amended_reports_match": true
+    },
+    "effective_status_after_page5_addendum": "PASS",
+    "page_png_sha256": [
+      {
+        "page": 1,
+        "png": "tmp/closeout_documents_20261007/handover_render/page-1.png",
+        "bytes": 628138,
+        "sha256": "909ec4a9c462a5f50224a8026caf8caa47c102f4b541437c084bf3b61ea4f68b",
+        "inspected": true
+      },
+      {
+        "page": 2,
+        "png": "tmp/closeout_documents_20261007/handover_render/page-2.png",
+        "bytes": 472207,
+        "sha256": "43792567783fb1a638add0c99836afa7cad0ebf6c9a48070903eef64d04415d5",
+        "inspected": true
+      },
+      {
+        "page": 3,
+        "png": "tmp/closeout_documents_20261007/handover_render/page-3.png",
+        "bytes": 502265,
+        "sha256": "275f5c764e6b3a940dadaf4c9128629f693459cf60dece74f5374f22572f05d4",
+        "inspected": true
+      },
+      {
+        "page": 4,
+        "png": "tmp/closeout_documents_20261007/handover_render/page-4.png",
+        "bytes": 442742,
+        "sha256": "aa9346c87ead7721d69c522cbf8fff65de5ed11d81ebbf29ae399992f7555eda",
+        "inspected": true
+      },
+      {
+        "page": 5,
+        "png": "tmp/closeout_documents_20261007/handover_render/page-5.png",
+        "bytes": 568866,
+        "sha256": "d656e6be095b5553befec8606d14acb760101ecf9b3932e25a95e8315550f33c",
+        "inspected": true
+      },
+      {
+        "page": 6,
+        "png": "tmp/closeout_documents_20261007/handover_render/page-6.png",
+        "bytes": 568846,
+        "sha256": "ed7b9b92bbeb8e14a0efe5469ff868e2d3ff3b4ae19685cd0492b3e3d4e049d0",
+        "inspected": true
+      },
+      {
+        "page": 7,
+        "png": "tmp/closeout_documents_20261007/handover_render/page-7.png",
+        "bytes": 511112,
+        "sha256": "77fca2a5cecf33dd14559e15addeadd4ab4f3f361e683b27ac824abecdec4469",
+        "inspected": true
+      },
+      {
+        "page": 8,
+        "png": "tmp/closeout_documents_20261007/handover_render/page-8.png",
+        "bytes": 504065,
+        "sha256": "f5def97017b2825df8f78ce109dca368b517833ef2594c05bbb0c799b2dffd4b",
+        "inspected": true
+      },
+      {
+        "page": 9,
+        "png": "tmp/closeout_documents_20261007/handover_render/page-9.png",
+        "bytes": 574275,
+        "sha256": "5e5bdca56d0a0af2267667d4234f977ff23f44f3e9bf524d4a296aca04147e70",
+        "inspected": true
+      },
+      {
+        "page": 10,
+        "png": "tmp/closeout_documents_20261007/handover_render/page-10.png",
+        "bytes": 520225,
+        "sha256": "1c397f73c66e68556a29254fc2d10bd83ff5b9727f5f86669584d7356c6f492e",
+        "inspected": true
+      },
+      {
+        "page": 11,
+        "png": "tmp/closeout_documents_20261007/handover_render/page-11.png",
+        "bytes": 533718,
+        "sha256": "63900923faba7db6a71ea626992cff252d31700eb24a57fcda92f8fb6f8ea01a",
+        "inspected": true
+      },
+      {
+        "page": 12,
+        "png": "tmp/closeout_documents_20261007/handover_render/page-12.png",
+        "bytes": 636478,
+        "sha256": "ce5621f7e6cb045ab2862f46fb1bd0295df522d73287684c4b527f427e3baafb",
+        "inspected": true
+      },
+      {
+        "page": 13,
+        "png": "tmp/closeout_documents_20261007/handover_render/page-13.png",
+        "bytes": 553796,
+        "sha256": "e250bdcb5571209b9084d09e184fe1fc4bb04f3ef03507129874c70c97ebdd8b",
+        "inspected": true
+      }
+    ],
+    "qa_json_inputs": [
+      {
+        "path": "tmp/closeout_documents_20261007/qa/final_handover_001_007.json",
+        "bytes": 4026,
+        "sha256": "ec8397fc5670adc431e152f36e2806651749935c4edab0de76288dca80ec9dd4"
+      },
+      {
+        "path": "tmp/closeout_documents_20261007/qa/final_handover_008_013.json",
+        "bytes": 3805,
+        "sha256": "6870677194938fda523908c87bf5ebc346e91dd607a9c340dfbd318aae0be216"
+      }
+    ]
+  },
+  "combined_rendered_page_count": 238,
+  "combined_render_coverage": {
+    "layout_final_pages": [
+      1,
+      225
+    ],
+    "handover_pages": [
+      1,
+      13
+    ],
+    "expected_total_png_pages": 238,
+    "actual_total_png_pages": 238,
+    "no_missing_or_duplicate_pages_within_each_document": true
+  },
+  "preserved_history": {
+    "baseline_overwrite_addendum_json": {
+      "path": "tmp/closeout_documents_20261007/qa/final_master_086_102.baseline_overwrite_addendum.json",
+      "bytes": 2036,
+      "sha256": "2aec946b99330bf23511dbc60bd31b54b47216602cb49ea6c188ddf1bee4fe4a"
+    },
+    "baseline_overwrite_addendum_markdown": {
+      "path": "tmp/closeout_documents_20261007/qa/final_master_086_102.baseline_overwrite_addendum.md",
+      "bytes": 1386,
+      "sha256": "dc006efdc92407090ad8e0de4cd568f2b2646873f0a87d103c4ba79d1371910c"
+    },
+    "baseline_original_report_recoverable": false,
+    "baseline_original_report_reconstructed": false,
+    "baseline_docx_sha256_recorded": "7b15f365545d05538cddcd10801c90c9d10cfc741fa4a391bdc33706ea545fe0",
+    "baseline_203_page_render_retained_as_recorded": true,
+    "current_086_102_final_json_copy_identical_to_overwritten_path": true,
+    "current_086_102_final_markdown_copy_identical_to_overwritten_path": true,
+    "current_086_102_copies_both_identical": true,
+    "oldbase_qa_reference_only": {
+      "path": "tmp/closeout_documents_20261007/FINAL_QA_COVERAGE.json",
+      "bytes": 7602,
+      "sha256": "0d74733576183e8d56a998fdbc51ceaaf24e32ca3ac1c66951f7122a23cced8b"
+    },
+    "oldbase_used_to_grant_merged_master_pass": false,
+    "known_tmp_helper_loss_or_overwrite_records": {
+      "count_from_root_instruction": 2,
+      "provenance": "recorded from the root instruction; item details are not reconstructed",
+      "artifacts_reconstructed": false
+    }
+  },
+  "integrity_findings": [
+    "layout_master_019_036.json has no integer counts.issues",
+    "layout_master_019_036.json pass count does not equal its page range",
+    "layout_master_019_036.json range/source page-count metadata does not match the frozen render",
+    "layout_master_037_054.json has no integer counts.issues",
+    "layout_master_037_054.json pass count does not equal its page range",
+    "layout_master_037_054.json range/source page-count metadata does not match the frozen render",
+    "layout_master_055_072.json has no integer counts.issues",
+    "layout_master_055_072.json pass count does not equal its page range",
+    "layout_master_055_072.json range/source page-count metadata does not match the frozen render",
+    "layout_master_073_090.json has no integer counts.issues",
+    "layout_master_073_090.json pass count does not equal its page range",
+    "layout_master_073_090.json range/source page-count metadata does not match the frozen render",
+    "layout_master_091_108.json has no integer counts.issues",
+    "layout_master_091_108.json pass count does not equal its page range",
+    "layout_master_091_108.json range/source page-count metadata does not match the frozen render",
+    "layout_master_109_126.json has no integer counts.issues",
+    "layout_master_109_126.json pass count does not equal its page range",
+    "layout_master_109_126.json range/source page-count metadata does not match the frozen render",
+    "layout_master_127_144.json has no integer counts.issues",
+    "layout_master_127_144.json pass count does not equal its page range",
+    "layout_master_127_144.json range/source page-count metadata does not match the frozen render",
+    "layout_master_145_162.json has no integer counts.issues",
+    "layout_master_145_162.json pass count does not equal its page range",
+    "layout_master_145_162.json range/source page-count metadata does not match the frozen render",
+    "layout_master_163_180.json has no integer counts.issues",
+    "layout_master_163_180.json pass count does not equal its page range",
+    "layout_master_163_180.json range/source page-count metadata does not match the frozen render",
+    "layout_master_181_198.json has no integer counts.issues",
+    "layout_master_181_198.json pass count does not equal its page range",
+    "layout_master_181_198.json range/source page-count metadata does not match the frozen render",
+    "layout_master_199_216.json has no integer counts.issues",
+    "layout_master_199_216.json pass count does not equal its page range",
+    "layout_master_199_216.json range/source page-count metadata does not match the frozen render",
+    "layout_master_217_225.json has no integer counts.issues",
+    "layout_master_217_225.json pass count does not equal its page range",
+    "layout_master_217_225.json range/source page-count metadata does not match the frozen render"
+  ],
+  "scope_note": "One-shot read/hash aggregation only. No rendering, source edits, numerical work, CAD, tests, or Git writes."
+}

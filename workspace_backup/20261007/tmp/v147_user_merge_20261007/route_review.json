@@ -1,0 +1,191 @@
+{
+  "artifact": "C:/Users/xiemo/Desktop/ShardForge/RelicWeave_V1.47.docx",
+  "review_scope": [
+    "section 2",
+    "A6.15-A6.28",
+    "A8 EXP10-EXP12",
+    "A12.21-A12.23",
+    "B2.3",
+    "adjacent metric definitions in 2.2.2"
+  ],
+  "verdict": {
+    "direction": "accept",
+    "contract": "revise",
+    "implementation_and_expansion_this_closeout": "defer",
+    "rationale": "The R2-first, separate R1 same-vessel retrieval, evidence/abstain/recapture/stop route is coherent as a long-term target; current project state does not support new implementation, experiments, or completion claims."
+  },
+  "findings": [
+    {
+      "id": "ontology_and_online_gt_boundary",
+      "priority": "P0",
+      "decision": "revise",
+      "clauses": [
+        "A6.16: final A-C relation is determined by direct-contact evidence and historical adjacency truth.",
+        "A6.15 memory table: R0/R1/R2/UNKNOWN posterior; R2 Local Memory stores pose/gap/contact and source_id.",
+        "A6.19/A6.20: old relations can be revised and R1/R2 swapped."
+      ],
+      "finding": "The plan conflates physical relation truth, epistemic UNKNOWN, model belief, and evaluator-only ground truth.",
+      "fix": [
+        "Use R0/R1/R2 as adjudicated physical labels; UNKNOWN is missing label, insufficient evidence, or abstention, not a fourth physical relation.",
+        "In truth, same-object membership is transitive; R2 is a direct historical adjacency subrelation and is not transitive. Predicted R1/R2 edges stay soft.",
+        "For known pairs require P(R2)<=P(same-vessel) and class consistency: P(R2)=P(same)*P(adjacent|same), P(R1)=P(same)*P(known-nonadjacent|same). Unclosed adjacency cannot be turned into R1.",
+        "Online inference may use only permitted observation and predictions, never motherID, GT pose, true adjacency, or TruthPack. Store pose_hat and uncertainty; keep identity/provenance keys out of model features.",
+        "Beliefs may revise with a versioned evidence audit; historical truth changes only under GT correction/versioning or a new fragmentation event."
+      ]
+    },
+    {
+      "id": "same_vessel_identifiability",
+      "priority": "P0",
+      "decision": "revise",
+      "clauses": [
+        "section 2 Level 2",
+        "A6.18 Vessel Identity Memory",
+        "A12.22 controlled vessel/style/material factors"
+      ],
+      "finding": "Style, material, thickness, profile, and repeated manufactured patterns can indicate a production class without identifying one physical vessel. Observationally exchangeable candidates are not deterministically identifiable.",
+      "fix": [
+        "Add same-style hard negatives from distinct physical items, including same-mold/lot/production-context candidates.",
+        "Split by physical vessel and audit source/session/seed/background/ID shortcuts; do not expose mother identity online.",
+        "Add an identifiability/ambiguity subset and selective-risk reporting; permit UNKNOWN or a candidate ambiguity group when permitted observations cannot distinguish the true member."
+      ]
+    },
+    {
+      "id": "membership_denominators_and_closure",
+      "priority": "P0",
+      "decision": "revise",
+      "clauses": [
+        "section 2.2.2 Vessel Precision/Recall/F1 equations",
+        "section 2.2.2 requirement to account for missing physical pieces",
+        "B2.3 member_manifest and member_set_complete"
+      ],
+      "finding": "Empty truth/prediction denominators are undefined, and physical-vessel closure is stronger than the stated database-snapshot task.",
+      "fix": [
+        "Define V_G(q) as same-vessel members present in frozen gallery G excluding q; closure means all gallery entries have adjudicated membership. Track lost/unregistered physical pieces as provenance but do not require them to score catalog-snapshot retrieval.",
+        "Specify the four empty-set cases; score empty-gallery targets with false-member/false-acceptance risk and correct empty rejection, not fabricated P/R/F1 values.",
+        "Separate closed-snapshot main metrics from partial/open-world diagnostics and report eligibility/exclusion rates in the full workflow denominator.",
+        "Keep membership closure separate from R2 adjacency closure; use vessel/object/source clusters for macro averages and confidence intervals."
+      ]
+    },
+    {
+      "id": "oracle_context_controls",
+      "priority": "P0",
+      "decision": "revise",
+      "clauses": [
+        "A6.20 T1 Oracle-R2 context",
+        "A6.21 Oracle-R2 upper-bound gate",
+        "A8 EXP12 Oracle→Predicted→Corrupted"
+      ],
+      "finding": "GT-neighbor context is privileged and may reveal object identity; it is a protocol-specific diagnostic, not a strict information-theoretic upper bound.",
+      "fix": [
+        "Restrict Oracle-R2 to offline evaluator/diagnostic use; if teacher-forced training is run, label it separately and never call it deployable.",
+        "Match query, gallery, candidate pool, context count/degree/quality, observables, and compute.",
+        "Add degree/quality/source-matched shuffled-neighbor controls and, when feasible, same-count R1 context to separate direct-contact value from simply receiving a same-vessel member hint.",
+        "No production/test path may read motherID, GT poses, true adjacency, or TruthPack."
+      ]
+    },
+    {
+      "id": "corruption_realism_and_endpoints",
+      "priority": "P1",
+      "decision": "revise",
+      "clauses": [
+        "A6.20 corrupted-memory ladder",
+        "A8 EXP12 0/5/10/20/30% corruption"
+      ],
+      "finding": "The percentage ladder does not define error denominators, class mix, source dependence, or the no-edge endpoint; its levels are not demonstrated realistic rates.",
+      "fix": [
+        "Define separate FN among true R2 edges, FP per retrieved candidate/degree, R1↔R2 swaps, false membership edges, and correlated duplicate-source errors.",
+        "Retain 0/5/10/20/30% as stress levels, not realistic estimates; derive deployment corruption from frozen held-out predicted edges.",
+        "Add no-seed/empty-memory and all-edge-missing endpoints, with recovery to the static baseline, and report false-member injection plus coverage."
+      ]
+    },
+    {
+      "id": "degradation_protocol",
+      "priority": "P1",
+      "decision": "revise",
+      "clauses": [
+        "section 2.2.2 fixed-GT D0→Dn",
+        "A6.26 D0-D5",
+        "A12.21 paired wear/chipping/erosion release"
+      ],
+      "finding": "A single fixed-topology curve mixes observation corruption with physical interventions that can alter surfaces, current fit, fragment lineage, and contact topology.",
+      "fix": [
+        "Separate fixed-world observation corruption (occlusion, blur, sensor noise, point dropout) from physical material loss/new chipping/secondary fracture.",
+        "For physical interventions preserve historical R2 facts by version/event, while recomputing current_fit_valid, evidence_visible, and new leaf/event relations.",
+        "Call uncalibrated 31-axis levels recipe/synthetic severity; map to physical severity only with independent measurement. Keep D5 real-domain confirmation separate."
+      ]
+    },
+    {
+      "id": "minimal_baseline_and_compute_gate",
+      "priority": "P1",
+      "decision": "revise",
+      "clauses": [
+        "A6.15 all-candidate token bank and multi-memory loop",
+        "A6.17 B1-B5 sequence",
+        "A6.21 broad ablations",
+        "A8 EXP11/EXP12 baseline lists"
+      ],
+      "finding": "The candidate space is broad relative to current readiness; equal FLOPs alone does not bound gallery search, repeated rereads, local-token residency, latency, or memory.",
+      "fix": [
+        "B1 scalar feedback is a mandatory baseline, but a positive B1 gain is not required before B2 if a matched privileged-context diagnostic shows R1 information gain; scalar feedback may be an information bottleneck. In that case B2 is the only next minimal alternative and must be budget-matched to B1.",
+        "If the matched privileged-context diagnostic is null, audit candidate/context coverage, GT closure, metric power, and eligible-data capacity; if the protocol still shows no signal, stop this branch for lack of demonstrated signal/resource value without claiming universal absence of useful relation information.",
+        "Cache compact per-fragment embeddings, retrieve a common bounded Top-K shortlist, fetch local tokens on demand, and update only a bounded affected subgraph rather than materializing all N² relations/tokens.",
+        "Freeze K, local token budget, iterations, and per-query resource limits; report end-to-end FLOPs, P95 latency, peak VRAM/RAM, GPU hours, and query cost under the actual configured hardware.",
+        "Do not claim feasibility from RTX 5090 peak specs; official spec lists 32 GB VRAM and the document says throughput has not been measured."
+      ]
+    },
+    {
+      "id": "novelty_scope",
+      "priority": "P1",
+      "decision": "accept_narrow_claim_only",
+      "clauses": [
+        "A6.22/A6.28 novelty language"
+      ],
+      "finding": "The plan correctly rejects broad 'first autoregressive' claims. Existing 3D assembly work already describes iterative auto-agglomerative assembly, contact structure, geometric verification, and uncertain-part resampling; these works are related but not identical to R1 same-vessel retrieval.",
+      "fix": [
+        "Keep novelty centered on a closed, identifiable R1 membership-retrieval task and safe, calibrated use of R2 context beyond a strong static/pairwise baseline.",
+        "Do not claim novelty from recurrence, feedback, graphs, or reversible edges alone."
+      ]
+    },
+    {
+      "id": "closeout_status",
+      "priority": "P0",
+      "decision": "defer",
+      "clauses": [
+        "A6/A8/A12 planned future experiments"
+      ],
+      "finding": "Per owner-provided state, PG is 25–35% with the moving-front fieldrc/return_code mismatch and no retry; VF is 30–40% with native-CAD-source checking only; Objectivity source checking is PG-Frag scope; A12 is 30–40% with zero physically-qualified packs.",
+      "fix": [
+        "Keep this route as a future hypothesis/contract. No implementation, new experiment, or new numeric claim in this closeout.",
+        "After closeout, eligible real observations plus closed membership GT are sufficient to consider real-data static/context experiments; a synthetic physically-qualified pack is required only for claims depending on physical synthetic generation, physical degradation, or synthetic pretraining.",
+        "Do not promote synthetic generation, vessel recovery, or physical degradation results to completed evidence until their relevant acceptance gates have passed."
+      ]
+    }
+  ],
+  "novelty_sources": [
+    {
+      "title": "PuzzleFusion++: Auto-agglomerative 3D Fracture Assembly by Denoise and Verify",
+      "url": "https://arxiv.org/abs/2406.00259",
+      "relevance": "Primary paper states iterative alignment/merging repeated in an auto-regressive-like process."
+    },
+    {
+      "title": "SARe: Structure-Aware Generative 3D Fragment Reassembly",
+      "url": "https://arxiv.org/abs/2603.21611",
+      "relevance": "Primary preprint describes contact-structure supervision, geometric verification, reliable subassemblies, and resampling uncertain fragments."
+    },
+    {
+      "title": "GeForce RTX 50 Series official announcement",
+      "url": "https://www.nvidia.com/en-us/geforce/news/rtx-50-series-graphics-cards-gpu-laptop-announcements/",
+      "relevance": "Official NVIDIA page reports RTX 5090 32 GB memory; this is a capacity constraint, not a throughput guarantee."
+    },
+    {
+      "title": "Chemical insights into pottery production and use at Neolithic Zoumaling",
+      "url": "https://www.nature.com/articles/s40494-025-01667-1",
+      "relevance": "Primary study reports stable clay sourcing and limited household production variation across a broad sherd set, motivating same-style/material hard negatives."
+    }
+  ],
+  "sources": {
+    "reviewed_document": "C:/Users/xiemo/Desktop/ShardForge/RelicWeave_V1.47.docx",
+    "browsing_used_for_novelty_and_hardware_verification": true,
+    "external_links_are_primary_papers_or_official_specs": true
+  }
+}

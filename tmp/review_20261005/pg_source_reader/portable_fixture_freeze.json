@@ -1,0 +1,101 @@
+{
+  "schema": "synlab.pgfrag.source_reader.portable_fixture_freeze.v1",
+  "status": "PRE_FULL_TEST_FILE_FREEZE",
+  "output_entry_count": 9,
+  "fixture_total_bytes": 1530325,
+  "fixture_within_5mb": true,
+  "source_files": [
+    {
+      "path": "synlab/qa/source_readers/__init__.py",
+      "bytes": 300,
+      "sha256": "2d187338150a7582c6cb895cf15f8934b271c863c0a6903da5784e5f947f330b"
+    },
+    {
+      "path": "synlab/qa/source_readers/pgfrag_result.py",
+      "bytes": 40405,
+      "sha256": "ed1d72f0bd25d2962217e88a226d2a72706c013c7087465b53bb9ca04116bd9e"
+    },
+    {
+      "path": "tests/a12/qa/test_pgfrag_source_reader_20261005.py",
+      "bytes": 15479,
+      "sha256": "a89e80bd6ef852817813bd64d9bc65a916d7aeebf2e872105fcbe7854b7e8f57"
+    },
+    {
+      "path": "tmp/review_20261005/pg_source_reader/probe_named_job_source.py",
+      "bytes": 2563,
+      "sha256": "57f2d63868f2b5d16271434dc702f484f56127e3a2971402e5ca6c66556c6c51"
+    },
+    {
+      "path": "tmp/review_20261005/pg_source_reader/read_actual_pg_report.py",
+      "bytes": 1391,
+      "sha256": "9ea7c4f8776d66e922d55667d2ebf075fe8455f39c8fdf5b9415f71fce900d83"
+    },
+    {
+      "path": "tmp/review_20261005/pg_source_reader/DIFF_SUMMARY.md",
+      "bytes": 2032,
+      "sha256": "af291261dc662576fad92a39d1bcf488231e85337772762ff9eaed097046ee14"
+    }
+  ],
+  "fixture_files": [
+    {
+      "path": "tests\\fixtures\\pgfrag\\result_v1_toy_endpoint\\output\\result.json",
+      "bytes": 8258,
+      "sha256": "b3fb84f20d409f4a4dca0b34ffd8b95a07b7c7944b8b6ecd70100b0b5b17dc20"
+    },
+    {
+      "path": "tests\\fixtures\\pgfrag\\result_v1_toy_endpoint\\output\\bond_states.csv",
+      "bytes": 1095598,
+      "sha256": "2ba477c6c915f9eefdb141eb6f203b30b50fc99f6d93df0145a096771e143d3d"
+    },
+    {
+      "path": "tests\\fixtures\\pgfrag\\result_v1_toy_endpoint\\output\\broken_bonds.csv",
+      "bytes": 249045,
+      "sha256": "4d9d79764b3e228ab63b5ebb250c92643e7df5951e91fb6d01442ba83724a870"
+    },
+    {
+      "path": "tests\\fixtures\\pgfrag\\result_v1_toy_endpoint\\output\\components.csv",
+      "bytes": 27275,
+      "sha256": "b3ac06b6d86a44465650f9528fd0e1064fd7b76008f19ea3740fdae4ec7a1fa6"
+    },
+    {
+      "path": "tests\\fixtures\\pgfrag\\result_v1_toy_endpoint\\output\\data_dictionary.json",
+      "bytes": 11063,
+      "sha256": "0e0a2d1d39986fa2e676deb182c529237c9c72e86d99ff85e18f06ccd50d73e0"
+    },
+    {
+      "path": "tests\\fixtures\\pgfrag\\result_v1_toy_endpoint\\output\\isolated_points.csv",
+      "bytes": 41,
+      "sha256": "d0bb697a4412b470be2d5ff0fdafeef8de814f94847f0ad4569de9dfe52cd0a7"
+    },
+    {
+      "path": "tests\\fixtures\\pgfrag\\result_v1_toy_endpoint\\output\\points.csv",
+      "bytes": 135416,
+      "sha256": "f78180800aa39702b31d60f2e523cb5a3fc13339644d86826c39bb9acd250edf"
+    },
+    {
+      "path": "tests\\fixtures\\pgfrag\\result_v1_toy_endpoint\\output\\solver.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests\\fixtures\\pgfrag\\result_v1_toy_endpoint\\output\\solver.stdout.log",
+      "bytes": 102,
+      "sha256": "1a0884a22e1fa4f29ec378599d63682393a50e00c29fc21c914228d53dd6d695"
+    },
+    {
+      "path": "tests\\fixtures\\pgfrag\\result_v1_toy_endpoint\\output\\summary.toml",
+      "bytes": 1771,
+      "sha256": "337cd21c83446c0099207efdf51754ae89303baae2f883c21c2674e1c921d0bb"
+    },
+    {
+      "path": "tests\\fixtures\\pgfrag\\result_v1_toy_endpoint\\job.json",
+      "bytes": 949,
+      "sha256": "83af8ea8cb0fd204ab288841fd87382c9dae77ec1cfb5dc9d0c925d610d430d1"
+    },
+    {
+      "path": "tests\\fixtures\\pgfrag\\result_v1_toy_endpoint\\README.md",
+      "bytes": 807,
+      "sha256": "d0d73d104f230959fd76272187250e73fbadf1b8806a8a6e9e05676900f74635"
+    }
+  ]
+}

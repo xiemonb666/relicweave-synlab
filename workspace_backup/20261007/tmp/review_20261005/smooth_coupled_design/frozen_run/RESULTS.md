@@ -1,0 +1,11 @@
+# Frozen pure-math result
+
+Candidate: `beaker-coupled-fairing-math-v2`. The single authorized run used 1001 curvature samples per span and 101 normal-ray samples per eligible outer base/side span. It completed in 2.282 seconds with exit code 2 and status `PURE_MATH_DIAGNOSTIC_NEEDS_REVIEW`; this is the expected retained failure, with no rerun or parameter adjustment. The plot script ran once afterward in 0.803 seconds and exited 0.
+
+Exact non-axis C2 and exact control constraints passed. The lip has an exact regular convex one-turn/no-inflection certificate, a 3.5 mm radial endpoint gap, exact crest `1795/16 = 112.1875 mm`, and finite-sample minimum curvature radius 1.456012678 mm. Outer base/lower-body target spans passed finite samples. The inner base's second fairing span failed the unchanged 1.25 mm target at 0.742951260 mm (parameter 0.915); the first inner fairing span reached 1.692472694 mm. All targeted curvature samples were finite and non-degenerate.
+
+The 2D meridian-ray report had 889 eligible and measured candidate inner-boundary hits, zero UNKNOWN, 20 radial-normal-dot `<= 0.25` exclusions, and zero axis exclusions. Its minimum sampled candidate distance was 2.157362275 mm on `outer_side:1` at t=0.95, with one recorded positive hit. This is a section-generator candidate distance only; radial gaps and these 2D distances are not a classifier-confirmed material interval, surface-normal wall proof, or global minimum. `global_minimum_normal_wall` remains UNKNOWN.
+
+The exact section signed area is positive (`4993189/14000 mm^2`) and section endpoints/joins close exactly. Global simplicity/self-intersection is not proved. No CAD/OCC/STEP was run. Style/material, full native bbox, physical qualification, and reusable family bounds remain unknown.
+
+The PNG is an equal-scale analytic RZ section, not a CAD or realistic vessel rendering. The red cross marks only the historical v1 classifier UNKNOWN projected into RZ; it was not tested on v2. The black dashed segment is the smallest finite 2D candidate ray, not a global thickness measurement. Nominal height 110 mm is the rim endpoint; the lip crest is 112.1875 mm and the Bezier control-hull upper bound is 112.8 mm.

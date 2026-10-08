@@ -1,0 +1,311 @@
+{
+  "schema": "curated_backup_execution_receipt.v1",
+  "plan_path": "tmp/backup_coordinator/next_core_incremental_plan_20261006_v1.json",
+  "approved_plan_sha256": "f573119d3db8925452b5dd25e2e4378048e6f5e03d7b64424fa5a43c061dda38",
+  "execution_status": "PUSHED_AND_POSTVERIFIED",
+  "repository": "pgfrag",
+  "origin": "https://github.com/xiemonb666/pgfrag.git",
+  "branch": "backup/forge-work-20261003",
+  "pre_commit_head": "74618ab750ee38083f11b73a5b310fdf55b163ec",
+  "commit": "ed1ac1d1a128e1d239809d50fd1c8705dd5c03e4",
+  "commit_parent": "74618ab750ee38083f11b73a5b310fdf55b163ec",
+  "commit_parent_matches_preflight": true,
+  "commit_message": "backup: preserve bounded PG diagnostics and fixture",
+  "author": "PGFrag Maintainer <pgfrag@local>",
+  "committer": "PGFrag Maintainer <pgfrag@local>",
+  "stage_command": "git -C <pgfrag> -c core.autocrlf=false add -- <30 exact plan destination paths>",
+  "commit_command": "git -C <pgfrag> -c core.autocrlf=false -c user.name=\"PGFrag Maintainer\" -c user.email=pgfrag@local commit -m \"backup: preserve bounded PG diagnostics and fixture\"",
+  "push_command": "git -C <pgfrag> -c core.autocrlf=false push origin HEAD:refs/heads/backup/forge-work-20261003",
+  "git_stage_exit": 0,
+  "git_commit_exit": 0,
+  "git_push_exit": 0,
+  "pre_push_remote_head": "74618ab750ee38083f11b73a5b310fdf55b163ec",
+  "post_push_remote_head": "ed1ac1d1a128e1d239809d50fd1c8705dd5c03e4",
+  "remote_matches_commit": true,
+  "commit_changed_paths_count": 30,
+  "planned_files_count": 30,
+  "planned_total_bytes": 479302,
+  "committed_blob_records": [
+    {
+      "id": "modeiii_driver",
+      "path": "experiments/modeiii_pu_operator_20261005/modeiii_operator_diagnostic.py",
+      "source_path": "experiments/modeiii_pu_operator_20261005/modeiii_operator_diagnostic.py",
+      "blob_oid": "2b67aa1ba3b7296e673a1e948d36be760601b867",
+      "sha256": "aa8765b0e99dd22f474506ffc539e58a68e295ad7b9a1b4fb4f24eecea49491a",
+      "bytes": 45422,
+      "matches_plan": true
+    },
+    {
+      "id": "modeiii_provider",
+      "path": "experiments/modeiii_pu_operator_20261005/mls_modeiii_provider.py",
+      "source_path": "experiments/modeiii_pu_operator_20261005/mls_modeiii_provider.py",
+      "blob_oid": "f977166c290e2b82733c77686d7fd3fdc4af75e6",
+      "sha256": "6025642fdd119a95c76d693d3edbc4785d982731560e556ce7b13bad109c6034",
+      "bytes": 12219,
+      "matches_plan": true
+    },
+    {
+      "id": "modeiii_case",
+      "path": "experiments/modeiii_pu_operator_20261005/fixed_case.json",
+      "source_path": "experiments/modeiii_pu_operator_20261005/fixed_case.json",
+      "blob_oid": "9f8738a8969476e4946049ea323bbfa6a9c42dd1",
+      "sha256": "dce0a1f3009246a52198bc0ed833ed67998144549a653e7bce9bcc17babd71b9",
+      "bytes": 7244,
+      "matches_plan": true
+    },
+    {
+      "id": "modeiii_freeze",
+      "path": "docs/evidence/20261006/core_incremental/modeiii_operator/source_freeze.json",
+      "source_path": "tmp/review_20261005/modeiii_pu_operator_20261005/source_freeze.json",
+      "blob_oid": "1bd80ea77cbd9b0e339ff627b6d3d81515a7e424",
+      "sha256": "65197acaead31faacfad967ffda94ebac9991ff7a433c86fc133e699ad591780",
+      "bytes": 2390,
+      "matches_plan": true
+    },
+    {
+      "id": "modeiii_run_record",
+      "path": "docs/evidence/20261006/core_incremental/modeiii_operator/run01/run_record.json",
+      "source_path": "tmp/review_20261005/modeiii_pu_operator_20261005/runs/run01/run_record.json",
+      "blob_oid": "6b38ebe0199a9299fe8bd8a4209fb204e27a6b3f",
+      "sha256": "101f948ea40c40b63845c60df417efad84343d9fd41ad2ebf875a83cbab85f2a",
+      "bytes": 109098,
+      "matches_plan": true
+    },
+    {
+      "id": "modeiii_primary_json",
+      "path": "docs/evidence/20261006/core_incremental/modeiii_operator/run01/operator_diagnostic.json",
+      "source_path": "tmp/review_20261005/modeiii_pu_operator_20261005/runs/run01/operator_diagnostic.json",
+      "blob_oid": "ca09845a87bffefa0f25ec4c30bb92fbfe2ccf41",
+      "sha256": "8a62d61384156921fecc585b2336f161dd572988eadae8bed46afadf105c22c2",
+      "bytes": 118413,
+      "matches_plan": true
+    },
+    {
+      "id": "field_reference_module",
+      "path": "experiments/modeiii_field_reference_20261005/field_reference.py",
+      "source_path": "experiments/modeiii_field_reference_20261005/field_reference.py",
+      "blob_oid": "12cdb0d9f76e895f6a6451219063cdf448365c80",
+      "sha256": "7b07dfb30a64c50734dc18de2778b7725320de6d5a8f275c55f301c453ef18d7",
+      "bytes": 12663,
+      "matches_plan": true
+    },
+    {
+      "id": "field_reference_test",
+      "path": "experiments/modeiii_field_reference_20261005/test_field_reference.py",
+      "source_path": "experiments/modeiii_field_reference_20261005/test_field_reference.py",
+      "blob_oid": "47a518bfdc30556194acffeea22fe12285aca909",
+      "sha256": "90d326b3708e749a514905132f906aa470729a04c123e6cfed634af2bc8d020b",
+      "bytes": 10115,
+      "matches_plan": true
+    },
+    {
+      "id": "field_reference_case",
+      "path": "experiments/modeiii_field_reference_20261005/fixed_case.json",
+      "source_path": "experiments/modeiii_field_reference_20261005/fixed_case.json",
+      "blob_oid": "b85c7ea470285977a5a8a9dff2b0efd918b7e403",
+      "sha256": "38c57c6e91fcd9e4c5201e5a4652a8ce476ed565a6f362e58b8eab047fdacf1f",
+      "bytes": 975,
+      "matches_plan": true
+    },
+    {
+      "id": "field_reference_freeze",
+      "path": "docs/evidence/20261006/core_incremental/modeiii_field_reference/source_freeze.json",
+      "source_path": "tmp/review_20261005/modeiii_field_reference_20261005/source_freeze.json",
+      "blob_oid": "c34ecc39eb13a2ee474c786e9eaa1db4a7510b02",
+      "sha256": "ebc808be2f0b8e5cbc1e0ff180313afa3e1ed2206c5c02689e95174c7a33d03a",
+      "bytes": 1563,
+      "matches_plan": true
+    },
+    {
+      "id": "enriched_contract_module",
+      "path": "experiments/enriched_dof_contract_20261005/enriched_dof_contract.py",
+      "source_path": "experiments/enriched_dof_contract_20261005/enriched_dof_contract.py",
+      "blob_oid": "b4d98a8a7d6ab4562dbbb42c63bc2a3f460775ee",
+      "sha256": "e3ddb3b067465bb5b269576a1b8a5100e2bb92c9c924bc09c949702c19efa9d8",
+      "bytes": 12789,
+      "matches_plan": true
+    },
+    {
+      "id": "enriched_contract_test",
+      "path": "experiments/enriched_dof_contract_20261005/test_enriched_dof_contract_fake_field.py",
+      "source_path": "experiments/enriched_dof_contract_20261005/test_enriched_dof_contract_fake_field.py",
+      "blob_oid": "fcf2c2d69e20addeed8c8731fef84dcd0ffc9c10",
+      "sha256": "bf0a1ae46a4671810879ff80fc35c6b8cd01f69590dd65cb11a0810ad7e8a4eb",
+      "bytes": 10518,
+      "matches_plan": true
+    },
+    {
+      "id": "enriched_contract_pins",
+      "path": "docs/evidence/20261006/core_incremental/enriched_dof_contract/pins.json",
+      "source_path": "tmp/review_20261005/enriched_dof_contract_20261005/fake_field_run_20261005/pins.json",
+      "blob_oid": "67a9a9fbff41c39b2a53425b35d328551b14a4e2",
+      "sha256": "a8d957c21a7d3a3bac4436737cb39654b7937eda4c266f37d68272fbcc1d4cd2",
+      "bytes": 1201,
+      "matches_plan": true
+    },
+    {
+      "id": "efgm_dependency",
+      "path": "experiments/efgm_elastic_operator_20261005/efgm_elastic_operator.py",
+      "source_path": "experiments/efgm_elastic_operator_20261005/efgm_elastic_operator.py",
+      "blob_oid": "96af8381a74f746742d6f5d1c09b62df807f6bd3",
+      "sha256": "41a5ac6ef6359ed1640ee681c94a3496c18652b29cc72c679b3e37c20dd9ac0d",
+      "bytes": 16768,
+      "matches_plan": true
+    },
+    {
+      "id": "ghostshadow_driver",
+      "path": "experiments/front_shadow_counterexample_20261005/run_front_shadow_counterexample.py",
+      "source_path": "experiments/front_shadow_counterexample_20261005/run_front_shadow_counterexample.py",
+      "blob_oid": "1c0f38cabc2e97acef455dd1e29623a41de16b67",
+      "sha256": "33cfb327363b73f4c0cc556b6c4b3a9472796da8f16c4472f8acafc1947aba7e",
+      "bytes": 11868,
+      "matches_plan": true
+    },
+    {
+      "id": "ghostshadow_case",
+      "path": "experiments/front_shadow_counterexample_20261005/fixedcase.json",
+      "source_path": "experiments/front_shadow_counterexample_20261005/fixedcase.json",
+      "blob_oid": "bdc81a3624b7096aa7defbaff86c5a51cc42a612",
+      "sha256": "68ad13b3848baf4867a00c8c7a991768a5ec05b18c61168a96d3fa741ac0de90",
+      "bytes": 1471,
+      "matches_plan": true
+    },
+    {
+      "id": "ghostshadow_freeze",
+      "path": "experiments/front_shadow_counterexample_20261005/freeze_manifest.json",
+      "source_path": "experiments/front_shadow_counterexample_20261005/freeze_manifest.json",
+      "blob_oid": "7f315eb55ae266f8790d2c547590306276829fc4",
+      "sha256": "674e1ed43ed384cd1212e9cf76943e0f90bb40d842bfada1ca70896cf1b3925e",
+      "bytes": 1904,
+      "matches_plan": true
+    },
+    {
+      "id": "ghostshadow_primary_json",
+      "path": "experiments/front_shadow_counterexample_20261005/results.json",
+      "source_path": "experiments/front_shadow_counterexample_20261005/results.json",
+      "blob_oid": "1c316a167e43b32b5bcb487d23006d01cd7d1d98",
+      "sha256": "49527f1aa8283c17e44bd44bf236c707e0ab76be31c4ec7daed8c22da3aa3976",
+      "bytes": 18876,
+      "matches_plan": true
+    },
+    {
+      "id": "ghostshadow_source_manifest",
+      "path": "experiments/front_shadow_counterexample_20261005/source_manifest.json",
+      "source_path": "experiments/front_shadow_counterexample_20261005/source_manifest.json",
+      "blob_oid": "b27705a5d030795ad99154f4c146039f7fdce910",
+      "sha256": "34a034f2615f48444ab12099c9f742f900b89300932273ba42015c3a444ecd46",
+      "bytes": 663,
+      "matches_plan": true
+    },
+    {
+      "id": "ghostshadow_decision",
+      "path": "docs/evidence/20261006/core_incremental/front_shadow/DECISION.md",
+      "source_path": "tmp/review_20261005/astra_front_shadow_decision_20261005/DECISION.md",
+      "blob_oid": "0cbe5b13f332c23908582b97501f0eb73aed0e85",
+      "sha256": "66b327667d0f7cf8468632a80b720d2b384409eb272446c2be34f6470cce4606",
+      "bytes": 8073,
+      "matches_plan": true
+    },
+    {
+      "id": "ghostshadow_run_receipt",
+      "path": "docs/evidence/20261006/core_incremental/front_shadow/run01/receipt.json",
+      "source_path": "tmp/review_20261005/front_shadow_counterexample_20261005/run_01/receipt.json",
+      "blob_oid": "d0c82b3eef821cbbaacc89544f159c1617f0e959",
+      "sha256": "ed594b984f8ab9572ffa0402256894fb3df076de876d35f331caaeda4bd40c1f",
+      "bytes": 1857,
+      "matches_plan": true
+    },
+    {
+      "id": "ghostshadow_visibility_snapshot",
+      "path": "docs/evidence/20261006/core_incremental/front_shadow/source_snapshot/visibility3d.py",
+      "source_path": "tmp/review_20261005/front_shadow_counterexample_20261005/source_snapshot/visibility3d.py",
+      "blob_oid": "d48567b307fb65ed4e8355d83e5ef733ba8c67ff",
+      "sha256": "9d5097ca33ce899cf788ad43ef0740a34296216a8fd7aa490868c27ffe1ebb03",
+      "bytes": 23190,
+      "matches_plan": true
+    },
+    {
+      "id": "body_pilot_source",
+      "path": "experiments/initial_bond_policy_body_pilot_20261005/native_body_pilot.jl",
+      "source_path": "experiments/initial_bond_policy_body_pilot_20261005/native_body_pilot.jl",
+      "blob_oid": "880452a95d62000674ddaabda19800486578b9a0",
+      "sha256": "038f289af08b91f5d4cbee599aaab0e1e37061d5f1615316c62d15343faae4bf",
+      "bytes": 19940,
+      "matches_plan": true
+    },
+    {
+      "id": "body_generator",
+      "path": "experiments/initial_bond_policy_body_pilot_20261005/generate_fixture_policy.py",
+      "source_path": "experiments/initial_bond_policy_body_pilot_20261005/generate_fixture_policy.py",
+      "blob_oid": "a5d3e7e75287686446caf2d8d68f6bc892ea17fa",
+      "sha256": "570dba4a4360b1d22b9aea336c4ee4539364c8c7acb9282900c5258bb1488a5d",
+      "bytes": 13466,
+      "matches_plan": true
+    },
+    {
+      "id": "body_points",
+      "path": "experiments/initial_bond_policy_body_pilot_20261005/fixedcase_points.csv",
+      "source_path": "experiments/initial_bond_policy_body_pilot_20261005/fixedcase_points.csv",
+      "blob_oid": "cb637a9b944fa6caee3bc0a2d6b345eb4dd74d34",
+      "sha256": "0f635481d102e98c4ace79dc880e3cdfc5cbe80fe5a1ee73eac463c113c5fab7",
+      "bytes": 280,
+      "matches_plan": true
+    },
+    {
+      "id": "body_components",
+      "path": "experiments/initial_bond_policy_body_pilot_20261005/fixedcase_components.csv",
+      "source_path": "experiments/initial_bond_policy_body_pilot_20261005/fixedcase_components.csv",
+      "blob_oid": "10665da58738974b0c0d57b818005ca993551468",
+      "sha256": "1f55f30c2803618fa689b541c79757834d7dd86945f5c614a4c4b3802d541940",
+      "bytes": 171,
+      "matches_plan": true
+    },
+    {
+      "id": "body_source_marker",
+      "path": "experiments/initial_bond_policy_body_pilot_20261005/fixedcase_source_marker.txt",
+      "source_path": "experiments/initial_bond_policy_body_pilot_20261005/fixedcase_source_marker.txt",
+      "blob_oid": "ba4a7e223feefca94a90ee582dc776c188eeba03",
+      "sha256": "2091ec6772be7411e42efa37038017460050c26cbd977fc1cab9edbdcbb830fe",
+      "bytes": 185,
+      "matches_plan": true
+    },
+    {
+      "id": "body_execution_receipt",
+      "path": "docs/evidence/20261006/core_incremental/native_body_fixture/attempt01/pilot_execution_result.json",
+      "source_path": "tmp/initial_bond_policy_body_pilot_20261005/run_native_attempt_01/audit/pilot_execution_result.json",
+      "blob_oid": "0c3c1ab6cfc32b064ad59dea39ca44c65b4a3a7f",
+      "sha256": "5a95b39a59b918284d542134bdf2c62bcc378f6709677abbcdedeca6054e0641",
+      "bytes": 10342,
+      "matches_plan": true
+    },
+    {
+      "id": "body_graph_readback",
+      "path": "docs/evidence/20261006/core_incremental/native_body_fixture/attempt01/native_graph_readback.txt",
+      "source_path": "tmp/initial_bond_policy_body_pilot_20261005/run_native_attempt_01/bundles/positive_mask/native_graph_readback.txt",
+      "blob_oid": "2e45e1bc5e7422c5a088b2fab28f755f105fe083",
+      "sha256": "fe09cb298d2fadb7cb1ebd2279fb51348e1abe444c861934e7f6e948240cd0c9",
+      "bytes": 2240,
+      "matches_plan": true
+    },
+    {
+      "id": "body_scope_addendum",
+      "path": "docs/evidence/20261006/core_incremental/native_body_fixture/acceptance_scope_addendum.md",
+      "source_path": "tmp/review_20261005/initial_bond_policy_body_pilot/acceptance_scope_addendum.md",
+      "blob_oid": "46f9303c77713c2fa8421d69d16a41d4cc579e3f",
+      "sha256": "bdd003ad727771cc7e43915ed765c27981fd4d7ce771ae516bd60c256436710c",
+      "bytes": 3398,
+      "matches_plan": true
+    }
+  ],
+  "postverification": {
+    "commit_paths_exact": true,
+    "all_30_blobs_match_source_sha_and_bytes": true,
+    "source_files_still_match_plan": true,
+    "branch_head_is_commit": true,
+    "remote_head_is_commit": true,
+    "tracked_worktree_clean": true,
+    "index_clean": true,
+    "tracked_status_lines": 0
+  },
+  "failures": []
+}

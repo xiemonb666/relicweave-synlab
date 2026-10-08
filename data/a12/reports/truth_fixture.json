@@ -1,0 +1,167 @@
+{
+  "check": "A08 truth relations on hand-known fixtures (plan 11.1)",
+  "evidence": [
+    "tests/a12/qc/run_truth_fixture.py",
+    "tests/a12/truth/truth_fixtures.py"
+  ],
+  "metrics": {
+    "cases": {
+      "ambiguous_event": {
+        "checks": {
+          "kind_unknown": true,
+          "no_loss_mask": true,
+          "reason_present": true
+        },
+        "expected": "ambiguous patch stays UNKNOWN and carries no loss mask",
+        "observed": {
+          "kind": "UNKNOWN",
+          "reason": "no_unique_source"
+        },
+        "ok": true
+      },
+      "assembly_contact_event": {
+        "checks": {
+          "area_zero": true,
+          "kind_r1": true,
+          "reason_is_not_a_new_fracture": true
+        },
+        "expected": "original assembly contact never becomes R2",
+        "observed": {
+          "area_mm2": 0.0,
+          "kind": "R1",
+          "reason": "not_a_new_fracture_surface (assembly / outer-surface contact)"
+        },
+        "ok": true
+      },
+      "cavity_adjacency_event": {
+        "checks": {
+          "kind_unknown": true,
+          "material_inside_fraction_below_0.9": true,
+          "material_inside_fraction_measured": true,
+          "no_loss_mask": true,
+          "not_valid": true,
+          "reason_names_cavity_or_outside": true
+        },
+        "expected": "identical cavity walls are never R2 (never a new fracture surface)",
+        "observed": {
+          "kind": "UNKNOWN",
+          "material_inside_fraction": 0.0,
+          "reason": "cavity_adjacency_or_outside_material"
+        },
+        "ok": true
+      },
+      "four_block_event": {
+        "checks": {
+          "all_r2_areas_400mm2": true,
+          "r1_set_matches_hand_computation": true,
+          "r2_set_matches_hand_computation": true,
+          "relation_audit_pass": true,
+          "six_pairs": true,
+          "symmetric_keys": true
+        },
+        "expected": "4 R2 (A-B, C-D, A-C, B-D) and 2 R1 (A-D, B-C)",
+        "observed": {
+          "r1": [
+            [
+              "A",
+              "D"
+            ],
+            [
+              "B",
+              "C"
+            ]
+          ],
+          "r2": [
+            [
+              "A",
+              "B"
+            ],
+            [
+              "A",
+              "C"
+            ],
+            [
+              "B",
+              "D"
+            ],
+            [
+              "C",
+              "D"
+            ]
+          ]
+        },
+        "ok": true
+      },
+      "point_contact_event": {
+        "checks": {
+          "grey_zone_not_a_negative": true,
+          "hand_area_0.02mm2": true,
+          "kind_tiny": true
+        },
+        "expected": "point contact is TINY with measured area and no loss mask",
+        "observed": {
+          "area_mm2": 0.02,
+          "kind": "TINY_CONTACT"
+        },
+        "ok": true
+      },
+      "three_block_event": {
+        "checks": {
+          "A_B_is_r2": true,
+          "A_C_area_zero": true,
+          "A_C_is_r1_not_r2": true,
+          "A_C_no_loss_mask": true,
+          "B_C_is_r2": true,
+          "qa_r1_pairs_1": true,
+          "qa_r2_pairs_2": true,
+          "r2_not_transitive": true
+        },
+        "expected": "chain A-B-C: two R2, A-C stays R1",
+        "observed": {
+          "A_B": "R2",
+          "A_C": "R1",
+          "B_C": "R2"
+        },
+        "ok": true
+      },
+      "two_block_event": {
+        "checks": {
+          "clean_qa_pass": true,
+          "hand_area_400mm2": true,
+          "interface_id_0": true,
+          "kind_is_r2": true,
+          "loss_mask_and_valid": true,
+          "one_relation": true,
+          "relation_audit_pass": true
+        },
+        "expected": "A-B is exactly one R2 of 400 mm2",
+        "observed": {
+          "area_mm2": 400.0,
+          "kind": "R2",
+          "relations": 1
+        },
+        "ok": true
+      }
+    },
+    "failed": [],
+    "fixtures": 7,
+    "fixtures_ok": 7,
+    "hand_computed_cases": [
+      "two_block",
+      "three_block",
+      "four_block"
+    ],
+    "negative_cases": [
+      "cavity_adjacency",
+      "assembly_contact",
+      "point_contact",
+      "ambiguous"
+    ]
+  },
+  "ok": true,
+  "source": "tests/a12/truth/truth_fixtures.py via synlab.truth.api.finalize_clean_truth",
+  "status": "PASS",
+  "units": {
+    "area_mm2": "mm^2"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "status": "COMPLETED",
+  "started_utc": "2026-10-06T03:11:17.6082012Z",
+  "runtime": "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+  "argv": [
+    "-B",
+    "-c",
+    "import sys; sys.path.insert(0, r'C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\experiments\\whole_body_c2_profiles_20261006'); from diagnostic_driver_source_only import run_fixed_outer_source_plan; run_fixed_outer_source_plan(root_ready=True)"
+  ],
+  "command_line": "-B -c \"import sys; sys.path.insert(0, r'C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\experiments\\whole_body_c2_profiles_20261006'); from diagnostic_driver_source_only import run_fixed_outer_source_plan; run_fixed_outer_source_plan(root_ready=True)\"",
+  "working_directory": "C:\\Users\\xiemo\\Desktop\\ShardForge",
+  "timeout_seconds": 30,
+  "elapsed_seconds": 2.147634,
+  "exit_code": 0,
+  "stdout_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\review_20261006\\whole_body_c2_profiles_20261006\\fixed_outer_trial\\process_stdout.txt",
+  "stdout_bytes": 0,
+  "stderr_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\review_20261006\\whole_body_c2_profiles_20261006\\fixed_outer_trial\\process_stderr.txt",
+  "stderr_bytes": 0,
+  "combined_stdout_stderr_limit_bytes": 2097152,
+  "combined_stdout_stderr_within_limit": true,
+  "source_pins_pre_sha256": {
+    "vesselforge/experiments/whole_body_c2_profiles_20261006/profile_design.py": "057233b930a2b8e0e3ef43a3568f1cb0e6e972baed97eeeeceb6459d9de8c951",
+    "vesselforge/experiments/whole_body_c2_profiles_20261006/fixed_cases.json": "e1e9c3cf659dbc59d99a18c4b70694201518be4f3aba09a57806402e732cf95a",
+    "vesselforge/experiments/whole_body_c2_profiles_20261006/DESIGN_PROPOSAL.md": "8b5c8b7e78c8d2e245f9ade1498e3dd3c5f69b0a7a82eaf593e3ea49b1b7dbbf",
+    "vesselforge/experiments/whole_body_c2_profiles_20261006/CONTROL_HULL_DESIGN.md": "9fab758e2bc43926f6fe2e82b8ee6b65e4d3fdbaebbca8da84e29f5feb0f4a2b",
+    "vesselforge/experiments/whole_body_c2_profiles_20261006/diagnostic_driver_source_only.py": "d1d327f298dad639e0529edf45d4a5d4c6a6fe6b7cf7ac2773a3fcd48adb66a7",
+    "tmp/review_20261006/whole_body_c2_profiles_20261006/REVIEW_PLAN.md": "734be4d98d9aabc3e30e3385506a64b28cf31a376dd34e91d1b1e6538376811e",
+    "tmp/review_20261006/whole_body_c2_profiles_20261006/FREEZE_MANIFEST.json": "4905c92d580aadd0b92d861d88fb49ab2d57ce680fbdf314ad1b47f8b8be775d"
+  },
+  "source_pins_post_sha256": {
+    "vesselforge/experiments/whole_body_c2_profiles_20261006/profile_design.py": "057233b930a2b8e0e3ef43a3568f1cb0e6e972baed97eeeeceb6459d9de8c951",
+    "vesselforge/experiments/whole_body_c2_profiles_20261006/fixed_cases.json": "e1e9c3cf659dbc59d99a18c4b70694201518be4f3aba09a57806402e732cf95a",
+    "vesselforge/experiments/whole_body_c2_profiles_20261006/DESIGN_PROPOSAL.md": "8b5c8b7e78c8d2e245f9ade1498e3dd3c5f69b0a7a82eaf593e3ea49b1b7dbbf",
+    "vesselforge/experiments/whole_body_c2_profiles_20261006/CONTROL_HULL_DESIGN.md": "9fab758e2bc43926f6fe2e82b8ee6b65e4d3fdbaebbca8da84e29f5feb0f4a2b",
+    "vesselforge/experiments/whole_body_c2_profiles_20261006/diagnostic_driver_source_only.py": "d1d327f298dad639e0529edf45d4a5d4c6a6fe6b7cf7ac2773a3fcd48adb66a7",
+    "tmp/review_20261006/whole_body_c2_profiles_20261006/REVIEW_PLAN.md": "734be4d98d9aabc3e30e3385506a64b28cf31a376dd34e91d1b1e6538376811e",
+    "tmp/review_20261006/whole_body_c2_profiles_20261006/FREEZE_MANIFEST.json": "4905c92d580aadd0b92d861d88fb49ab2d57ce680fbdf314ad1b47f8b8be775d"
+  }
+}

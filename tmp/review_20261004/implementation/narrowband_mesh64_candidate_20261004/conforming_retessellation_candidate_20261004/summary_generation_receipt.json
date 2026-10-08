@@ -1,0 +1,39 @@
+{
+  "task": "derive small summary from closed saved report and receipts",
+  "timestamp_utc": "2026-10-04T05:48:49.2082293Z",
+  "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+  "python_executable": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\.venv\\Scripts\\python.exe",
+  "argv": [
+    "-B",
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\derive_retessellation_short_summary.py"
+  ],
+  "process_exit": 0,
+  "elapsed_seconds": 0.125879,
+  "candidate_conversion_rerun": false,
+  "boolean_calls": 0,
+  "hashes_before": {
+    "inputs": "d80707312638ce2830847f2dc198632c5456963a6043715d27436b3db3ce6dc2",
+    "source": "6398ee6a02b010e172cd709c17403b81e868fe6784536c257976c6edb2ecaf10",
+    "report": "6b4078337fab9f7c0d4e4d8cdaaa2e0e4442968b4aaa5274a95a9ec1820abcba",
+    "manifest": "3f46fb25978ba0e1210067494c8dc538448b962c483bcc56865f93fdd1fc9391",
+    "outputs": "e00404f67bf13ced471e3c7c8d0596b3b50efd4c9b17f4175142712a5e5a04a0",
+    "script": "f1e636414674e4d864d61da713d4be4cb6b5f5730c04f2964ad7448330aa830f"
+  },
+  "stdout": {
+    "bytes": 428,
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\summary_run.stdout.txt",
+    "sha256": "0ac618ce1f66944693971f5c43a8fec030fd209dca42158feb78b46661c785b9"
+  },
+  "stderr": {
+    "bytes": 0,
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\summary_run.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "summary": {
+    "max_bytes": 8192,
+    "bytes": 13204,
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\retessellation_short_summary.json",
+    "sha256": "dabca038544d888e629171a8206be3bb3b3a74cbe9459ef099d0a9fb2b5df82d"
+  },
+  "interpretation": "Read-only extraction of already-saved JSON metrics and receipts; no mesh conversion or geometry computation."
+}

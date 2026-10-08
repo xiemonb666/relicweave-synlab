@@ -1,0 +1,455 @@
+--- guide_v11
++++ guide_v12
+@@ -1,11 +1,11 @@
+ [P style=Normal] VesselForge × PG-Frag
+ [P style=Normal] 两个通用三维基础设施子项目的技术总纲与算法参考
+ [P style=Normal] 参数化三维器物与纹样生成平台  ×  通用三维物理断裂与碎片生成引擎
+-[P style=Normal] 版本：技术路线总纲 v1.1
++[P style=Normal] 版本：技术路线总纲 v1.2
+ 基准日期：2026-10-03
+ [TABLE 1 ROW 1] 文档定位：本文件不是为某一个上层应用“写死”的实现计划，而是为两个可长期独立演化的通用项目建立技术边界、候选算法池、插件架构、功能要求和阶段路线。任何算法均视为可替换 Backend，而非永久绑定。
+ [P style=Heading1] 目录与阅读方式
+-[P style=ListBullet] 第 1 章：共同定位与开发规范——独立基础设施、通用化、算法复用与非重复造轮子原则。
++[P style=ListBullet] 第 1 章：共同定位与开发规范——独立基础设施、通用化、算法复用、非重复造轮子与混合高性能技术栈。
+ [P style=ListBullet] 第 2–8 章：VesselForge——器型、纹样、表面、网格、资产协议和算法候选。
+ [P style=ListBullet] 第 9–16 章：PG-Frag——材料、断裂、接触、碎片动力学、断面与输出协议。
+ [P style=ListBullet] 第 17–20 章：两个项目之间的标准接口、非锁定设计、里程碑与验收。
+@@ -64,8 +64,31 @@
+ [P style=ListBullet] VesselForge 的核心不是“自己实现所有几何/生成算法”，而是把 CAD、程序化几何、纹样、UV、SDF、PBR、网格等能力统一成稳定的可组合资产生成接口。
+ [P style=ListBullet] PG-Frag 的核心不是“自己实现所有断裂 PDE/粒子/有限元求解器”，而是把 Peridynamics、FEM、Phase-Field、MPM、CZM、显式动力学和刚体碎片动力学统一为可替换的物理 Backend。
+ [P style=ListBullet] 两个项目都应把真正的自研资源优先投入到通用数据契约、自动预处理、Backend 编排、结果标准化、质量门控、Benchmark、可观测性和插件 SDK。
+-[P style=Heading2] 1.4 总体系统关系
+-[TABLE 4 ROW 1] VesselForge
++[P style=Heading2] 1.4 混合高性能技术栈与语言边界（强制）
++[P style=Normal] 两个项目统一采用“控制面使用高生产力语言，计算面使用高性能语言/成熟原生库”的混合架构。不得为了语言统一而把所有模块都写成 Python，也不得为了追求低层语言而把工作流、实验编排和 Web 层全部重写为 C++。技术选型以热路径、数据规模、并行性、生态成熟度和维护成本为依据。
++[P style=Quote] Performance rule：Python 负责 orchestration；C++ 负责 CPU-heavy native core；CUDA 负责 NVIDIA GPU 热路径；Node.js/TypeScript 负责 Web/API/任务控制面。
++[P style=Heading3] 1.4.1 强制语言/运行时分工
++[TABLE 4 ROW 1] 层/任务 || 首选技术 || 强制边界 / 原因
++[TABLE 4 ROW 2] GPU 高并行热路径 || CUDA C++；必要时成熟 CUDA 库 || 邻域搜索、bond/particle 更新、损伤、接触、稠密场运算等需要 GPU 加速时优先 CUDA。禁止用 Python for-loop 承担主时间步热循环。
++[TABLE 4 ROW 3] CPU 高负载原生核心 || C++20/23 + OpenMP/TBB；必要时 MPI || 几何拓扑、网格/场处理、碎片提取、并行预处理、CPU fallback 等使用 C++。需要多节点时再引入 MPI。
++[TABLE 4 ROW 4] 科学工作流 / SDK || Python || 配置、实验、批量任务、数据分析、可视化、Adapter、Solver 启动与研究 API；避免把 Python 解释器放进大规模数值内循环。
++[TABLE 4 ROW 5] Python ↔ C++ 边界 || pybind11 + NumPy buffer / zero-copy 设计 || C++ 原生核心通过稳定 binding 暴露给 Python；大数组优先 view/buffer，避免 C++→Python list→NumPy 的重复复制。
++[TABLE 4 ROW 6] Web / API / 控制面 || Node.js LTS + TypeScript || Web API、认证、WebSocket/SSE、任务状态、前端 BFF、队列/调度接入。2026-10 生产基线可用 Node.js 24 LTS；后续跟随 Active/Maintenance LTS。
++[TABLE 4 ROW 7] 外部成熟求解器 || 保持原语言/运行时 || PeriLab/Julia、OpenRadioss、Chrono 等通过 Backend Adapter 调用，不为了“统一成 C++”而重写。
++[TABLE 4 ROW 8] 可移植并行抽象（可选） || Kokkos || 当 CPU/CUDA/HIP/SYCL 多后端维护成本上升时采用；V1 不强制。
++[P style=Heading3] 1.4.2 Python 的允许范围与禁止范围
++[P style=ListBullet] 允许：参数配置、Job Schema、实验脚本、批处理、数据分析、可视化、测试、CLI、Backend 编排、Python SDK。
++[P style=ListBullet] 允许：调用底层已经由 C/C++/CUDA 实现的 NumPy、PyTorch、CadQuery/OpenCascade、Gmsh 等；“Python 调用”不等于“Python 执行热循环”。
++[P style=ListBullet] 禁止：在 Python 中实现大规模 particle/bond/contact 的逐元素主时间步循环，或让 Python 对百万级几何/场数据做高频逐对象回调。
++[P style=ListBullet] 禁止：为了方便原型而把明显属于 C++/CUDA 热路径的实现固化为生产后端；原型必须设置迁移门槛和 profiler 证据。
++[P style=Heading3] 1.4.3 性能优化顺序
++[P style=Normal] 1. 第一优先：直接复用成熟的原生高性能库/求解器；NVIDIA 官方同样建议优先使用已经优化的 GPU 库而不是重复实现成熟算法。[R26]
++[P style=Normal] 2. 第二优先：先建立 CPU reference / correctness baseline，再使用 profiler 找到真正的热点。
++[P style=Normal] 3. 第三优先：只把热点迁移到 C++/CUDA，避免“全项目 CUDA 化”导致调试和维护成本失控。
++[P style=Normal] 4. 第四优先：控制 CPU↔GPU 数据搬运；连续时间步尽量让状态常驻设备端，批量同步而非每步往返。
++[P style=Normal] 5. 第五优先：当需要跨 NVIDIA/AMD/CPU 的统一并行模型时，再评估 Kokkos；其当前执行后端覆盖 CUDA、HIP、SYCL 与 OpenMP。[R28]
++[P style=Heading2] 1.5 总体系统关系
++[TABLE 5 ROW 1] VesselForge
+   └─ 输出：Physics-Ready Asset / Render-Ready Asset
+           ↓ 标准资产契约
+ PG-Frag
+@@ -73,9 +96,9 @@
+           ↓ 可选供任何上层应用使用
+ 第三方科研 / 数字孪生 / 数据生成 / 教育 / 视觉重建 / 游戏工具链 / 工程分析
+ [P style=Heading1] 第一部分：VesselForge——通用三维器物与纹样生成平台
+-[TABLE 5 ROW 1] 核心目标：输入参数、规则、参考或生成式先验，输出结构正确、尺寸明确、表面语义丰富、可批量生成、可进入物理仿真的三维实体资产。平台的核心不是“预置更多模板”，而是提供可组合的几何语法、参数空间和插件接口。
++[TABLE 6 ROW 1] 核心目标：输入参数、规则、参考或生成式先验，输出结构正确、尺寸明确、表面语义丰富、可批量生成、可进入物理仿真的三维实体资产。平台的核心不是“预置更多模板”，而是提供可组合的几何语法、参数空间和插件接口。
+ [P style=Heading1] 2. VesselForge 功能架构
+-[TABLE 6 ROW 1] VesselForge Core
++[TABLE 7 ROW 1] VesselForge Core
+ ├─ Shape Kernel            # 参数化几何、曲线/曲面、B-Rep/SDF
+ ├─ Part System             # 把手、壶嘴、盖、足、耳等可组合部件
+ ├─ Ornament Engine         # 语义纹样、布局语法、连续纹样、浮雕/刻纹
+@@ -96,56 +119,56 @@
+ [P style=ListBullet] 物理可用输出：可获得封闭实体、真实尺度、厚度信息和体网格/体表示。
+ [P style=ListBullet] 批量模式：支持参数分布、Latin Hypercube/Sobol/随机采样和可复现 seed。
+ [P style=Heading1] 3. 器型与结构几何：候选算法池
+-[TABLE 7 ROW 1] 算法/技术 || 成熟度定位 || 优势 || 主要限制 || 适合在平台中的角色
+-[TABLE 7 ROW 2] B-Spline / NURBS + B-Rep || 稳定主干 || 曲率连续、尺寸可控、适合参数化、可精确布尔和 STEP；非常适合瓶/罐/碗等旋转或准旋转器形。 || 复杂自由拓扑和高度非规则形状的自动生成需要额外规则。 || 默认精确几何核心；建议以 OpenCascade/CadQuery 封装。
+-[TABLE 7 ROW 3] Profile Revolution + Loft + Sweep || 稳定主干 || 简单、可解释、参数少；生成瓶、碗、盘、罐、壶体、壶嘴和把手非常高效。 || 对极复杂拓扑需组合多个部件。 || 高吞吐器型族生成；成为参数化模板“语法”，而不是固定模型。
+-[TABLE 7 ROW 4] Blender Geometry Nodes || 稳定/易扩展 || 节点式程序化、曲线/网格/体积/实例统一，适合快速构造部件、变化器和艺术规则。 || 严格工程尺寸和 B-Rep 语义弱于 CAD 内核。 || 可视化编辑器与高级程序化后端；不是唯一核心。
+-[TABLE 7 ROW 5] Implicit/SDF Modeling || 稳定到研究 || 布尔融合稳定、对复杂连接和表面形变自然，适合将浮雕、把手等融合为封闭体。 || 精确尺寸约束和 CAD 语义较弱；需高质量重建表面。 || 修复、复杂融合、几何装饰、长尾形状。
+-[TABLE 7 ROW 6] Shape Grammar / Procedural Grammar || 成熟思想 || 能用少量规则生成大量结构合理器物，规则可解释、可复现。 || 规则设计成本高，需要长期扩展语法库。 || 长期的“通用器物结构语言”，尤其适合部件组合。
+-[TABLE 7 ROW 7] TRELLIS.2 等生成式 3D || 前沿候选 || 能产生复杂拓扑和高多样性的长尾资产，并包含 PBR 表达。 || 结果不保证物理可用、尺度/壁厚/拓扑/封闭性需后处理，算力较高。 || 灵感/长尾几何提案或参考资产生成，不能直接替代 physics-ready pipeline。
++[TABLE 8 ROW 1] 算法/技术 || 成熟度定位 || 优势 || 主要限制 || 适合在平台中的角色
++[TABLE 8 ROW 2] B-Spline / NURBS + B-Rep || 稳定主干 || 曲率连续、尺寸可控、适合参数化、可精确布尔和 STEP；非常适合瓶/罐/碗等旋转或准旋转器形。 || 复杂自由拓扑和高度非规则形状的自动生成需要额外规则。 || 默认精确几何核心；建议以 OpenCascade/CadQuery 封装。
++[TABLE 8 ROW 3] Profile Revolution + Loft + Sweep || 稳定主干 || 简单、可解释、参数少；生成瓶、碗、盘、罐、壶体、壶嘴和把手非常高效。 || 对极复杂拓扑需组合多个部件。 || 高吞吐器型族生成；成为参数化模板“语法”，而不是固定模型。
++[TABLE 8 ROW 4] Blender Geometry Nodes || 稳定/易扩展 || 节点式程序化、曲线/网格/体积/实例统一，适合快速构造部件、变化器和艺术规则。 || 严格工程尺寸和 B-Rep 语义弱于 CAD 内核。 || 可视化编辑器与高级程序化后端；不是唯一核心。
++[TABLE 8 ROW 5] Implicit/SDF Modeling || 稳定到研究 || 布尔融合稳定、对复杂连接和表面形变自然，适合将浮雕、把手等融合为封闭体。 || 精确尺寸约束和 CAD 语义较弱；需高质量重建表面。 || 修复、复杂融合、几何装饰、长尾形状。
++[TABLE 8 ROW 6] Shape Grammar / Procedural Grammar || 成熟思想 || 能用少量规则生成大量结构合理器物，规则可解释、可复现。 || 规则设计成本高，需要长期扩展语法库。 || 长期的“通用器物结构语言”，尤其适合部件组合。
++[TABLE 8 ROW 7] TRELLIS.2 等生成式 3D || 前沿候选 || 能产生复杂拓扑和高多样性的长尾资产，并包含 PBR 表达。 || 结果不保证物理可用、尺度/壁厚/拓扑/封闭性需后处理，算力较高。 || 灵感/长尾几何提案或参考资产生成，不能直接替代 physics-ready pipeline。
+ [P style=Normal] 工程上应采用“精确参数化主干 + SDF/节点式补充 + 生成式 3D 长尾”的多后端策略，而不是把任何一个模型设为唯一入口。CadQuery 基于 OpenCascade，可提供脚本化参数 CAD；Blender 5.2 LTS 的 Geometry Nodes 支持 Mesh、Curve、Point Cloud、Volume、Instance 等几何类型；TRELLIS.2 则适合作为高多样性生成候选。[R1][R2][R5]
+ [P style=Heading1] 4. 几何修复、封闭与体网格
+-[TABLE 8 ROW 1] 功能 || 候选算法/库 || 优势 || 注意点
+-[TABLE 8 ROW 2] B-Rep/实体修复 || OpenCascade / CadQuery || 与参数化 CAD 同源，适合精确实体和 STEP 流程。 || 对脏扫描网格不是万能修复器。
+-[TABLE 8 ROW 3] Polygon Mesh Repair || CGAL Polygon Mesh Repair || 可处理朝向、退化面、孔洞、边界缝合、自交检测/修复等。 || C++ 依赖较重；需围绕输入质量建立分级修复流程。
+-[TABLE 8 ROW 4] SDF/体素修复 || OpenVDB MeshToVolume → VolumeToMesh || 能把三角网格转换为 SDF，并在复杂融合、重建、浮雕布尔方面非常实用。 || 体素分辨率决定细节与内存；精确 CAD 边界会有离散化误差。
+-[TABLE 8 ROW 5] 四面体网格 || Gmsh 4.15.x || 成熟 3D FE 网格器，多语言 API、OpenCASCADE 集成，适合标准工程管线。 || 复杂薄壁和极端尺度差异仍需网格质量控制。
+-[TABLE 8 ROW 6] 替代体离散 || Voxel/SDF particles / point sampling || 对 PD、MPM 等无网格/粒子方法友好。 || 不能完全替代高质量表面/体网格资产。
++[TABLE 9 ROW 1] 功能 || 候选算法/库 || 优势 || 注意点
++[TABLE 9 ROW 2] B-Rep/实体修复 || OpenCascade / CadQuery || 与参数化 CAD 同源，适合精确实体和 STEP 流程。 || 对脏扫描网格不是万能修复器。
++[TABLE 9 ROW 3] Polygon Mesh Repair || CGAL Polygon Mesh Repair || 可处理朝向、退化面、孔洞、边界缝合、自交检测/修复等。 || C++ 依赖较重；需围绕输入质量建立分级修复流程。
++[TABLE 9 ROW 4] SDF/体素修复 || OpenVDB MeshToVolume → VolumeToMesh || 能把三角网格转换为 SDF，并在复杂融合、重建、浮雕布尔方面非常实用。 || 体素分辨率决定细节与内存；精确 CAD 边界会有离散化误差。
++[TABLE 9 ROW 5] 四面体网格 || Gmsh 4.15.x || 成熟 3D FE 网格器，多语言 API、OpenCASCADE 集成，适合标准工程管线。 || 复杂薄壁和极端尺度差异仍需网格质量控制。
++[TABLE 9 ROW 6] 替代体离散 || Voxel/SDF particles / point sampling || 对 PD、MPM 等无网格/粒子方法友好。 || 不能完全替代高质量表面/体网格资产。
+ [P style=Normal] 截至 2026-03-24，Gmsh 当前稳定版为 4.15.2；CGAL 6.2 系列的 Polygon Mesh Repair 继续提供面朝向、退化几何、孔洞、自交等修复能力；OpenVDB 则明确提供 MeshToVolume 和 VolumeToMesh，并对 fracture seam 标记提供专门支持。[R3][R4][R15][R16]
+ [P style=Heading1] 5. 语义纹样生成：不要只生成“纹理图”
+ [P style=Normal] 纹样应拆成 Motif（母题）— Layout（布局）— Repetition/Symmetry（连续规则）— Surface Mapping（曲面映射）— Relief/Material（几何与材质表达）五层。这样才能同时满足“有意义、连续、多样、可编辑、可复现”。
+-[TABLE 9 ROW 1] 方法 || 定位 || 优势 || 主要限制 || 建议用途
+-[TABLE 9 ROW 2] 规则/图元库 + Graph Grammar || 稳定主干 || 语义最可控，可保证“鸟-枝-花-叶”等组合关系、区域约束与连续带状布局。 || 需要建设图元库和规则库。 || 所有纹样的结构骨架和约束层。
+-[TABLE 9 ROW 3] L-System / 植物生长文法 || 稳定主干 || 非常适合藤蔓、树枝、叶片、缠枝、竹叶等生长结构。 || 不适合所有人物/动物/叙事图案。 || 植物类/枝蔓类纹样生成。
+-[TABLE 9 ROW 4] Wallpaper / Frieze / Symmetry Group || 稳定主干 || 天然保证二方连续、四方连续、环状重复和对称边饰。 || 偏几何结构，需要与语义 motif 结合。 || 边饰、回纹、连珠纹、几何连续纹。
+-[TABLE 9 ROW 5] IntroSVG (CVPR 2026) || 前沿强候选 || Generator-Critic 闭环，能基于渲染反馈迭代修正，强调复杂结构、语义一致与可编辑 SVG。 || 属于快速发展的模型路线；生成结果仍需语法/几何校验。 || Text→SVG 语义 motif 或复杂图案草案。
+-[TABLE 9 ROW 6] OmniSVG 1.1 || 前沿/可用 || VLM 端到端 SVG，面向从图标到复杂插画；公开权重和训练生态持续更新。 || 依赖较大模型，复杂连续纹样仍需程序层约束。 || 多模态 motif/插画式纹样候选。
+-[TABLE 9 ROW 7] SVGen || 研究可用 || SVG-1M、课程学习、CoT、RL；文本到 SVG 路线清晰。 || 更像通用 SVG 生成器，不自带器物表面布局语法。 || 可作为轻量/替代 SVG 后端。
+-[TABLE 9 ROW 8] RefineSVG (2026) || 前沿实验 || Image→SVG 闭环视觉反馈和自纠正，适合把参考纹样高质量矢量化。 || 偏参考图重建，不是 Text→Pattern 的唯一方案。 || 历史纹样/参考图矢量化 Backend。
++[TABLE 10 ROW 1] 方法 || 定位 || 优势 || 主要限制 || 建议用途
++[TABLE 10 ROW 2] 规则/图元库 + Graph Grammar || 稳定主干 || 语义最可控，可保证“鸟-枝-花-叶”等组合关系、区域约束与连续带状布局。 || 需要建设图元库和规则库。 || 所有纹样的结构骨架和约束层。
++[TABLE 10 ROW 3] L-System / 植物生长文法 || 稳定主干 || 非常适合藤蔓、树枝、叶片、缠枝、竹叶等生长结构。 || 不适合所有人物/动物/叙事图案。 || 植物类/枝蔓类纹样生成。
++[TABLE 10 ROW 4] Wallpaper / Frieze / Symmetry Group || 稳定主干 || 天然保证二方连续、四方连续、环状重复和对称边饰。 || 偏几何结构，需要与语义 motif 结合。 || 边饰、回纹、连珠纹、几何连续纹。
++[TABLE 10 ROW 5] IntroSVG (CVPR 2026) || 前沿强候选 || Generator-Critic 闭环，能基于渲染反馈迭代修正，强调复杂结构、语义一致与可编辑 SVG。 || 属于快速发展的模型路线；生成结果仍需语法/几何校验。 || Text→SVG 语义 motif 或复杂图案草案。
++[TABLE 10 ROW 6] OmniSVG 1.1 || 前沿/可用 || VLM 端到端 SVG，面向从图标到复杂插画；公开权重和训练生态持续更新。 || 依赖较大模型，复杂连续纹样仍需程序层约束。 || 多模态 motif/插画式纹样候选。
++[TABLE 10 ROW 7] SVGen || 研究可用 || SVG-1M、课程学习、CoT、RL；文本到 SVG 路线清晰。 || 更像通用 SVG 生成器，不自带器物表面布局语法。 || 可作为轻量/替代 SVG 后端。
++[TABLE 10 ROW 8] RefineSVG (2026) || 前沿实验 || Image→SVG 闭环视觉反馈和自纠正，适合把参考纹样高质量矢量化。 || 偏参考图重建，不是 Text→Pattern 的唯一方案。 || 历史纹样/参考图矢量化 Backend。
+ [P style=Normal] IntroSVG 在 CVPR 2026 提出统一 Generator/Critic 的“生成—渲染—评价—修正”闭环；OmniSVG 作为 NeurIPS 2025 工作，在 2025 年底已发布 1.1 权重；SVGen 则采用 SVG-1M、课程学习和强化学习。它们适合作为“语义图元/复杂纹样生成器”，但连续布局仍应由程序化规则控制。[R6][R7][R8][R9]
+ [P style=Heading1] 6. 曲面映射与连续纹样
+-[TABLE 10 ROW 1] 算法/库 || 优势 || 适用场景 || 限制/注意
+-[TABLE 10 ROW 2] xatlas || 小型 C++11、无外部依赖、自动生成唯一 UV 坐标；易嵌入批处理。 || 默认自动 UV、批量资产。 || 以工程实用为主，不保证在所有复杂曲面上达到最小畸变。
+-[TABLE 10 ROW 3] Boundary First Flattening (BFF) || 低畸变 conformal flattening、支持 cone singularity、seamless maps、复杂拓扑，百万三角形也可交互。 || 高质量纹样区域、对畸变敏感的花鸟纹。 || 代码较成熟但更新节奏不如新项目；集成复杂度高于 xatlas。
+-[TABLE 10 ROW 4] libigl LSCM || 算法简单、开放、易研究和二次开发。 || 单 patch、快速参数化、算法实验。 || 对复杂拓扑/全局无缝需要额外切缝策略。
+-[TABLE 10 ROW 5] libigl ARAP / SLIM || 更注重局部形状/距离保持；SLIM 可抑制翻转。 || 高质量局部映射、强约束纹样区域。 || 非线性优化，算力高于简单 UV。
+-[TABLE 10 ROW 6] 方向场 / N-RoSy + Poisson || 可让纹样沿器物结构方向“流动”，如藤蔓绕肩部、条纹沿壶嘴。 || 语义方向性纹样和各向异性布局。 || 需要高质量曲率/方向场和 seam 处理。
++[TABLE 11 ROW 1] 算法/库 || 优势 || 适用场景 || 限制/注意
++[TABLE 11 ROW 2] xatlas || 小型 C++11、无外部依赖、自动生成唯一 UV 坐标；易嵌入批处理。 || 默认自动 UV、批量资产。 || 以工程实用为主，不保证在所有复杂曲面上达到最小畸变。
++[TABLE 11 ROW 3] Boundary First Flattening (BFF) || 低畸变 conformal flattening、支持 cone singularity、seamless maps、复杂拓扑，百万三角形也可交互。 || 高质量纹样区域、对畸变敏感的花鸟纹。 || 代码较成熟但更新节奏不如新项目；集成复杂度高于 xatlas。
++[TABLE 11 ROW 4] libigl LSCM || 算法简单、开放、易研究和二次开发。 || 单 patch、快速参数化、算法实验。 || 对复杂拓扑/全局无缝需要额外切缝策略。
++[TABLE 11 ROW 5] libigl ARAP / SLIM || 更注重局部形状/距离保持；SLIM 可抑制翻转。 || 高质量局部映射、强约束纹样区域。 || 非线性优化，算力高于简单 UV。
++[TABLE 11 ROW 6] 方向场 / N-RoSy + Poisson || 可让纹样沿器物结构方向“流动”，如藤蔓绕肩部、条纹沿壶嘴。 || 语义方向性纹样和各向异性布局。 || 需要高质量曲率/方向场和 seam 处理。
+ [P style=Normal] xatlas 是适合默认工程模式的轻量 UV 后端；BFF 更适合作为高质量低畸变模式；libigl 提供 LSCM、ARAP、SLIM 等参数化和优化基础。[R10][R11][R12]
+ [P style=Heading1] 7. 浮雕、刻纹与 PBR 材质
+ [P style=Heading2] 7.1 几何装饰候选路线
+-[TABLE 11 ROW 1] 路线 || 优势 || 限制 || 建议
+-[TABLE 11 ROW 2] SVG/Vector → Signed Distance Field → Height Field → Normal Displacement || 参数清晰、可复现、可控制凸起/凹陷高度、边缘轮廓和平滑曲线。 || 极高频细节会受网格密度限制。 || 默认浮雕/刻纹生成路线。
+-[TABLE 11 ROW 3] Exact B-Rep Boolean / Sweep || 几何精确，适合规则刻槽、凸棱和工程尺寸装饰。 || 复杂花鸟图案布尔成本高。 || 规则纹/结构性装饰。
+-[TABLE 11 ROW 4] OpenVDB SDF Boolean/Fusion || 复杂图案、扫描网格和高拓扑变化更稳；易重建 watertight surface。 || 存在体素化误差，内存随分辨率增加。 || 复杂浮雕融合与修复模式。
+-[TABLE 11 ROW 5] Pure Normal/Displacement Map || 速度快、渲染友好。 || 不改变真实几何，不适合要求几何断裂受影响的场景。 || 仅 Render-Ready 资产的视觉层。
++[TABLE 12 ROW 1] 路线 || 优势 || 限制 || 建议
++[TABLE 12 ROW 2] SVG/Vector → Signed Distance Field → Height Field → Normal Displacement || 参数清晰、可复现、可控制凸起/凹陷高度、边缘轮廓和平滑曲线。 || 极高频细节会受网格密度限制。 || 默认浮雕/刻纹生成路线。
++[TABLE 12 ROW 3] Exact B-Rep Boolean / Sweep || 几何精确，适合规则刻槽、凸棱和工程尺寸装饰。 || 复杂花鸟图案布尔成本高。 || 规则纹/结构性装饰。
++[TABLE 12 ROW 4] OpenVDB SDF Boolean/Fusion || 复杂图案、扫描网格和高拓扑变化更稳；易重建 watertight surface。 || 存在体素化误差，内存随分辨率增加。 || 复杂浮雕融合与修复模式。
++[TABLE 12 ROW 5] Pure Normal/Displacement Map || 速度快、渲染友好。 || 不改变真实几何，不适合要求几何断裂受影响的场景。 || 仅 Render-Ready 资产的视觉层。
+ [P style=Heading2] 7.2 PBR / 材质生成候选
+-[TABLE 12 ROW 1] 方法 || 年份/定位 || 优势 || 用途
+-[TABLE 12 ROW 2] StableMaterials || CVPR 2026 / 前沿 || 面向 PBR 材料生成；半监督 + LDM；高分辨率 refinement，并蒸馏出四步快速生成。 || 陶土、瓷釉、玻璃表面、石材等程序化材质候选。
+-[TABLE 12 ROW 3] MaterialMVP || ICCV 2025 Highlight / 前沿可用 || 多视角 PBR diffusion，强调 illumination-invariant 和多视图一致。 || 根据参考图/多视角条件生成一致的 PBR 材质。
+-[TABLE 12 ROW 4] Procedural PBR / Substance-like rules || 稳定主干 || 完全可控、可复现、适合参数扫描。 || 默认基础材质与数据集生成；AI 材质作为增强。
++[TABLE 13 ROW 1] 方法 || 年份/定位 || 优势 || 用途
++[TABLE 13 ROW 2] StableMaterials || CVPR 2026 / 前沿 || 面向 PBR 材料生成；半监督 + LDM；高分辨率 refinement，并蒸馏出四步快速生成。 || 陶土、瓷釉、玻璃表面、石材等程序化材质候选。
++[TABLE 13 ROW 3] MaterialMVP || ICCV 2025 Highlight / 前沿可用 || 多视角 PBR diffusion，强调 illumination-invariant 和多视图一致。 || 根据参考图/多视角条件生成一致的 PBR 材质。
++[TABLE 13 ROW 4] Procedural PBR / Substance-like rules || 稳定主干 || 完全可控、可复现、适合参数扫描。 || 默认基础材质与数据集生成；AI 材质作为增强。
+ [P style=Normal] StableMaterials 是 CVPR 2026 的 PBR 材料生成工作；MaterialMVP 在 ICCV 2025 被列为 Highlight，并已公开代码。[R13][R14]
+ [P style=Heading1] 8. VesselForge 推荐的软件架构与独立发展空间
+-[TABLE 13 ROW 1] vesselforge-core
++[TABLE 14 ROW 1] vesselforge-core
+ ├─ geometry-api
+ ├─ pattern-api
+ ├─ material-api
+@@ -167,7 +190,7 @@
+ ├─ material-stablematerials
+ └─ meshing-gmsh
+ [P style=Heading2] 8.1 建议对外 API
+-[TABLE 14 ROW 1] asset = vesselforge.generate(
++[TABLE 15 ROW 1] asset = vesselforge.generate(
+     shape_spec=...,        # 参数、程序规则、参考或生成式提案
+     ornament_spec=...,     # 语义 motif + layout + relief
+     material_spec=...,
+@@ -184,10 +207,20 @@
+ [P style=ListBullet] CLI + Python SDK + REST/gRPC；GUI/Blender 插件属于可选客户端。
+ [P style=ListBullet] Benchmark：几何有效率、封闭率、网格质量、纹样连续性、参数可控性、生成吞吐、可复现率。
+ [P style=ListBullet] 将“生成式 3D”视为 Backend，不将平台变成某个模型的壳。
++[P style=Heading2] 8.3 VesselForge 建议的混合实现栈
++[P style=Normal] VesselForge 的主业务层可以以 Python 为主，因为其重计算应尽量下沉到 OpenCascade、OpenVDB、Gmsh、CGAL、AI/CUDA 框架等原生后端。只有在自研几何/网格/批量处理出现明确 CPU 热点时，才进入 C++ Core；AI 模型训练与推理按所用框架走 GPU/CUDA。Web 控制面统一由 Node.js/TypeScript 提供。
++[TABLE 16 ROW 1] 模块 || 建议技术栈 || 说明
++[TABLE 16 ROW 2] 参数化/工作流 || Python || 器型参数、Grammar、批量采样、Asset Contract、CLI/SDK。
++[TABLE 16 ROW 3] 精确几何 || OpenCascade/CadQuery（C++ core + Python API） || 尽量调用成熟内核，不在 Python 中重写 B-Rep/NURBS。
++[TABLE 16 ROW 4] SDF/体处理 || OpenVDB C++，Python 仅编排 || 大规模体素/SDF 处理走原生实现。
++[TABLE 16 ROW 5] 网格与修复 || Gmsh/CGAL C++ backend || 几何修复和 meshing 由原生库执行。
++[TABLE 16 ROW 6] AI 纹样/材质/3D || PyTorch + CUDA 或模型官方运行时 || GPU 推理由 CUDA/框架 kernel 执行；Python 仅作为推理控制层。
++[TABLE 16 ROW 7] 自研 CPU 热点 || C++20/23 || 只有 profiler 证明必要时才写原生扩展。
++[TABLE 16 ROW 8] Web/服务层 || Node.js LTS + TypeScript || Web API、作业管理、实时状态、用户/项目服务；不承担 CAD/AI 重计算。
+ [P style=Heading1] 第二部分：PG-Frag——通用三维物理断裂与碎片生成引擎
+-[TABLE 15 ROW 1] 核心目标：接收任意满足契约的三维实体、材料定义、初始条件和环境，计算动态损伤、裂纹形成与传播、碎片分离、真实三维断面及碎片后续运动。核心不得知道输入对象是“碗”还是“茶壶”。
++[TABLE 17 ROW 1] 核心目标：接收任意满足契约的三维实体、材料定义、初始条件和环境，计算动态损伤、裂纹形成与传播、碎片分离、真实三维断面及碎片后续运动。核心不得知道输入对象是“碗”还是“茶壶”。
+ [P style=Heading1] 9. PG-Frag 功能架构
+-[TABLE 16 ROW 1] PG-Frag Core
++[TABLE 18 ROW 1] PG-Frag Core
+ ├─ Input/Geometry Adapter
+ ├─ Material & Field System
+ ├─ Solver Abstraction Layer
+@@ -205,60 +238,60 @@
+ └─ Plugin Registry + Scheduler + HPC
+ [P style=Heading2] 9.1 输入契约
+ [P style=Normal] 最小抽象建议固定为 F(G, M, I, E, C) → Result，其中 G=Geometry，M=Material，I=Initial State，E=Environment，C=Simulation Config。对象类别标签可作为 metadata，但不得参与核心求解器分支。
+-[TABLE 17 ROW 1] 输入 || 必须包含 || 可选高级信息
+-[TABLE 17 ROW 2] Geometry || 真实尺度、封闭实体或可转换体表示、坐标系。 || 区域标签、壳/实体层、多材料分区、初始缺陷几何。
+-[TABLE 17 ROW 3] Material || 密度、弹性参数、破坏/损伤参数所需最小集合。 || 随机场、孔隙、晶粒、纤维方向、残余应力、温度/应变率依赖。
+-[TABLE 17 ROW 4] Initial State || 位置、姿态、线速度、角速度。 || 预应力、初始裂纹、温度场。
+-[TABLE 17 ROW 5] Environment || 重力、碰撞体、地面材料、接触/摩擦。 || 多体场景、约束、流体或热环境。
+-[TABLE 17 ROW 6] Simulation Config || Backend、精度、时间步/容差、输出选项。 || 自适应策略、HPC 分区、二次碎裂策略。
++[TABLE 19 ROW 1] 输入 || 必须包含 || 可选高级信息
++[TABLE 19 ROW 2] Geometry || 真实尺度、封闭实体或可转换体表示、坐标系。 || 区域标签、壳/实体层、多材料分区、初始缺陷几何。
++[TABLE 19 ROW 3] Material || 密度、弹性参数、破坏/损伤参数所需最小集合。 || 随机场、孔隙、晶粒、纤维方向、残余应力、温度/应变率依赖。
++[TABLE 19 ROW 4] Initial State || 位置、姿态、线速度、角速度。 || 预应力、初始裂纹、温度场。
++[TABLE 19 ROW 5] Environment || 重力、碰撞体、地面材料、接触/摩擦。 || 多体场景、约束、流体或热环境。
++[TABLE 19 ROW 6] Simulation Config || Backend、精度、时间步/容差、输出选项。 || 自适应策略、HPC 分区、二次碎裂策略。
+ [P style=Heading1] 10. 动态断裂算法：必须多后端共存
+ [P style=Normal] PG-Frag 不应宣称存在一个算法对所有材料、速度区间、几何尺度和精度要求都最优。正确架构是统一输入/输出与材料接口，在求解层保留多个 Backend。
+-[TABLE 18 ROW 1] 方法 || 优势 || 典型适用 || 关键限制 || 平台角色
+-[TABLE 18 ROW 2] Bond-Based Peridynamics (BB-PD) || 形式简单、裂纹天然产生、实现和验证门槛较低。 || 脆性断裂基础实验、原型、教学/基准。 || 材料泊松比/本构自由度受限制，复杂材料表达不足。 || 兼容与基准 Backend。
+-[TABLE 18 ROW 3] Ordinary State-Based PD (OSB-PD) || 比 BB-PD 支持更一般材料响应，保留非局部自由裂纹优势。 || 普通脆性材料、裂纹萌生/分叉/碎裂。 || 计算量大，边界/表面修正和参数标定重要。 || 稳定主 Backend 候选之一。
+-[TABLE 18 ROW 4] Non-Ordinary State-Based PD (NOSB-PD) || 可与更一般连续介质本构结合，适应各向异性/复杂材料。 || 陶瓷、复材、竹材等更复杂材料扩展。 || 零能模式/稳定化、数值鲁棒性和实现复杂度更高。 || 高级主 Backend 候选。
+-[TABLE 18 ROW 5] FEM–PD Coupling || 大部分完好区域用 FEM，裂纹区使用 PD，可显著节省全局非局部计算。 || 大尺寸器物、批量生成、局部断裂。 || 耦合区、能量一致性、动态迁移和复杂 3D 自适应仍是研究/工程难点。 || 中长期默认高效路线。
+-[TABLE 18 ROW 6] Phase-Field Fracture || 裂纹无需预定义；变分框架、裂纹拓扑表达强，适合高保真研究。 || 高精度参考、裂纹路径/能量研究、多裂纹。 || 计算昂贵；2026 研究指出动态 fragmentation 存在 crack widening，需要 mass erosion 等修正。 || Reference / High-Fidelity Backend。
+-[TABLE 18 ROW 7] XFEM / Enriched FEM || 在 FEM 框架内处理不连续面，成熟理论和工程软件生态。 || 少量主裂纹、裂纹尖端问题。 || 大量裂纹、剧烈碎裂与拓扑变化管理复杂。 || 特定问题 Backend。
+-[TABLE 18 ROW 8] Cohesive Zone Model (CZM) || 界面开裂、分层、粘结失效物理直观，参数有明确含义。 || 釉层-胎体、竹纤维/基体、层状复材、预期界面。 || 通常需要预先存在的潜在界面，不适合任意体内裂纹作为唯一方法。 || Interface Plugin，与 PD/MPM/FEM 组合。
+-[TABLE 18 ROW 9] Material Point Method (MPM) || 大变形、多材料接触和碎片后接触非常强。 || 复合材料、界面、极大变形、复杂接触。 || 3D 显式裂纹传播生态不如 PD/Phase-field 完整；实现差异大。 || 研究/特定材料 Backend。
+-[TABLE 18 ROW 10] Explicit FEM + Damage/JH-2 || 工业成熟、高速动力学和碰撞生态强，JH-2 专为玻璃/陶瓷等脆材。 || 高速冲击、高压、高应变率陶瓷/玻璃。 || element deletion 等会有网格依赖，断面几何未必适合精细碎片表面。 || 高速冲击专用 Backend。
+-[TABLE 18 ROW 11] SPH / particle damage || 大变形、无网格、极端破坏场景灵活。 || 冲击、粉碎、高速破坏探索。 || 固体裂纹和断面精确度依实现而异，数值耗散/核参数敏感。 || 实验 Backend，不作为默认。
++[TABLE 20 ROW 1] 方法 || 优势 || 典型适用 || 关键限制 || 平台角色
++[TABLE 20 ROW 2] Bond-Based Peridynamics (BB-PD) || 形式简单、裂纹天然产生、实现和验证门槛较低。 || 脆性断裂基础实验、原型、教学/基准。 || 材料泊松比/本构自由度受限制，复杂材料表达不足。 || 兼容与基准 Backend。
++[TABLE 20 ROW 3] Ordinary State-Based PD (OSB-PD) || 比 BB-PD 支持更一般材料响应，保留非局部自由裂纹优势。 || 普通脆性材料、裂纹萌生/分叉/碎裂。 || 计算量大，边界/表面修正和参数标定重要。 || 稳定主 Backend 候选之一。
++[TABLE 20 ROW 4] Non-Ordinary State-Based PD (NOSB-PD) || 可与更一般连续介质本构结合，适应各向异性/复杂材料。 || 陶瓷、复材、竹材等更复杂材料扩展。 || 零能模式/稳定化、数值鲁棒性和实现复杂度更高。 || 高级主 Backend 候选。
++[TABLE 20 ROW 5] FEM–PD Coupling || 大部分完好区域用 FEM，裂纹区使用 PD，可显著节省全局非局部计算。 || 大尺寸器物、批量生成、局部断裂。 || 耦合区、能量一致性、动态迁移和复杂 3D 自适应仍是研究/工程难点。 || 中长期默认高效路线。
++[TABLE 20 ROW 6] Phase-Field Fracture || 裂纹无需预定义；变分框架、裂纹拓扑表达强，适合高保真研究。 || 高精度参考、裂纹路径/能量研究、多裂纹。 || 计算昂贵；2026 研究指出动态 fragmentation 存在 crack widening，需要 mass erosion 等修正。 || Reference / High-Fidelity Backend。
++[TABLE 20 ROW 7] XFEM / Enriched FEM || 在 FEM 框架内处理不连续面，成熟理论和工程软件生态。 || 少量主裂纹、裂纹尖端问题。 || 大量裂纹、剧烈碎裂与拓扑变化管理复杂。 || 特定问题 Backend。
++[TABLE 20 ROW 8] Cohesive Zone Model (CZM) || 界面开裂、分层、粘结失效物理直观，参数有明确含义。 || 釉层-胎体、竹纤维/基体、层状复材、预期界面。 || 通常需要预先存在的潜在界面，不适合任意体内裂纹作为唯一方法。 || Interface Plugin，与 PD/MPM/FEM 组合。
++[TABLE 20 ROW 9] Material Point Method (MPM) || 大变形、多材料接触和碎片后接触非常强。 || 复合材料、界面、极大变形、复杂接触。 || 3D 显式裂纹传播生态不如 PD/Phase-field 完整；实现差异大。 || 研究/特定材料 Backend。
++[TABLE 20 ROW 10] Explicit FEM + Damage/JH-2 || 工业成熟、高速动力学和碰撞生态强，JH-2 专为玻璃/陶瓷等脆材。 || 高速冲击、高压、高应变率陶瓷/玻璃。 || element deletion 等会有网格依赖，断面几何未必适合精细碎片表面。 || 高速冲击专用 Backend。
++[TABLE 20 ROW 11] SPH / particle damage || 大变形、无网格、极端破坏场景灵活。 || 冲击、粉碎、高速破坏探索。 || 固体裂纹和断面精确度依实现而异，数值耗散/核参数敏感。 || 实验 Backend，不作为默认。
+ [P style=Heading1] 11. 2026 年可参考的物理求解软件与算法实现
+-[TABLE 19 ROW 1] 软件/实现 || 当前状态与能力 || 适合作为什么 || 不应误解为
+-[TABLE 19 ROW 2] PeriLab.jl || 2026-08 的 2.2.3 仍在更新；支持 BB/BA/OSB/NOSB、材料/损伤插件、Contact、MPI、FEM/PD coupling、Gmsh import。 || PG-Frag 的 PD 原型和参考 Backend；也适合借鉴插件化输入 deck。 || 已经解决了所有任意 3D 自适应 FEM-PD 问题；官方文档仍注明耦合区单元形状限制。
+-[TABLE 19 ROW 3] Peridynamics.jl || Julia 并行 PD 包，支持动态/准静态、多种 PD formulation、multibody contact、MPI/多线程。 || 第二 PD 参考实现，便于交叉验证。 || 完整通用物理引擎。
+-[TABLE 19 ROW 4] OpenRadioss || 开源、工业验证的 explicit dynamics FEM 求解器，长期用于高度非线性动态事件。 || 高速碰撞/冲击、JH-2 对照、工业级验证。 || 高保真自由断面生成的唯一后端。
+-[TABLE 19 ROW 5] OpenRadioss LAW79 / JH-2 || 官方材料律明确描述 ceramics 和 glass 的 JH-2。 || 高应变率脆性材料本构参考。 || 普通低速摔落下所有陶瓷断裂的通用最佳模型。
+-[TABLE 19 ROW 6] NairnMPM / OSParticulas || 支持显式 cracks、contact laws、traction/cohesive laws、多材料接触；但官方 3D cracks 文档说明 3D explicit crack propagation 仍有限制。 || MPM/CZM/界面研究参考。 || 当前最成熟的任意 3D 碎裂默认方案。
+-[TABLE 19 ROW 7] Project Chrono || 开源多物理 C++ 引擎，支持 rigid body、collision/contact、FEA，并有 PyChrono。 || 碎片已经分离后的刚体/多体运动与碰撞后端。 || 裂纹求解器本身。
++[TABLE 21 ROW 1] 软件/实现 || 当前状态与能力 || 适合作为什么 || 不应误解为
++[TABLE 21 ROW 2] PeriLab.jl || 2026-08 的 2.2.3 仍在更新；支持 BB/BA/OSB/NOSB、材料/损伤插件、Contact、MPI、FEM/PD coupling、Gmsh import。 || PG-Frag 的 PD 原型和参考 Backend；也适合借鉴插件化输入 deck。 || 已经解决了所有任意 3D 自适应 FEM-PD 问题；官方文档仍注明耦合区单元形状限制。
++[TABLE 21 ROW 3] Peridynamics.jl || Julia 并行 PD 包，支持动态/准静态、多种 PD formulation、multibody contact、MPI/多线程。 || 第二 PD 参考实现，便于交叉验证。 || 完整通用物理引擎。
++[TABLE 21 ROW 4] OpenRadioss || 开源、工业验证的 explicit dynamics FEM 求解器，长期用于高度非线性动态事件。 || 高速碰撞/冲击、JH-2 对照、工业级验证。 || 高保真自由断面生成的唯一后端。
++[TABLE 21 ROW 5] OpenRadioss LAW79 / JH-2 || 官方材料律明确描述 ceramics 和 glass 的 JH-2。 || 高应变率脆性材料本构参考。 || 普通低速摔落下所有陶瓷断裂的通用最佳模型。
++[TABLE 21 ROW 6] NairnMPM / OSParticulas || 支持显式 cracks、contact laws、traction/cohesive laws、多材料接触；但官方 3D cracks 文档说明 3D explicit crack propagation 仍有限制。 || MPM/CZM/界面研究参考。 || 当前最成熟的任意 3D 碎裂默认方案。
++[TABLE 21 ROW 7] Project Chrono || 开源多物理 C++ 引擎，支持 rigid body、collision/contact、FEA，并有 PyChrono。 || 碎片已经分离后的刚体/多体运动与碰撞后端。 || 裂纹求解器本身。
+ [P style=Normal] PeriLab 的项目文档明确列出 state-based formulations、damage、contact、FEM/PD coupling、MPI 等能力；其 2026 changelog 还加入 HEX8 FE-PD coupling 等改进。OpenRadioss 则定位为 industry-proven dynamic event solver，而 LAW79 明确实现 JH-2，用于 ceramics 和 glass。[R17][R18][R19][R20][R21][R22]
+ [P style=Heading1] 12. 材料系统：通用化的核心不在“材料名称”，而在可组合本构
+ [P style=Normal] PG-Frag 的 Material Plugin 不应只接受 material="porcelain" 这样的字符串。字符串只能是 preset 的入口；真正的内部模型必须由参数、场、取向、界面和损伤律构成。
+-[TABLE 20 ROW 1] 材料建模维度 || 候选技术 || 用途
+-[TABLE 20 ROW 2] 均匀本构 || 线弹性、各向异性弹性、塑性/粘弹等 || 基础力学响应。
+-[TABLE 20 ROW 3] 空间随机场 || Gaussian Random Field (GRF)、谱方法 || 生成 E(x)、Gc(x)、强度(x)、孔隙率(x) 等相关随机场。
+-[TABLE 20 ROW 4] 低维随机场表达 || Karhunen–Loève Expansion (KLE) || 用少量随机变量表示可复现的空间相关材料变化，适合大规模实验。
+-[TABLE 20 ROW 5] 脆性缺陷统计 || Weibull flaw/strength distribution || 玻璃/陶瓷强度散布、尺寸效应和表面缺陷统计。
+-[TABLE 20 ROW 6] 晶粒/颗粒结构 || Voronoi / Laguerre / weighted tessellation || 生成晶粒、颗粒和局部边界；用于细观断面而不是“随机切块”。
+-[TABLE 20 ROW 7] 纤维/方向场 || Orthotropic tensor field / vector orientation field || 竹材、木材、复合材料。
+-[TABLE 20 ROW 8] 多层/多材料 || Region-wise material + interface/CZM || 釉层/胎体、复合层、涂层、粘结面。
+-[TABLE 20 ROW 9] 初始缺陷 || surface scratch, pores, microcracks, inclusions || 决定随机但物理一致的裂纹萌生位置。
+-[TABLE 21 ROW 1] 关键原则：随机性必须来自可记录、可控制的材料/缺陷随机变量，而不是在裂纹生成后再“随机抖动断面”。同一几何、同一冲击事件，在不同 defect seed 下可以得到不同但统计合理的碎裂结果。
++[TABLE 22 ROW 1] 材料建模维度 || 候选技术 || 用途
++[TABLE 22 ROW 2] 均匀本构 || 线弹性、各向异性弹性、塑性/粘弹等 || 基础力学响应。
++[TABLE 22 ROW 3] 空间随机场 || Gaussian Random Field (GRF)、谱方法 || 生成 E(x)、Gc(x)、强度(x)、孔隙率(x) 等相关随机场。
++[TABLE 22 ROW 4] 低维随机场表达 || Karhunen–Loève Expansion (KLE) || 用少量随机变量表示可复现的空间相关材料变化，适合大规模实验。
++[TABLE 22 ROW 5] 脆性缺陷统计 || Weibull flaw/strength distribution || 玻璃/陶瓷强度散布、尺寸效应和表面缺陷统计。
++[TABLE 22 ROW 6] 晶粒/颗粒结构 || Voronoi / Laguerre / weighted tessellation || 生成晶粒、颗粒和局部边界；用于细观断面而不是“随机切块”。
++[TABLE 22 ROW 7] 纤维/方向场 || Orthotropic tensor field / vector orientation field || 竹材、木材、复合材料。
++[TABLE 22 ROW 8] 多层/多材料 || Region-wise material + interface/CZM || 釉层/胎体、复合层、涂层、粘结面。
++[TABLE 22 ROW 9] 初始缺陷 || surface scratch, pores, microcracks, inclusions || 决定随机但物理一致的裂纹萌生位置。
++[TABLE 23 ROW 1] 关键原则：随机性必须来自可记录、可控制的材料/缺陷随机变量，而不是在裂纹生成后再“随机抖动断面”。同一几何、同一冲击事件，在不同 defect seed 下可以得到不同但统计合理的碎裂结果。
+ [P style=Heading1] 13. 动态接触、碎片分离与二次碎裂
+ [P style=Normal] 断裂发生后继续用最高成本断裂求解器追踪每个完整碎片的长距离飞行通常不划算。推荐把“连续体断裂”和“分离后刚体/多体动力学”解耦。
+-[TABLE 22 ROW 1] Continuum / PD / Phase-field
++[TABLE 24 ROW 1] Continuum / PD / Phase-field
+        ↓ connected components + surface extraction
+ Fragment F1, F2, ... Fn
+        ↓ transfer mass / inertia / velocity / angular momentum
+ Rigid-body / multibody backend (e.g. Chrono)
+        ↓ if secondary impact exceeds fracture trigger
+ selected fragment → fracture backend again
+-[TABLE 23 ROW 1] 技术 || 优势 || 角色
+-[TABLE 23 ROW 2] Project Chrono || 嵌入式 C++、PyChrono、3D collision/contact、rigid/flexible bodies。 || 推荐碎片动力学 Backend。
+-[TABLE 23 ROW 3] DEM || 大量颗粒/碎块接触成熟。 || 极大量小碎片/颗粒化场景。
+-[TABLE 23 ROW 4] IPC / robust contact || 高质量几何接触与防穿透思想。 || 高保真接触实验 Backend。
+-[TABLE 23 ROW 5] Solver-native contact || 减少状态转换。 || 短时断裂阶段内部接触。
++[TABLE 25 ROW 1] 技术 || 优势 || 角色
++[TABLE 25 ROW 2] Project Chrono || 嵌入式 C++、PyChrono、3D collision/contact、rigid/flexible bodies。 || 推荐碎片动力学 Backend。
++[TABLE 25 ROW 3] DEM || 大量颗粒/碎块接触成熟。 || 极大量小碎片/颗粒化场景。
++[TABLE 25 ROW 4] IPC / robust contact || 高质量几何接触与防穿透思想。 || 高保真接触实验 Backend。
++[TABLE 25 ROW 5] Solver-native contact || 减少状态转换。 || 短时断裂阶段内部接触。
+ [P style=Normal] Chrono 官方将自己定位为开源 multi-physics simulation engine，并提供 3D rigid body、collision/contact、FEA 和 PyChrono，适合作为碎片分离后的动力学模块。[R23][R24]
+ [P style=Heading1] 14. 断面重建与输出：物理引擎必须把“新生成表面”视为一级数据
+ [P style=ListBullet] 每个 Fragment 输出原始外表面与 fracture surface 的明确分区。
+@@ -268,15 +301,15 @@
+ [P style=ListBullet] 必须区分“物理得到的断面宏观形状”和“可选的细观表面增强”；任何增强都需标记来源，避免把视觉后处理误当物理真值。
+ [P style=ListBullet] OpenVDB VolumeToMesh 可作为 SDF/体表示的表面重建候选，并支持以未破裂参考 SDF 标记 exterior/fracture seam，值得作为实现参考。[R16]
+ [P style=Heading1] 15. 精度 Profile：统一接口，不统一算法
+-[TABLE 24 ROW 1] Profile || 目标 || 可能后端组合 || 典型用途
+-[TABLE 24 ROW 2] FAST || 高吞吐、合理统计、快速预览 || Coarse FEM/PD、简化材料场、低分辨率接触。 || 批量筛选、参数扫描。
+-[TABLE 24 ROW 3] BALANCED || 通用默认 || OSB/NOSB-PD 或 FEM-PD + 随机场 + 标准 contact。 || 常规科研/生成。
+-[TABLE 24 ROW 4] HIGH || 更高断面与裂纹精度 || Dense PD / adaptive PD + 细观结构 + 二次碎裂。 || 高质量样本、材料研究。
+-[TABLE 24 ROW 5] REFERENCE || 少量高保真对照 || Phase-field(+2026 动态修正研究)、高密度 PD、成熟 FEM/JH-2 对照。 || 验证其他 Backend 的系统偏差。
+-[TABLE 24 ROW 6] HIGH-RATE || 高应变率/冲击 || Explicit FEM + JH-2 / 高速 PD。 || 高速陶瓷/玻璃。
++[TABLE 26 ROW 1] Profile || 目标 || 可能后端组合 || 典型用途
++[TABLE 26 ROW 2] FAST || 高吞吐、合理统计、快速预览 || Coarse FEM/PD、简化材料场、低分辨率接触。 || 批量筛选、参数扫描。
++[TABLE 26 ROW 3] BALANCED || 通用默认 || OSB/NOSB-PD 或 FEM-PD + 随机场 + 标准 contact。 || 常规科研/生成。
++[TABLE 26 ROW 4] HIGH || 更高断面与裂纹精度 || Dense PD / adaptive PD + 细观结构 + 二次碎裂。 || 高质量样本、材料研究。
++[TABLE 26 ROW 5] REFERENCE || 少量高保真对照 || Phase-field(+2026 动态修正研究)、高密度 PD、成熟 FEM/JH-2 对照。 || 验证其他 Backend 的系统偏差。
++[TABLE 26 ROW 6] HIGH-RATE || 高应变率/冲击 || Explicit FEM + JH-2 / 高速 PD。 || 高速陶瓷/玻璃。
+ [P style=Normal] 2026 年关于 dynamic phase-field fragmentation 的研究指出 damage regularization zone 会出现 crack widening，并提出 mass erosion 作为缓解策略。因此 Phase-field 很适合高保真参考，但动态碎裂下必须把该问题写进验证清单，而不能把“phase-field”三个字自动等同于绝对真值。[R25]
+ [P style=Heading1] 16. PG-Frag 独立项目化架构
+-[TABLE 25 ROW 1] pgfrag-core
++[TABLE 27 ROW 1] pgfrag-core
+ ├─ geometry-contract
+ ├─ material-contract
+ ├─ event-contract
+@@ -302,9 +335,40 @@
+ [P style=ListBullet] 选择只做 fracture、只做 fragment dynamics，或完整 pipeline。
+ [P style=ListBullet] 通过 Python/CLI/REST/gRPC 运行同一个 job schema。
+ [P style=ListBullet] 把结果保存为自描述数据包，并能在数年后根据 manifest 复现。
++[P style=Heading2] 16.2 PG-Frag 高性能核心与异构计算架构（强制）
++[P style=Normal] PG-Frag 的数值核心必须按异构高性能计算设计。Python 不能承担大规模断裂、接触、粒子/单元更新的主循环；默认采用 C++ Native Core + CUDA GPU Backend + Python SDK/Orchestrator + 外部 Solver Adapter。这样既保留科研迭代速度，也避免未来因 Python 热循环成为瓶颈而整体重写。
++[TABLE 28 ROW 1] PG-Frag 模块 || 首选实现 || 性能/架构要求
++[TABLE 28 ROW 2] Core data model / geometry / topology || C++20/23 || SoA/CSR 等紧凑数据结构；支持多线程；公共 ABI/API 稳定。
++[TABLE 28 ROW 3] Neighbor / horizon search || CUDA C++（GPU）+ C++ CPU fallback || 空间哈希、uniform grid、BVH/Morton 等；百万级点时优先 GPU。
++[TABLE 28 ROW 4] PD bond/state force evaluation || CUDA C++ || 每 bond/particle 并行；状态尽量常驻 GPU。
++[TABLE 28 ROW 5] Damage / bond breaking / material field update || CUDA C++ || 高并行更新，减少 host-device 往返。
++[TABLE 28 ROW 6] Contact / collision 热路径 || Chrono/CUDA 或成熟 GPU contact backend || 优先复用成熟实现；自研仅在 benchmark 明确要求时进行。
++[TABLE 28 ROW 7] Time integration || 求解器原生实现；自研时 C++/CUDA || 禁止 Python timestep loop 作为生产后端。
++[TABLE 28 ROW 8] Fragment extraction / connected components || C++；规模大时 GPU || 拓扑与组件分析必须避免 Python 对象级遍历。
++[TABLE 28 ROW 9] Surface reconstruction || OpenVDB/CGAL/C++ || 断面重建与 mesh 修复下沉到原生库。
++[TABLE 28 ROW 10] External solvers || PeriLab/Julia、OpenRadioss、Chrono 等 || 通过 Adapter 执行并统一 Result Schema；保留原实现语言。
++[TABLE 28 ROW 11] Python SDK || Python + pybind11 || 提供 pgfrag.simulate()、实验控制、分析和 Agent 接口；pybind11 用于 C++/Python 薄绑定。[R27]
++[TABLE 28 ROW 12] Web/API || Node.js LTS + TypeScript || 只负责控制面、认证、队列、进度、结果索引；数值求解必须通过 Worker/Job Service 调用。
++[P style=Heading3] 16.2.1 推荐运行时拓扑
++[P style=Quote] Web / UI (Node.js + TypeScript)
++        ↓ Job API / Queue
++Python SDK / Orchestrator
++        ↓ pybind11 / Backend Adapter
++C++ Native Core ───── External Solver Backends
++        ↓                 ├─ PeriLab (Julia)
++CUDA GPU Backend          ├─ OpenRadioss
++        ↓                 └─ Chrono / others
++Unified PGFragResult / Artifact Store
++[P style=Heading3] 16.2.2 CUDA 使用原则
++[P style=ListBullet] 仅对可并行且占比高的热路径使用 CUDA；先 profile，再 GPU 化。
++[P style=ListBullet] 优先复用 CUDA/cu* 或第三方高性能 kernel；NVIDIA 官方建议成熟库优先于重复实现。[R26]
++[P style=ListBullet] GPU 状态尽量常驻显存，避免每个 timestep 在 CPU/GPU 间搬运大数组。
++[P style=ListBullet] 保留 CPU reference backend，用于正确性对照、CI、小规模调试和无 NVIDIA GPU 环境。
++[P style=ListBullet] 核心 GPU kernel 必须有 deterministic/reproducibility 策略说明；涉及原子操作或非确定归约时需记录容差。
++[P style=ListBullet] CUDA 是 NVIDIA 默认 GPU 路线；若后期需要 AMD/Intel 可通过 Kokkos/HIP/SYCL 增加可移植 Backend，而不是破坏公共接口。[R28]
+ [P style=Heading1] 第三部分：两个项目的标准接口与长期演化
+ [P style=Heading1] 17. VesselForge → PG-Frag：标准资产契约
+-[TABLE 26 ROW 1] asset_000123/
++[TABLE 29 ROW 1] asset_000123/
+ ├─ manifest.json
+ ├─ geometry/
+ │  ├─ surface.glb
+@@ -324,50 +388,50 @@
+    └─ generation.json
+ [P style=Normal] PG-Frag 只依赖“Asset Contract”，不依赖 VesselForge 内部实现。第三方只要能输出相同契约，就能接入 PG-Frag。反过来，VesselForge 也可以把资产输出给游戏、数字孪生、CAD/CAE、渲染或数据集平台。
+ [P style=Heading1] 18. 非锁定（Non-Lock-In）设计规则
+-[TABLE 27 ROW 1] 规则 || 实现要求
+-[TABLE 27 ROW 2] 算法不进入公共 API 名称 || 不要设计 `simulate_with_perilab()`；应是 `simulate(..., backend="perilab")`。
+-[TABLE 27 ROW 3] 数据契约独立于软件库 || 资产和结果 schema 不应暴露某个库的私有对象或内存布局。
+-[TABLE 27 ROW 4] Backend 能力声明 || 每个 Backend 声明支持材料、维度、接触、裂纹模式、GPU/HPC、输出字段。
+-[TABLE 27 ROW 5] 统一 Validation || 所有 Backend 输出经过公共 validator：能量、质量、拓扑、碎片、断面、NaN/发散检查。
+-[TABLE 27 ROW 6] 版本和可复现 || manifest 记录 core、backend、material、依赖版本、seed、编译器/设备信息。
+-[TABLE 27 ROW 7] Fallback 策略 || 某 Backend 不支持某功能时，明确返回 capability error 或切换经授权的 fallback，不静默降级。
++[TABLE 30 ROW 1] 规则 || 实现要求
++[TABLE 30 ROW 2] 算法不进入公共 API 名称 || 不要设计 `simulate_with_perilab()`；应是 `simulate(..., backend="perilab")`。
++[TABLE 30 ROW 3] 数据契约独立于软件库 || 资产和结果 schema 不应暴露某个库的私有对象或内存布局。
++[TABLE 30 ROW 4] Backend 能力声明 || 每个 Backend 声明支持材料、维度、接触、裂纹模式、GPU/HPC、输出字段。
++[TABLE 30 ROW 5] 统一 Validation || 所有 Backend 输出经过公共 validator：能量、质量、拓扑、碎片、断面、NaN/发散检查。
++[TABLE 30 ROW 6] 版本和可复现 || manifest 记录 core、backend、material、依赖版本、seed、编译器/设备信息。
++[TABLE 30 ROW 7] Fallback 策略 || 某 Backend 不支持某功能时，明确返回 capability error 或切换经授权的 fallback，不静默降级。
+ [P style=Heading1] 19. 分阶段实现路线（不把当前子项目身份写死）
+-[TABLE 28 ROW 1] 阶段 || VesselForge || PG-Frag || 独立项目化目标
+-[TABLE 28 ROW 2] v0.1 骨架 || 参数化旋转体 + Loft/Sweep；规则纹样；基本 Physics-Ready export。 || 统一 job schema；一个 PD Backend + 基本碰撞；碎片提取。 || 独立仓库、CI、版本号、CLI、Python API。
+-[TABLE 28 ROW 3] v0.3 多后端 || Geometry Nodes/SDF adapter；xatlas/BFF；SVG motif；OpenVDB/Gmsh。 || PeriLab adapter + Chrono adapter；材料插件和随机场。 || 插件 SDK、统一 manifest、基准测试。
+-[TABLE 28 ROW 4] v0.5 通用化 || 部件语法、复杂器形、AI SVG/AI 3D Backend、PBR Backend。 || FEM-PD / phase-field / OpenRadioss adapter 至少两类；多材料/界面。 || REST/gRPC、Headless scheduler、文档站。
+-[TABLE 28 ROW 5] v1.0 独立产品级 || 批量参数空间、资产验证、GUI/Blender 插件可选。 || 稳定多后端、fidelity profiles、二次碎裂、HPC。 || 分别可单独安装、发布、被第三方使用。
+-[TABLE 28 ROW 6] v2.x 研究平台 || 学习型 shape grammar、生成式控制、材料/制造耦合。 || 自适应 FEM→PD、GPU、复杂材料库、solver benchmarking。 || 形成各自社区和插件生态，不再依赖任何单一上层项目。
++[TABLE 31 ROW 1] 阶段 || VesselForge || PG-Frag || 独立项目化目标
++[TABLE 31 ROW 2] v0.1 骨架 || 参数化旋转体 + Loft/Sweep；规则纹样；基本 Physics-Ready export。 || 统一 job schema；一个 PD Backend + 基本碰撞；碎片提取。 || 独立仓库、CI、版本号、CLI、Python API。
++[TABLE 31 ROW 3] v0.3 多后端 || Geometry Nodes/SDF adapter；xatlas/BFF；SVG motif；OpenVDB/Gmsh。 || PeriLab adapter + Chrono adapter；材料插件和随机场。 || 插件 SDK、统一 manifest、基准测试。
++[TABLE 31 ROW 4] v0.5 通用化 || 部件语法、复杂器形、AI SVG/AI 3D Backend、PBR Backend。 || FEM-PD / phase-field / OpenRadioss adapter 至少两类；多材料/界面。 || REST/gRPC、Headless scheduler、文档站。
++[TABLE 31 ROW 5] v1.0 独立产品级 || 批量参数空间、资产验证、GUI/Blender 插件可选。 || 稳定多后端、fidelity profiles、二次碎裂、HPC。 || 分别可单独安装、发布、被第三方使用。
++[TABLE 31 ROW 6] v2.x 研究平台 || 学习型 shape grammar、生成式控制、材料/制造耦合。 || 自适应 FEM→PD、GPU、复杂材料库、solver benchmarking。 || 形成各自社区和插件生态，不再依赖任何单一上层项目。
+ [P style=Heading1] 20. 验收指标与基准体系
+ [P style=Heading2] 20.1 VesselForge
+-[TABLE 29 ROW 1] 维度 || 建议指标
+-[TABLE 29 ROW 2] 几何有效性 || watertight 率、manifold 率、自交率、正体积率、最小壁厚违规率。
+-[TABLE 29 ROW 3] 参数可控性 || 目标尺寸 vs 实际尺寸误差；参数单调性；seed 可复现。
+-[TABLE 29 ROW 4] 纹样质量 || 语义一致性、连续接缝错误率、UV 畸变、motif 完整率、布局约束满足率。
+-[TABLE 29 ROW 5] 物理就绪 || Gmsh/其他体网格成功率、最差单元质量、区域/厚度/材料场完整度。
+-[TABLE 29 ROW 6] 吞吐 || 单资产耗时、批量并发效率、CPU/GPU/内存峰值。
++[TABLE 32 ROW 1] 维度 || 建议指标
++[TABLE 32 ROW 2] 几何有效性 || watertight 率、manifold 率、自交率、正体积率、最小壁厚违规率。
++[TABLE 32 ROW 3] 参数可控性 || 目标尺寸 vs 实际尺寸误差；参数单调性；seed 可复现。
++[TABLE 32 ROW 4] 纹样质量 || 语义一致性、连续接缝错误率、UV 畸变、motif 完整率、布局约束满足率。
++[TABLE 32 ROW 5] 物理就绪 || Gmsh/其他体网格成功率、最差单元质量、区域/厚度/材料场完整度。
++[TABLE 32 ROW 6] 吞吐 || 单资产耗时、批量并发效率、CPU/GPU/内存峰值。
+ [P style=Heading2] 20.2 PG-Frag
+-[TABLE 30 ROW 1] 维度 || 建议指标
+-[TABLE 30 ROW 2] 数值稳定 || 发散率、NaN/Inf、时间步稳定性、并行一致性。
+-[TABLE 30 ROW 3] 守恒 || 质量、线动量、角动量、能量账本（按 Backend 能力定义）。
+-[TABLE 30 ROW 4] 断裂物理 || 首裂位置/时间、裂纹速度、分叉、碎片数量/尺寸分布、断裂能与实验对照。
+-[TABLE 30 ROW 5] 断面质量 || 非流形率、孔洞率、表面重建误差、宏观断面粗糙度统计、seam 完整性。
+-[TABLE 30 ROW 6] Backend 一致性 || 同一 benchmark 在不同求解器下的差异报告；不要求结果完全一致，但要求可解释。
+-[TABLE 30 ROW 7] 可扩展 || CPU/GPU/HPC scaling、百万级 DOF/粒子、碎片数增长下的接触性能。
++[TABLE 33 ROW 1] 维度 || 建议指标
++[TABLE 33 ROW 2] 数值稳定 || 发散率、NaN/Inf、时间步稳定性、并行一致性。
++[TABLE 33 ROW 3] 守恒 || 质量、线动量、角动量、能量账本（按 Backend 能力定义）。
++[TABLE 33 ROW 4] 断裂物理 || 首裂位置/时间、裂纹速度、分叉、碎片数量/尺寸分布、断裂能与实验对照。
++[TABLE 33 ROW 5] 断面质量 || 非流形率、孔洞率、表面重建误差、宏观断面粗糙度统计、seam 完整性。
++[TABLE 33 ROW 6] Backend 一致性 || 同一 benchmark 在不同求解器下的差异报告；不要求结果完全一致，但要求可解释。
++[TABLE 33 ROW 7] 可扩展 || CPU/GPU/HPC scaling、百万级 DOF/粒子、碎片数增长下的接触性能。
+ [P style=Heading1] 21. 当前技术选型建议：用“参考组合”而不是“唯一标准答案”
+-[TABLE 31 ROW 1] 层 || 稳定优先候选 || 前沿/研究候选 || 为什么这样分层
+-[TABLE 31 ROW 2] 精确几何 || OpenCascade/CadQuery + B-Spline/NURBS || Geometry Nodes / SDF / Generative 3D || 工程尺寸与可控性优先；长尾几何再引入生成式。
+-[TABLE 31 ROW 3] 几何修复 || CGAL + OpenCascade || OpenVDB SDF || 面修复与体修复互补。
+-[TABLE 31 ROW 4] 体网格 || Gmsh || 自适应/无网格采样 || Gmsh 工程成熟，特殊 Backend 再用专用离散。
+-[TABLE 31 ROW 5] 语义纹样 || Grammar/L-System/Symmetry || IntroSVG / OmniSVG / SVGen / RefineSVG || 程序保证结构连续，AI 增加语义和多样性。
+-[TABLE 31 ROW 6] 曲面映射 || xatlas / libigl LSCM || BFF / ARAP / SLIM / direction fields || 批量速度与高质量模式分开。
+-[TABLE 31 ROW 7] PBR || 程序化 PBR || StableMaterials / MaterialMVP || 可控基础 + AI 丰富度。
+-[TABLE 31 ROW 8] 普通动态碎裂 || OSB/NOSB Peridynamics || 自适应 FEM-PD || PD 适合未知自由裂纹；FEM-PD 解决规模成本。
+-[TABLE 31 ROW 9] 高精度参考 || 高密度 PD || Phase-field + 动态修正研究 || 提供独立物理对照，避免单方法自证。
+-[TABLE 31 ROW 10] 高速脆材 || OpenRadioss + JH-2 || 高应变率 PD/其他本构 || 工业成熟的 explicit FEM 作为可靠参照。
+-[TABLE 31 ROW 11] 界面/复材 || CZM + 各向异性材料 || MPM / anisotropic PD || 界面和大变形需求与普通脆裂不同。
+-[TABLE 31 ROW 12] 分离后运动 || Project Chrono || DEM / robust contact research || 不要浪费断裂求解器计算长距离刚体飞行。
+-[TABLE 32 ROW 1] 最重要的架构结论：两个项目都应当以“能力接口 + Backend 注册 + 标准数据契约”为中心，而不是以“某个算法实现”作为项目本体。2026 年最好用的算法未来一定会变化，但如果接口、数据和验证体系稳定，替换算法不会推翻项目。
++[TABLE 34 ROW 1] 层 || 稳定优先候选 || 前沿/研究候选 || 为什么这样分层
++[TABLE 34 ROW 2] 精确几何 || OpenCascade/CadQuery + B-Spline/NURBS || Geometry Nodes / SDF / Generative 3D || 工程尺寸与可控性优先；长尾几何再引入生成式。
++[TABLE 34 ROW 3] 几何修复 || CGAL + OpenCascade || OpenVDB SDF || 面修复与体修复互补。
++[TABLE 34 ROW 4] 体网格 || Gmsh || 自适应/无网格采样 || Gmsh 工程成熟，特殊 Backend 再用专用离散。
++[TABLE 34 ROW 5] 语义纹样 || Grammar/L-System/Symmetry || IntroSVG / OmniSVG / SVGen / RefineSVG || 程序保证结构连续，AI 增加语义和多样性。
++[TABLE 34 ROW 6] 曲面映射 || xatlas / libigl LSCM || BFF / ARAP / SLIM / direction fields || 批量速度与高质量模式分开。
++[TABLE 34 ROW 7] PBR || 程序化 PBR || StableMaterials / MaterialMVP || 可控基础 + AI 丰富度。
++[TABLE 34 ROW 8] 普通动态碎裂 || OSB/NOSB Peridynamics || 自适应 FEM-PD || PD 适合未知自由裂纹；FEM-PD 解决规模成本。
++[TABLE 34 ROW 9] 高精度参考 || 高密度 PD || Phase-field + 动态修正研究 || 提供独立物理对照，避免单方法自证。
++[TABLE 34 ROW 10] 高速脆材 || OpenRadioss + JH-2 || 高应变率 PD/其他本构 || 工业成熟的 explicit FEM 作为可靠参照。
++[TABLE 34 ROW 11] 界面/复材 || CZM + 各向异性材料 || MPM / anisotropic PD || 界面和大变形需求与普通脆裂不同。
++[TABLE 34 ROW 12] 分离后运动 || Project Chrono || DEM / robust contact research || 不要浪费断裂求解器计算长距离刚体飞行。
++[P style=Quote] 架构结论：能力接口、Backend 注册、标准数据契约是项目核心；具体算法与运行后端始终可替换。
+ [P style=Heading1] 附录 A：主要参考资料（截至 2026-10-03）
+ [P style=Normal] [R1] CadQuery Documentation — parametric CAD based on OpenCascade. https://cadquery.readthedocs.io/en/stable/
+ [P style=Normal] [R2] Blender 5.2 LTS Manual — Geometry Nodes. https://docs.blender.org/manual/en/5.2/modeling/geometry_nodes/
+@@ -394,6 +458,10 @@
+ [P style=Normal] [R23] NairnMPM / OSUPDOCS — cracks, cohesive/traction laws, multimaterial contact. https://osupdocs.forestry.oregonstate.edu/index.php/NairnMPM
+ [P style=Normal] [R24] Project Chrono — open-source multi-physics simulation engine. https://www.projectchrono.org/
+ [P style=Normal] [R25] Durussel, Molnár, Molinari, “Origins of phase-field crack widening in dynamic fragmentation explained,” CMAME, 2026. https://doi.org/10.1016/j.cma.2026.118942
++[P style=Normal] [R26] NVIDIA CUDA Programming Guide — CUDA platform, C++ programming and recommendation to use optimized libraries when available. https://docs.nvidia.com/cuda/cuda-programming-guide/
++[P style=Normal] [R27] pybind11 Documentation — lightweight C++/Python bindings and NumPy/buffer interoperability. https://pybind11.readthedocs.io/en/stable/
++[P style=Normal] [R28] Kokkos Documentation — portable C++ execution backends including CUDA, HIP, SYCL and OpenMP. https://kokkos.org/kokkos-core-wiki/
++[P style=Normal] [R29] Node.js Release Schedule / TypeScript Documentation — production should use Active or Maintenance LTS; Node.js 24 is LTS as of 2026-10. https://nodejs.org/about/previous-releases ; https://nodejs.org/api/typescript.html
+ [P style=Heading1] 附录 B：文档中的“推荐”应如何解释
+ [P style=Normal] 本文件中的“默认/稳定/前沿”是架构层面的角色建议，不是永久算法排名。任何 Backend 在进入默认路径前都应通过统一 benchmark、材料标定、真实实验或可信数值基准验证。对于动态断裂，模型参数、尺度、边界、网格/粒子分辨率、时间步和接触设置往往与算法名称同样重要。
+ [P style=Normal] 建议每 6–12 个月重新进行一次技术雷达评审：检查新论文、新开源实现、活跃度、许可证、GPU/HPC 能力、数值验证与维护风险；更新 Backend Registry，但尽量保持公共 Asset/Job/Result Schema 兼容。

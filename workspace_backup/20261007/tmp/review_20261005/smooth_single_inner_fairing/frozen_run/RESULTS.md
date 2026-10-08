@@ -1,0 +1,13 @@
+# Single inner-base fairing candidate result
+
+The only authorized candidate diagnostic completed once in 2.151 seconds with exit code 0. Its frozen wrapper used 1001 curvature samples per span and 101 normal-ray samples per eligible outer span. The plot ran once in 0.805 seconds with exit code 0. Source, case, plot, design-note, review-plan, and parent v2 source/case SHA-256 pins matched before and after both processes; see the run records.
+
+The diagnostic status is `PURE_MATH_TARGETS_MET_FINITE_ONLY_WITH_EXACT_INNER_BASE_CERTIFICATE`. All non-axis C2 checks and inherited exact control constraints passed. The single inner base span's minimum sampled curvature radius is `3.37766893790163 mm` at `t = 0.906`, above the fixed `1.25 mm` finite-sample target; all 1001 derivative samples were finite and non-degenerate. Its exact radial derivative Bernstein controls are `[-32/5, -32/5, -183/10, -16/5, -16/5]`, all strictly negative; exact z derivative controls are `[-56/5, -56/5, -51/10, 0, 0]`. This proves strict radial decrease, nonincreasing z, regularity, and injectivity of this single arc.
+
+The exact Bernstein coefficients of the inner fairing curvature numerator `r' z'' - z' r''` are `[0, -51696/175, -11056/35, -5856/35, -2112/35, -1696/35, -4896/175, 0]`, with signs `[0, -, -, -, -, -, -, 0]`. Since the speed is nonzero, this proves a convex, no-inflection single arc with the curvature numerator strictly negative in the open interval. It does not prove global section simplicity or a whole-span curvature-radius lower bound.
+
+The finite 2D section-ray diagnostic had 889 eligible/889 measured candidate inner-boundary hits, zero UNKNOWN rows, 20 radial-normal-dot `<= 0.25` exclusions, and zero axis exclusions. Its sampled candidate distances ranged from `2.15736227457382 mm` to `4.79806384273377 mm`. These are not classifier-confirmed material intervals, surface-normal wall thicknesses, or a global minimum; global minimum normal wall remains UNKNOWN.
+
+`110 mm` is the rim endpoint elevation. The exact symmetric lip crest is `1795/16 = 112.1875 mm`; the control-hull z upper bound is `112.8 mm`. The analytic profile's maximum z is the lip crest, while the native CAD bounding box remains UNKNOWN because no CAD/OCC/STEP was run. The full-section self-intersection proof is also false/not established; positive exact signed area is `3673109/10500 mm^2`.
+
+The PNG shows the single fairing with an equal-scale RZ axis and a separate legend panel outside the plotting axes. It is a pure mathematical section. The red marker denotes only a historical v1 classifier UNKNOWN and was not tested on this candidate.

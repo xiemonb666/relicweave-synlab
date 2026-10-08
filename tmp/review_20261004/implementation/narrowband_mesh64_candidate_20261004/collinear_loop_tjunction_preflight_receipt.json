@@ -1,0 +1,20 @@
+{
+  "schema": "a12.narrowband-collinear-preflight-invocation.v1",
+  "argv": [
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\.venv\\Scripts\\python.exe",
+    "-B",
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\analyze_collinear_loops.py"
+  ],
+  "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+  "python_executable": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\.venv\\Scripts\\python.exe",
+  "started_utc": "2026-10-04T04:55:05.1567391Z",
+  "finished_utc": "2026-10-04T04:55:06.1345214Z",
+  "elapsed_seconds": 0.972,
+  "exit_code": 0,
+  "output": "{\r\n  \"path\": \"C:\\\\Users\\\\xiemo\\\\Desktop\\\\ShardForge\\\\relicweave-synlab\\\\tmp\\\\review_20261004\\\\implementation\\\\narrowband_mesh64_candidate_20261004\\\\collinear_loop_tjunction_preflight.json\",\r\n  \"bytes\": 114400,\r\n  \"sha256\": \"bd8d48ba82a45c6638c2ca633292ceedc076962ae04dd46304801522bc0d8adc\",\r\n  \"cross_case_summary\": {\r\n    \"all_cases_have_seven_raw_degenerate_faces\": true,\r\n    \"all_cases_have_21_clean_boundary_edges\": true,\r\n    \"all_cases_clean_boundary_edges_are_exactly_removed_face_edges\": true,\r\n    \"all_cases_show_collinear_interior_middle_vertices\": true,\r\n    \"all_cases_have_positive_area_neighbor_on_long_and_both_short_spans\": true,\r\n    \"interpretation\": \"If these predicates hold, the saved topology supports a local conforming edge-split hypothesis: split the positive-area long-edge neighbor at the already-existing collinear middle vertex, then remove the zero-area face. This is only a preflight hypothesis, not an executed repair or proof of globally valid geometry.\"\r\n  }\r\n}",
+  "booleans": 0,
+  "mesh_repair_calls": 0,
+  "writes": [
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\collinear_loop_tjunction_preflight.json"
+  ]
+}

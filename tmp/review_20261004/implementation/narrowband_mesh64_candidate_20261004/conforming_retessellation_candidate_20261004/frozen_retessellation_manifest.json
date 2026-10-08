@@ -1,0 +1,339 @@
+{
+  "schema": "a12.conforming-retessellation-frozen-inputs.v1",
+  "repo_root": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+  "output_dir": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004",
+  "source_candidate": {
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\conforming_retessellate_candidate.py",
+    "bytes": 21144,
+    "sha256": "6398ee6a02b010e172cd709c17403b81e868fe6784536c257976c6edb2ecaf10"
+  },
+  "source_preparation_script": {
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\freeze_retessellation_inputs.executed_snapshot.py",
+    "bytes": 10157,
+    "sha256": "4349db698928496589d2c3ddc04ae9171e73d14602d38d5737f5e938c4d48653",
+    "captured_execution_sha256": "4349db698928496589d2c3ddc04ae9171e73d14602d38d5737f5e938c4d48653",
+    "receipt_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\preparation_receipt.json",
+    "receipt_sha256": "c83a30d188aa1fa4ac814e3b0cb65057b22b9069f909f5a389338ca570a3fd45"
+  },
+  "source_preflight_manifest_sha256": "0d5d7d5dac802f55198324ef5c3bd8870e21705aace96b43afbba3dd72afddaa",
+  "source_execution_addendum_sha256": "7032f43f921fa5d6842a268b1f0a34cfd8737efe06d89257cbbbaa39b3383f5e",
+  "source_postexecution_hash_snapshot_sha256": "d89098941890098a9ac6e40b6d436850b60f5fea7f15b6fb8c15e368887288f1",
+  "cases": [
+    {
+      "case_id": "P02_mesh32",
+      "source_output_npz": {
+        "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\output_P02_mesh32.npz",
+        "bytes": 98184,
+        "sha256": "39331608f36996993d53297630aa560359c410106690effe55ef97aa31325e43"
+      },
+      "source_result_json": {
+        "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\result_P02_mesh32.json",
+        "bytes": 46653,
+        "sha256": "c96bdf65ad974fc1f67bbbec3e02b34ed20cceffb7675753ca308f332a24cc13"
+      },
+      "vertices": {
+        "dtype": "<f8",
+        "shape": [
+          2739,
+          3
+        ],
+        "nbytes": 65736,
+        "sha256_c_order_bytes": "f738f01d191e0a2d4db48dcf067c4db90761cd160447c377765ff2d99be73625"
+      },
+      "faces": {
+        "dtype": "<i8",
+        "shape": [
+          5474,
+          3
+        ],
+        "nbytes": 131376,
+        "sha256_c_order_bytes": "1a2cf11cae1da62c4ec4f391faa34b041ce29a45098b14f37eda08251dc91396"
+      }
+    },
+    {
+      "case_id": "P02_mesh64",
+      "source_output_npz": {
+        "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\output_P02_mesh64.npz",
+        "bytes": 112950,
+        "sha256": "27e46b8c5fdf6ac9b8de14d183895041c4a66a6064c1396b6d559861eb5a88bf"
+      },
+      "source_result_json": {
+        "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\result_P02_mesh64.json",
+        "bytes": 44893,
+        "sha256": "a83611485e8421f34a6a06eb7c93d0fe10d7315fbcb3844f46227873ac634102"
+      },
+      "vertices": {
+        "dtype": "<f8",
+        "shape": [
+          2739,
+          3
+        ],
+        "nbytes": 65736,
+        "sha256_c_order_bytes": "062e918a1f03ef12e06e55e3c8f8a5f208264da2022412c44ae945472c442c77"
+      },
+      "faces": {
+        "dtype": "<i8",
+        "shape": [
+          5474,
+          3
+        ],
+        "nbytes": 131376,
+        "sha256_c_order_bytes": "1a2cf11cae1da62c4ec4f391faa34b041ce29a45098b14f37eda08251dc91396"
+      }
+    },
+    {
+      "case_id": "P03_mesh32",
+      "source_output_npz": {
+        "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\output_P03_mesh32.npz",
+        "bytes": 107527,
+        "sha256": "d65680234558ba0889072f980b8e6dd125765c3f3370cf58c68e13551fd15af3"
+      },
+      "source_result_json": {
+        "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\result_P03_mesh32.json",
+        "bytes": 46596,
+        "sha256": "4b474791b0a3766c79ffc0cc24176295d2197812b056bdcdc8ce7c65f8038c1f"
+      },
+      "vertices": {
+        "dtype": "<f8",
+        "shape": [
+          2730,
+          3
+        ],
+        "nbytes": 65520,
+        "sha256_c_order_bytes": "83678d3cc3f44b62147f9f3a7c175f89ff6ce950e0f12ef5a8d0a5a7c230822e"
+      },
+      "faces": {
+        "dtype": "<i8",
+        "shape": [
+          5456,
+          3
+        ],
+        "nbytes": 130944,
+        "sha256_c_order_bytes": "352ba8c52d74ef3ec1b8756dbf36ef7dc117bcd26b52c33dc3824e43ada01d2b"
+      }
+    },
+    {
+      "case_id": "P03_mesh64",
+      "source_output_npz": {
+        "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\output_P03_mesh64.npz",
+        "bytes": 135859,
+        "sha256": "c17b5cd641fa054cef01f36c860c0ae792d2ffdd76ba67d39ffbb3ec1dc48ab8"
+      },
+      "source_result_json": {
+        "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\result_P03_mesh64.json",
+        "bytes": 44863,
+        "sha256": "6d70315a32f3a72937629d18bded04416f0d8d547a408eb7947dd45e37a286dd"
+      },
+      "vertices": {
+        "dtype": "<f8",
+        "shape": [
+          2730,
+          3
+        ],
+        "nbytes": 65520,
+        "sha256_c_order_bytes": "0c4220601d2aab7f62100b8b53d852c90d73956f7cdae6e1100a9be3297ff7d7"
+      },
+      "faces": {
+        "dtype": "<i8",
+        "shape": [
+          5456,
+          3
+        ],
+        "nbytes": 130944,
+        "sha256_c_order_bytes": "352ba8c52d74ef3ec1b8756dbf36ef7dc117bcd26b52c33dc3824e43ada01d2b"
+      }
+    }
+  ],
+  "negative_control": {
+    "case_id": "P02_mesh64",
+    "kind": "single_positive_area_triangle_removed",
+    "removed_positive_area_face_id": 4688,
+    "removed_face_area_mm2": 0.6328125,
+    "expected_boundary_edges": [
+      [
+        2323,
+        2332
+      ],
+      [
+        2323,
+        2338
+      ],
+      [
+        2332,
+        2338
+      ]
+    ],
+    "expected_boundary_edge_count": 3,
+    "purpose": "must be rejected; no automatic cap of a positive-area opening"
+  },
+  "frozen_archive": {
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\frozen_retessellation_inputs.npz",
+    "bytes": 191997,
+    "sha256": "d80707312638ce2830847f2dc198632c5456963a6043715d27436b3db3ce6dc2",
+    "arrays": {
+      "P02_mesh32_raw_vertices_f64": {
+        "dtype": "<f8",
+        "shape": [
+          2739,
+          3
+        ],
+        "nbytes": 65736,
+        "sha256_c_order_bytes": "f738f01d191e0a2d4db48dcf067c4db90761cd160447c377765ff2d99be73625"
+      },
+      "P02_mesh32_raw_faces_i64": {
+        "dtype": "<i8",
+        "shape": [
+          5474,
+          3
+        ],
+        "nbytes": 131376,
+        "sha256_c_order_bytes": "1a2cf11cae1da62c4ec4f391faa34b041ce29a45098b14f37eda08251dc91396"
+      },
+      "P02_mesh64_raw_vertices_f64": {
+        "dtype": "<f8",
+        "shape": [
+          2739,
+          3
+        ],
+        "nbytes": 65736,
+        "sha256_c_order_bytes": "062e918a1f03ef12e06e55e3c8f8a5f208264da2022412c44ae945472c442c77"
+      },
+      "P02_mesh64_raw_faces_i64": {
+        "dtype": "<i8",
+        "shape": [
+          5474,
+          3
+        ],
+        "nbytes": 131376,
+        "sha256_c_order_bytes": "1a2cf11cae1da62c4ec4f391faa34b041ce29a45098b14f37eda08251dc91396"
+      },
+      "P03_mesh32_raw_vertices_f64": {
+        "dtype": "<f8",
+        "shape": [
+          2730,
+          3
+        ],
+        "nbytes": 65520,
+        "sha256_c_order_bytes": "83678d3cc3f44b62147f9f3a7c175f89ff6ce950e0f12ef5a8d0a5a7c230822e"
+      },
+      "P03_mesh32_raw_faces_i64": {
+        "dtype": "<i8",
+        "shape": [
+          5456,
+          3
+        ],
+        "nbytes": 130944,
+        "sha256_c_order_bytes": "352ba8c52d74ef3ec1b8756dbf36ef7dc117bcd26b52c33dc3824e43ada01d2b"
+      },
+      "P03_mesh64_raw_vertices_f64": {
+        "dtype": "<f8",
+        "shape": [
+          2730,
+          3
+        ],
+        "nbytes": 65520,
+        "sha256_c_order_bytes": "0c4220601d2aab7f62100b8b53d852c90d73956f7cdae6e1100a9be3297ff7d7"
+      },
+      "P03_mesh64_raw_faces_i64": {
+        "dtype": "<i8",
+        "shape": [
+          5456,
+          3
+        ],
+        "nbytes": 130944,
+        "sha256_c_order_bytes": "352ba8c52d74ef3ec1b8756dbf36ef7dc117bcd26b52c33dc3824e43ada01d2b"
+      },
+      "P02_mesh64_hole_negative_vertices_f64": {
+        "dtype": "<f8",
+        "shape": [
+          2739,
+          3
+        ],
+        "nbytes": 65736,
+        "sha256_c_order_bytes": "062e918a1f03ef12e06e55e3c8f8a5f208264da2022412c44ae945472c442c77"
+      },
+      "P02_mesh64_hole_negative_faces_i64": {
+        "dtype": "<i8",
+        "shape": [
+          5473,
+          3
+        ],
+        "nbytes": 131352,
+        "sha256_c_order_bytes": "8a120d397bdc29bdc87eac6ffb49780d9bab75f650cb60b361cc3856d743a5b4"
+      }
+    }
+  },
+  "planned_run": {
+    "source_is_not_executed_by_freezer": true,
+    "candidate_execution_authorized": false,
+    "candidate_boolean_calls": 0,
+    "candidate_repair_calls": 0,
+    "candidate_cases": [
+      "P02_mesh32",
+      "P02_mesh64",
+      "P03_mesh32",
+      "P03_mesh64",
+      "P02_mesh64_positive_area_hole_negative"
+    ],
+    "candidate_algorithm_execution_count": 0
+  },
+  "candidate_plan": {
+    "scope": "offline local edge-conformance candidate only; no production code, operator, Boolean, or test",
+    "qualification": [
+      "three distinct vertex IDs",
+      "exact zero area and exact collinearity",
+      "middle vertex strictly inside unique longest edge",
+      "one positive-area neighbor on long edge and both short spans",
+      "each edge incidence exactly two before change",
+      "long-edge target face unique across all loops"
+    ],
+    "operation": "replace each qualified positive-area long-edge neighbor with two winding-preserving child faces using the existing middle vertex, then remove exactly the corresponding zero-area triangle",
+    "forbidden": [
+      "move or create vertices",
+      "fill positive-area holes",
+      "abs(signed_volume)",
+      "delete components",
+      "generic mesh healing",
+      "rerun any Boolean"
+    ],
+    "acceptance": {
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "orientation_conflict_edges": 0,
+      "exact_zero_area_faces": 0,
+      "signed_volume_positive": true,
+      "signed_volume_abs_delta_max_mm3": 1e-10,
+      "signed_volume_relative_delta_max": 1e-12,
+      "surface_area_tolerance": "max(1e-10 mm^2, 1e-12 * abs(raw surface area))",
+      "vertices_byte_identical": true,
+      "component_count_preserved": true,
+      "volume_tolerance": "abs(signed output minus signed raw) <= max(1e-10 mm^3, 1e-12 * max(0, signed raw mm^3)); output must independently remain signed-positive."
+    },
+    "negative_control": "A positive-area triangle is omitted from a closed saved raw mesh. The candidate must reject its three unexplained boundary edges without modifying or capping that input.",
+    "no_execution_yet": true,
+    "face_lineage": "Only raw Boolean output row IDs are retained; operand/mother/source-versus-candidate material ancestry is UNKNOWN and must not qualify physical R2 or pretraining use."
+  },
+  "revision": 2,
+  "supersedes_initial_manifest_sha256": "3cfd3eb41d109548fc3c1fdc1de9ea8eda0e4ef00d2beb5c2cfe13021ca3f7e5",
+  "source_candidate_static_review": {
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\candidate_source_static_review.json",
+    "bytes": 1332,
+    "sha256": "afa97d0872205357e061f202d311c4bde0df61ae2dbfedffcfa5e08d806afa1d",
+    "receipt_sha256": "697691fe53072dd6990c42101b29312e0e9a10d0775df426e5ca4caacbbee118",
+    "ast_parse": "ok",
+    "forbidden_modules_present": []
+  },
+  "source_preparation_script_current_revision": {
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\freeze_retessellation_inputs.py",
+    "bytes": 10367,
+    "sha256": "923bd82e340227d954e443654168eb8e04c44d70a09ccfd324cec6f05d671e98",
+    "note": "Metadata-only face-lineage wording was added after the freezer run; exact executed source bytes are preserved at source_preparation_script.path."
+  },
+  "source_preflight_hash_snapshot": {
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\postexecution_preflight_hash_snapshot.json",
+    "sha256": "d89098941890098a9ac6e40b6d436850b60f5fea7f15b6fb8c15e368887288f1",
+    "verified_at_utc": "2026-10-04T05:07:10Z",
+    "all_22_unchanged_at_snapshot": true
+  },
+  "status": "frozen_for_parent_source_review_not_executed"
+}

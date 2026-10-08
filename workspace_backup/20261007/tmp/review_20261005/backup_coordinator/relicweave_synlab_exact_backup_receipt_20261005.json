@@ -1,0 +1,655 @@
+{
+  "schema": "luna-exact-backup-execution-receipt.v1",
+  "created_utc": "2026-10-05T09:58:04.1048040Z",
+  "repository": "relicweave-synlab",
+  "plan_sha256": "5404c9e1ae3b2eb12427954d8693e0819dfd57208d5a68c302632cd3e3bc8c59",
+  "branch": "backup/forge-work-20261003",
+  "parent_head_expected": "c9c342bd936d87e3b52372498943fdb5fb7a9c5b",
+  "approved_identity_used_per_call": "A12 SynLab <synlab@local>",
+  "candidate_path_count": 10,
+  "candidate_paths": [
+    "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.junit.xml",
+    "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.rc.txt",
+    "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.stderr.txt",
+    "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.stdout.txt",
+    "docs/a12/evidence/20261005/heightgraph_certificate/proposal.json",
+    "docs/a12/evidence/20261005/heightgraph_certificate/report.md",
+    "docs/a12/evidence/20261005/heightgraph_certificate/source-freeze-review2.sha256",
+    "docs/a12/evidence/20261005/heightgraph_certificate/source-review-plan.md",
+    "synlab/degrade/heightgraph_certificate.py",
+    "tests/a12/degrade/test_heightgraph_certificate_20261005.py"
+  ],
+  "status": "pushed_and_remote_head_verified",
+  "copy_results": [
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261005/degradation_resume/focused_pytest_review2.junit.xml",
+      "destination_path": "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.junit.xml",
+      "bytes": 2235,
+      "sha256": "9b9ba00f0f75f74fa0fa6002d2fddfe4af895daa01e2b8dd43becda2184e0b87",
+      "already_present_same_bytes": false,
+      "match": true
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261005/degradation_resume/focused_pytest_review2.rc.txt",
+      "destination_path": "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.rc.txt",
+      "bytes": 791,
+      "sha256": "5d2d3276f05dc606edf7d0f04c48494b7a1b4d96033552fbc46fc733dece53a1",
+      "already_present_same_bytes": false,
+      "match": true
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261005/degradation_resume/focused_pytest_review2.stderr.txt",
+      "destination_path": "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "already_present_same_bytes": false,
+      "match": true
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261005/degradation_resume/focused_pytest_review2.stdout.txt",
+      "destination_path": "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.stdout.txt",
+      "bytes": 81,
+      "sha256": "4208f92aa778c742c7655af90b8e57da8220901a67e852bb157f327d7f189aa3",
+      "already_present_same_bytes": false,
+      "match": true
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261005/degradation_resume/proposal.json",
+      "destination_path": "docs/a12/evidence/20261005/heightgraph_certificate/proposal.json",
+      "bytes": 16653,
+      "sha256": "ebb4fa868913c23fde75932d05e0d4deb350f529faa48bbea634d36e698044a6",
+      "already_present_same_bytes": false,
+      "match": true
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261005/degradation_resume/report.md",
+      "destination_path": "docs/a12/evidence/20261005/heightgraph_certificate/report.md",
+      "bytes": 15697,
+      "sha256": "e855ce9b1966ff520ed87adddbeba32a9272406cb3e5b8a2da9cc76d6b57eacf",
+      "already_present_same_bytes": false,
+      "match": true
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261005/degradation_resume/source-freeze-review2.sha256",
+      "destination_path": "docs/a12/evidence/20261005/heightgraph_certificate/source-freeze-review2.sha256",
+      "bytes": 665,
+      "sha256": "ce7590ca661636322d0689126c13c4084ec63ec7f6d00d90f828eb184c3e6b43",
+      "already_present_same_bytes": false,
+      "match": true
+    },
+    {
+      "source_path": "relicweave-synlab/tmp/review_20261005/degradation_resume/source-review-plan.md",
+      "destination_path": "docs/a12/evidence/20261005/heightgraph_certificate/source-review-plan.md",
+      "bytes": 12922,
+      "sha256": "0eb3eb8fdf12834e9e04031b4a79709f47d366f3f407120aca32f819ce56e937",
+      "already_present_same_bytes": false,
+      "match": true
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "-c",
+        "core.autocrlf=false",
+        "add",
+        "--",
+        "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.junit.xml",
+        "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.rc.txt",
+        "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.stderr.txt",
+        "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.stdout.txt",
+        "docs/a12/evidence/20261005/heightgraph_certificate/proposal.json",
+        "docs/a12/evidence/20261005/heightgraph_certificate/report.md",
+        "docs/a12/evidence/20261005/heightgraph_certificate/source-freeze-review2.sha256",
+        "docs/a12/evidence/20261005/heightgraph_certificate/source-review-plan.md",
+        "synlab/degrade/heightgraph_certificate.py",
+        "tests/a12/degrade/test_heightgraph_certificate_20261005.py"
+      ],
+      "exit_code": 0,
+      "output": []
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "-c",
+        "core.autocrlf=false",
+        "-c",
+        "user.name=A12 SynLab",
+        "-c",
+        "user.email=synlab@local",
+        "commit",
+        "-m",
+        "backup: preserve heightgraph certificate focused review",
+        "-m",
+        "Preserve the accepted heightgraph certificate source/test and 12 focused test/review evidence. Broader geometry, physics, observation, and label qualification remain unverified."
+      ],
+      "exit_code": 0,
+      "output": [
+        "[backup/forge-work-20261003 b605851] backup: preserve heightgraph certificate focused review",
+        " 10 files changed, 2281 insertions(+)",
+        " create mode 100644 docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.junit.xml",
+        " create mode 100644 docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.rc.txt",
+        " create mode 100644 docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.stderr.txt",
+        " create mode 100644 docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.stdout.txt",
+        " create mode 100644 docs/a12/evidence/20261005/heightgraph_certificate/proposal.json",
+        " create mode 100644 docs/a12/evidence/20261005/heightgraph_certificate/report.md",
+        " create mode 100644 docs/a12/evidence/20261005/heightgraph_certificate/source-freeze-review2.sha256",
+        " create mode 100644 docs/a12/evidence/20261005/heightgraph_certificate/source-review-plan.md",
+        " create mode 100644 synlab/degrade/heightgraph_certificate.py",
+        " create mode 100644 tests/a12/degrade/test_heightgraph_certificate_20261005.py"
+      ]
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "-c",
+        "core.autocrlf=false",
+        "push",
+        "origin",
+        "HEAD:refs/heads/backup/forge-work-20261003"
+      ],
+      "exit_code": 0,
+      "output": [
+        "To https://github.com/xiemonb666/relicweave-synlab.git",
+        "   c9c342b..b605851  HEAD -> backup/forge-work-20261003"
+      ]
+    }
+  ],
+  "stage_blob_checks": [
+    {
+      "path": "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.junit.xml",
+      "object_id": "9c7f9c45cbf647550bc13726fc9bfc685b9acbef",
+      "bytes": 2235,
+      "sha256": "9b9ba00f0f75f74fa0fa6002d2fddfe4af895daa01e2b8dd43becda2184e0b87",
+      "expected_bytes": 2235,
+      "expected_sha256": "9b9ba00f0f75f74fa0fa6002d2fddfe4af895daa01e2b8dd43becda2184e0b87",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "cat-file",
+        "blob",
+        "9c7f9c45cbf647550bc13726fc9bfc685b9acbef"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.rc.txt",
+      "object_id": "7ddccac909cba7822bdafe48f6566b454bb2d761",
+      "bytes": 791,
+      "sha256": "5d2d3276f05dc606edf7d0f04c48494b7a1b4d96033552fbc46fc733dece53a1",
+      "expected_bytes": 791,
+      "expected_sha256": "5d2d3276f05dc606edf7d0f04c48494b7a1b4d96033552fbc46fc733dece53a1",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "cat-file",
+        "blob",
+        "7ddccac909cba7822bdafe48f6566b454bb2d761"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.stderr.txt",
+      "object_id": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_bytes": 0,
+      "expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "cat-file",
+        "blob",
+        "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.stdout.txt",
+      "object_id": "2b49ee391cc32c60f4e87d1410ac2d912e283db7",
+      "bytes": 81,
+      "sha256": "4208f92aa778c742c7655af90b8e57da8220901a67e852bb157f327d7f189aa3",
+      "expected_bytes": 81,
+      "expected_sha256": "4208f92aa778c742c7655af90b8e57da8220901a67e852bb157f327d7f189aa3",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "cat-file",
+        "blob",
+        "2b49ee391cc32c60f4e87d1410ac2d912e283db7"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/a12/evidence/20261005/heightgraph_certificate/proposal.json",
+      "object_id": "dcfe003aa86a51a725be8b15a088fae9afa1841a",
+      "bytes": 16653,
+      "sha256": "ebb4fa868913c23fde75932d05e0d4deb350f529faa48bbea634d36e698044a6",
+      "expected_bytes": 16653,
+      "expected_sha256": "ebb4fa868913c23fde75932d05e0d4deb350f529faa48bbea634d36e698044a6",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "cat-file",
+        "blob",
+        "dcfe003aa86a51a725be8b15a088fae9afa1841a"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/a12/evidence/20261005/heightgraph_certificate/report.md",
+      "object_id": "3c51993e54ff4c00f745c41c178432b565bc2723",
+      "bytes": 15697,
+      "sha256": "e855ce9b1966ff520ed87adddbeba32a9272406cb3e5b8a2da9cc76d6b57eacf",
+      "expected_bytes": 15697,
+      "expected_sha256": "e855ce9b1966ff520ed87adddbeba32a9272406cb3e5b8a2da9cc76d6b57eacf",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "cat-file",
+        "blob",
+        "3c51993e54ff4c00f745c41c178432b565bc2723"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/a12/evidence/20261005/heightgraph_certificate/source-freeze-review2.sha256",
+      "object_id": "526dc5d608a1c889dbafe40be560c13ac3f810ce",
+      "bytes": 665,
+      "sha256": "ce7590ca661636322d0689126c13c4084ec63ec7f6d00d90f828eb184c3e6b43",
+      "expected_bytes": 665,
+      "expected_sha256": "ce7590ca661636322d0689126c13c4084ec63ec7f6d00d90f828eb184c3e6b43",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "cat-file",
+        "blob",
+        "526dc5d608a1c889dbafe40be560c13ac3f810ce"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/a12/evidence/20261005/heightgraph_certificate/source-review-plan.md",
+      "object_id": "d69a3355b8db877ac55f5ba53bf70985bfcc4996",
+      "bytes": 12922,
+      "sha256": "0eb3eb8fdf12834e9e04031b4a79709f47d366f3f407120aca32f819ce56e937",
+      "expected_bytes": 12922,
+      "expected_sha256": "0eb3eb8fdf12834e9e04031b4a79709f47d366f3f407120aca32f819ce56e937",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "cat-file",
+        "blob",
+        "d69a3355b8db877ac55f5ba53bf70985bfcc4996"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "synlab/degrade/heightgraph_certificate.py",
+      "object_id": "9d8be38fb3c9d32571f7fbdc72f45929d63bab36",
+      "bytes": 72229,
+      "sha256": "c1a3468cae00b944bcb86c4186b04c5c7cd8e42af586bd27e9603bc6284523ec",
+      "expected_bytes": 72229,
+      "expected_sha256": "c1a3468cae00b944bcb86c4186b04c5c7cd8e42af586bd27e9603bc6284523ec",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "cat-file",
+        "blob",
+        "9d8be38fb3c9d32571f7fbdc72f45929d63bab36"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "tests/a12/degrade/test_heightgraph_certificate_20261005.py",
+      "object_id": "179c0e4600be6c20a5d2631751b5dc86dd475bfc",
+      "bytes": 15498,
+      "sha256": "ba9929534d71bb6d59489db6c69946282007112c956919829c6655df80487377",
+      "expected_bytes": 15498,
+      "expected_sha256": "ba9929534d71bb6d59489db6c69946282007112c956919829c6655df80487377",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "cat-file",
+        "blob",
+        "179c0e4600be6c20a5d2631751b5dc86dd475bfc"
+      ],
+      "cat_file_exit_code": 0
+    }
+  ],
+  "commit_blob_checks": [
+    {
+      "path": "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.junit.xml",
+      "object_id": "9c7f9c45cbf647550bc13726fc9bfc685b9acbef",
+      "bytes": 2235,
+      "sha256": "9b9ba00f0f75f74fa0fa6002d2fddfe4af895daa01e2b8dd43becda2184e0b87",
+      "expected_bytes": 2235,
+      "expected_sha256": "9b9ba00f0f75f74fa0fa6002d2fddfe4af895daa01e2b8dd43becda2184e0b87",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "cat-file",
+        "blob",
+        "9c7f9c45cbf647550bc13726fc9bfc685b9acbef"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.rc.txt",
+      "object_id": "7ddccac909cba7822bdafe48f6566b454bb2d761",
+      "bytes": 791,
+      "sha256": "5d2d3276f05dc606edf7d0f04c48494b7a1b4d96033552fbc46fc733dece53a1",
+      "expected_bytes": 791,
+      "expected_sha256": "5d2d3276f05dc606edf7d0f04c48494b7a1b4d96033552fbc46fc733dece53a1",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "cat-file",
+        "blob",
+        "7ddccac909cba7822bdafe48f6566b454bb2d761"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.stderr.txt",
+      "object_id": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_bytes": 0,
+      "expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "cat-file",
+        "blob",
+        "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.stdout.txt",
+      "object_id": "2b49ee391cc32c60f4e87d1410ac2d912e283db7",
+      "bytes": 81,
+      "sha256": "4208f92aa778c742c7655af90b8e57da8220901a67e852bb157f327d7f189aa3",
+      "expected_bytes": 81,
+      "expected_sha256": "4208f92aa778c742c7655af90b8e57da8220901a67e852bb157f327d7f189aa3",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "cat-file",
+        "blob",
+        "2b49ee391cc32c60f4e87d1410ac2d912e283db7"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/a12/evidence/20261005/heightgraph_certificate/proposal.json",
+      "object_id": "dcfe003aa86a51a725be8b15a088fae9afa1841a",
+      "bytes": 16653,
+      "sha256": "ebb4fa868913c23fde75932d05e0d4deb350f529faa48bbea634d36e698044a6",
+      "expected_bytes": 16653,
+      "expected_sha256": "ebb4fa868913c23fde75932d05e0d4deb350f529faa48bbea634d36e698044a6",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "cat-file",
+        "blob",
+        "dcfe003aa86a51a725be8b15a088fae9afa1841a"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/a12/evidence/20261005/heightgraph_certificate/report.md",
+      "object_id": "3c51993e54ff4c00f745c41c178432b565bc2723",
+      "bytes": 15697,
+      "sha256": "e855ce9b1966ff520ed87adddbeba32a9272406cb3e5b8a2da9cc76d6b57eacf",
+      "expected_bytes": 15697,
+      "expected_sha256": "e855ce9b1966ff520ed87adddbeba32a9272406cb3e5b8a2da9cc76d6b57eacf",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "cat-file",
+        "blob",
+        "3c51993e54ff4c00f745c41c178432b565bc2723"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/a12/evidence/20261005/heightgraph_certificate/source-freeze-review2.sha256",
+      "object_id": "526dc5d608a1c889dbafe40be560c13ac3f810ce",
+      "bytes": 665,
+      "sha256": "ce7590ca661636322d0689126c13c4084ec63ec7f6d00d90f828eb184c3e6b43",
+      "expected_bytes": 665,
+      "expected_sha256": "ce7590ca661636322d0689126c13c4084ec63ec7f6d00d90f828eb184c3e6b43",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "cat-file",
+        "blob",
+        "526dc5d608a1c889dbafe40be560c13ac3f810ce"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "docs/a12/evidence/20261005/heightgraph_certificate/source-review-plan.md",
+      "object_id": "d69a3355b8db877ac55f5ba53bf70985bfcc4996",
+      "bytes": 12922,
+      "sha256": "0eb3eb8fdf12834e9e04031b4a79709f47d366f3f407120aca32f819ce56e937",
+      "expected_bytes": 12922,
+      "expected_sha256": "0eb3eb8fdf12834e9e04031b4a79709f47d366f3f407120aca32f819ce56e937",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "cat-file",
+        "blob",
+        "d69a3355b8db877ac55f5ba53bf70985bfcc4996"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "synlab/degrade/heightgraph_certificate.py",
+      "object_id": "9d8be38fb3c9d32571f7fbdc72f45929d63bab36",
+      "bytes": 72229,
+      "sha256": "c1a3468cae00b944bcb86c4186b04c5c7cd8e42af586bd27e9603bc6284523ec",
+      "expected_bytes": 72229,
+      "expected_sha256": "c1a3468cae00b944bcb86c4186b04c5c7cd8e42af586bd27e9603bc6284523ec",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "cat-file",
+        "blob",
+        "9d8be38fb3c9d32571f7fbdc72f45929d63bab36"
+      ],
+      "cat_file_exit_code": 0
+    },
+    {
+      "path": "tests/a12/degrade/test_heightgraph_certificate_20261005.py",
+      "object_id": "179c0e4600be6c20a5d2631751b5dc86dd475bfc",
+      "bytes": 15498,
+      "sha256": "ba9929534d71bb6d59489db6c69946282007112c956919829c6655df80487377",
+      "expected_bytes": 15498,
+      "expected_sha256": "ba9929534d71bb6d59489db6c69946282007112c956919829c6655df80487377",
+      "content_match": true,
+      "cat_file_argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+        "cat-file",
+        "blob",
+        "179c0e4600be6c20a5d2631751b5dc86dd475bfc"
+      ],
+      "cat_file_exit_code": 0
+    }
+  ],
+  "failure": null,
+  "stage_command_argv": [
+    "git",
+    "-C",
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+    "-c",
+    "core.autocrlf=false",
+    "add",
+    "--",
+    "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.junit.xml",
+    "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.rc.txt",
+    "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.stderr.txt",
+    "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.stdout.txt",
+    "docs/a12/evidence/20261005/heightgraph_certificate/proposal.json",
+    "docs/a12/evidence/20261005/heightgraph_certificate/report.md",
+    "docs/a12/evidence/20261005/heightgraph_certificate/source-freeze-review2.sha256",
+    "docs/a12/evidence/20261005/heightgraph_certificate/source-review-plan.md",
+    "synlab/degrade/heightgraph_certificate.py",
+    "tests/a12/degrade/test_heightgraph_certificate_20261005.py"
+  ],
+  "stage_exit_codes": [
+    0
+  ],
+  "staged_path_count": 10,
+  "staged_paths": [
+    "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.junit.xml",
+    "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.rc.txt",
+    "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.stderr.txt",
+    "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.stdout.txt",
+    "docs/a12/evidence/20261005/heightgraph_certificate/proposal.json",
+    "docs/a12/evidence/20261005/heightgraph_certificate/report.md",
+    "docs/a12/evidence/20261005/heightgraph_certificate/source-freeze-review2.sha256",
+    "docs/a12/evidence/20261005/heightgraph_certificate/source-review-plan.md",
+    "synlab/degrade/heightgraph_certificate.py",
+    "tests/a12/degrade/test_heightgraph_certificate_20261005.py"
+  ],
+  "commit_command_argv": [
+    "git",
+    "-C",
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+    "-c",
+    "core.autocrlf=false",
+    "-c",
+    "user.name=A12 SynLab",
+    "-c",
+    "user.email=synlab@local",
+    "commit",
+    "-m",
+    "backup: preserve heightgraph certificate focused review",
+    "-m",
+    "Preserve the accepted heightgraph certificate source/test and 12 focused test/review evidence. Broader geometry, physics, observation, and label qualification remain unverified."
+  ],
+  "commit_exit_code": 0,
+  "commit_output": [
+    "[backup/forge-work-20261003 b605851] backup: preserve heightgraph certificate focused review",
+    " 10 files changed, 2281 insertions(+)",
+    " create mode 100644 docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.junit.xml",
+    " create mode 100644 docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.rc.txt",
+    " create mode 100644 docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.stderr.txt",
+    " create mode 100644 docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.stdout.txt",
+    " create mode 100644 docs/a12/evidence/20261005/heightgraph_certificate/proposal.json",
+    " create mode 100644 docs/a12/evidence/20261005/heightgraph_certificate/report.md",
+    " create mode 100644 docs/a12/evidence/20261005/heightgraph_certificate/source-freeze-review2.sha256",
+    " create mode 100644 docs/a12/evidence/20261005/heightgraph_certificate/source-review-plan.md",
+    " create mode 100644 synlab/degrade/heightgraph_certificate.py",
+    " create mode 100644 tests/a12/degrade/test_heightgraph_certificate_20261005.py"
+  ],
+  "commit": "b6058511e1255f70bc4f026bad57a7bb595aaa85",
+  "commit_parent": "c9c342bd936d87e3b52372498943fdb5fb7a9c5b",
+  "changed_path_count": 10,
+  "changed_paths": [
+    "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.junit.xml",
+    "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.rc.txt",
+    "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.stderr.txt",
+    "docs/a12/evidence/20261005/heightgraph_certificate/focused_pytest_review2.stdout.txt",
+    "docs/a12/evidence/20261005/heightgraph_certificate/proposal.json",
+    "docs/a12/evidence/20261005/heightgraph_certificate/report.md",
+    "docs/a12/evidence/20261005/heightgraph_certificate/source-freeze-review2.sha256",
+    "docs/a12/evidence/20261005/heightgraph_certificate/source-review-plan.md",
+    "synlab/degrade/heightgraph_certificate.py",
+    "tests/a12/degrade/test_heightgraph_certificate_20261005.py"
+  ],
+  "commit_tree_path_check": "exact_match",
+  "commit_blob_match_count": 10,
+  "commit_tree_verified": true,
+  "remote_head_before_push": "c9c342bd936d87e3b52372498943fdb5fb7a9c5b",
+  "remote_query_before_push_argv": [
+    "git",
+    "-C",
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+    "ls-remote",
+    "--heads",
+    "origin",
+    "backup/forge-work-20261003"
+  ],
+  "remote_query_before_push_exit_code": 0,
+  "push_argv": [
+    "git",
+    "-C",
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+    "-c",
+    "core.autocrlf=false",
+    "push",
+    "origin",
+    "HEAD:refs/heads/backup/forge-work-20261003"
+  ],
+  "push_exit_code": 0,
+  "push_output": [
+    "To https://github.com/xiemonb666/relicweave-synlab.git",
+    "   c9c342b..b605851  HEAD -> backup/forge-work-20261003"
+  ],
+  "remote_head_after_push": "b6058511e1255f70bc4f026bad57a7bb595aaa85",
+  "remote_query_after_push_argv": [
+    "git",
+    "-C",
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+    "ls-remote",
+    "--heads",
+    "origin",
+    "backup/forge-work-20261003"
+  ],
+  "remote_query_after_push_exit_code": 0,
+  "local_head_after": "b6058511e1255f70bc4f026bad57a7bb595aaa85",
+  "branch_after": "backup/forge-work-20261003",
+  "remaining_staged_paths": null,
+  "exact_path_status_after": [],
+  "finished_utc": "2026-10-05T09:58:14.3028877Z"
+}

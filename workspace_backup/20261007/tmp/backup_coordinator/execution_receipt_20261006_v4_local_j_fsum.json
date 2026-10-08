@@ -1,0 +1,576 @@
+{
+  "schema": "backup_execution_receipt.v1",
+  "plan_path": "tmp/backup_coordinator/next_core_incremental_plan_20261006_v4_local_operator_j_fsum.json",
+  "plan_sha256": "3f9b2bffe33aea3721f264f455d1a286a88a37d589f19d599bfe9c1d265269d0",
+  "repository": "pgfrag",
+  "branch": "backup/forge-work-20261003",
+  "parent": "861fc8a4b09a646b82f25c2b24b2abc3ba7fb873",
+  "commit": "a7c4699d74e341333da8d108c546cefe1bb0f052",
+  "remote": "origin",
+  "remote_branch": "backup/forge-work-20261003",
+  "remote_head_before": "861fc8a4b09a646b82f25c2b24b2abc3ba7fb873",
+  "remote_head_after": "a7c4699d74e341333da8d108c546cefe1bb0f052",
+  "preflight_head": "861fc8a4b09a646b82f25c2b24b2abc3ba7fb873",
+  "preflight_remote_head": "861fc8a4b09a646b82f25c2b24b2abc3ba7fb873",
+  "source_file_count": 39,
+  "source_bytes": 1655715,
+  "copied_count": 34,
+  "staged_count": 39,
+  "committed_path_count": 39,
+  "committed_blobs_verified": 39,
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+        "-c",
+        "core.autocrlf=false",
+        "add",
+        "--",
+        "docs/evidence/20261006/core_incremental/local_front_operator/basis_count_mapping_fix.py",
+        "docs/evidence/20261006/core_incremental/local_front_operator/EXECUTION_ADDENDUM.md",
+        "docs/evidence/20261006/core_incremental/local_front_operator/independent/local_saved_array_audit.json",
+        "docs/evidence/20261006/core_incremental/local_front_operator/independent/local_saved_array_audit.py",
+        "docs/evidence/20261006/core_incremental/local_front_operator/independent/local_saved_K_spectrum.png",
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/.local_front_scalar_operator.json.149216.worker.json",
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/actual_operator_readback.json",
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/external_run_receipt.json",
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/local_front_scalar_operator.unknown_receipt.json",
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/outer_stderr.txt",
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/outer_stdout.txt",
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/post_run_source_pins.json",
+        "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/pre_run_source_pins.json",
+        "docs/evidence/20261006/core_incremental/local_front_operator/source_freeze.json",
+        "docs/evidence/20261006/core_incremental/local_front_operator/SOURCE_REVIEW.md",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/EXECUTION_ADDENDUM.json",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/EXECUTION_ADDENDUM.md",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/metadata_mapping_fix.py",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/.solved_field_j_coupling.json.34676.worker.json",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/run_receipt.json",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/solved_field_j_coupling.json",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/stderr.log",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/stdout.log",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/source_freeze.json",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/source_freeze.sha256",
+        "docs/evidence/20261006/core_incremental/solved_field_j_coupling/SOURCE_REVIEW.md",
+        "docs/evidence/20261006/core_incremental/solved_j_fsum_independent/CORRECTION.json",
+        "docs/evidence/20261006/core_incremental/solved_j_fsum_independent/CORRECTION.md",
+        "docs/evidence/20261006/core_incremental/solved_j_fsum_independent/numeric_results.json",
+        "docs/evidence/20261006/core_incremental/solved_j_fsum_independent/review_receipt.json",
+        "docs/evidence/20261006/core_incremental/solved_j_fsum_independent/review_solved_j.py",
+        "docs/evidence/20261006/core_incremental/solved_j_fsum_independent/REVIEW.md",
+        "docs/evidence/20261006/core_incremental/solved_j_fsum_independent/solved_j_review.png",
+        "docs/evidence/20261006/core_incremental/solved_j_fsum_independent/source_run_receipt.json",
+        "experiments/local_front_operator_20261006/fixed_case.json",
+        "experiments/local_front_operator_20261006/operator_diagnostic.py",
+        "experiments/local_front_operator_20261006/README.md",
+        "experiments/solved_field_j_coupling_20261006/read_solved_field_j.py",
+        "experiments/solved_field_j_coupling_20261006/README.md"
+      ],
+      "rc": 0,
+      "output": "",
+      "scope": "exact approved 39 destination paths"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+        "-c",
+        "core.autocrlf=false",
+        "-c",
+        "user.name=PGFrag Maintainer",
+        "-c",
+        "user.email=pgfrag@local",
+        "commit",
+        "-m",
+        "backup: preserve local-front and solved-J diagnostics",
+        "-m",
+        "Preserve frozen scalar diagnostic and readback evidence from the local-front operator outer-125 run, the solved-field-J worker whose parent result remains UNKNOWN_WORKER_RESULT_CONTRACT, and the independent 448-sample math.fsum review. The local-front wrapper did not promote a primary result; solved-J metadata correction remains unapplied and no retry was run. The fsum review only checked the preserved worker stage and its label correction, not a full-domain integral or physical G. These artifacts do not qualify a solver or geometry."
+      ],
+      "rc": 0,
+      "output": "[backup/forge-work-20261003 a7c4699] backup: preserve local-front and solved-J diagnostics; 39 files changed, 47728 insertions(+)"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+        "-c",
+        "core.autocrlf=false",
+        "push",
+        "origin",
+        "HEAD:refs/heads/backup/forge-work-20261003"
+      ],
+      "rc": 0,
+      "output": [
+        "To https://github.com/xiemonb666/pgfrag.git",
+        "   861fc8a..a7c4699  HEAD -> backup/forge-work-20261003"
+      ]
+    }
+  ],
+  "verified_blob_manifest": [
+    {
+      "path": "experiments/local_front_operator_20261006/fixed_case.json",
+      "bytes": 7609,
+      "sha256": "bee0638bdbafdcd9dd1af02152faf3d87384503b6a029a70831f71b5369c162b",
+      "git_blob": "6f89a4f6b50ce5d219a27a0ea46c9343e012601f"
+    },
+    {
+      "path": "experiments/local_front_operator_20261006/operator_diagnostic.py",
+      "bytes": 60973,
+      "sha256": "77b0db5f26855ffb6d444154d42b04c5644fc99737be177420a3efad76ac9e59",
+      "git_blob": "46631892543fe9aaf3881636fd5996c3011bd065"
+    },
+    {
+      "path": "experiments/local_front_operator_20261006/README.md",
+      "bytes": 3956,
+      "sha256": "64bf3e86b88bd3aef705f25f9cb5967d2e3d372bc14bb392c2585b7b9e6301ed",
+      "git_blob": "036b35620a02eb09b071f7ddbe7d8e5ba2384f03"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/local_front_operator/source_freeze.json",
+      "bytes": 3541,
+      "sha256": "8b7e29a701a53ec9f00f24cb5ed2b45d80ffc470df2ce225dbbf4380026424af",
+      "git_blob": "e8765c17f43835a9804e9c717518cc60fa2b58e2"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/local_front_operator/SOURCE_REVIEW.md",
+      "bytes": 6183,
+      "sha256": "5d3ccee25c47aee57d937e49e08b9d3c904d623393b21c7cbc20ced416a8d273",
+      "git_blob": "228e69173f75084480b35e64f6826854cc45fd85"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/local_front_operator/EXECUTION_ADDENDUM.md",
+      "bytes": 816,
+      "sha256": "c62f51d7c30541d4f78acabd91a6897fed23f155be8bf017bd91bbb9d35ec571",
+      "git_blob": "0a555a2d698ccaea88b08a91aa0feace3bfcd79b"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/local_front_operator/basis_count_mapping_fix.py",
+      "bytes": 4220,
+      "sha256": "5481a2cb6e73b6cc92a0dfe8588c79477d501ca1a389ef12969b26a586d5204b",
+      "git_blob": "9e16ed46d7e2d85f440d061d7c7d8b9f83c7469e"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/.local_front_scalar_operator.json.149216.worker.json",
+      "bytes": 494763,
+      "sha256": "ebdea44857ab2b1a358fc679d0b1e4996943905a5996ba83f8f8f1ba68340762",
+      "git_blob": "ea5f2894db4f2e2ec3715e9c96832d84b0c7e19a"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/actual_operator_readback.json",
+      "bytes": 8453,
+      "sha256": "7ed92d02a7b4f680c8cd832dd7004f092a114bc2cfbddfa59c3e21c913cce924",
+      "git_blob": "95e3ff93c02f25f8d71cf850ba00a04a5b3b9380"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/external_run_receipt.json",
+      "bytes": 2333,
+      "sha256": "8997cd8e929456e3fa5d2cd0ba14f1efcd40dfb99cbf6efcbb57a24eeda9ccdd",
+      "git_blob": "c995b0fa6667d9f3f47481f9544b0ec684f4cbd8"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/local_front_scalar_operator.unknown_receipt.json",
+      "bytes": 1803,
+      "sha256": "8c6f623a1504103e06776ca7f185af797d042351ea96714fe7685a7709ab9fba",
+      "git_blob": "c460244115dfb1e5ff146ac96e99ed0f4b89cb3b"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/outer_stdout.txt",
+      "bytes": 411,
+      "sha256": "5ee49920c870fd44e6b6958f6a0941b155a28aa10bfdac8b4a6b5d8a9f24dbc5",
+      "git_blob": "d40578b4d048e3334e6b181504ae8bb4daf71586"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/outer_stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/pre_run_source_pins.json",
+      "bytes": 3989,
+      "sha256": "2d480a346f803f3c4819133617abc2759de5a806f47ecbb077d590aaf23b836a",
+      "git_blob": "937a3ecfb5e199b0bb95db334691719a1dee3368"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/post_run_source_pins.json",
+      "bytes": 4676,
+      "sha256": "1692d68ad92affc9b9f5c7230918670b9c5b8a85bec2f35cd046e1860eea287f",
+      "git_blob": "5afac2441faef081f72c1d5cd23b0d54446b5c08"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/local_front_operator/independent/local_saved_array_audit.py",
+      "bytes": 11631,
+      "sha256": "066cf71f7d17d60412debd1ab2e9c671a20c24af27d73683a51d531e5361032f",
+      "git_blob": "b5a031a10a3036b2a618aa8e8d9dc880fa65971a"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/local_front_operator/independent/local_saved_array_audit.json",
+      "bytes": 2482,
+      "sha256": "e1c60fa1ab3a1a073cb1f0f8ab51afea4a4fb3c33810d42914c0134ade74229a",
+      "git_blob": "c4a13fb375ca7616664c2613d3c488c2e0f74ef8"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/local_front_operator/independent/local_saved_K_spectrum.png",
+      "bytes": 10990,
+      "sha256": "451319c14f3e09378c98a47e5530b30aeed7e6598134ac5720cc44b618b6b1b1",
+      "git_blob": "6e00626f5e92f80a74beea87ca5240df63ecaeb4"
+    },
+    {
+      "path": "experiments/solved_field_j_coupling_20261006/read_solved_field_j.py",
+      "bytes": 69924,
+      "sha256": "4b2eca6bae43ca74aaee6129f58da838e35d2ab3f7e1ca22cd3fdba21d13815d",
+      "git_blob": "4d0dd7989a63f3ff45eefae6464a73df10fb71d4"
+    },
+    {
+      "path": "experiments/solved_field_j_coupling_20261006/README.md",
+      "bytes": 2097,
+      "sha256": "fd24a27ce44f4e38f7b8b1bab23fe4459fc97e0778f39dc36673770464f50242",
+      "git_blob": "bf9b135d51ec3e74e1dea29ca42872fe355089c1"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/source_freeze.json",
+      "bytes": 4972,
+      "sha256": "d5654bf579a8e7a11bd7a08a01b6878e88e96263dc1a14896f4b2067a9f449a8",
+      "git_blob": "91cbe73a549fff5573984e55520c5cdf016ef822"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/source_freeze.sha256",
+      "bytes": 86,
+      "sha256": "c16b29cbec69ead7e86d8e4e9ee39dcac0431085e477c0609e749c7c2f4c3a50",
+      "git_blob": "63420befbc9ed0452bfb18414217d89fe7f47e8e"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/SOURCE_REVIEW.md",
+      "bytes": 2928,
+      "sha256": "258913bb6a888b8d997bc62934f4be8986a59d88bbc5bedf6706aaca1f879aa4",
+      "git_blob": "fe3a12481756a97d1bbf78d1dd0165b5b7af8d60"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/EXECUTION_ADDENDUM.md",
+      "bytes": 1698,
+      "sha256": "d91ea236b3344d25605a784b44a75b0f4190ec8ca7b0773d71328dc2af5c5a61",
+      "git_blob": "8a5d952e2a999425b78c45537867a8db183e3701"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/EXECUTION_ADDENDUM.json",
+      "bytes": 3695,
+      "sha256": "b680360b602f2798927a9c36b567710a9aebedd6acd7b83d5ef5ff3bbcfef2dd",
+      "git_blob": "09a950acf898598b9d954c6552708b0f7e1eb889"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/metadata_mapping_fix.py",
+      "bytes": 3758,
+      "sha256": "39157314717d988e3136cb0feccd84784bd3002dcf52aadd5486b7d3b90bb2e3",
+      "git_blob": "203747fa7db360a9c3db35e270af7658a9d5a7fb"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/.solved_field_j_coupling.json.34676.worker.json",
+      "bytes": 649133,
+      "sha256": "1377e428a12f53bbc9dc9537c4dbf5d0c3f67a937bcdeceee6ddc6c98dfdfac9",
+      "git_blob": "04166be38ebcaf359cc7a680d965cea48a6efaef"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/run_receipt.json",
+      "bytes": 1650,
+      "sha256": "6a7eef3761ccc07a941dcb49805cf20c127825230f738560a32d5b2669f60b6b",
+      "git_blob": "ed8314af5b0a5676e5005e4f22eacc525e35646d"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/solved_field_j_coupling.json",
+      "bytes": 387,
+      "sha256": "6f3854d603f1c861dd86eceb44efe3374f84263a4053b9d0ed07d07f11926873",
+      "git_blob": "6a793aa0380745cb548a68b69bf76d79109306b0"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/solved_j_fsum_independent/review_solved_j.py",
+      "bytes": 13895,
+      "sha256": "c98f11010f3db31bc944f67eb5a481db23766c11eecc26fe6486c4630d602a03",
+      "git_blob": "1bb9496f35891b4c79f605474814a745e4276d2e"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/solved_j_fsum_independent/numeric_results.json",
+      "bytes": 11771,
+      "sha256": "b8d2ca2f96f29de8629f8089726c6132fe31a70870c76032152d06862f3f20ed",
+      "git_blob": "91e3561985eb180570b20dc49a72024f8161b9c6"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/solved_j_fsum_independent/solved_j_review.png",
+      "bytes": 253920,
+      "sha256": "b212ef41968b1bbcc0ef62ec0ae0a4ac6a7b5d5aa7f5098f43f97882e5be1e0c",
+      "git_blob": "c0232b13b4e290f30e1bec2c22c0f594d65d68da"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/solved_j_fsum_independent/REVIEW.md",
+      "bytes": 781,
+      "sha256": "1f08f4969ba17bebc898ffc938c08df8e6e9c73e177b05a2a069539b7d405955",
+      "git_blob": "490d2e950a57a58fde33ae440307cfcb09ab4dcb"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/solved_j_fsum_independent/review_receipt.json",
+      "bytes": 3888,
+      "sha256": "3516e277d0809375cdce333f4da84b6cd0e37efa2c38097bfb44f65f0ceced08",
+      "git_blob": "19879db30f1b844682ce085177bd9202cfeb0560"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/solved_j_fsum_independent/source_run_receipt.json",
+      "bytes": 1650,
+      "sha256": "6a7eef3761ccc07a941dcb49805cf20c127825230f738560a32d5b2669f60b6b",
+      "git_blob": "ed8314af5b0a5676e5005e4f22eacc525e35646d"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/solved_j_fsum_independent/CORRECTION.md",
+      "bytes": 383,
+      "sha256": "2a3ac0aa7a0de615b2a7fda2a9e16493bef9b0f4aea90f22799441fa43128965",
+      "git_blob": "7e5d35ab367ea98e555802cfa8f77a212239a490"
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental/solved_j_fsum_independent/CORRECTION.json",
+      "bytes": 270,
+      "sha256": "45c143f80952d15733f6dc34de8dabd1b6cb2e3b3b1ce6b8420d616d4a47d1a6",
+      "git_blob": "b47702afa1ef86aa626f0f9be7f61df3f92bef4e"
+    }
+  ],
+  "verification": {
+    "remote_head_matches_commit": true,
+    "all_39_git_blobs_byte_sha256_verified": true,
+    "committed_paths_exactly_match_plan": true,
+    "tracked_worktree_clean": true,
+    "index_clean": true
+  },
+  "claim_boundaries": [
+    "Local-front outer wrapper returned 125 and did not promote a primary result.",
+    "Solved-field-J parent result remains UNKNOWN_WORKER_RESULT_CONTRACT; no retry and metadata correction unapplied.",
+    "Independent fsum review covers 448 saved-stage samples and label correction only; no full-domain, path-independence, physical-G, solver, or geometry qualification is claimed."
+  ],
+  "copy_operations": [
+    {
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/source_freeze.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/source_freeze.json",
+      "bytes": 3541,
+      "sha256": "8b7e29a701a53ec9f00f24cb5ed2b45d80ffc470df2ce225dbbf4380026424af"
+    },
+    {
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/SOURCE_REVIEW.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/SOURCE_REVIEW.md",
+      "bytes": 6183,
+      "sha256": "5d3ccee25c47aee57d937e49e08b9d3c904d623393b21c7cbc20ced416a8d273"
+    },
+    {
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/EXECUTION_ADDENDUM.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/EXECUTION_ADDENDUM.md",
+      "bytes": 816,
+      "sha256": "c62f51d7c30541d4f78acabd91a6897fed23f155be8bf017bd91bbb9d35ec571"
+    },
+    {
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/basis_count_mapping_fix.py",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/basis_count_mapping_fix.py",
+      "bytes": 4220,
+      "sha256": "5481a2cb6e73b6cc92a0dfe8588c79477d501ca1a389ef12969b26a586d5204b"
+    },
+    {
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/runs/run01/.local_front_scalar_operator.json.149216.worker.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/.local_front_scalar_operator.json.149216.worker.json",
+      "bytes": 494763,
+      "sha256": "ebdea44857ab2b1a358fc679d0b1e4996943905a5996ba83f8f8f1ba68340762"
+    },
+    {
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/runs/run01/actual_operator_readback.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/actual_operator_readback.json",
+      "bytes": 8453,
+      "sha256": "7ed92d02a7b4f680c8cd832dd7004f092a114bc2cfbddfa59c3e21c913cce924"
+    },
+    {
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/runs/run01/external_run_receipt.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/external_run_receipt.json",
+      "bytes": 2333,
+      "sha256": "8997cd8e929456e3fa5d2cd0ba14f1efcd40dfb99cbf6efcbb57a24eeda9ccdd"
+    },
+    {
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/runs/run01/local_front_scalar_operator.unknown_receipt.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/local_front_scalar_operator.unknown_receipt.json",
+      "bytes": 1803,
+      "sha256": "8c6f623a1504103e06776ca7f185af797d042351ea96714fe7685a7709ab9fba"
+    },
+    {
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/runs/run01/outer_stdout.txt",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/outer_stdout.txt",
+      "bytes": 411,
+      "sha256": "5ee49920c870fd44e6b6958f6a0941b155a28aa10bfdac8b4a6b5d8a9f24dbc5"
+    },
+    {
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/runs/run01/outer_stderr.txt",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/outer_stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/runs/run01/pre_run_source_pins.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/pre_run_source_pins.json",
+      "bytes": 3989,
+      "sha256": "2d480a346f803f3c4819133617abc2759de5a806f47ecbb077d590aaf23b836a"
+    },
+    {
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/runs/run01/post_run_source_pins.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/post_run_source_pins.json",
+      "bytes": 4676,
+      "sha256": "1692d68ad92affc9b9f5c7230918670b9c5b8a85bec2f35cd046e1860eea287f"
+    },
+    {
+      "source_path": "tmp/review_20261006/full3d_and_local_operator_independent/local_saved_array_audit.py",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/independent/local_saved_array_audit.py",
+      "bytes": 11631,
+      "sha256": "066cf71f7d17d60412debd1ab2e9c671a20c24af27d73683a51d531e5361032f"
+    },
+    {
+      "source_path": "tmp/review_20261006/full3d_and_local_operator_independent/local_saved_array_audit.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/independent/local_saved_array_audit.json",
+      "bytes": 2482,
+      "sha256": "e1c60fa1ab3a1a073cb1f0f8ab51afea4a4fb3c33810d42914c0134ade74229a"
+    },
+    {
+      "source_path": "tmp/review_20261006/full3d_and_local_operator_independent/local_saved_K_spectrum.png",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/independent/local_saved_K_spectrum.png",
+      "bytes": 10990,
+      "sha256": "451319c14f3e09378c98a47e5530b30aeed7e6598134ac5720cc44b618b6b1b1"
+    },
+    {
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/source_freeze.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/source_freeze.json",
+      "bytes": 4972,
+      "sha256": "d5654bf579a8e7a11bd7a08a01b6878e88e96263dc1a14896f4b2067a9f449a8"
+    },
+    {
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/source_freeze.sha256",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/source_freeze.sha256",
+      "bytes": 86,
+      "sha256": "c16b29cbec69ead7e86d8e4e9ee39dcac0431085e477c0609e749c7c2f4c3a50"
+    },
+    {
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/SOURCE_REVIEW.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/SOURCE_REVIEW.md",
+      "bytes": 2928,
+      "sha256": "258913bb6a888b8d997bc62934f4be8986a59d88bbc5bedf6706aaca1f879aa4"
+    },
+    {
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/EXECUTION_ADDENDUM.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/EXECUTION_ADDENDUM.md",
+      "bytes": 1698,
+      "sha256": "d91ea236b3344d25605a784b44a75b0f4190ec8ca7b0773d71328dc2af5c5a61"
+    },
+    {
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/EXECUTION_ADDENDUM.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/EXECUTION_ADDENDUM.json",
+      "bytes": 3695,
+      "sha256": "b680360b602f2798927a9c36b567710a9aebedd6acd7b83d5ef5ff3bbcfef2dd"
+    },
+    {
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/metadata_mapping_fix.py",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/metadata_mapping_fix.py",
+      "bytes": 3758,
+      "sha256": "39157314717d988e3136cb0feccd84784bd3002dcf52aadd5486b7d3b90bb2e3"
+    },
+    {
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/runs/run01/.solved_field_j_coupling.json.34676.worker.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/.solved_field_j_coupling.json.34676.worker.json",
+      "bytes": 649133,
+      "sha256": "1377e428a12f53bbc9dc9537c4dbf5d0c3f67a937bcdeceee6ddc6c98dfdfac9"
+    },
+    {
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/runs/run01/run_receipt.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/run_receipt.json",
+      "bytes": 1650,
+      "sha256": "6a7eef3761ccc07a941dcb49805cf20c127825230f738560a32d5b2669f60b6b"
+    },
+    {
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/runs/run01/solved_field_j_coupling.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/solved_field_j_coupling.json",
+      "bytes": 387,
+      "sha256": "6f3854d603f1c861dd86eceb44efe3374f84263a4053b9d0ed07d07f11926873"
+    },
+    {
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/runs/run01/stdout.log",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/runs/run01/stderr.log",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "tmp/review_20261006/solved_j_fsum_independent/review_solved_j.py",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_j_fsum_independent/review_solved_j.py",
+      "bytes": 13895,
+      "sha256": "c98f11010f3db31bc944f67eb5a481db23766c11eecc26fe6486c4630d602a03"
+    },
+    {
+      "source_path": "tmp/review_20261006/solved_j_fsum_independent/numeric_results.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_j_fsum_independent/numeric_results.json",
+      "bytes": 11771,
+      "sha256": "b8d2ca2f96f29de8629f8089726c6132fe31a70870c76032152d06862f3f20ed"
+    },
+    {
+      "source_path": "tmp/review_20261006/solved_j_fsum_independent/solved_j_review.png",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_j_fsum_independent/solved_j_review.png",
+      "bytes": 253920,
+      "sha256": "b212ef41968b1bbcc0ef62ec0ae0a4ac6a7b5d5aa7f5098f43f97882e5be1e0c"
+    },
+    {
+      "source_path": "tmp/review_20261006/solved_j_fsum_independent/REVIEW.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_j_fsum_independent/REVIEW.md",
+      "bytes": 781,
+      "sha256": "1f08f4969ba17bebc898ffc938c08df8e6e9c73e177b05a2a069539b7d405955"
+    },
+    {
+      "source_path": "tmp/review_20261006/solved_j_fsum_independent/review_receipt.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_j_fsum_independent/review_receipt.json",
+      "bytes": 3888,
+      "sha256": "3516e277d0809375cdce333f4da84b6cd0e37efa2c38097bfb44f65f0ceced08"
+    },
+    {
+      "source_path": "tmp/review_20261006/solved_j_fsum_independent/source_run_receipt.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_j_fsum_independent/source_run_receipt.json",
+      "bytes": 1650,
+      "sha256": "6a7eef3761ccc07a941dcb49805cf20c127825230f738560a32d5b2669f60b6b"
+    },
+    {
+      "source_path": "tmp/review_20261006/solved_j_fsum_independent/CORRECTION.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_j_fsum_independent/CORRECTION.md",
+      "bytes": 383,
+      "sha256": "2a3ac0aa7a0de615b2a7fda2a9e16493bef9b0f4aea90f22799441fa43128965"
+    },
+    {
+      "source_path": "tmp/review_20261006/solved_j_fsum_independent/CORRECTION.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_j_fsum_independent/CORRECTION.json",
+      "bytes": 270,
+      "sha256": "45c143f80952d15733f6dc34de8dabd1b6cb2e3b3b1ce6b8420d616d4a47d1a6"
+    }
+  ],
+  "preflight": {
+    "branch": "backup/forge-work-20261003",
+    "head": "861fc8a4b09a646b82f25c2b24b2abc3ba7fb873",
+    "remote_head": "861fc8a4b09a646b82f25c2b24b2abc3ba7fb873",
+    "tracked_changes": 0,
+    "index_changes": 0,
+    "source_hashes_verified_before_copy": true,
+    "all_copy_destinations_absent_before_copy": true
+  }
+}

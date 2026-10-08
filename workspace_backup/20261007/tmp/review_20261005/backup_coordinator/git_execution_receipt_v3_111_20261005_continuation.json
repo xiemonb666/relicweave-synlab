@@ -1,0 +1,1153 @@
+{
+  "status": "COMPLETE",
+  "created_at_utc": "2026-10-05T11:42:29.619759+00:00",
+  "approved_plan_sha256": "7ce4dd0b3d3c46e7d170a287953cd8156b69246ca672e6e1106af5f514a5cd6a",
+  "approved_scope_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\review_20261005\\backup_coordinator\\approved_execution_scope_v3_111_20261005.json",
+  "approved_scope_sha256": "a8edb981d02a41238a8568224aa54f1a7a7b75f81a725602a92b5bc8af617a69",
+  "copy_receipt_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\review_20261005\\backup_coordinator\\copy_execution_receipt_v3_111_20261005.json",
+  "copy_receipt_sha256": "7f910a73e499c24fac2d3aca5ce99e8f13151b76f2904029fe0352f1760f2820",
+  "prior_git_execution_receipt_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\review_20261005\\backup_coordinator\\git_execution_receipt_v3_111_20261005.json",
+  "prior_git_execution_receipt_sha256": "dd9b4312682840da7a3acbf3ddc7facc4df65eb66e51b9c283977f525685b4ab",
+  "approved_entries": 111,
+  "excluded_entries": [
+    {
+      "source_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\tmp\\review_20261005\\explicit_crack_formulation\\thesis_ch2_selected_pages.txt",
+      "destination_repo_path": "docs/evidence/20261005/explicit_crack_formulation_20261005/thesis_ch2_selected_pages.txt",
+      "expected_bytes": 26213,
+      "expected_sha256": "fa0e4c7eeec225391d7dab5f11436518b445427ae347f46c14ad5325f30a198b",
+      "reason": "Public-facing document excerpt/image excluded at root review; retained locally unchanged."
+    },
+    {
+      "source_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\tmp\\review_20261005\\explicit_crack_formulation\\thesis_ch6_selected_pages.txt",
+      "destination_repo_path": "docs/evidence/20261005/explicit_crack_formulation_20261005/thesis_ch6_selected_pages.txt",
+      "expected_bytes": 20196,
+      "expected_sha256": "66352381a60a9ce401084ba9727613a6c9bb689f49b8c4461bb95a68a4f7e84e",
+      "reason": "Public-facing document excerpt/image excluded at root review; retained locally unchanged."
+    },
+    {
+      "source_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\tmp\\review_20261005\\explicit_crack_formulation\\thesis_p131_eq6_2.png",
+      "destination_repo_path": "docs/evidence/20261005/explicit_crack_formulation_20261005/thesis_p131_eq6_2.png",
+      "expected_bytes": 259104,
+      "expected_sha256": "2a1b8886adc42b3d2f6bef6d29978a6eef834e2d56e399dea06fb0eb90a8ae52",
+      "reason": "Public-facing document excerpt/image excluded at root review; retained locally unchanged."
+    }
+  ],
+  "repo_results": [
+    {
+      "repo": "pgfrag",
+      "started_at_utc": "2026-10-05T11:42:10.320348+00:00",
+      "entries": [],
+      "errors": [],
+      "status": "ALREADY_PUSHED_AND_REVERIFIED",
+      "pre_git": {
+        "branch": "backup/forge-work-20261003",
+        "head": "f21f15837eab1e012a0007422cd819d8f3171a18",
+        "origin": "https://github.com/xiemonb666/pgfrag.git"
+      },
+      "commit": "f21f15837eab1e012a0007422cd819d8f3171a18",
+      "parent": "6d850027cbd3a8d7d4c721185aed4e4e9da50199",
+      "committed_paths": [
+        "docs/evidence/20261005/explicit_crack_formulation_20261005/SOURCE_EVIDENCE.md",
+        "docs/evidence/20261005/explicit_surface_state_20261005/REVIEW.md",
+        "docs/evidence/20261005/explicit_surface_state_20261005/freeze_manifest.json",
+        "docs/evidence/20261005/explicit_surface_state_20261005/phase1/run_20261005_01/junit.xml",
+        "docs/evidence/20261005/explicit_surface_state_20261005/phase1/run_20261005_01/receipt.json",
+        "docs/evidence/20261005/explicit_surface_state_20261005/phase1/source_snapshot/test_explicit_surface_state.py",
+        "docs/evidence/20261005/explicit_surface_state_20261005/phase2/phase2_source_pin.json",
+        "docs/evidence/20261005/explicit_surface_state_20261005/phase2/phase2_test_only.diff",
+        "docs/evidence/20261005/explicit_surface_state_20261005/phase2/run_20261005_02/junit.xml",
+        "docs/evidence/20261005/explicit_surface_state_20261005/phase2/run_20261005_02/receipt.json",
+        "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/final_receipt.json",
+        "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/original_source_snapshot/CONTRACT.md",
+        "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/original_source_snapshot/plan.json",
+        "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/original_source_snapshot/snapshot_manifest.json",
+        "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/original_source_snapshot/source_freeze.json",
+        "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/original_source_snapshot/worker.py",
+        "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/pilot_results_summary.json",
+        "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/pilot_results_summary.md",
+        "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/preflight.json",
+        "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/report_fix_source_review.json",
+        "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/retained_stage/cell_in_progress.json",
+        "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/retained_stage/cell_ledger.json",
+        "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/retained_stage/cell_ledger.partial.json",
+        "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/retained_stage/material_points.json",
+        "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/retained_stage/parent_execution_receipt.json",
+        "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/retained_stage/request.json",
+        "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/retained_stage/worker_failure.json",
+        "docs/evidence/20261005/forge_volume_ingress_roi_20261005/fixed_worker_test/junit.xml",
+        "docs/evidence/20261005/forge_volume_ingress_roi_20261005/fixed_worker_test/test_receipt.json",
+        "docs/evidence/20261005/forge_volume_ingress_roi_20261005/plan.json",
+        "docs/evidence/20261005/forge_volume_ingress_roi_20261005/source_freeze.json",
+        "docs/evidence/20261005/free_fracture_pilot_20261005/review/EXECUTION_REVIEW_20261005.md",
+        "docs/evidence/20261005/free_fracture_pilot_20261005/review/SOURCE_REVIEW.md",
+        "docs/evidence/20261005/free_fracture_pilot_20261005/review/pilot_input_hash_inventory.json",
+        "docs/evidence/20261005/free_fracture_pilot_20261005/run_attempt_01/launcher_receipt.json",
+        "docs/evidence/20261005/free_fracture_pilot_20261005/run_attempt_01/native_stderr.log",
+        "docs/evidence/20261005/free_fracture_pilot_20261005/run_attempt_01/native_stdout.log",
+        "docs/evidence/20261005/free_fracture_pilot_20261005/run_attempt_01/results/canonical_bonds_lossless.zip",
+        "docs/evidence/20261005/free_fracture_pilot_20261005/run_attempt_01/results/canonical_bonds_zip_receipt.json",
+        "docs/evidence/20261005/free_fracture_pilot_20261005/run_attempt_01/results/energy_reaction_history.csv",
+        "docs/evidence/20261005/free_fracture_pilot_20261005/run_attempt_01/results/graph_component_labels_layout.toml",
+        "docs/evidence/20261005/free_fracture_pilot_20261005/run_attempt_01/results/graph_state_history.csv",
+        "docs/evidence/20261005/free_fracture_pilot_20261005/run_attempt_01/results/native_arrays_lossless.zip",
+        "docs/evidence/20261005/free_fracture_pilot_20261005/run_attempt_01/results/native_arrays_zip_receipt.json",
+        "docs/evidence/20261005/free_fracture_pilot_20261005/run_attempt_01/results/native_failure_events.csv",
+        "docs/evidence/20261005/free_fracture_pilot_20261005/run_attempt_01/results/point_reference.csv",
+        "docs/evidence/20261005/free_fracture_pilot_20261005/run_attempt_01/results/point_state_layout.toml",
+        "docs/evidence/20261005/free_fracture_pilot_20261005/run_attempt_01/results/summary.toml",
+        "docs/evidence/20261005/mls3d_phase1_20261005/RUN_METADATA.json",
+        "docs/evidence/20261005/mls3d_phase1_20261005/RUN_RECORD.md",
+        "docs/evidence/20261005/mls3d_phase1_20261005/junit.xml",
+        "docs/evidence/20261005/mls3d_phase2_20261005/CONTRACT.md",
+        "docs/evidence/20261005/mls3d_phase2_20261005/PHASE1_SNAPSHOT.md",
+        "docs/evidence/20261005/mls3d_phase2_20261005/PHASE1_SNAPSHOT_IDENTITY_CHECK.txt",
+        "docs/evidence/20261005/mls3d_phase2_20261005/PHASE1_SNAPSHOT_SHA256.txt",
+        "docs/evidence/20261005/mls3d_phase2_20261005/PHASE2_SOURCE_IDENTITY_CHECK.txt",
+        "docs/evidence/20261005/mls3d_phase2_20261005/PHASE2_SOURCE_SHA256.txt",
+        "docs/evidence/20261005/mls3d_phase2_20261005/README.md",
+        "docs/evidence/20261005/mls3d_phase2_20261005/SOURCE_REVIEW.md",
+        "docs/evidence/20261005/mls3d_phase2_20261005/test/POST_RUN_PHASE1_ORIGINAL_SHA256.txt",
+        "docs/evidence/20261005/mls3d_phase2_20261005/test/POST_RUN_PHASE2_SOURCE_SHA256.txt",
+        "docs/evidence/20261005/mls3d_phase2_20261005/test/POST_RUN_SNAPSHOT_CHECK.txt",
+        "docs/evidence/20261005/mls3d_phase2_20261005/test/PRE_RUN_PHASE1_ORIGINAL_SHA256.txt",
+        "docs/evidence/20261005/mls3d_phase2_20261005/test/PRE_RUN_PHASE2_SOURCE_SHA256.txt",
+        "docs/evidence/20261005/mls3d_phase2_20261005/test/PRE_RUN_SNAPSHOT_CHECK.txt",
+        "docs/evidence/20261005/mls3d_phase2_20261005/test/RUN_METADATA.json",
+        "docs/evidence/20261005/mls3d_phase2_20261005/test/RUN_RECORD.md",
+        "docs/evidence/20261005/mls3d_phase2_20261005/test/junit.xml",
+        "docs/evidence/20261005/mls3d_phase2_20261005/test/stderr.txt",
+        "docs/evidence/20261005/mls3d_phase2_20261005/test/stdout.txt",
+        "experiments/explicit_crack_formulation_20261005/FORMULATION_CONTRACT.md",
+        "experiments/explicit_surface_state_20261005/README.md",
+        "experiments/explicit_surface_state_20261005/explicit_surface_state.py",
+        "experiments/explicit_surface_state_20261005/state.schema.json",
+        "experiments/explicit_surface_state_20261005/test_explicit_surface_state.py",
+        "experiments/forge_volume_ingress_20261005/CONTRACT.md",
+        "experiments/forge_volume_ingress_20261005/tests/test_report_serialization.py",
+        "experiments/forge_volume_ingress_20261005/worker.py",
+        "experiments/free_fracture_pilot_20261005/fixed_case.toml",
+        "experiments/free_fracture_pilot_20261005/run_free_fracture_pilot.jl",
+        "experiments/free_fracture_pilot_20261005/run_once.ps1",
+        "experiments/free_fracture_pilot_20261005/source_freeze.toml",
+        "experiments/mls3d_kernel_20261005/README.md",
+        "experiments/mls3d_kernel_20261005/mls3d_mls.py",
+        "experiments/mls3d_kernel_20261005/mls3d_shape.py",
+        "experiments/mls3d_kernel_20261005/test_mls3d_mls.py",
+        "experiments/mls3d_kernel_20261005/test_mls3d_shape.py"
+      ],
+      "commit_blob_checks": [
+        {
+          "path": "experiments/free_fracture_pilot_20261005/run_free_fracture_pilot.jl",
+          "oid": "17a770e323f2636b28a670a324fcfe8c4c049de1",
+          "bytes": 82117,
+          "sha256": "9922d52c13468df5152d88c1fdb1b7c9fc6ce473a1a3a9e56507aaf37479f50b"
+        },
+        {
+          "path": "experiments/free_fracture_pilot_20261005/fixed_case.toml",
+          "oid": "cf1faeafcdac95006ff9cb8410e686a80f21f18a",
+          "bytes": 3276,
+          "sha256": "45b9f8bb5d10522fa2e6fa91ca8d944e2d6af27396034b489e27a026783bbedd"
+        },
+        {
+          "path": "experiments/free_fracture_pilot_20261005/run_once.ps1",
+          "oid": "5595f131fe7a1cda840558e03c33f1f3213d067e",
+          "bytes": 17288,
+          "sha256": "97434a0f5b17dd93ae7a0064f98515b4651aad583b0a039b7907c646c89ba69d"
+        },
+        {
+          "path": "experiments/free_fracture_pilot_20261005/source_freeze.toml",
+          "oid": "989f668f6c63aecc35c04a0c00b1690b313ac8e8",
+          "bytes": 21717,
+          "sha256": "1f4c3e9b10a607d303bbc3435bf22ae8b591ce8f6b5651aacb6cba3c3bfd7217"
+        },
+        {
+          "path": "docs/evidence/20261005/free_fracture_pilot_20261005/review/SOURCE_REVIEW.md",
+          "oid": "511ebc5989968257c63aae8b06f84f35c4006db4",
+          "bytes": 7908,
+          "sha256": "30f12cfd0c2235bd5c0bc34d8b79c8bea391022c71f11ff4f9fac764a088ce42"
+        },
+        {
+          "path": "docs/evidence/20261005/free_fracture_pilot_20261005/review/EXECUTION_REVIEW_20261005.md",
+          "oid": "9832eb5a030d05fb74aa0d96a6ae2c9674d72e09",
+          "bytes": 9125,
+          "sha256": "795cf85c0a10a554436496a20d544a96da7a36c4ef19d537f16b73cff473e020"
+        },
+        {
+          "path": "docs/evidence/20261005/free_fracture_pilot_20261005/review/pilot_input_hash_inventory.json",
+          "oid": "afee90b05b52d6ee5946e0ec6224c330ef6c0d11",
+          "bytes": 3041,
+          "sha256": "480696292e9dc58cb368ebdb35102b1d727f716a42a215a1759cf6b678fce87d"
+        },
+        {
+          "path": "docs/evidence/20261005/free_fracture_pilot_20261005/run_attempt_01/launcher_receipt.json",
+          "oid": "26ef5e1dcb3bd353b6542c81179d400a0b25db4e",
+          "bytes": 2755,
+          "sha256": "0bae8302c765effdd2614f72a2e1802d4779aa9ea4910829a1281f063c4eb557"
+        },
+        {
+          "path": "docs/evidence/20261005/free_fracture_pilot_20261005/run_attempt_01/native_stdout.log",
+          "oid": "3aaa5574f2bdc60ce4abdd6f82861e525048c786",
+          "bytes": 118,
+          "sha256": "84478924ac9ba53b17a977e36b87a1bfa12ede462605963fd5641070e7bebab8"
+        },
+        {
+          "path": "docs/evidence/20261005/free_fracture_pilot_20261005/run_attempt_01/native_stderr.log",
+          "oid": "038880f0dcdd271356bf0141ac64e17ab3a7fb6f",
+          "bytes": 227,
+          "sha256": "b87722a6adc7800d3eea59db8e3e633b3e2cb9e160eaf980b5772bce56980937"
+        },
+        {
+          "path": "docs/evidence/20261005/free_fracture_pilot_20261005/run_attempt_01/results/summary.toml",
+          "oid": "c094699810fbd3d33a18084ccdc28e2ba4fd1ae7",
+          "bytes": 24598,
+          "sha256": "1e3396d30aa124a3371b47bcd6cc40eea4118312a18d685bbfbe3fdaa60a9c8c"
+        },
+        {
+          "path": "docs/evidence/20261005/free_fracture_pilot_20261005/run_attempt_01/results/point_state_layout.toml",
+          "oid": "7c9e0b00ea0e753a57a2ea5117d2f3c05ab98eff",
+          "bytes": 1816,
+          "sha256": "6e5f1ca4ccf7c8680bf693a6f96236dca1e52382bf58126c2cfeaa276074959d"
+        },
+        {
+          "path": "docs/evidence/20261005/free_fracture_pilot_20261005/run_attempt_01/results/graph_component_labels_layout.toml",
+          "oid": "493c1dfdc2fd406dbf35a7cb7f4c22b612d5eb89",
+          "bytes": 684,
+          "sha256": "7a6a0e137dcccd807f6942b807699f65e9a3f062d26c8e817296a90ebc195899"
+        },
+        {
+          "path": "docs/evidence/20261005/free_fracture_pilot_20261005/run_attempt_01/results/energy_reaction_history.csv",
+          "oid": "87989900385ebf1dc4e2643c1bb184759a27e1a0",
+          "bytes": 65563,
+          "sha256": "8287c68ca0cc612b406d87759c4792e15eb8836722273a5e14df0aec0f07f667"
+        },
+        {
+          "path": "docs/evidence/20261005/free_fracture_pilot_20261005/run_attempt_01/results/graph_state_history.csv",
+          "oid": "b135403d1c4f9c19ed5724e25d735ce38e241140",
+          "bytes": 17567,
+          "sha256": "37c12ca66913c1d192b68364adfe40ce70bae01779f2cc90096788673c645f62"
+        },
+        {
+          "path": "docs/evidence/20261005/free_fracture_pilot_20261005/run_attempt_01/results/native_failure_events.csv",
+          "oid": "5a607fd4b2c4ddf30a511cd33e6e93784aeca1c9",
+          "bytes": 957282,
+          "sha256": "e37e0785da631d62be4413d54577ba14439d24b347fa728e832124ea0a5e30b6"
+        },
+        {
+          "path": "docs/evidence/20261005/free_fracture_pilot_20261005/run_attempt_01/results/point_reference.csv",
+          "oid": "b77a1e0280454bee3a1aedbcc3923902ef7579f9",
+          "bytes": 520394,
+          "sha256": "7194fadbcd2af23b3205aa4349b471d6cb9457d24ee84b88e91404af35579257"
+        },
+        {
+          "path": "docs/evidence/20261005/free_fracture_pilot_20261005/run_attempt_01/results/native_arrays_lossless.zip",
+          "oid": "89d68bc21ca336bfc3b820d6af0237aa28883616",
+          "bytes": 43640741,
+          "sha256": "aca9be8a2e0b2a9d11084d2398930674a70a6edca290e50f2d2d63c34bb92191"
+        },
+        {
+          "path": "docs/evidence/20261005/free_fracture_pilot_20261005/run_attempt_01/results/native_arrays_zip_receipt.json",
+          "oid": "9927be09cf2af23cfccc18b47a5fa7fd94be21f8",
+          "bytes": 1969,
+          "sha256": "2e18db367bb70c4ffbe33172bcd3dd9294180ea1712730f6dfa5904bc19380a2"
+        },
+        {
+          "path": "experiments/explicit_crack_formulation_20261005/FORMULATION_CONTRACT.md",
+          "oid": "6d19e8250a8551ce4129f12bdbd790e411c0a76f",
+          "bytes": 14017,
+          "sha256": "56e36e197985e4b829b95090f224e67c7b7a94bb6c977961b1dbb45f21b681eb"
+        },
+        {
+          "path": "docs/evidence/20261005/explicit_crack_formulation_20261005/SOURCE_EVIDENCE.md",
+          "oid": "8ad15e58293b1c52fd053ba8f994f998c9e5a053",
+          "bytes": 7306,
+          "sha256": "c92f385579e65b232c544f838e5ae98a12352b1c358570ee2c19630e9e3a8d0e"
+        },
+        {
+          "path": "experiments/mls3d_kernel_20261005/README.md",
+          "oid": "1fc9a4d0a94457b12189a5ebed8d83d74477903b",
+          "bytes": 889,
+          "sha256": "ce3898b500d47354b9a65385024bf940e8ea9347ca49b1e3afee6d4b1034dd8a"
+        },
+        {
+          "path": "experiments/mls3d_kernel_20261005/mls3d_mls.py",
+          "oid": "f7c50cdf91b960c69aa941f005289278f6435395",
+          "bytes": 16461,
+          "sha256": "404256d9b7546361a5704c4c3cec7c022069a9cf83a137c58a16e7a64f79ec63"
+        },
+        {
+          "path": "experiments/mls3d_kernel_20261005/test_mls3d_mls.py",
+          "oid": "56673d0b4a236fa396d07666dde145ddf16fecf9",
+          "bytes": 9025,
+          "sha256": "b8a11a4cf6bb5cf2362726af120a2c52e289c615210f3cdf21b16934957cd840"
+        },
+        {
+          "path": "docs/evidence/20261005/mls3d_phase1_20261005/RUN_RECORD.md",
+          "oid": "555a15fa5b786f95591015a6e218cb89fe9d95e8",
+          "bytes": 1249,
+          "sha256": "65322d183f0221de781967d3c6858fcceb1d87c453031f07bc41851f61514679"
+        },
+        {
+          "path": "docs/evidence/20261005/mls3d_phase1_20261005/RUN_METADATA.json",
+          "oid": "f98cd2ab0c3aac4b9408e78e87d360f70cad5166",
+          "bytes": 598,
+          "sha256": "77b35476621e8a9c4fdcbfb8c2073dc96e5c035e0972a28ae177a01acc1d758d"
+        },
+        {
+          "path": "docs/evidence/20261005/mls3d_phase1_20261005/junit.xml",
+          "oid": "d19c2733f7b87addedf544ea65f9d2f3cb729c7d",
+          "bytes": 1238,
+          "sha256": "4c71ba740e45d47bba8577d66755d4d93791f137cd9868673fa842bc7b2e9d33"
+        },
+        {
+          "path": "experiments/explicit_surface_state_20261005/explicit_surface_state.py",
+          "oid": "c990180bc79bfb7d3d5ab231a299dd62087968a6",
+          "bytes": 34775,
+          "sha256": "b4ed9bc2eff7a3c7811d6adaaea012db398afd256285d04ccdd15b3dd2a2b6e0"
+        },
+        {
+          "path": "experiments/explicit_surface_state_20261005/test_explicit_surface_state.py",
+          "oid": "a6a2f0bf00b587e169e8654d27cec2b16377e661",
+          "bytes": 15930,
+          "sha256": "01732dc826953153e7861e07a42ecc3cc8c2d72389e50db60edb12ffe6ef99e0"
+        },
+        {
+          "path": "experiments/explicit_surface_state_20261005/state.schema.json",
+          "oid": "4395e56091d477ae837b326fd38f7a95c3e50e39",
+          "bytes": 6473,
+          "sha256": "a8a4c0881cc90b959271321e837ab37ea4341036a3060ad09adf3411910ff9ea"
+        },
+        {
+          "path": "experiments/explicit_surface_state_20261005/README.md",
+          "oid": "e4d7044cceeb86e18ce557ab55b6e6e5cac33b88",
+          "bytes": 4134,
+          "sha256": "ad4041e9addaac9a19e4fce3b00cf51329be286397934fb6ef990a67c847cf5b"
+        },
+        {
+          "path": "docs/evidence/20261005/explicit_surface_state_20261005/REVIEW.md",
+          "oid": "e7aef8836a47c60e03d0ffb62e053616a0085072",
+          "bytes": 3493,
+          "sha256": "09295290a7b383ac32ba078a26a646450bc23765382e0b5b31de8a05d1d6ec7c"
+        },
+        {
+          "path": "docs/evidence/20261005/explicit_surface_state_20261005/freeze_manifest.json",
+          "oid": "3d38d3588d5e3d33fa35e14db0d226068ec9978b",
+          "bytes": 881,
+          "sha256": "96deeb13e42d8abb61475c5e1806227cfb5d734e0d0b2bf946715886b3dca4ca"
+        },
+        {
+          "path": "docs/evidence/20261005/explicit_surface_state_20261005/phase1/source_snapshot/test_explicit_surface_state.py",
+          "oid": "b13ec33a360f65a926a5aee9a6e887693a52dadc",
+          "bytes": 15368,
+          "sha256": "6eb0f109502f32066d710a071eb33afdf64262c1e9a582df254fda0849afdd19"
+        },
+        {
+          "path": "docs/evidence/20261005/explicit_surface_state_20261005/phase1/run_20261005_01/receipt.json",
+          "oid": "cc70ef8639740a44667fbcee82b3f46342cc2edc",
+          "bytes": 3659,
+          "sha256": "74ed99b84ced7dc29cdb37eebc98aefa6aeba91afb013028fee8e77c28c23cc5"
+        },
+        {
+          "path": "docs/evidence/20261005/explicit_surface_state_20261005/phase1/run_20261005_01/junit.xml",
+          "oid": "bc27f9ecb45f200d9f970dd21a09007f8e7b04c2",
+          "bytes": 9453,
+          "sha256": "1a689511371bada3ccf7a5b0a388b61a0d4ad9a1c07bfb875b5a98f12130dae6"
+        },
+        {
+          "path": "docs/evidence/20261005/explicit_surface_state_20261005/phase2/phase2_test_only.diff",
+          "oid": "1cdfc112055219f0f5dc58aa77b3ad510ea40d76",
+          "bytes": 3010,
+          "sha256": "1a3e93f455ebeefd0453c360c94cc75b095151bb18adb07fbd468f7aff10460f"
+        },
+        {
+          "path": "docs/evidence/20261005/explicit_surface_state_20261005/phase2/phase2_source_pin.json",
+          "oid": "891d414f935ba1622a76ef0b0d00ebf9430926b5",
+          "bytes": 1810,
+          "sha256": "37a30731c9f903349fb60888a05933aff9d7ef4fc205fabaff624d7b8e352b81"
+        },
+        {
+          "path": "docs/evidence/20261005/explicit_surface_state_20261005/phase2/run_20261005_02/receipt.json",
+          "oid": "45ac02ca537ce1cb23176116ce3fd2d03ceef58b",
+          "bytes": 3872,
+          "sha256": "edca64fbed521cb61621737ef1c85d18adac27d6cceb3a5725fb373107f36996"
+        },
+        {
+          "path": "docs/evidence/20261005/explicit_surface_state_20261005/phase2/run_20261005_02/junit.xml",
+          "oid": "1afb3b231b0f6a9ad9ab6b989955c7e51128e70b",
+          "bytes": 3953,
+          "sha256": "1312eeebe83a2a9b1ceef17e916f52111bea62071411d4e7f4ad18a9ad8a540c"
+        },
+        {
+          "path": "experiments/forge_volume_ingress_20261005/CONTRACT.md",
+          "oid": "df6ae161bf3a9a374703e2028e22a47660c81f5b",
+          "bytes": 7770,
+          "sha256": "7151df72d082b0d1d728f86aa118c3f396a4d6a3e545fbf5dc76f37a7118c6f7"
+        },
+        {
+          "path": "experiments/forge_volume_ingress_20261005/worker.py",
+          "oid": "8f80f10d194991352f4ae83fc5d5faaeb1432438",
+          "bytes": 68742,
+          "sha256": "10a53525d095715d53eec16406c560fb42a37740e1c4e56cf5db85e54f080e34"
+        },
+        {
+          "path": "experiments/forge_volume_ingress_20261005/tests/test_report_serialization.py",
+          "oid": "e67fa6f0da68f7b2980259009bb1dae35263b982",
+          "bytes": 2745,
+          "sha256": "52573ab3242375393627a873577fc4ec5e56125c48f290be5ac945045e12eabf"
+        },
+        {
+          "path": "docs/evidence/20261005/forge_volume_ingress_roi_20261005/plan.json",
+          "oid": "fc5e9a797e3881fe8b60f6c5dadcd50e857edf16",
+          "bytes": 7616,
+          "sha256": "e7124ceb99489b858bb2d116fed5dd9c88960209dee632f7d49d75e2ffefc73a"
+        },
+        {
+          "path": "docs/evidence/20261005/forge_volume_ingress_roi_20261005/source_freeze.json",
+          "oid": "4afe38904f5d97f2da866f984847102061d60ada",
+          "bytes": 2427,
+          "sha256": "3b29580e4470cfa3016968eb784cd5b1ab9c02e832a2ce1bf5dee57c2a2a5538"
+        },
+        {
+          "path": "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/final_receipt.json",
+          "oid": "024a26a77fbc947af79555aec4f526b4b6254d0b",
+          "bytes": 426234,
+          "sha256": "721f5021b248afe5d3eb14e32cff0d6edc7a3a03a535ad36588e2c5e71f8cf4c"
+        },
+        {
+          "path": "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/preflight.json",
+          "oid": "83f1d5908cf62ce4129229117190af76902b9310",
+          "bytes": 2648,
+          "sha256": "ebbc17650e84ac9888dc02496d674191b7ec2b1498f09b1e86b48a9b43e0b6d0"
+        },
+        {
+          "path": "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/pilot_results_summary.json",
+          "oid": "670c7279140aa8afd4db45b09f3cebb94f379c1c",
+          "bytes": 9870,
+          "sha256": "391ae016166451f1135c0467cb90d24bfe751a3f39c199d1561705039d678213"
+        },
+        {
+          "path": "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/pilot_results_summary.md",
+          "oid": "39145956c79fe30594cb337aac378f8f52ff84ca",
+          "bytes": 2167,
+          "sha256": "c93d1160fbdffff2e0d4cff3ca7a9a17a1415666141aba04581fbbceac3579de"
+        },
+        {
+          "path": "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/report_fix_source_review.json",
+          "oid": "f7b290053a547fb7d2edfbfb0b20ca9cf0326728",
+          "bytes": 2042,
+          "sha256": "4465bef7a7ef9bd0d960d486679ea7a38bb451d537a1f9a572a8d3e3eb12f7ac"
+        },
+        {
+          "path": "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/original_source_snapshot/CONTRACT.md",
+          "oid": "df6ae161bf3a9a374703e2028e22a47660c81f5b",
+          "bytes": 7770,
+          "sha256": "7151df72d082b0d1d728f86aa118c3f396a4d6a3e545fbf5dc76f37a7118c6f7"
+        },
+        {
+          "path": "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/original_source_snapshot/plan.json",
+          "oid": "fc5e9a797e3881fe8b60f6c5dadcd50e857edf16",
+          "bytes": 7616,
+          "sha256": "e7124ceb99489b858bb2d116fed5dd9c88960209dee632f7d49d75e2ffefc73a"
+        },
+        {
+          "path": "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/original_source_snapshot/snapshot_manifest.json",
+          "oid": "665f6f9486a46579abd759b427e8c7d50b5a4577",
+          "bytes": 1140,
+          "sha256": "3ed9edbf24ea67d04afe5d695efdc635417703e55bf99dd383639f45a7234e16"
+        },
+        {
+          "path": "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/original_source_snapshot/source_freeze.json",
+          "oid": "4afe38904f5d97f2da866f984847102061d60ada",
+          "bytes": 2427,
+          "sha256": "3b29580e4470cfa3016968eb784cd5b1ab9c02e832a2ce1bf5dee57c2a2a5538"
+        },
+        {
+          "path": "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/original_source_snapshot/worker.py",
+          "oid": "902009a5364bd81ea1195ec5f5166a6e75731086",
+          "bytes": 68430,
+          "sha256": "be02c2914b3459b727b43d9969b95efeb07b014768ac68d9ab39bbba8da602d5"
+        },
+        {
+          "path": "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/retained_stage/cell_in_progress.json",
+          "oid": "8204852aa2dab94ce0f35890052cff003e31813a",
+          "bytes": 2372,
+          "sha256": "5a166e9eef48a505b9bc00880d6bc264e87430aef1d748511e1059cc852e99e3"
+        },
+        {
+          "path": "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/retained_stage/cell_ledger.json",
+          "oid": "7f7ee583a9431f11de0cd32194b4ca2f8cbb5fb6",
+          "bytes": 118930,
+          "sha256": "605ac46fa610141f45998cf66bb4cfe6381bc74c5c3e7e93c54fd22bfe44b56d"
+        },
+        {
+          "path": "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/retained_stage/cell_ledger.partial.json",
+          "oid": "a6e13466193675a180cfb5ab66eee390b9c36677",
+          "bytes": 119097,
+          "sha256": "544ed3557f0e24d68e91dd8ee5b566eede773d0f54b3f58633272ae2caac49b1"
+        },
+        {
+          "path": "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/retained_stage/material_points.json",
+          "oid": "7d8e997a474cdc980f9895bec402b2def67de967",
+          "bytes": 77304,
+          "sha256": "ea0c64b996173735185368934c2bd6dfb7734ce1990813599c8f695b89bd1c0b"
+        },
+        {
+          "path": "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/retained_stage/parent_execution_receipt.json",
+          "oid": "665c59456d9c7c9f3ce41b1b27191885e780e1c5",
+          "bytes": 2151,
+          "sha256": "97310270be5a002b78e24b75e61d3f8c301f66b8c3095ddef61caf475f2a6bb5"
+        },
+        {
+          "path": "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/retained_stage/request.json",
+          "oid": "0295f5596a3b70d3bb5cf267003ea1c84b06c2a2",
+          "bytes": 1032,
+          "sha256": "ef3d3e668b183ecb2af98b02e0800ab93779e9a1ef91de9bfa151ca608334cbb"
+        },
+        {
+          "path": "docs/evidence/20261005/forge_volume_ingress_roi_20261005/failed_run/retained_stage/worker_failure.json",
+          "oid": "e27323c90612c4f9f71d6bb4d44dd0e00442ef49",
+          "bytes": 4302,
+          "sha256": "5eb4c9739430bf1f9a26e8ce6f51d0d951e879791fe10a2f37fa586a8a6c5e1e"
+        },
+        {
+          "path": "docs/evidence/20261005/forge_volume_ingress_roi_20261005/fixed_worker_test/test_receipt.json",
+          "oid": "9e92184eaa9df5f1413ae5e932f00e0b0e56b25d",
+          "bytes": 5439,
+          "sha256": "6f654046ee76ef29f5d7aa8f3842bb41a39a0f8c00d82c8fdc377705e14f2789"
+        },
+        {
+          "path": "docs/evidence/20261005/forge_volume_ingress_roi_20261005/fixed_worker_test/junit.xml",
+          "oid": "2717af9ba02ff2481a6be2fb4624a9f05dc96764",
+          "bytes": 766,
+          "sha256": "24597e402c5d5cddc5202d6cd68785a18a2b8fbda66e75ec818ddf52353bed37"
+        },
+        {
+          "path": "docs/evidence/20261005/free_fracture_pilot_20261005/run_attempt_01/results/canonical_bonds_lossless.zip",
+          "oid": "f5011d5ac2a342a813147b4ec3684eb2d32a789d",
+          "bytes": 922880,
+          "sha256": "26db0af3e9b83ddd12a09bdde5cb62cd10432f2fa44d324230fdb12a2b335523"
+        },
+        {
+          "path": "docs/evidence/20261005/free_fracture_pilot_20261005/run_attempt_01/results/canonical_bonds_zip_receipt.json",
+          "oid": "f0093178a6e2b3211a9ebe2511033ae3c674274a",
+          "bytes": 1001,
+          "sha256": "c9149d9bea96005a9cdd335366d31d01d1285e49b6d36dbd7fffa03a7d2f5f5c"
+        },
+        {
+          "path": "experiments/mls3d_kernel_20261005/mls3d_shape.py",
+          "oid": "5877abab7ccbd1e7587dd86a0982769eb55a65c8",
+          "bytes": 11181,
+          "sha256": "66e680616a988182875d17aeb84fadb541867aee13fc15e0ae098f7c98839ef5"
+        },
+        {
+          "path": "experiments/mls3d_kernel_20261005/test_mls3d_shape.py",
+          "oid": "3051990f55f611822b4810bf5eaf38a53913d0bb",
+          "bytes": 8510,
+          "sha256": "1f792f2ff227d477ce246e0dc174c51caaeaa3c7549faa4442b6c70f4eedf237"
+        },
+        {
+          "path": "docs/evidence/20261005/mls3d_phase2_20261005/SOURCE_REVIEW.md",
+          "oid": "7958ab4a9de1be1224e3ea5c9753ff0a3cfd2fa9",
+          "bytes": 3735,
+          "sha256": "a52051f32a1d242763a3e4842694f12228fe3a3ab9c7952c838584a6e4b34160"
+        },
+        {
+          "path": "docs/evidence/20261005/mls3d_phase2_20261005/README.md",
+          "oid": "40b7de572f2bf7ecddb15a81e5aea7e681b9bdba",
+          "bytes": 503,
+          "sha256": "93fb8478a727524ea7a45e29cb63dba82364b0f86d5c6cf7737298192c853aa7"
+        },
+        {
+          "path": "docs/evidence/20261005/mls3d_phase2_20261005/CONTRACT.md",
+          "oid": "d9081b6435125af71bed9a3eab331c4b488bba43",
+          "bytes": 4482,
+          "sha256": "3d384f84a89eb643b770cc2ec7af44077fdb83a67d383d4650dc686acf9fc277"
+        },
+        {
+          "path": "docs/evidence/20261005/mls3d_phase2_20261005/PHASE1_SNAPSHOT.md",
+          "oid": "5722d3ce4dfbb1a03e2db9618f918790505a3159",
+          "bytes": 710,
+          "sha256": "266492b764233a3ec8356c48250adb961eac392c356b7f7724bde35ef82326da"
+        },
+        {
+          "path": "docs/evidence/20261005/mls3d_phase2_20261005/PHASE1_SNAPSHOT_IDENTITY_CHECK.txt",
+          "oid": "1c94a50e429e98cb02764e812d244dd3d8212cea",
+          "bytes": 533,
+          "sha256": "bdd398f4ea1153f909cacb8cebabb89f3eb3a14da884f184bea57e7c242ac343"
+        },
+        {
+          "path": "docs/evidence/20261005/mls3d_phase2_20261005/PHASE1_SNAPSHOT_SHA256.txt",
+          "oid": "702ad51369b3687324ee6724c68ff0b82273a6a4",
+          "bytes": 365,
+          "sha256": "58fb8831affb0c8a44e38f0bba5e127280c65250ad6de33abd03216db7f77836"
+        },
+        {
+          "path": "docs/evidence/20261005/mls3d_phase2_20261005/PHASE2_SOURCE_IDENTITY_CHECK.txt",
+          "oid": "e75c948cca16fa80d41c3510337545bdaaf3d88e",
+          "bytes": 672,
+          "sha256": "ab42a8a27e7a0a9def2117319e8f39cc7edff6ad8cb1b1ac3b0c54b528ba147d"
+        },
+        {
+          "path": "docs/evidence/20261005/mls3d_phase2_20261005/PHASE2_SOURCE_SHA256.txt",
+          "oid": "edf43dcd1b3f133c7f4d04d648ac8e0fc240fa0f",
+          "bytes": 372,
+          "sha256": "13292ffe3a19a47716b1950206527b6bf373b6d4d21d77ebe3e20c660255bcf5"
+        },
+        {
+          "path": "docs/evidence/20261005/mls3d_phase2_20261005/test/RUN_RECORD.md",
+          "oid": "226a21f9a7d58255f66071827af9178fdac28047",
+          "bytes": 1399,
+          "sha256": "844e4f5532fd52107a00c3ece363c8e583fb1be5d769a5ac6f5bd50ff61ba213"
+        },
+        {
+          "path": "docs/evidence/20261005/mls3d_phase2_20261005/test/RUN_METADATA.json",
+          "oid": "c258fafd203a5b22df4d94fc8e626f323eb9fe40",
+          "bytes": 784,
+          "sha256": "a27379c03d0ac9c9552eb0ea0087064d9e7181772727ba4cf28918f85af026e2"
+        },
+        {
+          "path": "docs/evidence/20261005/mls3d_phase2_20261005/test/junit.xml",
+          "oid": "e6cda9a5408b1c8ed8a9ecb5d621de61beff01ae",
+          "bytes": 1338,
+          "sha256": "2e4b71c13782a1aeec2078c31452fb438e21fc5ad55114c928fd558bb7e67545"
+        },
+        {
+          "path": "docs/evidence/20261005/mls3d_phase2_20261005/test/stdout.txt",
+          "oid": "983438cba86b6bc54c67e3ab334d9d5410b93849",
+          "bytes": 100,
+          "sha256": "a4877bf263ba8809ed19c019d8c4b68e58a07e1c7f528cfcfcaf5332807c6f7b"
+        },
+        {
+          "path": "docs/evidence/20261005/mls3d_phase2_20261005/test/stderr.txt",
+          "oid": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/evidence/20261005/mls3d_phase2_20261005/test/PRE_RUN_SNAPSHOT_CHECK.txt",
+          "oid": "f10ebf120b2851f8b932051642cb098590bee669",
+          "bytes": 1397,
+          "sha256": "ac1f17a9472f9925159b3a3534601b8eb88b5c7b215d1b79b0734c51cba56756"
+        },
+        {
+          "path": "docs/evidence/20261005/mls3d_phase2_20261005/test/POST_RUN_SNAPSHOT_CHECK.txt",
+          "oid": "3bb2322712a0d8bf53f813094691cc86434eba4d",
+          "bytes": 1919,
+          "sha256": "e287d5201845d4a4f2ef848e1d4b45c8669be8876bb0a73e4a8f6efcdb3b551f"
+        },
+        {
+          "path": "docs/evidence/20261005/mls3d_phase2_20261005/test/PRE_RUN_PHASE2_SOURCE_SHA256.txt",
+          "oid": "edf43dcd1b3f133c7f4d04d648ac8e0fc240fa0f",
+          "bytes": 372,
+          "sha256": "13292ffe3a19a47716b1950206527b6bf373b6d4d21d77ebe3e20c660255bcf5"
+        },
+        {
+          "path": "docs/evidence/20261005/mls3d_phase2_20261005/test/POST_RUN_PHASE2_SOURCE_SHA256.txt",
+          "oid": "edf43dcd1b3f133c7f4d04d648ac8e0fc240fa0f",
+          "bytes": 372,
+          "sha256": "13292ffe3a19a47716b1950206527b6bf373b6d4d21d77ebe3e20c660255bcf5"
+        },
+        {
+          "path": "docs/evidence/20261005/mls3d_phase2_20261005/test/PRE_RUN_PHASE1_ORIGINAL_SHA256.txt",
+          "oid": "702ad51369b3687324ee6724c68ff0b82273a6a4",
+          "bytes": 365,
+          "sha256": "58fb8831affb0c8a44e38f0bba5e127280c65250ad6de33abd03216db7f77836"
+        },
+        {
+          "path": "docs/evidence/20261005/mls3d_phase2_20261005/test/POST_RUN_PHASE1_ORIGINAL_SHA256.txt",
+          "oid": "702ad51369b3687324ee6724c68ff0b82273a6a4",
+          "bytes": 365,
+          "sha256": "58fb8831affb0c8a44e38f0bba5e127280c65250ad6de33abd03216db7f77836"
+        }
+      ],
+      "all_commit_blobs_verified": true,
+      "pre_push_remote": {
+        "argv": [
+          "git",
+          "-c",
+          "core.autocrlf=false",
+          "ls-remote",
+          "origin",
+          "refs/heads/backup/forge-work-20261003"
+        ],
+        "returncode": 0,
+        "head": "f21f15837eab1e012a0007422cd819d8f3171a18",
+        "stdout": "f21f15837eab1e012a0007422cd819d8f3171a18\trefs/heads/backup/forge-work-20261003",
+        "stderr": ""
+      },
+      "post_push_remote": {
+        "argv": [
+          "git",
+          "-c",
+          "core.autocrlf=false",
+          "ls-remote",
+          "origin",
+          "refs/heads/backup/forge-work-20261003"
+        ],
+        "returncode": 0,
+        "head": "f21f15837eab1e012a0007422cd819d8f3171a18",
+        "stdout": "f21f15837eab1e012a0007422cd819d8f3171a18\trefs/heads/backup/forge-work-20261003",
+        "stderr": ""
+      },
+      "push_succeeded": true,
+      "remote_matches_commit": true,
+      "reused_prior_execution_receipt": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\review_20261005\\backup_coordinator\\git_execution_receipt_v3_111_20261005.json",
+      "finished_at_utc": "2026-10-05T11:42:18.460900+00:00"
+    },
+    {
+      "repo": "vesselforge",
+      "started_at_utc": "2026-10-05T11:42:18.462051+00:00",
+      "entries": [
+        {
+          "state": "staged",
+          "path": "experiments/smooth_surface_native_adapter_20261005/native_adapter.py",
+          "oid": "dc6570e785328dbc433e49f7943b2137f53aa0e7",
+          "bytes": 41217,
+          "sha256": "7d745f48111d24b38a288714b580c0eefe55415b2998351bf6144fa1cf4dab76"
+        },
+        {
+          "state": "staged",
+          "path": "experiments/smooth_surface_native_adapter_20261005/adapter_plan.md",
+          "oid": "893c94844483bb0949b95090d50d0f5a9cc9bc00",
+          "bytes": 2860,
+          "sha256": "a4fecf1735824b89ce45723b6cc22c52d637cd87b95f33eea8346bf8357f82c6"
+        },
+        {
+          "state": "already_present_unchanged",
+          "path": "experiments/smooth_surface_single_inner_fairing_20261005/fixed_case_beaker_single_inner_fairing_v1.json",
+          "oid": "0334273824ee8f633dec70c8a2134ed37c4de817",
+          "bytes": 11668,
+          "sha256": "2d7a0950f870a8663f7e326275e3c666d880e906d04fccbcd0f1ba7d453fd3c0"
+        },
+        {
+          "state": "already_present_unchanged",
+          "path": "experiments/smooth_surface_single_inner_fairing_20261005/single_inner_fairing_math.py",
+          "oid": "6df4f24992a6397e5de722f3c2ecee9992678915",
+          "bytes": 10586,
+          "sha256": "f3315ac8d1fc112f4dc0af4bb4cea86dddd262052bcbc94c6f776780aefbbec8"
+        },
+        {
+          "state": "already_present_unchanged",
+          "path": "experiments/smooth_surface_single_inner_fairing_20261005/plot_single_inner_fairing_section.py",
+          "oid": "1a45e36ee1241155b132d820fd391be93e055aca",
+          "bytes": 8657,
+          "sha256": "80c9dbbece8c583b63fcabf7c241f56316ff3c0a7af07692573c6cd740014d84"
+        },
+        {
+          "state": "already_present_unchanged",
+          "path": "experiments/smooth_surface_single_inner_fairing_20261005/DESIGN_NOTE.md",
+          "oid": "412be725a7019e9c4b59c1f161218ae8acb8c43f",
+          "bytes": 2273,
+          "sha256": "0ef94eca0abc08f3f85461ef9ed6fd3827d2d14af15636dd54119afca1bbd225"
+        },
+        {
+          "state": "already_present_unchanged",
+          "path": "experiments/smooth_surface_coupled_design_20261005/coupled_profile_math.py",
+          "oid": "651ec1b5f588a06891c9e0277e221c856dc6d49d",
+          "bytes": 38387,
+          "sha256": "4a90264b83e465af8bdb4dc7771f61ab4cb8314bc8d4d0ef540952310f3cb85b"
+        },
+        {
+          "state": "already_present_unchanged",
+          "path": "experiments/smooth_surface_coupled_design_20261005/fixed_case_beaker_coupled_v2.json",
+          "oid": "911ed2db0e61fb0d8f2d71a5400d0a6b007aeef4",
+          "bytes": 11034,
+          "sha256": "7e65d490c5cf1a5fa80d9964b1c89392c06a30290768bf00bfad03b4e757d391"
+        },
+        {
+          "state": "staged",
+          "path": "docs/evidence/20261005/single_inner_native_adapter_20261005/math/FROZEN_SHA256.txt",
+          "oid": "4313c9cc5bc10bbc855f75b73348a6224c26e6ab",
+          "bytes": 1584,
+          "sha256": "35fe13502da52b67ae3d7a15ce1b7566f050ab339f04cd9708c7ee56b7ed82f4"
+        },
+        {
+          "state": "staged",
+          "path": "docs/evidence/20261005/single_inner_native_adapter_20261005/math/FROZEN_CANDIDATE_INPUTS.json",
+          "oid": "0c4cb7777e4021b1d6657b38a16772d032285b98",
+          "bytes": 3542,
+          "sha256": "dc1125330064a18ff0936356d20c5289911929a6eed01c46f01f2c3c305c0f02"
+        },
+        {
+          "state": "staged",
+          "path": "docs/evidence/20261005/single_inner_native_adapter_20261005/math/REVIEW_AND_EXECUTION_BUDGET.md",
+          "oid": "b40da45fd99d08d105155691fbd8b0bace8d5dc4",
+          "bytes": 3063,
+          "sha256": "07c2c3a31614828c9570558a2ebfd74790a6334059b03bbbdcd3a205b85d1191"
+        },
+        {
+          "state": "staged",
+          "path": "docs/evidence/20261005/single_inner_native_adapter_20261005/math/math_diagnostics.json",
+          "oid": "dde950e70218184b0e79a045ce0bee86e2bdc652",
+          "bytes": 1044484,
+          "sha256": "88b09514619fa62e1df1afb4954d4be14275b3907fad76ba13749c066933b550"
+        },
+        {
+          "state": "staged",
+          "path": "docs/evidence/20261005/single_inner_native_adapter_20261005/approval/SOURCE_REVIEW.json",
+          "oid": "f66564bba13115085430742de6b12c54d14fb891",
+          "bytes": 3878,
+          "sha256": "c1f84b386c8bf3202c78c226b12953aa2411b56ca2112b47beda7435c14d0f88"
+        },
+        {
+          "state": "staged",
+          "path": "docs/evidence/20261005/single_inner_native_adapter_20261005/approval/ROOT_NATIVE_CAD_REVIEW_20261005.json",
+          "oid": "a2d15909cf5bd31f9f6f1cbe40127ccba6684fba",
+          "bytes": 3126,
+          "sha256": "4be5467f4ba6cad657e4de2eda20d772a9d69fab809aa22d4d294f5a5bd76b4b"
+        },
+        {
+          "state": "staged",
+          "path": "docs/evidence/20261005/single_inner_native_adapter_20261005/approval/ROOT_NATIVE_CAD_APPROVAL.json",
+          "oid": "beba5103f3535f84673b69ed2ca9262cb45e7d0c",
+          "bytes": 2588,
+          "sha256": "4e3e1dd952ba16a67dc0eda9298b4427f76e997f28a3375dff973f8a91a233cd"
+        },
+        {
+          "state": "staged",
+          "path": "docs/evidence/20261005/single_inner_native_adapter_20261005/native_run/candidate.step",
+          "oid": "083871330882bfd25d81a0719d1927dc1ddfc177",
+          "bytes": 57660,
+          "sha256": "9a6ac86efb2d714e5d2d737263307014487fe2e45979c4181f6071c6f0cf6c71"
+        },
+        {
+          "state": "staged",
+          "path": "docs/evidence/20261005/single_inner_native_adapter_20261005/native_run/run_receipt.json",
+          "oid": "c825104350835f63806dcb97f703e3f460a30a19",
+          "bytes": 21016,
+          "sha256": "4c17fe03c74a6fe4474d98b3de9305916572910247c64bd144189ca2c3f711c8"
+        },
+        {
+          "state": "staged",
+          "path": "docs/evidence/20261005/single_inner_native_adapter_20261005/native_run/runner_receipt.json",
+          "oid": "78ffea0cce0aa5ddf22a10f6e18f0b0c90dc611f",
+          "bytes": 4349,
+          "sha256": "f1c263cb53f0a332dae352299b3617854c92efefef66ca104d7f4d98b109e60d"
+        },
+        {
+          "state": "staged",
+          "path": "docs/evidence/20261005/native_cad_visual_20261005/native_cad_visual.py",
+          "oid": "57cc1abd9913ce36d5732b7fe64ab601193ad649",
+          "bytes": 11250,
+          "sha256": "424cf8d9f3a99fcbe6f26c964ad5e19e5ce208f4699770d0c7c4e41d26695a4e"
+        },
+        {
+          "state": "staged",
+          "path": "docs/evidence/20261005/native_cad_visual_20261005/FREEZE.json",
+          "oid": "008075ae05b64c44ec4d78640ad2b96850d555b6",
+          "bytes": 2839,
+          "sha256": "fcb5f9d66aca0482e81263fceea6869f49fdcbc396c695e63a78e47771a83108"
+        },
+        {
+          "state": "staged",
+          "path": "docs/evidence/20261005/native_cad_visual_20261005/native_cad_visual_run_manifest.json",
+          "oid": "95ee797762c279856afa98031a6d872feb800911",
+          "bytes": 478739,
+          "sha256": "83ddc568ab87902ed66f28db2cc6b0e3b8242be6e3f16176b5ae15ab7e347dfa"
+        },
+        {
+          "state": "staged",
+          "path": "docs/evidence/20261005/native_cad_visual_20261005/parent_execution_receipt.json",
+          "oid": "c653da30e1be1961eb345355bbd0e06e3f5f7b1d",
+          "bytes": 2488,
+          "sha256": "6c2e7c68a1f101187a443bc52c55da71ad456bef0e8ca28b48a158c1dbe39a92"
+        },
+        {
+          "state": "staged",
+          "path": "docs/evidence/20261005/native_cad_visual_20261005/native_cad_visual_data.json",
+          "oid": "9804bc951bce2556148db185db46ec81ef4f4350",
+          "bytes": 437911,
+          "sha256": "85a62cca8dc369a5415e74e44e6190e57b5cbc3f74512ea44fcd72a26bedbb63"
+        },
+        {
+          "state": "staged",
+          "path": "docs/evidence/20261005/native_cad_visual_20261005/native_cad_visual_2panel.png",
+          "oid": "a4f102a1f1c6b05504c718c4c7025e20e2da6aef",
+          "bytes": 278986,
+          "sha256": "fb26da06b83b3b56d40f36eaae4c4406693d4faa3b4c513c8b1d5f8935dd9478"
+        }
+      ],
+      "errors": [],
+      "status": "PUSHED_AND_REMOTE_VERIFIED",
+      "pre_git": {
+        "branch": "backup/forge-work-20261003",
+        "head": "f7aa1041ba94bc93d16b589b997ae100ab440055",
+        "origin": "https://github.com/xiemonb666/vesselforge.git",
+        "tracked_status": "A  docs/evidence/20261005/native_cad_visual_20261005/FREEZE.json\nA  docs/evidence/20261005/native_cad_visual_20261005/native_cad_visual.py\nA  docs/evidence/20261005/native_cad_visual_20261005/native_cad_visual_2panel.png\nA  docs/evidence/20261005/native_cad_visual_20261005/native_cad_visual_data.json\nA  docs/evidence/20261005/native_cad_visual_20261005/native_cad_visual_run_manifest.json\nA  docs/evidence/20261005/native_cad_visual_20261005/parent_execution_receipt.json\nA  docs/evidence/20261005/single_inner_native_adapter_20261005/approval/ROOT_NATIVE_CAD_APPROVAL.json\nA  docs/evidence/20261005/single_inner_native_adapter_20261005/approval/ROOT_NATIVE_CAD_REVIEW_20261005.json\nA  docs/evidence/20261005/single_inner_native_adapter_20261005/approval/SOURCE_REVIEW.json\nA  docs/evidence/20261005/single_inner_native_adapter_20261005/math/FROZEN_CANDIDATE_INPUTS.json\nA  docs/evidence/20261005/single_inner_native_adapter_20261005/math/FROZEN_SHA256.txt\nA  docs/evidence/20261005/single_inner_native_adapter_20261005/math/REVIEW_AND_EXECUTION_BUDGET.md\nA  docs/evidence/20261005/single_inner_native_adapter_20261005/math/math_diagnostics.json\nA  docs/evidence/20261005/single_inner_native_adapter_20261005/native_run/candidate.step\nA  docs/evidence/20261005/single_inner_native_adapter_20261005/native_run/run_receipt.json\nA  docs/evidence/20261005/single_inner_native_adapter_20261005/native_run/runner_receipt.json\nA  experiments/smooth_surface_native_adapter_20261005/adapter_plan.md\nA  experiments/smooth_surface_native_adapter_20261005/native_adapter.py",
+        "index_clean": false,
+        "worktree_clean": true
+      },
+      "pre_push_remote": {
+        "argv": [
+          "git",
+          "-c",
+          "core.autocrlf=false",
+          "ls-remote",
+          "origin",
+          "refs/heads/backup/forge-work-20261003"
+        ],
+        "returncode": 0,
+        "head": "f7aa1041ba94bc93d16b589b997ae100ab440055",
+        "stdout": "f7aa1041ba94bc93d16b589b997ae100ab440055\trefs/heads/backup/forge-work-20261003",
+        "stderr": ""
+      },
+      "git_add": {
+        "skipped": true,
+        "reason": "preserved exact-path stage from prior attempt; no additional files staged"
+      },
+      "staged_paths": [
+        "docs/evidence/20261005/native_cad_visual_20261005/FREEZE.json",
+        "docs/evidence/20261005/native_cad_visual_20261005/native_cad_visual.py",
+        "docs/evidence/20261005/native_cad_visual_20261005/native_cad_visual_2panel.png",
+        "docs/evidence/20261005/native_cad_visual_20261005/native_cad_visual_data.json",
+        "docs/evidence/20261005/native_cad_visual_20261005/native_cad_visual_run_manifest.json",
+        "docs/evidence/20261005/native_cad_visual_20261005/parent_execution_receipt.json",
+        "docs/evidence/20261005/single_inner_native_adapter_20261005/approval/ROOT_NATIVE_CAD_APPROVAL.json",
+        "docs/evidence/20261005/single_inner_native_adapter_20261005/approval/ROOT_NATIVE_CAD_REVIEW_20261005.json",
+        "docs/evidence/20261005/single_inner_native_adapter_20261005/approval/SOURCE_REVIEW.json",
+        "docs/evidence/20261005/single_inner_native_adapter_20261005/math/FROZEN_CANDIDATE_INPUTS.json",
+        "docs/evidence/20261005/single_inner_native_adapter_20261005/math/FROZEN_SHA256.txt",
+        "docs/evidence/20261005/single_inner_native_adapter_20261005/math/REVIEW_AND_EXECUTION_BUDGET.md",
+        "docs/evidence/20261005/single_inner_native_adapter_20261005/math/math_diagnostics.json",
+        "docs/evidence/20261005/single_inner_native_adapter_20261005/native_run/candidate.step",
+        "docs/evidence/20261005/single_inner_native_adapter_20261005/native_run/run_receipt.json",
+        "docs/evidence/20261005/single_inner_native_adapter_20261005/native_run/runner_receipt.json",
+        "experiments/smooth_surface_native_adapter_20261005/adapter_plan.md",
+        "experiments/smooth_surface_native_adapter_20261005/native_adapter.py"
+      ],
+      "staged_change_count": 18,
+      "already_present_unchanged_count": 6,
+      "all_scope_blobs_verified_before_commit": true,
+      "commit_identity_source": {
+        "source": "current HEAD author and committer metadata",
+        "name": "A12 SynLab",
+        "email": "synlab@local",
+        "per_command_only": true
+      },
+      "git_commit": {
+        "argv": [
+          "git",
+          "-c",
+          "core.autocrlf=false",
+          "-c",
+          "user.name=A12 SynLab",
+          "-c",
+          "user.email=synlab@local",
+          "commit",
+          "-m",
+          "Back up single-inner CAD evidence and visuals",
+          "-m",
+          "Preserves the root-reviewed single-inner native adapter run and its visual evidence. This is a one-run geometry-only STEP roundtrip. Global wall checks, self-intersection, broader qualification, and physical validation remain unknown or unassessed."
+        ],
+        "returncode": 0,
+        "stdout": "[backup/forge-work-20261003 c656240] Back up single-inner CAD evidence and visuals\n 18 files changed, 76878 insertions(+)\n create mode 100644 docs/evidence/20261005/native_cad_visual_20261005/FREEZE.json\n create mode 100644 docs/evidence/20261005/native_cad_visual_20261005/native_cad_visual.py\n create mode 100644 docs/evidence/20261005/native_cad_visual_20261005/native_cad_visual_2panel.png\n create mode 100644 docs/evidence/20261005/native_cad_visual_20261005/native_cad_visual_data.json\n create mode 100644 docs/evidence/20261005/native_cad_visual_20261005/native_cad_visual_run_manifest.json\n create mode 100644 docs/evidence/20261005/native_cad_visual_20261005/parent_execution_receipt.json\n create mode 100644 docs/evidence/20261005/single_inner_native_adapter_20261005/approval/ROOT_NATIVE_CAD_APPROVAL.json\n create mode 100644 docs/evidence/20261005/single_inner_native_adapter_20261005/approval/ROOT_NATIVE_CAD_REVIEW_20261005.json\n create mode 100644 docs/evidence/20261005/single_inner_native_adapter_20261005/approval/SOURCE_REVIEW.json\n create mode 100644 docs/evidence/20261005/single_inner_native_adapter_20261005/math/FROZEN_CANDIDATE_INPUTS.json\n create mode 100644 docs/evidence/20261005/single_inner_native_adapter_20261005/math/FROZEN_SHA256.txt\n create mode 100644 docs/evidence/20261005/single_inner_native_adapter_20261005/math/REVIEW_AND_EXECUTION_BUDGET.md\n create mode 100644 docs/evidence/20261005/single_inner_native_adapter_20261005/math/math_diagnostics.json\n create mode 100644 docs/evidence/20261005/single_inner_native_adapter_20261005/native_run/candidate.step\n create mode 100644 docs/evidence/20261005/single_inner_native_adapter_20261005/native_run/run_receipt.json\n create mode 100644 docs/evidence/20261005/single_inner_native_adapter_20261005/native_run/runner_receipt.json\n create mode 100644 experiments/smooth_surface_native_adapter_20261005/adapter_plan.md\n create mode 100644 experiments/smooth_surface_native_adapter_20261005/native_adapter.py",
+        "stderr": ""
+      },
+      "commit": "c65624062fc0dbdaaceed9b1ea92335b92976682",
+      "parent": "f7aa1041ba94bc93d16b589b997ae100ab440055",
+      "committed_paths": [
+        "docs/evidence/20261005/native_cad_visual_20261005/FREEZE.json",
+        "docs/evidence/20261005/native_cad_visual_20261005/native_cad_visual.py",
+        "docs/evidence/20261005/native_cad_visual_20261005/native_cad_visual_2panel.png",
+        "docs/evidence/20261005/native_cad_visual_20261005/native_cad_visual_data.json",
+        "docs/evidence/20261005/native_cad_visual_20261005/native_cad_visual_run_manifest.json",
+        "docs/evidence/20261005/native_cad_visual_20261005/parent_execution_receipt.json",
+        "docs/evidence/20261005/single_inner_native_adapter_20261005/approval/ROOT_NATIVE_CAD_APPROVAL.json",
+        "docs/evidence/20261005/single_inner_native_adapter_20261005/approval/ROOT_NATIVE_CAD_REVIEW_20261005.json",
+        "docs/evidence/20261005/single_inner_native_adapter_20261005/approval/SOURCE_REVIEW.json",
+        "docs/evidence/20261005/single_inner_native_adapter_20261005/math/FROZEN_CANDIDATE_INPUTS.json",
+        "docs/evidence/20261005/single_inner_native_adapter_20261005/math/FROZEN_SHA256.txt",
+        "docs/evidence/20261005/single_inner_native_adapter_20261005/math/REVIEW_AND_EXECUTION_BUDGET.md",
+        "docs/evidence/20261005/single_inner_native_adapter_20261005/math/math_diagnostics.json",
+        "docs/evidence/20261005/single_inner_native_adapter_20261005/native_run/candidate.step",
+        "docs/evidence/20261005/single_inner_native_adapter_20261005/native_run/run_receipt.json",
+        "docs/evidence/20261005/single_inner_native_adapter_20261005/native_run/runner_receipt.json",
+        "experiments/smooth_surface_native_adapter_20261005/adapter_plan.md",
+        "experiments/smooth_surface_native_adapter_20261005/native_adapter.py"
+      ],
+      "commit_blob_checks": [
+        {
+          "path": "experiments/smooth_surface_native_adapter_20261005/native_adapter.py",
+          "oid": "dc6570e785328dbc433e49f7943b2137f53aa0e7",
+          "bytes": 41217,
+          "sha256": "7d745f48111d24b38a288714b580c0eefe55415b2998351bf6144fa1cf4dab76"
+        },
+        {
+          "path": "experiments/smooth_surface_native_adapter_20261005/adapter_plan.md",
+          "oid": "893c94844483bb0949b95090d50d0f5a9cc9bc00",
+          "bytes": 2860,
+          "sha256": "a4fecf1735824b89ce45723b6cc22c52d637cd87b95f33eea8346bf8357f82c6"
+        },
+        {
+          "path": "experiments/smooth_surface_single_inner_fairing_20261005/fixed_case_beaker_single_inner_fairing_v1.json",
+          "oid": "0334273824ee8f633dec70c8a2134ed37c4de817",
+          "bytes": 11668,
+          "sha256": "2d7a0950f870a8663f7e326275e3c666d880e906d04fccbcd0f1ba7d453fd3c0"
+        },
+        {
+          "path": "experiments/smooth_surface_single_inner_fairing_20261005/single_inner_fairing_math.py",
+          "oid": "6df4f24992a6397e5de722f3c2ecee9992678915",
+          "bytes": 10586,
+          "sha256": "f3315ac8d1fc112f4dc0af4bb4cea86dddd262052bcbc94c6f776780aefbbec8"
+        },
+        {
+          "path": "experiments/smooth_surface_single_inner_fairing_20261005/plot_single_inner_fairing_section.py",
+          "oid": "1a45e36ee1241155b132d820fd391be93e055aca",
+          "bytes": 8657,
+          "sha256": "80c9dbbece8c583b63fcabf7c241f56316ff3c0a7af07692573c6cd740014d84"
+        },
+        {
+          "path": "experiments/smooth_surface_single_inner_fairing_20261005/DESIGN_NOTE.md",
+          "oid": "412be725a7019e9c4b59c1f161218ae8acb8c43f",
+          "bytes": 2273,
+          "sha256": "0ef94eca0abc08f3f85461ef9ed6fd3827d2d14af15636dd54119afca1bbd225"
+        },
+        {
+          "path": "experiments/smooth_surface_coupled_design_20261005/coupled_profile_math.py",
+          "oid": "651ec1b5f588a06891c9e0277e221c856dc6d49d",
+          "bytes": 38387,
+          "sha256": "4a90264b83e465af8bdb4dc7771f61ab4cb8314bc8d4d0ef540952310f3cb85b"
+        },
+        {
+          "path": "experiments/smooth_surface_coupled_design_20261005/fixed_case_beaker_coupled_v2.json",
+          "oid": "911ed2db0e61fb0d8f2d71a5400d0a6b007aeef4",
+          "bytes": 11034,
+          "sha256": "7e65d490c5cf1a5fa80d9964b1c89392c06a30290768bf00bfad03b4e757d391"
+        },
+        {
+          "path": "docs/evidence/20261005/single_inner_native_adapter_20261005/math/FROZEN_SHA256.txt",
+          "oid": "4313c9cc5bc10bbc855f75b73348a6224c26e6ab",
+          "bytes": 1584,
+          "sha256": "35fe13502da52b67ae3d7a15ce1b7566f050ab339f04cd9708c7ee56b7ed82f4"
+        },
+        {
+          "path": "docs/evidence/20261005/single_inner_native_adapter_20261005/math/FROZEN_CANDIDATE_INPUTS.json",
+          "oid": "0c4cb7777e4021b1d6657b38a16772d032285b98",
+          "bytes": 3542,
+          "sha256": "dc1125330064a18ff0936356d20c5289911929a6eed01c46f01f2c3c305c0f02"
+        },
+        {
+          "path": "docs/evidence/20261005/single_inner_native_adapter_20261005/math/REVIEW_AND_EXECUTION_BUDGET.md",
+          "oid": "b40da45fd99d08d105155691fbd8b0bace8d5dc4",
+          "bytes": 3063,
+          "sha256": "07c2c3a31614828c9570558a2ebfd74790a6334059b03bbbdcd3a205b85d1191"
+        },
+        {
+          "path": "docs/evidence/20261005/single_inner_native_adapter_20261005/math/math_diagnostics.json",
+          "oid": "dde950e70218184b0e79a045ce0bee86e2bdc652",
+          "bytes": 1044484,
+          "sha256": "88b09514619fa62e1df1afb4954d4be14275b3907fad76ba13749c066933b550"
+        },
+        {
+          "path": "docs/evidence/20261005/single_inner_native_adapter_20261005/approval/SOURCE_REVIEW.json",
+          "oid": "f66564bba13115085430742de6b12c54d14fb891",
+          "bytes": 3878,
+          "sha256": "c1f84b386c8bf3202c78c226b12953aa2411b56ca2112b47beda7435c14d0f88"
+        },
+        {
+          "path": "docs/evidence/20261005/single_inner_native_adapter_20261005/approval/ROOT_NATIVE_CAD_REVIEW_20261005.json",
+          "oid": "a2d15909cf5bd31f9f6f1cbe40127ccba6684fba",
+          "bytes": 3126,
+          "sha256": "4be5467f4ba6cad657e4de2eda20d772a9d69fab809aa22d4d294f5a5bd76b4b"
+        },
+        {
+          "path": "docs/evidence/20261005/single_inner_native_adapter_20261005/approval/ROOT_NATIVE_CAD_APPROVAL.json",
+          "oid": "beba5103f3535f84673b69ed2ca9262cb45e7d0c",
+          "bytes": 2588,
+          "sha256": "4e3e1dd952ba16a67dc0eda9298b4427f76e997f28a3375dff973f8a91a233cd"
+        },
+        {
+          "path": "docs/evidence/20261005/single_inner_native_adapter_20261005/native_run/candidate.step",
+          "oid": "083871330882bfd25d81a0719d1927dc1ddfc177",
+          "bytes": 57660,
+          "sha256": "9a6ac86efb2d714e5d2d737263307014487fe2e45979c4181f6071c6f0cf6c71"
+        },
+        {
+          "path": "docs/evidence/20261005/single_inner_native_adapter_20261005/native_run/run_receipt.json",
+          "oid": "c825104350835f63806dcb97f703e3f460a30a19",
+          "bytes": 21016,
+          "sha256": "4c17fe03c74a6fe4474d98b3de9305916572910247c64bd144189ca2c3f711c8"
+        },
+        {
+          "path": "docs/evidence/20261005/single_inner_native_adapter_20261005/native_run/runner_receipt.json",
+          "oid": "78ffea0cce0aa5ddf22a10f6e18f0b0c90dc611f",
+          "bytes": 4349,
+          "sha256": "f1c263cb53f0a332dae352299b3617854c92efefef66ca104d7f4d98b109e60d"
+        },
+        {
+          "path": "docs/evidence/20261005/native_cad_visual_20261005/native_cad_visual.py",
+          "oid": "57cc1abd9913ce36d5732b7fe64ab601193ad649",
+          "bytes": 11250,
+          "sha256": "424cf8d9f3a99fcbe6f26c964ad5e19e5ce208f4699770d0c7c4e41d26695a4e"
+        },
+        {
+          "path": "docs/evidence/20261005/native_cad_visual_20261005/FREEZE.json",
+          "oid": "008075ae05b64c44ec4d78640ad2b96850d555b6",
+          "bytes": 2839,
+          "sha256": "fcb5f9d66aca0482e81263fceea6869f49fdcbc396c695e63a78e47771a83108"
+        },
+        {
+          "path": "docs/evidence/20261005/native_cad_visual_20261005/native_cad_visual_run_manifest.json",
+          "oid": "95ee797762c279856afa98031a6d872feb800911",
+          "bytes": 478739,
+          "sha256": "83ddc568ab87902ed66f28db2cc6b0e3b8242be6e3f16176b5ae15ab7e347dfa"
+        },
+        {
+          "path": "docs/evidence/20261005/native_cad_visual_20261005/parent_execution_receipt.json",
+          "oid": "c653da30e1be1961eb345355bbd0e06e3f5f7b1d",
+          "bytes": 2488,
+          "sha256": "6c2e7c68a1f101187a443bc52c55da71ad456bef0e8ca28b48a158c1dbe39a92"
+        },
+        {
+          "path": "docs/evidence/20261005/native_cad_visual_20261005/native_cad_visual_data.json",
+          "oid": "9804bc951bce2556148db185db46ec81ef4f4350",
+          "bytes": 437911,
+          "sha256": "85a62cca8dc369a5415e74e44e6190e57b5cbc3f74512ea44fcd72a26bedbb63"
+        },
+        {
+          "path": "docs/evidence/20261005/native_cad_visual_20261005/native_cad_visual_2panel.png",
+          "oid": "a4f102a1f1c6b05504c718c4c7025e20e2da6aef",
+          "bytes": 278986,
+          "sha256": "fb26da06b83b3b56d40f36eaae4c4406693d4faa3b4c513c8b1d5f8935dd9478"
+        }
+      ],
+      "all_commit_blobs_verified": true,
+      "git_push": {
+        "argv": [
+          "git",
+          "-c",
+          "core.autocrlf=false",
+          "push",
+          "origin",
+          "backup/forge-work-20261003"
+        ],
+        "returncode": 0,
+        "stdout": "",
+        "stderr": "To https://github.com/xiemonb666/vesselforge.git\n   f7aa104..c656240  backup/forge-work-20261003 -> backup/forge-work-20261003"
+      },
+      "push_succeeded": true,
+      "post_push_remote": {
+        "argv": [
+          "git",
+          "-c",
+          "core.autocrlf=false",
+          "ls-remote",
+          "origin",
+          "refs/heads/backup/forge-work-20261003"
+        ],
+        "returncode": 0,
+        "head": "c65624062fc0dbdaaceed9b1ea92335b92976682",
+        "stdout": "c65624062fc0dbdaaceed9b1ea92335b92976682\trefs/heads/backup/forge-work-20261003",
+        "stderr": ""
+      },
+      "remote_matches_commit": true,
+      "post_tracked_status": "",
+      "finished_at_utc": "2026-10-05T11:42:29.619235+00:00"
+    }
+  ],
+  "notes": [
+    "Only exact approved paths were staged, committed, and pushed; preexisting unchanged tracked files were verified in HEAD and not redundantly staged.",
+    "The approved per-repo list may have fewer committed paths than manifest entries when a pinned file is unchanged and already present at the parent commit.",
+    "No Syn commit was authorized or attempted.",
+    "No tests were run as part of this backup operation."
+  ]
+}

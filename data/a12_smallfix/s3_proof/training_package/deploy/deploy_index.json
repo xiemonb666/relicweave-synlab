@@ -1,0 +1,42 @@
+{
+  "note": "opaque-name map for the deployment view; contains no label and no split",
+  "rows": {
+    "LIN0000_V01_M01_PAT01_E01-m": {
+      "geometry_shard": "geometry/shard_0000.npz",
+      "obs_shard": "obs/shard_0000.tar",
+      "opaque": "c7381df5d84b25fac9e8eb2b",
+      "token_shard": "tokens/shard_0000.npz"
+    },
+    "LIN0000_V01_M01_PAT01_E01-p": {
+      "geometry_shard": null,
+      "obs_shard": null,
+      "opaque": "b186e5b5364b93057bfe3f85",
+      "token_shard": null
+    },
+    "LIN0001_V02_M01_PAT01_E01-m": {
+      "geometry_shard": "geometry/shard_0000.npz",
+      "obs_shard": "obs/shard_0000.tar",
+      "opaque": "56af3b4c1137751192c649b4",
+      "token_shard": "tokens/shard_0000.npz"
+    },
+    "LIN0001_V02_M01_PAT01_E01-p": {
+      "geometry_shard": null,
+      "obs_shard": null,
+      "opaque": "971a839a5236ba5ada8781c6",
+      "token_shard": null
+    },
+    "LIN0002_V13_M01_PAT01_E01-m": {
+      "geometry_shard": "geometry/shard_0000.npz",
+      "obs_shard": "obs/shard_0000.tar",
+      "opaque": "e6b794e0386608bbd20b509b",
+      "token_shard": "tokens/shard_0000.npz"
+    },
+    "LIN0002_V13_M01_PAT01_E01-p": {
+      "geometry_shard": null,
+      "obs_shard": null,
+      "opaque": "8817bcb2c75dbce380d5f51a",
+      "token_shard": null
+    }
+  },
+  "schema": "synlab.deploy_index.v1"
+}

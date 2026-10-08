@@ -1,0 +1,1468 @@
+{
+  "assets": {
+    "by_role": {
+      "clean_truth": 1,
+      "context_pack": 1,
+      "degrade_source": 3,
+      "degrade_variant": 33,
+      "feature_bundle": 2,
+      "fragment_mesh": 2,
+      "label_bundle": 1,
+      "material_profile": 1,
+      "mother_mesh": 1,
+      "obs_result": 2,
+      "pattern_channels": 1,
+      "pattern_recipe": 1,
+      "physical_component": 1,
+      "physical_result": 1,
+      "physical_truth": 1,
+      "provenance": 1,
+      "visible_labels": 1
+    },
+    "count": 54
+  },
+  "build": {
+    "fragments_per_shard": 8,
+    "include_truth": true,
+    "obs_view_limit": null,
+    "relations_per_shard": 512
+  },
+  "bytes_total": 5465345,
+  "counts": {
+    "context_batches": 1,
+    "context_packs": 1,
+    "context_queries": 0,
+    "correspondence_pairs": 1,
+    "correspondence_samples": 1183,
+    "degrade_axes": 9,
+    "degrade_axis_levels": 33,
+    "degrade_identity_references": 9,
+    "degrade_lineages": 1,
+    "degrade_sources": 3,
+    "degrade_variants": 33,
+    "deploy_channels_per_fragment": {
+      "K": 2,
+      "deployment_mask": 2,
+      "depth_z": 2,
+      "roi": 2,
+      "tiles": 2,
+      "uncertain_mask": 2,
+      "valid": 2,
+      "view_pos": 2
+    },
+    "fragments_with_observation": 2,
+    "fragments_without_observation": 0,
+    "geometry_bytes": 45528,
+    "geometry_fragments": 2,
+    "geometry_points": 1897,
+    "label_layers": 5,
+    "obs_bytes": 1572864,
+    "obs_views": 8,
+    "observations": 2,
+    "quality_target_views": 4,
+    "quality_targets": 4,
+    "queries": 2,
+    "r2_relations": 1,
+    "relation_kinds": {
+      "R2": 1
+    },
+    "relations": 1,
+    "superseded_relations": 0,
+    "token_fragments": 2,
+    "tokens": 384,
+    "zarr_arrays": 2,
+    "zarr_files": 27
+  },
+  "counts_total": 47,
+  "degrade_diversity": {
+    "axes": {
+      "LIN0000_V02_M01_PAT02::G05": {
+        "axis_id": "G05",
+        "basis_id": "7cd69995556e118f8f561ec3a272ee67",
+        "family": "G",
+        "levels": [
+          4
+        ],
+        "lineage_id": "LIN0000_V02_M01_PAT02",
+        "realized_levels": [
+          4
+        ],
+        "source_assets": [
+          "asset_39b7b9183aaf4a85c26e"
+        ],
+        "stage": "GEOMETRY_OBS",
+        "variant": "qem_decimation"
+      },
+      "LIN0000_V02_M01_PAT02::G08": {
+        "axis_id": "G08",
+        "basis_id": "d50a79957ef5670476731acffbd527a6",
+        "family": "G",
+        "levels": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "lineage_id": "LIN0000_V02_M01_PAT02",
+        "realized_levels": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "source_assets": [
+          "asset_39b7b9183aaf4a85c26e"
+        ],
+        "stage": "GEOMETRY_OBS",
+        "variant": "bump"
+      },
+      "LIN0000_V02_M01_PAT02::I01": {
+        "axis_id": "I01",
+        "basis_id": "d00be4185b6f0e88c2aa29f70d5f867d",
+        "family": "I",
+        "levels": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "lineage_id": "LIN0000_V02_M01_PAT02",
+        "realized_levels": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "source_assets": [
+          "asset_f141ba8f1eebc6a8defd"
+        ],
+        "stage": "OPTICS",
+        "variant": "gaussian_psf"
+      },
+      "LIN0000_V02_M01_PAT02::I03": {
+        "axis_id": "I03",
+        "basis_id": "cc85d2e7eec6f9659babbbff99ddaaf3",
+        "family": "I",
+        "levels": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "lineage_id": "LIN0000_V02_M01_PAT02",
+        "realized_levels": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "source_assets": [
+          "asset_f141ba8f1eebc6a8defd"
+        ],
+        "stage": "SENSOR",
+        "variant": "photon_scale"
+      },
+      "LIN0000_V02_M01_PAT02::I05": {
+        "axis_id": "I05",
+        "basis_id": "29551a7dc26da5aa83391bd2d4880423",
+        "family": "I",
+        "levels": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "lineage_id": "LIN0000_V02_M01_PAT02",
+        "realized_levels": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "source_assets": [
+          "asset_f141ba8f1eebc6a8defd"
+        ],
+        "stage": "ISP",
+        "variant": "fixed_direction_wb"
+      },
+      "LIN0000_V02_M01_PAT02::I09": {
+        "axis_id": "I09",
+        "basis_id": "7a1b9fff8530ba59c6876e7bf73d182c",
+        "family": "I",
+        "levels": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "lineage_id": "LIN0000_V02_M01_PAT02",
+        "realized_levels": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "source_assets": [
+          "asset_f141ba8f1eebc6a8defd"
+        ],
+        "stage": "ISP",
+        "variant": "antialiased_downsample"
+      },
+      "LIN0000_V02_M01_PAT02::P03": {
+        "axis_id": "P03",
+        "basis_id": "a1b74d9bec09beb6a23d38328cbf13bf",
+        "family": "P",
+        "levels": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "lineage_id": "LIN0000_V02_M01_PAT02",
+        "realized_levels": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "source_assets": [
+          "asset_857e7ea14728a8a442da"
+        ],
+        "stage": "PHYSICAL",
+        "variant": "smooth_recession_field"
+      },
+      "LIN0000_V02_M01_PAT02::X01": {
+        "axis_id": "X01",
+        "basis_id": "2a48e6b469256be337b9a683edb824f5",
+        "family": "X",
+        "levels": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "lineage_id": "LIN0000_V02_M01_PAT02",
+        "realized_levels": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "source_assets": [
+          "asset_f66ed4fa3c10bea5fe5c"
+        ],
+        "stage": "FEATURE_PROTOCOL",
+        "variant": "presence_removal"
+      },
+      "LIN0000_V02_M01_PAT02::X04": {
+        "axis_id": "X04",
+        "basis_id": "0b10028703ee4af49c56113a3affd709",
+        "family": "X",
+        "levels": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "lineage_id": "LIN0000_V02_M01_PAT02",
+        "realized_levels": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "source_assets": [
+          "asset_f66ed4fa3c10bea5fe5c"
+        ],
+        "stage": "FEATURE_PROTOCOL",
+        "variant": "regression_bias"
+      }
+    },
+    "counts": {
+      "degrade_axes": 9,
+      "degrade_axis_levels": 33,
+      "degrade_identity_references": 9,
+      "degrade_lineages": 1,
+      "degrade_sources": 3,
+      "degrade_variants": 33
+    },
+    "feature_bundle_exclusion": "degrade_variant metadata carries axis_id/level/variant, which roles.FORBIDDEN_FEATURE_FIELDS forbids inside a feature_bundle; the variant index is written at the package root, outside both views",
+    "files": [
+      "index.json",
+      "variants.json",
+      "sources.json"
+    ],
+    "level_zero_contract": "level 0 is the source asset itself: no variant asset exists for it, `identity=true`/`bytes_unchanged=true` are recorded in the run report and the source asset id is `source_asset_id`",
+    "retrieval_role": {
+      "different_source_same_level": "the hardest negatives of the robustness evaluation; a same-instance hit under mismatched degradation must still rank above them",
+      "must_not_enter": "the mate-task negative pool (R1/R0): two variants of one source are the same instance, so counting them as negatives would inject label noise",
+      "same_source_different_level": "same physical fragment under two degradation levels -> a same-instance positive (degradation invariance), never a mate-task positive"
+    },
+    "role": "degrade_variant",
+    "schema": "synlab.degrade_variant.index.v1",
+    "source_role": "degrade_source"
+  },
+  "files": [
+    {
+      "bytes": 73722,
+      "hash": "sha256:d9d66597baf008af8e59bf32a2b75d3569ff61ad73dea35db2eee0287798b118",
+      "note": "degradation-diversity index (variant fields, no payload)",
+      "path": "degrade/index.json"
+    },
+    {
+      "bytes": 1268,
+      "hash": "sha256:0198e36dd950b39dc7c32b345994475ff88b979426c5078c5331224186d6ee64",
+      "note": "one row per degradation source asset (level-0 anchor)",
+      "path": "degrade/sources.json"
+    },
+    {
+      "bytes": 66555,
+      "hash": "sha256:2761597b6582e1d78a023b7244061ddcad62a6fc384231cf8ee68707d9c0ca9b",
+      "note": "one row per committed degrade_variant asset",
+      "path": "degrade/variants.json"
+    },
+    {
+      "bytes": 2159,
+      "hash": "sha256:4fc7a6fec0a961b39f9d9b3c3cb0b60be67c4c7a8a54041e92979ace2796e3a6",
+      "note": "deployment view: simulated excavation context",
+      "path": "deploy/context/packs.json"
+    },
+    {
+      "bytes": 608,
+      "hash": "sha256:c98025e35fccc560587b20b4e5ccf066a2756ed5c3f3bbb554d5af9ad18335ae",
+      "path": "deploy/deploy_index.json"
+    },
+    {
+      "bytes": 1425,
+      "hash": "sha256:d167e25e6edf68dc9d1e38357a9e1fdcd40e9d69216dd774a7b5a64f59eeb336",
+      "path": "deploy/geometry/index.json"
+    },
+    {
+      "bytes": 62457,
+      "hash": "sha256:8a73d3ee3475c348a76463b99358e2e79ed089ad6022bfa4e65df77b23cde520",
+      "note": "geometry shard (points/normals/*_valid/scale_valid/frame_id)",
+      "path": "deploy/geometry/shard_0000.npz"
+    },
+    {
+      "bytes": 5985,
+      "hash": "sha256:d1a02f135165a61e5e5769cd197c7441faecebf1b6ac8d4c15c30819a1cf450a",
+      "path": "deploy/obs/index.json"
+    },
+    {
+      "bytes": 4352000,
+      "hash": "sha256:e0af204b42464caa42bd87bcb4b7d58db4543a6bd7d6c54c2bb361477ca8e7f5",
+      "note": "ObsPack shard (opaque names, policy-driven channels, no truth channel)",
+      "path": "deploy/obs/shard_0000.tar"
+    },
+    {
+      "bytes": 4314,
+      "hash": "sha256:e4da6d40704205ead3c34cbecf21203d44e7c0d27e6e1165c7c6aa9fb94c5564",
+      "note": "deployment view: query roster without labels",
+      "path": "deploy/queries.parquet"
+    },
+    {
+      "bytes": 1028,
+      "hash": "sha256:0a96263570c8de95f6eb285b872552e106e8e3932bb576634228ff511b4a5e96",
+      "path": "deploy/tokens/index.json"
+    },
+    {
+      "bytes": 792942,
+      "hash": "sha256:dd4b8bcf8cf1240097c950b9eb3418e2ef3772f0de58c9814af534bafeaa75e3",
+      "note": "token cache shard",
+      "path": "deploy/tokens/shard_0000.npz"
+    },
+    {
+      "bytes": 501,
+      "hash": "sha256:92ab9306da802fc769631b42ebb80b544ff02faac57eb2a2afcd1db06f6328bf",
+      "note": "zarr replica of the geometry shards",
+      "path": "deploy/zarr/24382e8df934c5d4fa362d3e/frame_id/c/0"
+    },
+    {
+      "bytes": 617,
+      "hash": "sha256:7180e6091e740c2e0eaa55296c9fae08f94befb59153d6729ad42d8a401d7ab0",
+      "note": "zarr replica of the geometry shards",
+      "path": "deploy/zarr/24382e8df934c5d4fa362d3e/frame_id/zarr.json"
+    },
+    {
+      "bytes": 19,
+      "hash": "sha256:d1c3ecb7fbeb0913f0fd47f2721df0449dc4c3e4dd7f5b3cd1fc5e8bf57f8cb1",
+      "note": "zarr replica of the geometry shards",
+      "path": "deploy/zarr/24382e8df934c5d4fa362d3e/normal_valid/c/0"
+    },
+    {
+      "bytes": 559,
+      "hash": "sha256:d667f35f0b9b1ce172eb2d668e78bdf26504f978a74bde014f39a71de3a52e2b",
+      "note": "zarr replica of the geometry shards",
+      "path": "deploy/zarr/24382e8df934c5d4fa362d3e/normal_valid/zarr.json"
+    },
+    {
+      "bytes": 9818,
+      "hash": "sha256:95f8015032f49adfe5454959fb451404c0307d0736fdd30e633e3e608f711f18",
+      "note": "zarr replica of the geometry shards",
+      "path": "deploy/zarr/24382e8df934c5d4fa362d3e/normals/c/0/0"
+    },
+    {
+      "bytes": 639,
+      "hash": "sha256:03e45cf4cf8f2656133c04cb1eac862577e2490f52ecc8f74caa2d5c732d9248",
+      "note": "zarr replica of the geometry shards",
+      "path": "deploy/zarr/24382e8df934c5d4fa362d3e/normals/zarr.json"
+    },
+    {
+      "bytes": 19,
+      "hash": "sha256:d1c3ecb7fbeb0913f0fd47f2721df0449dc4c3e4dd7f5b3cd1fc5e8bf57f8cb1",
+      "note": "zarr replica of the geometry shards",
+      "path": "deploy/zarr/24382e8df934c5d4fa362d3e/point_valid/c/0"
+    },
+    {
+      "bytes": 559,
+      "hash": "sha256:d667f35f0b9b1ce172eb2d668e78bdf26504f978a74bde014f39a71de3a52e2b",
+      "note": "zarr replica of the geometry shards",
+      "path": "deploy/zarr/24382e8df934c5d4fa362d3e/point_valid/zarr.json"
+    },
+    {
+      "bytes": 10040,
+      "hash": "sha256:f97a1b1696cda88c7cf7023ed91f49f07a4322fc288bcba01a96aacffa402958",
+      "note": "zarr replica of the geometry shards",
+      "path": "deploy/zarr/24382e8df934c5d4fa362d3e/points/c/0/0"
+    },
+    {
+      "bytes": 639,
+      "hash": "sha256:03e45cf4cf8f2656133c04cb1eac862577e2490f52ecc8f74caa2d5c732d9248",
+      "note": "zarr replica of the geometry shards",
+      "path": "deploy/zarr/24382e8df934c5d4fa362d3e/points/zarr.json"
+    },
+    {
+      "bytes": 19,
+      "hash": "sha256:d1c3ecb7fbeb0913f0fd47f2721df0449dc4c3e4dd7f5b3cd1fc5e8bf57f8cb1",
+      "note": "zarr replica of the geometry shards",
+      "path": "deploy/zarr/24382e8df934c5d4fa362d3e/scale_valid/c/0"
+    },
+    {
+      "bytes": 559,
+      "hash": "sha256:d667f35f0b9b1ce172eb2d668e78bdf26504f978a74bde014f39a71de3a52e2b",
+      "note": "zarr replica of the geometry shards",
+      "path": "deploy/zarr/24382e8df934c5d4fa362d3e/scale_valid/zarr.json"
+    },
+    {
+      "bytes": 66,
+      "hash": "sha256:36615682d5be9646729635067a75185212eb0c48d708ef06ad34c1f58dd587d2",
+      "note": "zarr replica of the geometry shards",
+      "path": "deploy/zarr/24382e8df934c5d4fa362d3e/zarr.json"
+    },
+    {
+      "bytes": 451,
+      "hash": "sha256:442d4b7c365c751fbeee3eb9b15ce6523a0fb8ce77f467199f43460fe3e72bcd",
+      "note": "zarr replica of the geometry shards",
+      "path": "deploy/zarr/99d6ba555e36f770932ded35/frame_id/c/0"
+    },
+    {
+      "bytes": 617,
+      "hash": "sha256:e6e9cd31c034afbcb86070341d169fa413d29becf12b03ce84aab8f7991491e0",
+      "note": "zarr replica of the geometry shards",
+      "path": "deploy/zarr/99d6ba555e36f770932ded35/frame_id/zarr.json"
+    },
+    {
+      "bytes": 19,
+      "hash": "sha256:aaf72ef86c11fcfa5e0b35d5c997f47a7b5010ed732e1c59b9af8e6d1e59b070",
+      "note": "zarr replica of the geometry shards",
+      "path": "deploy/zarr/99d6ba555e36f770932ded35/normal_valid/c/0"
+    },
+    {
+      "bytes": 559,
+      "hash": "sha256:03363edc86b0d36a65e354d8f02ad4b9baf6f13b2ee5d20e30a2fdeefa98dc2f",
+      "note": "zarr replica of the geometry shards",
+      "path": "deploy/zarr/99d6ba555e36f770932ded35/normal_valid/zarr.json"
+    },
+    {
+      "bytes": 10501,
+      "hash": "sha256:e772d54f4b5637f1bc5e32280f287773d6f402165998dd113dc631179b7e6ade",
+      "note": "zarr replica of the geometry shards",
+      "path": "deploy/zarr/99d6ba555e36f770932ded35/normals/c/0/0"
+    },
+    {
+      "bytes": 639,
+      "hash": "sha256:d0d2f1b3a92d338105d923275a7db3380adf9eec1eab0650cf9b3fff3c14e95d",
+      "note": "zarr replica of the geometry shards",
+      "path": "deploy/zarr/99d6ba555e36f770932ded35/normals/zarr.json"
+    },
+    {
+      "bytes": 19,
+      "hash": "sha256:aaf72ef86c11fcfa5e0b35d5c997f47a7b5010ed732e1c59b9af8e6d1e59b070",
+      "note": "zarr replica of the geometry shards",
+      "path": "deploy/zarr/99d6ba555e36f770932ded35/point_valid/c/0"
+    },
+    {
+      "bytes": 559,
+      "hash": "sha256:03363edc86b0d36a65e354d8f02ad4b9baf6f13b2ee5d20e30a2fdeefa98dc2f",
+      "note": "zarr replica of the geometry shards",
+      "path": "deploy/zarr/99d6ba555e36f770932ded35/point_valid/zarr.json"
+    },
+    {
+      "bytes": 10889,
+      "hash": "sha256:df14d0ecd55af40fd938daa3e8bca6c533b8a48e6bc93d2ff65ea9976188b049",
+      "note": "zarr replica of the geometry shards",
+      "path": "deploy/zarr/99d6ba555e36f770932ded35/points/c/0/0"
+    },
+    {
+      "bytes": 639,
+      "hash": "sha256:d0d2f1b3a92d338105d923275a7db3380adf9eec1eab0650cf9b3fff3c14e95d",
+      "note": "zarr replica of the geometry shards",
+      "path": "deploy/zarr/99d6ba555e36f770932ded35/points/zarr.json"
+    },
+    {
+      "bytes": 19,
+      "hash": "sha256:aaf72ef86c11fcfa5e0b35d5c997f47a7b5010ed732e1c59b9af8e6d1e59b070",
+      "note": "zarr replica of the geometry shards",
+      "path": "deploy/zarr/99d6ba555e36f770932ded35/scale_valid/c/0"
+    },
+    {
+      "bytes": 559,
+      "hash": "sha256:03363edc86b0d36a65e354d8f02ad4b9baf6f13b2ee5d20e30a2fdeefa98dc2f",
+      "note": "zarr replica of the geometry shards",
+      "path": "deploy/zarr/99d6ba555e36f770932ded35/scale_valid/zarr.json"
+    },
+    {
+      "bytes": 66,
+      "hash": "sha256:36615682d5be9646729635067a75185212eb0c48d708ef06ad34c1f58dd587d2",
+      "note": "zarr replica of the geometry shards",
+      "path": "deploy/zarr/99d6ba555e36f770932ded35/zarr.json"
+    },
+    {
+      "bytes": 246,
+      "hash": "sha256:9bc6e03f5a6583e661e62aca408460611a5c1fef716f5017da8a6da98469b2eb",
+      "note": "zarr replica of the geometry shards",
+      "path": "deploy/zarr/zarr.json"
+    },
+    {
+      "bytes": 636,
+      "hash": "sha256:c95253ded99bebc3e98b9777994993d825cc156a30f810cb5c175a272e22fc99",
+      "note": "research view: batch membership ids",
+      "path": "research/context_membership.json"
+    },
+    {
+      "bytes": 5168,
+      "hash": "sha256:9e5a67cc58b49521b4688ebbc2b378d718925556aeb2b69090abe5428e1b95b6",
+      "note": "research view: clean labels",
+      "path": "research/labels/clean.parquet"
+    },
+    {
+      "bytes": 25861,
+      "hash": "sha256:fc3103070208a3450a2eafb0b5f84282a92ee06b58f20fea90e24096498ad97c",
+      "note": "research view: correspondence labels",
+      "path": "research/labels/correspondence.parquet"
+    },
+    {
+      "bytes": 5183,
+      "hash": "sha256:05dba8adcae5e489fc79e9585b0bd3e51c661d0dca228b2e4f15e8dcc37a5754",
+      "note": "research view: physical labels",
+      "path": "research/labels/physical.parquet"
+    },
+    {
+      "bytes": 7853,
+      "hash": "sha256:ee4ad9336eef6cebb8fdccfa0d32784bef94310fd99e92d32cd0eceec1ec2f01",
+      "note": "research view: quality labels",
+      "path": "research/labels/quality.parquet"
+    },
+    {
+      "bytes": 276,
+      "hash": "sha256:bb4c0309c5c7eb59a6b3125c305c46ff46033fcfd8351e6f532496510dbac3d9",
+      "path": "research/labels/query_map.json"
+    },
+    {
+      "bytes": 2542,
+      "hash": "sha256:450c972b6f314958b025ff2b2a01d37da1c7b8c2b83f2e4d5c2361cdad76aa55",
+      "note": "research view: visible labels",
+      "path": "research/labels/visible.parquet"
+    },
+    {
+      "bytes": 3527,
+      "hash": "sha256:b75de1224d048c3306ad8e5ba6668c90c2abf596eba26951033e4e3bf9be78d5",
+      "note": "research view: relation labels",
+      "path": "research/relations.parquet"
+    }
+  ],
+  "formats": [
+    "parquet",
+    "npz",
+    "zarr",
+    "tar"
+  ],
+  "labels": [
+    {
+      "assets": [
+        "asset_444a0bb78946247d520e"
+      ],
+      "layer": "clean",
+      "path": "research/labels/clean.parquet",
+      "rows": 3
+    },
+    {
+      "assets": [
+        "asset_43aa923fe5a0cd56cfb5"
+      ],
+      "layer": "physical",
+      "path": "research/labels/physical.parquet",
+      "rows": 3
+    },
+    {
+      "assets": [
+        "asset_a8f5d2cc61afd8682ec0"
+      ],
+      "layer": "visible",
+      "path": "research/labels/visible.parquet",
+      "rows": 2
+    },
+    {
+      "assets": [
+        "asset_a8f5d2cc61afd8682ec0"
+      ],
+      "layer": "quality",
+      "path": "research/labels/quality.parquet",
+      "rows": 4
+    },
+    {
+      "assets": [],
+      "layer": "correspondence",
+      "path": "research/labels/correspondence.parquet",
+      "rows": 1183
+    }
+  ],
+  "manifest_hash": "sha256:42cd9df82cfe3a0b2b15bce00a6f3824597d9e0fa959153d14e5bb8ce54acc68",
+  "package_id": "pkg_rel_degrade_diversity_1790919754",
+  "package_schema": "synlab.training_package.v1",
+  "reference_closure": {
+    "assets": 54,
+    "files_checked": 54,
+    "ok": true,
+    "problems": []
+  },
+  "release_gates": {
+    "gates": {
+      "accepted_nested_100k": "PENDING",
+      "accepted_nested_10k": "PENDING",
+      "accepted_nested_50k": "PENDING",
+      "capture_profile": "PENDING",
+      "confirmation_complete": "PENDING",
+      "coordinate_contract": "PASS",
+      "core_ui_api": "PASS",
+      "coverage_12_materials": "PENDING",
+      "coverage_16_patterns": "PENDING",
+      "coverage_24_vessels": "PENDING",
+      "coverage_31_axes": "PENDING",
+      "coverage_4_backends": "PENDING",
+      "coverage_4_layers": "PASS",
+      "fixture_contract": "PASS",
+      "fracture_operator_runs": "PASS",
+      "frozen_protocol": "PENDING",
+      "l2_qualification": "PENDING",
+      "leakage_audit": "PENDING",
+      "legal_inputs": "PASS",
+      "loader_index_runnable": "PENDING",
+      "mask_source": "PENDING",
+      "mvs_subset_real_run": "PENDING",
+      "observation_operator_runs": "PASS",
+      "operators_used_pass": "PASS",
+      "phone_rgb_mvs": "PENDING",
+      "proxy_calibration": "PENDING",
+      "read_recovery": "PASS",
+      "readonly_commit": "PASS",
+      "real_capture_dataset": "PENDING",
+      "references_loadable": "PASS",
+      "relations_complete": "PENDING",
+      "resource_profile": "PASS",
+      "risk_calibration": "PENDING",
+      "scale_source": "PENDING",
+      "source_map": "PASS",
+      "train_dev_lineage": "PENDING",
+      "training_runs": "PENDING"
+    },
+    "note": "freeze refused",
+    "reason": "canonical JSON forbids NaN/Inf"
+  },
+  "release_id": "rel_degrade_diversity_1790919754",
+  "release_manifest_hash": "sha256:aa1dbb1826c243e1057c6ec3bddd37ba6a0982b8dd423df6c4f41712a47ae59b",
+  "release_profile": "SANDBOX_CORE_UNFROZEN",
+  "release_scope": "SYNTHETIC",
+  "release_scope_completed": null,
+  "release_scope_pending": null,
+  "schema": "synlab.training_package_manifest.v1",
+  "separation": {
+    "answer_field_scan": {
+      "containers": {
+        "context/packs.json": 41,
+        "deploy_index.json": 9,
+        "geometry/index.json": 23,
+        "geometry/shard_0000.npz": 6,
+        "obs/index.json": 39,
+        "obs/shard_0000.tar": 8,
+        "queries.parquet": 14,
+        "tokens/index.json": 15,
+        "tokens/shard_0000.npz": 5,
+        "zarr/* (declared array names)": 6
+      },
+      "forbidden_fields": [
+        "T_WF",
+        "axis_id",
+        "bag_id",
+        "clean_hidden_surface",
+        "damage_strength",
+        "event_id",
+        "fragment_id",
+        "generator_family_id",
+        "gt_curvature",
+        "gt_normal",
+        "gt_thickness",
+        "hard_case_tag",
+        "historical_R2",
+        "interface_id",
+        "level",
+        "lineage_id",
+        "mate_present",
+        "mother_id",
+        "object_id",
+        "parent_id",
+        "relation",
+        "seed",
+        "seed_ref",
+        "split",
+        "spurious_mask",
+        "truth_pose",
+        "variant"
+      ],
+      "hits": [
+        {
+          "field": "bag_id",
+          "file": "context/packs.json"
+        },
+        {
+          "field": "bag_id",
+          "file": "queries.parquet"
+        }
+      ],
+      "hits_by_field": {
+        "bag_id": [
+          "context/packs.json",
+          "queries.parquet"
+        ]
+      },
+      "keys_scanned": 166,
+      "not_read": [
+        {
+          "examples": [
+            "zarr/24382e8df934c5d4fa362d3e/frame_id/c/0",
+            "zarr/24382e8df934c5d4fa362d3e/normal_valid/c/0",
+            "zarr/24382e8df934c5d4fa362d3e/normals/c/0/0",
+            "zarr/24382e8df934c5d4fa362d3e/point_valid/c/0",
+            "zarr/24382e8df934c5d4fa362d3e/points/c/0/0"
+          ],
+          "files": 12,
+          "reason": "binary payload (carries no field name)"
+        },
+        {
+          "examples": [
+            "zarr/24382e8df934c5d4fa362d3e/frame_id/zarr.json",
+            "zarr/24382e8df934c5d4fa362d3e/normal_valid/zarr.json",
+            "zarr/24382e8df934c5d4fa362d3e/normals/zarr.json",
+            "zarr/24382e8df934c5d4fa362d3e/point_valid/zarr.json",
+            "zarr/24382e8df934c5d4fa362d3e/points/zarr.json"
+          ],
+          "files": 15,
+          "reason": "storage-format metadata (zarr chunk/compression vocabulary)"
+        }
+      ],
+      "unique_keys": 126,
+      "view": "deploy"
+    },
+    "channel_separation": {
+      "declared_by_the_writer": {
+        "channels": [
+          "K",
+          "deployment_mask",
+          "depth_z",
+          "roi",
+          "tiles",
+          "uncertain_mask",
+          "valid",
+          "view_pos"
+        ],
+        "file": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\data\\a12_degrade\\exports\\rel_degrade_diversity_1790919754\\training_package\\deploy\\obs\\index.json",
+        "policy": {
+          "env_override": "SYNLAB_VIEW_CHANNEL_POLICY",
+          "hash": "sha256:8627b39e30825e3dd33af1e50afe87250f338a1b59cc6cdc1ea93f0ec5014f2f",
+          "note": "the deployment view's channel set is data, not a literal: this is the policy the shards were written under, with its own hash",
+          "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\synlab\\schemas\\view_channels.json",
+          "schema": "synlab.view_channel_policy.v1",
+          "source": "raw observation arrays of obs_result (synlab/observe/routes.py:observation_to_dict)"
+        }
+      },
+      "deploy": {
+        "channels_declared": [
+          "K",
+          "deployment_mask",
+          "depth_z",
+          "roi",
+          "tiles",
+          "uncertain_mask",
+          "valid",
+          "view_pos"
+        ],
+        "channels_present": [
+          "K",
+          "T_WC",
+          "applicability",
+          "bag_id",
+          "batch_id",
+          "context_id",
+          "deployment_mask",
+          "depth_z",
+          "dist",
+          "excavation_area_id",
+          "fragment",
+          "frame_id",
+          "gallery",
+          "has_observation",
+          "historical_N_G",
+          "id_map",
+          "lineage",
+          "mother",
+          "normal_valid",
+          "normals",
+          "point_valid",
+          "points",
+          "query_id",
+          "rgb_linear",
+          "roi",
+          "scale_valid",
+          "status",
+          "stratum_id",
+          "surface_tag",
+          "tile_valid",
+          "tiles",
+          "token_input",
+          "token_valid",
+          "token_view",
+          "tokens",
+          "uncertain_mask",
+          "valid",
+          "view_pos"
+        ],
+        "files_by_channel": {
+          "K": [
+            "obs/index.json",
+            "obs/shard_0000.tar"
+          ],
+          "T_WC": [
+            "obs/index.json"
+          ],
+          "applicability": [
+            "queries.parquet"
+          ],
+          "bag_id": [
+            "queries.parquet"
+          ],
+          "batch_id": [
+            "queries.parquet"
+          ],
+          "context_id": [
+            "queries.parquet"
+          ],
+          "deployment_mask": [
+            "obs/index.json",
+            "obs/shard_0000.tar"
+          ],
+          "depth_z": [
+            "obs/index.json",
+            "obs/shard_0000.tar"
+          ],
+          "dist": [
+            "obs/index.json"
+          ],
+          "excavation_area_id": [
+            "queries.parquet"
+          ],
+          "fragment": [
+            "queries.parquet"
+          ],
+          "frame_id": [
+            "geometry/shard_0000.npz"
+          ],
+          "gallery": [
+            "queries.parquet"
+          ],
+          "has_observation": [
+            "queries.parquet"
+          ],
+          "historical_N_G": [
+            "queries.parquet"
+          ],
+          "id_map": [
+            "obs/index.json"
+          ],
+          "lineage": [
+            "queries.parquet"
+          ],
+          "mother": [
+            "queries.parquet"
+          ],
+          "normal_valid": [
+            "geometry/shard_0000.npz"
+          ],
+          "normals": [
+            "geometry/shard_0000.npz"
+          ],
+          "point_valid": [
+            "geometry/shard_0000.npz"
+          ],
+          "points": [
+            "geometry/shard_0000.npz"
+          ],
+          "query_id": [
+            "queries.parquet"
+          ],
+          "rgb_linear": [
+            "obs/index.json"
+          ],
+          "roi": [
+            "obs/index.json",
+            "obs/shard_0000.tar"
+          ],
+          "scale_valid": [
+            "geometry/shard_0000.npz"
+          ],
+          "status": [
+            "queries.parquet"
+          ],
+          "stratum_id": [
+            "queries.parquet"
+          ],
+          "surface_tag": [
+            "obs/index.json"
+          ],
+          "tile_valid": [
+            "tokens/shard_0000.npz"
+          ],
+          "tiles": [
+            "obs/index.json",
+            "obs/shard_0000.tar"
+          ],
+          "token_input": [
+            "tokens/shard_0000.npz"
+          ],
+          "token_valid": [
+            "tokens/shard_0000.npz"
+          ],
+          "token_view": [
+            "tokens/shard_0000.npz"
+          ],
+          "tokens": [
+            "tokens/shard_0000.npz"
+          ],
+          "uncertain_mask": [
+            "obs/index.json",
+            "obs/shard_0000.tar"
+          ],
+          "valid": [
+            "obs/index.json",
+            "obs/shard_0000.tar"
+          ],
+          "view_pos": [
+            "obs/index.json",
+            "obs/shard_0000.tar"
+          ]
+        },
+        "fragments_examined": 2,
+        "fragments_with_channel": {
+          "K": 2,
+          "deployment_mask": 2,
+          "depth_z": 2,
+          "roi": 2,
+          "tiles": 2,
+          "uncertain_mask": 2,
+          "valid": 2,
+          "view_pos": 2
+        },
+        "permitted": [
+          "tiles",
+          "valid",
+          "view_pos",
+          "depth_z",
+          "deployment_mask",
+          "uncertain_mask",
+          "roi",
+          "K"
+        ],
+        "status": {
+          "K": "included",
+          "deployment_mask": "included",
+          "depth_z": "included",
+          "roi": "included",
+          "tiles": "included",
+          "uncertain_mask": "included",
+          "valid": "included",
+          "view_pos": "included"
+        }
+      },
+      "leaked_into_deploy": [
+        "T_WC",
+        "dist",
+        "id_map",
+        "rgb_linear",
+        "surface_tag"
+      ],
+      "policy": {
+        "hash": "sha256:8627b39e30825e3dd33af1e50afe87250f338a1b59cc6cdc1ea93f0ec5014f2f",
+        "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\synlab\\schemas\\view_channels.json",
+        "schema": "synlab.view_channel_policy.v1"
+      },
+      "research": {
+        "channels_present": [
+          "ambiguous",
+          "area_mm2",
+          "asset_id",
+          "association_code",
+          "candidate",
+          "candidate_id",
+          "deployment_ok",
+          "deployment_ok_rate",
+          "depth_ok",
+          "depth_ok_rate",
+          "detail",
+          "eligible_as_negative",
+          "fragment_a",
+          "fragment_b",
+          "fragment_id",
+          "has_observation",
+          "id_ok",
+          "id_ok_rate",
+          "index_a",
+          "index_b",
+          "interface_id",
+          "kind",
+          "label_layer",
+          "lineage",
+          "lineage_cluster",
+          "loss_mask",
+          "not_uncertain",
+          "not_uncertain_rate",
+          "passed",
+          "pool_id",
+          "projected",
+          "query",
+          "reason",
+          "relation_kind",
+          "residual_mm",
+          "role",
+          "sample_valid",
+          "samples",
+          "source_kind",
+          "source_ref",
+          "split",
+          "target_channel",
+          "target_unit",
+          "target_value",
+          "unique_source_triangle",
+          "valid",
+          "view_id",
+          "visible",
+          "visible_rate",
+          "weight"
+        ],
+        "files_by_channel": {
+          "ambiguous": [
+            "labels/correspondence.parquet"
+          ],
+          "area_mm2": [
+            "labels/clean.parquet",
+            "labels/physical.parquet",
+            "relations.parquet"
+          ],
+          "asset_id": [
+            "labels/clean.parquet",
+            "labels/correspondence.parquet",
+            "labels/physical.parquet",
+            "labels/quality.parquet",
+            "labels/visible.parquet"
+          ],
+          "association_code": [
+            "labels/correspondence.parquet"
+          ],
+          "candidate": [
+            "relations.parquet"
+          ],
+          "candidate_id": [
+            "labels/clean.parquet",
+            "labels/physical.parquet"
+          ],
+          "deployment_ok": [
+            "labels/quality.parquet"
+          ],
+          "deployment_ok_rate": [
+            "labels/quality.parquet"
+          ],
+          "depth_ok": [
+            "labels/quality.parquet"
+          ],
+          "depth_ok_rate": [
+            "labels/quality.parquet"
+          ],
+          "detail": [
+            "labels/clean.parquet",
+            "labels/physical.parquet",
+            "labels/visible.parquet"
+          ],
+          "eligible_as_negative": [
+            "relations.parquet"
+          ],
+          "fragment_a": [
+            "labels/correspondence.parquet"
+          ],
+          "fragment_b": [
+            "labels/correspondence.parquet"
+          ],
+          "fragment_id": [
+            "labels/clean.parquet",
+            "labels/physical.parquet",
+            "labels/quality.parquet",
+            "labels/visible.parquet"
+          ],
+          "has_observation": [
+            "relations.parquet"
+          ],
+          "id_ok": [
+            "labels/quality.parquet"
+          ],
+          "id_ok_rate": [
+            "labels/quality.parquet"
+          ],
+          "index_a": [
+            "labels/correspondence.parquet"
+          ],
+          "index_b": [
+            "labels/correspondence.parquet"
+          ],
+          "interface_id": [
+            "labels/correspondence.parquet"
+          ],
+          "kind": [
+            "labels/clean.parquet",
+            "labels/physical.parquet",
+            "relations.parquet"
+          ],
+          "label_layer": [
+            "labels/clean.parquet",
+            "labels/correspondence.parquet",
+            "labels/physical.parquet",
+            "labels/quality.parquet",
+            "labels/visible.parquet"
+          ],
+          "lineage": [
+            "labels/clean.parquet",
+            "labels/correspondence.parquet",
+            "labels/physical.parquet",
+            "labels/quality.parquet",
+            "labels/visible.parquet"
+          ],
+          "lineage_cluster": [
+            "relations.parquet"
+          ],
+          "loss_mask": [
+            "labels/clean.parquet",
+            "labels/physical.parquet",
+            "relations.parquet"
+          ],
+          "not_uncertain": [
+            "labels/quality.parquet"
+          ],
+          "not_uncertain_rate": [
+            "labels/quality.parquet"
+          ],
+          "passed": [
+            "labels/clean.parquet",
+            "labels/physical.parquet",
+            "labels/visible.parquet"
+          ],
+          "pool_id": [
+            "relations.parquet"
+          ],
+          "projected": [
+            "labels/quality.parquet"
+          ],
+          "query": [
+            "relations.parquet"
+          ],
+          "reason": [
+            "labels/clean.parquet",
+            "labels/correspondence.parquet",
+            "labels/physical.parquet",
+            "labels/quality.parquet",
+            "relations.parquet"
+          ],
+          "relation_kind": [
+            "labels/correspondence.parquet"
+          ],
+          "residual_mm": [
+            "labels/correspondence.parquet"
+          ],
+          "role": [
+            "labels/clean.parquet",
+            "labels/physical.parquet",
+            "labels/visible.parquet"
+          ],
+          "sample_valid": [
+            "labels/correspondence.parquet"
+          ],
+          "samples": [
+            "labels/quality.parquet"
+          ],
+          "source_kind": [
+            "labels/correspondence.parquet",
+            "labels/quality.parquet"
+          ],
+          "source_ref": [
+            "labels/correspondence.parquet",
+            "labels/quality.parquet"
+          ],
+          "split": [
+            "labels/clean.parquet",
+            "labels/correspondence.parquet",
+            "labels/physical.parquet",
+            "labels/quality.parquet",
+            "labels/visible.parquet",
+            "relations.parquet"
+          ],
+          "target_channel": [
+            "labels/quality.parquet"
+          ],
+          "target_unit": [
+            "labels/quality.parquet"
+          ],
+          "target_value": [
+            "labels/quality.parquet"
+          ],
+          "unique_source_triangle": [
+            "labels/clean.parquet",
+            "labels/physical.parquet"
+          ],
+          "valid": [
+            "labels/clean.parquet",
+            "labels/correspondence.parquet",
+            "labels/physical.parquet",
+            "labels/quality.parquet",
+            "relations.parquet"
+          ],
+          "view_id": [
+            "labels/quality.parquet"
+          ],
+          "visible": [
+            "labels/quality.parquet"
+          ],
+          "visible_rate": [
+            "labels/quality.parquet"
+          ],
+          "weight": [
+            "labels/correspondence.parquet"
+          ]
+        },
+        "permitted": [
+          "rgb_linear",
+          "id_map",
+          "surface_tag",
+          "T_WC",
+          "dist"
+        ],
+        "status": {
+          "T_WC": "missing",
+          "dist": "missing",
+          "id_map": "missing",
+          "rgb_linear": "missing",
+          "surface_tag": "missing"
+        }
+      },
+      "research_only_channels": [
+        "T_WC",
+        "dist",
+        "id_map",
+        "rgb_linear",
+        "surface_tag"
+      ],
+      "source": "content scan of the written package: tar member names, npz array names, parquet column names and json array-name lists of each view",
+      "statement": "every channel of the deployment view is either permitted by the channel policy or reported here as unexpected/leaked; a permitted but absent channel is reported as missing",
+      "truth_roles": {
+        "arrays_research_only": [
+          "iface_id",
+          "iface_area_mm2",
+          "iface_gap_p95_mm",
+          "iface_normal_p95_deg",
+          "iface_ambiguity_ratio",
+          "iface_offset",
+          "iface_points_a",
+          "iface_points_b",
+          "iface_normals_a",
+          "iface_normals_b",
+          "iface_common_clip_area_mm2",
+          "iface_pair_common_clip_area_mm2",
+          "corr_point_a",
+          "corr_point_b",
+          "corr_normal_a",
+          "corr_normal_b",
+          "corr_bary_a",
+          "corr_bary_b",
+          "corr_face_a",
+          "corr_face_b",
+          "corr_index_a",
+          "corr_index_b",
+          "corr_weight",
+          "corr_residual_mm",
+          "corr_valid",
+          "corr_ambiguous",
+          "corr_association_code",
+          "corr_fragment_ids",
+          "corr_interface_id"
+        ],
+        "clean": [
+          "clean_truth"
+        ],
+        "note": [
+          "Roles whose payload is a ground-truth layer.  Their channel sets are never copied into the",
+          "deployment view: clean/physical/visible truth and the iface_*/corr_* correspondence arrays",
+          "stay on the research side, where the layered label tables consume them."
+        ],
+        "physical": [
+          "physical_truth"
+        ],
+        "visible": [
+          "visible_labels"
+        ]
+      }
+    },
+    "deploy_truth_content_files": [
+      {
+        "file": "obs/index.json",
+        "reason": "carries supervision fields: reason"
+      }
+    ],
+    "deploy_truth_files": [],
+    "features_carry_answer_fields": true,
+    "features_carry_answer_fields_source": "content scan of the written deployment view: keys read from its JSON/parquet/npz/tar containers and intersected with roles.FORBIDDEN_FEATURE_FIELDS",
+    "labels_kept_beside_features": true,
+    "statement": "the deployment view is safe to ship to an unprivileged loader; the research view must never be merged into it",
+    "truth_content_scan": {
+      "deploy": {
+        "contains_truth": true,
+        "keys_scanned": 166,
+        "truth_bearing_files": [
+          {
+            "file": "obs/index.json",
+            "reason": "carries supervision fields: reason"
+          }
+        ]
+      },
+      "research": {
+        "contains_truth": true,
+        "keys_scanned": 106,
+        "truth_bearing_files": [
+          {
+            "file": "labels/clean.parquet",
+            "reason": "carries supervision fields: area_mm2, candidate_id, kind, label_layer, loss_mask, reason, unique_source_triangle"
+          },
+          {
+            "file": "labels/correspondence.parquet",
+            "reason": "carries supervision fields: label_layer, reason"
+          },
+          {
+            "file": "labels/physical.parquet",
+            "reason": "carries supervision fields: area_mm2, candidate_id, kind, label_layer, loss_mask, reason, unique_source_triangle"
+          },
+          {
+            "file": "labels/quality.parquet",
+            "reason": "carries supervision fields: label_layer, reason"
+          },
+          {
+            "file": "labels/query_map.json",
+            "reason": "maps the deployment view's opaque names back to real ids"
+          },
+          {
+            "file": "labels/visible.parquet",
+            "reason": "carries supervision fields: label_layer"
+          },
+          {
+            "file": "relations.parquet",
+            "reason": "carries supervision fields: area_mm2, candidate, eligible_as_negative, kind, lineage_cluster, loss_mask, query, reason"
+          }
+        ]
+      }
+    }
+  },
+  "superseded_relations": [],
+  "supervision_labels": {
+    "correspondence": {
+      "ambiguous_samples": 0,
+      "association_code_histogram": {
+        "0": 1183
+      },
+      "pairs_supervised": 1,
+      "pairs_with_correspondence": 1,
+      "samples": 1183,
+      "skipped": [],
+      "valid_samples": 1183,
+      "weight_sum": 1486.93354820549
+    },
+    "quality": {
+      "candidates": {
+        "LIN0000_V02_M01_PAT02_E01-m": {
+          "available": [
+            {
+              "asset_id": "asset_9ba5896eec374ed6e910",
+              "max_samples": 1183,
+              "role": "label_bundle",
+              "views": 4
+            },
+            {
+              "asset_id": "asset_a8f5d2cc61afd8682ec0",
+              "max_samples": 1183,
+              "role": "visible_labels",
+              "views": 4
+            }
+          ],
+          "chosen": "asset_9ba5896eec374ed6e910"
+        }
+      },
+      "fragments_with_measurement": 1,
+      "rule": "visible = inside the delivered image AND camera z>0 AND |z - rendered depth| <= max(0.5 mm, 4 * mm_per_px) AND id_map>=0 AND not uncertain_mask AND deployment_mask (measured by the visible/truth layer)",
+      "source_kind": "GT_ORACLE",
+      "target_channel": "observability_visible_rate",
+      "target_unit": "1",
+      "views_measured": 4
+    }
+  },
+  "token_cache": {
+    "crop_hash": "sha256:e4bd2643289546ddf1eda3033fd33c32361fa65bf5f78f5722cca73677c5d8e7",
+    "encoder_hash": "sha256:5f613c9c2621405778222f267169b97e392a6b2b3d2dd4eebb9fe79108540f81",
+    "encoder_id": "identity_rgb_blockmean",
+    "input_hash": "sha256:f00180df63fc709f70f6e0ce46e1d75747a7beb279b7588cda902a165c954974",
+    "token_policy_hash": "sha256:142e8ead9541318e4dbafa40d33f0881f18c6ead3074b811853ef3fd07bed1e2"
+  },
+  "views": {
+    "deploy": {
+      "bytes": 5272754,
+      "contains_truth": true,
+      "files": 36,
+      "forbidden": [
+        "labels",
+        "relation kinds",
+        "lineage",
+        "split",
+        "depth/id_map/surface_tag channels"
+      ],
+      "purpose": "features only: ObsPack RGB shards, geometry, token cache, query roster",
+      "role": "deployment"
+    },
+    "research": {
+      "bytes": 51046,
+      "contains_truth": true,
+      "files": 8,
+      "purpose": "supervision: relation labels, layered labels, opaque-name map",
+      "role": "research"
+    }
+  }
+}

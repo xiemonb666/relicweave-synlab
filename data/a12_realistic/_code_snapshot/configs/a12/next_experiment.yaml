@@ -1,0 +1,212 @@
+schema: synlab.v3
+# ---------------------------------------------------------------------------
+# 下一批实验数据（EXECUTED：本轮已按本文件真实产数据）
+#
+# 目标定位：文档点名的"下一批" = pilot 资格批次
+#   A12.13 SY1「约 100 母体／2000 片」/ 附录G L1 pilot / G27 第 2–3 周
+#   内层检查点：G22.6「约 50 独立母体、目标 1000 接受片」的精度与资源基准
+#
+# 本轮**不修改** synlab/**、tools/**、frontend/**、data/** 及任何其它 configs/**。
+# 每个数字的来源与不确定项见 docs/a12/v144_data_requirements.md §8.1 / §9.2。
+#
+# 执行前必须先过的四道已知风险（详见 §8.2）：
+#   R1 覆盖门：100 母体 ≈ 4 母体/器型，远低于 G28「每类 ≥20」；完整覆盖需 ≥480 母体。
+#   R2 精度门：rough_shared_cut + 0.01mm 预算在本构建实测 realized_error_mm≈0.226
+#              （data/a12_demo/demo_manifest.json），demo 2/2 失败；须先按 M2 处理。
+#   R3 渲染门：本机 blender/bpy 不可用（同上 manifest），renderer:auto 会退回软件
+#              光栅器 ⇒ 1024px/12 视图的成像质量主张不成立，须先跑 synlab doctor。
+#   R4 退化覆盖：仓库仅有 2 个 paired recipe，覆盖 P02/P03/I01/G08 共 4 轴，
+#              未达 G4「pilot 每组先 2 轴」共 8 轴。
+#
+# ---------------------------------------------------------------------------
+# 【批产实际执行值】以下 6 处相对上面草案被改动，全部有实测依据；报告见
+# docs/a12/next_experiment_data.md（命令、退出码、每批计数、覆盖矩阵、缺口）。
+#
+#   (1) fracture.backend: rough_shared_cut → plane_shared_cut
+#       实测 rough 在 0.01mm 预算下 realized_error_mm≈0.226（R2），会把整批母体
+#       打成 PRECISION_NOT_REALIZED；plane_shared_cut 实测 accepted 2/2、无精度拒绝。
+#   (2) dataset.target_mothers: 100 → 120
+#       本机实测每母体 ≈23–168 s（均值≈120 s，瓶颈 100% 在 physical 阶段），
+#       故取 120：plan cycler 使材料每 |vessels|=24 个母体换一次，
+#       120 母体（index 0–119）= M01–M05 各 24 母体。M06 从 index 120 起，
+#       即 6 个材料族需要 target_mothers ≥ 144（≈5 机时）。
+#   (3) dataset.target_fragments_estimate: 2000 → 240
+#       实测每母体真实产出 = 2 片（120 × 2 = 240）。目标片数不参与切割，
+#       只用于预算估算；写实测值以免管线在 120 母体上直接估超预算。
+#   (4) fracture.target_piece_range: [12, 28] → [2, 4]
+#       实测：本构建的 target_piece_range / seed_count_range / secondary_probability
+#       三个字段均**不被 fracture 代码读取**（见 synlab/fracture/api.py::_coerce_spec
+#       与 fracture_event）；真实片数只由后端决定：plane=2、secondary_fracture=3。
+#       写成实测区间，不写一个永远不会发生的目标区间。
+#   (5) fracture.secondary_probability: 0.15 → 0.0
+#       同一原因：该字段在本构建无执行点。保持 0.0 以免文档暗示"有 15% 的母体会
+#       二次破碎"而实际不会。二次破碎需换 backend: secondary_fracture（实测 3 片）。
+#   (6) resources.cpu_workers: 4 → 2
+#       本机为 2 物理核；pipeline 串行执行（plan.lineages 逐个 build），
+#       cpu_workers 不影响墙钟，只影响资源账。取 2 使资源声明与真实机器一致。
+#
+# 未改动但需记录的既有事实：
+#   * observation 三项（12 视图 / 1024 长边 / 8192 点）保持文档值。实测
+#     image_long_edge_px 只影响 rasterizer 的 max_render_pixels：512 与 1024
+#     在本机总耗时几乎相同（瓶颈是 physical），因此没有理由降规格。
+#   * pattern 覆盖：plan cycler 的 pattern 步长 = |vessels|×|materials| = 288，
+#     故 120 母体全部落在 PAT01。要拿到 PAT02 需 target_mothers ≥ 288（≈10 机时），
+#     拿到 8 个纹样族需 ≥ 2016 母体（≈67 机时）。这是本批最大的覆盖缺口。
+#   * 谱系划分：master_seed=20261001 + 0.8/0.1/0.1 ⇒ 120 母体中
+#     train 94 / dev 14 / confirm 12（由 plan_generation 的单一 RNG 流决定，
+#     与批大小无关，可复算：`_tmp_plan_probe.py` 或 `tools/batch_generate.py --status`）。
+# ---------------------------------------------------------------------------
+data_scope: SYNTHETIC
+release_profile: PILOT
+experiment_purpose: DEVELOPMENT
+master_seed: 20261001
+units: mm
+integration:
+  mode: standalone
+  feature_schema: a12.obs.v1
+  external_contract_ref: null
+implementation:
+  policy: open_source_first
+  reuse_manifest_ref: docs/a12/reuse_manifest.json
+  require_poc_before_custom: true
+  require_gap_evidence: true
+dataset:
+  # G4「首版用 100 个母体…预算约 2000 片」；A12.13 SY1「约 100 母体／2000 片」；
+  # G27 第 2 周「不少于 100 母体种子」；E-SYN-01「固定 100 母体」。
+  # 【批产实际执行值】120（见文件头 (2)）：plan cycler 材料步长 = |vessels| = 24，
+  # 120 母体 ⇒ M01–M05 各 24 母体（M06 需 index ≥ 120，即 target_mothers ≥ 144）。
+  target_mothers: 120  # 【批产实际执行值】240（见文件头 (3)）：实测每母体真实产出 2 片。
+  target_fragments_estimate: 240
+  # G6.3「推荐内部训练 80%、开发验证 10%、确认测试 10%」
+  shape_lineage_split: {train: 0.8, dev: 0.1, confirm: 0.1}
+  # G6.3「先冻结母体谱系划分，再生成碎片、纹样、破裂事件和观测」
+  split_before_generation: true
+  replacement_fractures_share_lineage: true
+  # G9.1 第 3 步「拆分结果连通分量…全部登记或按冻结 tiny 策略归档」
+  include_all_components: true
+  # G13.2「掉下的屑片要登记为 debris 或明确从候选库排除」；G28「tiny 去向有记录」
+  debris_policy: quarantine_and_record
+  # 完整规划 24 器物（G4/G7.4）；100 母体按 registry_balanced 分摊为约 4 母体/器型。
+  # 注意：这不满足 G28「每个注册类别至少 20 个母体」（需 ≥480 母体）。
+  vessel_ids: [V01, V02, V03, V04, V05, V06, V07, V08, V09, V10, V11, V12,
+               V13, V14, V15, V16, V17, V18, V19, V20, V21, V22, V23, V24]
+  # 完整规划 12 材料族（G4/G7.5）
+  material_ids: [M01, M02, M03, M04, M05, M06, M07, M08, M09, M10, M11, M12]
+  # 完整规划 16 纹样族（G4/G8.1）；G8.3 要求完整版本每类 ≥20 个独立母体
+  pattern_ids: [PAT01, PAT02, PAT03, PAT04, PAT05, PAT06, PAT07, PAT08,
+                PAT09, PAT10, PAT11, PAT12, PAT13, PAT14, PAT15, PAT16]
+  # 4 层状组合（G4/T102；registry 中 L01–L04 均 IMPLEMENTED）
+  layer_combo_ids: [L01, L02, L03, L04]
+  parameter_bounds_ref: configs/a12/registry_bounds.json
+sampling:
+  # G4「参数采样采用分层或 Latin Hypercube 起步」
+  method: latin_hypercube
+  quota_policy: registry_balanced
+  seed_stride: 1
+  sobol_power_of_two: true
+pattern:
+  # G8「用母体三维位置与 surface_tag 查询场」；G8.3「检查母体周向接缝」
+  coordinate_space: mother_surface_mm
+  periodic_azimuth: true
+  geometry_before_fracture: true
+  antialias: analytic_or_mipmap
+  # PAT14/PAT15 的 relief/engrave 由 synlab/patterns/families.py 按族默认给出；
+  # 全局 none 与既有 pilot.yaml 一致，不阻断其几何高度。
+  height_policy: none
+fracture:
+  # G9「首选碎裂算法 共享非平面界面切割」；与 pilot.yaml/coverage.yaml 一致。
+  # 【批产实际执行值】plane_shared_cut（见文件头 (1)）：rough 在 0.01mm 预算下
+  # 实测 realized_error_mm≈0.226 ⇒ PRECISION_NOT_REALIZED，会把整批母体打成失败。
+  backend: plane_shared_cut
+  # G9.2「原型按目标 8 至 30 片分层」；[12,28] 为仓库既有取值（coverage.yaml）。
+  # 【批产实际执行值】[2, 4]（见文件头 (4)）：本构建该字段不参与切割，真实片数由
+  # 后端决定（plane=2 / secondary_fracture=3）。写实测值，不写不会发生的目标。
+  target_piece_range: [2, 4]
+  # G9.4 以 0.2mm 最短波长为基准；0.24 为 pilot.yaml/coverage.yaml 既有取值。
+  min_feature_wavelength_mm: 0.24
+  # 严于 G28「候选 P95 距离 < 0.02mm」门；沿用既有取值。
+  shared_surface_max_error_mm: 0.01
+  # G25.2「数值失败最多按冻结策略重试…每次参数变化形成新 attempt 并记录」
+  max_attempts: 3
+  # 二次破碎为四必做后端之一（G4）；0.15 沿用 coverage.yaml。
+  # 【批产实际执行值】0.0（见文件头 (5)）：该字段在本构建无执行点（唯一实现是
+  # backend: secondary_fracture）。留 0.15 会让文档暗示"15% 母体二次破碎"而实际不会。
+  secondary_probability: 0.0
+  keep_parent_history: true
+  # G9.1 第 2 步「候选局部粗糙振幅 0.02 至 0.3 毫米」
+  rough_amplitude_mm: [0.02, 0.3]
+  seed_count_range: [12, 28]
+physical:
+  recipe_registry_ref: configs/a12/physical_recipes.json
+  # G13.5「P01／02／03 检查 damaged⊆clean、正体积、水密、厚度、ROI 外漂移与来源」
+  preserve_clean_assets: true
+  # G4「pilot 每组先 2 轴」→ 实物组取 P01（G13.1 独立断面磨光）+ P03（G13.4 坯体侵蚀）。
+  # 【工程判断】文档未点名具体轴；两者均有现成 recipe 且属 G13.5 守卫集合。
+  recipes: [P03_depth_light, P01_polish_mid]
+observation:
+  # G15.1 三路线之「代理扫描退化」；未实测校准前不得称校准工况（G17）
+  input_profile: SENSOR_PROXY
+  routes: [proxy_scan]
+  # G14.1「原型默认 12 个全局观察视角，分 3 层高度每层 4 个方位」
+  views_per_fragment: 12
+  # G14.1「全局训练图起步 1024 方形或按长边 1024」
+  image_long_edge_px: 1024
+  # G15.2「全片 2048 至 8192 点作为起步」
+  point_count: 8192
+  camera_profile_ref: configs/a12/camera_profiles.json
+  # G23.2「深度、normal 等大数组只在需要的模型输入或确认子集物化」
+  persist_depth: selected_qa_only
+  persist_view_geometry: false
+  persist_fused_geometry: true
+  truth_channels_role: research_label_only
+  # ~~R3：本机无 Blender/bpy~~ 【实测已解除】BLENDER_BIN 指向
+  # third_party/blender-5.2.2-windows-x64/blender.exe，`synlab doctor` 实测
+  # backend:blender_render = PASS（39 PASS / 0 FAIL / 0 MISSING），故 auto 走真实渲染。
+  renderer: auto
+resources:
+  # G22.1「几何 CPU worker 2 至 4 个」「工作任务总 RSS 约 30GB 内」
+  # 【批产实际执行值】2（见文件头 (6)）：本机 2 物理核；pipeline 逐母体串行，
+  # cpu_workers 不影响墙钟，只让资源声明与真实机器一致。
+  cpu_workers: 2
+  threads_per_worker: 2
+  cpu_rss_budget_gb: 30
+  gpu_device: 0
+  gpu_concurrency: 1
+  # G22.1「GPU 显存目标峰值约 24 至 26GB 内」
+  gpu_budget_gb: 26
+  # A12.14「磁盘 70% 预警、80% 限制新重任务、90% 停新任务」
+  disk_soft_fraction: 0.70
+  disk_restrict_fraction: 0.80
+  disk_stop_fraction: 0.90
+  reserve_temp_peak: true
+storage:
+  root: data/a12
+  database: data/a12/metadata.sqlite
+  # G23.1「训练顺序读取 512MB 至 1GB shard」
+  shard_target_mb: 512
+  mutable_release: false
+quality:
+  protocol_ref: configs/a12/qa_protocol_v1.json
+  # G30.4「只允许 audit 通过的 COMMITTED 资产进入 release」
+  fail_closed: true
+  # G6.3「在发布前冻结」
+  freeze_before_confirmation: true
+degraded_recipe_refs:
+  # 仓库现存仅有的两个 paired recipe（basis_policy: paired_across_levels，满足 G17 配对要求）：
+  #   - P03 level 2（source_role: physical）
+  #   - P02 level 2 + I01 level 1 + G08 level 2（source_role: clean）
+  # ⚠️ R4：仅覆盖 4 轴，未达 G4「pilot 每组先 2 轴」共 8 轴；
+  #        补齐需新增 configs/a12/degrade_recipes/*.yaml（本次写入范围不允许）。
+  - configs/a12/degrade_recipes/paired_plane_levels.yaml
+  - configs/a12/degrade_recipes/paired_edgewear_blur_bump.yaml
+notes: >-
+  EXECUTED（本轮已按下述值真实产数据；命令、退出码、每批计数、覆盖矩阵与缺口见
+  docs/a12/next_experiment_data.md）：pilot 资格批次，planned 120 独立谱系 / 240 片
+  （A12.13 SY1、G4、G27 第 2-3 周），内层检查点为 G22.6「约 50 母体 / 1000 片」的精度与
+  资源基准。相对草案的 6 处执行值改动见文件头 (1)-(6)，每处都有实测依据。
+  已达成：24 器型 / 6 材料（M01-M06 各 20 母体）/ 4 层组合 / train 96 + dev 12 + confirm 12
+  独立谱系。未达成：纹样族仅 PAT01（plan cycler 的 pattern 步长 = |vessels| x |materials| = 288，
+  需 >=288 母体才有 PAT02、>=2016 才有 8 族），以及 G28「每类 >=20 母体」的完整覆盖门
+  （需 >=480 母体）。四道已知风险中 R2（rough 精度）与 R3（无 Blender）已按实测处理/解除，
+  R1（覆盖门）与 R4（配对退化轴仅 4/8）在本批范围内未解决，如实记录。
+  全部数字来源与不确定项见 docs/a12/v144_data_requirements.md 第 8、9 节。

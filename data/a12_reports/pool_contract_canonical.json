@@ -1,0 +1,727 @@
+{
+  "canonical": {
+    "agreement": {
+      "context": "canonical",
+      "disagreement_count": 0,
+      "disagreements": [],
+      "ok": true,
+      "protocol_version": "relations.pool_protocol.v1",
+      "readings": [
+        "mates",
+        "neighbours",
+        "legal_pool"
+      ],
+      "schema": "synlab.qc.pool_contract.agreement.v1"
+    },
+    "context": {
+      "assertions": [
+        "interface_present",
+        "relation_value_domain",
+        "relation_symmetry",
+        "mates_match_measured_r2",
+        "neighbours_are_mates",
+        "legal_set_only_confirmed_negatives",
+        "legal_set_excludes_self",
+        "legal_set_excludes_mates",
+        "legal_pool_equals_legal_negatives",
+        "history_exclusions_superset_of_mates",
+        "history_exclusions_disjoint_from_legal",
+        "assert_legal_negative_accepts_the_legal_set",
+        "assert_legal_negative_refuses_illegal"
+      ],
+      "duplicate_pairs": [],
+      "name": "canonical",
+      "notes": {
+        "complete_over_the_universe": true,
+        "mate_absent_fragments": [
+          "n0",
+          "n1",
+          "n2"
+        ],
+        "mates": [
+          [
+            "a0-m",
+            "a0-p"
+          ],
+          [
+            "a1-m",
+            "a1-p"
+          ],
+          [
+            "b0-m",
+            "b0-p"
+          ],
+          [
+            "b1-m",
+            "b1-p"
+          ],
+          [
+            "d0",
+            "d1"
+          ]
+        ],
+        "role": "the fixture every implementation is instantiated from"
+      },
+      "rows": 105,
+      "source": "synlab.qc.pool_contract.canonical_rows()",
+      "universe": 15
+    },
+    "exit_ok": true,
+    "failed_pools": [],
+    "failure_injection": {
+      "base": {
+        "failed_assertions": [],
+        "label": "relations.gallery.RelationPool",
+        "ok": true
+      },
+      "caught": 6,
+      "context": "canonical",
+      "injections": [
+        {
+          "caught": true,
+          "expected_assertion": "neighbours_are_mates",
+          "failed_assertions": [
+            "legal_set_excludes_mates",
+            "neighbours_are_mates"
+          ],
+          "first_failure": "neighbours_are_mates: neighbours(a0-m) = ['a1-m', 'a1-p', 'b0-m', 'b0-p', 'b1-m', 'b1-p', 'd0', 'd1', 'n0', 'n1', 'n2', 'u0'] but mates(a0-m) = ['a0-p']",
+          "name": "neighbours_return_the_negative_set",
+          "wrapper": "synlab.qc.pool_contract.NeighboursReturnTheNegativeSet"
+        },
+        {
+          "caught": true,
+          "expected_assertion": "history_exclusions_superset_of_mates",
+          "failed_assertions": [
+            "history_exclusions_superset_of_mates"
+          ],
+          "first_failure": "history_exclusions_superset_of_mates: history_exclusions(a0-m) omits the mate(s) ['a0-p']",
+          "name": "history_exclusions_drop_the_mates",
+          "wrapper": "synlab.qc.pool_contract.HistoryExclusionsDropTheMates"
+        },
+        {
+          "caught": true,
+          "expected_assertion": "legal_set_excludes_mates",
+          "failed_assertions": [
+            "assert_legal_negative_accepts_the_legal_set",
+            "history_exclusions_disjoint_from_legal",
+            "legal_set_excludes_mates",
+            "legal_set_only_confirmed_negatives"
+          ],
+          "first_failure": "legal_set_only_confirmed_negatives: legal_pool(a0-m) offers a0-p with kind 'R2' (ordinary negatives are ['R0', 'R1'] only)",
+          "name": "legal_set_offers_a_mate",
+          "wrapper": "synlab.qc.pool_contract.LegalSetOffersAMate"
+        },
+        {
+          "caught": true,
+          "expected_assertion": "legal_set_only_confirmed_negatives",
+          "failed_assertions": [
+            "assert_legal_negative_accepts_the_legal_set",
+            "history_exclusions_disjoint_from_legal",
+            "legal_set_only_confirmed_negatives"
+          ],
+          "first_failure": "legal_set_only_confirmed_negatives: legal_pool(a0-m) offers t0 with kind 'TINY_CONTACT' (ordinary negatives are ['R0', 'R1'] only)",
+          "name": "legal_set_offers_unknown",
+          "wrapper": "synlab.qc.pool_contract.LegalSetOffersUnknown"
+        },
+        {
+          "caught": true,
+          "expected_assertion": "relation_symmetry",
+          "failed_assertions": [
+            "assert_legal_negative_refuses_illegal",
+            "legal_set_only_confirmed_negatives",
+            "relation_symmetry",
+            "relation_value_domain"
+          ],
+          "first_failure": "relation_value_domain: relation(a0-m, a1-m) = 'R2' but the measured row says 'R0'",
+          "name": "relation_is_asymmetric",
+          "wrapper": "synlab.qc.pool_contract.RelationIsAsymmetric"
+        },
+        {
+          "caught": true,
+          "expected_assertion": "assert_legal_negative_refuses_illegal",
+          "failed_assertions": [
+            "assert_legal_negative_refuses_illegal"
+          ],
+          "first_failure": "assert_legal_negative_refuses_illegal: assert_legal_negative(a0-m, a0-p) accepted a historical R2 mate",
+          "name": "guard_accepts_a_mate",
+          "wrapper": "synlab.qc.pool_contract.GuardAcceptsAMate"
+        }
+      ],
+      "ok": true,
+      "protocol_version": "relations.pool_protocol.v1",
+      "schema": "synlab.qc.pool_contract.injection.v1",
+      "total": 6
+    },
+    "ok": true,
+    "pools": {
+      "qc.loader_probe.ExportedRelationPool": {
+        "assertions": [
+          {
+            "clause": "the pool exposes every protocol method and a non-empty candidate universe",
+            "failure_count": 0,
+            "failures": [],
+            "name": "interface_present",
+            "ok": true
+          },
+          {
+            "clause": "relation(a,b) is symmetric, never an adjacency for a==b, equals the measured row's kind, and never invents an adjacency for an unmeasured pair",
+            "failure_count": 0,
+            "failures": [],
+            "name": "relation_value_domain",
+            "ok": true
+          },
+          {
+            "clause": "relation(a,b) == relation(b,a) for every pair of the universe",
+            "failure_count": 0,
+            "failures": [],
+            "name": "relation_symmetry",
+            "ok": true
+          },
+          {
+            "clause": "mates(q) is exactly the confirmed R2 adjacency of q (q excluded)",
+            "failure_count": 0,
+            "failures": [],
+            "name": "mates_match_measured_r2",
+            "ok": true
+          },
+          {
+            "clause": "neighbours(q) == mates(q) -- the clause whose divergence made rank never start",
+            "failure_count": 0,
+            "failures": [],
+            "name": "neighbours_are_mates",
+            "ok": true
+          },
+          {
+            "clause": "legal_pool()/legal_negatives() contain confirmed R0/R1 candidates only",
+            "failure_count": 0,
+            "failures": [],
+            "name": "legal_set_only_confirmed_negatives",
+            "ok": true
+          },
+          {
+            "clause": "no legal candidate and no candidate_ids entry is the query itself",
+            "failure_count": 0,
+            "failures": [],
+            "name": "legal_set_excludes_self",
+            "ok": true
+          },
+          {
+            "clause": "a legal negative is never a mate (or a neighbour) of its query",
+            "failure_count": 0,
+            "failures": [],
+            "name": "legal_set_excludes_mates",
+            "ok": true
+          },
+          {
+            "clause": "the two spellings of the legal set agree",
+            "failure_count": 0,
+            "failures": [],
+            "name": "legal_pool_equals_legal_negatives",
+            "ok": true
+          },
+          {
+            "clause": "history_exclusions(q) contains every mate of q",
+            "failure_count": 0,
+            "failures": [],
+            "name": "history_exclusions_superset_of_mates",
+            "ok": true
+          },
+          {
+            "clause": "nothing history_exclusions(q) forbids is offered by legal_pool(q)",
+            "failure_count": 0,
+            "failures": [],
+            "name": "history_exclusions_disjoint_from_legal",
+            "ok": true
+          },
+          {
+            "clause": "the guard accepts every candidate the pool calls legal",
+            "failure_count": 0,
+            "failures": [],
+            "name": "assert_legal_negative_accepts_the_legal_set",
+            "ok": true
+          },
+          {
+            "clause": "the guard refuses q itself, its mates and every R2/TINY/UNKNOWN candidate",
+            "failure_count": 0,
+            "failures": [],
+            "name": "assert_legal_negative_refuses_illegal",
+            "ok": true
+          }
+        ],
+        "context": "canonical",
+        "failed_assertions": [],
+        "failure_count": 0,
+        "failures": [],
+        "implementation": "synlab.qc.loader_probe.ExportedRelationPool",
+        "label": "qc.loader_probe.ExportedRelationPool",
+        "ok": true,
+        "pool_id": "contract::canonical",
+        "protocol_version": "relations.pool_protocol.v1",
+        "rows": 105,
+        "schema": "synlab.qc.pool_contract.result.v1",
+        "self_relation_readings": {
+          "UNKNOWN": 15
+        },
+        "universe": 15
+      },
+      "relations.gallery.RelationPool": {
+        "assertions": [
+          {
+            "clause": "the pool exposes every protocol method and a non-empty candidate universe",
+            "failure_count": 0,
+            "failures": [],
+            "name": "interface_present",
+            "ok": true
+          },
+          {
+            "clause": "relation(a,b) is symmetric, never an adjacency for a==b, equals the measured row's kind, and never invents an adjacency for an unmeasured pair",
+            "failure_count": 0,
+            "failures": [],
+            "name": "relation_value_domain",
+            "ok": true
+          },
+          {
+            "clause": "relation(a,b) == relation(b,a) for every pair of the universe",
+            "failure_count": 0,
+            "failures": [],
+            "name": "relation_symmetry",
+            "ok": true
+          },
+          {
+            "clause": "mates(q) is exactly the confirmed R2 adjacency of q (q excluded)",
+            "failure_count": 0,
+            "failures": [],
+            "name": "mates_match_measured_r2",
+            "ok": true
+          },
+          {
+            "clause": "neighbours(q) == mates(q) -- the clause whose divergence made rank never start",
+            "failure_count": 0,
+            "failures": [],
+            "name": "neighbours_are_mates",
+            "ok": true
+          },
+          {
+            "clause": "legal_pool()/legal_negatives() contain confirmed R0/R1 candidates only",
+            "failure_count": 0,
+            "failures": [],
+            "name": "legal_set_only_confirmed_negatives",
+            "ok": true
+          },
+          {
+            "clause": "no legal candidate and no candidate_ids entry is the query itself",
+            "failure_count": 0,
+            "failures": [],
+            "name": "legal_set_excludes_self",
+            "ok": true
+          },
+          {
+            "clause": "a legal negative is never a mate (or a neighbour) of its query",
+            "failure_count": 0,
+            "failures": [],
+            "name": "legal_set_excludes_mates",
+            "ok": true
+          },
+          {
+            "clause": "the two spellings of the legal set agree",
+            "failure_count": 0,
+            "failures": [],
+            "name": "legal_pool_equals_legal_negatives",
+            "ok": true
+          },
+          {
+            "clause": "history_exclusions(q) contains every mate of q",
+            "failure_count": 0,
+            "failures": [],
+            "name": "history_exclusions_superset_of_mates",
+            "ok": true
+          },
+          {
+            "clause": "nothing history_exclusions(q) forbids is offered by legal_pool(q)",
+            "failure_count": 0,
+            "failures": [],
+            "name": "history_exclusions_disjoint_from_legal",
+            "ok": true
+          },
+          {
+            "clause": "the guard accepts every candidate the pool calls legal",
+            "failure_count": 0,
+            "failures": [],
+            "name": "assert_legal_negative_accepts_the_legal_set",
+            "ok": true
+          },
+          {
+            "clause": "the guard refuses q itself, its mates and every R2/TINY/UNKNOWN candidate",
+            "failure_count": 0,
+            "failures": [],
+            "name": "assert_legal_negative_refuses_illegal",
+            "ok": true
+          }
+        ],
+        "context": "canonical",
+        "failed_assertions": [],
+        "failure_count": 0,
+        "failures": [],
+        "implementation": "synlab.relations.gallery.RelationPool",
+        "label": "relations.gallery.RelationPool",
+        "ok": true,
+        "pool_id": "contract::canonical",
+        "protocol_version": "relations.pool_protocol.v1",
+        "rows": 105,
+        "schema": "synlab.qc.pool_contract.result.v1",
+        "self_relation_readings": {
+          "SELF": 15
+        },
+        "universe": 15
+      },
+      "training.sampler.PoolIndex[exported]": {
+        "assertions": [
+          {
+            "clause": "the pool exposes every protocol method and a non-empty candidate universe",
+            "failure_count": 0,
+            "failures": [],
+            "name": "interface_present",
+            "ok": true
+          },
+          {
+            "clause": "relation(a,b) is symmetric, never an adjacency for a==b, equals the measured row's kind, and never invents an adjacency for an unmeasured pair",
+            "failure_count": 0,
+            "failures": [],
+            "name": "relation_value_domain",
+            "ok": true
+          },
+          {
+            "clause": "relation(a,b) == relation(b,a) for every pair of the universe",
+            "failure_count": 0,
+            "failures": [],
+            "name": "relation_symmetry",
+            "ok": true
+          },
+          {
+            "clause": "mates(q) is exactly the confirmed R2 adjacency of q (q excluded)",
+            "failure_count": 0,
+            "failures": [],
+            "name": "mates_match_measured_r2",
+            "ok": true
+          },
+          {
+            "clause": "neighbours(q) == mates(q) -- the clause whose divergence made rank never start",
+            "failure_count": 0,
+            "failures": [],
+            "name": "neighbours_are_mates",
+            "ok": true
+          },
+          {
+            "clause": "legal_pool()/legal_negatives() contain confirmed R0/R1 candidates only",
+            "failure_count": 0,
+            "failures": [],
+            "name": "legal_set_only_confirmed_negatives",
+            "ok": true
+          },
+          {
+            "clause": "no legal candidate and no candidate_ids entry is the query itself",
+            "failure_count": 0,
+            "failures": [],
+            "name": "legal_set_excludes_self",
+            "ok": true
+          },
+          {
+            "clause": "a legal negative is never a mate (or a neighbour) of its query",
+            "failure_count": 0,
+            "failures": [],
+            "name": "legal_set_excludes_mates",
+            "ok": true
+          },
+          {
+            "clause": "the two spellings of the legal set agree",
+            "failure_count": 0,
+            "failures": [],
+            "name": "legal_pool_equals_legal_negatives",
+            "ok": true
+          },
+          {
+            "clause": "history_exclusions(q) contains every mate of q",
+            "failure_count": 0,
+            "failures": [],
+            "name": "history_exclusions_superset_of_mates",
+            "ok": true
+          },
+          {
+            "clause": "nothing history_exclusions(q) forbids is offered by legal_pool(q)",
+            "failure_count": 0,
+            "failures": [],
+            "name": "history_exclusions_disjoint_from_legal",
+            "ok": true
+          },
+          {
+            "clause": "the guard accepts every candidate the pool calls legal",
+            "failure_count": 0,
+            "failures": [],
+            "name": "assert_legal_negative_accepts_the_legal_set",
+            "ok": true
+          },
+          {
+            "clause": "the guard refuses q itself, its mates and every R2/TINY/UNKNOWN candidate",
+            "failure_count": 0,
+            "failures": [],
+            "name": "assert_legal_negative_refuses_illegal",
+            "ok": true
+          }
+        ],
+        "context": "canonical",
+        "failed_assertions": [],
+        "failure_count": 0,
+        "failures": [],
+        "implementation": "synlab.training.sampler.PoolIndex",
+        "label": "training.sampler.PoolIndex[exported]",
+        "ok": true,
+        "pool_id": "contract::canonical",
+        "protocol_version": "relations.pool_protocol.v1",
+        "rows": 105,
+        "schema": "synlab.qc.pool_contract.result.v1",
+        "self_relation_readings": {
+          "SELF": 15
+        },
+        "universe": 15
+      },
+      "training.sampler.PoolIndex[gallery]": {
+        "assertions": [
+          {
+            "clause": "the pool exposes every protocol method and a non-empty candidate universe",
+            "failure_count": 0,
+            "failures": [],
+            "name": "interface_present",
+            "ok": true
+          },
+          {
+            "clause": "relation(a,b) is symmetric, never an adjacency for a==b, equals the measured row's kind, and never invents an adjacency for an unmeasured pair",
+            "failure_count": 0,
+            "failures": [],
+            "name": "relation_value_domain",
+            "ok": true
+          },
+          {
+            "clause": "relation(a,b) == relation(b,a) for every pair of the universe",
+            "failure_count": 0,
+            "failures": [],
+            "name": "relation_symmetry",
+            "ok": true
+          },
+          {
+            "clause": "mates(q) is exactly the confirmed R2 adjacency of q (q excluded)",
+            "failure_count": 0,
+            "failures": [],
+            "name": "mates_match_measured_r2",
+            "ok": true
+          },
+          {
+            "clause": "neighbours(q) == mates(q) -- the clause whose divergence made rank never start",
+            "failure_count": 0,
+            "failures": [],
+            "name": "neighbours_are_mates",
+            "ok": true
+          },
+          {
+            "clause": "legal_pool()/legal_negatives() contain confirmed R0/R1 candidates only",
+            "failure_count": 0,
+            "failures": [],
+            "name": "legal_set_only_confirmed_negatives",
+            "ok": true
+          },
+          {
+            "clause": "no legal candidate and no candidate_ids entry is the query itself",
+            "failure_count": 0,
+            "failures": [],
+            "name": "legal_set_excludes_self",
+            "ok": true
+          },
+          {
+            "clause": "a legal negative is never a mate (or a neighbour) of its query",
+            "failure_count": 0,
+            "failures": [],
+            "name": "legal_set_excludes_mates",
+            "ok": true
+          },
+          {
+            "clause": "the two spellings of the legal set agree",
+            "failure_count": 0,
+            "failures": [],
+            "name": "legal_pool_equals_legal_negatives",
+            "ok": true
+          },
+          {
+            "clause": "history_exclusions(q) contains every mate of q",
+            "failure_count": 0,
+            "failures": [],
+            "name": "history_exclusions_superset_of_mates",
+            "ok": true
+          },
+          {
+            "clause": "nothing history_exclusions(q) forbids is offered by legal_pool(q)",
+            "failure_count": 0,
+            "failures": [],
+            "name": "history_exclusions_disjoint_from_legal",
+            "ok": true
+          },
+          {
+            "clause": "the guard accepts every candidate the pool calls legal",
+            "failure_count": 0,
+            "failures": [],
+            "name": "assert_legal_negative_accepts_the_legal_set",
+            "ok": true
+          },
+          {
+            "clause": "the guard refuses q itself, its mates and every R2/TINY/UNKNOWN candidate",
+            "failure_count": 0,
+            "failures": [],
+            "name": "assert_legal_negative_refuses_illegal",
+            "ok": true
+          }
+        ],
+        "context": "canonical",
+        "failed_assertions": [],
+        "failure_count": 0,
+        "failures": [],
+        "implementation": "synlab.training.sampler.PoolIndex",
+        "label": "training.sampler.PoolIndex[gallery]",
+        "ok": true,
+        "pool_id": "contract::canonical",
+        "protocol_version": "relations.pool_protocol.v1",
+        "rows": 105,
+        "schema": "synlab.qc.pool_contract.result.v1",
+        "self_relation_readings": {
+          "SELF": 15
+        },
+        "universe": 15
+      },
+      "training.smoke.TrainingPoolView": {
+        "assertions": [
+          {
+            "clause": "the pool exposes every protocol method and a non-empty candidate universe",
+            "failure_count": 0,
+            "failures": [],
+            "name": "interface_present",
+            "ok": true
+          },
+          {
+            "clause": "relation(a,b) is symmetric, never an adjacency for a==b, equals the measured row's kind, and never invents an adjacency for an unmeasured pair",
+            "failure_count": 0,
+            "failures": [],
+            "name": "relation_value_domain",
+            "ok": true
+          },
+          {
+            "clause": "relation(a,b) == relation(b,a) for every pair of the universe",
+            "failure_count": 0,
+            "failures": [],
+            "name": "relation_symmetry",
+            "ok": true
+          },
+          {
+            "clause": "mates(q) is exactly the confirmed R2 adjacency of q (q excluded)",
+            "failure_count": 0,
+            "failures": [],
+            "name": "mates_match_measured_r2",
+            "ok": true
+          },
+          {
+            "clause": "neighbours(q) == mates(q) -- the clause whose divergence made rank never start",
+            "failure_count": 0,
+            "failures": [],
+            "name": "neighbours_are_mates",
+            "ok": true
+          },
+          {
+            "clause": "legal_pool()/legal_negatives() contain confirmed R0/R1 candidates only",
+            "failure_count": 0,
+            "failures": [],
+            "name": "legal_set_only_confirmed_negatives",
+            "ok": true
+          },
+          {
+            "clause": "no legal candidate and no candidate_ids entry is the query itself",
+            "failure_count": 0,
+            "failures": [],
+            "name": "legal_set_excludes_self",
+            "ok": true
+          },
+          {
+            "clause": "a legal negative is never a mate (or a neighbour) of its query",
+            "failure_count": 0,
+            "failures": [],
+            "name": "legal_set_excludes_mates",
+            "ok": true
+          },
+          {
+            "clause": "the two spellings of the legal set agree",
+            "failure_count": 0,
+            "failures": [],
+            "name": "legal_pool_equals_legal_negatives",
+            "ok": true
+          },
+          {
+            "clause": "history_exclusions(q) contains every mate of q",
+            "failure_count": 0,
+            "failures": [],
+            "name": "history_exclusions_superset_of_mates",
+            "ok": true
+          },
+          {
+            "clause": "nothing history_exclusions(q) forbids is offered by legal_pool(q)",
+            "failure_count": 0,
+            "failures": [],
+            "name": "history_exclusions_disjoint_from_legal",
+            "ok": true
+          },
+          {
+            "clause": "the guard accepts every candidate the pool calls legal",
+            "failure_count": 0,
+            "failures": [],
+            "name": "assert_legal_negative_accepts_the_legal_set",
+            "ok": true
+          },
+          {
+            "clause": "the guard refuses q itself, its mates and every R2/TINY/UNKNOWN candidate",
+            "failure_count": 0,
+            "failures": [],
+            "name": "assert_legal_negative_refuses_illegal",
+            "ok": true
+          }
+        ],
+        "context": "canonical",
+        "failed_assertions": [],
+        "failure_count": 0,
+        "failures": [],
+        "implementation": "synlab.training.smoke.TrainingPoolView",
+        "label": "training.smoke.TrainingPoolView",
+        "ok": true,
+        "pool_id": "contract::canonical",
+        "protocol_version": "relations.pool_protocol.v1",
+        "rows": 105,
+        "schema": "synlab.qc.pool_contract.result.v1",
+        "self_relation_readings": {
+          "UNKNOWN": 15
+        },
+        "universe": 15
+      }
+    },
+    "protocol_version": "relations.pool_protocol.v1",
+    "schema": "synlab.qc.pool_contract.suite.v1",
+    "source": {
+      "context": "synlab.qc.pool_contract.canonical_rows()",
+      "implementations": [
+        "qc.loader_probe.ExportedRelationPool",
+        "relations.gallery.RelationPool",
+        "training.sampler.PoolIndex[exported]",
+        "training.sampler.PoolIndex[gallery]",
+        "training.smoke.TrainingPoolView"
+      ],
+      "protocol_version": "relations.pool_protocol.v1"
+    },
+    "step": "canonical",
+    "wall_seconds": 0.09048360004089773
+  },
+  "ok": true,
+  "schema": "synlab.a12.pool_contract.run.v1",
+  "status": "PASS"
+}

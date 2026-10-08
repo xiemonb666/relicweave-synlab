@@ -1,0 +1,358 @@
+﻿{
+  "schema": "core_incremental_copy_receipt.v1",
+  "plan_path": "tmp/backup_coordinator/next_core_incremental_plan_20261006_v4.json",
+  "plan_sha256": "29f6307b71bf23d5c0d227a9122f91c7e91787e71290f06209c487eb197757ce",
+  "repo": "pgfrag",
+  "branch": "backup/forge-work-20261003",
+  "pre_head": "90d47aa0bebc81ff2a7a1f4303356e72e04ee704",
+  "origin": "https://github.com/xiemonb666/pgfrag.git",
+  "bounded_ls_remote": {
+    "timeout_ms": 20000,
+    "rc": 0,
+    "timed_out": false,
+    "stdout": "90d47aa0bebc81ff2a7a1f4303356e72e04ee704\trefs/heads/backup/forge-work-20261003"
+  },
+  "source_preflight": [
+    {
+      "source": "experiments/fixed_load_front_reanalysis_20261006/fixed_load_front_reanalysis.py",
+      "destination": "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/source/fixed_load_front_reanalysis.py",
+      "bytes": 32421,
+      "sha256": "9707fa3c47403e0dada8081e3fba9273249e9a05fc2055b0e3a20a69b62c952c",
+      "destination_existed_before": false,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "source": "experiments/fixed_load_front_reanalysis_20261006/fixed_load_front_reanalysis_case.json",
+      "destination": "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/source/fixed_load_front_reanalysis_case.json",
+      "bytes": 3980,
+      "sha256": "8f919a55127b6f310e6f262b4a550f8daa9cd214496d824c3e1848ed0b1b46df",
+      "destination_existed_before": false,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "source": "experiments/fixed_load_front_reanalysis_20261006/README.md",
+      "destination": "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/source/README.md",
+      "bytes": 3490,
+      "sha256": "8a6c21e5c49eeb67499d04d1871187692899bc2bde79ae805e7e16801cf704a1",
+      "destination_existed_before": false,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "source": "tmp/review_20261006/fixed_load_front_reanalysis_20261006/run01/result.json",
+      "destination": "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/run01/result.json",
+      "bytes": 539566,
+      "sha256": "a60e51c85c26510c358ee57cafa4bfdda6ed89ea463d99bcc86551f64220732c",
+      "destination_existed_before": false,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "source": "tmp/review_20261006/fixed_load_front_reanalysis_20261006/run01/outer_process_receipt.json",
+      "destination": "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/run01/outer_process_receipt.json",
+      "bytes": 4603,
+      "sha256": "2a0615a0cbfaee065669ba28cf56e0d979811acbfd377e790f65fbfd3f3e8386",
+      "destination_existed_before": false,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "source": "tmp/review_20261006/fixed_load_front_reanalysis_20261006/run01/OUTER_PROCESS_ADDENDUM.md",
+      "destination": "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/run01/OUTER_PROCESS_ADDENDUM.md",
+      "bytes": 2929,
+      "sha256": "d12f5752fefcc702016e9a215fe8a6b9fbf9f159bfe15cc35fe681559a85ac9d",
+      "destination_existed_before": false,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "source": "experiments/mixed_lefm_benchmark_20261006/mixed_lefm_field.py",
+      "destination": "docs/evidence/20261006/core_incremental_review/mixed_lefm/source/mixed_lefm_field.py",
+      "bytes": 16380,
+      "sha256": "ed90063029d69649fbb8b4a0785946cfdd7e7b6a22e483513ff27f447745dacd",
+      "destination_existed_before": false,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "source": "experiments/mixed_lefm_benchmark_20261006/README.md",
+      "destination": "docs/evidence/20261006/core_incremental_review/mixed_lefm/source/README.md",
+      "bytes": 5466,
+      "sha256": "4de18376bc619a0952051c383c16ef410ec2b8a9240661aae010ab5e7632f286",
+      "destination_existed_before": false,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "source": "tmp/review_20261006/mixed_lefm_benchmark_20261006/SOURCE_REVIEW.md",
+      "destination": "docs/evidence/20261006/core_incremental_review/mixed_lefm/source/SOURCE_REVIEW.md",
+      "bytes": 3870,
+      "sha256": "c4274c0bc398f27c47e6ee00d883444bde99e7c8443e8e01cb71a0e95dc87be8",
+      "destination_existed_before": false,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "source": "tmp/review_20261006/mixed_lefm_independent/audit_mixed_lefm.py",
+      "destination": "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_mixed_lefm.py",
+      "bytes": 15295,
+      "sha256": "ed4cf862c502b9ac4a186e34af62b960497c0358bb63bb7679dca7b48a2533c7",
+      "destination_existed_before": false,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "source": "tmp/review_20261006/mixed_lefm_independent/audit_mixed_lefm.prepatch.py",
+      "destination": "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_mixed_lefm.prepatch.py",
+      "bytes": 14142,
+      "sha256": "d4e613d9de863036de1a69de94b3a9e2c36cb916b0e7eeda83a51b4da3fc668f",
+      "destination_existed_before": false,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "source": "tmp/review_20261006/mixed_lefm_independent/ownreview/audit_report.json",
+      "destination": "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_report.json",
+      "bytes": 1547,
+      "sha256": "bd478d0349bf70f932cdd7ed50e031e8fc7d21509f11fd7fd6d53dc134aa8b5f",
+      "destination_existed_before": false,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "source": "tmp/review_20261006/mixed_lefm_independent/ownreview/audit_points.csv",
+      "destination": "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_points.csv",
+      "bytes": 7909,
+      "sha256": "f7805b4cbbb83fdb1bad996b18494d1b19edb751d17dc0a471e77eab225e8c40",
+      "destination_existed_before": false,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "source": "tmp/review_20261006/mixed_lefm_independent/ownreview/mixed_displacement_quiver.png",
+      "destination": "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/mixed_displacement_quiver.png",
+      "bytes": 3004,
+      "sha256": "5efb4899ad295f0bc5799ffe332ba5a0f65271eadc5dec0c1b4f1cd209ad6297",
+      "destination_existed_before": false,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "source": "tmp/review_20261006/mixed_lefm_independent/ownreview/execution_receipt.json",
+      "destination": "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/execution_receipt.json",
+      "bytes": 927,
+      "sha256": "20f03a64dec14da02eb61da7f93c8d112864233a57e8a16a66bacf900d1fae68",
+      "destination_existed_before": false,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "source": "tmp/review_20261006/mixed_lefm_independent/ownreview/audit_run.log",
+      "destination": "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_run.log",
+      "bytes": 196,
+      "sha256": "9e4908708f5d4495992f914bd44fa2ec8bec633bbaf698d18173bf3784169b03",
+      "destination_existed_before": false,
+      "operation": "copy_then_stage_exact"
+    },
+    {
+      "source": "docs/progress/20261006_physics_core_status.md",
+      "destination": "docs/progress/20261006_physics_core_status.md",
+      "bytes": 2754,
+      "sha256": "8772e087de7d055c9b83206bb9ed264561da0c3381ec31353851e1a1b6d9cf2c",
+      "destination_existed_before": true,
+      "operation": "stage_existing_exact"
+    }
+  ],
+  "copy_count": 16,
+  "copied_files": [
+    {
+      "source": "experiments/fixed_load_front_reanalysis_20261006/fixed_load_front_reanalysis.py",
+      "destination": "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/source/fixed_load_front_reanalysis.py",
+      "sha256": "9707fa3c47403e0dada8081e3fba9273249e9a05fc2055b0e3a20a69b62c952c",
+      "bytes": 32421
+    },
+    {
+      "source": "experiments/fixed_load_front_reanalysis_20261006/fixed_load_front_reanalysis_case.json",
+      "destination": "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/source/fixed_load_front_reanalysis_case.json",
+      "sha256": "8f919a55127b6f310e6f262b4a550f8daa9cd214496d824c3e1848ed0b1b46df",
+      "bytes": 3980
+    },
+    {
+      "source": "experiments/fixed_load_front_reanalysis_20261006/README.md",
+      "destination": "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/source/README.md",
+      "sha256": "8a6c21e5c49eeb67499d04d1871187692899bc2bde79ae805e7e16801cf704a1",
+      "bytes": 3490
+    },
+    {
+      "source": "tmp/review_20261006/fixed_load_front_reanalysis_20261006/run01/result.json",
+      "destination": "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/run01/result.json",
+      "sha256": "a60e51c85c26510c358ee57cafa4bfdda6ed89ea463d99bcc86551f64220732c",
+      "bytes": 539566
+    },
+    {
+      "source": "tmp/review_20261006/fixed_load_front_reanalysis_20261006/run01/outer_process_receipt.json",
+      "destination": "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/run01/outer_process_receipt.json",
+      "sha256": "2a0615a0cbfaee065669ba28cf56e0d979811acbfd377e790f65fbfd3f3e8386",
+      "bytes": 4603
+    },
+    {
+      "source": "tmp/review_20261006/fixed_load_front_reanalysis_20261006/run01/OUTER_PROCESS_ADDENDUM.md",
+      "destination": "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/run01/OUTER_PROCESS_ADDENDUM.md",
+      "sha256": "d12f5752fefcc702016e9a215fe8a6b9fbf9f159bfe15cc35fe681559a85ac9d",
+      "bytes": 2929
+    },
+    {
+      "source": "experiments/mixed_lefm_benchmark_20261006/mixed_lefm_field.py",
+      "destination": "docs/evidence/20261006/core_incremental_review/mixed_lefm/source/mixed_lefm_field.py",
+      "sha256": "ed90063029d69649fbb8b4a0785946cfdd7e7b6a22e483513ff27f447745dacd",
+      "bytes": 16380
+    },
+    {
+      "source": "experiments/mixed_lefm_benchmark_20261006/README.md",
+      "destination": "docs/evidence/20261006/core_incremental_review/mixed_lefm/source/README.md",
+      "sha256": "4de18376bc619a0952051c383c16ef410ec2b8a9240661aae010ab5e7632f286",
+      "bytes": 5466
+    },
+    {
+      "source": "tmp/review_20261006/mixed_lefm_benchmark_20261006/SOURCE_REVIEW.md",
+      "destination": "docs/evidence/20261006/core_incremental_review/mixed_lefm/source/SOURCE_REVIEW.md",
+      "sha256": "c4274c0bc398f27c47e6ee00d883444bde99e7c8443e8e01cb71a0e95dc87be8",
+      "bytes": 3870
+    },
+    {
+      "source": "tmp/review_20261006/mixed_lefm_independent/audit_mixed_lefm.py",
+      "destination": "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_mixed_lefm.py",
+      "sha256": "ed4cf862c502b9ac4a186e34af62b960497c0358bb63bb7679dca7b48a2533c7",
+      "bytes": 15295
+    },
+    {
+      "source": "tmp/review_20261006/mixed_lefm_independent/audit_mixed_lefm.prepatch.py",
+      "destination": "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_mixed_lefm.prepatch.py",
+      "sha256": "d4e613d9de863036de1a69de94b3a9e2c36cb916b0e7eeda83a51b4da3fc668f",
+      "bytes": 14142
+    },
+    {
+      "source": "tmp/review_20261006/mixed_lefm_independent/ownreview/audit_report.json",
+      "destination": "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_report.json",
+      "sha256": "bd478d0349bf70f932cdd7ed50e031e8fc7d21509f11fd7fd6d53dc134aa8b5f",
+      "bytes": 1547
+    },
+    {
+      "source": "tmp/review_20261006/mixed_lefm_independent/ownreview/audit_points.csv",
+      "destination": "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_points.csv",
+      "sha256": "f7805b4cbbb83fdb1bad996b18494d1b19edb751d17dc0a471e77eab225e8c40",
+      "bytes": 7909
+    },
+    {
+      "source": "tmp/review_20261006/mixed_lefm_independent/ownreview/mixed_displacement_quiver.png",
+      "destination": "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/mixed_displacement_quiver.png",
+      "sha256": "5efb4899ad295f0bc5799ffe332ba5a0f65271eadc5dec0c1b4f1cd209ad6297",
+      "bytes": 3004
+    },
+    {
+      "source": "tmp/review_20261006/mixed_lefm_independent/ownreview/execution_receipt.json",
+      "destination": "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/execution_receipt.json",
+      "sha256": "20f03a64dec14da02eb61da7f93c8d112864233a57e8a16a66bacf900d1fae68",
+      "bytes": 927
+    },
+    {
+      "source": "tmp/review_20261006/mixed_lefm_independent/ownreview/audit_run.log",
+      "destination": "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_run.log",
+      "sha256": "9e4908708f5d4495992f914bd44fa2ec8bec633bbaf698d18173bf3784169b03",
+      "bytes": 196
+    }
+  ],
+  "stage_existing_count": 1,
+  "postcopy_all_17_source_and_destination_pins_match": true,
+  "postcopy_checks": [
+    {
+      "path": "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/source/fixed_load_front_reanalysis.py",
+      "sha256": "9707fa3c47403e0dada8081e3fba9273249e9a05fc2055b0e3a20a69b62c952c",
+      "bytes": 32421,
+      "source_unchanged": true
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/source/fixed_load_front_reanalysis_case.json",
+      "sha256": "8f919a55127b6f310e6f262b4a550f8daa9cd214496d824c3e1848ed0b1b46df",
+      "bytes": 3980,
+      "source_unchanged": true
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/source/README.md",
+      "sha256": "8a6c21e5c49eeb67499d04d1871187692899bc2bde79ae805e7e16801cf704a1",
+      "bytes": 3490,
+      "source_unchanged": true
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/run01/result.json",
+      "sha256": "a60e51c85c26510c358ee57cafa4bfdda6ed89ea463d99bcc86551f64220732c",
+      "bytes": 539566,
+      "source_unchanged": true
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/run01/outer_process_receipt.json",
+      "sha256": "2a0615a0cbfaee065669ba28cf56e0d979811acbfd377e790f65fbfd3f3e8386",
+      "bytes": 4603,
+      "source_unchanged": true
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental_review/fixed_load_front_reanalysis/run01/OUTER_PROCESS_ADDENDUM.md",
+      "sha256": "d12f5752fefcc702016e9a215fe8a6b9fbf9f159bfe15cc35fe681559a85ac9d",
+      "bytes": 2929,
+      "source_unchanged": true
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental_review/mixed_lefm/source/mixed_lefm_field.py",
+      "sha256": "ed90063029d69649fbb8b4a0785946cfdd7e7b6a22e483513ff27f447745dacd",
+      "bytes": 16380,
+      "source_unchanged": true
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental_review/mixed_lefm/source/README.md",
+      "sha256": "4de18376bc619a0952051c383c16ef410ec2b8a9240661aae010ab5e7632f286",
+      "bytes": 5466,
+      "source_unchanged": true
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental_review/mixed_lefm/source/SOURCE_REVIEW.md",
+      "sha256": "c4274c0bc398f27c47e6ee00d883444bde99e7c8443e8e01cb71a0e95dc87be8",
+      "bytes": 3870,
+      "source_unchanged": true
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_mixed_lefm.py",
+      "sha256": "ed4cf862c502b9ac4a186e34af62b960497c0358bb63bb7679dca7b48a2533c7",
+      "bytes": 15295,
+      "source_unchanged": true
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_mixed_lefm.prepatch.py",
+      "sha256": "d4e613d9de863036de1a69de94b3a9e2c36cb916b0e7eeda83a51b4da3fc668f",
+      "bytes": 14142,
+      "source_unchanged": true
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_report.json",
+      "sha256": "bd478d0349bf70f932cdd7ed50e031e8fc7d21509f11fd7fd6d53dc134aa8b5f",
+      "bytes": 1547,
+      "source_unchanged": true
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_points.csv",
+      "sha256": "f7805b4cbbb83fdb1bad996b18494d1b19edb751d17dc0a471e77eab225e8c40",
+      "bytes": 7909,
+      "source_unchanged": true
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/mixed_displacement_quiver.png",
+      "sha256": "5efb4899ad295f0bc5799ffe332ba5a0f65271eadc5dec0c1b4f1cd209ad6297",
+      "bytes": 3004,
+      "source_unchanged": true
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/execution_receipt.json",
+      "sha256": "20f03a64dec14da02eb61da7f93c8d112864233a57e8a16a66bacf900d1fae68",
+      "bytes": 927,
+      "source_unchanged": true
+    },
+    {
+      "path": "docs/evidence/20261006/core_incremental_review/mixed_lefm/independent/audit_run.log",
+      "sha256": "9e4908708f5d4495992f914bd44fa2ec8bec633bbaf698d18173bf3784169b03",
+      "bytes": 196,
+      "source_unchanged": true
+    },
+    {
+      "path": "docs/progress/20261006_physics_core_status.md",
+      "sha256": "8772e087de7d055c9b83206bb9ed264561da0c3381ec31353851e1a1b6d9cf2c",
+      "bytes": 2754,
+      "source_unchanged": true
+    }
+  ]
+}

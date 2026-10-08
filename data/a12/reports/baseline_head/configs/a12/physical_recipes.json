@@ -1,0 +1,76 @@
+{
+  "schema": "synlab.physical_recipes.v1",
+  "note": "Physical damage recipes reference axis ids and levels only; the compiler expands levels into physical units and records the real measurement. level 0 must be a true identity for every axis.",
+  "recipes": [
+    {
+      "recipe_id": "P03_depth_light",
+      "source_role": "clean",
+      "operators": [
+        {"axis_id": "P03", "level": 1, "variant": "depth_mm"}
+      ]
+    },
+    {
+      "recipe_id": "P03_depth_heavy",
+      "source_role": "clean",
+      "operators": [
+        {"axis_id": "P03", "level": 3, "variant": "depth_mm"}
+      ]
+    },
+    {
+      "recipe_id": "P01_polish_mid",
+      "source_role": "clean",
+      "operators": [
+        {"axis_id": "P01", "level": 2, "variant": "recession_strength"}
+      ]
+    },
+    {
+      "recipe_id": "P02_round_edge_mid",
+      "source_role": "clean",
+      "operators": [
+        {"axis_id": "P02", "level": 2, "variant": "subtractive_edge_rounding"}
+      ]
+    },
+    {
+      "recipe_id": "P04_chip_mid",
+      "source_role": "clean",
+      "operators": [
+        {"axis_id": "P04", "level": 2, "variant": "contact_loss_target"}
+      ]
+    },
+    {
+      "recipe_id": "P05_paint_loss_mid",
+      "source_role": "clean",
+      "operators": [
+        {"axis_id": "P05", "level": 2, "variant": "retained_fraction"}
+      ]
+    },
+    {
+      "recipe_id": "P06_dirt_mid",
+      "source_role": "clean",
+      "operators": [
+        {"axis_id": "P06", "level": 2, "variant": "coverage"}
+      ]
+    },
+    {
+      "recipe_id": "P07_erode_outer_light",
+      "source_role": "clean",
+      "operators": [
+        {"axis_id": "P07", "level": 1, "variant": "depth_mm"}
+      ]
+    },
+    {
+      "recipe_id": "P08_geometry_crack_mid",
+      "source_role": "clean",
+      "operators": [
+        {"axis_id": "P08", "level": 2, "variant": "geometry_crack"}
+      ]
+    },
+    {
+      "recipe_id": "P08_coat_loss_mid",
+      "source_role": "clean",
+      "operators": [
+        {"axis_id": "P08", "level": 2, "variant": "geometric_coat_loss"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,215 @@
+{
+  "schema": "shardforge.synlab-source-fixture-candidate-manifest.v1",
+  "captured_at_utc": "2026-10-04T23:56:06.792Z",
+  "repo": "relicweave-synlab",
+  "branch": "backup/forge-work-20261003",
+  "local_head": "2a1660304a7895fb8cf9bac931ee016112beb420",
+  "remote_branch_head": "2a1660304a7895fb8cf9bac931ee016112beb420",
+  "remote_matches_local": true,
+  "remote_url_printed": false,
+  "source_manifests": [
+    {
+      "path": "relicweave-synlab/tmp/review_20261005/pg_source_reader/final_freeze_manifest.json",
+      "bytes": 13204,
+      "sha256": "eba1d443ea7b66be1d818794b18362466640a7d2b8fce79e014841cc36eb10da"
+    },
+    {
+      "path": "relicweave-synlab/tmp/review_20261005/pg_source_reader/fixture_source_manifest.json",
+      "bytes": 4435,
+      "sha256": "ae6ba7326a70afb452c739de4fd57f56b520dc9295fdb6c9882ca800346a0ae1"
+    }
+  ],
+  "files": [
+    {
+      "path": "relicweave-synlab/synlab/qa/source_readers/__init__.py",
+      "role": "source_or_test",
+      "bytes": 300,
+      "sha256": "2d187338150a7582c6cb895cf15f8934b271c863c0a6903da5784e5f947f330b",
+      "worktree_status": "clean",
+      "stage_approved": false
+    },
+    {
+      "path": "relicweave-synlab/synlab/qa/source_readers/pgfrag_result.py",
+      "role": "source_or_test",
+      "bytes": 40405,
+      "sha256": "ed1d72f0bd25d2962217e88a226d2a72706c013c7087465b53bb9ca04116bd9e",
+      "worktree_status": "??",
+      "stage_approved": false
+    },
+    {
+      "path": "relicweave-synlab/tests/a12/qa/test_pgfrag_source_reader_20261005.py",
+      "role": "source_or_test",
+      "bytes": 15514,
+      "sha256": "0071ad62a7d6780771923cba0da01bde4326e390732ba371e703825fd8640c54",
+      "worktree_status": "??",
+      "stage_approved": false
+    },
+    {
+      "path": "relicweave-synlab/tests/fixtures/pgfrag/result_v1_toy_endpoint/output/result.json",
+      "role": "fixture",
+      "bytes": 8258,
+      "sha256": "b3fb84f20d409f4a4dca0b34ffd8b95a07b7c7944b8b6ecd70100b0b5b17dc20",
+      "source_path": "tmp/review_20261003/implementation/pg/jobs/osb_fracture_branch_001/output/result.json",
+      "byte_identical_to_source": true,
+      "worktree_status": "??",
+      "stage_approved": false
+    },
+    {
+      "path": "relicweave-synlab/tests/fixtures/pgfrag/result_v1_toy_endpoint/output/bond_states.csv",
+      "role": "fixture",
+      "bytes": 1095598,
+      "sha256": "2ba477c6c915f9eefdb141eb6f203b30b50fc99f6d93df0145a096771e143d3d",
+      "source_path": "tmp/review_20261003/implementation/pg/jobs/osb_fracture_branch_001/output/bond_states.csv",
+      "byte_identical_to_source": true,
+      "worktree_status": "??",
+      "stage_approved": false
+    },
+    {
+      "path": "relicweave-synlab/tests/fixtures/pgfrag/result_v1_toy_endpoint/output/broken_bonds.csv",
+      "role": "fixture",
+      "bytes": 249045,
+      "sha256": "4d9d79764b3e228ab63b5ebb250c92643e7df5951e91fb6d01442ba83724a870",
+      "source_path": "tmp/review_20261003/implementation/pg/jobs/osb_fracture_branch_001/output/broken_bonds.csv",
+      "byte_identical_to_source": true,
+      "worktree_status": "??",
+      "stage_approved": false
+    },
+    {
+      "path": "relicweave-synlab/tests/fixtures/pgfrag/result_v1_toy_endpoint/output/components.csv",
+      "role": "fixture",
+      "bytes": 27275,
+      "sha256": "b3ac06b6d86a44465650f9528fd0e1064fd7b76008f19ea3740fdae4ec7a1fa6",
+      "source_path": "tmp/review_20261003/implementation/pg/jobs/osb_fracture_branch_001/output/components.csv",
+      "byte_identical_to_source": true,
+      "worktree_status": "??",
+      "stage_approved": false
+    },
+    {
+      "path": "relicweave-synlab/tests/fixtures/pgfrag/result_v1_toy_endpoint/output/data_dictionary.json",
+      "role": "fixture",
+      "bytes": 11063,
+      "sha256": "0e0a2d1d39986fa2e676deb182c529237c9c72e86d99ff85e18f06ccd50d73e0",
+      "source_path": "tmp/review_20261003/implementation/pg/jobs/osb_fracture_branch_001/output/data_dictionary.json",
+      "byte_identical_to_source": true,
+      "worktree_status": "??",
+      "stage_approved": false
+    },
+    {
+      "path": "relicweave-synlab/tests/fixtures/pgfrag/result_v1_toy_endpoint/output/isolated_points.csv",
+      "role": "fixture",
+      "bytes": 41,
+      "sha256": "d0bb697a4412b470be2d5ff0fdafeef8de814f94847f0ad4569de9dfe52cd0a7",
+      "source_path": "tmp/review_20261003/implementation/pg/jobs/osb_fracture_branch_001/output/isolated_points.csv",
+      "byte_identical_to_source": true,
+      "worktree_status": "??",
+      "stage_approved": false
+    },
+    {
+      "path": "relicweave-synlab/tests/fixtures/pgfrag/result_v1_toy_endpoint/output/points.csv",
+      "role": "fixture",
+      "bytes": 135416,
+      "sha256": "f78180800aa39702b31d60f2e523cb5a3fc13339644d86826c39bb9acd250edf",
+      "source_path": "tmp/review_20261003/implementation/pg/jobs/osb_fracture_branch_001/output/points.csv",
+      "byte_identical_to_source": true,
+      "worktree_status": "??",
+      "stage_approved": false
+    },
+    {
+      "path": "relicweave-synlab/tests/fixtures/pgfrag/result_v1_toy_endpoint/output/solver.stderr.log",
+      "role": "fixture",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "tmp/review_20261003/implementation/pg/jobs/osb_fracture_branch_001/output/solver.stderr.log",
+      "byte_identical_to_source": true,
+      "worktree_status": "ignored_or_missing_from_status",
+      "stage_approved": false
+    },
+    {
+      "path": "relicweave-synlab/tests/fixtures/pgfrag/result_v1_toy_endpoint/output/solver.stdout.log",
+      "role": "fixture",
+      "bytes": 102,
+      "sha256": "1a0884a22e1fa4f29ec378599d63682393a50e00c29fc21c914228d53dd6d695",
+      "source_path": "tmp/review_20261003/implementation/pg/jobs/osb_fracture_branch_001/output/solver.stdout.log",
+      "byte_identical_to_source": true,
+      "worktree_status": "ignored_or_missing_from_status",
+      "stage_approved": false
+    },
+    {
+      "path": "relicweave-synlab/tests/fixtures/pgfrag/result_v1_toy_endpoint/output/summary.toml",
+      "role": "fixture",
+      "bytes": 1771,
+      "sha256": "337cd21c83446c0099207efdf51754ae89303baae2f883c21c2674e1c921d0bb",
+      "source_path": "tmp/review_20261003/implementation/pg/jobs/osb_fracture_branch_001/output/summary.toml",
+      "byte_identical_to_source": true,
+      "worktree_status": "??",
+      "stage_approved": false
+    },
+    {
+      "path": "relicweave-synlab/tests/fixtures/pgfrag/result_v1_toy_endpoint/job.json",
+      "role": "fixture",
+      "bytes": 949,
+      "sha256": "83af8ea8cb0fd204ab288841fd87382c9dae77ec1cfb5dc9d0c925d610d430d1",
+      "source_path": "tmp/review_20261003/implementation/pg/jobs/osb_fracture_branch_001/job.json",
+      "byte_identical_to_source": true,
+      "worktree_status": "??",
+      "stage_approved": false
+    },
+    {
+      "path": "relicweave-synlab/tests/fixtures/pgfrag/result_v1_toy_endpoint/README.md",
+      "role": "fixture_readme",
+      "bytes": 838,
+      "sha256": "4b9beb4d2d0277def9faf8ba97b312406cf941287d770c0e433673146c12ba2c",
+      "worktree_status": "??",
+      "stage_approved": false
+    }
+  ],
+  "fixture_file_count": 12,
+  "fixture_total_bytes": 1530356,
+  "fixture_sources_byte_identical": true,
+  "validation": {
+    "distinct_test_cases": 19,
+    "full_file_first_run_failures": 1,
+    "corrected_node_retry_failures": 0,
+    "source_reader_final_status": "FINAL_REVIEW_FREEZE",
+    "coordinator_reran_tests": false
+  },
+  "git_status": {
+    "currently_staged_paths": [],
+    "fixture_ignore_matches": [
+      {
+        "path": "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/solver.stderr.log",
+        "rule": ".gitignore:11:*.log\ttests/fixtures/pgfrag/result_v1_toy_endpoint/output/solver.stderr.log"
+      },
+      {
+        "path": "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/solver.stdout.log",
+        "rule": ".gitignore:11:*.log\ttests/fixtures/pgfrag/result_v1_toy_endpoint/output/solver.stdout.log"
+      }
+    ],
+    "fixture_text_attributes": [
+      "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/result.json: text: unspecified",
+      "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/bond_states.csv: text: unspecified",
+      "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/broken_bonds.csv: text: unspecified",
+      "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/components.csv: text: unspecified",
+      "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/data_dictionary.json: text: unspecified",
+      "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/isolated_points.csv: text: unspecified",
+      "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/points.csv: text: unspecified",
+      "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/solver.stderr.log: text: unspecified",
+      "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/solver.stdout.log: text: unspecified",
+      "tests/fixtures/pgfrag/result_v1_toy_endpoint/output/summary.toml: text: unspecified",
+      "tests/fixtures/pgfrag/result_v1_toy_endpoint/job.json: text: unspecified",
+      "tests/fixtures/pgfrag/result_v1_toy_endpoint/README.md: text: unspecified"
+    ]
+  },
+  "proposed_gitattributes_only": {
+    "append_line": "/tests/fixtures/pgfrag/result_v1_toy_endpoint/** -text",
+    "current_file_unchanged": true,
+    "git_write_approved": false
+  },
+  "notes": [
+    "Inventory only; no Git staging, commit, push, or config change.",
+    "Includes exactly 3 source/test files and the 12-file fixture (11 byte-identical copies plus README).",
+    "Excludes all review evidence under tmp; source-reader evidence is not in this candidate list.",
+    "Root has not approved SynLab Git writes yet; root audit and exact approval remain required.",
+    "Two fixture log files are currently ignored by the repository ignore rules; any later force-add must be separately authorized for exact paths."
+  ]
+}

@@ -1,0 +1,182 @@
+{
+  "schema": "shardforge.backup-push-receipt.v1",
+  "captured_at_utc": "2026-10-04 18:50:40 UTC",
+  "manifest": "backup_manifest.json",
+  "git_configuration_changed": false,
+  "per_command_settings": [
+    "core.autocrlf=false for exact-byte staging",
+    "existing repository commit identity per invocation"
+  ],
+  "tests_run": false,
+  "no_force_push": true,
+  "repositories": [
+    {
+      "repo": "pgfrag",
+      "branch": "backup/forge-work-20261003",
+      "commit": "041a03f6bdac638930966cc92e316751589e27cc",
+      "parent": "dff88c083a9c25975db77fc652e0821d2207551b",
+      "remote_branch_head": "041a03f6bdac638930966cc92e316751589e27cc",
+      "remote_push_verified": true,
+      "commit_metadata": "041a03f6bdac638930966cc92e316751589e27cc\r\ndff88c083a9c25975db77fc652e0821d2207551b\r\nBackup loaded-branch diagnostics (diagnostic only)\r\nPGFrag Maintainer <pgfrag@local>",
+      "committed_paths": [
+        "experiments/pd_loaded_diagnostics_20261004/b_driver_scopefix.diff.md",
+        "experiments/pd_loaded_diagnostics_20261004/case_a_loaded_elastic.toml",
+        "experiments/pd_loaded_diagnostics_20261004/case_b_affine_threshold.toml",
+        "experiments/pd_loaded_diagnostics_20261004/common_loaded_case.toml",
+        "experiments/pd_loaded_diagnostics_20261004/launch_a_loaded_elastic.ps1",
+        "experiments/pd_loaded_diagnostics_20261004/launch_b_affine_threshold.ps1",
+        "experiments/pd_loaded_diagnostics_20261004/manifest_pre_scopefix_2c246c38.json",
+        "experiments/pd_loaded_diagnostics_20261004/manifest.json",
+        "experiments/pd_loaded_diagnostics_20261004/run_affine_critical_stretch_probe_pre_scopefix_d7c8.jl",
+        "experiments/pd_loaded_diagnostics_20261004/run_affine_critical_stretch_probe.jl"
+      ],
+      "committed_path_count": 10,
+      "files": [
+        {
+          "path": "pgfrag/experiments/pd_loaded_diagnostics_20261004/b_driver_scopefix.diff.md",
+          "bytes": 1475,
+          "sha256": "c6f4029369fec8b52f7cbb70d5a4cc94a6e5e015e77a72399f7d86de7d74fa49",
+          "git_blob_sha1": "b287b407b1f7ccb0208783a8731e8775883b2788"
+        },
+        {
+          "path": "pgfrag/experiments/pd_loaded_diagnostics_20261004/case_a_loaded_elastic.toml",
+          "bytes": 166,
+          "sha256": "98797bc6feeffcca2aac7ff54e671b23587b342140b94691b68e8948b33ccf26",
+          "git_blob_sha1": "c4fb1acff095c987d1aeb5b6ff96d91272f54c1a"
+        },
+        {
+          "path": "pgfrag/experiments/pd_loaded_diagnostics_20261004/case_b_affine_threshold.toml",
+          "bytes": 955,
+          "sha256": "baab83193430e09af79a1306292972033483f757da445d1cc53bf185676362ff",
+          "git_blob_sha1": "69f8530902bf16bb6218ef3828970fdf33571f9e"
+        },
+        {
+          "path": "pgfrag/experiments/pd_loaded_diagnostics_20261004/common_loaded_case.toml",
+          "bytes": 491,
+          "sha256": "381ac4564a3df101e8070ce0159c3b6d88c2a6834ca372a8e3a7ce486fdea062",
+          "git_blob_sha1": "0997fb49285a7bec47b58e5c9c18459a62f20a8c"
+        },
+        {
+          "path": "pgfrag/experiments/pd_loaded_diagnostics_20261004/launch_a_loaded_elastic.ps1",
+          "bytes": 6261,
+          "sha256": "ac51620610649ffef9bec043c5d3f1f422126b4bf86f98c6d269314af62883b5",
+          "git_blob_sha1": "27de083ff6f7f9c18a1973912ce7fbf22bd2a75f"
+        },
+        {
+          "path": "pgfrag/experiments/pd_loaded_diagnostics_20261004/launch_b_affine_threshold.ps1",
+          "bytes": 11640,
+          "sha256": "d54d93d55f9842147885d9aada43af234339cd32ad3e85f4c7649a639c7b67db",
+          "git_blob_sha1": "93425741b650a8d180d74f371102359de22821a1"
+        },
+        {
+          "path": "pgfrag/experiments/pd_loaded_diagnostics_20261004/manifest.json",
+          "bytes": 15435,
+          "sha256": "cd6bccb40afbcd74ff84ebe4e80c027a5d10eed3477d766695b37880fbc358ef",
+          "git_blob_sha1": "8ca41629af901849cea61039ed4652a767818935"
+        },
+        {
+          "path": "pgfrag/experiments/pd_loaded_diagnostics_20261004/manifest_pre_scopefix_2c246c38.json",
+          "bytes": 10170,
+          "sha256": "2c246c38f5f298bc33d069307a8ff908a1f6a4157fc533bf152ab6632ec2a01b",
+          "git_blob_sha1": "dde39e17cda4b969da11bad3c9e96cf89cce7ed2"
+        },
+        {
+          "path": "pgfrag/experiments/pd_loaded_diagnostics_20261004/run_affine_critical_stretch_probe.jl",
+          "bytes": 12838,
+          "sha256": "2ea0ce90831ec1a9d299a02fc7a223b8bbff1cd411991ce80a0ddbf40e408c2c",
+          "git_blob_sha1": "0e16cf5a319521a306ed8b5a7c320c4e3e195731"
+        },
+        {
+          "path": "pgfrag/experiments/pd_loaded_diagnostics_20261004/run_affine_critical_stretch_probe_pre_scopefix_d7c8.jl",
+          "bytes": 12438,
+          "sha256": "d7c8c11fe9d24ff3bd395240942d625bae0e17e6cbf70619b2d87aade09f03aa",
+          "git_blob_sha1": "5120308cc4f2e0869141356cfcdc8c6b9018de4d"
+        }
+      ]
+    },
+    {
+      "repo": "vesselforge",
+      "branch": "backup/forge-work-20261003",
+      "commit": "b5ac9237dc2404d7178ac798b5e16ae449840737",
+      "parent": "9e4eef13a17a011dc1a96030245e530c274751d0",
+      "remote_branch_head": "b5ac9237dc2404d7178ac798b5e16ae449840737",
+      "remote_push_verified": true,
+      "commit_metadata": "b5ac9237dc2404d7178ac798b5e16ae449840737\r\n9e4eef13a17a011dc1a96030245e530c274751d0\r\nBackup surface ornament prototype with open quality gaps\r\nA12 SynLab <synlab@local>",
+      "committed_paths": [
+        "experiments/surface_ornament_route_20261004/DESIGN.md",
+        "experiments/surface_ornament_route_20261004/fixture_once_check_original_bd4511b5.py",
+        "experiments/surface_ornament_route_20261004/fixture_once_check_run02.diff",
+        "experiments/surface_ornament_route_20261004/fixture_once_check_run02.py",
+        "experiments/surface_ornament_route_20261004/fixture_once_check_run02.sha256.txt",
+        "experiments/surface_ornament_route_20261004/fixture_once_check.py",
+        "experiments/surface_ornament_route_20261004/PLAN.md",
+        "experiments/surface_ornament_route_20261004/REFINEMENT_ERROR_CONTROL_DRAFT.md",
+        "experiments/surface_ornament_route_20261004/RUN02_REVIEW_AND_QUALITY_GAP.md",
+        "experiments/surface_ornament_route_20261004/surface_mapping_prototype.py"
+      ],
+      "committed_path_count": 10,
+      "files": [
+        {
+          "path": "vesselforge/experiments/surface_ornament_route_20261004/DESIGN.md",
+          "bytes": 11804,
+          "sha256": "206cc1f4bad3bd67cfdbe3390f85b7afd923f7311b40374138e90e4adeb4db55",
+          "git_blob_sha1": "1c8073c04cffec80dbf4474c5d4dd1e7176a5877"
+        },
+        {
+          "path": "vesselforge/experiments/surface_ornament_route_20261004/PLAN.md",
+          "bytes": 4623,
+          "sha256": "249835ae95d784b7278e1cf5335fa4205df4ecdaa1bf775b684a17ff029059e7",
+          "git_blob_sha1": "b70510f450de90619d32728c85c5968578ef1c3c"
+        },
+        {
+          "path": "vesselforge/experiments/surface_ornament_route_20261004/REFINEMENT_ERROR_CONTROL_DRAFT.md",
+          "bytes": 7244,
+          "sha256": "1a13425e5cf8e066063a8385d6754eff28ff2516e435285903b73043c81cc4c3",
+          "git_blob_sha1": "1a5bd896467cb795344a4dfccdb194d7ad7f9f18"
+        },
+        {
+          "path": "vesselforge/experiments/surface_ornament_route_20261004/RUN02_REVIEW_AND_QUALITY_GAP.md",
+          "bytes": 4568,
+          "sha256": "9e3b09b468ee1a170bffdca5fe10f1d02d38d8571bc9d203c5253f1a767fc19c",
+          "git_blob_sha1": "18abf1ed4b089fb022417a81d4719ad45ef41bd8"
+        },
+        {
+          "path": "vesselforge/experiments/surface_ornament_route_20261004/fixture_once_check.py",
+          "bytes": 35908,
+          "sha256": "bd4511b51b5ca4683825eca3f2b3e9e5fd51ca74563a8f361322b69bf30d084f",
+          "git_blob_sha1": "38058dcb65edabb2ecbbf14ce339c8f10b48f527"
+        },
+        {
+          "path": "vesselforge/experiments/surface_ornament_route_20261004/fixture_once_check_original_bd4511b5.py",
+          "bytes": 35908,
+          "sha256": "bd4511b51b5ca4683825eca3f2b3e9e5fd51ca74563a8f361322b69bf30d084f",
+          "git_blob_sha1": "38058dcb65edabb2ecbbf14ce339c8f10b48f527"
+        },
+        {
+          "path": "vesselforge/experiments/surface_ornament_route_20261004/fixture_once_check_run02.diff",
+          "bytes": 227,
+          "sha256": "e04cf91c36fea91ae973f728c8f69003f1e77b1a97b7fc75ec4dbdb2bd4ab759",
+          "git_blob_sha1": "e6033b8cc7faaf537bc5bef353fd4ecd560849b8"
+        },
+        {
+          "path": "vesselforge/experiments/surface_ornament_route_20261004/fixture_once_check_run02.py",
+          "bytes": 35951,
+          "sha256": "e0f185d01ffa7b7f9239ece90617852aebc418693cef46dcdebb6121f37b75ae",
+          "git_blob_sha1": "533e342e72e9fbd420579be7914fa53d6172d3aa"
+        },
+        {
+          "path": "vesselforge/experiments/surface_ornament_route_20261004/fixture_once_check_run02.sha256.txt",
+          "bytes": 103,
+          "sha256": "6e6530069e7d850bedf27c8c7d3465ceba092a1175eee521f826e7536b75df62",
+          "git_blob_sha1": "643b020ec5012e49cca84076119cd8736e085c5b"
+        },
+        {
+          "path": "vesselforge/experiments/surface_ornament_route_20261004/surface_mapping_prototype.py",
+          "bytes": 12210,
+          "sha256": "0f624f8482d4d6540a0594ca1cbebebf1d02179d15a1e9fa05d3924107b12177",
+          "git_blob_sha1": "eb48131747c161b6ca6fb5220479d547aa3da41d"
+        }
+      ]
+    }
+  ]
+}

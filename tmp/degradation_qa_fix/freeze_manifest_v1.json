@@ -1,0 +1,22 @@
+{
+  "status": "READY_FOR_ROOT_REVIEW",
+  "repository": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+  "git_head_at_snapshot": "32454d0ac9ef3f669c1858741f3fd0b60ff53064",
+  "original_snapshot_manifest": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\degradation_qa_fix\\source_before\\manifest.json",
+  "tracked_scope_diff": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\degradation_qa_fix\\prepared_diff.patch",
+  "new_test_diff": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\degradation_qa_fix\\new_test.diff",
+  "test_plan": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\degradation_qa_fix\\test_plan.md",
+  "tests_run": false,
+  "execution_state": "Awaiting root review/release; do not run tests/native/Boolean before release.",
+  "changed_files": [
+    {"path": "synlab/physical/api.py", "bytes": 103459, "sha256": "A89B59B1DD60759BCBC2ECC7645A830992F649346FD6103D66A72A7F032877F8"},
+    {"path": "synlab/degrade/axes.py", "bytes": 140342, "sha256": "1255550FE50741C81C2C57CF1EA5B4701496E8B1E933949279E4F54D41CF0E87"},
+    {"path": "synlab/degrade/physical_narrowband.py", "bytes": 46650, "sha256": "47D1DC5308AEE795D49F05CB28165BBE4A940DBD27E3E3A59579BB9EB6A976EA"},
+    {"path": "tests/a12/operators/test_postassembly_qa_20261003.py", "bytes": 12262, "sha256": "AC553BDB176421129EFDC70E8901D684D39DA3507476926A9D24F34EEA2164D0"},
+    {"path": "tests/a12/degrade/test_physical_acceptance_20261004.py", "bytes": 16739, "sha256": "6AE2CC5F4336814493DA97C2132F885838CA0E30495706C38E471D1BDB766CDA"}
+  ],
+  "prepared_artifacts": [
+    {"path": "prepared_diff.patch", "bytes": 30296, "sha256": "4432810B2C759783854A5896684A63671C34579C7ED9D365DA41DDA756DA5CBC"},
+    {"path": "new_test.diff", "bytes": 17707, "sha256": "C6752DC401E85BBB24EAA6E84CF589D1D5DBC87253EC8A54ADC7C864F2752416"}
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "schema": "synlab.diagnostic_variants.v1",
+  "note": "Pre-registered single-factor variants per axis family (plan 30.9). Composite parameters must be named as BUNDLED_STRESS and may not claim single-factor causality.",
+  "variants": {
+    "P08": [
+      {"name": "paint_coat_loss", "factor_kind": "SINGLE_PARAMETER", "unit": "affected_area"},
+      {"name": "geometric_coat_loss", "factor_kind": "SINGLE_PARAMETER", "unit": "affected_area"},
+      {"name": "geometry_crack", "factor_kind": "ONE_DIMENSIONAL_RECIPE", "unit": "affected_area"}
+    ],
+    "I03": [
+      {"name": "photon_scale", "factor_kind": "SINGLE_PARAMETER", "unit": "photons"},
+      {"name": "read_sigma", "factor_kind": "SINGLE_PARAMETER", "unit": "adu"},
+      {"name": "camera_noise_profile", "factor_kind": "BUNDLED_STRESS", "unit": "1"}
+    ],
+    "I04": [
+      {"name": "exposure_gain", "factor_kind": "SINGLE_PARAMETER", "unit": "EV"},
+      {"name": "digital_gain", "factor_kind": "SINGLE_PARAMETER", "unit": "EV"}
+    ],
+    "I06": [
+      {"name": "fixed_light_specular_profile", "factor_kind": "SINGLE_PARAMETER", "unit": "saturation_target"},
+      {"name": "lighting_bundle", "factor_kind": "BUNDLED_STRESS", "unit": "1"}
+    ],
+    "G04": [
+      {"name": "translation_only", "factor_kind": "SINGLE_PARAMETER", "unit": "mm"},
+      {"name": "rotation_only", "factor_kind": "SINGLE_PARAMETER", "unit": "deg"},
+      {"name": "pose_drift_profile", "factor_kind": "BUNDLED_STRESS", "unit": "1"}
+    ],
+    "G07": [
+      {"name": "focal_only", "factor_kind": "SINGLE_PARAMETER", "unit": "ratio"},
+      {"name": "principal_only", "factor_kind": "SINGLE_PARAMETER", "unit": "px"},
+      {"name": "distortion_only", "factor_kind": "SINGLE_PARAMETER", "unit": "1"},
+      {"name": "calibration_profile", "factor_kind": "BUNDLED_STRESS", "unit": "1"}
+    ],
+    "G08": [
+      {"name": "compact_bump", "factor_kind": "SINGLE_PARAMETER", "unit": "mm"},
+      {"name": "false_patch", "factor_kind": "SINGLE_PARAMETER", "unit": "mm"},
+      {"name": "bridge", "factor_kind": "SINGLE_PARAMETER", "unit": "mm"}
+    ],
+    "X04": [
+      {"name": "regression_bias", "factor_kind": "SINGLE_PARAMETER", "unit": "1"},
+      {"name": "regression_variance", "factor_kind": "SINGLE_PARAMETER", "unit": "1"},
+      {"name": "probability_temperature", "factor_kind": "SINGLE_PARAMETER", "unit": "1"}
+    ],
+    "X05": [
+      {"name": "profile_shift_holdout_a", "factor_kind": "CATEGORICAL_SHIFT", "unit": "1"},
+      {"name": "profile_shift_holdout_b", "factor_kind": "CATEGORICAL_SHIFT", "unit": "1"},
+      {"name": "profile_shift_holdout_c", "factor_kind": "CATEGORICAL_SHIFT", "unit": "1"},
+      {"name": "profile_shift_holdout_d", "factor_kind": "CATEGORICAL_SHIFT", "unit": "1"}
+    ]
+  }
+}

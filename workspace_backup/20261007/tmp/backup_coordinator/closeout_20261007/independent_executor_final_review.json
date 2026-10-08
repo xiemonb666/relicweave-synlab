@@ -1,0 +1,107 @@
+{
+  "schema": "independent_closeout_executor_review_v1",
+  "status": "BLOCKED_BEFORE_EXECUTION",
+  "review_mode": "source_only_no_execution",
+  "workspace_root": "C:\\Users\\xiemo\\Desktop\\ShardForge",
+  "reviewed_date": "2026-10-07",
+  "artifacts": {
+    "executor": {"path": "tmp/backup_coordinator/closeout_20261007/execute_closeout_backup.py", "bytes": 66609, "sha256": "e83b1f3c4a7dbecf29c5f13c88cfc628960c0b6cbb91ceee464b2886fb45259b"},
+    "inventory_builder": {"path": "tmp/backup_coordinator/closeout_20261007/build_closeout_inventory_v2.py", "bytes": 53961, "sha256": "4739e56e9e75303630ce25f9fcd919ee0dedae18467c6f3215b5d30006edbe88"},
+    "readme": {"path": "tmp/backup_coordinator/closeout_20261007/README.md", "bytes": 4498, "sha256": "78b8e247da10c2280e263ee88d7cac03f9b468d3f55d4fff101714c52cb62dc7"},
+    "postverify_helper": {"path": "tmp/backup_coordinator/closeout_20261007/independent_postverify_all_code_backup_20261007.py", "bytes": 51017, "sha256": "7706e133102aaa4d47360e3e792d8ff21305267968a3d346119d7a836cef95ba"}
+  },
+  "blocking_findings": [
+    {
+      "id": "push_returncode_schema_mismatch",
+      "severity": "blocker",
+      "status": "confirmed",
+      "evidence": "Executor writes repositories.<repo>.push_returncode; frozen postverify helper accepts push_exit_code, push_rc, or push_command.rc only.",
+      "locations": ["execute_closeout_backup.py:986-999", "execute_closeout_backup.py:1014", "independent_postverify_all_code_backup_20261007.py:878-883"],
+      "impact": "A successful push receipt is rejected by the frozen postverify helper because no accepted return-code field is present."
+    }
+  ],
+  "additional_findings": [
+    {
+      "id": "unchecked_git_read_command_returncodes",
+      "severity": "high",
+      "status": "confirmed_source_issue",
+      "locations": ["execute_closeout_backup.py:655-658", "execute_closeout_backup.py:895-902"],
+      "impact": "Failed ls-tree/index/diff commands can be parsed as empty state; later checks may stop after staging has begun, and zero-delta paths risk a false clean interpretation."
+    },
+    {
+      "id": "attribute_sensitive_raw_path_staging",
+      "severity": "high",
+      "status": "conditional_on_final_inventory_attributes",
+      "locations": ["build_closeout_inventory_v2.py:245-293", "build_closeout_inventory_v2.py:531", "execute_closeout_backup.py:895-905"],
+      "impact": "Tracked raw-changed originals remain actions beside raw snapshots. If text/eol/filter applies to the original, Git add can transform it while the executor expects the raw source blob."
+    },
+    {
+      "id": "check_attr_failure_not_fail_closed",
+      "severity": "high",
+      "status": "confirmed_source_issue",
+      "locations": ["build_closeout_inventory_v2.py:407-419"],
+      "impact": "A nonzero check-attr result leaves an empty map that can be interpreted as no attribute risk."
+    },
+    {
+      "id": "supplementary_resolved_path_hides_symlink_components",
+      "severity": "medium",
+      "status": "confirmed_source_issue",
+      "locations": ["execute_closeout_backup.py:530-531", "execute_closeout_backup.py:561-566"],
+      "impact": "The fixed supplementary source path is resolved before path_has_symlink_component runs, unlike ordinary manifest sources."
+    },
+    {
+      "id": "git_binary_provenance_not_pinned_across_tools",
+      "severity": "medium",
+      "status": "partial",
+      "details": {
+        "executor_uses_absolute_bundled_binary": true,
+        "executor_records_runtime_binary_hash": true,
+        "executor_static_expected_binary_hash": false,
+        "builder_uses_path_git": true,
+        "builder_records_git_binary_hash": false,
+        "postverify_has_explicit_git_argument": true,
+        "postverify_default_is_path_git": true,
+        "bundled_git_bytes": 46464,
+        "bundled_git_sha256": "c53279919fdea03474bb23b465b3a82287157491f1bd69a5eb82dd9831582333",
+        "path_git": "C:\\Program Files\\Git\\cmd\\git.exe"
+      }
+    },
+    {
+      "id": "env_example_template_false_positive_exclusion",
+      "severity": "low",
+      "status": "policy_issue_no_current_candidate_found",
+      "locations": ["build_closeout_inventory_v2.py:17", "build_closeout_inventory_v2.py:117-119"],
+      "impact": "The builder excludes .env.example and all .env.* names as credentials. No such file was found by the narrow filename check in the three repositories."
+    },
+    {
+      "id": "xml_fixture_and_evidence_classification_gap",
+      "severity": "medium",
+      "status": "scope_decision_required",
+      "locations": ["build_closeout_inventory_v2.py:149-179"],
+      "evidence_paths": [
+        "relicweave-synlab/tmp/review_20261005/pg_source_reader/junit_portable_fixture.xml",
+        "relicweave-synlab/docs/a12/evidence/20261005/pg_source_reader/junit_portable_fixture.xml"
+      ],
+      "impact": "XML is included only under CLOSED roots, while these fixture/evidence paths are outside CLOSED and are referenced by the validation summary/evidence index."
+    }
+  ],
+  "confirmed_controls": {
+    "exact_main_manifest_sha_and_root_go_required": true,
+    "separate_supplementary_sha_and_root_go_required": true,
+    "supplementary_count_exactly_three": true,
+    "supplementary_roles_sources_destinations_exact_allowlist": true,
+    "receipt_pathsets_per_repository": ["approved_action_paths", "git_add_requested_paths", "staged_paths", "changed_paths", "changed_paths_exact"],
+    "explicit_literal_pathspec_add": true,
+    "force_add_requires_exact_ignored_path_pin": true,
+    "non_force_push_fixed_branch": true,
+    "per_command_core_autocrlf_false": true,
+    "selected_three_npz_paths_allowed_and_present": true,
+    "selected_npz_bytes": [1770008, 12356515, 1569232],
+    "pre_scan_readme_pinned_and_post_scan_checked_without_rewrite": true,
+    "small_backup_coordinator_record_threshold_bytes": 5242880
+  },
+  "execution_performed": false,
+  "git_mutation_performed": false,
+  "inventory_build_performed": false,
+  "numerical_or_project_tests_performed": false
+}

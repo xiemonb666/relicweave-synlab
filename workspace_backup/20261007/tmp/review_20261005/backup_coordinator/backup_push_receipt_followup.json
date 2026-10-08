@@ -1,0 +1,82 @@
+{
+  "schema": "shardforge.backup-push-receipt-followup.v1",
+  "captured_at_utc": "2026-10-04T19:17:24.631Z",
+  "prior_receipt": "backup_push_receipt.json",
+  "branch": "backup/forge-work-20261003",
+  "git_configuration_changed": false,
+  "per_command_settings": [
+    "core.autocrlf=false for exact-byte staging",
+    "existing repository commit identity per invocation"
+  ],
+  "tests_run": false,
+  "no_force_push": true,
+  "repositories": [
+    {
+      "repo": "pgfrag",
+      "branch": "backup/forge-work-20261003",
+      "commit": "bf15835cac97a2ba032ec1872c57e6e60cb1e977",
+      "parent": "041a03f6bdac638930966cc92e316751589e27cc",
+      "remote_branch_head": "bf15835cac97a2ba032ec1872c57e6e60cb1e977",
+      "remote_push_verified": true,
+      "commit_subject": "Back up static bond visibility guard",
+      "commit_body": "Preserve the approved source and focused test as a narrow visibility safeguard. This does not qualify the full physical or training chain.",
+      "committer_identity": "PGFrag Maintainer <pgfrag@local>",
+      "committed_paths": [
+        "src/pgfrag/bond_visibility.py",
+        "tests/test_bond_visibility.py"
+      ],
+      "committed_path_count": 2,
+      "files": [
+        {
+          "path": "pgfrag/src/pgfrag/bond_visibility.py",
+          "bytes": 47533,
+          "sha256": "3708afc01c265c3187f6fcec930f7f0cdbbc0427b3b616ed0ea28895628d7e24",
+          "git_blob_sha1": "a8f1bc39b98219ec07924fc11ba5edc9911994b4"
+        },
+        {
+          "path": "pgfrag/tests/test_bond_visibility.py",
+          "bytes": 24244,
+          "sha256": "4db55621b470596226b91e3a8128c2cdb8c021a8039cbbb42f6964149362790d",
+          "git_blob_sha1": "8c58ba24a2103170ebde06a8c7cc1bc51c6a4b6a"
+        }
+      ]
+    },
+    {
+      "repo": "relicweave-synlab",
+      "branch": "backup/forge-work-20261003",
+      "commit": "2a1660304a7895fb8cf9bac931ee016112beb420",
+      "parent": "faeac6e8332cf53ffd18ac0082604d6a9495d299",
+      "remote_branch_head": "2a1660304a7895fb8cf9bac931ee016112beb420",
+      "remote_push_verified": true,
+      "commit_subject": "Back up opt-in G01 total RMS scope",
+      "commit_body": "Preserve the approved opt-in total-RMS implementation and focused G01 regression. The narrow validation does not qualify the full degradation, training, or physics chain.",
+      "committer_identity": "A12 SynLab <synlab@local>",
+      "committed_paths": [
+        "synlab/degrade/axes.py",
+        "synlab/degrade/ops_geometry.py",
+        "tests/a12/degrade/test_g01_total_rms_20261005.py"
+      ],
+      "committed_path_count": 3,
+      "files": [
+        {
+          "path": "relicweave-synlab/synlab/degrade/ops_geometry.py",
+          "bytes": 49315,
+          "sha256": "725a4f7b85319314ed438ec9701e3d6c4bc6f0181dcdc07b07115bb2ee255bf2",
+          "git_blob_sha1": "3f14bc376e7b879b84631445bf7bf1aac06373a4"
+        },
+        {
+          "path": "relicweave-synlab/synlab/degrade/axes.py",
+          "bytes": 143360,
+          "sha256": "910959444244bff3ab096a89c051b28e7b6ae97122433f560f8c1d95a87c74da",
+          "git_blob_sha1": "c6776c8afcd7a877511012d2706bc2e54b9b379a"
+        },
+        {
+          "path": "relicweave-synlab/tests/a12/degrade/test_g01_total_rms_20261005.py",
+          "bytes": 14722,
+          "sha256": "b3e881555fb226a6a9ab6a9ef60a40117e844a50637405ec31e18753c0d76afc",
+          "git_blob_sha1": "6a6d22d238759173fa91c4f14b46716067fd49f1"
+        }
+      ]
+    }
+  ]
+}

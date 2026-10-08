@@ -1,0 +1,7 @@
+# Exact ignored-copy operation normalization
+
+The builder now converts an ignored `copy_then_stage_exact` row to `copy_then_stage_exact_force` after all current entry generation and ignore/attribute queries. The action operation set includes that executor-supported operation. A fail-closed pass requires every copy/stage action to have an exact ignore-status result and requires ignored rows and `_force` operations to agree.
+
+Builder before: 56749 bytes, SHA-256 `cdb83cdea2c78f1e1a04df6d0ba6c21c9d02c94b9b9ced34999cb3eec7bdd90e`; after: 57924 bytes, SHA-256 `11622789099326a8f2fad58a9806ce3527c04362144203e01853fb585e7b1ac9`. Exact pre-change bytes are preserved at `tmp/backup_coordinator/closeout_20261007/build_closeout_inventory_v2.py.pre_ignored_copy_force_20261008.snapshot`. AST parsing passed; the source diff has one insertion block and one replacement of the action-operation set.
+
+The previous stale action manifest had 806 ignored `copy_then_stage_exact` rows. Its 90 raw-source snapshots were all created before the batch ignore query and had exact status results; the late attribute-generated raw-source snapshot set was empty. The three supplementary targets were independently checked by root with `check-ignore --no-index -v` (rc=1, no matching rule), so their regular copy operation and parser remain unchanged. The interrupted inventory run was stopped before writing either inventory or action manifest.

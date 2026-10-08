@@ -1,0 +1,1759 @@
+{
+  "counts": {
+    "FAIL": 5,
+    "NA": 7,
+    "NOT_RUN": 6,
+    "PASS": 12,
+    "PENDING": 6
+  },
+  "generated_at": 1790905610.6627133,
+  "items": {
+    "A01": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [
+        "synlab/observe/features.py::assert_no_leakage"
+      ],
+      "metrics": {
+        "forbidden_fields_in_committed_features": [
+          "fragment_id",
+          "mother_id",
+          "fragment_id",
+          "mother_id",
+          "fragment_id",
+          "mother_id",
+          "fragment_id",
+          "mother_id",
+          "fragment_id",
+          "mother_id",
+          "fragment_id",
+          "mother_id",
+          "fragment_id",
+          "mother_id",
+          "fragment_id",
+          "mother_id"
+        ],
+        "leakage_detector": true,
+        "unknown_field_rejected": true
+      },
+      "notes": "schema rejection + recursive whitelist + committed feature audit",
+      "seconds": 0.011,
+      "status": "FAIL",
+      "title": "合同与权限（六 pack、features/labels 边界）"
+    },
+    "A02": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [
+        "docs/a12/env_report.json"
+      ],
+      "metrics": {
+        "max_mm_error": 1.4210854715202004e-14,
+        "max_px_error": 0.0
+      },
+      "notes": "analytic projection/back-projection round trip",
+      "seconds": 0.0,
+      "status": "PASS",
+      "title": "坐标投影（mm、K、T、depth/range、crop）"
+    },
+    "A03": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {
+        "min_lineages_per_vessel": 1,
+        "total_mothers": 13,
+        "vessels_present": 3
+      },
+      "notes": "counts come from committed mother assets; 24x20 requires the L2 run",
+      "seconds": 0.0,
+      "status": "PENDING",
+      "title": "母体（24 族 × ≥20 独立母体）"
+    },
+    "A04": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {
+        "ids": [
+          "M01",
+          "M04"
+        ],
+        "materials_present": 2
+      },
+      "notes": "shading vs geometric layers must be distinguishable",
+      "seconds": 0.0,
+      "status": "PENDING",
+      "title": "材料层（12 材料 / 4 层结构）"
+    },
+    "A05": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [
+        "data/a12/reports/pattern_audit.json"
+      ],
+      "metrics": {
+        "deterministic": true,
+        "families": 16,
+        "geometry_applied": true,
+        "max_seam_error": 6.183942247162122e-14
+      },
+      "notes": "",
+      "seconds": 0.014,
+      "status": "FAIL",
+      "title": "花纹（16 family）"
+    },
+    "A06": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [
+        "data/a12/reports/fracture_audit.json"
+      ],
+      "metrics": {
+        "backends": {
+          "plane_shared_cut": "FAIL"
+        },
+        "backends_pass": 0,
+        "conservation_ratio_max": null,
+        "overlap_ratio_max": null,
+        "shared_distance_p95_max": null
+      },
+      "notes": "",
+      "seconds": 0.0,
+      "status": "FAIL",
+      "title": "断裂守恒（四必做后端、薄壳、复杂体）"
+    },
+    "A07": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {},
+      "notes": "requires a fracture event with an error budget",
+      "seconds": 0.0,
+      "status": "NOT_RUN",
+      "title": "精度实现（cutter / 共形 warp）"
+    },
+    "A08": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {},
+      "notes": "requires `synlab.truth` fixture run",
+      "seconds": 0.0,
+      "status": "NOT_RUN",
+      "title": "真值关系（R2/R1/R0/UNKNOWN 与事件树）"
+    },
+    "A09": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [
+        "data/a12/reports/physical_audit.json"
+      ],
+      "metrics": {},
+      "notes": "",
+      "seconds": 0.0,
+      "status": "FAIL",
+      "title": "减法损伤（P01–P04/P07 + 适用 P08）"
+    },
+    "A10": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [
+        "data/a12/reports/operator_audit.json"
+      ],
+      "metrics": {
+        "axes_pass": 26,
+        "axes_registered": 31,
+        "axes_with_20_mothers": 0,
+        "identity_ok": true,
+        "missing": []
+      },
+      "notes": "",
+      "seconds": 0.0,
+      "status": "PENDING",
+      "title": "31 轴身份与效果"
+    },
+    "A11": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [
+        "data/a12/reports/spurious_audit.json"
+      ],
+      "metrics": {
+        "clean_hash_unchanged": true,
+        "level_zero_identity": true,
+        "variants": {
+          "bridge": {
+            "area_after_mm2": 9575.30049961296,
+            "area_before_mm2": 9568.0,
+            "components_after": 3,
+            "components_before": 2,
+            "level0_identity": true,
+            "measured": {
+              "clean_hash_untouched": 1.0,
+              "connectivity_changed": 1.0,
+              "euler_after": 4.0,
+              "euler_before": 3.0,
+              "identity": 0.0,
+              "level": 2.0,
+              "measured_added_area_mm2": 7.300499612960266,
+              "measured_band_length_mm": 6.082762530298219,
+              "measured_max_displacement_mm": 2.9260832165362802,
+              "measured_p95_displacement_mm": 2.879451012946407,
+              "n_added_faces": 14.0,
+              "n_components_after": 3.0,
+              "n_components_before": 2.0,
+              "normal_deviation_max_deg": 81.76680760907216,
+              "planned_width_mm": 1.2,
+              "realized": 1.0,
+              "spurious_vertex_count": 16.0
+            },
+            "source_unchanged": true,
+            "status": "PASS"
+          },
+          "bump": {
+            "area_after_mm2": 9569.597321683079,
+            "area_before_mm2": 9568.0,
+            "components_after": 2,
+            "components_before": 2,
+            "level0_identity": true,
+            "measured": {
+              "bump_radius_mm": 6.0,
+              "clean_hash_untouched": 1.0,
+              "edge_value_mm": 0.0,
+              "euler_after": 3.0,
+              "euler_before": 3.0,
+              "identity": 0.0,
+              "level": 2.0,
+              "measured_added_area_mm2": 1.597321683078917,
+              "measured_max_displacement_mm": 0.8,
+              "measured_p95_displacement_mm": 0.8,
+              "n_components_after": 2.0,
+              "n_components_before": 2.0,
+              "n_vertices_moved": 5.0,
+              "planned_height_mm": 0.8,
+              "realized": 1.0,
+              "spurious_vertex_count": 5.0
+            },
+            "source_unchanged": true,
+            "status": "PASS"
+          },
+          "false_patch": {
+            "area_after_mm2": 10169.930352892146,
+            "area_before_mm2": 9568.0,
+            "components_after": 2,
+            "components_before": 2,
+            "level0_identity": true,
+            "measured": {
+              "clean_hash_untouched": 1.0,
+              "euler_after": 4.0,
+              "euler_before": 3.0,
+              "identity": 0.0,
+              "level": 2.0,
+              "measured_added_area_mm2": 601.9303528921464,
+              "measured_max_displacement_mm": 6.289077833832239,
+              "measured_p95_displacement_mm": 3.773446700299341,
+              "n_added_faces": 8.0,
+              "n_added_vertices": 9.0,
+              "n_components_after": 2.0,
+              "n_components_before": 2.0,
+              "normal_deviation_max_deg": 7.969610394321354,
+              "planned_offset_mm": 0.7,
+              "realized": 1.0,
+              "spurious_vertex_count": 1.0
+            },
+            "source_unchanged": true,
+            "status": "PASS"
+          }
+        }
+      },
+      "notes": "",
+      "seconds": 0.0,
+      "status": "PASS",
+      "title": "伪凸起/补面/假桥（G08 三变体）"
+    },
+    "A12": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [
+        "data/a12/reports/channel_audit.json"
+      ],
+      "metrics": {
+        "backend": "SOFTWARE_RASTERIZER",
+        "deployment_mask_pixels": 0,
+        "depth_median_abs_error_mm": 0.43125950028843363,
+        "depth_p95_abs_error_mm": 7.394597217116015,
+        "fractional_labels": 0,
+        "integer_label_dtype": true,
+        "label_values": [
+          -1,
+          4,
+          6,
+          7,
+          9
+        ],
+        "mask_excludes_uncertain": true,
+        "mask_within_visibility": true,
+        "rgb_dtype": "float32",
+        "rgb_finite": true,
+        "rgb_max": 0.6603907942771912,
+        "rgb_min": 0.019999999552965164,
+        "uncertain_on_silhouette": 176,
+        "uncertain_pixels": 3438,
+        "visible_pixels": 3305
+      },
+      "notes": "",
+      "seconds": 0.0,
+      "status": "PASS",
+      "title": "成像标签（RGB、深度、mask、可见性）"
+    },
+    "A13": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [
+        "data/a12/reports/camera_profile_audit.json"
+      ],
+      "metrics": {
+        "engineering": "PASS",
+        "note": "a U move changes the camera extrinsic and never the image size; real-capture calibration is absent on this host, so A13.real_calibration stays PENDING",
+        "profiles": [
+          "CAM_GLOBAL_V3",
+          "CAM_MID_V3",
+          "CAM_LOCAL_V3"
+        ],
+        "real_calibration": "PENDING",
+        "tiers": {
+          "GLOBAL": {
+            "calibrated": false,
+            "image_size_unchanged": true,
+            "mm_per_pixel": 0.1640909090909091,
+            "projection_roundtrip_mm": 2.842170943040401e-14,
+            "status": "PASS",
+            "u_move_delta_mm": 10.0,
+            "u_move_translation_mm": 9.99999999999997,
+            "u_position_mm": -100.0,
+            "working_distance_mm": 380.0
+          },
+          "LOCAL": {
+            "calibrated": false,
+            "image_size_unchanged": true,
+            "mm_per_pixel": 0.04360655737704919,
+            "projection_roundtrip_mm": 1.4210854715202004e-14,
+            "status": "PASS",
+            "u_move_delta_mm": -10.0,
+            "u_move_translation_mm": 10.000000000000007,
+            "u_position_mm": 70.0,
+            "working_distance_mm": 140.0
+          },
+          "MID": {
+            "calibrated": false,
+            "image_size_unchanged": true,
+            "mm_per_pixel": 0.08038461538461539,
+            "projection_roundtrip_mm": 1.4210854715202004e-14,
+            "status": "PASS",
+            "u_move_delta_mm": 10.0,
+            "u_move_translation_mm": 10.000000000000007,
+            "u_position_mm": 0.0,
+            "working_distance_mm": 220.0
+          }
+        }
+      },
+      "notes": "A13.engineering and A13.real_calibration are reported separately",
+      "seconds": 0.0,
+      "status": "PENDING",
+      "title": "物理近远档（U 相机 profile）"
+    },
+    "A14": {
+      "commands": [],
+      "evidence": [],
+      "metrics": {},
+      "notes": "not applicable to profile SANDBOX_CORE",
+      "status": "NA",
+      "title": "实际 MVS 子集"
+    },
+    "A15": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {},
+      "notes": "run `synlab build-pool` first",
+      "seconds": 0.0,
+      "status": "NOT_RUN",
+      "title": "全库和采样（多 R2、R1/R0、无邻片）"
+    },
+    "A16": {
+      "commands": [],
+      "evidence": [],
+      "metrics": {},
+      "notes": "not applicable to profile SANDBOX_CORE",
+      "status": "NA",
+      "title": "训练有效性（五任务、valid 与 missing）"
+    },
+    "A17": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [
+        "data/a12/reports/recovery_probe.json"
+      ],
+      "metrics": {
+        "final_state": "COMMITTED",
+        "stale_commit_blocked": true
+      },
+      "notes": "",
+      "seconds": 0.689,
+      "status": "PASS",
+      "title": "恢复（数据 job 与训练 checkpoint）"
+    },
+    "A18": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [
+        "data/a12/reports/metric_fixture.json",
+        "data/a12/reports/stat_fixture.json"
+      ],
+      "metrics": {
+        "metric_fixture_ok": true,
+        "stat_fixture_ok": true
+      },
+      "notes": "",
+      "seconds": 0.0,
+      "status": "PASS",
+      "title": "诊断计算（指标与统计）"
+    },
+    "A19": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {},
+      "notes": "run `synlab episode` first",
+      "seconds": 0.0,
+      "status": "NOT_RUN",
+      "title": "规则 episode（actions/cost/STOP）"
+    },
+    "A20": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [
+        "docs/a12/api_ui.md"
+      ],
+      "metrics": {
+        "assets_page_items": 5,
+        "assets_status": 200,
+        "capabilities_status": 200,
+        "frontend_build_present": true,
+        "frontend_doc_present": true,
+        "frontend_index_present": true,
+        "registry_status": 200,
+        "routes": {
+          "assets": "/api/synlab/assets",
+          "capabilities": "/api/synlab/capabilities",
+          "registry_vessel": "/api/synlab/registry/vessel"
+        }
+      },
+      "notes": "",
+      "seconds": 0.0,
+      "status": "PASS",
+      "title": "UI/API（12 页与真实端到端）"
+    },
+    "A21": {
+      "commands": [],
+      "evidence": [],
+      "metrics": {},
+      "notes": "not applicable to profile SANDBOX_CORE",
+      "status": "NA",
+      "title": "资源与规模（L2/L3）"
+    },
+    "A22": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [
+        "docs/a12/runbook.md"
+      ],
+      "metrics": {
+        "releases": 0,
+        "runbook": true,
+        "store_health": true
+      },
+      "notes": "",
+      "seconds": 0.335,
+      "status": "PENDING",
+      "title": "发布交接（新目录启动/读写恢复）"
+    },
+    "A23": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [
+        "docs/a12/reuse_manifest.json"
+      ],
+      "metrics": {
+        "custom_gap_without_evidence": [],
+        "custom_gaps": 4,
+        "incomplete": [],
+        "modules": 25
+      },
+      "notes": "",
+      "seconds": 0.0,
+      "status": "PASS",
+      "title": "开源复用（第 2.4 节全部适用模块）"
+    },
+    "A24": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [
+        "data/a12/reports/source_dependency_audit.json"
+      ],
+      "metrics": {
+        "checks": {
+          "control_is_sensitive": true,
+          "frame_source_kind": true,
+          "gt_pose_invariance": false,
+          "no_depth_or_scale_input": true,
+          "pose_priors_empty": true
+        },
+        "control_run": {
+          "db_hash": "sha256:9a4e6e3f121ee6eec70b50d3c351f4e755d929544e93c44d3429c023d03b65cb",
+          "keypoints": 4821,
+          "keypoints_hash": "sha256:c099b88503e08a783c88e86356201ba2b6704d1616f8e80cd10db0fa5a96070f",
+          "matched_pairs": 6,
+          "matches": 2854,
+          "matches_hash": "sha256:3e9e8ca8e4bb7ce65337c26bd33f7f8344086b8ec97148c8e37d7549f5eedbfc",
+          "mean_reprojection_error_px": 0.16292224327639335,
+          "model_hash": "sha256:ebbcd0a15bddc044cd6f97391813f4b7c71feea22c550b306e0134f38ec6d1d6",
+          "ok": false,
+          "pose_priors": 0,
+          "registered_frames": 2,
+          "registered_names": [
+            "audit_v_000.png",
+            "audit_v_001.png"
+          ],
+          "sparse_points": 566
+        },
+        "corrupted_run": {
+          "db_hash": "sha256:939127a163101bb0767983000fe6c06a2b733737060e359a7fec2d8ded39c5f0",
+          "keypoints": 4826,
+          "keypoints_hash": "sha256:a36bce83fd28903106ff3890f374ea6ff2501240e6b29004aa25b024e5d00499",
+          "matched_pairs": 6,
+          "matches": 2817,
+          "matches_hash": "sha256:a5bbd406461161d67e40d842ee3761a75f209a500732d88ef7ec46eac5a7972a",
+          "mean_reprojection_error_px": 0.16324207404234797,
+          "model_hash": "sha256:6988710f8dd0c7084fa2d9d07272c266893dc99fa90af242974d438ab8fbc20d",
+          "ok": false,
+          "pose_priors": 0,
+          "registered_frames": 2,
+          "registered_names": [
+            "audit_v_000.png",
+            "audit_v_001.png"
+          ],
+          "sparse_points": 560
+        },
+        "determinism_baseline": {
+          "identical_keypoints_hash": true,
+          "identical_matches_hash": false,
+          "identical_model_hash": false,
+          "identical_registered_sets": false,
+          "n_identical_runs": 4,
+          "note": "identical input repeated with single-thread stages, a fixed pycolmap RNG seed and a pinned initial pair.  Feature extraction is bit-repeatable; the matcher's RANSAC verification is not, so the reconstruction band is measured rather than assumed",
+          "points_spread": [
+            586,
+            559,
+            559,
+            560
+          ],
+          "reprojection_spread_px": [
+            0.510435,
+            0.161193,
+            0.161193,
+            0.163242
+          ]
+        },
+        "invariance_tolerance": {
+          "corrupted_point_delta": 26,
+          "corrupted_reprojection_delta_px": 0.3471930908365773,
+          "envelope_points": 27,
+          "envelope_reprojection_px": 0.34924214185332547,
+          "points": 29,
+          "reprojection_px": 1.0477264255599765
+        },
+        "pose_table_offered_to_pipeline": [
+          "C:\\Users\\xiemo\\AppData\\Local\\Temp\\pytest-of-xiemo\\pytest-233\\test_source_dependency_audit_i0\\gt_poses_true.json",
+          "C:\\Users\\xiemo\\AppData\\Local\\Temp\\pytest-of-xiemo\\pytest-233\\test_source_dependency_audit_i0\\gt_poses_corrupted.json",
+          "SYNLAB_GT_POSES"
+        ],
+        "pose_table_rotation_delta_deg": 37.0,
+        "pose_table_translation_delta_mm": 668.1870995462274,
+        "repeat_runs": [
+          {
+            "db_hash": "sha256:303c7ec0ca9691420ef474dec7c75ebab9e86f1aebe68de8d3c8966b97ddbf9a",
+            "keypoints": 4826,
+            "keypoints_hash": "sha256:a36bce83fd28903106ff3890f374ea6ff2501240e6b29004aa25b024e5d00499",
+            "matched_pairs": 6,
+            "matches": 2819,
+            "matches_hash": "sha256:819b78dd7f87e153cb2953db7594578e3529daf9820c3e4d82ce8cbe32fb68d4",
+            "mean_reprojection_error_px": 0.5104351648789253,
+            "model_hash": "sha256:66502d9dc1757bd56ae3cb4e7ca06a239cf11bd6caac41b1b744f0cd80c56d57",
+            "ok": false,
+            "pose_priors": 0,
+            "registered_frames": 3,
+            "registered_names": [
+              "audit_v_000.png",
+              "audit_v_001.png",
+              "audit_v_002.png"
+            ],
+            "sparse_points": 586
+          },
+          {
+            "db_hash": "sha256:dff674ff71bd7012542eb4641566b458bf028100e3b5476e0fa720add65dbd85",
+            "keypoints": 4826,
+            "keypoints_hash": "sha256:a36bce83fd28903106ff3890f374ea6ff2501240e6b29004aa25b024e5d00499",
+            "matched_pairs": 6,
+            "matches": 2820,
+            "matches_hash": "sha256:3f2d114850964cbb1a63bbf9df551438e1f24055e6e97764c0294cbfd56ba824",
+            "mean_reprojection_error_px": 0.16119302302559982,
+            "model_hash": "sha256:404f76bdfe45af9a991c3c4361608f63968987b4d4414f41f267bde29eda72e8",
+            "ok": false,
+            "pose_priors": 0,
+            "registered_frames": 2,
+            "registered_names": [
+              "audit_v_000.png",
+              "audit_v_001.png"
+            ],
+            "sparse_points": 559
+          },
+          {
+            "db_hash": "sha256:f68a28bd03d665863f3fc9046513fb2d641ab36841799b8c3fd2c39f8ea68dd4",
+            "keypoints": 4826,
+            "keypoints_hash": "sha256:a36bce83fd28903106ff3890f374ea6ff2501240e6b29004aa25b024e5d00499",
+            "matched_pairs": 6,
+            "matches": 2818,
+            "matches_hash": "sha256:ee26c8be2928c52766946ab482ff5eb9a63d6f9b9b295d7d2580b6b9af0f213c",
+            "mean_reprojection_error_px": 0.16119302302559982,
+            "model_hash": "sha256:404f76bdfe45af9a991c3c4361608f63968987b4d4414f41f267bde29eda72e8",
+            "ok": false,
+            "pose_priors": 0,
+            "registered_frames": 2,
+            "registered_names": [
+              "audit_v_000.png",
+              "audit_v_001.png"
+            ],
+            "sparse_points": 559
+          },
+          {
+            "db_hash": "sha256:84919c1213cc2794d4d70c9a5965612b24027f621e31472c953582c024585189",
+            "keypoints": 4826,
+            "keypoints_hash": "sha256:a36bce83fd28903106ff3890f374ea6ff2501240e6b29004aa25b024e5d00499",
+            "matched_pairs": 6,
+            "matches": 2819,
+            "matches_hash": "sha256:9db82dcd7dba286f303c2fe4067e8c63e7d8fa2d4d622eece69269a9d3045f2f",
+            "mean_reprojection_error_px": 0.16324207404234797,
+            "model_hash": "sha256:6988710f8dd0c7084fa2d9d07272c266893dc99fa90af242974d438ab8fbc20d",
+            "ok": false,
+            "pose_priors": 0,
+            "registered_frames": 2,
+            "registered_names": [
+              "audit_v_000.png",
+              "audit_v_001.png"
+            ],
+            "sparse_points": 560
+          }
+        ],
+        "seconds": 15.532,
+        "sfm_scale_source": {
+          "kind": "NONE",
+          "note": "COLMAP SfM is scale-free; no scale target is supplied, so the reconstruction stays in an arbitrary unit and no mm claim is made",
+          "scale_target_radius_mm": null
+        },
+        "true_run": {
+          "db_hash": "sha256:303c7ec0ca9691420ef474dec7c75ebab9e86f1aebe68de8d3c8966b97ddbf9a",
+          "keypoints": 4826,
+          "keypoints_hash": "sha256:a36bce83fd28903106ff3890f374ea6ff2501240e6b29004aa25b024e5d00499",
+          "matched_pairs": 6,
+          "matches": 2819,
+          "matches_hash": "sha256:819b78dd7f87e153cb2953db7594578e3529daf9820c3e4d82ce8cbe32fb68d4",
+          "mean_reprojection_error_px": 0.5104351648789253,
+          "model_hash": "sha256:66502d9dc1757bd56ae3cb4e7ca06a239cf11bd6caac41b1b744f0cd80c56d57",
+          "ok": false,
+          "pose_priors": 0,
+          "registered_frames": 3,
+          "registered_names": [
+            "audit_v_000.png",
+            "audit_v_001.png",
+            "audit_v_002.png"
+          ],
+          "sparse_points": 586
+        }
+      },
+      "notes": "",
+      "seconds": 0.0,
+      "status": "FAIL",
+      "title": "观测来源/DAG"
+    },
+    "A25": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [
+        "data/a12/reports/pixel_contract.json"
+      ],
+      "metrics": {
+        "checks": {
+          "colmap_convention": {
+            "note": "",
+            "ok": true
+          },
+          "colmap_real_library": {
+            "note": "",
+            "ok": true
+          },
+          "display": {
+            "note": "GLB derivation + UI measurement + frontend matrices verified",
+            "ok": true
+          },
+          "exif": {
+            "note": "",
+            "ok": true
+          },
+          "pixel_transforms": {
+            "note": "",
+            "ok": true
+          }
+        },
+        "colmap_convention": {
+          "K_roundtrip_max_error": 0.0,
+          "convention": "opencv_pixel_center_0_0 -> colmap_top_left_corner_0_5",
+          "cx_shift": 0.5,
+          "cy_shift": 0.5,
+          "uv_roundtrip_max_error_px": 0.0,
+          "uv_shift": [
+            0.5,
+            0.5
+          ]
+        },
+        "colmap_real_library": {
+          "available": true,
+          "camera_summary_first_line": "camera_id = 4294967295",
+          "forward_max_error_px": 0.0,
+          "library": "pycolmap",
+          "normalized_max_error": 0.0,
+          "principal_point_colmap": [
+            320.2,
+            239.9
+          ],
+          "principal_point_opencv_plus_half": [
+            320.2,
+            239.9
+          ],
+          "reverse_max_error_px": 0.0,
+          "version": "3.11.1"
+        },
+        "convention": "opencv_pixel_center_0_0 <-> colmap_top_left_corner_0_5",
+        "display": {
+          "T_AUTHORITY_DISPLAY_at_T_DISPLAY_AUTHORITY_error": 0.0,
+          "authority_to_display_scale_ok": true,
+          "authority_to_display_scale_ratio_vs_matrix": 1.0,
+          "authority_unit": "mm",
+          "blocking_defect": null,
+          "cube_edge_mm": 100.0,
+          "display_edge_max_error_m": 0.0,
+          "display_edge_mean_m": 0.10000000000000002,
+          "display_unit": "m",
+          "double_application_detected": true,
+          "double_application_factor": 0.001,
+          "expected_scale_ratio": 1.0,
+          "frontend": {
+            "authority_matrix_matches": true,
+            "display_matrix_matches": true,
+            "mm_per_m_ok": true,
+            "ok": true,
+            "path": "frontend\\src\\lib\\display.ts",
+            "present": true,
+            "ts_authority_to_display_matrix": [
+              [
+                1000.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                -1000.0,
+                0.0
+              ],
+              [
+                0.0,
+                1000.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "ts_display_to_authority_matrix": [
+              [
+                0.001,
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.001,
+                0.0
+              ],
+              [
+                0.0,
+                -0.001,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "ts_mm_per_m": 1000.0
+          },
+          "glb_and_ui_contract_ok": true,
+          "n_edges": 12,
+          "roundtrip_identity": true,
+          "roundtrip_max_error_mm": 0.0,
+          "transform_applied_count": 1,
+          "ui_measure_max_error_mm": 0.0,
+          "ui_measured_edge_mm": 100.0,
+          "up_axis_swap_matrix": [
+            [
+              1000.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              -1000.0
+            ],
+            [
+              0.0,
+              1000.0,
+              0.0
+            ]
+          ]
+        },
+        "exif": {
+          "all_orientations_ok": true,
+          "exif_90": {
+            "K_new_equals_A_K": true,
+            "expected_pixel": [
+              258.0,
+              111.0
+            ],
+            "image_size_after": [
+              481,
+              641
+            ],
+            "image_size_before": [
+              641,
+              481
+            ],
+            "landed_pixel": [
+              258,
+              111
+            ],
+            "metadata_only_would_fail": true,
+            "pixel_applied": true,
+            "size_swapped": true,
+            "source_pixel": [
+              111,
+              222
+            ]
+          },
+          "orientations": {
+            "1": {
+              "A": [
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "K_new_equals_A_K": true,
+              "image_size": [
+                641,
+                481
+              ],
+              "max_pixel_mismatch": 0,
+              "mirror": null,
+              "ok": true,
+              "probes_moved": 0,
+              "rotate_cw": 0,
+              "shape_ok": true
+            },
+            "2": {
+              "A": [
+                [
+                  -1.0,
+                  0.0,
+                  640.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "K_new_equals_A_K": true,
+              "image_size": [
+                641,
+                481
+              ],
+              "max_pixel_mismatch": 0,
+              "mirror": "horizontal",
+              "ok": true,
+              "probes_moved": 7,
+              "rotate_cw": 0,
+              "shape_ok": true
+            },
+            "3": {
+              "A": [
+                [
+                  -1.0,
+                  0.0,
+                  640.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  480.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "K_new_equals_A_K": true,
+              "image_size": [
+                641,
+                481
+              ],
+              "max_pixel_mismatch": 0,
+              "mirror": null,
+              "ok": true,
+              "probes_moved": 7,
+              "rotate_cw": 180,
+              "shape_ok": true
+            },
+            "4": {
+              "A": [
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  -1.0,
+                  480.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "K_new_equals_A_K": true,
+              "image_size": [
+                641,
+                481
+              ],
+              "max_pixel_mismatch": 0,
+              "mirror": "vertical",
+              "ok": true,
+              "probes_moved": 7,
+              "rotate_cw": 0,
+              "shape_ok": true
+            },
+            "5": {
+              "A": [
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "K_new_equals_A_K": true,
+              "image_size": [
+                481,
+                641
+              ],
+              "max_pixel_mismatch": 0,
+              "mirror": "horizontal",
+              "ok": true,
+              "probes_moved": 7,
+              "rotate_cw": 270,
+              "shape_ok": true
+            },
+            "6": {
+              "A": [
+                [
+                  0.0,
+                  -1.0,
+                  480.0
+                ],
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "K_new_equals_A_K": true,
+              "image_size": [
+                481,
+                641
+              ],
+              "max_pixel_mismatch": 0,
+              "mirror": null,
+              "ok": true,
+              "probes_moved": 8,
+              "rotate_cw": 90,
+              "shape_ok": true
+            },
+            "7": {
+              "A": [
+                [
+                  0.0,
+                  -1.0,
+                  480.0
+                ],
+                [
+                  -1.0,
+                  0.0,
+                  640.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "K_new_equals_A_K": true,
+              "image_size": [
+                481,
+                641
+              ],
+              "max_pixel_mismatch": 0,
+              "mirror": "horizontal",
+              "ok": true,
+              "probes_moved": 8,
+              "rotate_cw": 90,
+              "shape_ok": true
+            },
+            "8": {
+              "A": [
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  -1.0,
+                  0.0,
+                  640.0
+                ],
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ]
+              ],
+              "K_new_equals_A_K": true,
+              "image_size": [
+                481,
+                641
+              ],
+              "max_pixel_mismatch": 0,
+              "mirror": null,
+              "ok": true,
+              "probes_moved": 8,
+              "rotate_cw": 270,
+              "shape_ok": true
+            }
+          }
+        },
+        "failing_checks": [],
+        "pixel_transforms": {
+          "cases": {
+            "crop_and_non_integer": {
+              "A_determinant": 1.0,
+              "A_matches_crop_resize_matrix": true,
+              "K_new_equals_A_K": true,
+              "K_new_matches_A_K": true,
+              "crop_origin": [
+                13,
+                7
+              ],
+              "cx_new_closed_form_error": 0.0,
+              "cy_new_closed_form_error": 0.0,
+              "image_size": [
+                641,
+                481
+              ],
+              "letterbox": {
+                "K_new_equals_A_K": true,
+                "K_pad_difference": 2.842170943040401e-14,
+                "K_pad_matches_A_lb_K": true,
+                "image_size": [
+                  687,
+                  563
+                ],
+                "max_A_formula_error_px": 5.684341886080802e-14,
+                "max_mm_error": 1.2868476258827026e-13,
+                "max_px_error": 1.1368683772161603e-13,
+                "n_points": 90,
+                "pad": [
+                  23.0,
+                  41.0
+                ],
+                "translation_only": true
+              },
+              "max_A_formula_error_px": 2.842170943040401e-14,
+              "max_mm_error": 1.2224639458285405e-13,
+              "max_px_error": 1.1368683772161603e-13,
+              "n_points": 90,
+              "ok": true,
+              "scale": [
+                1.25,
+                0.8
+              ]
+            },
+            "crop_origin_even": {
+              "A_determinant": 0.4444444444444444,
+              "A_matches_crop_resize_matrix": true,
+              "K_new_equals_A_K": true,
+              "K_new_matches_A_K": true,
+              "crop_origin": [
+                64,
+                48
+              ],
+              "cx_new_closed_form_error": 2.842170943040401e-14,
+              "cy_new_closed_form_error": 0.0,
+              "image_size": [
+                640,
+                480
+              ],
+              "letterbox": {
+                "K_new_equals_A_K": true,
+                "K_pad_difference": 0.0,
+                "K_pad_matches_A_lb_K": true,
+                "image_size": [
+                  686,
+                  562
+                ],
+                "max_A_formula_error_px": 2.842170943040401e-14,
+                "max_mm_error": 1.3349885981068564e-13,
+                "max_px_error": 5.684341886080802e-14,
+                "n_points": 90,
+                "pad": [
+                  23.0,
+                  41.0
+                ],
+                "translation_only": true
+              },
+              "max_A_formula_error_px": 2.842170943040401e-14,
+              "max_mm_error": 1.3349885981068564e-13,
+              "max_px_error": 5.684341886080802e-14,
+              "n_points": 90,
+              "ok": true,
+              "scale": [
+                0.6666666666666666,
+                0.6666666666666666
+              ]
+            },
+            "crop_origin_odd": {
+              "A_determinant": 0.25,
+              "A_matches_crop_resize_matrix": true,
+              "K_new_equals_A_K": true,
+              "K_new_matches_A_K": true,
+              "crop_origin": [
+                37,
+                19
+              ],
+              "cx_new_closed_form_error": 0.0,
+              "cy_new_closed_form_error": 0.0,
+              "image_size": [
+                641,
+                481
+              ],
+              "letterbox": {
+                "K_new_equals_A_K": true,
+                "K_pad_difference": 0.0,
+                "K_pad_matches_A_lb_K": true,
+                "image_size": [
+                  687,
+                  563
+                ],
+                "max_A_formula_error_px": 0.0,
+                "max_mm_error": 1.2327455730270367e-13,
+                "max_px_error": 2.842170943040401e-14,
+                "n_points": 90,
+                "pad": [
+                  23.0,
+                  41.0
+                ],
+                "translation_only": true
+              },
+              "max_A_formula_error_px": 0.0,
+              "max_mm_error": 1.191086668529821e-13,
+              "max_px_error": 1.4210854715202004e-14,
+              "n_points": 90,
+              "ok": true,
+              "scale": [
+                0.5,
+                0.5
+              ]
+            },
+            "distorted_resize": {
+              "K_new_equals_A_K": true,
+              "K_new_matches_A_K": true,
+              "distortion": [
+                -0.12,
+                0.031,
+                0.0021,
+                -0.0016,
+                -0.0042
+              ],
+              "max_A_formula_error_px": 0.0,
+              "max_mm_error": 1.191086668529821e-13,
+              "max_px_error": 0.0,
+              "model": "OPENCV",
+              "n_points": 90,
+              "ok": true,
+              "scale": [
+                0.5,
+                0.5
+              ]
+            },
+            "even_to_odd_upscale": {
+              "A_determinant": 2.21,
+              "A_matches_crop_resize_matrix": true,
+              "K_new_equals_A_K": true,
+              "K_new_matches_A_K": true,
+              "crop_origin": [
+                0,
+                0
+              ],
+              "cx_new_closed_form_error": 1.1368683772161603e-13,
+              "cy_new_closed_form_error": 0.0,
+              "image_size": [
+                640,
+                480
+              ],
+              "letterbox": {
+                "K_new_equals_A_K": true,
+                "K_pad_difference": 0.0,
+                "K_pad_matches_A_lb_K": true,
+                "image_size": [
+                  686,
+                  562
+                ],
+                "max_A_formula_error_px": 1.1368683772161603e-13,
+                "max_mm_error": 1.2888077909577372e-13,
+                "max_px_error": 1.1368683772161603e-13,
+                "n_points": 90,
+                "pad": [
+                  23.0,
+                  41.0
+                ],
+                "translation_only": true
+              },
+              "max_A_formula_error_px": 1.1368683772161603e-13,
+              "max_mm_error": 1.2888077909577372e-13,
+              "max_px_error": 1.1368683772161603e-13,
+              "n_points": 90,
+              "ok": true,
+              "scale": [
+                1.7,
+                1.3
+              ]
+            },
+            "non_integer_scale": {
+              "A_determinant": 0.2331,
+              "A_matches_crop_resize_matrix": true,
+              "K_new_equals_A_K": true,
+              "K_new_matches_A_K": true,
+              "crop_origin": [
+                0,
+                0
+              ],
+              "cx_new_closed_form_error": 1.4210854715202004e-14,
+              "cy_new_closed_form_error": 0.0,
+              "image_size": [
+                641,
+                481
+              ],
+              "letterbox": {
+                "K_new_equals_A_K": true,
+                "K_pad_difference": 0.0,
+                "K_pad_matches_A_lb_K": true,
+                "image_size": [
+                  687,
+                  563
+                ],
+                "max_A_formula_error_px": 2.842170943040401e-14,
+                "max_mm_error": 1.165376734978219e-13,
+                "max_px_error": 2.842170943040401e-14,
+                "n_points": 90,
+                "pad": [
+                  23.0,
+                  41.0
+                ],
+                "translation_only": true
+              },
+              "max_A_formula_error_px": 2.842170943040401e-14,
+              "max_mm_error": 1.2224639458285405e-13,
+              "max_px_error": 2.842170943040401e-14,
+              "n_points": 90,
+              "ok": true,
+              "scale": [
+                0.37,
+                0.63
+              ]
+            },
+            "odd_to_even": {
+              "A_determinant": 0.24909104472287003,
+              "A_matches_crop_resize_matrix": true,
+              "K_new_equals_A_K": true,
+              "K_new_matches_A_K": true,
+              "crop_origin": [
+                0,
+                0
+              ],
+              "cx_new_closed_form_error": 0.0,
+              "cy_new_closed_form_error": 0.0,
+              "image_size": [
+                641,
+                481
+              ],
+              "letterbox": {
+                "K_new_equals_A_K": true,
+                "K_pad_difference": 0.0,
+                "K_pad_matches_A_lb_K": true,
+                "image_size": [
+                  687,
+                  563
+                ],
+                "max_A_formula_error_px": 2.842170943040401e-14,
+                "max_mm_error": 1.24699744040301e-13,
+                "max_px_error": 2.842170943040401e-14,
+                "n_points": 90,
+                "pad": [
+                  23.0,
+                  41.0
+                ],
+                "translation_only": true
+              },
+              "max_A_formula_error_px": 2.842170943040401e-14,
+              "max_mm_error": 1.2730419646209808e-13,
+              "max_px_error": 2.842170943040401e-14,
+              "n_points": 90,
+              "ok": true,
+              "scale": [
+                0.49921996879875197,
+                0.498960498960499
+              ]
+            }
+          },
+          "max_mm_error": 1.3349885981068564e-13,
+          "max_px_error": 1.1368683772161603e-13
+        },
+        "seconds": 0.017,
+        "thresholds": {
+          "display_max_error_m": 1e-09,
+          "display_max_error_mm": 1e-09,
+          "exact_tolerance": 1e-12,
+          "max_mm_error": 0.001,
+          "max_px_error": 0.05,
+          "source": "configs\\a12\\qa_protocol_v1.json"
+        }
+      },
+      "notes": "",
+      "seconds": 0.0,
+      "status": "PASS",
+      "title": "坐标/展示（0.5px、resize、EXIF、COLMAP 往返、100mm GLB）"
+    },
+    "A26": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {},
+      "notes": "requires the warped_partition backend to run",
+      "seconds": 0.0,
+      "status": "NOT_RUN",
+      "title": "分区形变（共享 PLC / 共形网格）"
+    },
+    "A27": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {},
+      "notes": "requires fracture + truth audits",
+      "seconds": 0.0,
+      "status": "NOT_RUN",
+      "title": "来源/对应（原三角 ID、公共面积、损伤关联分离）"
+    },
+    "A28": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {},
+      "notes": "requires physical identity audit (components/debris/ancestry)",
+      "seconds": 0.0,
+      "status": "PENDING",
+      "title": "物理身份/损伤（P01/P02 固定场、嵌套、多组件）"
+    },
+    "A29": {
+      "commands": [],
+      "evidence": [],
+      "metrics": {},
+      "notes": "not applicable to profile SANDBOX_CORE",
+      "status": "NA",
+      "title": "检索/匹配（双塔、TopM 精排、全 R2 排除）"
+    },
+    "A30": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [
+        "data/a12/reports/metric_fixture.json"
+      ],
+      "metrics": {
+        "absent_risk_defined": true,
+        "effective_zero_on_failure": true,
+        "hand_computed_cov": true,
+        "hand_computed_hit": true,
+        "hand_computed_poolcov": true
+      },
+      "notes": "",
+      "seconds": 0.0,
+      "status": "PASS",
+      "title": "拒识/分母（多正例接受集、失败主分母）"
+    },
+    "A31": {
+      "commands": [],
+      "evidence": [],
+      "metrics": {},
+      "notes": "not applicable to profile SANDBOX_CORE",
+      "status": "NA",
+      "title": "独立数据/统计（N 广度深度、gallery 隔离、CP 假设）"
+    },
+    "A32": {
+      "commands": [],
+      "evidence": [],
+      "metrics": {},
+      "notes": "not applicable to profile SANDBOX_CORE",
+      "status": "NA",
+      "title": "全流程泄漏（置换、ID 重命名、同器库负控）"
+    },
+    "A33": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [
+        "data/a12/reports/api_security.json"
+      ],
+      "metrics": {
+        "deployment_truth_denied": true,
+        "idempotency_conflict_409": true,
+        "operator_truth_denied": true,
+        "oracle_export_denied": true,
+        "path_traversal_denied": true,
+        "sse_seq_monotonic": true,
+        "unregistered_file_role_denied": true,
+        "workspace_isolation": true
+      },
+      "notes": "",
+      "seconds": 0.0,
+      "status": "PASS",
+      "title": "权限/输入（服务端角色、路径/资源限制）"
+    },
+    "A34": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [
+        "data/a12/reports/recovery_probe.json"
+      ],
+      "metrics": {},
+      "notes": "",
+      "seconds": 0.0,
+      "status": "PASS",
+      "title": "资产/调度（同 blob 多 role、code identity、GPU 清退、reservation）"
+    },
+    "A35": {
+      "commands": [],
+      "evidence": [],
+      "metrics": {},
+      "notes": "not applicable to profile SANDBOX_CORE",
+      "status": "NA",
+      "title": "续训/监督分母（acknowledged cursor、prefetch 重放）"
+    },
+    "A36": {
+      "commands": [
+        "synlab acceptance --profile SANDBOX_CORE"
+      ],
+      "evidence": [],
+      "metrics": {
+        "compiled": {
+          "closed_loop.yaml": "OK",
+          "coverage.yaml": "OK",
+          "degrade_recipes/paired_edgewear_blur_bump.yaml": "OK",
+          "degrade_recipes/paired_plane_levels.yaml": "OK",
+          "diagnose_sandbox.yaml": "OK",
+          "pilot.yaml": "OK",
+          "pool_dev.yaml": "OK",
+          "pool_pilot.yaml": "OK",
+          "sandbox.yaml": "OK",
+          "train_pilot.yaml": "OK",
+          "train_sandbox.yaml": "OK"
+        },
+        "failed": {},
+        "profiles_registered": [
+          "CALIBRATED_PHONE",
+          "CORE_COVERAGE",
+          "PILOT",
+          "RESEARCH_EVIDENCE",
+          "SANDBOX_CORE",
+          "SCALE_100K",
+          "SCALE_10K",
+          "SCALE_50K"
+        ],
+        "validators": {
+          "closed_loop.yaml": "GenerationSpec (synlab.v3) + compile_spec",
+          "coverage.yaml": "GenerationSpec (synlab.v3) + compile_spec",
+          "degrade_recipes/paired_edgewear_blur_bump.yaml": "DegradationRecipeSpec + compile_recipe",
+          "degrade_recipes/paired_plane_levels.yaml": "DegradationRecipeSpec + compile_recipe",
+          "diagnose_sandbox.yaml": "DiagnosticSpec (synlab.diagnose.v1)",
+          "pilot.yaml": "GenerationSpec (synlab.v3) + compile_spec",
+          "pool_dev.yaml": "relations.PoolConfig (synlab.pool.v1)",
+          "pool_pilot.yaml": "relations.PoolConfig (synlab.pool.v1)",
+          "sandbox.yaml": "GenerationSpec (synlab.v3) + compile_spec",
+          "train_pilot.yaml": "TrainingSpec (synlab.train.v1)",
+          "train_sandbox.yaml": "TrainingSpec (synlab.train.v1)"
+        }
+      },
+      "notes": "every shipped config must compile through the typed schema",
+      "seconds": 0.044,
+      "status": "PASS",
+      "title": "配置/发布（route/scope 枚举、全部配置编译）"
+    }
+  },
+  "platform": "Windows-11-10.0.26200-SP0",
+  "profile": "SANDBOX_CORE",
+  "python": "3.12.14",
+  "registry": {
+    "axis": {
+      "by_status": {
+        "IMPLEMENTED": 31
+      },
+      "count": 31,
+      "ids": [
+        "G01",
+        "G02",
+        "G03",
+        "G04",
+        "G05",
+        "G06",
+        "G07",
+        "G08",
+        "I01",
+        "I02",
+        "I03",
+        "I04",
+        "I05",
+        "I06",
+        "I07",
+        "I08",
+        "I09",
+        "I10",
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P07",
+        "P08",
+        "X01",
+        "X02",
+        "X03",
+        "X04",
+        "X05"
+      ]
+    },
+    "fracture_backend": {
+      "by_status": {
+        "IMPLEMENTED": 3,
+        "MISSING": 1,
+        "PENDING": 1
+      },
+      "count": 5,
+      "ids": [
+        "fracture_modes",
+        "plane_shared_cut",
+        "rough_shared_cut",
+        "secondary_fracture",
+        "warped_partition"
+      ]
+    },
+    "layer_combo": {
+      "by_status": {
+        "IMPLEMENTED": 4
+      },
+      "count": 4,
+      "ids": [
+        "L01",
+        "L02",
+        "L03",
+        "L04"
+      ]
+    },
+    "material": {
+      "by_status": {
+        "IMPLEMENTED": 12
+      },
+      "count": 12,
+      "ids": [
+        "M01",
+        "M02",
+        "M03",
+        "M04",
+        "M05",
+        "M06",
+        "M07",
+        "M08",
+        "M09",
+        "M10",
+        "M11",
+        "M12"
+      ]
+    },
+    "pattern": {
+      "by_status": {
+        "IMPLEMENTED": 16
+      },
+      "count": 16,
+      "ids": [
+        "PAT01",
+        "PAT02",
+        "PAT03",
+        "PAT04",
+        "PAT05",
+        "PAT06",
+        "PAT07",
+        "PAT08",
+        "PAT09",
+        "PAT10",
+        "PAT11",
+        "PAT12",
+        "PAT13",
+        "PAT14",
+        "PAT15",
+        "PAT16"
+      ]
+    },
+    "vessel": {
+      "by_status": {
+        "IMPLEMENTED": 24
+      },
+      "count": 24,
+      "ids": [
+        "V01",
+        "V02",
+        "V03",
+        "V04",
+        "V05",
+        "V06",
+        "V07",
+        "V08",
+        "V09",
+        "V10",
+        "V11",
+        "V12",
+        "V13",
+        "V14",
+        "V15",
+        "V16",
+        "V17",
+        "V18",
+        "V19",
+        "V20",
+        "V21",
+        "V22",
+        "V23",
+        "V24"
+      ]
+    }
+  },
+  "schema": "synlab.acceptance.v1",
+  "summary_hash": "sha256:3c7ecc0800902f467c443ff1cb426add5aec3bcfbcfd694fd91b93b7e339515c"
+}

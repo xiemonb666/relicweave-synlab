@@ -1,0 +1,23 @@
+{
+  "figure": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_interval_implementation_20261004\\capture_run_01\\actual_wall_intervals.png",
+  "input_report": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\wall_interval_implementation_20261004\\capture_run_01\\uniform_cavity_side_erosion.report.json",
+  "fixture_id": "uniform_cavity_side_erosion_0_2_mm",
+  "native_status": "SAMPLED_PASS",
+  "global_wall_status": "UNVERIFIED",
+  "physical_qualification_status": "UNKNOWN",
+  "native_source_interval_mm": [
+    0.0009999275207519531,
+    1.0009998083114624
+  ],
+  "native_result_interval_mm": [
+    0.0009999275207519531,
+    0.8010001182556152
+  ],
+  "native_source_length_mm": 0.9999998807907104,
+  "native_result_length_mm": 0.8000001907348633,
+  "analytic_oracle_mm": {
+    "source_wall_mm": 1.0,
+    "remaining_wall_mm": 0.8
+  },
+  "opposite_wall_and_cavity": "analytic context only; not measured or summed"
+}

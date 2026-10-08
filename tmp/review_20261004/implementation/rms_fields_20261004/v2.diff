@@ -1,0 +1,116 @@
+--- v1/synlab/degrade/rms_fields.py
++++ v2/synlab/degrade/rms_fields.py
+@@ -21,6 +21,7 @@
+     "sqrt(mean(displacement_mm ** 2)); uncentered scalar displacement over "
+     "requested mask samples that are finite"
+ )
++_RMS_REL_TOL = 64.0 * float(np.finfo(np.float64).eps)
+ _DISTRIBUTION_NOTE = (
+     "Conditioned exact RMS comes from deterministic scalar rescaling of this frozen field; "
+     "it does not preserve a strict independent-Gaussian model. Real-phone noise calibration "
+@@ -63,6 +64,7 @@
+             "raw_field_sha256": self.raw_field_sha256,
+             "mask_sha256": self.mask_sha256,
+             "rms_definition": _RMS_DEFINITION,
++            "rms_relative_tolerance": _RMS_REL_TOL,
+             "conditioned_exact_rms": self.status == "EXACT",
+             "distribution_note": _DISTRIBUTION_NOTE,
+             "real_phone_noise_calibration": "NOT_CLAIMED",
+@@ -74,7 +76,11 @@
+     header = json.dumps(
+         {"kind": kind, "shape": list(array.shape)}, sort_keys=True, separators=(",", ":")
+     ).encode("ascii")
+-    payload = np.ascontiguousarray(array).tobytes(order="C")
++    if array.dtype.kind == "f":
++        contents = np.ascontiguousarray(array, dtype="<f8")
++    else:
++        contents = np.ascontiguousarray(array)
++    payload = contents.tobytes(order="C")
+     digest = hashlib.sha256()
+     digest.update(header)
+     digest.update(b"\0")
+@@ -86,10 +92,13 @@
+     """Measure uncentered RMS, signed mean and absolute peak on finite samples."""
+     if values.size == 0:
+         return None
+-    with np.errstate(over="ignore", invalid="ignore"):
+-        rms = float(np.sqrt(np.mean(values ** 2)))
+-        mean = float(np.mean(values))
+-        peak = float(np.max(np.abs(values)))
++    peak = float(np.max(np.abs(values)))
++    if peak == 0.0:
++        return 0.0, 0.0, 0.0
++    normalized = values / peak
++    unit_rms = float(np.sqrt(np.mean(normalized ** 2)))
++    rms = float(peak * unit_rms)
++    mean = float(peak * np.mean(normalized))
+     if not (np.isfinite(rms) and np.isfinite(mean) and np.isfinite(peak)):
+         return None
+     return rms, mean, peak
+@@ -179,10 +188,14 @@
+     if raw_rms == 0.0:
+         return result("UNKNOWN_DEGENERATE_ZERO_FIELD", None)
+ 
+-    with np.errstate(over="ignore", divide="ignore", invalid="ignore"):
++    with np.errstate(over="ignore", divide="ignore", invalid="ignore", under="ignore"):
+         scale = float(target / raw_rms)
+-        scaled = finite_values * scale
+-    if not np.isfinite(scale) or not np.all(np.isfinite(scaled)):
++        unit_values = finite_values / raw_measure[2]
++        unit_rms = float(np.sqrt(np.mean(unit_values ** 2)))
++        normalized = unit_values / unit_rms
++        scaled = normalized * target
++    scale_representable = bool(np.isfinite(scale) and scale > 0.0)
++    if not np.isfinite(unit_rms) or unit_rms <= 0.0 or not np.all(np.isfinite(scaled)):
+         return result("UNKNOWN_NONFINITE_SCALE", None)
+ 
+     output[selected_mask] = scaled
+@@ -190,5 +203,14 @@
+     if actual_measure is None:
+         output[selected_mask] = selected
+         return result("UNKNOWN_NONFINITE_METRIC", None)
++    actual_rms = actual_measure[0]
++    if not (actual_rms > 0.0 and np.isclose(actual_rms, target,
++                                            rtol=_RMS_REL_TOL, atol=0.0)):
++        output[selected_mask] = selected
++        return result("UNKNOWN_RMS_MISMATCH", None)
++    if not scale_representable:
++        # The normalized construction can keep the field finite even when target/raw_rms
++        # itself underflows or overflows. Do not report a fabricated scalar factor or EXACT.
++        return result("UNKNOWN_SCALE_UNREPRESENTABLE", None)
+     return result("EXACT", scale)
+ 
+--- v1/tests/a12/degrade/test_rms_fields_20261004.py
++++ v2/tests/a12/degrade/test_rms_fields_20261004.py
+@@ -93,6 +93,31 @@
+     np.testing.assert_array_equal(zero.calibrated_field_mm, raw)
+ 
+ 
++def test_high_dynamic_range_rms_is_stable_and_unrepresentable_scale_is_unknown() -> None:
++    mask = np.array([True, True])
++    large = np.array([1e200, -1e200])
++    large_result = calibrate_rms_field(large, mask, 1e200)
++
++    assert large_result.status == "EXACT"
++    assert large_result.raw_rms_mm == 1e200
++    assert large_result.actual_rms_mm == 1e200
++
++    underflow_raw = np.array([1e100, -1e100])
++    underflow_original = underflow_raw.copy()
++    smallest_positive = np.nextafter(0.0, 1.0)
++    underflow_result = calibrate_rms_field(underflow_raw, mask, smallest_positive)
++
++    assert underflow_result.status == "UNKNOWN_SCALE_UNREPRESENTABLE"
++    assert underflow_result.scale_factor is None
++    assert underflow_result.actual_rms_mm == smallest_positive
++    assert underflow_result.actual_rms_mm > 0.0
++    assert underflow_result.to_metadata()["conditioned_exact_rms"] is False
++    np.testing.assert_array_equal(underflow_result.calibrated_field_mm,
++                                  [smallest_positive, -smallest_positive])
++    np.testing.assert_array_equal(underflow_result.raw_field_mm, underflow_original)
++    np.testing.assert_array_equal(underflow_raw, underflow_original)
++
++
+ @pytest.mark.parametrize("target", [-1.0, np.nan, np.inf])
+ def test_invalid_target_is_rejected(target: float) -> None:
+     with pytest.raises(ValueError, match="target_rms_mm"):

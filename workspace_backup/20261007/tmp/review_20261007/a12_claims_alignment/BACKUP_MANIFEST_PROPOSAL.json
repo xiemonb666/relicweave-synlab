@@ -1,0 +1,114 @@
+{
+  "git_changes_made": false,
+  "git_readonly_snapshot": {
+    "branch": "backup/forge-work-20261003",
+    "head": "b6058511e1255f70bc4f026bad57a7bb595aaa85",
+    "raw_remote_credentials_persisted_or_emitted": false,
+    "remotes_sanitized": [
+      {
+        "https_derived": false,
+        "name": "origin",
+        "transport": "https",
+        "url": "https://github.com/xiemonb666/relicweave-synlab.git"
+      }
+    ],
+    "repo_root": "C:/Users/xiemo/Desktop/ShardForge/relicweave-synlab"
+  },
+  "link_portability_followup": {
+    "current_docs_reference_workspace_tmp": true,
+    "link_changes_made": false,
+    "proposed_doc_relative_targets": [
+      "reviews/20261007/REVIEW.md",
+      "reviews/20261007/claims.json"
+    ],
+    "review_copy_references_may_need_portable_path_rewrite_later": true
+  },
+  "original_doc_snapshots": [
+    {
+      "path": "tmp/review_20261007/a12_claims_alignment/status.md.original_3c5593d8.snapshot",
+      "sha256": "3c5593d847b2638c28c409b1921c9075e823b1cc8d54a90544a52bb9ddc1f1d5"
+    },
+    {
+      "path": "tmp/review_20261007/a12_claims_alignment/patterns.md.original_ca0cb226.snapshot",
+      "sha256": "ca0cb226a17c1ee9950955bc2fda40827ea694b8ae7a2a92348f328dddc05311"
+    }
+  ],
+  "proposed_byte_copy_manifest": {
+    "copies_created": false,
+    "copy_safe_from_name_collision": true,
+    "destination_directory": "relicweave-synlab/docs/a12/reviews/20261007",
+    "destinations_already_exist": [],
+    "entries": [
+      {
+        "destination": "relicweave-synlab/docs/a12/reviews/20261007/status.md",
+        "source": "relicweave-synlab/docs/a12/status.md",
+        "source_bytes": 11374,
+        "source_sha256": "66920da601f36c12073451f407e323466760221cfef5efdc81a1bbae87714658"
+      },
+      {
+        "destination": "relicweave-synlab/docs/a12/reviews/20261007/patterns.md",
+        "source": "relicweave-synlab/docs/a12/patterns.md",
+        "source_bytes": 28180,
+        "source_sha256": "cf90515b4393c6e3a138795fd62c649dbef3a95978b46b84eb1a65329c048266"
+      },
+      {
+        "destination": "relicweave-synlab/docs/a12/reviews/20261007/REVIEW.md",
+        "source": "tmp/review_20261007/a12_claims_alignment/REVIEW.md",
+        "source_bytes": 7232,
+        "source_sha256": "881e71d0441d235b2143a1a06cf7429547892a953c2c74a951ec6161576eeeba"
+      },
+      {
+        "destination": "relicweave-synlab/docs/a12/reviews/20261007/claims.json",
+        "source": "tmp/review_20261007/a12_claims_alignment/claims.json",
+        "source_bytes": 17991,
+        "source_sha256": "7c7d6c6c00e7086c7da1b531103cb95812b87e5befd0ae69730e1f395d482806"
+      }
+    ],
+    "target_directory_exists": false
+  },
+  "raw_report_tracking": [
+    {
+      "path": "data/a12/reports/precision_probe_07_degrade_audit.json",
+      "sha256": "b38d7dd1cddeff2dfcc06173de44ac83eb583cab045c05d6f47aff102a9f39fb",
+      "tracked_in_head": false,
+      "tracked_in_index": false,
+      "working_file_exists": true
+    },
+    {
+      "path": "data/a12/reports/precision_probe_09_degrade_error.json",
+      "sha256": "d964413f473caea5bb75ec7a7ca39c140dcd8ac38892e13ebe3247a40327987e",
+      "tracked_in_head": false,
+      "tracked_in_index": false,
+      "working_file_exists": true
+    },
+    {
+      "path": "data/a12/reports/pattern_audit.json",
+      "sha256": "e52989f1fa25cfb47442094c3c36dccbccc8b59a10ca97c9cbf910d3071e7e71",
+      "tracked_in_head": false,
+      "tracked_in_index": false,
+      "working_file_exists": true
+    }
+  ],
+  "schema": "a12_claims_alignment_backup_manifest_proposal.v1",
+  "source_or_report_files_modified": false,
+  "status": "PROPOSED_NOT_COPIED",
+  "tracked_worktree_check": {
+    "expected_paths": [
+      "docs/a12/patterns.md",
+      "docs/a12/status.md"
+    ],
+    "only_two_authorized_docs_changed": true,
+    "tracked_change_count": 2,
+    "tracked_changes": [
+      {
+        "path": "docs/a12/patterns.md",
+        "xy": " M"
+      },
+      {
+        "path": "docs/a12/status.md",
+        "xy": " M"
+      }
+    ],
+    "untracked_files_included": false
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "protocol_id": "qa_protocol_v1",
+  "schema": "synlab.qa_protocol.v1",
+  "status": "CANDIDATE_ENGINEERING_THRESHOLDS",
+  "note": "Candidate engineering acceptance thresholds from plan section 25.1. They must be frozen after the pilot and are NOT measured results. Changing a threshold requires a new version, a reason and the affected asset list.",
+  "thresholds": {
+    "A02_max_px_error": 0.05,
+    "A02_max_mm_error": 0.001,
+    "A05_period_pair_error": 1e-05,
+    "A06_volume_relative_error": 0.001,
+    "A06_overlap_volume_ratio": 0.01,
+    "A06_shared_distance_p95_mm": 0.02,
+    "A06_normal_reverse_angle_p95_deg": 2.0,
+    "A07_requested_surface_error_mm": 0.01,
+    "A08_min_contact_area_mm2": 0.1,
+    "A10_min_independent_mothers_per_axis": 20,
+    "A27_ambiguity_area_ratio": 0.05
+  },
+  "risk": {
+    "absent_false_accept_alpha": 0.05,
+    "absent_false_accept_target": 0.10,
+    "min_independent_zero_event_units": 29,
+    "present_wrong_accept_target": 0.10
+  },
+  "research": {
+    "primary_metric": "CovRecallAtK_macro",
+    "min_meaningful_delta": 0.03,
+    "confidence": 0.95,
+    "bootstrap_replicates": 10000,
+    "unit": "shape_lineage"
+  }
+}

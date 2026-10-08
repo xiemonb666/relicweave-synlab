@@ -1,0 +1,131 @@
+{
+  "schema": "p03_wall_interval_acceptance_v1",
+  "analysis_only": true,
+  "units": "mm",
+  "not_run": ["operator", "solver", "tests", "git"],
+  "readonly_api_probe": {
+    "python": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\.venv\\Scripts\\python.exe",
+    "argv": ["-c"],
+    "open3d_version": "0.19.0",
+    "class": "open3d.cpu.pybind.t.geometry.RaycastingScene",
+    "scene_instantiated": false,
+    "query_methods_called": false,
+    "exit_code": 0,
+    "symbols": {
+      "list_intersections": {
+        "present": true,
+        "signature": "list_intersections(self, rays: Tensor, nthreads: int = 0) -> dict[str, Tensor]",
+        "doc_returns": ["ray_splits", "ray_ids", "t_hit", "geometry_ids", "primitive_ids", "primitive_uvs"],
+        "purpose": "lists all ray intersections"
+      },
+      "compute_occupancy": {
+        "present": true,
+        "signature": "compute_occupancy(query_points, nthreads=0, nsamples=1)",
+        "preconditions": ["all meshes watertight", "meshes do not intersect"],
+        "edge_vertex_note": "inside/outside parity may err for rays hitting an edge or vertex; nsamples is odd"
+      },
+      "compute_signed_distance": {
+        "present": true,
+        "signature": "compute_signed_distance(query_points, nthreads=0, nsamples=1)",
+        "preconditions": ["all meshes watertight", "meshes do not intersect"],
+        "sign_convention": "negative inside",
+        "edge_vertex_note": "sign may flip for rays hitting an edge or vertex"
+      }
+    }
+  },
+  "nearest_hit_fallback": {
+    "allowed_only_if_list_intersections_missing": true,
+    "resolution_and_hit_cap_must_be_frozen": true,
+    "resolution_ambiguity_or_hit_cap_reached_means_unknown": true,
+    "may_not_pass_if_sub_resolution_layers_cannot_be_excluded": true
+  },
+  "guard": {
+    "sampled_status_scope": "sampled rays only; never global wall QA",
+    "absolute_min_remaining_mm": 0.6,
+    "relative_loss_threshold": 0.5,
+    "relative_violation_budget": 0.01,
+    "candidate_min_coverage": 0.95,
+    "coverage_is_sampled_quality_only": true,
+    "unmeasured_samples_must_be_reported_as_unknown": true,
+    "sampled_min_does_not_prove_global_min": true,
+    "global_wall_status_without_exhaustive_proof": "UNVERIFIED",
+    "physical_qa_pass_requires_global_wall_proof_or_explicitly_scoped_contract": true,
+    "pass_requires": [
+      "trusted_wall_direction",
+      "valid_closed_consistently_wound_source_and_result",
+      "coverage_at_or_above_frozen_sampled_quality_threshold",
+      "no_perforated_or_split_intervals",
+      "all_measured_sampled_intervals_gte_absolute_min",
+      "fraction_over_relative_loss_threshold_lte_budget"
+    ],
+    "unknown_never_counts_as_pass": true,
+    "unpaired_rays_must_be_counted_by_reason": true,
+    "perforated_sample_is_fail": true
+  },
+  "fixtures": [
+    {
+      "id": "known_1mm_shell",
+      "geometry": "closed hollow box shell: outer 10x10x10, inner 8x8x8",
+      "source_interval_mm": 1.0,
+      "damaged_interval_mm": 1.0,
+      "expected_sampled_status": "SAMPLED_PASS",
+      "expected_global_wall_status": "UNVERIFIED",
+      "assertions": ["entry_and_exit_are_paired", "thickness_is_not_approximately_2eps"]
+    },
+    {
+      "id": "uniform_erosion_0p2mm",
+      "geometry": "known_1mm_shell with 0.2mm uniform recession on one sampled wall side",
+      "source_interval_mm": 1.0,
+      "damaged_interval_mm": 0.8,
+      "loss_mm": 0.2,
+      "expected_sampled_status": "SAMPLED_PASS",
+      "expected_global_wall_status": "UNVERIFIED",
+      "assertions": ["same_source_stations", "absolute_and_relative_guards_pass"]
+    },
+    {
+      "id": "absolute_guard_0p5mm_remaining",
+      "geometry": "known_1mm_shell with 0.5mm uniform recession on one sampled wall side",
+      "source_interval_mm": 1.0,
+      "damaged_interval_mm": 0.5,
+      "absolute_min_remaining_mm": 0.6,
+      "expected_sampled_status": "SAMPLED_FAIL",
+      "assertions": ["absolute_guard_fails_even_at_exactly_50_percent_loss"]
+    },
+    {
+      "id": "local_through_hole",
+      "geometry": "1mm shell with a small bore through one sampled station",
+      "source_interval_mm": 1.0,
+      "damaged_interval_mm": 0.0,
+      "expected_sampled_status": "SAMPLED_FAIL",
+      "reason": "PERFORATED",
+      "assertions": ["missing_corresponding_interval_is_not_dropped", "nearby_shell_is_not_substituted"]
+    },
+    {
+      "id": "ray_miss_or_open_result",
+      "geometry": "raycast miss or damaged input with an open shell",
+      "expected_sampled_status": "UNKNOWN",
+      "assertions": ["coverage_and_reason_counts_are_reported", "unknown_never_returns_zero_violation_pass"]
+    },
+    {
+      "id": "grazing_and_duplicate_hits",
+      "geometry": "ray tangent to a wall or coplanar/shared-triangle-edge event",
+      "expected_sampled_status": "UNKNOWN",
+      "reason": "GRAZING_OR_AMBIGUOUS",
+      "assertions": ["coincident_triangle_hits_are_clustered", "no_crossing_does_not_create_interval"]
+    },
+    {
+      "id": "multiple_intervals_with_air_cavity",
+      "geometry": "ray crosses first 1mm wall, an air cavity, then a second 1mm wall",
+      "source_interval_mm": 1.0,
+      "expected_sampled_status": "SAMPLED_PASS",
+      "expected_global_wall_status": "UNVERIFIED",
+      "assertions": ["only_station_containing_interval_is_reported", "lengths_are_not_summed_across_cavity"]
+    },
+    {
+      "id": "invalid_topology_or_inverted_winding",
+      "geometry": "non-closed/non-manifold shell or globally inverted inconsistent winding",
+      "expected_sampled_status": "UNKNOWN",
+      "assertions": ["preflight_rejects_unreliable_interval_classification", "never_passes"]
+    }
+  ]
+}

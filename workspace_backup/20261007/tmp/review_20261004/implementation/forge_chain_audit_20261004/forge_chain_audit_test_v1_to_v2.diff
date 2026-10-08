@@ -1,0 +1,140 @@
+--- v1_snapshot/test_forge_chain_audit_20261004.py
++++ relicweave-synlab/tests/a12/qa/test_forge_chain_audit_20261004.py
+@@ -3,6 +3,8 @@
+ import hashlib
+ import json
+ from pathlib import Path
++
++import pytest
+ 
+ from synlab.qa.forge_chain_audit import INPUT_SCHEMA, audit_chain
+ 
+@@ -13,6 +15,14 @@
+     raw = (json.dumps(value, sort_keys=True, separators=(",", ":")) + "\n").encode("utf-8")
+     path.write_bytes(raw)
+     return {"path": path.relative_to(root).as_posix(), "sha256": hashlib.sha256(raw).hexdigest()}
++
++
++def _rewrite_ref(root: Path, document: dict, name: str, value: dict) -> None:
++    """Rewrite one fixture-only JSON reference and keep its declared digest current."""
++    ref = document["references"][name]
++    raw = (json.dumps(value, sort_keys=True, separators=(",", ":")) + "\n").encode("utf-8")
++    (root / ref["path"]).write_bytes(raw)
++    ref["sha256"] = hashlib.sha256(raw).hexdigest()
+ 
+ 
+ def _complete_fictional_input(root: Path) -> dict:
+@@ -72,6 +82,9 @@
+     references["dataset_export_manifest"] = _write_ref(root, "export", {
+         "schema": "synlab.training_package_manifest.v1", "release_scope": "SYNTHETIC",
+         "release_profile": "PILOT_UNFROZEN",
++        # Fictional positive aggregate counts keep this structural-only fixture from
++        # conflating absent keys with the actual zero counts in the current export.
++        "degrade_diversity": {"counts": {"degrade_sources": 1, "degrade_variants": 1}},
+     })
+ 
+     event_id = "event-fictional-1"
+@@ -138,6 +151,103 @@
+     assert report["science_qualification"]["pretrain_qualified"] is False
+     assert report["gaps"] == []
+     assert all(row["audit_status"] == "CLAIMED_PASS_UNVERIFIED" for row in report["science_qualification"]["gate_statuses"].values())
++    assert report["source_binding"]["status"] == "UNKNOWN"
++    assert report["source_binding"]["producer_row_contents_compared"] is False
++    assert set(report["source_binding"]["status_by_component"].values()) == {"UNKNOWN"}
++
++
++def test_missing_event_fragment_roster_is_incomplete(tmp_path: Path) -> None:
++    document = _complete_fictional_input(tmp_path)
++    document["chain"]["event"].pop("fragment_ids")
++    report = audit_chain(document, tmp_path)
++    assert report["status"] == "INCOMPLETE"
++    assert "event.fragment_ids" in _gap_fields(report)
++
++
++def test_duplicate_event_fragment_roster_id_is_rejected(tmp_path: Path) -> None:
++    document = _complete_fictional_input(tmp_path)
++    document["chain"]["event"]["fragment_ids"].append("fragment-a")
++    report = audit_chain(document, tmp_path)
++    assert report["status"] == "INCOMPLETE"
++    assert "event.fragment_ids[2]" in _gap_fields(report)
++
++
++def test_event_roster_must_match_all_normalized_fragment_rows(tmp_path: Path) -> None:
++    document = _complete_fictional_input(tmp_path)
++    document["chain"]["event"]["fragment_ids"].remove("fragment-b")
++    report = audit_chain(document, tmp_path)
++    assert report["status"] == "INCOMPLETE"
++    assert "event.fragment_ids" in _gap_fields(report)
++
++
++@pytest.mark.parametrize(("relation_label", "declare_gallery", "expected_status"), [
++    ("R0", True, "STRUCTURAL_PASS"),
++    ("R1", True, "STRUCTURAL_PASS"),
++    ("R0", False, "INCOMPLETE"),
++    ("R1", False, "INCOMPLETE"),
++])
++def test_external_r0_r1_candidate_requires_declared_gallery_roster(
++    tmp_path: Path, relation_label: str, declare_gallery: bool, expected_status: str,
++) -> None:
++    document = _complete_fictional_input(tmp_path)
++    document["chain"]["historical_relations"].append({
++        "query_fragment_id": "fragment-a",
++        "candidate_fragment_id": "gallery-fragment-1",
++        "historical_relation": relation_label,
++        "event_id": "event-fictional-1",
++    })
++    if declare_gallery:
++        document["chain"]["reference_library_fragment_ids"] = ["gallery-fragment-1"]
++    report = audit_chain(document, tmp_path)
++    assert report["status"] == expected_status
++    endpoint_gap = next((row for row in report["gaps"] if row["field"] == "historical_relations[1].candidate_fragment_id"), None)
++    if declare_gallery:
++        assert endpoint_gap is None
++    else:
++        assert endpoint_gap is not None
++        assert endpoint_gap["status"] == "UNKNOWN"
++
++
++def test_deploy_channel_name_does_not_validate_featurebundle_tensor(tmp_path: Path) -> None:
++    document = _complete_fictional_input(tmp_path)
++    document["chain"]["features"]["fields"] = ["tiles"]
++    report = audit_chain(document, tmp_path)
++    assert report["status"] == "INCOMPLETE"
++    gap = next(row for row in report["gaps"] if row["field"] == "features.fields.tiles")
++    assert gap["status"] == "UNKNOWN"
++    assert "not proof" in gap["reason"]
++    assert report["feature_input_audit"]["deploy_channel_names_are_feature_bundle_fields"] is False
++
++
++def test_missing_degradation_aggregate_is_unknown_not_zero(tmp_path: Path) -> None:
++    document = _complete_fictional_input(tmp_path)
++    export_ref = document["references"]["dataset_export_manifest"]
++    export_path = tmp_path / export_ref["path"]
++    export = json.loads(export_path.read_text(encoding="utf-8"))
++    del export["degrade_diversity"]["counts"]["degrade_sources"]
++    _rewrite_ref(tmp_path, document, "dataset_export_manifest", export)
++
++    report = audit_chain(document, tmp_path)
++    gap = next(row for row in report["gaps"] if row["field"].endswith("counts.degrade_sources"))
++    assert report["status"] == "INCOMPLETE"
++    assert gap["status"] == "UNKNOWN"
++    assert "MISSING_AGGREGATE" in gap["reason"]
++    assert "degradation.actual_measurements" not in _gap_fields(report)
++
++
++def test_explicit_zero_degradation_aggregate_remains_a_known_zero(tmp_path: Path) -> None:
++    document = _complete_fictional_input(tmp_path)
++    export_ref = document["references"]["dataset_export_manifest"]
++    export_path = tmp_path / export_ref["path"]
++    export = json.loads(export_path.read_text(encoding="utf-8"))
++    export["degrade_diversity"]["counts"]["degrade_sources"] = 0
++    _rewrite_ref(tmp_path, document, "dataset_export_manifest", export)
++
++    report = audit_chain(document, tmp_path)
++    gap = next(row for row in report["gaps"] if row["field"] == "degradation.actual_measurements")
++    assert report["status"] == "INCOMPLETE"
++    assert "explicitly records degrade_sources=0" in gap["reason"]
++    assert "MISSING_AGGREGATE" not in gap["reason"]
+ 
+ 
+ def test_missing_historical_annotation_is_unknown_and_incomplete(tmp_path: Path) -> None:

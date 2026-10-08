@@ -1,0 +1,88 @@
+{
+  "schema": "synlab.pgfrag.v1.toy_fixture_copy.v1",
+  "fixture_root": "tests/fixtures/pgfrag/result_v1_toy_endpoint",
+  "output_entry_count": 9,
+  "source_files": [
+    {
+      "source_path": "tmp\\review_20261003\\implementation\\pg\\jobs\\osb_fracture_branch_001\\output\\result.json",
+      "fixture_path": "tests\\fixtures\\pgfrag\\result_v1_toy_endpoint\\output\\result.json",
+      "bytes": 8258,
+      "sha256": "b3fb84f20d409f4a4dca0b34ffd8b95a07b7c7944b8b6ecd70100b0b5b17dc20",
+      "byte_identical": true
+    },
+    {
+      "source_path": "tmp\\review_20261003\\implementation\\pg\\jobs\\osb_fracture_branch_001\\output\\bond_states.csv",
+      "fixture_path": "tests\\fixtures\\pgfrag\\result_v1_toy_endpoint\\output\\bond_states.csv",
+      "bytes": 1095598,
+      "sha256": "2ba477c6c915f9eefdb141eb6f203b30b50fc99f6d93df0145a096771e143d3d",
+      "byte_identical": true
+    },
+    {
+      "source_path": "tmp\\review_20261003\\implementation\\pg\\jobs\\osb_fracture_branch_001\\output\\broken_bonds.csv",
+      "fixture_path": "tests\\fixtures\\pgfrag\\result_v1_toy_endpoint\\output\\broken_bonds.csv",
+      "bytes": 249045,
+      "sha256": "4d9d79764b3e228ab63b5ebb250c92643e7df5951e91fb6d01442ba83724a870",
+      "byte_identical": true
+    },
+    {
+      "source_path": "tmp\\review_20261003\\implementation\\pg\\jobs\\osb_fracture_branch_001\\output\\components.csv",
+      "fixture_path": "tests\\fixtures\\pgfrag\\result_v1_toy_endpoint\\output\\components.csv",
+      "bytes": 27275,
+      "sha256": "b3ac06b6d86a44465650f9528fd0e1064fd7b76008f19ea3740fdae4ec7a1fa6",
+      "byte_identical": true
+    },
+    {
+      "source_path": "tmp\\review_20261003\\implementation\\pg\\jobs\\osb_fracture_branch_001\\output\\data_dictionary.json",
+      "fixture_path": "tests\\fixtures\\pgfrag\\result_v1_toy_endpoint\\output\\data_dictionary.json",
+      "bytes": 11063,
+      "sha256": "0e0a2d1d39986fa2e676deb182c529237c9c72e86d99ff85e18f06ccd50d73e0",
+      "byte_identical": true
+    },
+    {
+      "source_path": "tmp\\review_20261003\\implementation\\pg\\jobs\\osb_fracture_branch_001\\output\\isolated_points.csv",
+      "fixture_path": "tests\\fixtures\\pgfrag\\result_v1_toy_endpoint\\output\\isolated_points.csv",
+      "bytes": 41,
+      "sha256": "d0bb697a4412b470be2d5ff0fdafeef8de814f94847f0ad4569de9dfe52cd0a7",
+      "byte_identical": true
+    },
+    {
+      "source_path": "tmp\\review_20261003\\implementation\\pg\\jobs\\osb_fracture_branch_001\\output\\points.csv",
+      "fixture_path": "tests\\fixtures\\pgfrag\\result_v1_toy_endpoint\\output\\points.csv",
+      "bytes": 135416,
+      "sha256": "f78180800aa39702b31d60f2e523cb5a3fc13339644d86826c39bb9acd250edf",
+      "byte_identical": true
+    },
+    {
+      "source_path": "tmp\\review_20261003\\implementation\\pg\\jobs\\osb_fracture_branch_001\\output\\solver.stderr.log",
+      "fixture_path": "tests\\fixtures\\pgfrag\\result_v1_toy_endpoint\\output\\solver.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical": true
+    },
+    {
+      "source_path": "tmp\\review_20261003\\implementation\\pg\\jobs\\osb_fracture_branch_001\\output\\solver.stdout.log",
+      "fixture_path": "tests\\fixtures\\pgfrag\\result_v1_toy_endpoint\\output\\solver.stdout.log",
+      "bytes": 102,
+      "sha256": "1a0884a22e1fa4f29ec378599d63682393a50e00c29fc21c914228d53dd6d695",
+      "byte_identical": true
+    },
+    {
+      "source_path": "tmp\\review_20261003\\implementation\\pg\\jobs\\osb_fracture_branch_001\\output\\summary.toml",
+      "fixture_path": "tests\\fixtures\\pgfrag\\result_v1_toy_endpoint\\output\\summary.toml",
+      "bytes": 1771,
+      "sha256": "337cd21c83446c0099207efdf51754ae89303baae2f883c21c2674e1c921d0bb",
+      "byte_identical": true
+    },
+    {
+      "source_path": "tmp\\review_20261003\\implementation\\pg\\jobs\\osb_fracture_branch_001\\job.json",
+      "fixture_path": "tests\\fixtures\\pgfrag\\result_v1_toy_endpoint\\job.json",
+      "bytes": 949,
+      "sha256": "83af8ea8cb0fd204ab288841fd87382c9dae77ec1cfb5dc9d0c925d610d430d1",
+      "byte_identical": true
+    }
+  ],
+  "readme_bytes": 838,
+  "total_bytes_including_readme": 1530356,
+  "within_5mb": true,
+  "readme_sha256": "4b9beb4d2d0277def9faf8ba97b312406cf941287d770c0e433673146c12ba2c"
+}

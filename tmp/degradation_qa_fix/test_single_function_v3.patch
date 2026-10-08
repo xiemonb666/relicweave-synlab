@@ -1,0 +1,20 @@
+diff --git a/tmp/degradation_qa_fix/source_before_v3/test_physical_acceptance_20261004.py b/tests/a12/degrade/test_physical_acceptance_20261004.py
+index 688db00..d4d63c7 100644
+--- a/tmp/degradation_qa_fix/source_before_v3/test_physical_acceptance_20261004.py
++++ b/tests/a12/degrade/test_physical_acceptance_20261004.py
+@@ -178,7 +178,14 @@ def test_narrowband_adapter_preserves_raw_effect_without_accepting_backend_qa(
+ def test_physical_axis_override_cannot_revive_failed_or_unaccepted_qa(monkeypatch, status):
+     _mesh, fragment, source, clean_truth, _appearance = _fixture()
+     operator = AXIS_REGISTRY.get("P04")
+-    recipe = _axis_recipe("P04", 1, fragment, source)
++    basis = operator.sample_basis(
++        {"source": source, "lineage_id": source.lineage_id,
++         "fragment_id": source.fragment_id, "master_seed": SEED},
++        np.random.default_rng(SEED), operator.default_variant)
++    recipe = operator.recipe(
++        level=1, variant=operator.default_variant,
++        params=operator.params_for(1, operator.default_variant), basis=basis,
++        fragment=fragment, source=source)
+     fake = PhysicalResult(
+         mother_id="M_probe", clean_ref="M_probe:E_probe:v1", event_id="E_probe",
+         recipe_id="P04:test:L1", version=1, components=[_component(fragment.mesh)],

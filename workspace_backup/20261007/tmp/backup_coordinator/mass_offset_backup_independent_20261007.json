@@ -1,0 +1,2210 @@
+{
+  "schema": "shardforge.mass_offset_backup_independent_postverify.v1",
+  "status": "PASS_READ_ONLY_POSTVERIFY",
+  "started_utc": "2026-10-06T18:41:22.496137+00:00",
+  "ended_utc": "2026-10-06T18:41:27.302337+00:00",
+  "wall_seconds": 4.806651,
+  "runtime": {
+    "python_executable": "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+    "flags": [
+      "-B",
+      "-c"
+    ],
+    "inline_checker_sha256": "ee5bb61b55ea2cf6560cf605a25995683efead70b3010d79a6fc48239576516a",
+    "process_returncode": 0,
+    "outer_timeout_seconds": 30,
+    "argv_template": [
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+      "-B",
+      "-c",
+      "<inline checker; SHA256 recorded above>"
+    ]
+  },
+  "input_pins": {
+    "plan": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\backup_coordinator\\mass_offset_backup_plan_20261007.json",
+      "bytes": 54463,
+      "sha256": "ccc1d74153133251048b05482827f166cd36dc9834f314beda8ca7b9541ff007"
+    },
+    "receipt": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\backup_coordinator\\mass_offset_backup_execution_20261007.json",
+      "bytes": 4116125,
+      "sha256": "b9b203fdc6f4fbc8dcb0dc2399ff8526f233efddbfec8850baf724752d2ca011"
+    }
+  },
+  "plan_totals": {
+    "item_count": 58,
+    "total_bytes": 959548,
+    "unique_sources": 58,
+    "unique_destinations": 58,
+    "by_repo": {
+      "pgfrag": {
+        "item_count": 31,
+        "total_bytes": 414602,
+        "copy_count": 26,
+        "stage_existing_count": 5
+      },
+      "vesselforge": {
+        "item_count": 27,
+        "total_bytes": 544946,
+        "copy_count": 22,
+        "stage_existing_count": 5
+      }
+    }
+  },
+  "receipt_counts": {
+    "planned_items": 58,
+    "planned_bytes": 959548,
+    "copies": 48,
+    "direct_stages": 10
+  },
+  "operation_counts": {
+    "stage_existing_exact": 10,
+    "copy_then_stage_exact": 48
+  },
+  "repositories": {
+    "pgfrag": {
+      "root": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+      "branch": "backup/forge-work-20261003",
+      "head": "6aabf6191eb232b4ad446334189d15e894bc3bff",
+      "parent": "c13770d7c99ae58d3b57c34b434d2eb1a743d814",
+      "item_count": 31,
+      "bytes": 414602,
+      "operation_counts": {
+        "stage_existing_exact": 5,
+        "copy_then_stage_exact": 26
+      },
+      "exact_diff_path_count": 31,
+      "exact_diff_paths_pass": true,
+      "remote_ref": "refs/heads/backup/forge-work-20261003",
+      "remote_head": "6aabf6191eb232b4ad446334189d15e894bc3bff",
+      "remote_matches_head": true,
+      "index_clean": true,
+      "tracked_worktree_clean": true,
+      "untracked_all_files_count_preserved": 1563,
+      "untracked_status_sha256": "fc142166bbac3fee10f3afa3c472a04a066eb33d52be5b023ae0b3b2c8652c12",
+      "tracked_status_count": 0,
+      "raw_push_capture": {
+        "returncode": 0,
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_bytes": 100,
+        "stderr_sha256": "7375c31a693c5928760ef6ff411d7a21b3f9eb6c6fb2bf20f7b6528e93ef8a83",
+        "stderr_text": "To https://github.com/xiemonb666/pgfrag.git\n   c13770d..6aabf61  HEAD -> backup/forge-work-20261003\n",
+        "structured_returncode": 0,
+        "remote_before": "c13770d7c99ae58d3b57c34b434d2eb1a743d814",
+        "remote_after": "6aabf6191eb232b4ad446334189d15e894bc3bff",
+        "success_ref_line_present": true
+      },
+      "commands": {
+        "root": {
+          "label": "root:pgfrag",
+          "argv": [
+            "git",
+            "rev-parse",
+            "--show-toplevel"
+          ],
+          "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+          "returncode": 0,
+          "wall_seconds": 0.033442,
+          "stdout_bytes": 41,
+          "stdout_sha256": "9872d2281ae5d0a56eb2c2243cfb4ce96faa23220979c04e163919d89c2221aa",
+          "stderr_bytes": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_preview": "",
+          "stdout_text": "C:/Users/xiemo/Desktop/ShardForge/pgfrag\n"
+        },
+        "branch": {
+          "label": "branch:pgfrag",
+          "argv": [
+            "git",
+            "branch",
+            "--show-current"
+          ],
+          "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+          "returncode": 0,
+          "wall_seconds": 0.029149,
+          "stdout_bytes": 27,
+          "stdout_sha256": "f50110fba5e8f77ff5799dd68a48c97b2646278d8f9f3a0b51bbb6fb1f3521a7",
+          "stderr_bytes": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_preview": "",
+          "stdout_text": "backup/forge-work-20261003\n"
+        },
+        "head": {
+          "label": "head:pgfrag",
+          "argv": [
+            "git",
+            "rev-parse",
+            "HEAD"
+          ],
+          "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+          "returncode": 0,
+          "wall_seconds": 0.034315,
+          "stdout_bytes": 41,
+          "stdout_sha256": "75d1ff7d326323a089018a1f267a07fd5869317eedc715bf59318a159025dd5f",
+          "stderr_bytes": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_preview": "",
+          "stdout_text": "6aabf6191eb232b4ad446334189d15e894bc3bff\n"
+        },
+        "parent": {
+          "label": "parent:pgfrag",
+          "argv": [
+            "git",
+            "rev-parse",
+            "HEAD^"
+          ],
+          "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+          "returncode": 0,
+          "wall_seconds": 0.028717,
+          "stdout_bytes": 41,
+          "stdout_sha256": "2ae92e9932fe6f9e2bbbd909a5f3b536d3aea73d711275cc2d21c4418acb21be",
+          "stderr_bytes": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_preview": "",
+          "stdout_text": "c13770d7c99ae58d3b57c34b434d2eb1a743d814\n"
+        },
+        "diff_tree": {
+          "label": "diff_tree:pgfrag",
+          "argv": [
+            "git",
+            "diff-tree",
+            "--no-commit-id",
+            "--name-only",
+            "-r",
+            "-z",
+            "6aabf6191eb232b4ad446334189d15e894bc3bff"
+          ],
+          "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+          "returncode": 0,
+          "wall_seconds": 0.029643,
+          "stdout_bytes": 2922,
+          "stdout_sha256": "2b055bb1a0823e8d70f4298b4302603210fc5c121105115bd357364eca4eadcb",
+          "stderr_bytes": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_preview": "",
+          "stdout_preview": "docs/progress/review_artifacts/20261007/mixed93_consistent_mass/preauthorization/case_pre_authorization.json\u0000docs/progress/revie ... ed93_consistent_mass_20261006/mixed93_consistent_mass.py\u0000experiments/mixed93_consistent_mass_20261006/recovery_metadata_gate.py\u0000"
+        },
+        "tracked_diff": {
+          "label": "tracked_diff:pgfrag",
+          "argv": [
+            "git",
+            "diff",
+            "--quiet"
+          ],
+          "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+          "returncode": 0,
+          "wall_seconds": 0.051684,
+          "stdout_bytes": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_bytes": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_preview": "",
+          "stdout_text": ""
+        },
+        "index_diff": {
+          "label": "index_diff:pgfrag",
+          "argv": [
+            "git",
+            "diff",
+            "--cached",
+            "--quiet"
+          ],
+          "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+          "returncode": 0,
+          "wall_seconds": 0.034508,
+          "stdout_bytes": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_bytes": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_preview": "",
+          "stdout_text": ""
+        },
+        "status": {
+          "label": "status:pgfrag",
+          "argv": [
+            "git",
+            "status",
+            "--porcelain=v1",
+            "--untracked-files=all",
+            "-z"
+          ],
+          "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+          "returncode": 0,
+          "wall_seconds": 0.059636,
+          "stdout_bytes": 137546,
+          "stdout_sha256": "69cf2098b2b0aac19d190d37b0c4edb407eb410eb2e3febf21afdd99049a1b51",
+          "stderr_bytes": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_preview": "",
+          "stdout_preview": "?? docs/progress/20261006_physics_core_review_addendum.md\u0000?? docs/references/CERAMIC_FRACTURE_BENCHMARK_20261004.json\u0000?? docs/re ... eview_20261007/mixed93_physical_front_next_design/DESIGN.md\u0000?? tmp/review_20261007/mixed93_physical_front_next_design/PLAN.json\u0000"
+        },
+        "ls_remote": {
+          "label": "ls_remote:pgfrag",
+          "argv": [
+            "git",
+            "ls-remote",
+            "origin",
+            "refs/heads/backup/forge-work-20261003"
+          ],
+          "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+          "returncode": 0,
+          "wall_seconds": 1.972894,
+          "stdout_bytes": 79,
+          "stdout_sha256": "76ee2b64b5495b81f24bc76e8084028f252db97684682bf1d127d9278b1bf1b0",
+          "stderr_bytes": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_preview": "",
+          "stdout_text": "6aabf6191eb232b4ad446334189d15e894bc3bff\trefs/heads/backup/forge-work-20261003\n"
+        }
+      }
+    },
+    "vesselforge": {
+      "root": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+      "branch": "backup/forge-work-20261003",
+      "head": "8acff8ac7db9cf212ed87ede3054a8311b69cc3a",
+      "parent": "f34800e69b83277cff14629f6b1cd386872d8ef8",
+      "item_count": 27,
+      "bytes": 544946,
+      "operation_counts": {
+        "stage_existing_exact": 5,
+        "copy_then_stage_exact": 22
+      },
+      "exact_diff_path_count": 27,
+      "exact_diff_paths_pass": true,
+      "remote_ref": "refs/heads/backup/forge-work-20261003",
+      "remote_head": "8acff8ac7db9cf212ed87ede3054a8311b69cc3a",
+      "remote_matches_head": true,
+      "index_clean": true,
+      "tracked_worktree_clean": true,
+      "untracked_all_files_count_preserved": 702,
+      "untracked_status_sha256": "ad4d3ff617a8827159aad7b47a8127b92d3004348521b2af85ce0ebbf849c861",
+      "tracked_status_count": 0,
+      "raw_push_capture": {
+        "returncode": 0,
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_bytes": 105,
+        "stderr_sha256": "04f552c74f21ef9b7c7d853ca65f1e47683309b5cf9a7dd374dc224a0b1128ba",
+        "stderr_text": "To https://github.com/xiemonb666/vesselforge.git\n   f34800e..8acff8a  HEAD -> backup/forge-work-20261003\n",
+        "structured_returncode": 0,
+        "remote_before": "f34800e69b83277cff14629f6b1cd386872d8ef8",
+        "remote_after": "8acff8ac7db9cf212ed87ede3054a8311b69cc3a",
+        "success_ref_line_present": true
+      },
+      "commands": {
+        "root": {
+          "label": "root:vesselforge",
+          "argv": [
+            "git",
+            "rev-parse",
+            "--show-toplevel"
+          ],
+          "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+          "returncode": 0,
+          "wall_seconds": 0.029301,
+          "stdout_bytes": 46,
+          "stdout_sha256": "c882de123d463a5aee07691c4279fbb8f2e38c55becc9622db070591a3e00dc7",
+          "stderr_bytes": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_preview": "",
+          "stdout_text": "C:/Users/xiemo/Desktop/ShardForge/vesselforge\n"
+        },
+        "branch": {
+          "label": "branch:vesselforge",
+          "argv": [
+            "git",
+            "branch",
+            "--show-current"
+          ],
+          "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+          "returncode": 0,
+          "wall_seconds": 0.027314,
+          "stdout_bytes": 27,
+          "stdout_sha256": "f50110fba5e8f77ff5799dd68a48c97b2646278d8f9f3a0b51bbb6fb1f3521a7",
+          "stderr_bytes": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_preview": "",
+          "stdout_text": "backup/forge-work-20261003\n"
+        },
+        "head": {
+          "label": "head:vesselforge",
+          "argv": [
+            "git",
+            "rev-parse",
+            "HEAD"
+          ],
+          "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+          "returncode": 0,
+          "wall_seconds": 0.027446,
+          "stdout_bytes": 41,
+          "stdout_sha256": "db7ad056815922ed4f9d4b88c718e59f35bd1a4b5317ee131ab4390fae5fff0b",
+          "stderr_bytes": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_preview": "",
+          "stdout_text": "8acff8ac7db9cf212ed87ede3054a8311b69cc3a\n"
+        },
+        "parent": {
+          "label": "parent:vesselforge",
+          "argv": [
+            "git",
+            "rev-parse",
+            "HEAD^"
+          ],
+          "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+          "returncode": 0,
+          "wall_seconds": 0.031988,
+          "stdout_bytes": 41,
+          "stdout_sha256": "8883fd7a64ce0a8364f4e7629702073c34c6778c709e7110edfee096900cf3c9",
+          "stderr_bytes": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_preview": "",
+          "stdout_text": "f34800e69b83277cff14629f6b1cd386872d8ef8\n"
+        },
+        "diff_tree": {
+          "label": "diff_tree:vesselforge",
+          "argv": [
+            "git",
+            "diff-tree",
+            "--no-commit-id",
+            "--name-only",
+            "-r",
+            "-z",
+            "8acff8ac7db9cf212ed87ede3054a8311b69cc3a"
+          ],
+          "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+          "returncode": 0,
+          "wall_seconds": 0.035982,
+          "stdout_bytes": 2882,
+          "stdout_sha256": "089b142568e01eda9384a5b4964bc785c5f057da8ab36fb4138f6304445971f0",
+          "stderr_bytes": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_preview": "",
+          "stdout_preview": "docs/progress/review_artifacts/20261007/normal_offset_meridian/failure_source_freeze/README.md\u0000docs/progress/review_artifacts/20 ... n_20261006/run_normal_offset_meridian.py\u0000experiments/normal_offset_meridian_20261006/run_normal_offset_meridian_zprime_fixed.py\u0000"
+        },
+        "tracked_diff": {
+          "label": "tracked_diff:vesselforge",
+          "argv": [
+            "git",
+            "diff",
+            "--quiet"
+          ],
+          "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+          "returncode": 0,
+          "wall_seconds": 0.037432,
+          "stdout_bytes": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_bytes": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_preview": "",
+          "stdout_text": ""
+        },
+        "index_diff": {
+          "label": "index_diff:vesselforge",
+          "argv": [
+            "git",
+            "diff",
+            "--cached",
+            "--quiet"
+          ],
+          "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+          "returncode": 0,
+          "wall_seconds": 0.032472,
+          "stdout_bytes": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_bytes": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_preview": "",
+          "stdout_text": ""
+        },
+        "status": {
+          "label": "status:vesselforge",
+          "argv": [
+            "git",
+            "status",
+            "--porcelain=v1",
+            "--untracked-files=all",
+            "-z"
+          ],
+          "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+          "returncode": 0,
+          "wall_seconds": 0.048226,
+          "stdout_bytes": 56859,
+          "stdout_sha256": "616c01e757335ef803705857463164b50b20a581664238665d52a49c9d2f2642",
+          "stderr_bytes": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_preview": "",
+          "stdout_preview": "?? experiments/catalog_native_adapter_20261006/README.md\u0000?? experiments/exact_curvature_certificate_20261006/README.md\u0000?? experi ... eview_20261006/whole_body_c3_independent/saved_readback.json\u0000?? tmp/review_20261006/whole_body_c3_independent/saved_readback.md\u0000"
+        },
+        "ls_remote": {
+          "label": "ls_remote:vesselforge",
+          "argv": [
+            "git",
+            "ls-remote",
+            "origin",
+            "refs/heads/backup/forge-work-20261003"
+          ],
+          "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+          "returncode": 0,
+          "wall_seconds": 2.068266,
+          "stdout_bytes": 79,
+          "stdout_sha256": "2517851a456a1abb26b8017b8507cd0557d9fbcc2b7949712808c4b4b5f6b60c",
+          "stderr_bytes": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_preview": "",
+          "stdout_text": "8acff8ac7db9cf212ed87ede3054a8311b69cc3a\trefs/heads/backup/forge-work-20261003\n"
+        }
+      }
+    }
+  },
+  "file_count": 58,
+  "file_checks": [
+    {
+      "repo": "pgfrag",
+      "operation": "stage_existing_exact",
+      "source_repo_relative": "experiments/mixed93_consistent_mass_20261006/case.json",
+      "destination_repo_relative": "experiments/mixed93_consistent_mass_20261006/case.json",
+      "bytes": 5568,
+      "sha256": "56fcda7bc5bc39ea8d269e08d37dbce581cd4b5c318befc49f79a3415060d158",
+      "source": {
+        "bytes": 5568,
+        "sha256": "56fcda7bc5bc39ea8d269e08d37dbce581cd4b5c318befc49f79a3415060d158"
+      },
+      "destination": {
+        "bytes": 5568,
+        "sha256": "56fcda7bc5bc39ea8d269e08d37dbce581cd4b5c318befc49f79a3415060d158"
+      },
+      "head_blob": {
+        "bytes": 5568,
+        "sha256": "56fcda7bc5bc39ea8d269e08d37dbce581cd4b5c318befc49f79a3415060d158"
+      },
+      "git_blob_oid": "2ab6faf231c641e33d86b9cd26fc90dd6e2da068",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "stage_existing_exact",
+      "source_repo_relative": "experiments/mixed93_consistent_mass_20261006/mass_replay_audit.py",
+      "destination_repo_relative": "experiments/mixed93_consistent_mass_20261006/mass_replay_audit.py",
+      "bytes": 12133,
+      "sha256": "954f3f43a1a385c6540d2bc20562040d52c1c821c25b1566e68aa1c812352ffb",
+      "source": {
+        "bytes": 12133,
+        "sha256": "954f3f43a1a385c6540d2bc20562040d52c1c821c25b1566e68aa1c812352ffb"
+      },
+      "destination": {
+        "bytes": 12133,
+        "sha256": "954f3f43a1a385c6540d2bc20562040d52c1c821c25b1566e68aa1c812352ffb"
+      },
+      "head_blob": {
+        "bytes": 12133,
+        "sha256": "954f3f43a1a385c6540d2bc20562040d52c1c821c25b1566e68aa1c812352ffb"
+      },
+      "git_blob_oid": "ab0fc5af208fc12b8a0c1af165282aab4ae16a0f",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "stage_existing_exact",
+      "source_repo_relative": "experiments/mixed93_consistent_mass_20261006/mixed93_consistent_mass.py",
+      "destination_repo_relative": "experiments/mixed93_consistent_mass_20261006/mixed93_consistent_mass.py",
+      "bytes": 6348,
+      "sha256": "8887a9efbdf19a20b0d7890cff1acadeacc5923aecfb3b4f8695d24df33dfda2",
+      "source": {
+        "bytes": 6348,
+        "sha256": "8887a9efbdf19a20b0d7890cff1acadeacc5923aecfb3b4f8695d24df33dfda2"
+      },
+      "destination": {
+        "bytes": 6348,
+        "sha256": "8887a9efbdf19a20b0d7890cff1acadeacc5923aecfb3b4f8695d24df33dfda2"
+      },
+      "head_blob": {
+        "bytes": 6348,
+        "sha256": "8887a9efbdf19a20b0d7890cff1acadeacc5923aecfb3b4f8695d24df33dfda2"
+      },
+      "git_blob_oid": "f4d6f30d1cdadcd881572c8695faa9168b7b4031",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "stage_existing_exact",
+      "source_repo_relative": "experiments/mixed93_consistent_mass_20261006/README.md",
+      "destination_repo_relative": "experiments/mixed93_consistent_mass_20261006/README.md",
+      "bytes": 3263,
+      "sha256": "c7be101b6e9c5b0c06c9c7b4ea7304b99a0f38b9f1ce832fa3c05013dc23119a",
+      "source": {
+        "bytes": 3263,
+        "sha256": "c7be101b6e9c5b0c06c9c7b4ea7304b99a0f38b9f1ce832fa3c05013dc23119a"
+      },
+      "destination": {
+        "bytes": 3263,
+        "sha256": "c7be101b6e9c5b0c06c9c7b4ea7304b99a0f38b9f1ce832fa3c05013dc23119a"
+      },
+      "head_blob": {
+        "bytes": 3263,
+        "sha256": "c7be101b6e9c5b0c06c9c7b4ea7304b99a0f38b9f1ce832fa3c05013dc23119a"
+      },
+      "git_blob_oid": "c6b6f0f1488010aee983a405ace21dc5372a688d",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "stage_existing_exact",
+      "source_repo_relative": "experiments/mixed93_consistent_mass_20261006/recovery_metadata_gate.py",
+      "destination_repo_relative": "experiments/mixed93_consistent_mass_20261006/recovery_metadata_gate.py",
+      "bytes": 6513,
+      "sha256": "7e75e4e8e081cfbcb598a428bed0ed15b94016eeb607b75eaa1bc313cded6c5e",
+      "source": {
+        "bytes": 6513,
+        "sha256": "7e75e4e8e081cfbcb598a428bed0ed15b94016eeb607b75eaa1bc313cded6c5e"
+      },
+      "destination": {
+        "bytes": 6513,
+        "sha256": "7e75e4e8e081cfbcb598a428bed0ed15b94016eeb607b75eaa1bc313cded6c5e"
+      },
+      "head_blob": {
+        "bytes": 6513,
+        "sha256": "7e75e4e8e081cfbcb598a428bed0ed15b94016eeb607b75eaa1bc313cded6c5e"
+      },
+      "git_blob_oid": "d5a39f014e78100d89f77c603274c1a9301b6f48",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/mixed93_consistent_mass_20261006/preauthorization/case_pre_authorization.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mixed93_consistent_mass/preauthorization/case_pre_authorization.json",
+      "bytes": 5549,
+      "sha256": "5e985c3bd324cfd10e015b066996ecd448ff7a0abb369b634a54f3087e9ff244",
+      "source": {
+        "bytes": 5549,
+        "sha256": "5e985c3bd324cfd10e015b066996ecd448ff7a0abb369b634a54f3087e9ff244"
+      },
+      "destination": {
+        "bytes": 5549,
+        "sha256": "5e985c3bd324cfd10e015b066996ecd448ff7a0abb369b634a54f3087e9ff244"
+      },
+      "head_blob": {
+        "bytes": 5549,
+        "sha256": "5e985c3bd324cfd10e015b066996ecd448ff7a0abb369b634a54f3087e9ff244"
+      },
+      "git_blob_oid": "72d44dbdb418240c9351e1fce1e0e21fb78dacd9",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/mixed93_consistent_mass_20261006/preauthorization/mass_audit.stderr.log",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mixed93_consistent_mass/preauthorization/mass_audit.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "destination": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "head_blob": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "git_blob_oid": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/mixed93_consistent_mass_20261006/preauthorization/mass_audit.stdout.log",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mixed93_consistent_mass/preauthorization/mass_audit.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "destination": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "head_blob": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "git_blob_oid": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/mixed93_consistent_mass_20261006/preauthorization/outer_execution_observation.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mixed93_consistent_mass/preauthorization/outer_execution_observation.json",
+      "bytes": 369,
+      "sha256": "a2fe8a0ef14f2010d7ae663d8155eb4c01f0a2f58d079d27e9c14ae54415e256",
+      "source": {
+        "bytes": 369,
+        "sha256": "a2fe8a0ef14f2010d7ae663d8155eb4c01f0a2f58d079d27e9c14ae54415e256"
+      },
+      "destination": {
+        "bytes": 369,
+        "sha256": "a2fe8a0ef14f2010d7ae663d8155eb4c01f0a2f58d079d27e9c14ae54415e256"
+      },
+      "head_blob": {
+        "bytes": 369,
+        "sha256": "a2fe8a0ef14f2010d7ae663d8155eb4c01f0a2f58d079d27e9c14ae54415e256"
+      },
+      "git_blob_oid": "ece7f5a299ed618be629c0c866deb1ea2f4134d7",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/mixed93_consistent_mass_20261006/preauthorization/preauthorization_pins.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mixed93_consistent_mass/preauthorization/preauthorization_pins.json",
+      "bytes": 1593,
+      "sha256": "a9aa8e1038011b827f98c94b59530ed7911050f848d49d65fe41bf05c8f27903",
+      "source": {
+        "bytes": 1593,
+        "sha256": "a9aa8e1038011b827f98c94b59530ed7911050f848d49d65fe41bf05c8f27903"
+      },
+      "destination": {
+        "bytes": 1593,
+        "sha256": "a9aa8e1038011b827f98c94b59530ed7911050f848d49d65fe41bf05c8f27903"
+      },
+      "head_blob": {
+        "bytes": 1593,
+        "sha256": "a9aa8e1038011b827f98c94b59530ed7911050f848d49d65fe41bf05c8f27903"
+      },
+      "git_blob_oid": "b4ec10df9fb722fdaf98306ef2cb8be749b5e78c",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/mixed93_consistent_mass_20261006/preauthorization/source_freeze_pre_authorization.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mixed93_consistent_mass/preauthorization/source_freeze_pre_authorization.json",
+      "bytes": 3469,
+      "sha256": "ae49a0f81e5eeeceb9f2b013b06194eeebd1ce9b419dc9662fc3788b9b3a18b4",
+      "source": {
+        "bytes": 3469,
+        "sha256": "ae49a0f81e5eeeceb9f2b013b06194eeebd1ce9b419dc9662fc3788b9b3a18b4"
+      },
+      "destination": {
+        "bytes": 3469,
+        "sha256": "ae49a0f81e5eeeceb9f2b013b06194eeebd1ce9b419dc9662fc3788b9b3a18b4"
+      },
+      "head_blob": {
+        "bytes": 3469,
+        "sha256": "ae49a0f81e5eeeceb9f2b013b06194eeebd1ce9b419dc9662fc3788b9b3a18b4"
+      },
+      "git_blob_oid": "f3be32adf2b98310ac19deeda22d4e8b6a75b0cc",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/mixed93_consistent_mass_20261006/preauthorization/wrong_target_invocation.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mixed93_consistent_mass/preauthorization/wrong_target_invocation.json",
+      "bytes": 496,
+      "sha256": "700c3267b713315f12d8bd58160cc800bfbaee18de0960fe6750438e4a7ef883",
+      "source": {
+        "bytes": 496,
+        "sha256": "700c3267b713315f12d8bd58160cc800bfbaee18de0960fe6750438e4a7ef883"
+      },
+      "destination": {
+        "bytes": 496,
+        "sha256": "700c3267b713315f12d8bd58160cc800bfbaee18de0960fe6750438e4a7ef883"
+      },
+      "head_blob": {
+        "bytes": 496,
+        "sha256": "700c3267b713315f12d8bd58160cc800bfbaee18de0960fe6750438e4a7ef883"
+      },
+      "git_blob_oid": "d979c02a04c84cece7522fd382b51051322b9f72",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/mixed93_consistent_mass_20261006/preauthorization/wrong_target_invocation.stderr.log",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mixed93_consistent_mass/preauthorization/wrong_target_invocation.stderr.log",
+      "bytes": 274,
+      "sha256": "3f211b15c26ab8b1320a2b681dc736a35b81fdfc271f405f1044a6005c8dce3d",
+      "source": {
+        "bytes": 274,
+        "sha256": "3f211b15c26ab8b1320a2b681dc736a35b81fdfc271f405f1044a6005c8dce3d"
+      },
+      "destination": {
+        "bytes": 274,
+        "sha256": "3f211b15c26ab8b1320a2b681dc736a35b81fdfc271f405f1044a6005c8dce3d"
+      },
+      "head_blob": {
+        "bytes": 274,
+        "sha256": "3f211b15c26ab8b1320a2b681dc736a35b81fdfc271f405f1044a6005c8dce3d"
+      },
+      "git_blob_oid": "9a1056f944383984137c192d72d55559e106c0e6",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/mixed93_consistent_mass_20261006/preauthorization/wrong_target_invocation.stdout.log",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mixed93_consistent_mass/preauthorization/wrong_target_invocation.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "destination": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "head_blob": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "git_blob_oid": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/mixed93_consistent_mass_20261006/preauthorization/wrong_target_mislabeled_observation.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mixed93_consistent_mass/preauthorization/wrong_target_mislabeled_observation.json",
+      "bytes": 369,
+      "sha256": "146cc60aff573b541c170013659cf6bb0f492e94c60b3e4c92fc99034c701538",
+      "source": {
+        "bytes": 369,
+        "sha256": "146cc60aff573b541c170013659cf6bb0f492e94c60b3e4c92fc99034c701538"
+      },
+      "destination": {
+        "bytes": 369,
+        "sha256": "146cc60aff573b541c170013659cf6bb0f492e94c60b3e4c92fc99034c701538"
+      },
+      "head_blob": {
+        "bytes": 369,
+        "sha256": "146cc60aff573b541c170013659cf6bb0f492e94c60b3e4c92fc99034c701538"
+      },
+      "git_blob_oid": "db92ddd15fc67e7e3c5afd3159fc7a33a1e44c44",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/mixed93_consistent_mass_20261006/run01/EXECUTION_CAPTURE.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mixed93_consistent_mass/run01/EXECUTION_CAPTURE.json",
+      "bytes": 11447,
+      "sha256": "9b96b51e7f0058672b22c11932c0c6bf6dac4441516854a113b176f3230d5743",
+      "source": {
+        "bytes": 11447,
+        "sha256": "9b96b51e7f0058672b22c11932c0c6bf6dac4441516854a113b176f3230d5743"
+      },
+      "destination": {
+        "bytes": 11447,
+        "sha256": "9b96b51e7f0058672b22c11932c0c6bf6dac4441516854a113b176f3230d5743"
+      },
+      "head_blob": {
+        "bytes": 11447,
+        "sha256": "9b96b51e7f0058672b22c11932c0c6bf6dac4441516854a113b176f3230d5743"
+      },
+      "git_blob_oid": "3a2fc0754f09aa300da5be9803354cd9d56a30cc",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/mixed93_consistent_mass_20261006/run01/mass_raw_kg.csv",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mixed93_consistent_mass/run01/mass_raw_kg.csv",
+      "bytes": 78588,
+      "sha256": "b6a2b2f781d290e356d6a8b15c743cf5d0b4b121e9fa759d6424d1af8d85a126",
+      "source": {
+        "bytes": 78588,
+        "sha256": "b6a2b2f781d290e356d6a8b15c743cf5d0b4b121e9fa759d6424d1af8d85a126"
+      },
+      "destination": {
+        "bytes": 78588,
+        "sha256": "b6a2b2f781d290e356d6a8b15c743cf5d0b4b121e9fa759d6424d1af8d85a126"
+      },
+      "head_blob": {
+        "bytes": 78588,
+        "sha256": "b6a2b2f781d290e356d6a8b15c743cf5d0b4b121e9fa759d6424d1af8d85a126"
+      },
+      "git_blob_oid": "88becd07e20f360539cf049ba490b8593f37ff9d",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/mixed93_consistent_mass_20261006/run01/mass_raw_le_f64.bin",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mixed93_consistent_mass/run01/mass_raw_le_f64.bin",
+      "bytes": 69192,
+      "sha256": "3d1aa1b03dc25aeb1d56e6c7cdbd97eb9f63ae29b8f0da104042c1119b41bcf1",
+      "source": {
+        "bytes": 69192,
+        "sha256": "3d1aa1b03dc25aeb1d56e6c7cdbd97eb9f63ae29b8f0da104042c1119b41bcf1"
+      },
+      "destination": {
+        "bytes": 69192,
+        "sha256": "3d1aa1b03dc25aeb1d56e6c7cdbd97eb9f63ae29b8f0da104042c1119b41bcf1"
+      },
+      "head_blob": {
+        "bytes": 69192,
+        "sha256": "3d1aa1b03dc25aeb1d56e6c7cdbd97eb9f63ae29b8f0da104042c1119b41bcf1"
+      },
+      "git_blob_oid": "6df46dc657ae23ee3e40b4a9f152e79457839e01",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/mixed93_consistent_mass_20261006/run01/result.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mixed93_consistent_mass/run01/result.json",
+      "bytes": 7953,
+      "sha256": "48535218766ed986b5f26c19da7bbb35bd2583840028a674bfa791e632f14bbe",
+      "source": {
+        "bytes": 7953,
+        "sha256": "48535218766ed986b5f26c19da7bbb35bd2583840028a674bfa791e632f14bbe"
+      },
+      "destination": {
+        "bytes": 7953,
+        "sha256": "48535218766ed986b5f26c19da7bbb35bd2583840028a674bfa791e632f14bbe"
+      },
+      "head_blob": {
+        "bytes": 7953,
+        "sha256": "48535218766ed986b5f26c19da7bbb35bd2583840028a674bfa791e632f14bbe"
+      },
+      "git_blob_oid": "6679e4810d18a91c0601bb01f2439721b52e4402",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/mixed93_consistent_mass_20261006/SOURCE_DIFF.md",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mixed93_consistent_mass/source_review/SOURCE_DIFF.md",
+      "bytes": 1659,
+      "sha256": "28c9eb263ebdbad06f2e6524e8f887be436f9aeefad10bcbff0f10b95e856765",
+      "source": {
+        "bytes": 1659,
+        "sha256": "28c9eb263ebdbad06f2e6524e8f887be436f9aeefad10bcbff0f10b95e856765"
+      },
+      "destination": {
+        "bytes": 1659,
+        "sha256": "28c9eb263ebdbad06f2e6524e8f887be436f9aeefad10bcbff0f10b95e856765"
+      },
+      "head_blob": {
+        "bytes": 1659,
+        "sha256": "28c9eb263ebdbad06f2e6524e8f887be436f9aeefad10bcbff0f10b95e856765"
+      },
+      "git_blob_oid": "85f68465259b5ed4d960cf0515d1009b500315d5",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/mixed93_consistent_mass_20261006/SOURCE_FREEZE.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mixed93_consistent_mass/source_review/SOURCE_FREEZE.json",
+      "bytes": 3469,
+      "sha256": "ae49a0f81e5eeeceb9f2b013b06194eeebd1ce9b419dc9662fc3788b9b3a18b4",
+      "source": {
+        "bytes": 3469,
+        "sha256": "ae49a0f81e5eeeceb9f2b013b06194eeebd1ce9b419dc9662fc3788b9b3a18b4"
+      },
+      "destination": {
+        "bytes": 3469,
+        "sha256": "ae49a0f81e5eeeceb9f2b013b06194eeebd1ce9b419dc9662fc3788b9b3a18b4"
+      },
+      "head_blob": {
+        "bytes": 3469,
+        "sha256": "ae49a0f81e5eeeceb9f2b013b06194eeebd1ce9b419dc9662fc3788b9b3a18b4"
+      },
+      "git_blob_oid": "f3be32adf2b98310ac19deeda22d4e8b6a75b0cc",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/mixed93_saved_visual/mixed93_saved_stress_norms_2x2.png",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mixed93_saved_visual/mixed93_saved_stress_norms_2x2.png",
+      "bytes": 174497,
+      "sha256": "49a631ac7cc2e7ad126f3ecf85033d5c85608d97712f7978b99b703db605d702",
+      "source": {
+        "bytes": 174497,
+        "sha256": "49a631ac7cc2e7ad126f3ecf85033d5c85608d97712f7978b99b703db605d702"
+      },
+      "destination": {
+        "bytes": 174497,
+        "sha256": "49a631ac7cc2e7ad126f3ecf85033d5c85608d97712f7978b99b703db605d702"
+      },
+      "head_blob": {
+        "bytes": 174497,
+        "sha256": "49a631ac7cc2e7ad126f3ecf85033d5c85608d97712f7978b99b703db605d702"
+      },
+      "git_blob_oid": "512810f446bd9e4fb39f1397a67499b901e846e5",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/mixed93_saved_visual/pre_audit_contract_snapshot_v1/RENDER_PINS.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mixed93_saved_visual/pre_audit_contract_snapshot_v1/RENDER_PINS.json",
+      "bytes": 1347,
+      "sha256": "5a9b909b88f474ee9646c175862952088be7f017eb2ebfa17013100adc4f7c3a",
+      "source": {
+        "bytes": 1347,
+        "sha256": "5a9b909b88f474ee9646c175862952088be7f017eb2ebfa17013100adc4f7c3a"
+      },
+      "destination": {
+        "bytes": 1347,
+        "sha256": "5a9b909b88f474ee9646c175862952088be7f017eb2ebfa17013100adc4f7c3a"
+      },
+      "head_blob": {
+        "bytes": 1347,
+        "sha256": "5a9b909b88f474ee9646c175862952088be7f017eb2ebfa17013100adc4f7c3a"
+      },
+      "git_blob_oid": "fd09e1379990ac23062a489dda1814b9a05d4513",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/mixed93_saved_visual/pre_audit_contract_snapshot_v1/render_saved_stress.py",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mixed93_saved_visual/pre_audit_contract_snapshot_v1/render_saved_stress.py",
+      "bytes": 5794,
+      "sha256": "a105a6cc44c76e6ed5387216cc2fc686422f6ebf4df95e82f0aac2de0ca0e8a1",
+      "source": {
+        "bytes": 5794,
+        "sha256": "a105a6cc44c76e6ed5387216cc2fc686422f6ebf4df95e82f0aac2de0ca0e8a1"
+      },
+      "destination": {
+        "bytes": 5794,
+        "sha256": "a105a6cc44c76e6ed5387216cc2fc686422f6ebf4df95e82f0aac2de0ca0e8a1"
+      },
+      "head_blob": {
+        "bytes": 5794,
+        "sha256": "a105a6cc44c76e6ed5387216cc2fc686422f6ebf4df95e82f0aac2de0ca0e8a1"
+      },
+      "git_blob_oid": "d98f71277ca8b4004a326b910253bf0016b17bbc",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/mixed93_saved_visual/README.md",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mixed93_saved_visual/README.md",
+      "bytes": 1777,
+      "sha256": "e4c610e9ca2ce16d8ac628447cb934edf8ef235a80d568e51f0a74126ca15e44",
+      "source": {
+        "bytes": 1777,
+        "sha256": "e4c610e9ca2ce16d8ac628447cb934edf8ef235a80d568e51f0a74126ca15e44"
+      },
+      "destination": {
+        "bytes": 1777,
+        "sha256": "e4c610e9ca2ce16d8ac628447cb934edf8ef235a80d568e51f0a74126ca15e44"
+      },
+      "head_blob": {
+        "bytes": 1777,
+        "sha256": "e4c610e9ca2ce16d8ac628447cb934edf8ef235a80d568e51f0a74126ca15e44"
+      },
+      "git_blob_oid": "8c5e60b1cce24225908d51f84d12e7e96ba06707",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/mixed93_saved_visual/render_execution01/execution_receipt.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mixed93_saved_visual/render_execution01/execution_receipt.json",
+      "bytes": 1479,
+      "sha256": "2efb404b517d8afb2a88902b77e711443d523ac6d580b9f0a3e8cc19923dcb9b",
+      "source": {
+        "bytes": 1479,
+        "sha256": "2efb404b517d8afb2a88902b77e711443d523ac6d580b9f0a3e8cc19923dcb9b"
+      },
+      "destination": {
+        "bytes": 1479,
+        "sha256": "2efb404b517d8afb2a88902b77e711443d523ac6d580b9f0a3e8cc19923dcb9b"
+      },
+      "head_blob": {
+        "bytes": 1479,
+        "sha256": "2efb404b517d8afb2a88902b77e711443d523ac6d580b9f0a3e8cc19923dcb9b"
+      },
+      "git_blob_oid": "34c5210813b74affbb79579d9410dbd5454d40a5",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/mixed93_saved_visual/render_execution01/preauth_RENDER_PINS.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mixed93_saved_visual/render_execution01/preauth_RENDER_PINS.json",
+      "bytes": 1609,
+      "sha256": "af6d7b0b6cf985085fb0fe92f8a84b1e645ac8d823d764d317bfdbd494669435",
+      "source": {
+        "bytes": 1609,
+        "sha256": "af6d7b0b6cf985085fb0fe92f8a84b1e645ac8d823d764d317bfdbd494669435"
+      },
+      "destination": {
+        "bytes": 1609,
+        "sha256": "af6d7b0b6cf985085fb0fe92f8a84b1e645ac8d823d764d317bfdbd494669435"
+      },
+      "head_blob": {
+        "bytes": 1609,
+        "sha256": "af6d7b0b6cf985085fb0fe92f8a84b1e645ac8d823d764d317bfdbd494669435"
+      },
+      "git_blob_oid": "24be6cde1b660a68b0449da32acfbde25fb627fd",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/mixed93_saved_visual/render_execution01/stderr.bin",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mixed93_saved_visual/render_execution01/stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "destination": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "head_blob": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "git_blob_oid": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/mixed93_saved_visual/render_execution01/stdout.bin",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mixed93_saved_visual/render_execution01/stdout.bin",
+      "bytes": 1099,
+      "sha256": "41f6819f879756dfdf69dd72b0dd4c30b1b53b9e35ea219ad906e30e028e77af",
+      "source": {
+        "bytes": 1099,
+        "sha256": "41f6819f879756dfdf69dd72b0dd4c30b1b53b9e35ea219ad906e30e028e77af"
+      },
+      "destination": {
+        "bytes": 1099,
+        "sha256": "41f6819f879756dfdf69dd72b0dd4c30b1b53b9e35ea219ad906e30e028e77af"
+      },
+      "head_blob": {
+        "bytes": 1099,
+        "sha256": "41f6819f879756dfdf69dd72b0dd4c30b1b53b9e35ea219ad906e30e028e77af"
+      },
+      "git_blob_oid": "e993759019951d49e0324a8ebcb12c98fe0205f7",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/mixed93_saved_visual/RENDER_PINS.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mixed93_saved_visual/RENDER_PINS.json",
+      "bytes": 1684,
+      "sha256": "3356e2ada89de1cbb02527c9658c6873fa93a7d2b6b278e5bafbfaf011ee2cf0",
+      "source": {
+        "bytes": 1684,
+        "sha256": "3356e2ada89de1cbb02527c9658c6873fa93a7d2b6b278e5bafbfaf011ee2cf0"
+      },
+      "destination": {
+        "bytes": 1684,
+        "sha256": "3356e2ada89de1cbb02527c9658c6873fa93a7d2b6b278e5bafbfaf011ee2cf0"
+      },
+      "head_blob": {
+        "bytes": 1684,
+        "sha256": "3356e2ada89de1cbb02527c9658c6873fa93a7d2b6b278e5bafbfaf011ee2cf0"
+      },
+      "git_blob_oid": "fdc24db5e3e4ebd6c49c39800c270b6bbe6bfc99",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/mixed93_saved_visual/render_saved_stress.py",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/mixed93_saved_visual/render_saved_stress.py",
+      "bytes": 7064,
+      "sha256": "3c1069b9a41a16a029803ac9130dcbfde54cad604fc3f89391099c258752e882",
+      "source": {
+        "bytes": 7064,
+        "sha256": "3c1069b9a41a16a029803ac9130dcbfde54cad604fc3f89391099c258752e882"
+      },
+      "destination": {
+        "bytes": 7064,
+        "sha256": "3c1069b9a41a16a029803ac9130dcbfde54cad604fc3f89391099c258752e882"
+      },
+      "head_blob": {
+        "bytes": 7064,
+        "sha256": "3c1069b9a41a16a029803ac9130dcbfde54cad604fc3f89391099c258752e882"
+      },
+      "git_blob_oid": "a4c471de65b357da737d54275adc7465d47d1ba1",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "operation": "stage_existing_exact",
+      "source_repo_relative": "experiments/normal_offset_meridian_20261006/case_false.json",
+      "destination_repo_relative": "experiments/normal_offset_meridian_20261006/case_false.json",
+      "bytes": 1674,
+      "sha256": "6ae5611616dbb1fdeeb498efc845a91a79798e0db5894e9577c4312c8a81a319",
+      "source": {
+        "bytes": 1674,
+        "sha256": "6ae5611616dbb1fdeeb498efc845a91a79798e0db5894e9577c4312c8a81a319"
+      },
+      "destination": {
+        "bytes": 1674,
+        "sha256": "6ae5611616dbb1fdeeb498efc845a91a79798e0db5894e9577c4312c8a81a319"
+      },
+      "head_blob": {
+        "bytes": 1674,
+        "sha256": "6ae5611616dbb1fdeeb498efc845a91a79798e0db5894e9577c4312c8a81a319"
+      },
+      "git_blob_oid": "d45e27bb33f9608a25560ffbeb7bb34ff5829f4a",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "operation": "stage_existing_exact",
+      "source_repo_relative": "experiments/normal_offset_meridian_20261006/normal_offset_meridian_certificate.py",
+      "destination_repo_relative": "experiments/normal_offset_meridian_20261006/normal_offset_meridian_certificate.py",
+      "bytes": 9847,
+      "sha256": "48ee9fbc2c69ba97dbeb3f34de298a60571786aaf3359cc784b79d2fbfaa6114",
+      "source": {
+        "bytes": 9847,
+        "sha256": "48ee9fbc2c69ba97dbeb3f34de298a60571786aaf3359cc784b79d2fbfaa6114"
+      },
+      "destination": {
+        "bytes": 9847,
+        "sha256": "48ee9fbc2c69ba97dbeb3f34de298a60571786aaf3359cc784b79d2fbfaa6114"
+      },
+      "head_blob": {
+        "bytes": 9847,
+        "sha256": "48ee9fbc2c69ba97dbeb3f34de298a60571786aaf3359cc784b79d2fbfaa6114"
+      },
+      "git_blob_oid": "1b20628811280c5e4634e2538cf3ff30d0e14bb9",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "operation": "stage_existing_exact",
+      "source_repo_relative": "experiments/normal_offset_meridian_20261006/README.md",
+      "destination_repo_relative": "experiments/normal_offset_meridian_20261006/README.md",
+      "bytes": 4553,
+      "sha256": "93f456967f3f7ea31440e1bc5b814380efbe7df90faf422995e6874a17d7a1ef",
+      "source": {
+        "bytes": 4553,
+        "sha256": "93f456967f3f7ea31440e1bc5b814380efbe7df90faf422995e6874a17d7a1ef"
+      },
+      "destination": {
+        "bytes": 4553,
+        "sha256": "93f456967f3f7ea31440e1bc5b814380efbe7df90faf422995e6874a17d7a1ef"
+      },
+      "head_blob": {
+        "bytes": 4553,
+        "sha256": "93f456967f3f7ea31440e1bc5b814380efbe7df90faf422995e6874a17d7a1ef"
+      },
+      "git_blob_oid": "c46b70464af1e917287466d255646157e5523bb0",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "operation": "stage_existing_exact",
+      "source_repo_relative": "experiments/normal_offset_meridian_20261006/run_normal_offset_meridian_zprime_fixed.py",
+      "destination_repo_relative": "experiments/normal_offset_meridian_20261006/run_normal_offset_meridian_zprime_fixed.py",
+      "bytes": 14696,
+      "sha256": "ae91c04bac02e9a057e9f1a099350a34a9cb261d21c5bbd70388f931cb17cd54",
+      "source": {
+        "bytes": 14696,
+        "sha256": "ae91c04bac02e9a057e9f1a099350a34a9cb261d21c5bbd70388f931cb17cd54"
+      },
+      "destination": {
+        "bytes": 14696,
+        "sha256": "ae91c04bac02e9a057e9f1a099350a34a9cb261d21c5bbd70388f931cb17cd54"
+      },
+      "head_blob": {
+        "bytes": 14696,
+        "sha256": "ae91c04bac02e9a057e9f1a099350a34a9cb261d21c5bbd70388f931cb17cd54"
+      },
+      "git_blob_oid": "74115ff23e2908d76974ff9cbe500e5c8b21e7ce",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "operation": "stage_existing_exact",
+      "source_repo_relative": "experiments/normal_offset_meridian_20261006/run_normal_offset_meridian.py",
+      "destination_repo_relative": "experiments/normal_offset_meridian_20261006/run_normal_offset_meridian.py",
+      "bytes": 14652,
+      "sha256": "a4307e15c461813669232ca4055a0a9f42b0f60f009070cff9e5b713781f7fb8",
+      "source": {
+        "bytes": 14652,
+        "sha256": "a4307e15c461813669232ca4055a0a9f42b0f60f009070cff9e5b713781f7fb8"
+      },
+      "destination": {
+        "bytes": 14652,
+        "sha256": "a4307e15c461813669232ca4055a0a9f42b0f60f009070cff9e5b713781f7fb8"
+      },
+      "head_blob": {
+        "bytes": 14652,
+        "sha256": "a4307e15c461813669232ca4055a0a9f42b0f60f009070cff9e5b713781f7fb8"
+      },
+      "git_blob_oid": "0908dba0f13a794491a837b792dfd0b28748aca5",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_meridian_20261006/source_pins.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_meridian/original_attempt/source_pins.json",
+      "bytes": 5137,
+      "sha256": "ceb90fed65893f865d978679ca72945a0fe7957eb9e9ffa2ca8a24268b1d09a3",
+      "source": {
+        "bytes": 5137,
+        "sha256": "ceb90fed65893f865d978679ca72945a0fe7957eb9e9ffa2ca8a24268b1d09a3"
+      },
+      "destination": {
+        "bytes": 5137,
+        "sha256": "ceb90fed65893f865d978679ca72945a0fe7957eb9e9ffa2ca8a24268b1d09a3"
+      },
+      "head_blob": {
+        "bytes": 5137,
+        "sha256": "ceb90fed65893f865d978679ca72945a0fe7957eb9e9ffa2ca8a24268b1d09a3"
+      },
+      "git_blob_oid": "902a25b2f028af8f5c2bee5806d61be74b27421c",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_meridian_20261006/normal_offset_meridian_once.lock",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_meridian/original_attempt/normal_offset_meridian_once.lock",
+      "bytes": 25,
+      "sha256": "d4d8e4969b36964e6cd8a2b86f4a795504431173778110eba5ddcf5256aa82c6",
+      "source": {
+        "bytes": 25,
+        "sha256": "d4d8e4969b36964e6cd8a2b86f4a795504431173778110eba5ddcf5256aa82c6"
+      },
+      "destination": {
+        "bytes": 25,
+        "sha256": "d4d8e4969b36964e6cd8a2b86f4a795504431173778110eba5ddcf5256aa82c6"
+      },
+      "head_blob": {
+        "bytes": 25,
+        "sha256": "d4d8e4969b36964e6cd8a2b86f4a795504431173778110eba5ddcf5256aa82c6"
+      },
+      "git_blob_oid": "1e355d8e1453119cfb095a89db344bf2c1ca3f69",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_meridian_20261006/normal_offset_meridian_run_receipt.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_meridian/original_attempt/normal_offset_meridian_run_receipt.json",
+      "bytes": 2782,
+      "sha256": "f43b82f22a51fc3acd979df9f99b1d110932ab6d05ad571c7581dda300541083",
+      "source": {
+        "bytes": 2782,
+        "sha256": "f43b82f22a51fc3acd979df9f99b1d110932ab6d05ad571c7581dda300541083"
+      },
+      "destination": {
+        "bytes": 2782,
+        "sha256": "f43b82f22a51fc3acd979df9f99b1d110932ab6d05ad571c7581dda300541083"
+      },
+      "head_blob": {
+        "bytes": 2782,
+        "sha256": "f43b82f22a51fc3acd979df9f99b1d110932ab6d05ad571c7581dda300541083"
+      },
+      "git_blob_oid": "e8d0bd709cf076ce622845907eaa085386b3f2aa",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_meridian_20261006/normal_offset_meridian_stderr.bin",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_meridian/original_attempt/normal_offset_meridian_stderr.bin",
+      "bytes": 83,
+      "sha256": "e470e18eddab907f89c2c3f3b5fea6ebddd35dab89982ce2293d8ed6f728abdc",
+      "source": {
+        "bytes": 83,
+        "sha256": "e470e18eddab907f89c2c3f3b5fea6ebddd35dab89982ce2293d8ed6f728abdc"
+      },
+      "destination": {
+        "bytes": 83,
+        "sha256": "e470e18eddab907f89c2c3f3b5fea6ebddd35dab89982ce2293d8ed6f728abdc"
+      },
+      "head_blob": {
+        "bytes": 83,
+        "sha256": "e470e18eddab907f89c2c3f3b5fea6ebddd35dab89982ce2293d8ed6f728abdc"
+      },
+      "git_blob_oid": "fb8a538abce9d380579f8e946c0c839c33391590",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_meridian_20261006/normal_offset_meridian_stdout.bin",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_meridian/original_attempt/normal_offset_meridian_stdout.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "destination": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "head_blob": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "git_blob_oid": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_meridian_20261006/failure_source_freeze/case_false.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_meridian/failure_source_freeze/case_false.json",
+      "bytes": 1674,
+      "sha256": "6ae5611616dbb1fdeeb498efc845a91a79798e0db5894e9577c4312c8a81a319",
+      "source": {
+        "bytes": 1674,
+        "sha256": "6ae5611616dbb1fdeeb498efc845a91a79798e0db5894e9577c4312c8a81a319"
+      },
+      "destination": {
+        "bytes": 1674,
+        "sha256": "6ae5611616dbb1fdeeb498efc845a91a79798e0db5894e9577c4312c8a81a319"
+      },
+      "head_blob": {
+        "bytes": 1674,
+        "sha256": "6ae5611616dbb1fdeeb498efc845a91a79798e0db5894e9577c4312c8a81a319"
+      },
+      "git_blob_oid": "d45e27bb33f9608a25560ffbeb7bb34ff5829f4a",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_meridian_20261006/failure_source_freeze/failure_source_freeze_manifest.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_meridian/failure_source_freeze/failure_source_freeze_manifest.json",
+      "bytes": 4452,
+      "sha256": "78394f83e773830c23734c41071386cd9bf8e9fdba5fd54b7e3e80ecb5698a00",
+      "source": {
+        "bytes": 4452,
+        "sha256": "78394f83e773830c23734c41071386cd9bf8e9fdba5fd54b7e3e80ecb5698a00"
+      },
+      "destination": {
+        "bytes": 4452,
+        "sha256": "78394f83e773830c23734c41071386cd9bf8e9fdba5fd54b7e3e80ecb5698a00"
+      },
+      "head_blob": {
+        "bytes": 4452,
+        "sha256": "78394f83e773830c23734c41071386cd9bf8e9fdba5fd54b7e3e80ecb5698a00"
+      },
+      "git_blob_oid": "9178c63d46c4274491a0cf5545fc71df3f1d179c",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_meridian_20261006/failure_source_freeze/normal_offset_meridian_certificate.py",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_meridian/failure_source_freeze/normal_offset_meridian_certificate.py",
+      "bytes": 9847,
+      "sha256": "48ee9fbc2c69ba97dbeb3f34de298a60571786aaf3359cc784b79d2fbfaa6114",
+      "source": {
+        "bytes": 9847,
+        "sha256": "48ee9fbc2c69ba97dbeb3f34de298a60571786aaf3359cc784b79d2fbfaa6114"
+      },
+      "destination": {
+        "bytes": 9847,
+        "sha256": "48ee9fbc2c69ba97dbeb3f34de298a60571786aaf3359cc784b79d2fbfaa6114"
+      },
+      "head_blob": {
+        "bytes": 9847,
+        "sha256": "48ee9fbc2c69ba97dbeb3f34de298a60571786aaf3359cc784b79d2fbfaa6114"
+      },
+      "git_blob_oid": "1b20628811280c5e4634e2538cf3ff30d0e14bb9",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_meridian_20261006/failure_source_freeze/normal_offset_meridian_once.lock",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_meridian/failure_source_freeze/normal_offset_meridian_once.lock",
+      "bytes": 25,
+      "sha256": "d4d8e4969b36964e6cd8a2b86f4a795504431173778110eba5ddcf5256aa82c6",
+      "source": {
+        "bytes": 25,
+        "sha256": "d4d8e4969b36964e6cd8a2b86f4a795504431173778110eba5ddcf5256aa82c6"
+      },
+      "destination": {
+        "bytes": 25,
+        "sha256": "d4d8e4969b36964e6cd8a2b86f4a795504431173778110eba5ddcf5256aa82c6"
+      },
+      "head_blob": {
+        "bytes": 25,
+        "sha256": "d4d8e4969b36964e6cd8a2b86f4a795504431173778110eba5ddcf5256aa82c6"
+      },
+      "git_blob_oid": "1e355d8e1453119cfb095a89db344bf2c1ca3f69",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_meridian_20261006/failure_source_freeze/normal_offset_meridian_run_receipt.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_meridian/failure_source_freeze/normal_offset_meridian_run_receipt.json",
+      "bytes": 2782,
+      "sha256": "f43b82f22a51fc3acd979df9f99b1d110932ab6d05ad571c7581dda300541083",
+      "source": {
+        "bytes": 2782,
+        "sha256": "f43b82f22a51fc3acd979df9f99b1d110932ab6d05ad571c7581dda300541083"
+      },
+      "destination": {
+        "bytes": 2782,
+        "sha256": "f43b82f22a51fc3acd979df9f99b1d110932ab6d05ad571c7581dda300541083"
+      },
+      "head_blob": {
+        "bytes": 2782,
+        "sha256": "f43b82f22a51fc3acd979df9f99b1d110932ab6d05ad571c7581dda300541083"
+      },
+      "git_blob_oid": "e8d0bd709cf076ce622845907eaa085386b3f2aa",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_meridian_20261006/failure_source_freeze/normal_offset_meridian_stderr.bin",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_meridian/failure_source_freeze/normal_offset_meridian_stderr.bin",
+      "bytes": 83,
+      "sha256": "e470e18eddab907f89c2c3f3b5fea6ebddd35dab89982ce2293d8ed6f728abdc",
+      "source": {
+        "bytes": 83,
+        "sha256": "e470e18eddab907f89c2c3f3b5fea6ebddd35dab89982ce2293d8ed6f728abdc"
+      },
+      "destination": {
+        "bytes": 83,
+        "sha256": "e470e18eddab907f89c2c3f3b5fea6ebddd35dab89982ce2293d8ed6f728abdc"
+      },
+      "head_blob": {
+        "bytes": 83,
+        "sha256": "e470e18eddab907f89c2c3f3b5fea6ebddd35dab89982ce2293d8ed6f728abdc"
+      },
+      "git_blob_oid": "fb8a538abce9d380579f8e946c0c839c33391590",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_meridian_20261006/failure_source_freeze/normal_offset_meridian_stdout.bin",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_meridian/failure_source_freeze/normal_offset_meridian_stdout.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "destination": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "head_blob": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "git_blob_oid": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_meridian_20261006/failure_source_freeze/README.md",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_meridian/failure_source_freeze/README.md",
+      "bytes": 4553,
+      "sha256": "93f456967f3f7ea31440e1bc5b814380efbe7df90faf422995e6874a17d7a1ef",
+      "source": {
+        "bytes": 4553,
+        "sha256": "93f456967f3f7ea31440e1bc5b814380efbe7df90faf422995e6874a17d7a1ef"
+      },
+      "destination": {
+        "bytes": 4553,
+        "sha256": "93f456967f3f7ea31440e1bc5b814380efbe7df90faf422995e6874a17d7a1ef"
+      },
+      "head_blob": {
+        "bytes": 4553,
+        "sha256": "93f456967f3f7ea31440e1bc5b814380efbe7df90faf422995e6874a17d7a1ef"
+      },
+      "git_blob_oid": "c46b70464af1e917287466d255646157e5523bb0",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_meridian_20261006/failure_source_freeze/run_normal_offset_meridian.py",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_meridian/failure_source_freeze/run_normal_offset_meridian.py",
+      "bytes": 14652,
+      "sha256": "a4307e15c461813669232ca4055a0a9f42b0f60f009070cff9e5b713781f7fb8",
+      "source": {
+        "bytes": 14652,
+        "sha256": "a4307e15c461813669232ca4055a0a9f42b0f60f009070cff9e5b713781f7fb8"
+      },
+      "destination": {
+        "bytes": 14652,
+        "sha256": "a4307e15c461813669232ca4055a0a9f42b0f60f009070cff9e5b713781f7fb8"
+      },
+      "head_blob": {
+        "bytes": 14652,
+        "sha256": "a4307e15c461813669232ca4055a0a9f42b0f60f009070cff9e5b713781f7fb8"
+      },
+      "git_blob_oid": "0908dba0f13a794491a837b792dfd0b28748aca5",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_meridian_20261006/failure_source_freeze/source_pins.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_meridian/failure_source_freeze/source_pins.json",
+      "bytes": 5137,
+      "sha256": "ceb90fed65893f865d978679ca72945a0fe7957eb9e9ffa2ca8a24268b1d09a3",
+      "source": {
+        "bytes": 5137,
+        "sha256": "ceb90fed65893f865d978679ca72945a0fe7957eb9e9ffa2ca8a24268b1d09a3"
+      },
+      "destination": {
+        "bytes": 5137,
+        "sha256": "ceb90fed65893f865d978679ca72945a0fe7957eb9e9ffa2ca8a24268b1d09a3"
+      },
+      "head_blob": {
+        "bytes": 5137,
+        "sha256": "ceb90fed65893f865d978679ca72945a0fe7957eb9e9ffa2ca8a24268b1d09a3"
+      },
+      "git_blob_oid": "902a25b2f028af8f5c2bee5806d61be74b27421c",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_meridian_20261006/retry01_after_zprime_fix/normal_offset_meridian_once.lock",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_meridian/retry01_after_zprime_fix/normal_offset_meridian_once.lock",
+      "bytes": 25,
+      "sha256": "d4d8e4969b36964e6cd8a2b86f4a795504431173778110eba5ddcf5256aa82c6",
+      "source": {
+        "bytes": 25,
+        "sha256": "d4d8e4969b36964e6cd8a2b86f4a795504431173778110eba5ddcf5256aa82c6"
+      },
+      "destination": {
+        "bytes": 25,
+        "sha256": "d4d8e4969b36964e6cd8a2b86f4a795504431173778110eba5ddcf5256aa82c6"
+      },
+      "head_blob": {
+        "bytes": 25,
+        "sha256": "d4d8e4969b36964e6cd8a2b86f4a795504431173778110eba5ddcf5256aa82c6"
+      },
+      "git_blob_oid": "1e355d8e1453119cfb095a89db344bf2c1ca3f69",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_meridian_20261006/retry01_after_zprime_fix/normal_offset_meridian_result.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_meridian/retry01_after_zprime_fix/normal_offset_meridian_result.json",
+      "bytes": 435804,
+      "sha256": "96ea35c44d40d12acc4b57a932ebb5194dbccdfd516b1fc2338ec58c51a9956a",
+      "source": {
+        "bytes": 435804,
+        "sha256": "96ea35c44d40d12acc4b57a932ebb5194dbccdfd516b1fc2338ec58c51a9956a"
+      },
+      "destination": {
+        "bytes": 435804,
+        "sha256": "96ea35c44d40d12acc4b57a932ebb5194dbccdfd516b1fc2338ec58c51a9956a"
+      },
+      "head_blob": {
+        "bytes": 435804,
+        "sha256": "96ea35c44d40d12acc4b57a932ebb5194dbccdfd516b1fc2338ec58c51a9956a"
+      },
+      "git_blob_oid": "0bc1e998ac790fc351669b465cf069b3a538c085",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_meridian_20261006/retry01_after_zprime_fix/normal_offset_meridian_run_receipt.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_meridian/retry01_after_zprime_fix/normal_offset_meridian_run_receipt.json",
+      "bytes": 3071,
+      "sha256": "768c771d1b4a4feea3d8290d63c003afa0d44435175d4b86f1277b9297fa029d",
+      "source": {
+        "bytes": 3071,
+        "sha256": "768c771d1b4a4feea3d8290d63c003afa0d44435175d4b86f1277b9297fa029d"
+      },
+      "destination": {
+        "bytes": 3071,
+        "sha256": "768c771d1b4a4feea3d8290d63c003afa0d44435175d4b86f1277b9297fa029d"
+      },
+      "head_blob": {
+        "bytes": 3071,
+        "sha256": "768c771d1b4a4feea3d8290d63c003afa0d44435175d4b86f1277b9297fa029d"
+      },
+      "git_blob_oid": "096541d7a5672c659fd3d31de5643123626d7ec1",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_meridian_20261006/retry01_after_zprime_fix/normal_offset_meridian_stderr.bin",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_meridian/retry01_after_zprime_fix/normal_offset_meridian_stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "destination": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "head_blob": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "git_blob_oid": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_meridian_20261006/retry01_after_zprime_fix/normal_offset_meridian_stdout.bin",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_meridian/retry01_after_zprime_fix/normal_offset_meridian_stdout.bin",
+      "bytes": 83,
+      "sha256": "02a9574fccb60290d18db900f79150bb0f5b72fe4c964f0489f973f171469bb5",
+      "source": {
+        "bytes": 83,
+        "sha256": "02a9574fccb60290d18db900f79150bb0f5b72fe4c964f0489f973f171469bb5"
+      },
+      "destination": {
+        "bytes": 83,
+        "sha256": "02a9574fccb60290d18db900f79150bb0f5b72fe4c964f0489f973f171469bb5"
+      },
+      "head_blob": {
+        "bytes": 83,
+        "sha256": "02a9574fccb60290d18db900f79150bb0f5b72fe4c964f0489f973f171469bb5"
+      },
+      "git_blob_oid": "c11c972e3f4645fdf2abf60c509c6b086532afba",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_meridian_20261006/retry01_after_zprime_fix/ROOT_GO_record.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_meridian/retry01_after_zprime_fix/ROOT_GO_record.json",
+      "bytes": 3393,
+      "sha256": "8c4aeb2e8a793d59f9bb19db0089d28f97b3afc649d48ba2542dac21fe5c2a64",
+      "source": {
+        "bytes": 3393,
+        "sha256": "8c4aeb2e8a793d59f9bb19db0089d28f97b3afc649d48ba2542dac21fe5c2a64"
+      },
+      "destination": {
+        "bytes": 3393,
+        "sha256": "8c4aeb2e8a793d59f9bb19db0089d28f97b3afc649d48ba2542dac21fe5c2a64"
+      },
+      "head_blob": {
+        "bytes": 3393,
+        "sha256": "8c4aeb2e8a793d59f9bb19db0089d28f97b3afc649d48ba2542dac21fe5c2a64"
+      },
+      "git_blob_oid": "e7bd61d5026cebbb7ee5e0cf120a51d5d9c4a302",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "operation": "copy_then_stage_exact",
+      "source_repo_relative": "tmp/review_20261006/normal_offset_meridian_20261006/retry01_after_zprime_fix/source_pins.json",
+      "destination_repo_relative": "docs/progress/review_artifacts/20261007/normal_offset_meridian/retry01_after_zprime_fix/source_pins.json",
+      "bytes": 5916,
+      "sha256": "9aee6ad4032434279efebeabf9f1b6be525e4bfd3951c875b7b7d08e2b0b8203",
+      "source": {
+        "bytes": 5916,
+        "sha256": "9aee6ad4032434279efebeabf9f1b6be525e4bfd3951c875b7b7d08e2b0b8203"
+      },
+      "destination": {
+        "bytes": 5916,
+        "sha256": "9aee6ad4032434279efebeabf9f1b6be525e4bfd3951c875b7b7d08e2b0b8203"
+      },
+      "head_blob": {
+        "bytes": 5916,
+        "sha256": "9aee6ad4032434279efebeabf9f1b6be525e4bfd3951c875b7b7d08e2b0b8203"
+      },
+      "git_blob_oid": "fbc8f6012db7792d44a59526638f2332dbf1e04f",
+      "three_way_equal": true,
+      "plan_pin_match": true
+    }
+  ],
+  "source_pins_stable": true,
+  "destination_pins_stable": true,
+  "pg_post_commit_receipt_incident": {
+    "receipt_note": [
+      "PG commit succeeded with rc=0; an initial receipt writer assignment to a missing optional property failed after commit, before push. This was a receipt-only error. The existing commit was verified without repeating commit, then pushed and all 31 Git blobs were rechecked."
+    ],
+    "commit_command_returncode": 0,
+    "actual_commit": "6aabf6191eb232b4ad446334189d15e894bc3bff",
+    "interpretation": "receipt-assignment/logging failure after a successful commit and before push; no commit was repeated in this postverify"
+  },
+  "failures": [],
+  "command_count": 22,
+  "command_evidence": [
+    {
+      "label": "ls_tree:pgfrag",
+      "argv": [
+        "git",
+        "ls-tree",
+        "-r",
+        "-z",
+        "6aabf6191eb232b4ad446334189d15e894bc3bff"
+      ],
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+      "returncode": 0,
+      "wall_seconds": 0.038656,
+      "stdout_bytes": 124732,
+      "stdout_sha256": "7494f62933024b13f4f580453c42cafda3b4626ecb5e2e0dea3af9c5611a3d81",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_preview": "",
+      "stdout_preview": "100644 blob 73353e9fae37e11d32b7837420d32091746d04d6\t.gitattributes\u0000100644 blob 6c3ecd596c0525abc2cfffee5cadaa5261a434dc\t.gitign ... ification/verification.jl\u0000100644 blob 42d9ae4e1c3d188f95fb73613a9c021263d2685b\tvendor/patches/peridynamics-0.5.4-headless.patch\u0000"
+    },
+    {
+      "label": "cat_file_batch:pgfrag",
+      "argv": [
+        "git",
+        "cat-file",
+        "--batch"
+      ],
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+      "returncode": 0,
+      "wall_seconds": 0.032664,
+      "stdout_bytes": 416204,
+      "stdout_sha256": "80aa920bc20958d45e2fa16b338daae179e40262caf2498624ca9d72082ad6ee",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_preview": "",
+      "stdout_preview": "2ab6faf231c641e33d86b9cd26fc90dd6e2da068 blob 5568\n{\n  \"schema\": \"pgfrag.mixed93_consistent_mass_case.v1\",\n  \"case_id\": \"mixed93 ...   print(json.dumps(result, sort_keys=True, allow_nan=False))\n    return 0\n\nif __name__ == \"__main__\": raise SystemExit(main())\n\n"
+    },
+    {
+      "label": "ls_tree:vesselforge",
+      "argv": [
+        "git",
+        "ls-tree",
+        "-r",
+        "-z",
+        "8acff8ac7db9cf212ed87ede3054a8311b69cc3a"
+      ],
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+      "returncode": 0,
+      "wall_seconds": 0.03703,
+      "stdout_bytes": 46909,
+      "stdout_sha256": "cc54703706606eb326d5114eb967468c427b3f5c015e9fbaf061bb65486219c0",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_preview": "",
+      "stdout_preview": "100644 blob fd49bf4c90f6c4b8ad5791c01a91dc162e8c37de\t.gitattributes\u0000100644 blob 1f5557cbcf8aaa43be128dfae6d4e47e822cff85\t.github ... ec2ace7459e9c\ttests/test_wall_mesh_binding.py\u0000100644 blob b36d8bb6c856f07554fc96df94994e11716054f2\ttests/test_wall_reference.py\u0000"
+    },
+    {
+      "label": "cat_file_batch:vesselforge",
+      "argv": [
+        "git",
+        "cat-file",
+        "--batch"
+      ],
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+      "returncode": 0,
+      "wall_seconds": 0.039436,
+      "stdout_bytes": 546334,
+      "stdout_sha256": "a248bdf57f5f142e0db9b1a58363b5880991d56a465a97852b05b45ea2bb639b",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_preview": "",
+      "stdout_preview": "d45e27bb33f9608a25560ffbeb7bb34ff5829f4a blob 1674\n{\r\n  \"schema\": \"vesselforge.normal_offset_meridian.false_cases.v1\",\r\n  \"purpo ... ,\r\n    \"output_directory\": \"vesselforge/tmp/review_20261006/normal_offset_meridian_20261006/retry01_after_zprime_fix\"\r\n  }\r\n}\r\n\n"
+    },
+    {
+      "label": "root:pgfrag",
+      "argv": [
+        "git",
+        "rev-parse",
+        "--show-toplevel"
+      ],
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+      "returncode": 0,
+      "wall_seconds": 0.033442,
+      "stdout_bytes": 41,
+      "stdout_sha256": "9872d2281ae5d0a56eb2c2243cfb4ce96faa23220979c04e163919d89c2221aa",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_preview": "",
+      "stdout_text": "C:/Users/xiemo/Desktop/ShardForge/pgfrag\n"
+    },
+    {
+      "label": "branch:pgfrag",
+      "argv": [
+        "git",
+        "branch",
+        "--show-current"
+      ],
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+      "returncode": 0,
+      "wall_seconds": 0.029149,
+      "stdout_bytes": 27,
+      "stdout_sha256": "f50110fba5e8f77ff5799dd68a48c97b2646278d8f9f3a0b51bbb6fb1f3521a7",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_preview": "",
+      "stdout_text": "backup/forge-work-20261003\n"
+    },
+    {
+      "label": "head:pgfrag",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+      "returncode": 0,
+      "wall_seconds": 0.034315,
+      "stdout_bytes": 41,
+      "stdout_sha256": "75d1ff7d326323a089018a1f267a07fd5869317eedc715bf59318a159025dd5f",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_preview": "",
+      "stdout_text": "6aabf6191eb232b4ad446334189d15e894bc3bff\n"
+    },
+    {
+      "label": "parent:pgfrag",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD^"
+      ],
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+      "returncode": 0,
+      "wall_seconds": 0.028717,
+      "stdout_bytes": 41,
+      "stdout_sha256": "2ae92e9932fe6f9e2bbbd909a5f3b536d3aea73d711275cc2d21c4418acb21be",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_preview": "",
+      "stdout_text": "c13770d7c99ae58d3b57c34b434d2eb1a743d814\n"
+    },
+    {
+      "label": "diff_tree:pgfrag",
+      "argv": [
+        "git",
+        "diff-tree",
+        "--no-commit-id",
+        "--name-only",
+        "-r",
+        "-z",
+        "6aabf6191eb232b4ad446334189d15e894bc3bff"
+      ],
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+      "returncode": 0,
+      "wall_seconds": 0.029643,
+      "stdout_bytes": 2922,
+      "stdout_sha256": "2b055bb1a0823e8d70f4298b4302603210fc5c121105115bd357364eca4eadcb",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_preview": "",
+      "stdout_preview": "docs/progress/review_artifacts/20261007/mixed93_consistent_mass/preauthorization/case_pre_authorization.json\u0000docs/progress/revie ... ed93_consistent_mass_20261006/mixed93_consistent_mass.py\u0000experiments/mixed93_consistent_mass_20261006/recovery_metadata_gate.py\u0000"
+    },
+    {
+      "label": "tracked_diff:pgfrag",
+      "argv": [
+        "git",
+        "diff",
+        "--quiet"
+      ],
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+      "returncode": 0,
+      "wall_seconds": 0.051684,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_preview": "",
+      "stdout_text": ""
+    },
+    {
+      "label": "index_diff:pgfrag",
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--quiet"
+      ],
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+      "returncode": 0,
+      "wall_seconds": 0.034508,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_preview": "",
+      "stdout_text": ""
+    },
+    {
+      "label": "status:pgfrag",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all",
+        "-z"
+      ],
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+      "returncode": 0,
+      "wall_seconds": 0.059636,
+      "stdout_bytes": 137546,
+      "stdout_sha256": "69cf2098b2b0aac19d190d37b0c4edb407eb410eb2e3febf21afdd99049a1b51",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_preview": "",
+      "stdout_preview": "?? docs/progress/20261006_physics_core_review_addendum.md\u0000?? docs/references/CERAMIC_FRACTURE_BENCHMARK_20261004.json\u0000?? docs/re ... eview_20261007/mixed93_physical_front_next_design/DESIGN.md\u0000?? tmp/review_20261007/mixed93_physical_front_next_design/PLAN.json\u0000"
+    },
+    {
+      "label": "ls_remote:pgfrag",
+      "argv": [
+        "git",
+        "ls-remote",
+        "origin",
+        "refs/heads/backup/forge-work-20261003"
+      ],
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+      "returncode": 0,
+      "wall_seconds": 1.972894,
+      "stdout_bytes": 79,
+      "stdout_sha256": "76ee2b64b5495b81f24bc76e8084028f252db97684682bf1d127d9278b1bf1b0",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_preview": "",
+      "stdout_text": "6aabf6191eb232b4ad446334189d15e894bc3bff\trefs/heads/backup/forge-work-20261003\n"
+    },
+    {
+      "label": "root:vesselforge",
+      "argv": [
+        "git",
+        "rev-parse",
+        "--show-toplevel"
+      ],
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+      "returncode": 0,
+      "wall_seconds": 0.029301,
+      "stdout_bytes": 46,
+      "stdout_sha256": "c882de123d463a5aee07691c4279fbb8f2e38c55becc9622db070591a3e00dc7",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_preview": "",
+      "stdout_text": "C:/Users/xiemo/Desktop/ShardForge/vesselforge\n"
+    },
+    {
+      "label": "branch:vesselforge",
+      "argv": [
+        "git",
+        "branch",
+        "--show-current"
+      ],
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+      "returncode": 0,
+      "wall_seconds": 0.027314,
+      "stdout_bytes": 27,
+      "stdout_sha256": "f50110fba5e8f77ff5799dd68a48c97b2646278d8f9f3a0b51bbb6fb1f3521a7",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_preview": "",
+      "stdout_text": "backup/forge-work-20261003\n"
+    },
+    {
+      "label": "head:vesselforge",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+      "returncode": 0,
+      "wall_seconds": 0.027446,
+      "stdout_bytes": 41,
+      "stdout_sha256": "db7ad056815922ed4f9d4b88c718e59f35bd1a4b5317ee131ab4390fae5fff0b",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_preview": "",
+      "stdout_text": "8acff8ac7db9cf212ed87ede3054a8311b69cc3a\n"
+    },
+    {
+      "label": "parent:vesselforge",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD^"
+      ],
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+      "returncode": 0,
+      "wall_seconds": 0.031988,
+      "stdout_bytes": 41,
+      "stdout_sha256": "8883fd7a64ce0a8364f4e7629702073c34c6778c709e7110edfee096900cf3c9",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_preview": "",
+      "stdout_text": "f34800e69b83277cff14629f6b1cd386872d8ef8\n"
+    },
+    {
+      "label": "diff_tree:vesselforge",
+      "argv": [
+        "git",
+        "diff-tree",
+        "--no-commit-id",
+        "--name-only",
+        "-r",
+        "-z",
+        "8acff8ac7db9cf212ed87ede3054a8311b69cc3a"
+      ],
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+      "returncode": 0,
+      "wall_seconds": 0.035982,
+      "stdout_bytes": 2882,
+      "stdout_sha256": "089b142568e01eda9384a5b4964bc785c5f057da8ab36fb4138f6304445971f0",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_preview": "",
+      "stdout_preview": "docs/progress/review_artifacts/20261007/normal_offset_meridian/failure_source_freeze/README.md\u0000docs/progress/review_artifacts/20 ... n_20261006/run_normal_offset_meridian.py\u0000experiments/normal_offset_meridian_20261006/run_normal_offset_meridian_zprime_fixed.py\u0000"
+    },
+    {
+      "label": "tracked_diff:vesselforge",
+      "argv": [
+        "git",
+        "diff",
+        "--quiet"
+      ],
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+      "returncode": 0,
+      "wall_seconds": 0.037432,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_preview": "",
+      "stdout_text": ""
+    },
+    {
+      "label": "index_diff:vesselforge",
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--quiet"
+      ],
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+      "returncode": 0,
+      "wall_seconds": 0.032472,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_preview": "",
+      "stdout_text": ""
+    },
+    {
+      "label": "status:vesselforge",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all",
+        "-z"
+      ],
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+      "returncode": 0,
+      "wall_seconds": 0.048226,
+      "stdout_bytes": 56859,
+      "stdout_sha256": "616c01e757335ef803705857463164b50b20a581664238665d52a49c9d2f2642",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_preview": "",
+      "stdout_preview": "?? experiments/catalog_native_adapter_20261006/README.md\u0000?? experiments/exact_curvature_certificate_20261006/README.md\u0000?? experi ... eview_20261006/whole_body_c3_independent/saved_readback.json\u0000?? tmp/review_20261006/whole_body_c3_independent/saved_readback.md\u0000"
+    },
+    {
+      "label": "ls_remote:vesselforge",
+      "argv": [
+        "git",
+        "ls-remote",
+        "origin",
+        "refs/heads/backup/forge-work-20261003"
+      ],
+      "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+      "returncode": 0,
+      "wall_seconds": 2.068266,
+      "stdout_bytes": 79,
+      "stdout_sha256": "2517851a456a1abb26b8017b8507cd0557d9fbcc2b7949712808c4b4b5f6b60c",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_preview": "",
+      "stdout_text": "8acff8ac7db9cf212ed87ede3054a8311b69cc3a\trefs/heads/backup/forge-work-20261003\n"
+    }
+  ],
+  "limitations": [
+    "Read-only verification only; no tests or Git mutations.",
+    "Original raw push capture is in the execution receipt: stdout empty; stderr contains the successful remote branch update. Current ls-remote independently matches both HEADs."
+  ]
+}

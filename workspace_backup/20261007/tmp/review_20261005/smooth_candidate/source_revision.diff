@@ -1,0 +1,434 @@
+--- route_source_draft.original.py
++++ route_source_draft.py
+@@ -29,6 +29,10 @@
+ WIRE_TOL_MM = 1e-7
+ CURVE_SAMPLES_PER_SPAN = 41
+ WALL_SAMPLE_GRID = (16, 20)  # azimuth x meridian per trimmed revolution face
++INTERSECTION_TOL_MM = 1e-7
++SOLID_CLASSIFIER_TOL_MM = 1e-7
++ALL_HIT_NEAR_TOL_MM = 1e-5
++MIN_STRICT_INTERVAL_WIDTH_MM = 1e-6
+ 
+ 
+ @dataclass(frozen=True)
+@@ -545,7 +549,7 @@
+     return NativeCandidate(family, body, wires[0], section_face, report, curve_spans)
+ 
+ 
+-def _solid_state(shape: Any, point: Any, tolerance: float = 1e-7) -> str:
++def _solid_state(shape: Any, point: Any, tolerance: float = SOLID_CLASSIFIER_TOL_MM) -> str:
+     from OCP.BRepClass3d import BRepClass3d_SolidClassifier
+ 
+     classifier = BRepClass3d_SolidClassifier()
+@@ -554,14 +558,117 @@
+     return str(classifier.State())
+ 
+ 
+-def _cluster_hits(distances: Sequence[float], tolerance: float = 1e-5) -> list[float]:
+-    grouped: list[list[float]] = []
+-    for distance in sorted(float(value) for value in distances if math.isfinite(float(value)) and float(value) >= 0.0):
+-        if not grouped or distance - grouped[-1][-1] > tolerance:
+-            grouped.append([distance])
+-        else:
+-            grouped[-1].append(distance)
+-    return [sum(group) / len(group) for group in grouped]
++def _audit_all_hit_distances(
++    raw_distances: Sequence[Any],
++    *,
++    max_distance_mm: float,
++    near_tolerance_mm: float = ALL_HIT_NEAR_TOL_MM,
++) -> dict[str, Any]:
++    """Retain raw OCC hits and refuse ambiguous near-distinct cuts.
++
++    Exact duplicate floating-point distances can be removed as duplicate face
++    reports. Distinct distances within the near tolerance are preserved in a
++    connected group and make the ray UNKNOWN; they are never averaged into a
++    replacement boundary.
++    """
++    maximum = float(max_distance_mm)
++    tolerance = float(near_tolerance_mm)
++    invalid_reasons: list[str] = []
++    if not math.isfinite(maximum) or maximum <= 0.0:
++        invalid_reasons.append("invalid_max_distance")
++    if not math.isfinite(tolerance) or tolerance <= 0.0:
++        invalid_reasons.append("invalid_near_tolerance")
++
++    raw_json: list[float | str | dict[str, str]] = []
++    finite_values: list[float] = []
++    for index, value in enumerate(raw_distances):
++        try:
++            distance = float(value)
++        except (TypeError, ValueError, OverflowError):
++            raw_json.append({"unparsed_value": repr(value)})
++            invalid_reasons.append(f"raw_hit_{index}_is_not_numeric")
++            continue
++        if math.isnan(distance):
++            raw_json.append("NaN")
++            invalid_reasons.append(f"raw_hit_{index}_is_nonfinite")
++            continue
++        if distance == math.inf:
++            raw_json.append("+Infinity")
++            invalid_reasons.append(f"raw_hit_{index}_is_nonfinite")
++            continue
++        if distance == -math.inf:
++            raw_json.append("-Infinity")
++            invalid_reasons.append(f"raw_hit_{index}_is_nonfinite")
++            continue
++        raw_json.append(distance)
++        finite_values.append(distance)
++        if distance < 0.0:
++            invalid_reasons.append(f"raw_hit_{index}_is_negative")
++        if math.isfinite(maximum) and distance > maximum:
++            invalid_reasons.append(f"raw_hit_{index}_is_beyond_query_limit")
++
++    ordered = sorted(finite_values)
++    exact_unique: list[float] = []
++    for distance in ordered:
++        if not exact_unique or distance != exact_unique[-1]:
++            exact_unique.append(distance)
++    exact_duplicate_count = len(finite_values) - len(exact_unique)
++
++    near_groups: list[list[float]] = []
++    if math.isfinite(tolerance) and tolerance > 0.0:
++        current_group: list[float] = []
++        for distance in exact_unique:
++            if not current_group or distance - current_group[-1] <= tolerance:
++                current_group.append(distance)
++            else:
++                if len(current_group) > 1:
++                    near_groups.append(current_group)
++                current_group = [distance]
++        if len(current_group) > 1:
++            near_groups.append(current_group)
++
++    near_hit_groups = [
++        {
++            "members_mm": [float(value) for value in group],
++            "span_mm": [float(group[0]), float(group[-1])],
++        }
++        for group in near_groups
++    ]
++    if near_groups:
++        invalid_reasons.append("distinct_hits_within_near_tolerance")
++    if invalid_reasons:
++        status = "UNKNOWN_RAW_HIT_OR_NEAR_HIT_AMBIGUITY"
++        usable_hits: list[float] | None = None
++    else:
++        status = "PASS_EXACT_DUPLICATES_ONLY"
++        usable_hits = [float(value) for value in exact_unique]
++
++    return {
++        "status": status,
++        "reason_codes": sorted(set(invalid_reasons)),
++        "raw_hit_values_mm": raw_json,
++        "raw_hit_count": len(raw_json),
++        "finite_raw_hit_count": len(finite_values),
++        "exact_duplicate_hit_count": exact_duplicate_count,
++        "exact_unique_finite_hits_mm": [float(value) for value in exact_unique],
++        "near_hit_tolerance_mm": tolerance,
++        "near_hit_groups": near_hit_groups,
++        "usable_hits_mm": usable_hits,
++        "cuts_use_group_mean": False,
++    }
++
++
++def _interval_has_strict_interior_probe(lower: float, upper: float) -> bool:
++    """Require a finite interval wide enough to classify away from both hits."""
++    lower_value = float(lower)
++    upper_value = float(upper)
++    width = upper_value - lower_value
++    return (
++        math.isfinite(lower_value)
++        and math.isfinite(upper_value)
++        and math.isfinite(width)
++        and width > MIN_STRICT_INTERVAL_WIDTH_MM
++    )
+ 
+ 
+ def measure_all_hit_normal_walls(shape: Any, *, max_distance_mm: float, height_mm: float) -> dict[str, Any]:
+@@ -578,31 +685,42 @@
+ 
+     azimuth_steps, meridian_steps = WALL_SAMPLE_GRID
+     intersector = IntCurvesFace_ShapeIntersector()
+-    intersector.Load(shape.wrapped, 1e-7)
++    intersector.Load(shape.wrapped, INTERSECTION_TOL_MM)
+     records: list[dict[str, Any]] = []
+     unknown: list[dict[str, Any]] = []
+     candidate_count = 0
+     face_coverage: list[dict[str, Any]] = []
++    non_revolution_face_count = 0
+     for face_index, face in enumerate(shape.Faces()):
+         surface = BRepAdaptor_Surface(face.wrapped, True)
+         if surface.GetType() != GeomAbs_SurfaceOfRevolution:
++            non_revolution_face_count += 1
+             continue
+         u_min, u_max, v_min, v_max = BRepTools.UVBounds_s(face.wrapped)
+         normal_eval = BRepGProp_Face(face.wrapped)
++        face_uv_cell_centers = 0
++        face_inside_trim_count = 0
++        face_above_rim_count = 0
++        face_axis_excluded_count = 0
++        face_low_radial_normal_count = 0
++        face_degenerate_normal_count = 0
+         face_candidates = 0
+         face_measured = 0
+         for iu in range(azimuth_steps):
+             u = u_min + (u_max - u_min) * (iu + 0.5) / azimuth_steps
+             for iv in range(meridian_steps):
++                face_uv_cell_centers += 1
+                 v = v_min + (v_max - v_min) * (iv + 0.5) / meridian_steps
+-                trim = BRepClass_FaceClassifier(face.wrapped, gp_Pnt2d(u, v), 1e-7)
++                trim = BRepClass_FaceClassifier(face.wrapped, gp_Pnt2d(u, v), SOLID_CLASSIFIER_TOL_MM)
+                 if trim.State() not in (TopAbs_IN, TopAbs_ON):
+                     continue
++                face_inside_trim_count += 1
+                 point = surface.Value(u, v)
+                 normal = gp_Vec()
+                 normal_eval.Normal(u, v, point, normal)
+                 magnitude = float(normal.Magnitude())
+                 if not math.isfinite(magnitude) or magnitude < 1e-10:
++                    face_degenerate_normal_count += 1
+                     unknown.append({"face_index": face_index, "u": u, "v": v, "reason": "degenerate_normal"})
+                     continue
+                 normal.Normalize()
+@@ -611,13 +729,16 @@
+                 # The rounded mouth bridge sits at or above the nominal rim.
+                 # Keep this ray set on the side wall and base transition only.
+                 if float(xyz[2]) >= float(height_mm) - 1e-8:
++                    face_above_rim_count += 1
+                     continue
+                 radius = float(math.hypot(xyz[0], xyz[1]))
+                 if radius < 1e-6:
++                    face_axis_excluded_count += 1
+                     continue
+                 radial = np.asarray([xyz[0] / radius, xyz[1] / radius, 0.0])
+                 radial_dot = float(np.dot(nxyz, radial))
+                 if radial_dot <= 0.25:
++                    face_low_radial_normal_count += 1
+                     continue
+                 candidate_count += 1
+                 face_candidates += 1
+@@ -645,33 +766,85 @@
+                 if not intersector.IsDone():
+                     unknown.append({"face_index": face_index, "u": u, "v": v, "reason": "all_hit_query_not_done"})
+                     continue
+-                raw_hits = [
+-                    float(intersector.WParameter(hit))
+-                    for hit in range(1, intersector.NbPnt() + 1)
+-                    if float(intersector.WParameter(hit)) > 1e-7
+-                ]
+-                hits = _cluster_hits(raw_hits)
++                raw_hits = [intersector.WParameter(hit) for hit in range(1, intersector.NbPnt() + 1)]
++                hit_audit = _audit_all_hit_distances(raw_hits, max_distance_mm=max_distance_mm)
++                if hit_audit["status"] != "PASS_EXACT_DUPLICATES_ONLY":
++                    unknown.append(
++                        {
++                            "face_index": face_index,
++                            "u": float(u),
++                            "v": float(v),
++                            "reason": "raw_all_hit_distances_are_invalid_or_tolerance_ambiguous",
++                            "hit_audit": hit_audit,
++                        }
++                    )
++                    continue
++                hits = hit_audit["usable_hits_mm"]
+                 if len(hits) < 2:
+                     unknown.append(
+-                        {"face_index": face_index, "u": u, "v": v, "reason": "fewer_than_two_distinct_boundary_hits", "hits_mm": hits}
++                        {
++                            "face_index": face_index,
++                            "u": float(u),
++                            "v": float(v),
++                            "reason": "fewer_than_two_distinct_boundary_hits",
++                            "hit_audit": hit_audit,
++                        }
+                     )
+                     continue
+                 bounds = [0.0, *hits, float(max_distance_mm)]
+                 interval_states = []
++                interval_records = []
+                 state_unknown = False
+                 for lower, upper in zip(bounds, bounds[1:]):
+-                    if upper - lower <= 1e-7:
++                    width = upper - lower
++                    if not _interval_has_strict_interior_probe(lower, upper):
+                         interval_states.append("DEGENERATE")
++                        interval_records.append(
++                            {
++                                "lower_mm": float(lower),
++                                "upper_mm": float(upper),
++                                "width_mm": float(width),
++                                "state": "UNKNOWN_TOO_NARROW_FOR_STRICT_INTERIOR",
++                            }
++                        )
+                         state_unknown = True
+                         continue
+                     midpoint = outside + (0.5 * (lower + upper)) * inward
+                     state = _solid_state(shape, gp_Pnt(*midpoint.tolist()))
+                     if state.endswith("TopAbs_IN"):
+                         interval_states.append("IN_MATERIAL")
++                        interval_records.append(
++                            {
++                                "lower_mm": float(lower),
++                                "upper_mm": float(upper),
++                                "width_mm": float(width),
++                                "interior_sample_clearance_mm": float(0.5 * width),
++                                "state": "IN_MATERIAL",
++                            }
++                        )
+                     elif state.endswith("TopAbs_OUT"):
+                         interval_states.append("OUTSIDE_OR_CAVITY")
++                        interval_records.append(
++                            {
++                                "lower_mm": float(lower),
++                                "upper_mm": float(upper),
++                                "width_mm": float(width),
++                                "interior_sample_clearance_mm": float(0.5 * width),
++                                "state": "OUTSIDE_OR_CAVITY",
++                            }
++                        )
+                     else:
+                         interval_states.append("UNKNOWN")
++                        interval_records.append(
++                            {
++                                "lower_mm": float(lower),
++                                "upper_mm": float(upper),
++                                "width_mm": float(width),
++                                "interior_sample_clearance_mm": float(0.5 * width),
++                                "state": "UNKNOWN_SOLID_CLASSIFICATION",
++                                "classifier_state": state,
++                            }
++                        )
+                         state_unknown = True
+                 # The ray starts outside. Its first material interval must be
+                 # bounded by the first two distinct all-hit intersections.
+@@ -683,13 +856,24 @@
+                             "v": float(v),
+                             "reason": "all_hit_intervals_do_not_show_outer_entry_material_inner_exit",
+                             "all_hit_distances_mm": hits,
++                            "hit_audit": hit_audit,
+                             "interval_states": interval_states,
++                            "intervals": interval_records,
+                         }
+                     )
+                     continue
+                 thickness = hits[1] - hits[0]
+-                if not math.isfinite(thickness) or thickness <= 0.0:
+-                    unknown.append({"face_index": face_index, "u": u, "v": v, "reason": "invalid_first_material_interval"})
++                if not math.isfinite(thickness) or thickness <= MIN_STRICT_INTERVAL_WIDTH_MM:
++                    unknown.append(
++                        {
++                            "face_index": face_index,
++                            "u": float(u),
++                            "v": float(v),
++                            "reason": "invalid_or_too_narrow_first_material_interval",
++                            "hit_audit": hit_audit,
++                            "intervals": interval_records,
++                        }
++                    )
+                     continue
+                 records.append(
+                     {
+@@ -700,7 +884,9 @@
+                         "outward_normal": nxyz.tolist(),
+                         "radial_normal_dot": radial_dot,
+                         "all_hit_distances_mm": hits,
++                        "hit_audit": hit_audit,
+                         "all_interval_states": interval_states,
++                        "intervals": interval_records,
+                         "first_material_interval_mm": [float(hits[0]), float(hits[1])],
+                         "sampled_normal_wall_mm": float(thickness),
+                     }
+@@ -710,18 +896,36 @@
+             {
+                 "face_index_zero_based": face_index,
+                 "uv_bounds": [float(u_min), float(u_max), float(v_min), float(v_max)],
++                "uv_cell_center_count": face_uv_cell_centers,
++                "inside_trim_count": face_inside_trim_count,
++                "excluded_at_or_above_nominal_rim_count": face_above_rim_count,
++                "excluded_near_axis_count": face_axis_excluded_count,
++                "excluded_radial_normal_dot_le_0_25_count": face_low_radial_normal_count,
++                "degenerate_normal_count": face_degenerate_normal_count,
+                 "outer_side_candidate_count": face_candidates,
+                 "measured_count": face_measured,
+             }
+         )
+     distances = [record["sampled_normal_wall_mm"] for record in records]
+     return {
+-        "method": "native trimmed revolution-face UV samples; OCC outward normal classification; all IntCurvesFace intersections sorted and tolerance clustered; every ray interval solid-classified",
+-        "selection": "outward radial-facing side and base-transition probes with radial_normal_dot > 0.25 and z below nominal rim; flat floor and rounded lip excluded",
++        "method": "native trimmed revolution-face UV samples; OCC outward normal classification; every raw IntCurvesFace hit retained; exact duplicate parameters removed only; tolerance-close distinct hits refuse the ray; every strict-interior interval solid-classified",
++        "selection": "revolution-face UV cell centers below the nominal rim with radius >= 1e-6 mm and outward radial_normal_dot > 0.25",
++        "coverage_scope": "finite selected side/base-transition probes only; excludes all planar floor faces, rounded lip at or above the rim, axis samples, and revolved-face samples with radial_normal_dot <= 0.25; does not cover every wall normal",
++        "non_revolution_surface_face_count": non_revolution_face_count,
++        "hit_policy": {
++            "raw_hits_preserved": True,
++            "exact_float_duplicates_may_be_removed": True,
++            "distinct_hits_within_tolerance_make_ray_unknown": True,
++            "near_hit_tolerance_mm": ALL_HIT_NEAR_TOL_MM,
++            "near_hit_group_mean_used_as_cut": False,
++            "negative_nonfinite_or_out_of_query_range_hits_make_ray_unknown": True,
++            "minimum_interval_width_mm_for_strict_interior_probe": MIN_STRICT_INTERVAL_WIDTH_MM,
++        },
+         "sampling_grid_per_revolution_face": {"azimuth": azimuth_steps, "meridian": meridian_steps},
+         "candidate_outer_side_samples": candidate_count,
+         "measured_sample_count": len(records),
+         "unknown_count": len(unknown),
++        "unknown": unknown,
+         "unknown_first_50": unknown[:50],
+         "face_coverage": face_coverage,
+         "sampled_normal_wall_min_mm": float(min(distances)) if distances else None,
+@@ -729,7 +933,7 @@
+         "sampled_normal_wall_mean_mm": float(sum(distances) / len(distances)) if distances else None,
+         "radial_setting_is_separate_from_these_measured_values": True,
+         "samples": records,
+-        "scope": "finite measured rays only; global minimum normal thickness remains UNKNOWN",
++        "scope": "finite selected measured rays only; excluded wall regions are not represented; global minimum normal thickness remains UNKNOWN",
+     }
+ 
+ 
+@@ -742,10 +946,8 @@
+     restored = cq.importers.importStep(str(step_path)).val()
+     restored_solids, restored_shells = restored.Solids(), restored.Shells()
+     restored_shell_closed = [bool(shell.Closed()) for shell in restored_shells]
+-    bbox_before = candidate.body.BoundingBox()
+-    bbox_after = restored.BoundingBox()
+-    before_bounds = [bbox_before.xmin, bbox_before.xmax, bbox_before.ymin, bbox_before.ymax, bbox_before.zmin, bbox_before.zmax]
+-    after_bounds = [bbox_after.xmin, bbox_after.xmax, bbox_after.ymin, bbox_after.ymax, bbox_after.zmin, bbox_after.zmax]
++    before_bounds = _geometry_only_bbox_mm(candidate.body)
++    after_bounds = _geometry_only_bbox_mm(restored)
+     volume_delta = float(restored.Volume() - candidate.body.Volume())
+     bbox_deltas = [float(a - b) for a, b in zip(after_bounds, before_bounds)]
+     roundtrip_pass = bool(
+@@ -771,9 +973,31 @@
+         "native_bbox_mm": [float(value) for value in before_bounds],
+         "reloaded_bbox_mm": [float(value) for value in after_bounds],
+         "bbox_bound_deltas_mm": bbox_deltas,
++        "bbox_measurement_policy": {
++            "method": "OCP.BRepBndLib.AddOptimal_s on native geometry",
++            "use_triangulation": False,
++            "use_shape_tolerance": False,
++            "purpose": "exclude cached triangulation and shape-tolerance expansion from geometry bounds",
++        },
+         "acceptance_tolerances": {"absolute_volume_delta_mm3": 0.01, "absolute_bbox_bound_delta_mm": 0.01},
+         "scope": "STEP geometry round-trip only; does not establish production serialization or physical qualification",
+     }
++
++
++def _geometry_only_bbox_mm(shape: Any) -> list[float]:
++    """Return analytic geometry bounds without triangulation or shape tolerance."""
++    from OCP.Bnd import Bnd_Box
++    from OCP.BRepBndLib import BRepBndLib
++
++    box = Bnd_Box()
++    BRepBndLib.AddOptimal_s(shape.wrapped, box, False, False)
++    xmin, ymin, zmin, xmax, ymax, zmax = (float(value) for value in box.Get())
++    bounds = [xmin, xmax, ymin, ymax, zmin, zmax]
++    if not all(math.isfinite(value) for value in bounds):
++        raise ValueError("geometry-only bounding box contains non-finite bounds")
++    if xmin > xmax or ymin > ymax or zmin > zmax:
++        raise ValueError("geometry-only bounding box has reversed bounds")
++    return bounds
+ 
+ 
+ def _mesh_triangles(shape: Any, *, linear_mm: float, angular_rad: float) -> Any:

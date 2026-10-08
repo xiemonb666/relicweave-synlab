@@ -1,0 +1,122 @@
+{
+  "schema": "bibliography_coverage_delta_v1",
+  "state": "SOURCE_ONLY_BUILDER_COVERAGE_UPDATE",
+  "builder": {
+    "path": "tmp/backup_coordinator/closeout_20261007/build_closeout_inventory_v2.py",
+    "before_bytes": 56148,
+    "before_sha256": "4496097836423133ae58c77af13c60e259bc94a20cab7a889e840380d8d71079",
+    "after_bytes": 56155,
+    "after_sha256": "ae69f1ab9c0dda710cf1c9875295d185f81eeca9c7b38d0b1db1c6e7e5f5cd14",
+    "change": "DOCS suffix set gained only .bib",
+    "old_token": "DOCS={\".md\",\".rst\",\".adoc\"}",
+    "new_token": "DOCS={\".md\",\".rst\",\".adoc\",\".bib\"}",
+    "reconstructed_before_sha256": "4496097836423133ae58c77af13c60e259bc94a20cab7a889e840380d8d71079",
+    "ast_parse": "PASS"
+  },
+  "preserved_prechange_builder_snapshot": {
+    "path": "tmp/backup_coordinator/closeout_20261007/build_closeout_inventory_v2.py.pre_bib_coverage_20261008.snapshot",
+    "bytes": 56148,
+    "sha256": "4496097836423133ae58c77af13c60e259bc94a20cab7a889e840380d8d71079",
+    "matches_builder_before": true
+  },
+  "newly_covered_file": {
+    "path": "pgfrag/vendor/Peridynamics.jl/docs/src/references.bib",
+    "bytes": 8547,
+    "sha256": "bc60345cdd7686900d68a4ff169f6ba5ed5b2c14b52ff747cf8c992cc7cf28e9",
+    "matches_root_reviewed_pin": true,
+    "classification_intent": "reference bibliography metadata, not executable source"
+  },
+  "final_qa_authority": {
+    "path": "tmp/v147_user_merge_20261007/LAYOUT_FINAL_QA_COVERAGE.json",
+    "bytes": 119386,
+    "sha256": "8692754e75ab91e7ef823f7501343bb476731923922c46b4bfa3679edc4b0f52",
+    "status": "PASS",
+    "layout_final_qa_pass": true,
+    "combined_rendered_page_count": 238,
+    "coverage": {
+      "layout_final_pages": [
+        1,
+        225
+      ],
+      "handover_pages": [
+        1,
+        13
+      ],
+      "expected_total_png_pages": 238,
+      "actual_total_png_pages": 238,
+      "no_missing_or_duplicate_pages_within_each_document": true
+    },
+    "markdown": {
+      "path": "tmp/v147_user_merge_20261007/LAYOUT_FINAL_QA_COVERAGE.md",
+      "bytes": 1446,
+      "sha256": "0afa2d5c500a0a01a5b7008673dac2f18d0afb59129bc9a17e1c6da0482fdeb5"
+    }
+  },
+  "frozen_sources_checked": [
+    {
+      "label": "executor",
+      "path": "tmp/backup_coordinator/closeout_20261007/execute_closeout_backup.py",
+      "bytes": 69359,
+      "sha256": "9a27e1a9980fb99c144ee3dd63fe3c38405aa9b78eb03179c3ebceaba7cc1306",
+      "matches_root_pin": true
+    },
+    {
+      "label": "README",
+      "path": "tmp/backup_coordinator/closeout_20261007/README.md",
+      "bytes": 4566,
+      "sha256": "c64dafaafbcc1b95752cde84c3f3be012f8feb90e0509333e4d1de65129f8d5b",
+      "matches_root_pin": true
+    },
+    {
+      "label": "posthelper",
+      "path": "tmp/backup_coordinator/closeout_20261007/independent_postverify_all_code_backup_20261007.py",
+      "bytes": 51017,
+      "sha256": "7706e133102aaa4d47360e3e792d8ff21305267968a3d346119d7a836cef95ba",
+      "matches_root_pin": true
+    },
+    {
+      "label": "final_master",
+      "path": "RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx",
+      "bytes": 786150,
+      "sha256": "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d",
+      "matches_root_pin": true
+    },
+    {
+      "label": "user_v147_input",
+      "path": "RelicWeave_V1.47.docx",
+      "bytes": 779513,
+      "sha256": "41f1254e40a2ecabdcfa1c6583af2fce0ae1b0ab980d5f9179bbaf687b7be64b",
+      "matches_root_pin": true
+    },
+    {
+      "label": "handover_md",
+      "path": "docs/handover/20261007/HANDOVER.md",
+      "bytes": 41396,
+      "sha256": "f226a153f8aed2da04e07298f1277cd74071370d52cf74a4967702c2792f7a53",
+      "matches_root_pin": true
+    },
+    {
+      "label": "handover_docx",
+      "path": "docs/handover/20261007/RelicWeave_A12_VesselForge_PGFrag_Handover_20261007.docx",
+      "bytes": 64641,
+      "sha256": "c8b4e57340c7c9d485aeb5c6aa298ba90ac166870c9d8d0a7d414d35051f7fd2",
+      "matches_root_pin": true
+    }
+  ],
+  "prior_pin_status_delta_records_unchanged": {
+    "pin_delta_json_sha256": "d8a7118c5882b397f593579afeeb40a82e8d784480e513834f937a2e535e895f",
+    "pin_delta_md_sha256": "25b14a2d233f9cba25d67f729f460c0a9b654ebf38f54b5d0e737a57b0c5d398",
+    "status_delta_json_sha256": "993967e5b33d5b837f72de258dccffcc5499afdd74160146e2182738521f9564",
+    "status_delta_md_sha256": "b8a39063bd5bcaf64297b50eda8979e75a830ae1eb2f07a7ebe4f0dd5537d985"
+  },
+  "operations_not_performed": [
+    "inventory run",
+    "credential scan",
+    "manifest verification",
+    "export",
+    "copy",
+    "stage",
+    "commit",
+    "push"
+  ]
+}

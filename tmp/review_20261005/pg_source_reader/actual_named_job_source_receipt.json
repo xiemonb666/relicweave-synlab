@@ -1,0 +1,65 @@
+{
+  "schema": "synlab.pgfrag.named_job_probe.receipt.v1",
+  "status": "PG_DIAGNOSTIC_ONLY",
+  "scope": "PG_DIAGNOSTIC_ONLY",
+  "command": "python probe_named_job_source.py",
+  "runtime_ms": 204,
+  "expected_job_sha256": "83af8ea8cb0fd204ab288841fd87382c9dae77ec1cfb5dc9d0c925d610d430d1",
+  "actual_job_sha256": "83af8ea8cb0fd204ab288841fd87382c9dae77ec1cfb5dc9d0c925d610d430d1",
+  "job_source_status": "SOURCE_VERIFIED",
+  "job_id_match": true,
+  "result_external_sha256_verified": true,
+  "result_sha256_pre": "b3fb84f20d409f4a4dca0b34ffd8b95a07b7c7944b8b6ecd70100b0b5b17dc20",
+  "result_sha256_post": "b3fb84f20d409f4a4dca0b34ffd8b95a07b7c7944b8b6ecd70100b0b5b17dc20",
+  "source_input_hash_changes": [],
+  "source_code_hash_changes": [],
+  "dictionary_sha256": "0e0a2d1d39986fa2e676deb182c529237c9c72e86d99ff85e18f06ccd50d73e0",
+  "dictionary_bytes": 11063,
+  "unit_frame_contract": {
+    "status": "SOURCE_VERIFIED_BY_READER",
+    "global_frame": "right_handed_z_up",
+    "coordinate_unit": "m",
+    "velocity_unit": "m/s",
+    "mass_unit": "kg",
+    "volume_unit": "m^3",
+    "bond_length_unit": "m",
+    "silent_conversion": "false"
+  },
+  "caller_match": "UNKNOWN",
+  "normalized_rows_persisted": false,
+  "row_counts": {
+    "bond_state_rows": 20780,
+    "broken_bond_rows": 5236,
+    "component_rows": 576,
+    "inactive_bond_rows": 5236,
+    "isolated_point_rows": 0,
+    "point_rows": 576
+  },
+  "component_partition_validation": "UNKNOWN",
+  "capabilities": {
+    "crack_surfaces": {
+      "reason": "surface geometry and paired-face lineage are not source fields in this fixture",
+      "status": "UNKNOWN"
+    },
+    "event_history": {
+      "reason": "endpoint bond state does not contain a per-step event timeline",
+      "status": "UNKNOWN"
+    },
+    "historical_R2": {
+      "reason": "no historical surface adjacency or relation labels are emitted",
+      "status": "UNKNOWN"
+    },
+    "physical_fragments": {
+      "reason": "endpoint intact-bond components do not certify physical fragments",
+      "status": "UNKNOWN"
+    }
+  },
+  "latest_test_node": {
+    "tests": "1",
+    "failures": "0",
+    "name": "test_huge_declared_point_count_is_rejected_before_roster_construction"
+  },
+  "report_artifact": "actual_named_job_source_report.json",
+  "pre_hash_receipt": "verification_named_probe_pre.json",
+  "post_hash_receipt": "verification_named_probe_post.json"
+}

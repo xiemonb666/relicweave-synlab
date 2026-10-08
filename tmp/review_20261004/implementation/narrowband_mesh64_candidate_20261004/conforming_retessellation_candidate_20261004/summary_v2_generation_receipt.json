@@ -1,0 +1,39 @@
+{
+  "task": "derive <=8KiB compact summary from saved report and receipts",
+  "timestamp_utc": "2026-10-04T05:51:42.1403213Z",
+  "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+  "python_executable": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\.venv\\Scripts\\python.exe",
+  "argv": [
+    "-B",
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\derive_retessellation_short_summary_v2.py"
+  ],
+  "process_exit": 0,
+  "elapsed_seconds": 0.145665,
+  "candidate_conversion_rerun": false,
+  "boolean_calls": 0,
+  "hashes_before": {
+    "inputs": "d80707312638ce2830847f2dc198632c5456963a6043715d27436b3db3ce6dc2",
+    "outputs": "e00404f67bf13ced471e3c7c8d0596b3b50efd4c9b17f4175142712a5e5a04a0",
+    "script": "4ebbdf1211e54ada37438b2baec635f862fc9c825e0c84b1ef8f13bcd2bacad4",
+    "manifest": "3f46fb25978ba0e1210067494c8dc538448b962c483bcc56865f93fdd1fc9391",
+    "source": "6398ee6a02b010e172cd709c17403b81e868fe6784536c257976c6edb2ecaf10",
+    "report": "6b4078337fab9f7c0d4e4d8cdaaa2e0e4442968b4aaa5274a95a9ec1820abcba"
+  },
+  "stdout": {
+    "bytes": 411,
+    "sha256": "0836bff8ebdf50de53748ccab4737801fd046d92f552d97f2195e0ec72c6330e",
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\summary_v2_run.stdout.txt"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\summary_v2_run.stderr.txt"
+  },
+  "summary": {
+    "bytes": 6815,
+    "sha256": "af7a82d306b3861cc0ace0b1dfbcf7335d9ca6eada948251268a917fa5201cad",
+    "max_bytes": 8192,
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\retessellation_short_summary_v2.json"
+  },
+  "interpretation": "Read-only extraction of already-saved JSON metrics and receipts; no mesh conversion or geometry computation."
+}

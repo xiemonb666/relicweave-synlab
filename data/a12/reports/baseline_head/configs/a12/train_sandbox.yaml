@@ -1,0 +1,57 @@
+schema: synlab.train.v1
+run_name: sandbox_rank_head
+train_seed: 11
+release_ref: data/a12/releases/sandbox_release/manifest.json
+split: train
+release_profile_required: SANDBOX_CORE
+stage: P0
+retrieval:
+  first_stage: classical_descriptor
+  refinement: classical_local
+  candidate_pool_size: 50
+  score_sources_separate: true
+initialization:
+  kind: random
+  checkpoint_ref: null
+  require_sha256: false
+  allow_random_fallback: false
+inputs:
+  feature_schema: a12.obs.v1
+  feature_schema_requires_verified_adapter: true
+  input_profile: SENSOR_PROXY
+  observation_route: proxy_scan
+  quality_source: OBS_EST
+  roi_source: observed_estimator
+  local_token_budget: 64
+  oracle_features: false
+sampling:
+  queries_per_microbatch: 2
+  positive_limit: 2
+  legal_negative_limit: 8
+  negative_mix: {R1: 0.5, R0: 0.5}
+  exclude_all_R2_and_unknown: true
+  deduplicate_fragment_encoding: true
+optimization:
+  optimizer: AdamW
+  head_lr: 0.001
+  backbone_lr: 0.0001
+  weight_decay: 0.01
+  warmup_fraction: 0.05
+  gradient_clip_norm: 1.0
+  accumulation_steps: 1
+  max_steps: 300
+  precision: fp32
+losses: {rank: 1.0, view: 0.1, correspondence: 0.0, quality: 0.0, contradiction: 0.0}
+curriculum:
+  enabled: false
+  comparison_ref: null
+  clean_minimum_fraction: 0.2
+evaluation:
+  split: dev
+  interval_steps: 100
+  candidate_pool_ref: data/a12/pools/sandbox_dev.json
+  top_k: [1, 5, 10]
+checkpoint:
+  interval_steps: 100
+  save_rng_sampler_and_data_hash: true
+device: cpu

@@ -1,0 +1,2714 @@
+{
+  "schema": "curated_incremental_backup_plan.v1",
+  "plan_id": "next_core_incremental_plan_20261006_v3",
+  "created_utc": "2026-10-06T06:43:50.041625+08:00",
+  "plan_only": true,
+  "git_mutations_performed": false,
+  "root_exact_plan_review_required_before_copy_or_git_write": true,
+  "execution_eligibility": "DO_NOT_EXECUTE_BEFORE_ROOT_REVIEWS_EXACT_PLAN_SHA",
+  "constraints": {
+    "max_candidate_files": 100,
+    "max_candidate_bytes": 8388608,
+    "exact_paths_only": true,
+    "no_force_add": true,
+    "no_attributes_change": true,
+    "no_persistent_git_config_change": true,
+    "no_commit_or_push_until_root_approval": true,
+    "per_command_core_autocrlf_false_recommended": true
+  },
+  "repo_preflight": [
+    {
+      "repo": "pgfrag",
+      "branch": "backup/forge-work-20261003",
+      "head": "ab926e275a215979b4338a9f2b2d63bf5a0e90c8",
+      "remote_branch": "backup/forge-work-20261003",
+      "remote_head": "ab926e275a215979b4338a9f2b2d63bf5a0e90c8",
+      "local_equals_remote": true,
+      "index_clean": true,
+      "tracked_status_lines": 0
+    },
+    {
+      "repo": "vesselforge",
+      "branch": "backup/forge-work-20261003",
+      "head": "a0ba9030ff8c5c855e82acc4a84aa09dd737092c",
+      "remote_branch": "backup/forge-work-20261003",
+      "remote_head": "a0ba9030ff8c5c855e82acc4a84aa09dd737092c",
+      "local_equals_remote": true,
+      "index_clean": true,
+      "tracked_status_lines": 0
+    }
+  ],
+  "candidate_file_count": 96,
+  "candidate_total_bytes": 3047384,
+  "candidate_limit_bytes": 8388608,
+  "unique_destination_count": 96,
+  "groups": [
+    {
+      "id": "pg_safe_v2",
+      "file_count": 4,
+      "status": "FOCUSED_GEOMETRY_CHECK_PASS; 106 classifications; source-only and NOT_COUPLED"
+    },
+    {
+      "id": "pg_local_front_provider",
+      "file_count": 6,
+      "status": "242 query records: 235 OK, 7 UNKNOWN; source-only provider, no operator or solver"
+    },
+    {
+      "id": "pg_j_guard_v3",
+      "file_count": 5,
+      "status": "4 focused guard checks PASS; analytic 224-sample validation not rerun; no actual static J computed"
+    },
+    {
+      "id": "pg_energy_gate_v2",
+      "file_count": 8,
+      "status": "11 targeted tests PASS; 9 synthetic fixture states; solver and native runtime not invoked"
+    },
+    {
+      "id": "pg_mesh_binding",
+      "file_count": 9,
+      "status": "8 focused checks PASS; fixture geometry only; intersection/no-overlap/full-coverage proofs not established"
+    },
+    {
+      "id": "pg_wall_resolution",
+      "file_count": 7,
+      "status": "10 focused tests PASS; analytic hollow-cylinder fixture; physical_pass=false and global_pass=false"
+    },
+    {
+      "id": "pg_wall_bias",
+      "file_count": 15,
+      "status": "fixture-only evaluator report; NOT_ADMITTED; independent review found no false physical pass; real mesh bias remains unqualified"
+    },
+    {
+      "id": "vf_catalog_corner_fairing",
+      "file_count": 11,
+      "status": "bounded math design audit plus independent algebra review; no CAD/STEP; real-vessel/style, global normal wall and fracture remain UNKNOWN"
+    },
+    {
+      "id": "pg_local_front_operator_outer125",
+      "file_count": 18,
+      "status": "Frozen one-shot operator worker assembled scalar K, but outer wrapper returned 125 and did not promote a primary result; independent saved-array readback only; no solver or physical qualification."
+    },
+    {
+      "id": "pg_solved_field_j_unknown_contract",
+      "file_count": 13,
+      "status": "Worker stage completed readback, but parent returned UNKNOWN_WORKER_RESULT_CONTRACT from quadrature metadata mapping; mapping fix is source-only and unapplied; no retry, independent J, or qualification."
+    }
+  ],
+  "files": [
+    {
+      "id": "safe_v2_module",
+      "group": "pg_safe_v2",
+      "repo": "pgfrag",
+      "source_path": "experiments/local_front_support_safe_v2_20261006/support_topology.py",
+      "destination_path": "experiments/local_front_support_safe_v2_20261006/support_topology.py",
+      "operation": "stage_exact_existing",
+      "role": "safe-v2 finite-support topology classifier source",
+      "bytes": 27060,
+      "sha256": "919cb60a6d65ae6b55a0bd12b569ec6627066b2a72dfcca52145209336588664",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/local_front_support_safe_v2_20261006/support_topology.py"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/local_front_support_safe_v2_20261006/support_topology.py: text: unspecified",
+        "experiments/local_front_support_safe_v2_20261006/support_topology.py: eol: unspecified",
+        "experiments/local_front_support_safe_v2_20261006/support_topology.py: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "safe_v2_runner",
+      "group": "pg_safe_v2",
+      "repo": "pgfrag",
+      "source_path": "experiments/local_front_support_safe_v2_20261006/focused_geometry_check.py",
+      "destination_path": "experiments/local_front_support_safe_v2_20261006/focused_geometry_check.py",
+      "operation": "stage_exact_existing",
+      "role": "106-query focused geometry-check runner",
+      "bytes": 5365,
+      "sha256": "2ce8de74fc2f646f6d9cc50aad95ed7e44c55be5150eba3e8f5543d20d37269e",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/local_front_support_safe_v2_20261006/focused_geometry_check.py"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/local_front_support_safe_v2_20261006/focused_geometry_check.py: text: unspecified",
+        "experiments/local_front_support_safe_v2_20261006/focused_geometry_check.py: eol: unspecified",
+        "experiments/local_front_support_safe_v2_20261006/focused_geometry_check.py: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "safe_v2_readme",
+      "group": "pg_safe_v2",
+      "repo": "pgfrag",
+      "source_path": "experiments/local_front_support_safe_v2_20261006/README.md",
+      "destination_path": "experiments/local_front_support_safe_v2_20261006/README.md",
+      "operation": "stage_exact_existing",
+      "role": "safe-v2 scope and source provenance",
+      "bytes": 1175,
+      "sha256": "be2e030e71f031518bc7c806be12dd3918898158c19d36041f8628c8d89982aa",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/local_front_support_safe_v2_20261006/README.md"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/local_front_support_safe_v2_20261006/README.md: text: unspecified",
+        "experiments/local_front_support_safe_v2_20261006/README.md: eol: unspecified",
+        "experiments/local_front_support_safe_v2_20261006/README.md: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "safe_v2_review",
+      "group": "pg_safe_v2",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/local_front_support_safe_v2_20261006/REVIEW.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_support_safe_v2/REVIEW.md",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "106-classification result, scope, limitations, and launch history",
+      "bytes": 4731,
+      "sha256": "f25cd8a05823d6288545c3a4a0ccfb0156fcaa585625033c2d11fd99b3933d23",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/local_front_support_safe_v2_20261006/REVIEW.md"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/local_front_support_safe_v2/REVIEW.md: text: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_support_safe_v2/REVIEW.md: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_support_safe_v2/REVIEW.md: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_provider_module",
+      "group": "pg_local_front_provider",
+      "repo": "pgfrag",
+      "source_path": "experiments/local_front_provider_20261006/local_front_provider.py",
+      "destination_path": "experiments/local_front_provider_20261006/local_front_provider.py",
+      "operation": "stage_exact_existing",
+      "role": "pinned source-only local-front basis provider",
+      "bytes": 29526,
+      "sha256": "c586ec99dee8dc61f7a74904e1c0ce196d8ca562cbc2bb6f61411a8262c96421",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/local_front_provider_20261006/local_front_provider.py"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/local_front_provider_20261006/local_front_provider.py: text: unspecified",
+        "experiments/local_front_provider_20261006/local_front_provider.py: eol: unspecified",
+        "experiments/local_front_provider_20261006/local_front_provider.py: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_provider_runner",
+      "group": "pg_local_front_provider",
+      "repo": "pgfrag",
+      "source_path": "experiments/local_front_provider_20261006/run_provider_diagnostic.py",
+      "destination_path": "experiments/local_front_provider_20261006/run_provider_diagnostic.py",
+      "operation": "stage_exact_existing",
+      "role": "bounded 242-row provider diagnostic runner",
+      "bytes": 37108,
+      "sha256": "e5516f17dc946e62e73b6400736a50bb432ad2cd75537efff7c635ea70ec53d8",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/local_front_provider_20261006/run_provider_diagnostic.py"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/local_front_provider_20261006/run_provider_diagnostic.py: text: unspecified",
+        "experiments/local_front_provider_20261006/run_provider_diagnostic.py: eol: unspecified",
+        "experiments/local_front_provider_20261006/run_provider_diagnostic.py: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_provider_readme",
+      "group": "pg_local_front_provider",
+      "repo": "pgfrag",
+      "source_path": "experiments/local_front_provider_20261006/README.md",
+      "destination_path": "experiments/local_front_provider_20261006/README.md",
+      "operation": "stage_exact_existing",
+      "role": "provider interface and scope documentation",
+      "bytes": 1511,
+      "sha256": "e85c4beb6bc131015f65c9e047154330f0e93196b1c44425c71207ff944faf58",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/local_front_provider_20261006/README.md"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/local_front_provider_20261006/README.md: text: unspecified",
+        "experiments/local_front_provider_20261006/README.md: eol: unspecified",
+        "experiments/local_front_provider_20261006/README.md: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_provider_result",
+      "group": "pg_local_front_provider",
+      "repo": "pgfrag",
+      "source_path": "experiments/local_front_provider_20261006/provider_diagnostic.json",
+      "destination_path": "experiments/local_front_provider_20261006/provider_diagnostic.json",
+      "operation": "stage_exact_existing",
+      "role": "actual 242-query diagnostic; 235 OK and 7 UNKNOWN rows",
+      "bytes": 106887,
+      "sha256": "d5e9ac536c8bc5876359662c880e428fba68991680414dcf5766f059282c7e2d",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/local_front_provider_20261006/provider_diagnostic.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/local_front_provider_20261006/provider_diagnostic.json: text: unspecified",
+        "experiments/local_front_provider_20261006/provider_diagnostic.json: eol: unspecified",
+        "experiments/local_front_provider_20261006/provider_diagnostic.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_provider_png",
+      "group": "pg_local_front_provider",
+      "repo": "pgfrag",
+      "source_path": "experiments/local_front_provider_20261006/local_front_section.png",
+      "destination_path": "experiments/local_front_provider_20261006/local_front_section.png",
+      "operation": "stage_exact_existing",
+      "role": "render of saved exact-section query samples",
+      "bytes": 23352,
+      "sha256": "46c02dbd9344d975e46f5d26fd35ef85615d18c8a07ba7558bbde3593555713c",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/local_front_provider_20261006/local_front_section.png"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/local_front_provider_20261006/local_front_section.png: text: unspecified",
+        "experiments/local_front_provider_20261006/local_front_section.png: eol: unspecified",
+        "experiments/local_front_provider_20261006/local_front_section.png: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_provider_review",
+      "group": "pg_local_front_provider",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/local_front_provider_20261006/REVIEW.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_provider/REVIEW.md",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "independent scope review and generic-topology limitations",
+      "bytes": 4920,
+      "sha256": "2f7605e96d8f9caf88420cd3cdbb2f06d15237cbe793c7ceb7ff99f92adb358f",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/local_front_provider_20261006/REVIEW.md"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/local_front_provider/REVIEW.md: text: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_provider/REVIEW.md: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/local_front_provider/REVIEW.md: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "j_guard_v3_module",
+      "group": "pg_j_guard_v3",
+      "repo": "pgfrag",
+      "source_path": "experiments/modeiii_j_integral_20261006/j_integral_precopy_guard_v3.py",
+      "destination_path": "experiments/modeiii_j_integral_20261006/j_integral_precopy_guard_v3.py",
+      "operation": "stage_exact_existing",
+      "role": "v3 pre-copy shape and sample-budget guard source",
+      "bytes": 14066,
+      "sha256": "b4d5ca3734d0e44e7b8ed4bb690257c61e72c647d499003faae6d8fee6880b7b",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/modeiii_j_integral_20261006/j_integral_precopy_guard_v3.py"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/modeiii_j_integral_20261006/j_integral_precopy_guard_v3.py: text: unspecified",
+        "experiments/modeiii_j_integral_20261006/j_integral_precopy_guard_v3.py: eol: unspecified",
+        "experiments/modeiii_j_integral_20261006/j_integral_precopy_guard_v3.py: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "j_guard_v3_test",
+      "group": "pg_j_guard_v3",
+      "repo": "pgfrag",
+      "source_path": "experiments/modeiii_j_integral_20261006/test_precopy_guard_v3.py",
+      "destination_path": "experiments/modeiii_j_integral_20261006/test_precopy_guard_v3.py",
+      "operation": "stage_exact_existing",
+      "role": "four focused pre-copy guard checks",
+      "bytes": 5462,
+      "sha256": "98195943bd197d4c7f00dcb4bd7bf930a0a40786eece2514bab7fb931fa467fe",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/modeiii_j_integral_20261006/test_precopy_guard_v3.py"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/modeiii_j_integral_20261006/test_precopy_guard_v3.py: text: unspecified",
+        "experiments/modeiii_j_integral_20261006/test_precopy_guard_v3.py: eol: unspecified",
+        "experiments/modeiii_j_integral_20261006/test_precopy_guard_v3.py: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "j_guard_v3_receipt",
+      "group": "pg_j_guard_v3",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/modeiii_j_integral_20261006/precopy_guard_v3_receipt.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/j_guard_v3/precopy_guard_v3_receipt.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "actual four-check execution receipt; no analytic J rerun or static J computation",
+      "bytes": 1162,
+      "sha256": "b9babab6396225b9d1700824a530482aee294c79c262834d283fc9e5c88ccad7",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/modeiii_j_integral_20261006/precopy_guard_v3_receipt.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/j_guard_v3/precopy_guard_v3_receipt.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/j_guard_v3/precopy_guard_v3_receipt.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/j_guard_v3/precopy_guard_v3_receipt.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "j_guard_v3_pins",
+      "group": "pg_j_guard_v3",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/modeiii_j_integral_20261006/precopy_guard_v3_pins.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/j_guard_v3/precopy_guard_v3_pins.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "v1/v2/224-sample baseline and v3 source pin checks",
+      "bytes": 4452,
+      "sha256": "72c87a860a7fb796e6d53bb7dbda8724a1aed27b4f6106ab97e3ec9afe6e22f1",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/modeiii_j_integral_20261006/precopy_guard_v3_pins.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/j_guard_v3/precopy_guard_v3_pins.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/j_guard_v3/precopy_guard_v3_pins.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/j_guard_v3/precopy_guard_v3_pins.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "energy_gate_v2_module",
+      "group": "pg_energy_gate_v2",
+      "repo": "pgfrag",
+      "source_path": "experiments/griffith_front_energy_gate_v2_20261006/griffith_front_energy_gate_v2.py",
+      "destination_path": "experiments/griffith_front_energy_gate_v2_20261006/griffith_front_energy_gate_v2.py",
+      "operation": "stage_exact_existing",
+      "role": "fixture-only quasi-static energy gate source",
+      "bytes": 28295,
+      "sha256": "442426684ffa776ea24a877ce30e368a8795608aefc82883a91701281fb144b3",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/griffith_front_energy_gate_v2_20261006/griffith_front_energy_gate_v2.py"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/griffith_front_energy_gate_v2_20261006/griffith_front_energy_gate_v2.py: text: unspecified",
+        "experiments/griffith_front_energy_gate_v2_20261006/griffith_front_energy_gate_v2.py: eol: unspecified",
+        "experiments/griffith_front_energy_gate_v2_20261006/griffith_front_energy_gate_v2.py: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "energy_gate_v2_tests",
+      "group": "pg_energy_gate_v2",
+      "repo": "pgfrag",
+      "source_path": "experiments/griffith_front_energy_gate_v2_20261006/test_griffith_front_energy_gate_v2.py",
+      "destination_path": "experiments/griffith_front_energy_gate_v2_20261006/test_griffith_front_energy_gate_v2.py",
+      "operation": "stage_exact_existing",
+      "role": "11 targeted state-machine/API tests",
+      "bytes": 9386,
+      "sha256": "3bcf3282d518e284a1b5b92e3283dbdbcd2d9d559d8ce97d6bfc45ee95e78309",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/griffith_front_energy_gate_v2_20261006/test_griffith_front_energy_gate_v2.py"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/griffith_front_energy_gate_v2_20261006/test_griffith_front_energy_gate_v2.py: text: unspecified",
+        "experiments/griffith_front_energy_gate_v2_20261006/test_griffith_front_energy_gate_v2.py: eol: unspecified",
+        "experiments/griffith_front_energy_gate_v2_20261006/test_griffith_front_energy_gate_v2.py: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "energy_gate_v2_runner",
+      "group": "pg_energy_gate_v2",
+      "repo": "pgfrag",
+      "source_path": "experiments/griffith_front_energy_gate_v2_20261006/run_fixture.py",
+      "destination_path": "experiments/griffith_front_energy_gate_v2_20261006/run_fixture.py",
+      "operation": "stage_exact_existing",
+      "role": "fixture state generation runner",
+      "bytes": 11714,
+      "sha256": "5bb595cf7cc35f113dcda5483ea7299d4e407b7278fb2ed3644a8a552ea130fc",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/griffith_front_energy_gate_v2_20261006/run_fixture.py"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/griffith_front_energy_gate_v2_20261006/run_fixture.py: text: unspecified",
+        "experiments/griffith_front_energy_gate_v2_20261006/run_fixture.py: eol: unspecified",
+        "experiments/griffith_front_energy_gate_v2_20261006/run_fixture.py: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "energy_gate_v2_readme",
+      "group": "pg_energy_gate_v2",
+      "repo": "pgfrag",
+      "source_path": "experiments/griffith_front_energy_gate_v2_20261006/README.md",
+      "destination_path": "experiments/griffith_front_energy_gate_v2_20261006/README.md",
+      "operation": "stage_exact_existing",
+      "role": "energy-gate scope and limitations",
+      "bytes": 4621,
+      "sha256": "def58b109f11c4fb81990d4b8398b480c4b0c12138ac507ee619f2ff05fc7432",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/griffith_front_energy_gate_v2_20261006/README.md"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/griffith_front_energy_gate_v2_20261006/README.md: text: unspecified",
+        "experiments/griffith_front_energy_gate_v2_20261006/README.md: eol: unspecified",
+        "experiments/griffith_front_energy_gate_v2_20261006/README.md: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "energy_gate_v2_change_summary",
+      "group": "pg_energy_gate_v2",
+      "repo": "pgfrag",
+      "source_path": "experiments/griffith_front_energy_gate_v2_20261006/CHANGE_SUMMARY.md",
+      "destination_path": "experiments/griffith_front_energy_gate_v2_20261006/CHANGE_SUMMARY.md",
+      "operation": "stage_exact_existing",
+      "role": "narrow v2 implementation record",
+      "bytes": 1578,
+      "sha256": "26572825fd53a74f570e23603313aeede151f7f98ffa31b715f02c8204fe98ac",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/griffith_front_energy_gate_v2_20261006/CHANGE_SUMMARY.md"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/griffith_front_energy_gate_v2_20261006/CHANGE_SUMMARY.md: text: unspecified",
+        "experiments/griffith_front_energy_gate_v2_20261006/CHANGE_SUMMARY.md: eol: unspecified",
+        "experiments/griffith_front_energy_gate_v2_20261006/CHANGE_SUMMARY.md: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "energy_gate_v2_receipt",
+      "group": "pg_energy_gate_v2",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/griffith_front_energy_gate_v2_20261006/ACTUAL_TEST_RECEIPT.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/griffith_energy_gate_v2/ACTUAL_TEST_RECEIPT.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "actual 11-test receipt; native runtime and solver not invoked",
+      "bytes": 3536,
+      "sha256": "29c66ffd20d4e349f33e64fb9c992e7ffa6adf5ba679cdaa6b04c4c745fb4c00",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/griffith_front_energy_gate_v2_20261006/ACTUAL_TEST_RECEIPT.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/griffith_energy_gate_v2/ACTUAL_TEST_RECEIPT.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/griffith_energy_gate_v2/ACTUAL_TEST_RECEIPT.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/griffith_energy_gate_v2/ACTUAL_TEST_RECEIPT.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "energy_gate_v2_states",
+      "group": "pg_energy_gate_v2",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/griffith_front_energy_gate_v2_20261006/fixture_states.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/griffith_energy_gate_v2/fixture_states.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "nine synthetic state-machine fixtures; not solver states",
+      "bytes": 127145,
+      "sha256": "0884d424a404adc918555dff95afc3f2b1b9ee773f728d53f62d6bad54aeeb08",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/griffith_front_energy_gate_v2_20261006/fixture_states.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/griffith_energy_gate_v2/fixture_states.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/griffith_energy_gate_v2/fixture_states.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/griffith_energy_gate_v2/fixture_states.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "energy_gate_v2_flow",
+      "group": "pg_energy_gate_v2",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/griffith_front_energy_gate_v2_20261006/quasistatic_energy_gate_flow.svg",
+      "destination_path": "docs/evidence/20261006/core_incremental/griffith_energy_gate_v2/quasistatic_energy_gate_flow.svg",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "readable state-transition flow diagram",
+      "bytes": 3811,
+      "sha256": "00293a98c7a6f03a1eedd2ffb04a75d43d0901d877137e0ed666ebe5bda3ef30",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/griffith_front_energy_gate_v2_20261006/quasistatic_energy_gate_flow.svg"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/griffith_energy_gate_v2/quasistatic_energy_gate_flow.svg: text: unspecified",
+        "docs/evidence/20261006/core_incremental/griffith_energy_gate_v2/quasistatic_energy_gate_flow.svg: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/griffith_energy_gate_v2/quasistatic_energy_gate_flow.svg: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "mesh_binding_module",
+      "group": "pg_mesh_binding",
+      "repo": "pgfrag",
+      "source_path": "experiments/fracture_artifact_contract_20261006/mesh_binding_validator.py",
+      "destination_path": "experiments/fracture_artifact_contract_20261006/mesh_binding_validator.py",
+      "operation": "stage_exact_existing",
+      "role": "bounded independent planar-fixture mesh-binding validator",
+      "bytes": 38002,
+      "sha256": "3cd8018456c8be1e8a17cdbac9cfb4d7b227f09bb3170f8a04083ede2db8d51f",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/fracture_artifact_contract_20261006/mesh_binding_validator.py"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/fracture_artifact_contract_20261006/mesh_binding_validator.py: text: unspecified",
+        "experiments/fracture_artifact_contract_20261006/mesh_binding_validator.py: eol: unspecified",
+        "experiments/fracture_artifact_contract_20261006/mesh_binding_validator.py: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "mesh_binding_test",
+      "group": "pg_mesh_binding",
+      "repo": "pgfrag",
+      "source_path": "experiments/fracture_artifact_contract_20261006/test_mesh_binding_validator.py",
+      "destination_path": "experiments/fracture_artifact_contract_20261006/test_mesh_binding_validator.py",
+      "operation": "stage_exact_existing",
+      "role": "eight focused validator tests",
+      "bytes": 6913,
+      "sha256": "d21fd672bf799b24d6bd4a8fabc78346a4936be2036067552e47a23a085c4a0b",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/fracture_artifact_contract_20261006/test_mesh_binding_validator.py"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/fracture_artifact_contract_20261006/test_mesh_binding_validator.py: text: unspecified",
+        "experiments/fracture_artifact_contract_20261006/test_mesh_binding_validator.py: eol: unspecified",
+        "experiments/fracture_artifact_contract_20261006/test_mesh_binding_validator.py: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "mesh_binding_manifest",
+      "group": "pg_mesh_binding",
+      "repo": "pgfrag",
+      "source_path": "experiments/fracture_artifact_contract_20261006/fixtures/planar_box_mesh_binding_manifest.json",
+      "destination_path": "experiments/fracture_artifact_contract_20261006/fixtures/planar_box_mesh_binding_manifest.json",
+      "operation": "stage_exact_existing",
+      "role": "size/unit/SHA-pinned fixture input manifest",
+      "bytes": 1480,
+      "sha256": "6c490acb9ac1f54b045373e633d1db441361b46669d9b1b559a65e6a19b058b3",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/fracture_artifact_contract_20261006/fixtures/planar_box_mesh_binding_manifest.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/fracture_artifact_contract_20261006/fixtures/planar_box_mesh_binding_manifest.json: text: unspecified",
+        "experiments/fracture_artifact_contract_20261006/fixtures/planar_box_mesh_binding_manifest.json: eol: unspecified",
+        "experiments/fracture_artifact_contract_20261006/fixtures/planar_box_mesh_binding_manifest.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "mesh_binding_receipt",
+      "group": "pg_mesh_binding",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/fracture_artifact_contract_20261006/mesh_binding_execution_receipt.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/mesh_binding/mesh_binding_execution_receipt.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "actual geometry-only readback; intersection/full-coverage proofs not established",
+      "bytes": 3850,
+      "sha256": "e14f8eae0ccdeab5b8e909d7748dd225187b122d5cdead2b967129e4a3db81f1",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/fracture_artifact_contract_20261006/mesh_binding_execution_receipt.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/mesh_binding/mesh_binding_execution_receipt.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/mesh_binding/mesh_binding_execution_receipt.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/mesh_binding/mesh_binding_execution_receipt.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "mesh_binding_review",
+      "group": "pg_mesh_binding",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/fracture_artifact_contract_20261006/MESH_BINDING_REVIEW.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/mesh_binding/MESH_BINDING_REVIEW.md",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "review of actual OBJ face bindings, volume, area, and limitations",
+      "bytes": 4949,
+      "sha256": "d94278c391a9afc3d9ec3bb7c668d610a399cd8df18b7341f68b2f38cebb73c8",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/fracture_artifact_contract_20261006/MESH_BINDING_REVIEW.md"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/mesh_binding/MESH_BINDING_REVIEW.md: text: unspecified",
+        "docs/evidence/20261006/core_incremental/mesh_binding/MESH_BINDING_REVIEW.md: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/mesh_binding/MESH_BINDING_REVIEW.md: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "mesh_binding_fixture_output",
+      "group": "pg_mesh_binding",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/explicit_fragment_fixture_20261006/explicit_fragment_fixture_output.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/mesh_binding/fixture/explicit_fragment_fixture_output.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "small pinned fixture output JSON used by the independent validator",
+      "bytes": 17872,
+      "sha256": "0b18a24b8f58d1df516743c55cc0cb4c4a3629e5288fbcd920be3c4afecebe16",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/explicit_fragment_fixture_20261006/explicit_fragment_fixture_output.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/mesh_binding/fixture/explicit_fragment_fixture_output.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/mesh_binding/fixture/explicit_fragment_fixture_output.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/mesh_binding/fixture/explicit_fragment_fixture_output.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "mesh_binding_pair_ledger",
+      "group": "pg_mesh_binding",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/explicit_fragment_fixture_20261006/interface_pair_ledger.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/mesh_binding/fixture/interface_pair_ledger.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "small pinned reciprocal-interface ledger used by the independent validator",
+      "bytes": 3973,
+      "sha256": "b5e2d578d7f56f28cdf0edf988f0755ff4002b2f3a3b9b6fe96a337672bfd9fe",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/explicit_fragment_fixture_20261006/interface_pair_ledger.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/mesh_binding/fixture/interface_pair_ledger.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/mesh_binding/fixture/interface_pair_ledger.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/mesh_binding/fixture/interface_pair_ledger.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "mesh_binding_negative_obj",
+      "group": "pg_mesh_binding",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/explicit_fragment_fixture_20261006/piece_negative.obj",
+      "destination_path": "docs/evidence/20261006/core_incremental/mesh_binding/fixture/piece_negative.obj",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "small actual negative-piece OBJ read by validator",
+      "bytes": 812,
+      "sha256": "5f5e8e3556173f7f214b98d0e1cf87ec3f0ff84898d127e60ecd4b78a3e4a083",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/explicit_fragment_fixture_20261006/piece_negative.obj"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/mesh_binding/fixture/piece_negative.obj: text: unspecified",
+        "docs/evidence/20261006/core_incremental/mesh_binding/fixture/piece_negative.obj: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/mesh_binding/fixture/piece_negative.obj: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "mesh_binding_positive_obj",
+      "group": "pg_mesh_binding",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/explicit_fragment_fixture_20261006/piece_positive.obj",
+      "destination_path": "docs/evidence/20261006/core_incremental/mesh_binding/fixture/piece_positive.obj",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "small actual positive-piece OBJ read by validator",
+      "bytes": 808,
+      "sha256": "342e18222e59ce3e1863b606cab77841bd8035adb6da326573eba73512eec42f",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/explicit_fragment_fixture_20261006/piece_positive.obj"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/mesh_binding/fixture/piece_positive.obj: text: unspecified",
+        "docs/evidence/20261006/core_incremental/mesh_binding/fixture/piece_positive.obj: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/mesh_binding/fixture/piece_positive.obj: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "wall_resolution_module",
+      "group": "pg_wall_resolution",
+      "repo": "pgfrag",
+      "source_path": "experiments/wall_resolution_guard_20261006/thin_wall_qualification.py",
+      "destination_path": "experiments/wall_resolution_guard_20261006/thin_wall_qualification.py",
+      "operation": "stage_exact_existing",
+      "role": "bounded thin-wall sampling and local-resolution evaluator",
+      "bytes": 49085,
+      "sha256": "cd7eee448bf25d852dd2c23b8f6ea371c21004ed3a6b901b7be2e271a1b437d6",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/wall_resolution_guard_20261006/thin_wall_qualification.py"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/wall_resolution_guard_20261006/thin_wall_qualification.py: text: unspecified",
+        "experiments/wall_resolution_guard_20261006/thin_wall_qualification.py: eol: unspecified",
+        "experiments/wall_resolution_guard_20261006/thin_wall_qualification.py: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "wall_resolution_test",
+      "group": "pg_wall_resolution",
+      "repo": "pgfrag",
+      "source_path": "experiments/wall_resolution_guard_20261006/test_thin_wall_qualification.py",
+      "destination_path": "experiments/wall_resolution_guard_20261006/test_thin_wall_qualification.py",
+      "operation": "stage_exact_existing",
+      "role": "ten focused analytic-fixture tests",
+      "bytes": 7585,
+      "sha256": "bf71b77c26b4651dc69b36f3f5ebc81053454f35c7cc29e504dcfadf25b8b09b",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/wall_resolution_guard_20261006/test_thin_wall_qualification.py"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/wall_resolution_guard_20261006/test_thin_wall_qualification.py: text: unspecified",
+        "experiments/wall_resolution_guard_20261006/test_thin_wall_qualification.py: eol: unspecified",
+        "experiments/wall_resolution_guard_20261006/test_thin_wall_qualification.py: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "wall_resolution_readme",
+      "group": "pg_wall_resolution",
+      "repo": "pgfrag",
+      "source_path": "experiments/wall_resolution_guard_20261006/README.md",
+      "destination_path": "experiments/wall_resolution_guard_20261006/README.md",
+      "operation": "stage_exact_existing",
+      "role": "wall-qualification scope and non-promotion rules",
+      "bytes": 2135,
+      "sha256": "12fa002f824784a8b4b9b7a03e1c6148341a0ae2b03e8e780a3fd1a1f11edf4e",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/wall_resolution_guard_20261006/README.md"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/wall_resolution_guard_20261006/README.md: text: unspecified",
+        "experiments/wall_resolution_guard_20261006/README.md: eol: unspecified",
+        "experiments/wall_resolution_guard_20261006/README.md: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "wall_resolution_inputs",
+      "group": "pg_wall_resolution",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/wall_resolution_guard_20261006/thin_wall_qualification_inputs.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/wall_resolution/thin_wall_qualification_inputs.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "small analytic hollow-cylinder fixture input",
+      "bytes": 246997,
+      "sha256": "1f86e4d9d1627ede302a2c660024597a62387866dca2eb2572a1023854b1ef86",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/wall_resolution_guard_20261006/thin_wall_qualification_inputs.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/wall_resolution/thin_wall_qualification_inputs.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/wall_resolution/thin_wall_qualification_inputs.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/wall_resolution/thin_wall_qualification_inputs.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "wall_resolution_report",
+      "group": "pg_wall_resolution",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/wall_resolution_guard_20261006/thin_wall_qualification_report.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/wall_resolution/thin_wall_qualification_report.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "actual report; physical_pass and global_pass false",
+      "bytes": 140949,
+      "sha256": "b8802f7e20c07fbed172aedd18f875561ef8d53a7f11624dc2ee40f112b85316",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/wall_resolution_guard_20261006/thin_wall_qualification_report.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/wall_resolution/thin_wall_qualification_report.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/wall_resolution/thin_wall_qualification_report.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/wall_resolution/thin_wall_qualification_report.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "wall_resolution_png",
+      "group": "pg_wall_resolution",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/wall_resolution_guard_20261006/actual_section_samples.png",
+      "destination_path": "docs/evidence/20261006/core_incremental/wall_resolution/actual_section_samples.png",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "actual analytic section and cell-resolution visualization",
+      "bytes": 165180,
+      "sha256": "0fbeaca6413b1dd5a91dc73611fe195db095a4b836df528797d76fb2617818ba",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/wall_resolution_guard_20261006/actual_section_samples.png"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/wall_resolution/actual_section_samples.png: text: unspecified",
+        "docs/evidence/20261006/core_incremental/wall_resolution/actual_section_samples.png: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/wall_resolution/actual_section_samples.png: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "wall_resolution_review",
+      "group": "pg_wall_resolution",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/wall_resolution_guard_20261006/REVIEW.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/wall_resolution/REVIEW.md",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "bounded review of local precondition and under-resolution cases",
+      "bytes": 2638,
+      "sha256": "3aaaed5bbe4477a778ee4cb80252afa8cb5395e8ffebaf24d0a437a4d4b02bab",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/wall_resolution_guard_20261006/REVIEW.md"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/wall_resolution/REVIEW.md: text: unspecified",
+        "docs/evidence/20261006/core_incremental/wall_resolution/REVIEW.md: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/wall_resolution/REVIEW.md: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "wall_bias_module",
+      "group": "pg_wall_bias",
+      "repo": "pgfrag",
+      "source_path": "experiments/discretization_bias_metrics_20261006/bias_metrics.py",
+      "destination_path": "experiments/discretization_bias_metrics_20261006/bias_metrics.py",
+      "operation": "stage_exact_existing",
+      "role": "fixture-only discretization-pair evaluator",
+      "bytes": 23542,
+      "sha256": "88a1dee2c69e19cfe26751f5b9e875b13335faa98b77d34d25bc0a27b50f141a",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/discretization_bias_metrics_20261006/bias_metrics.py"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/discretization_bias_metrics_20261006/bias_metrics.py: text: unspecified",
+        "experiments/discretization_bias_metrics_20261006/bias_metrics.py: eol: unspecified",
+        "experiments/discretization_bias_metrics_20261006/bias_metrics.py: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "wall_bias_test",
+      "group": "pg_wall_bias",
+      "repo": "pgfrag",
+      "source_path": "experiments/discretization_bias_metrics_20261006/tests/test_bias_metrics.py",
+      "destination_path": "experiments/discretization_bias_metrics_20261006/tests/test_bias_metrics.py",
+      "operation": "stage_exact_existing",
+      "role": "focused evaluator and fail-closed tests",
+      "bytes": 5834,
+      "sha256": "dd3390cb7a7844d4f908fdfa682f18c9a9a95f82d336774aa89dca20d31756b0",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/discretization_bias_metrics_20261006/tests/test_bias_metrics.py"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/discretization_bias_metrics_20261006/tests/test_bias_metrics.py: text: unspecified",
+        "experiments/discretization_bias_metrics_20261006/tests/test_bias_metrics.py: eol: unspecified",
+        "experiments/discretization_bias_metrics_20261006/tests/test_bias_metrics.py: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "wall_bias_readme",
+      "group": "pg_wall_bias",
+      "repo": "pgfrag",
+      "source_path": "experiments/discretization_bias_metrics_20261006/README.md",
+      "destination_path": "experiments/discretization_bias_metrics_20261006/README.md",
+      "operation": "stage_exact_existing",
+      "role": "pairing rules and fixture-only limitations",
+      "bytes": 3367,
+      "sha256": "fdb8a53b7381fb3240f19f1296e37aba98fb333e2d59cae7d2e9b2644e67e369",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/discretization_bias_metrics_20261006/README.md"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/discretization_bias_metrics_20261006/README.md: text: unspecified",
+        "experiments/discretization_bias_metrics_20261006/README.md: eol: unspecified",
+        "experiments/discretization_bias_metrics_20261006/README.md: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "wall_bias_fixture_study",
+      "group": "pg_wall_bias",
+      "repo": "pgfrag",
+      "source_path": "experiments/discretization_bias_metrics_20261006/fixtures/fixture_study.json",
+      "destination_path": "experiments/discretization_bias_metrics_20261006/fixtures/fixture_study.json",
+      "operation": "stage_exact_existing",
+      "role": "small fixture-only paired study descriptor",
+      "bytes": 13779,
+      "sha256": "36e613370ca6c0bec07365cee57fcaa05ba904e43fc264f22d4cc45f432a9aaa",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/discretization_bias_metrics_20261006/fixtures/fixture_study.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/discretization_bias_metrics_20261006/fixtures/fixture_study.json: text: unspecified",
+        "experiments/discretization_bias_metrics_20261006/fixtures/fixture_study.json: eol: unspecified",
+        "experiments/discretization_bias_metrics_20261006/fixtures/fixture_study.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "wall_bias_baseline",
+      "group": "pg_wall_bias",
+      "repo": "pgfrag",
+      "source_path": "experiments/discretization_bias_metrics_20261006/fixtures/baseline.json",
+      "destination_path": "experiments/discretization_bias_metrics_20261006/fixtures/baseline.json",
+      "operation": "stage_exact_existing",
+      "role": "small fixture baseline descriptor",
+      "bytes": 3885,
+      "sha256": "e6229529d842a7d202f8cd003fc01ddc4277b4bcc828b4ea73fe94df02b77055",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/discretization_bias_metrics_20261006/fixtures/baseline.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/discretization_bias_metrics_20261006/fixtures/baseline.json: text: unspecified",
+        "experiments/discretization_bias_metrics_20261006/fixtures/baseline.json: eol: unspecified",
+        "experiments/discretization_bias_metrics_20261006/fixtures/baseline.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "wall_bias_rotated",
+      "group": "pg_wall_bias",
+      "repo": "pgfrag",
+      "source_path": "experiments/discretization_bias_metrics_20261006/fixtures/rotated.json",
+      "destination_path": "experiments/discretization_bias_metrics_20261006/fixtures/rotated.json",
+      "operation": "stage_exact_existing",
+      "role": "small orientation fixture descriptor",
+      "bytes": 3887,
+      "sha256": "e6d46862fea2a1735b355d891685baea093f8fe7c2bddc7205f5164f93f30544",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/discretization_bias_metrics_20261006/fixtures/rotated.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/discretization_bias_metrics_20261006/fixtures/rotated.json: text: unspecified",
+        "experiments/discretization_bias_metrics_20261006/fixtures/rotated.json: eol: unspecified",
+        "experiments/discretization_bias_metrics_20261006/fixtures/rotated.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "wall_bias_translated",
+      "group": "pg_wall_bias",
+      "repo": "pgfrag",
+      "source_path": "experiments/discretization_bias_metrics_20261006/fixtures/translated.json",
+      "destination_path": "experiments/discretization_bias_metrics_20261006/fixtures/translated.json",
+      "operation": "stage_exact_existing",
+      "role": "small translation fixture descriptor",
+      "bytes": 3945,
+      "sha256": "ee9568265c802aaac7f668845844db31d3e537b24b9e695c4496528b762eefde",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/discretization_bias_metrics_20261006/fixtures/translated.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/discretization_bias_metrics_20261006/fixtures/translated.json: text: unspecified",
+        "experiments/discretization_bias_metrics_20261006/fixtures/translated.json: eol: unspecified",
+        "experiments/discretization_bias_metrics_20261006/fixtures/translated.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "wall_bias_h_seed_changed",
+      "group": "pg_wall_bias",
+      "repo": "pgfrag",
+      "source_path": "experiments/discretization_bias_metrics_20261006/fixtures/h_seed_changed.json",
+      "destination_path": "experiments/discretization_bias_metrics_20261006/fixtures/h_seed_changed.json",
+      "operation": "stage_exact_existing",
+      "role": "small mesh-spacing/seed negative fixture descriptor",
+      "bytes": 3885,
+      "sha256": "8157b597db36e3e3396d96801b8596c8956105f4267a02779d89a40dff56cd93",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/discretization_bias_metrics_20261006/fixtures/h_seed_changed.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/discretization_bias_metrics_20261006/fixtures/h_seed_changed.json: text: unspecified",
+        "experiments/discretization_bias_metrics_20261006/fixtures/h_seed_changed.json: eol: unspecified",
+        "experiments/discretization_bias_metrics_20261006/fixtures/h_seed_changed.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "wall_bias_no_fracture",
+      "group": "pg_wall_bias",
+      "repo": "pgfrag",
+      "source_path": "experiments/discretization_bias_metrics_20261006/fixtures/no_fracture.json",
+      "destination_path": "experiments/discretization_bias_metrics_20261006/fixtures/no_fracture.json",
+      "operation": "stage_exact_existing",
+      "role": "negative fixture that must remain UNKNOWN",
+      "bytes": 2833,
+      "sha256": "69e19416af39939b0ab08f03e19493cd52796f65d3c698b82317986302a48ff8",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/discretization_bias_metrics_20261006/fixtures/no_fracture.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/discretization_bias_metrics_20261006/fixtures/no_fracture.json: text: unspecified",
+        "experiments/discretization_bias_metrics_20261006/fixtures/no_fracture.json: eol: unspecified",
+        "experiments/discretization_bias_metrics_20261006/fixtures/no_fracture.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "wall_bias_graph_only",
+      "group": "pg_wall_bias",
+      "repo": "pgfrag",
+      "source_path": "experiments/discretization_bias_metrics_20261006/fixtures/graph_only_fragments.json",
+      "destination_path": "experiments/discretization_bias_metrics_20261006/fixtures/graph_only_fragments.json",
+      "operation": "stage_exact_existing",
+      "role": "negative graph-only fragment fixture",
+      "bytes": 3610,
+      "sha256": "70443e19c332927e0b761b369aa4c7f7786e60fb4f028389803a5d88ef43e9f9",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/discretization_bias_metrics_20261006/fixtures/graph_only_fragments.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/discretization_bias_metrics_20261006/fixtures/graph_only_fragments.json: text: unspecified",
+        "experiments/discretization_bias_metrics_20261006/fixtures/graph_only_fragments.json: eol: unspecified",
+        "experiments/discretization_bias_metrics_20261006/fixtures/graph_only_fragments.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "wall_bias_report",
+      "group": "pg_wall_bias",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/discretization_bias_metrics_20261006/metrics_report.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/discretization_bias/metrics_report.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "saved fixture-only evaluator output; not admitted and bias_eliminated false",
+      "bytes": 4665,
+      "sha256": "e37d0098a52bed881f87f4c37018c0efc2737afa9e299f4301581f2eed7de5b1",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/discretization_bias_metrics_20261006/metrics_report.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/discretization_bias/metrics_report.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/discretization_bias/metrics_report.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/discretization_bias/metrics_report.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "wall_bias_pair_csv",
+      "group": "pg_wall_bias",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/discretization_bias_metrics_20261006/pair_metrics.csv",
+      "destination_path": "docs/evidence/20261006/core_incremental/discretization_bias/pair_metrics.csv",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "small actual pair-level fixture metrics CSV",
+      "bytes": 1923,
+      "sha256": "543e392d06ee7b9220d053ceffafb278f769d1ecb40b137ccbcec135125eb7d0",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/discretization_bias_metrics_20261006/pair_metrics.csv"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/discretization_bias/pair_metrics.csv: text: unspecified",
+        "docs/evidence/20261006/core_incremental/discretization_bias/pair_metrics.csv: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/discretization_bias/pair_metrics.csv: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "wall_bias_png",
+      "group": "pg_wall_bias",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/discretization_bias_metrics_20261006/fixture_metrics.png",
+      "destination_path": "docs/evidence/20261006/core_incremental/discretization_bias/fixture_metrics.png",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "actual fixture-metrics plot",
+      "bytes": 80768,
+      "sha256": "7b0cd7eccd791228ba783970f199b14b31ac806e72d0b46211d4e852ef7a2db9",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/discretization_bias_metrics_20261006/fixture_metrics.png"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/discretization_bias/fixture_metrics.png: text: unspecified",
+        "docs/evidence/20261006/core_incremental/discretization_bias/fixture_metrics.png: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/discretization_bias/fixture_metrics.png: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "wall_bias_independent_review",
+      "group": "pg_wall_bias",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/wall_bias_independent/REVIEW.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/discretization_bias/independent_review.md",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "independent review; no reproducible false physical pass; real mesh bias remains",
+      "bytes": 1746,
+      "sha256": "03a54b2c56622307ada1627d15796823d01244817ad8b47f00981cc85c904061",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/wall_bias_independent/REVIEW.md"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/discretization_bias/independent_review.md: text: unspecified",
+        "docs/evidence/20261006/core_incremental/discretization_bias/independent_review.md: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/discretization_bias/independent_review.md: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "wall_bias_independent_json",
+      "group": "pg_wall_bias",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/wall_bias_independent/review.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/discretization_bias/independent_review.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "machine-readable independent review and residual method limitations",
+      "bytes": 3412,
+      "sha256": "85633590eb3dbbd02f9b150def48e454b9e0abe1bc178106044c32938ead9fd1",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/wall_bias_independent/review.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/discretization_bias/independent_review.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/discretization_bias/independent_review.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/discretization_bias/independent_review.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "catalog_corner_module",
+      "group": "vf_catalog_corner_fairing",
+      "repo": "vesselforge",
+      "source_path": "experiments/catalog_corner_fairing_20261006/catalog_corner_fairing.py",
+      "destination_path": "experiments/catalog_corner_fairing_20261006/catalog_corner_fairing.py",
+      "operation": "stage_exact_existing",
+      "role": "bounded catalog profile corner-fairing math proposal",
+      "bytes": 43891,
+      "sha256": "6c1e94150d769158c757469141aab23796b005421d3878b150271d375086d534",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/catalog_corner_fairing_20261006/catalog_corner_fairing.py"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/catalog_corner_fairing_20261006/catalog_corner_fairing.py: text: unspecified",
+        "experiments/catalog_corner_fairing_20261006/catalog_corner_fairing.py: eol: unspecified",
+        "experiments/catalog_corner_fairing_20261006/catalog_corner_fairing.py: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "catalog_corner_design_note",
+      "group": "vf_catalog_corner_fairing",
+      "repo": "vesselforge",
+      "source_path": "experiments/catalog_corner_fairing_20261006/DESIGN_NOTE.md",
+      "destination_path": "experiments/catalog_corner_fairing_20261006/DESIGN_NOTE.md",
+      "operation": "stage_exact_existing",
+      "role": "fairing design policy and protected-corner rationale",
+      "bytes": 2602,
+      "sha256": "5f7b95e1cfe7e79c6006fa0e682c5b75df6d4cf1caf8791dfa0c1832534b32b5",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/catalog_corner_fairing_20261006/DESIGN_NOTE.md"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "experiments/catalog_corner_fairing_20261006/DESIGN_NOTE.md: text: unspecified",
+        "experiments/catalog_corner_fairing_20261006/DESIGN_NOTE.md: eol: unspecified",
+        "experiments/catalog_corner_fairing_20261006/DESIGN_NOTE.md: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "catalog_corner_review",
+      "group": "vf_catalog_corner_fairing",
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261006/catalog_corner_fairing_20261006/REVIEW.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/catalog_corner_fairing/REVIEW.md",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "source-only author review; no native CAD or STEP run",
+      "bytes": 5309,
+      "sha256": "f8922286073ba869af2256b24b83ec8b8e0fb9f5f3de7d7e5013a39fea23b7c9",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/catalog_corner_fairing_20261006/REVIEW.md"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/REVIEW.md: text: unspecified",
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/REVIEW.md: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/REVIEW.md: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "catalog_corner_pre_pins",
+      "group": "vf_catalog_corner_fairing",
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261006/catalog_corner_fairing_20261006/PRE_RUN_SOURCE_PINS.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/catalog_corner_fairing/PRE_RUN_SOURCE_PINS.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "pre-run immutable source/catalog/runtime pins",
+      "bytes": 589,
+      "sha256": "35aed61b06b58a3bcac7eafdc3b05ec8d1ce2f4f7eb91e02b70443aa048f4f5a",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/catalog_corner_fairing_20261006/PRE_RUN_SOURCE_PINS.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/PRE_RUN_SOURCE_PINS.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/PRE_RUN_SOURCE_PINS.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/PRE_RUN_SOURCE_PINS.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "catalog_corner_post_pins",
+      "group": "vf_catalog_corner_fairing",
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261006/catalog_corner_fairing_20261006/POST_RUN_SOURCE_PINS.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/catalog_corner_fairing/POST_RUN_SOURCE_PINS.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "post-run immutable source/catalog/runtime pins",
+      "bytes": 589,
+      "sha256": "35aed61b06b58a3bcac7eafdc3b05ec8d1ce2f4f7eb91e02b70443aa048f4f5a",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/catalog_corner_fairing_20261006/POST_RUN_SOURCE_PINS.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/POST_RUN_SOURCE_PINS.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/POST_RUN_SOURCE_PINS.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/POST_RUN_SOURCE_PINS.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "catalog_corner_audit",
+      "group": "vf_catalog_corner_fairing",
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261006/catalog_corner_fairing_20261006/DESIGN_AUDIT.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/catalog_corner_fairing/DESIGN_AUDIT.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "bounded math design audit; cad_imported false",
+      "bytes": 116672,
+      "sha256": "e36bb07ea07469671babda8e35c11fcf5a4a15b1d624ed2a16eaf44a3f57cf7e",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/catalog_corner_fairing_20261006/DESIGN_AUDIT.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/DESIGN_AUDIT.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/DESIGN_AUDIT.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/DESIGN_AUDIT.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "catalog_corner_png",
+      "group": "vf_catalog_corner_fairing",
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261006/catalog_corner_fairing_20261006/catalog_corner_fairing_profile_plot.png",
+      "destination_path": "docs/evidence/20261006/core_incremental/catalog_corner_fairing/catalog_corner_fairing_profile_plot.png",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "source-derived 2-D meridian profile visualization",
+      "bytes": 164328,
+      "sha256": "6427145d9e63a94c986170783f17d91a4b126224ec93b148c6545fcc7e864c0f",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/catalog_corner_fairing_20261006/catalog_corner_fairing_profile_plot.png"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/catalog_corner_fairing_profile_plot.png: text: unspecified",
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/catalog_corner_fairing_profile_plot.png: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/catalog_corner_fairing_profile_plot.png: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "catalog_corner_independent_check",
+      "group": "vf_catalog_corner_fairing",
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261006/catalog_corner_fairing_independent/independent_control_check.py",
+      "destination_path": "docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/independent_control_check.py",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "independent algebra readback source",
+      "bytes": 7872,
+      "sha256": "36dc9b731064eac5bb9395f75af952f6d1791a14aa1f2e96ebf0574b6fe24c24",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/catalog_corner_fairing_independent/independent_control_check.py"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/independent_control_check.py: text: unspecified",
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/independent_control_check.py: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/independent_control_check.py: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "catalog_corner_independent_algebra",
+      "group": "vf_catalog_corner_fairing",
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261006/catalog_corner_fairing_independent/INDEPENDENT_ALGEBRA_CHECK.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/INDEPENDENT_ALGEBRA_CHECK.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "saved independent control-point checks",
+      "bytes": 14258,
+      "sha256": "800b22706bc35679d939f76a949fc801500b9030a5b205d43988ce9c55c8bb5a",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/catalog_corner_fairing_independent/INDEPENDENT_ALGEBRA_CHECK.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/INDEPENDENT_ALGEBRA_CHECK.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/INDEPENDENT_ALGEBRA_CHECK.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/INDEPENDENT_ALGEBRA_CHECK.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "catalog_corner_independent_review",
+      "group": "vf_catalog_corner_fairing",
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261006/catalog_corner_fairing_independent/REVIEW.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/REVIEW.md",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "independent math/design review; physical and real-vessel qualifications UNKNOWN",
+      "bytes": 3049,
+      "sha256": "90a7ffe48c398e012468fb0617482e5fd37a1054d3fc24ecb38d4addee6a1efb",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/catalog_corner_fairing_independent/REVIEW.md"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/REVIEW.md: text: unspecified",
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/REVIEW.md: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/REVIEW.md: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "catalog_corner_independent_json",
+      "group": "vf_catalog_corner_fairing",
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261006/catalog_corner_fairing_independent/REVIEW.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/REVIEW.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "machine-readable independent results and limitations",
+      "bytes": 3765,
+      "sha256": "c0fe70e3eadbd64e33fda2a22ba26c6c0941bd8847fe63738446e1c03959abcc",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/catalog_corner_fairing_independent/REVIEW.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/REVIEW.json: text: unspecified",
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/REVIEW.json: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/catalog_corner_fairing/independent/REVIEW.json: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "j_guard_v3_diff",
+      "group": "pg_j_guard_v3",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/modeiii_j_integral_20261006/precopy_guard_v3.diff",
+      "destination_path": "docs/evidence/20261006/core_incremental/j_guard_v3/precopy_guard_v3.diff",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "small source diff from v2 to v3, pinned by the v3 freeze evidence",
+      "bytes": 4131,
+      "sha256": "37c3698ce34ad16861382e6a51e052bb066acdaf61864d81db8b32113fed6324",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/modeiii_j_integral_20261006/precopy_guard_v3.diff"
+      ],
+      "source_ignored": true,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "docs/evidence/20261006/core_incremental/j_guard_v3/precopy_guard_v3.diff: text: unspecified",
+        "docs/evidence/20261006/core_incremental/j_guard_v3/precopy_guard_v3.diff: eol: unspecified",
+        "docs/evidence/20261006/core_incremental/j_guard_v3/precopy_guard_v3.diff: filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_case",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "experiments/local_front_operator_20261006/fixed_case.json",
+      "destination_path": "experiments/local_front_operator_20261006/fixed_case.json",
+      "operation": "stage_exact_existing",
+      "role": "frozen fixed 100-source, 140-DOF, 256-query diagnostic case",
+      "bytes": 7609,
+      "sha256": "bee0638bdbafdcd9dd1af02152faf3d87384503b6a029a70831f71b5369c162b",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/local_front_operator_20261006/fixed_case.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"experiments\\\\\\\\local_front_operator_20261006\\\\\\\\fixed_case.json\": text: unspecified",
+        "\"experiments\\\\\\\\local_front_operator_20261006\\\\\\\\fixed_case.json\": eol: unspecified",
+        "\"experiments\\\\\\\\local_front_operator_20261006\\\\\\\\fixed_case.json\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_driver",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "experiments/local_front_operator_20261006/operator_diagnostic.py",
+      "destination_path": "experiments/local_front_operator_20261006/operator_diagnostic.py",
+      "operation": "stage_exact_existing",
+      "role": "frozen local-front scalar antiplane operator diagnostic driver",
+      "bytes": 60973,
+      "sha256": "77b0db5f26855ffb6d444154d42b04c5644fc99737be177420a3efad76ac9e59",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/local_front_operator_20261006/operator_diagnostic.py"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"experiments\\\\\\\\local_front_operator_20261006\\\\\\\\operator_diagnostic.py\": text: unspecified",
+        "\"experiments\\\\\\\\local_front_operator_20261006\\\\\\\\operator_diagnostic.py\": eol: unspecified",
+        "\"experiments\\\\\\\\local_front_operator_20261006\\\\\\\\operator_diagnostic.py\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_readme",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "experiments/local_front_operator_20261006/README.md",
+      "destination_path": "experiments/local_front_operator_20261006/README.md",
+      "operation": "stage_exact_existing",
+      "role": "scope and run contract for the frozen diagnostic",
+      "bytes": 3956,
+      "sha256": "64bf3e86b88bd3aef705f25f9cb5967d2e3d372bc14bb392c2585b7b9e6301ed",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/local_front_operator_20261006/README.md"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"experiments\\\\\\\\local_front_operator_20261006\\\\\\\\README.md\": text: unspecified",
+        "\"experiments\\\\\\\\local_front_operator_20261006\\\\\\\\README.md\": eol: unspecified",
+        "\"experiments\\\\\\\\local_front_operator_20261006\\\\\\\\README.md\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_freeze",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/source_freeze.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/source_freeze.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "immutable source freeze for the failed one-shot diagnostic",
+      "bytes": 3541,
+      "sha256": "8b7e29a701a53ec9f00f24cb5ed2b45d80ffc470df2ce225dbbf4380026424af",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/local_front_operator_20261006/source_freeze.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\source_freeze.json\": text: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\source_freeze.json\": eol: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\source_freeze.json\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_source_review",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/SOURCE_REVIEW.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/SOURCE_REVIEW.md",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "source review with bounded scope and fail-closed rules",
+      "bytes": 6183,
+      "sha256": "5d3ccee25c47aee57d937e49e08b9d3c904d623393b21c7cbc20ced416a8d273",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/local_front_operator_20261006/SOURCE_REVIEW.md"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\SOURCE_REVIEW.md\": text: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\SOURCE_REVIEW.md\": eol: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\SOURCE_REVIEW.md\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_execution_addendum",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/EXECUTION_ADDENDUM.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/EXECUTION_ADDENDUM.md",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "actual outer rc 125 and basis-count mapping failure; no retry or solver",
+      "bytes": 816,
+      "sha256": "c62f51d7c30541d4f78acabd91a6897fed23f155be8bf017bd91bbb9d35ec571",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/local_front_operator_20261006/EXECUTION_ADDENDUM.md"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\EXECUTION_ADDENDUM.md\": text: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\EXECUTION_ADDENDUM.md\": eol: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\EXECUTION_ADDENDUM.md\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_mapping_helper",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/basis_count_mapping_fix.py",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/basis_count_mapping_fix.py",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "source-only readback mapping helper; does not rerun provider or operator",
+      "bytes": 4220,
+      "sha256": "5481a2cb6e73b6cc92a0dfe8588c79477d501ca1a389ef12969b26a586d5204b",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/local_front_operator_20261006/basis_count_mapping_fix.py"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\basis_count_mapping_fix.py\": text: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\basis_count_mapping_fix.py\": eol: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\basis_count_mapping_fix.py\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_stage",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/runs/run01/.local_front_scalar_operator.json.149216.worker.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/.local_front_scalar_operator.json.149216.worker.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "preserved 494763-byte worker staging K/spectrum payload; outer result was not promoted",
+      "bytes": 494763,
+      "sha256": "ebdea44857ab2b1a358fc679d0b1e4996943905a5996ba83f8f8f1ba68340762",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/local_front_operator_20261006/runs/run01/.local_front_scalar_operator.json.149216.worker.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\runs\\\\\\\\run01\\\\\\\\.local_front_scalar_operator.json.149216.worker.json\": text: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\runs\\\\\\\\run01\\\\\\\\.local_front_scalar_operator.json.149216.worker.json\": eol: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\runs\\\\\\\\run01\\\\\\\\.local_front_scalar_operator.json.149216.worker.json\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_actual_readback",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/runs/run01/actual_operator_readback.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/actual_operator_readback.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "readback of saved unqualified scalar K; outer promotion failure retained",
+      "bytes": 8453,
+      "sha256": "7ed92d02a7b4f680c8cd832dd7004f092a114bc2cfbddfa59c3e21c913cce924",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/local_front_operator_20261006/runs/run01/actual_operator_readback.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\runs\\\\\\\\run01\\\\\\\\actual_operator_readback.json\": text: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\runs\\\\\\\\run01\\\\\\\\actual_operator_readback.json\": eol: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\runs\\\\\\\\run01\\\\\\\\actual_operator_readback.json\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_outer_receipt",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/runs/run01/external_run_receipt.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/external_run_receipt.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "actual external wrapper receipt recording PROCESS_NONZERO and exit code 125",
+      "bytes": 2333,
+      "sha256": "8997cd8e929456e3fa5d2cd0ba14f1efcd40dfb99cbf6efcbb57a24eeda9ccdd",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/local_front_operator_20261006/runs/run01/external_run_receipt.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\runs\\\\\\\\run01\\\\\\\\external_run_receipt.json\": text: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\runs\\\\\\\\run01\\\\\\\\external_run_receipt.json\": eol: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\runs\\\\\\\\run01\\\\\\\\external_run_receipt.json\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_unknown_receipt",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/runs/run01/local_front_scalar_operator.unknown_receipt.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/local_front_scalar_operator.unknown_receipt.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "preserved UNKNOWN receipt; no accepted primary output",
+      "bytes": 1803,
+      "sha256": "8c6f623a1504103e06776ca7f185af797d042351ea96714fe7685a7709ab9fba",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/local_front_operator_20261006/runs/run01/local_front_scalar_operator.unknown_receipt.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\runs\\\\\\\\run01\\\\\\\\local_front_scalar_operator.unknown_receipt.json\": text: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\runs\\\\\\\\run01\\\\\\\\local_front_scalar_operator.unknown_receipt.json\": eol: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\runs\\\\\\\\run01\\\\\\\\local_front_scalar_operator.unknown_receipt.json\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_outer_stdout",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/runs/run01/outer_stdout.txt",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/outer_stdout.txt",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "actual outer stdout from the failed one-shot run",
+      "bytes": 411,
+      "sha256": "5ee49920c870fd44e6b6958f6a0941b155a28aa10bfdac8b4a6b5d8a9f24dbc5",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/local_front_operator_20261006/runs/run01/outer_stdout.txt"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\runs\\\\\\\\run01\\\\\\\\outer_stdout.txt\": text: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\runs\\\\\\\\run01\\\\\\\\outer_stdout.txt\": eol: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\runs\\\\\\\\run01\\\\\\\\outer_stdout.txt\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_outer_stderr",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/runs/run01/outer_stderr.txt",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/outer_stderr.txt",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "actual empty outer stderr from the failed one-shot run",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/local_front_operator_20261006/runs/run01/outer_stderr.txt"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\runs\\\\\\\\run01\\\\\\\\outer_stderr.txt\": text: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\runs\\\\\\\\run01\\\\\\\\outer_stderr.txt\": eol: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\runs\\\\\\\\run01\\\\\\\\outer_stderr.txt\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_pre_pins",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/runs/run01/pre_run_source_pins.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/pre_run_source_pins.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "pre-run source and dependency SHA pins",
+      "bytes": 3989,
+      "sha256": "2d480a346f803f3c4819133617abc2759de5a806f47ecbb077d590aaf23b836a",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/local_front_operator_20261006/runs/run01/pre_run_source_pins.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\runs\\\\\\\\run01\\\\\\\\pre_run_source_pins.json\": text: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\runs\\\\\\\\run01\\\\\\\\pre_run_source_pins.json\": eol: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\runs\\\\\\\\run01\\\\\\\\pre_run_source_pins.json\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_post_pins",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/local_front_operator_20261006/runs/run01/post_run_source_pins.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/runs/run01/post_run_source_pins.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "post-run unchanged source/dependency pins and actual wrapper exit status",
+      "bytes": 4676,
+      "sha256": "1692d68ad92affc9b9f5c7230918670b9c5b8a85bec2f35cd046e1860eea287f",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/local_front_operator_20261006/runs/run01/post_run_source_pins.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\runs\\\\\\\\run01\\\\\\\\post_run_source_pins.json\": text: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\runs\\\\\\\\run01\\\\\\\\post_run_source_pins.json\": eol: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\runs\\\\\\\\run01\\\\\\\\post_run_source_pins.json\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_independent_audit_source",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_and_local_operator_independent/local_saved_array_audit.py",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/independent/local_saved_array_audit.py",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "independent saved-K readback script; no reassembly or solver",
+      "bytes": 11631,
+      "sha256": "066cf71f7d17d60412debd1ab2e9c671a20c24af27d73683a51d531e5361032f",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/full3d_and_local_operator_independent/local_saved_array_audit.py"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\independent\\\\\\\\local_saved_array_audit.py\": text: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\independent\\\\\\\\local_saved_array_audit.py\": eol: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\independent\\\\\\\\local_saved_array_audit.py\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_independent_audit_json",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_and_local_operator_independent/local_saved_array_audit.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/independent/local_saved_array_audit.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "independent saved-K algebra/eigenvalue readback; failed outer promotion remains",
+      "bytes": 2482,
+      "sha256": "e1c60fa1ab3a1a073cb1f0f8ab51afea4a4fb3c33810d42914c0134ade74229a",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/full3d_and_local_operator_independent/local_saved_array_audit.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\independent\\\\\\\\local_saved_array_audit.json\": text: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\independent\\\\\\\\local_saved_array_audit.json\": eol: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\independent\\\\\\\\local_saved_array_audit.json\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "local_front_operator_independent_K_png",
+      "group": "pg_local_front_operator_outer125",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_and_local_operator_independent/local_saved_K_spectrum.png",
+      "destination_path": "docs/evidence/20261006/core_incremental/local_front_operator/independent/local_saved_K_spectrum.png",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "spectrum plot for the saved scalar diagnostic K",
+      "bytes": 10990,
+      "sha256": "451319c14f3e09378c98a47e5530b30aeed7e6598134ac5720cc44b618b6b1b1",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/full3d_and_local_operator_independent/local_saved_K_spectrum.png"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\independent\\\\\\\\local_saved_K_spectrum.png\": text: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\independent\\\\\\\\local_saved_K_spectrum.png\": eol: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\local_front_operator\\\\\\\\independent\\\\\\\\local_saved_K_spectrum.png\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "solved_field_j_driver",
+      "group": "pg_solved_field_j_unknown_contract",
+      "repo": "pgfrag",
+      "source_path": "experiments/solved_field_j_coupling_20261006/read_solved_field_j.py",
+      "destination_path": "experiments/solved_field_j_coupling_20261006/read_solved_field_j.py",
+      "operation": "stage_exact_existing",
+      "role": "frozen solved-field/J readback adapter source",
+      "bytes": 69924,
+      "sha256": "4b2eca6bae43ca74aaee6129f58da838e35d2ab3f7e1ca22cd3fdba21d13815d",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/solved_field_j_coupling_20261006/read_solved_field_j.py"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"experiments\\\\\\\\solved_field_j_coupling_20261006\\\\\\\\read_solved_field_j.py\": text: unspecified",
+        "\"experiments\\\\\\\\solved_field_j_coupling_20261006\\\\\\\\read_solved_field_j.py\": eol: unspecified",
+        "\"experiments\\\\\\\\solved_field_j_coupling_20261006\\\\\\\\read_solved_field_j.py\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "solved_field_j_readme",
+      "group": "pg_solved_field_j_unknown_contract",
+      "repo": "pgfrag",
+      "source_path": "experiments/solved_field_j_coupling_20261006/README.md",
+      "destination_path": "experiments/solved_field_j_coupling_20261006/README.md",
+      "operation": "stage_exact_existing",
+      "role": "scope and contract notes for the frozen readback adapter",
+      "bytes": 2097,
+      "sha256": "fd24a27ce44f4e38f7b8b1bab23fe4459fc97e0778f39dc36673770464f50242",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? experiments/solved_field_j_coupling_20261006/README.md"
+      ],
+      "source_ignored": false,
+      "destination_exists": true,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"experiments\\\\\\\\solved_field_j_coupling_20261006\\\\\\\\README.md\": text: unspecified",
+        "\"experiments\\\\\\\\solved_field_j_coupling_20261006\\\\\\\\README.md\": eol: unspecified",
+        "\"experiments\\\\\\\\solved_field_j_coupling_20261006\\\\\\\\README.md\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "solved_field_j_source_freeze",
+      "group": "pg_solved_field_j_unknown_contract",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/source_freeze.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/source_freeze.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "immutable pre-run source freeze; paired with actual failure addendum",
+      "bytes": 4972,
+      "sha256": "d5654bf579a8e7a11bd7a08a01b6878e88e96263dc1a14896f4b2067a9f449a8",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/solved_field_j_coupling_20261006/source_freeze.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\source_freeze.json\": text: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\source_freeze.json\": eol: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\source_freeze.json\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "solved_field_j_freeze_sha256",
+      "group": "pg_solved_field_j_unknown_contract",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/source_freeze.sha256",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/source_freeze.sha256",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "source-freeze digest sidecar",
+      "bytes": 86,
+      "sha256": "c16b29cbec69ead7e86d8e4e9ee39dcac0431085e477c0609e749c7c2f4c3a50",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/solved_field_j_coupling_20261006/source_freeze.sha256"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\source_freeze.sha256\": text: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\source_freeze.sha256\": eol: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\source_freeze.sha256\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "solved_field_j_source_review",
+      "group": "pg_solved_field_j_unknown_contract",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/SOURCE_REVIEW.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/SOURCE_REVIEW.md",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "original source review record; later execution failure is separately retained",
+      "bytes": 2928,
+      "sha256": "258913bb6a888b8d997bc62934f4be8986a59d88bbc5bedf6706aaca1f879aa4",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/solved_field_j_coupling_20261006/SOURCE_REVIEW.md"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\SOURCE_REVIEW.md\": text: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\SOURCE_REVIEW.md\": eol: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\SOURCE_REVIEW.md\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "solved_field_j_execution_addendum_md",
+      "group": "pg_solved_field_j_unknown_contract",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/EXECUTION_ADDENDUM.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/EXECUTION_ADDENDUM.md",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "actual worker stage retained; parent result remains UNKNOWN after metadata rejection",
+      "bytes": 1698,
+      "sha256": "d91ea236b3344d25605a784b44a75b0f4190ec8ca7b0773d71328dc2af5c5a61",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/solved_field_j_coupling_20261006/EXECUTION_ADDENDUM.md"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\EXECUTION_ADDENDUM.md\": text: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\EXECUTION_ADDENDUM.md\": eol: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\EXECUTION_ADDENDUM.md\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "solved_field_j_execution_addendum_json",
+      "group": "pg_solved_field_j_unknown_contract",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/EXECUTION_ADDENDUM.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/EXECUTION_ADDENDUM.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "machine-readable failure, stage, and source pin record",
+      "bytes": 3695,
+      "sha256": "b680360b602f2798927a9c36b567710a9aebedd6acd7b83d5ef5ff3bbcfef2dd",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/solved_field_j_coupling_20261006/EXECUTION_ADDENDUM.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\EXECUTION_ADDENDUM.json\": text: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\EXECUTION_ADDENDUM.json\": eol: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\EXECUTION_ADDENDUM.json\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "solved_field_j_metadata_helper",
+      "group": "pg_solved_field_j_unknown_contract",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/metadata_mapping_fix.py",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/metadata_mapping_fix.py",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "source-only quadrature metadata mapping candidate; not applied and no rerun",
+      "bytes": 3758,
+      "sha256": "39157314717d988e3136cb0feccd84784bd3002dcf52aadd5486b7d3b90bb2e3",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/solved_field_j_coupling_20261006/metadata_mapping_fix.py"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\metadata_mapping_fix.py\": text: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\metadata_mapping_fix.py\": eol: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\metadata_mapping_fix.py\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "solved_field_j_worker_stage",
+      "group": "pg_solved_field_j_unknown_contract",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/runs/run01/.solved_field_j_coupling.json.34676.worker.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/.solved_field_j_coupling.json.34676.worker.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "preserved 649133-byte readback stage; result contract rejected by parent",
+      "bytes": 649133,
+      "sha256": "1377e428a12f53bbc9dc9537c4dbf5d0c3f67a937bcdeceee6ddc6c98dfdfac9",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/solved_field_j_coupling_20261006/runs/run01/.solved_field_j_coupling.json.34676.worker.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\runs\\\\\\\\run01\\\\\\\\.solved_field_j_coupling.json.34676.worker.json\": text: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\runs\\\\\\\\run01\\\\\\\\.solved_field_j_coupling.json.34676.worker.json\": eol: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\runs\\\\\\\\run01\\\\\\\\.solved_field_j_coupling.json.34676.worker.json\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "solved_field_j_run_receipt",
+      "group": "pg_solved_field_j_unknown_contract",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/runs/run01/run_receipt.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/run_receipt.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "actual readback run receipt; worker rc 0 but parent rc 1 on contract validation",
+      "bytes": 1650,
+      "sha256": "6a7eef3761ccc07a941dcb49805cf20c127825230f738560a32d5b2669f60b6b",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/solved_field_j_coupling_20261006/runs/run01/run_receipt.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\runs\\\\\\\\run01\\\\\\\\run_receipt.json\": text: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\runs\\\\\\\\run01\\\\\\\\run_receipt.json\": eol: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\runs\\\\\\\\run01\\\\\\\\run_receipt.json\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "solved_field_j_parent_result",
+      "group": "pg_solved_field_j_unknown_contract",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/runs/run01/solved_field_j_coupling.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/solved_field_j_coupling.json",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "actual UNKNOWN_WORKER_RESULT_CONTRACT parent result; retained as failure evidence",
+      "bytes": 387,
+      "sha256": "6f3854d603f1c861dd86eceb44efe3374f84263a4053b9d0ed07d07f11926873",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/solved_field_j_coupling_20261006/runs/run01/solved_field_j_coupling.json"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\runs\\\\\\\\run01\\\\\\\\solved_field_j_coupling.json\": text: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\runs\\\\\\\\run01\\\\\\\\solved_field_j_coupling.json\": eol: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\runs\\\\\\\\run01\\\\\\\\solved_field_j_coupling.json\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "solved_field_j_stdout",
+      "group": "pg_solved_field_j_unknown_contract",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/runs/run01/stdout.log",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/stdout.log",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "actual outer stdout log from the contract-rejected run",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/solved_field_j_coupling_20261006/runs/run01/stdout.log"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\runs\\\\\\\\run01\\\\\\\\stdout.log\": text: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\runs\\\\\\\\run01\\\\\\\\stdout.log\": eol: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\runs\\\\\\\\run01\\\\\\\\stdout.log\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    },
+    {
+      "id": "solved_field_j_stderr",
+      "group": "pg_solved_field_j_unknown_contract",
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/solved_field_j_coupling_20261006/runs/run01/stderr.log",
+      "destination_path": "docs/evidence/20261006/core_incremental/solved_field_j_coupling/runs/run01/stderr.log",
+      "operation": "copy_then_stage_exact_destination",
+      "role": "actual empty outer stderr log from the contract-rejected run",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_tracked": false,
+      "source_head_blob_sha256": null,
+      "source_head_blob_bytes": null,
+      "source_matches_head": false,
+      "source_porcelain": [
+        "?? tmp/review_20261006/solved_field_j_coupling_20261006/runs/run01/stderr.log"
+      ],
+      "source_ignored": false,
+      "destination_exists": false,
+      "destination_ignored": false,
+      "destination_attributes": [
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\runs\\\\\\\\run01\\\\\\\\stderr.log\": text: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\runs\\\\\\\\run01\\\\\\\\stderr.log\": eol: unspecified",
+        "\"docs\\\\\\\\evidence\\\\\\\\20261006\\\\\\\\core_incremental\\\\\\\\solved_field_j_coupling\\\\\\\\runs\\\\\\\\run01\\\\\\\\stderr.log\": filter: unspecified"
+      ],
+      "eligibility": "CANDIDATE_REVIEW_REQUIRED"
+    }
+  ],
+  "already_present_unchanged": [],
+  "blocked_files": [],
+  "excluded_material": [
+    "large NPZ inputs, generated large logs, runtime/vendor/venv trees, Matplotlib caches, raw unrelated payloads, credentials, and external copyrighted material",
+    "mesh-binding checks.json producer booleans omitted; independent receipt is based on parsed mesh bytes and numeric fields",
+    "Full3D, moving-front, whole-body, static-bridge, active stage/mapper work and the independent J readback remain excluded; only the two explicitly listed frozen failure/readback packages are added here."
+  ],
+  "known_claim_boundaries": [
+    "safe-v2 check covers its fixed source lattice and geometry cases only; no provider wiring, MLS/operator, solver, or generic arbitrary-geometry qualification.",
+    "Local-front provider is a source-only 242-query diagnostic with 7 UNKNOWN rows; it does not assemble or solve an operator, and its generic classifier has documented tolerance-band limits.",
+    "J guard v3 only validates bounded array shape/type/budget behavior; no actual static J or analytic-sample rerun is included.",
+    "Energy-gate results are synthetic state-machine tests only; external receipt branch uses test-only hashes, not solver evidence.",
+    "Mesh-binding fixture passes actual OBJ binding/closure/orientation/area/volume checks; no intersection, no-overlap, full-coverage, mechanics, or physical proof is established. Four small fixture payloads are included as evidence snapshots; the original manifest still references the temporary source fixture path.",
+    "Wall-resolution findings are an analytic hollow-cylinder local-resolution precondition only; physical/global pass remains false. Bias evaluator is fixture-only, NOT_ADMITTED, and does not establish that real mesh bias is eliminated.",
+    "Catalog corner fairing is a bounded 2-D math/design proposal on default bowl/jar profiles; no native CAD/STEP was run; actual real-vessel/style, global normal thickness, between-sample geometry, fracture and physical qualification remain unknown.",
+    "Frozen local-front scalar operator attempt: 256 provider and MLS rows are OK and a 140x140 diagnostic K was assembled in staging, but outer exit code 125 prevented primary promotion due to semantic basis-count label validation. Independent saved-array algebra review does not change the failed receipt; no solver/load/full-3D/physical result is claimed.",
+    "Frozen solved-field/J coupling attempt: worker exit code 0 and 248-row readback stage are preserved, while the parent returned UNKNOWN_WORKER_RESULT_CONTRACT because quadrature metadata mapping used a missing field. The mapping helper is unapplied, the parent result remains UNKNOWN, no retry or independent J readback is included, and this is not a J/physics qualification."
+  ],
+  "active_writer_notes": [
+    "All source files were read and hashed only; no file copies or Git writes were performed.",
+    "The only added operator-related files are the two root-reviewed frozen attempts listed above; the independently running J readback and all other active operators/stages remain outside this plan."
+  ],
+  "updated_local_time": "2026-10-06T06:53:28.6831366+08:00"
+}

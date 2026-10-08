@@ -1,0 +1,29 @@
+{
+  "encoder_id": "identity_rgb_blockmean",
+  "rows": {
+    "LIN0000_V02_M01_PAT02_E01-m": {
+      "opaque": "24382e8df934c5d4fa362d3e",
+      "shard": "tokens/shard_0000.npz",
+      "token_dim": 256,
+      "tokens": 192,
+      "tokens_hash": "sha256:38db69e45f5fe3809b0e247f0a8183e3553fb9f937948ee42784db4760d878ef"
+    },
+    "LIN0000_V02_M01_PAT02_E01-p": {
+      "opaque": "99d6ba555e36f770932ded35",
+      "shard": "tokens/shard_0000.npz",
+      "token_dim": 256,
+      "tokens": 192,
+      "tokens_hash": "sha256:1e6c1332ce416c97ecd946f4083e709c90e730a6cb60d296fe385ad8ca363819"
+    }
+  },
+  "schema": "synlab.token_index.v1",
+  "token_dim": 256,
+  "token_input": "coarse TOKEN_BLOCK x TOKEN_BLOCK block mean per view (real, rank-1 by construction); kept for provenance, not a 256-dim feature",
+  "token_layout": "per-token sub-grid block means (identity, no learned weights)",
+  "token_policy_id": "obspack_rgb_blockmean_v1",
+  "token_sub_grid": [
+    16,
+    16
+  ],
+  "tokens_per_view": 48
+}

@@ -1,0 +1,477 @@
+{
+  "schema": "stablecore_copy_phase_receipt.v2",
+  "plan_path": "tmp/backup_coordinator/next_stablecore_backup_plan_20261006_v2.json",
+  "plan_sha256": "c4af20f11b5681399ca3e42eccd85bb9daf00b0839ad1666b6b8b988678de60d",
+  "phase": "copy",
+  "status": "PASS",
+  "planned_files": 46,
+  "verified_destinations": 46,
+  "copied_this_resume": 45,
+  "verified_existing_from_interrupted_copy": 1,
+  "bytes": 1486661.0,
+  "prior_failure_receipt": "tmp/backup_coordinator/execution_receipt_20261006_stablecore_v2_copy_failure.json",
+  "reconciliation_receipt": "tmp/backup_coordinator/execution_receipt_20261006_stablecore_v2_copy_reconciliation.json",
+  "copy_rows": [
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/full3d_static_solve_bridge_20261006/static_solve_bridge.py",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source/static_solve_bridge.py",
+      "bytes": 50402,
+      "sha256": "2a5d60bb77c3ea178dcda086830270262391e954513076317da6ddff7b4a42e5",
+      "copied_this_resume": false,
+      "verified_existing_from_interrupted_copy": true,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/full3d_static_solve_bridge_20261006/static_solve_case.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source/static_solve_case.json",
+      "bytes": 6639,
+      "sha256": "08af8e11fff102c52dbc40ceb43ad610faad3c4462f1492739d2f5e198378728",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/full3d_static_solve_bridge_20261006/README.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source/README.md",
+      "bytes": 5748,
+      "sha256": "024b55cbf8cde715aaaa786dedc4e81c25fbb4c04ec8d2912fa7ea07ba60a411",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_static_solve_bridge_20261006/source_snapshot_before_run02/static_solve_bridge.py",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source_snapshot_before_run02/static_solve_bridge.py",
+      "bytes": 50247,
+      "sha256": "cb9e802bfbb25d0a5ae9dbbaf67952dfd71fb64757f35e2765da79f838c5be5f",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_static_solve_bridge_20261006/source_snapshot_before_run02/static_solve_case.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source_snapshot_before_run02/static_solve_case.json",
+      "bytes": 6173,
+      "sha256": "59e853f28f8ed194c21982f08183306a492ba8b594f91c3f54fdde05443e825e",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_static_solve_bridge_20261006/source_snapshot_before_run02/PINS.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/source_snapshot_before_run02/PINS.json",
+      "bytes": 725,
+      "sha256": "4e7945c08de0019f1b09aa685949bf9c93102ff0a6343459b446be78c3278247",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_static_solve_bridge_20261006/run_record.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run_record.json",
+      "bytes": 9981,
+      "sha256": "b0ee4ccdc012898cfe8ac8eff88d07c7e1587930b9c9f16ea32b2c953cac5188",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_static_solve_bridge_20261006/run01/run_receipt.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/run_receipt.json",
+      "bytes": 657,
+      "sha256": "c0aa65d49dfa59f3f99a32d2ad3fda781d3639a882785136ea23ee6d5f8a17e1",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_static_solve_bridge_20261006/run01/outer_stdout.bin",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/outer_stdout.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_static_solve_bridge_20261006/run01/outer_stderr.bin",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/outer_stderr.bin",
+      "bytes": 167,
+      "sha256": "5ffc5c6c505ec8a989eee357354513e797cd9bccf73662056fe42fb7e8edd20d",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_static_solve_bridge_20261006/run01/outer_execution_receipt.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/outer_execution_receipt.json",
+      "bytes": 2060,
+      "sha256": "b48282c2325c6982f7e04b0523bed3a96b1f3f5cef16d8e0556af8db6b98bcfa",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_static_solve_bridge_20261006/run01/child_stdout.bin",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/child_stdout.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_static_solve_bridge_20261006/run01/child_stderr.bin",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run01/child_stderr.bin",
+      "bytes": 178,
+      "sha256": "5e50d26f6582c306f41cddd02ce91a579ffc29d7272062f16c8254af85e089bd",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_static_solve_bridge_20261006/run02/static_solve_bridge_result.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/static_solve_bridge_result.json",
+      "bytes": 129942,
+      "sha256": "ef66783e2961dd77f34785a99e1b397210ccc0beb6e8fa2979678aa4992a0ce3",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_static_solve_bridge_20261006/run02/run_receipt.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/run_receipt.json",
+      "bytes": 842,
+      "sha256": "1786bc8cf81e5a2c5fb87b2af83979a0b736c42f207d350e300d19c7e5aa356f",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_static_solve_bridge_20261006/run02/outer_stdout.bin",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/outer_stdout.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_static_solve_bridge_20261006/run02/outer_stderr.bin",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/outer_stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_static_solve_bridge_20261006/run02/outer_execution_receipt.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/outer_execution_receipt.json",
+      "bytes": 2143,
+      "sha256": "e9589175cbe76739c75d04e56a774aff032a85b80a52300640c2ffc0afde1296",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_static_solve_bridge_20261006/run02/child_stdout.bin",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/child_stdout.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_static_solve_bridge_20261006/run02/child_stderr.bin",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_static_solve_bridge/run02/child_stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/full3d_consistent_mass_replay_20261006/full3d_consistent_mass_replay.py",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/source/full3d_consistent_mass_replay.py",
+      "bytes": 20402,
+      "sha256": "d97833c56099059b36ae91332a8bab7188c3be6b64ca433c108845701aaf657e",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/full3d_consistent_mass_replay_20261006/fixed_case.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/source/fixed_case.json",
+      "bytes": 4387,
+      "sha256": "a4780655f0bf78a55576bf3f63eb75aa133a065b50a104683df614d92218570a",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "experiments/full3d_consistent_mass_replay_20261006/README.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/source/README.md",
+      "bytes": 2771,
+      "sha256": "3eaa28a6358e6c568210415879639830f7dba31efb2a1982b2154ab2c4cff489",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_consistent_mass_replay_20261006/SOURCE_FREEZE.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/SOURCE_FREEZE.json",
+      "bytes": 3166,
+      "sha256": "126169c09fe13fd0a3d994743c200d4d5ed059c99e242b6788282e0a48055ffb",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_consistent_mass_replay_20261006/run01/stdout.log",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/stdout.log",
+      "bytes": 378,
+      "sha256": "6a8c48bab6b303877dac018c2c82c5147b7b23d524703caf48f0633df3d7966a",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_consistent_mass_replay_20261006/run01/stderr.log",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_consistent_mass_replay_20261006/run01/preauth_fixed_case.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/preauth_fixed_case.json",
+      "bytes": 4388,
+      "sha256": "63d79cf73ec364086970cf4a08d69dac54da2a016d0ef46071243b718e2c355c",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_consistent_mass_replay_20261006/run01/mass_result.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/mass_result.json",
+      "bytes": 506138,
+      "sha256": "326df86f867eec47141fce58a748eb68403853adce3a2d8b3b59d8f992ff15e1",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_consistent_mass_replay_20261006/run01/mass_matrix.csv",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/mass_matrix.csv",
+      "bytes": 291275,
+      "sha256": "fc1f78f45c091d7f203e54c5e6aa10b34974525f777bd3ea2143b6a9c40f3241",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/full3d_consistent_mass_replay_20261006/run01/execution_receipt.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/full3d_consistent_mass_replay/run01/execution_receipt.json",
+      "bytes": 20367,
+      "sha256": "c8b8b5e45251ca8dfa36f1d8db5c6cfb309b25f7528103871cdb17e6b37686bc",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "experiments/exact_curvature_certificate_20261006/exact_curvature_certificate.py",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/exact_curvature_certificate/source/exact_curvature_certificate.py",
+      "bytes": 17191,
+      "sha256": "bf6838f11ac4cb9422236242431ebcf0c4237c37a9329937da9322615092d97d",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "experiments/exact_curvature_certificate_20261006/exact_curvature_certificate.pre_review_335.py",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/exact_curvature_certificate/source/exact_curvature_certificate.pre_review_335.py",
+      "bytes": 15756,
+      "sha256": "20d95165dd2c54ab195e8eadd612b91232b635aac167f87cb6071fb5c9d4934e",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "experiments/exact_curvature_certificate_20261006/fixed_cases.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/exact_curvature_certificate/source/fixed_cases.json",
+      "bytes": 10633,
+      "sha256": "e1e9c3cf659dbc59d99a18c4b70694201518be4f3aba09a57806402e732cf95a",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "experiments/exact_curvature_certificate_20261006/README.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/exact_curvature_certificate/source/README.md",
+      "bytes": 2732,
+      "sha256": "677717379cbefd1749216ca53072e8ca92a626ae32e0a955992d2534b8e2e100",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261006/exact_curvature_certificate_20261006/exact_curvature_certificate.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/exact_curvature_certificate/actual/exact_curvature_certificate.json",
+      "bytes": 191724,
+      "sha256": "b08a550d14e59ed9945408bafc42a921692f1ef7f9c4540dc77f8a364ede8bde",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261006/exact_curvature_certificate_20261006/run_attempt_receipt.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/exact_curvature_certificate/actual/run_attempt_receipt.json",
+      "bytes": 1483,
+      "sha256": "5e511cf6e6fb0b522ec83802899590bc4939f8cba80d699ce18125e00ed7759f",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261006/exact_curvature_certificate_20261006/run_stdout.txt",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/exact_curvature_certificate/actual/run_stdout.txt",
+      "bytes": 76,
+      "sha256": "34d7c580e29553337ada7746ae2e6556fd5156905c0693d2f393291909f2ddf8",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261006/exact_curvature_certificate_20261006/run_stderr.txt",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/exact_curvature_certificate/actual/run_stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261006/exact_curvature_certificate_20261006/review_addendum.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/exact_curvature_certificate/actual/review_addendum.md",
+      "bytes": 4234,
+      "sha256": "f681720267bd2d4a865cfee3c550c1e195a7f368540171deacb09f30e02ed31f",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261006/exact_curvature_certificate_independent/check_certificate.py",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/exact_curvature_certificate/independent/check_certificate.py",
+      "bytes": 12764,
+      "sha256": "8a8ca7d75349d6d1475356b9ed026bd43f0934a7cc7ffabc1edd83c69a52a593",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/bridge_mass_independent/audit_cached_arrays.py",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/audit_cached_arrays.py",
+      "bytes": 18908,
+      "sha256": "d4c107cea4963a041f58be1ba076ce28762dad883935c28f3c672d8a6c296e50",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/bridge_mass_independent/audit_result.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/audit_result.json",
+      "bytes": 9344,
+      "sha256": "41e35d8bb50478ba19cd91a87337ec38bed9cf32f6626808bb7912ef386c12c9",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/bridge_mass_independent/outer_run_receipt.json",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/outer_run_receipt.json",
+      "bytes": 4182,
+      "sha256": "0bf5a9dc428baa7c6a7128fbddef4d9afd51f8e4b8ff419260cd00d9cdd04070",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/bridge_mass_independent/mass_spectrum_rigid_kinetic.png",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/mass_spectrum_rigid_kinetic.png",
+      "bytes": 40193,
+      "sha256": "1317db03b8e262383a14459727492f0760d5aa7c807ecfed38117391cae02e22",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "pgfrag",
+      "source_path": "tmp/review_20261006/bridge_mass_independent/bridge_strain_stress_scatter.png",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/bridge_mass_independent/bridge_strain_stress_scatter.png",
+      "bytes": 36269,
+      "sha256": "bb7fcda00ba3e9a755b731fecdfa44042ef8c9e71a2c9f487d8b22b8539e816a",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    },
+    {
+      "repo": "vesselforge",
+      "source_path": "tmp/review_20261006/exact_curvature_certificate_independent/execution_receipts.md",
+      "destination_path": "docs/evidence/20261006/core_incremental/stablecore/exact_curvature_certificate/independent/execution_receipts.md",
+      "bytes": 1996,
+      "sha256": "911051783d3f0aa33eb06597c962b8c0e8206fa66f4fd0ae62c68b01a1f45b4f",
+      "copied_this_resume": true,
+      "verified_existing_from_interrupted_copy": false,
+      "source_pre_post_match": true
+    }
+  ],
+  "recorded_utc": "2026-10-06T03:54:10.7536795Z"
+}

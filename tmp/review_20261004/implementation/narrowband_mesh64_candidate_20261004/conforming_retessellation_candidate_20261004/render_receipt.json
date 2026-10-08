@@ -1,0 +1,36 @@
+{
+  "task": "single render of saved before/after arrays",
+  "timestamp_utc": "2026-10-04T05:42:25.7483667Z",
+  "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab",
+  "python_executable": "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+  "argv": [
+    "-B",
+    "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\render_retessellation_before_after.py"
+  ],
+  "process_exit": 0,
+  "elapsed_seconds": 1.21297,
+  "conversion_rerun": false,
+  "boolean_calls": 0,
+  "hashes_before": {
+    "outputs": "e00404f67bf13ced471e3c7c8d0596b3b50efd4c9b17f4175142712a5e5a04a0",
+    "inputs": "d80707312638ce2830847f2dc198632c5456963a6043715d27436b3db3ce6dc2",
+    "renderer": "3a775aa56fee7dbb54b2bda277a6045870d3344ea9a2442d1732d3d521f454a8",
+    "report": "6b4078337fab9f7c0d4e4d8cdaaa2e0e4442968b4aaa5274a95a9ec1820abcba"
+  },
+  "stdout": {
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\render_run.stdout.txt",
+    "sha256": "1f913faeb1833f50dfc36501ae7911f70f059b6f0f005dc5933e3bd1701cc954",
+    "bytes": 748
+  },
+  "stderr": {
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\render_run.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "png": {
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\narrowband_mesh64_candidate_20261004\\conforming_retessellation_candidate_20261004\\retessellation_before_after_local_topology.png",
+    "sha256": "bc9aebadfb311c5f7759024a9b3a6320b1dfd56a0844556bb105d78a70b262f0",
+    "bytes": 463625
+  },
+  "interpretation": "Derived visualization from frozen raw and already-saved candidate arrays; no Boolean or conversion was rerun."
+}

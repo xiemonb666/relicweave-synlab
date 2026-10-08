@@ -1,0 +1,77 @@
+{
+  "schema": "independent_closeout_executor_review_v2",
+  "status": "DELTA_REVIEWED_WITH_CONDITIONAL_ITEMS",
+  "review_mode": "source_only_no_execution",
+  "workspace_root": "C:\\Users\\xiemo\\Desktop\\ShardForge",
+  "reviewed_date": "2026-10-08",
+  "artifacts": {
+    "executor": {"path": "tmp/backup_coordinator/closeout_20261007/execute_closeout_backup.py", "bytes": 69006, "sha256": "396c664f1386f6c33af8add423eb7b612678351803c40119a47e8771f47911a4"},
+    "inventory_builder": {"path": "tmp/backup_coordinator/closeout_20261007/build_closeout_inventory_v2.py", "bytes": 55967, "sha256": "741319d107112aa2e06a4639a673b0000c2e1422aba907a2360ad4962d599d34"},
+    "readme": {"path": "tmp/backup_coordinator/closeout_20261007/README.md", "bytes": 4566, "sha256": "c64dafaafbcc1b95752cde84c3f3be012f8feb90e0509333e4d1de65129f8d5b"},
+    "postverify_helper": {"path": "tmp/backup_coordinator/closeout_20261007/independent_postverify_all_code_backup_20261007.py", "bytes": 51017, "sha256": "7706e133102aaa4d47360e3e792d8ff21305267968a3d346119d7a836cef95ba"},
+    "prior_v1_review_preserved": {
+      "markdown_sha256": "0e5725c06867cf6caa499e917ef51e935091412cc88d53c554ae21dacb0659f8",
+      "json_sha256": "ba3042dc6530025f5822c6d280226817867214c33589bdf747acfc6989f0fa91"
+    }
+  },
+  "prior_blocker_resolution": {
+    "id": "push_returncode_field_mismatch_on_normal_push",
+    "status": "resolved_for_successful_push",
+    "executor_field": "repositories.<repo>.push_exit_code",
+    "postverify_accepted_field": "push_exit_code",
+    "evidence": ["execute_closeout_backup.py:1043-1044", "independent_postverify_all_code_backup_20261007.py:878-883"]
+  },
+  "confirmed_delta_fixes": {
+    "main_manifest_sha_and_root_go_required": true,
+    "separate_supplementary_sha_and_root_go_required": true,
+    "supplementary_exports_exactly_three_authorized_role_source_destination_tuples": true,
+    "read_repo_state_and_stage_expected_parse_commands_check_returncodes": true,
+    "supplementary_source_symlink_components_checked_before_resolve": true,
+    "executor_git_argument_must_resolve_to_fixed_bundled_path": true,
+    "builder_uses_same_absolute_bundled_git_path": true,
+    "builder_records_git_size_and_sha_in_inventory_and_manifest": true,
+    "check_ignore_accepts_only_rc_0_or_1_and_checks_result_subset": true,
+    "check_attr_requires_rc_0_and_complete_unique_three_attributes_per_path": true,
+    "two_exact_junit_xml_files_included": [
+      {"path": "relicweave-synlab/docs/a12/evidence/20261005/pg_source_reader/junit_portable_fixture.xml", "bytes": 4877},
+      {"path": "relicweave-synlab/tmp/review_20261005/pg_source_reader/junit_portable_fixture.xml", "bytes": 4877}
+    ],
+    "three_selected_npz_inputs_remain_within_20_mib_policy": true,
+    "readme_pre_scan_pin_matches_inventory_row_and_post_scan_file_without_rewrite": true
+  },
+  "conditional_items": [
+    {
+      "id": "postverify_does_not_accept_verified_remote_without_push_rc",
+      "severity": "medium",
+      "status": "conditional_resume_path_mismatch",
+      "locations": ["execute_closeout_backup.py:1012-1029", "independent_postverify_all_code_backup_20261007.py:878-888"],
+      "detail": "Executor emits explicit already_exact_remote_verified_without_push with push_exit_code null; helper unconditionally requires a zero push return code."
+    },
+    {
+      "id": "resume_and_postcommit_git_reads_lack_uniform_returncode_gate",
+      "severity": "medium",
+      "status": "residual_source_issue",
+      "locations": ["execute_closeout_backup.py:727", "execute_closeout_backup.py:731-733", "execute_closeout_backup.py:946", "execute_closeout_backup.py:948-950", "execute_closeout_backup.py:986-991"],
+      "detail": "Main preflight/state and staging parse commands are guarded; several resume/post-commit ls-tree/diff-tree outputs are still parsed without command_bytes or command_text."
+    },
+    {
+      "id": "bundled_git_hash_drift_not_compared_to_frozen_manifest",
+      "severity": "medium",
+      "status": "provenance_recorded_but_not_enforced",
+      "bundled_git_bytes": 46464,
+      "bundled_git_sha256": "c53279919fdea03474bb23b465b3a82287157491f1bd69a5eb82dd9831582333",
+      "detail": "Builder pins path/bytes/SHA into inventory/action manifest; executor restricts --git to the fixed path and records the runtime hash, but load_plan does not compare runtime bytes to the frozen manifest value."
+    }
+  ],
+  "previous_inventory_observation_supplied_by_root": {
+    "explicit_text_eol_filter_risks": 0,
+    "pure_crlf_source_rows": 86,
+    "modified_handover_attr": "unspecified with core.autocrlf=false and exact raw bytes verified by root",
+    "reviewer_ran_final_inventory": false,
+    "final_inventory_recheck_required": true
+  },
+  "execution_performed": false,
+  "inventory_build_performed": false,
+  "git_mutation_performed": false,
+  "tests_or_numerical_experiments_performed": false
+}

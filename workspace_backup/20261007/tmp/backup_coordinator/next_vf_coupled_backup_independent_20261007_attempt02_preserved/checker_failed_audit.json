@@ -1,0 +1,517 @@
+{
+  "schema": "shardforge.next_vf_coupled_backup_independent_postverify.v1",
+  "status": "FAIL_CORRECTED_POSTVERIFY",
+  "started_utc": "2026-10-06T19:36:13.780344+00:00",
+  "ended_utc": "2026-10-06T19:36:13.814006+00:00",
+  "wall_seconds": 0.033791,
+  "runtime": {
+    "python_executable": "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+    "flags": [
+      "-B",
+      "-c"
+    ],
+    "process_returncode": 1,
+    "outer_timeout_seconds": 60
+  },
+  "plan_pin": {
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\backup_coordinator\\next_vf_coupled_backup_plan_20261007.json",
+    "bytes": 36744,
+    "sha256": "d0564be84a6a51887db11a3aa2410fb9f3154935adc066e1c1d5487b8fb989e7"
+  },
+  "execution_receipt_pin": {
+    "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\backup_coordinator\\next_vf_coupled_backup_execution_20261007.json",
+    "bytes": 8113293,
+    "sha256": "32f8e57bda700e169c56720f0885f64499c543841e4f063f7fefbc88e3b0b35e"
+  },
+  "initial_failed_audit_preservation": {
+    "prior_status": "FAIL_READ_ONLY_POSTVERIFY",
+    "json_sha256": "41e3028b5daa9b962862fb7cbc185c599ad570b840f37ab31c460c3094ae7e43",
+    "json_bytes": 80835,
+    "markdown_sha256": "07f65d89219feed3e483ce217c2424df6cd74eaf4be7797dab652c80dceae5b1",
+    "markdown_bytes": 1008,
+    "failure_count": 43,
+    "failure_kind": "index_receipt_status",
+    "cause": "initial checker required command returncodes on compact summary rows; receipt has one detailed rc=0 row and one compact passed=true row per path",
+    "preserved_json_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\backup_coordinator\\next_vf_coupled_backup_independent_20261007_attempt01_preserved\\initial_failed_audit.json",
+    "preserved_markdown_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\backup_coordinator\\next_vf_coupled_backup_independent_20261007_attempt01_preserved\\initial_failed_audit.md"
+  },
+  "reused_43_file_evidence": {
+    "count": 43,
+    "all_three_way_and_plan_pins_pass": false,
+    "source_prepost_stable": true,
+    "destination_prepost_stable": true,
+    "full_blob_audit_repeated": false
+  },
+  "index_receipt_recheck": {
+    "records": 86,
+    "paths": 43,
+    "detailed_rc0": 43,
+    "compact_passed": 43,
+    "all_passed": true
+  },
+  "commit_blob_receipts": {
+    "count": 43,
+    "passed_count": 43
+  },
+  "copy_receipts": {
+    "count": 34,
+    "passed_count": 34
+  },
+  "repo_metadata_reused": {
+    "pgfrag": {
+      "root": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+      "branch": "backup/forge-work-20261003",
+      "head": "97d213c988323da39ddbaa9ebb2135b675190c93",
+      "parent": "6aabf6191eb232b4ad446334189d15e894bc3bff",
+      "file_count": 15,
+      "bytes": 636690,
+      "operation_counts": {
+        "stage_existing_exact": 9,
+        "copy_then_stage_exact": 6
+      },
+      "changed_path_count": 15,
+      "changed_paths_exact": true,
+      "remote_ref": "refs/heads/backup/forge-work-20261003",
+      "remote_head": "97d213c988323da39ddbaa9ebb2135b675190c93",
+      "remote_matches_head": true,
+      "index_clean": true,
+      "tracked_worktree_clean": true,
+      "untracked_all_files_count_preserved": 1642,
+      "untracked_status_sha256": "edb4488f80c6bd835a86db55de08c2f01e7ce525b18cbe2f2e957bf311ea8ba3",
+      "tracked_status_count": 0,
+      "raw_push_capture": {
+        "returncode": 0,
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_bytes": 100,
+        "stderr_sha256": "e42b0c5e1b4315c392a761952ee34f54975f1b319d6e7328a1afefde3b6d247e",
+        "stderr_text": "To https://github.com/xiemonb666/pgfrag.git\n   6aabf61..97d213c  HEAD -> backup/forge-work-20261003\n",
+        "timed_out": false,
+        "started_utc": "2026-10-06T19:27:21.842+00:00",
+        "ended_utc": "2026-10-06T19:27:24.495+00:00",
+        "success_ref_line_present": true
+      },
+      "commands": {
+        "root": {
+          "label": "root:pgfrag",
+          "argv": [
+            "git",
+            "rev-parse",
+            "--show-toplevel"
+          ],
+          "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+          "returncode": 0,
+          "wall_seconds": 0.029991,
+          "stdout_bytes": 41,
+          "stdout_sha256": "9872d2281ae5d0a56eb2c2243cfb4ce96faa23220979c04e163919d89c2221aa",
+          "stderr_bytes": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_preview": "",
+          "stdout_text": "C:/Users/xiemo/Desktop/ShardForge/pgfrag\n"
+        },
+        "branch": {
+          "label": "branch:pgfrag",
+          "argv": [
+            "git",
+            "branch",
+            "--show-current"
+          ],
+          "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+          "returncode": 0,
+          "wall_seconds": 0.025289,
+          "stdout_bytes": 27,
+          "stdout_sha256": "f50110fba5e8f77ff5799dd68a48c97b2646278d8f9f3a0b51bbb6fb1f3521a7",
+          "stderr_bytes": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_preview": "",
+          "stdout_text": "backup/forge-work-20261003\n"
+        },
+        "head": {
+          "label": "head:pgfrag",
+          "argv": [
+            "git",
+            "rev-parse",
+            "HEAD"
+          ],
+          "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+          "returncode": 0,
+          "wall_seconds": 0.02809,
+          "stdout_bytes": 41,
+          "stdout_sha256": "ad9eba5e0bacb491ac7f19e14b7d78d1a491be8430f9581762aeb2ef7c59dc2e",
+          "stderr_bytes": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_preview": "",
+          "stdout_text": "97d213c988323da39ddbaa9ebb2135b675190c93\n"
+        },
+        "parent": {
+          "label": "parent:pgfrag",
+          "argv": [
+            "git",
+            "rev-parse",
+            "HEAD^"
+          ],
+          "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag",
+          "returncode": 0,
+          "wall_seconds": 0.031468,
+          "stdout_bytes": 41,
+          "stdout_sha256": "75d1ff7d326323a089018a1f267a07fd5869317eedc715bf59318a159025dd5f",
+          "stderr_bytes": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_preview": "",
+          "stdout_text": "6aabf6191eb232b4ad446334189d15e894bc3bff\n"
+        }
+      }
+    },
+    "vesselforge": {
+      "root": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+      "branch": "backup/forge-work-20261003",
+      "head": "f75c1a464e5806268cf2d5e09fcd3b833c2c19df",
+      "parent": "8acff8ac7db9cf212ed87ede3054a8311b69cc3a",
+      "file_count": 28,
+      "bytes": 299822,
+      "operation_counts": {
+        "copy_then_stage_exact": 28
+      },
+      "changed_path_count": 28,
+      "changed_paths_exact": true,
+      "remote_ref": "refs/heads/backup/forge-work-20261003",
+      "remote_head": "f75c1a464e5806268cf2d5e09fcd3b833c2c19df",
+      "remote_matches_head": true,
+      "index_clean": true,
+      "tracked_worktree_clean": true,
+      "untracked_all_files_count_preserved": 736,
+      "untracked_status_sha256": "2bb05e2f23e14307ec128f6bab62424167c93bb6aa989e33fd74c317ebc03819",
+      "tracked_status_count": 0,
+      "raw_push_capture": {
+        "returncode": 0,
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_bytes": 105,
+        "stderr_sha256": "d5f1c8a00b5750d5e91eacf160203d53e43490bce6b7838a66337c04676dbaef",
+        "stderr_text": "To https://github.com/xiemonb666/vesselforge.git\n   8acff8a..f75c1a4  HEAD -> backup/forge-work-20261003\n",
+        "timed_out": false,
+        "started_utc": "2026-10-06T19:27:43.513+00:00",
+        "ended_utc": "2026-10-06T19:27:46.474+00:00",
+        "success_ref_line_present": true
+      },
+      "commands": {
+        "root": {
+          "label": "root:vesselforge",
+          "argv": [
+            "git",
+            "rev-parse",
+            "--show-toplevel"
+          ],
+          "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+          "returncode": 0,
+          "wall_seconds": 0.025441,
+          "stdout_bytes": 46,
+          "stdout_sha256": "c882de123d463a5aee07691c4279fbb8f2e38c55becc9622db070591a3e00dc7",
+          "stderr_bytes": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_preview": "",
+          "stdout_text": "C:/Users/xiemo/Desktop/ShardForge/vesselforge\n"
+        },
+        "branch": {
+          "label": "branch:vesselforge",
+          "argv": [
+            "git",
+            "branch",
+            "--show-current"
+          ],
+          "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+          "returncode": 0,
+          "wall_seconds": 0.025005,
+          "stdout_bytes": 27,
+          "stdout_sha256": "f50110fba5e8f77ff5799dd68a48c97b2646278d8f9f3a0b51bbb6fb1f3521a7",
+          "stderr_bytes": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_preview": "",
+          "stdout_text": "backup/forge-work-20261003\n"
+        },
+        "head": {
+          "label": "head:vesselforge",
+          "argv": [
+            "git",
+            "rev-parse",
+            "HEAD"
+          ],
+          "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+          "returncode": 0,
+          "wall_seconds": 0.03093,
+          "stdout_bytes": 41,
+          "stdout_sha256": "938b2f94910f51075a03e96b13c95b78bf85596f9338173c0c3c4e5bf976ea14",
+          "stderr_bytes": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_preview": "",
+          "stdout_text": "f75c1a464e5806268cf2d5e09fcd3b833c2c19df\n"
+        },
+        "parent": {
+          "label": "parent:vesselforge",
+          "argv": [
+            "git",
+            "rev-parse",
+            "HEAD^"
+          ],
+          "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge",
+          "returncode": 0,
+          "wall_seconds": 0.027232,
+          "stdout_bytes": 41,
+          "stdout_sha256": "db7ad056815922ed4f9d4b88c718e59f35bd1a4b5317ee131ab4390fae5fff0b",
+          "stderr_bytes": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_preview": "",
+          "stdout_text": "8acff8ac7db9cf212ed87ede3054a8311b69cc3a\n"
+        }
+      }
+    }
+  },
+  "raw_push_captures": {
+    "pgfrag": {
+      "returncode": 0,
+      "timed_out": false,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 100,
+      "stderr_sha256": "e42b0c5e1b4315c392a761952ee34f54975f1b319d6e7328a1afefde3b6d247e",
+      "stderr_text": "To https://github.com/xiemonb666/pgfrag.git\n   6aabf61..97d213c  HEAD -> backup/forge-work-20261003\n",
+      "success_ref_line_present": true,
+      "live_remote_head_from_prior_capture": "97d213c988323da39ddbaa9ebb2135b675190c93"
+    },
+    "vesselforge": {
+      "returncode": 0,
+      "timed_out": false,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 105,
+      "stderr_sha256": "d5f1c8a00b5750d5e91eacf160203d53e43490bce6b7838a66337c04676dbaef",
+      "stderr_text": "To https://github.com/xiemonb666/vesselforge.git\n   8acff8a..f75c1a4  HEAD -> backup/forge-work-20261003\n",
+      "success_ref_line_present": true,
+      "live_remote_head_from_prior_capture": "f75c1a464e5806268cf2d5e09fcd3b833c2c19df"
+    }
+  },
+  "receipt_notes": [
+    "Resumed the exact approved staged checkpoint after preserving a read-only precommit false-alarm receipt; no files were recopied or restaged."
+  ],
+  "producer_attempt_history": [
+    {
+      "attempt": 1,
+      "status": "preflight_copy_or_stage_failed",
+      "repository_mutation": "none",
+      "cause": "preflight comparison normalized actual Git path but not the plan path; read-only false alarm",
+      "error_excerpt": "System.Management.Automation.RuntimeException: pgfrag preflight branch/head/parent/remote/index/tracked drift",
+      "error_sha256": "838efb9ec6cbc8da4e6a37f2570aa63cf3f8c79d7f9cf0346d022379ae0e74c9",
+      "preserved_failure_receipt_sha256": null,
+      "resumed_from_stage_snapshot_sha256": null
+    },
+    {
+      "attempt": 2,
+      "status": "preflight_copy_or_stage_failed",
+      "repository_mutation": "none",
+      "cause": "PowerShell receipt update indexed a PSCustomObject; preflight checks passed but failed before file mutations",
+      "error_excerpt": "System.Management.Automation.RuntimeException: Unable to index into an object of type \"System.Management.Automation.PSObject\".\r\n   at System.Management.Automation.ExceptionHandlingOps.CheckActionPreference(FunctionContext funcContext, Exception exception)\r\n   at System.Management.Automation.Interpreter.ActionCallInstruction`2.Run(InterpretedFrame frame)\r\n   at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame)\r\n   at System.Management.Automation.Interpreter.EnterTryCatchFinallyInstruction.Run(InterpretedFrame frame)",
+      "error_sha256": "9aa649b82fd097919b610c9c6da31031a660c6499f357e43983195054c6c9f7b",
+      "preserved_failure_receipt_sha256": null,
+      "resumed_from_stage_snapshot_sha256": null
+    },
+    {
+      "attempt": 3,
+      "status": "read_only_precommit_guard_false_alarm",
+      "repository_mutation": "none; approved files were already copied and staged in the prior checkpoint",
+      "cause": "git status --short included the plan's expected staged additions; the corrected guard checks unstaged diff and exact cached paths",
+      "error_excerpt": "RuntimeError('pgfrag has unrelated tracked worktree changes: A  docs/progress/review_artifacts/20261007/mls_rotation_covariance/SOURCE_READY.json\\nA  docs/progress/review_artifacts/20261007/mls_rotation_covariance/focused_run01/ROOT_GO_RECORD.json\\nA  docs/progress/review_artifacts/20261007/mls_rotation_covariance/focused_run01/outer_run_receipt.json\\nA  docs/progress/review_artifacts/20261007/mls_rotation_covariance/focused_run01/result.json\\nA  docs/progress/review_artifacts/20261007/mls_rotation_covariance/focused_run01/stderr.raw\\nA  docs/progress/review_artifacts/20261007/mls_rotation_covariance/focused_run01/stdout.raw\\nA  experiments/mixed93_actual_cohesive_bridge_20261006/case.json\\n",
+      "error_sha256": "396f7d3fc71394d8a499500125ab8bde6a8a5a80b3c6479c3418a38f2577ede0",
+      "preserved_failure_receipt_sha256": "d93fbe8350249a9947effcd7a68af1089c4598f1f283147c51338749cb686e1e",
+      "resumed_from_stage_snapshot_sha256": "3268496203a1a2a1e6d8412f30a88b02a8b44e0c6026f38ac71c5f622b57bb84"
+    }
+  ],
+  "final_gates": {
+    "43_source_destination_blob_pins_pass": false,
+    "exact_pathsets_pass": true,
+    "live_remote_heads_match": true,
+    "index_and_tracked_clean": true,
+    "raw_push_success": true,
+    "corrected_index_rows_pass": true
+  },
+  "correction_issues": [
+    {
+      "check": "43_cached_three_way_checks",
+      "detail": "43"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "experiments/mixed93_actual_cohesive_bridge_20261006/run_actual_cohesive_bridge.py"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "experiments/mixed93_actual_cohesive_bridge_20261006/run_actual_cohesive_bridge_once.py"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "experiments/mixed93_actual_cohesive_bridge_20261006/case.json"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "experiments/mixed93_actual_cohesive_bridge_20261006/mixed93_actual_cohesive_bridge.py"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "experiments/mls_rotation_covariance_20261007/mls_rotation_covariance.py"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "experiments/mls_rotation_covariance_20261007/test_mls_rotation_covariance.py"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "experiments/mls_rotation_covariance_20261007/case.json"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "experiments/mls_rotation_covariance_20261007/source_pins.json"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "experiments/mls_rotation_covariance_20261007/README.md"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/mls_rotation_covariance/SOURCE_READY.json"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/mls_rotation_covariance/focused_run01/ROOT_GO_RECORD.json"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/mls_rotation_covariance/focused_run01/result.json"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/mls_rotation_covariance/focused_run01/outer_run_receipt.json"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/mls_rotation_covariance/focused_run01/stdout.raw"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/mls_rotation_covariance/focused_run01/stderr.raw"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/normal_offset_saved_independent/check_saved_offset.py"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/normal_offset_saved_independent/case_falsepins.json"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/normal_offset_saved_independent/README.md"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/normal_offset_saved_independent/once_capture_01/run_receipt.json"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/normal_offset_saved_independent/once_capture_01/stderr.bin"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/normal_offset_saved_independent/once_capture_01/stdout.bin"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/false_pins.json"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/false_pins.pre_budget_fix.json"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/false_pins.pre_render_go.json"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/false_pins.pre_retry01_snapshot.json"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/normal_offset_local_2d_preview.png"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/render_receipt.json"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/render_saved_local_normal_offset.pre_retry01_snapshot.py"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/render_saved_local_normal_offset.py"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/render_started.json"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/render_stderr.raw.bin"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/render_stdout.raw.bin"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/run_saved_visual_once.pre_budget_fix.py"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/run_saved_visual_once.py"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/layout_fixed_01/false_pins.json"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/layout_fixed_01/false_pins.pre_GO.json"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/layout_fixed_01/normal_offset_local_2d_preview.png"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/layout_fixed_01/render_receipt.json"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/layout_fixed_01/render_saved_local_normal_offset.py"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/layout_fixed_01/render_started.json"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/layout_fixed_01/render_stderr.raw.bin"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/layout_fixed_01/render_stdout.raw.bin"
+    },
+    {
+      "check": "cached_row_plan_pin",
+      "detail": "docs/progress/review_artifacts/20261007/normal_offset_saved_visual/layout_fixed_01/run_saved_visual_once.py"
+    }
+  ],
+  "repository_mutations_performed": false,
+  "git_commands_rerun": false,
+  "tests_run": false
+}
