@@ -1,0 +1,239 @@
+{
+  "schema": "independent_layout_source_precheck.v1",
+  "reviewed_at_utc": "2026-10-08T20:07:05+00:00",
+  "status": "PASS_STATIC_SOURCE_XML",
+  "publication_status": "PENDING_LAYOUT_RENDER_AND_VISUAL_QA",
+  "material_static_blockers": [],
+  "scope": "Read-only independent static audit of the Root-approved width-only patch from the pinned e22 prefinal DOCX. This is not a final DOCX/PDF or visual PASS. The earlier independent_source_review is retained as prefinal and was not overwritten.",
+  "pins": {
+    "candidate_docx": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\RelicWeave_V1.48_ContractAligned.docx",
+      "bytes": 793425,
+      "sha256": "164b65c96aa7701a0ad6036fc25c6402dc8bf86c8581c35d258c42eb17fc5a2d"
+    },
+    "prefinal_docx": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\master_contract_update_20261009\\prefinal_layout_snapshot\\RelicWeave_V1.48_ContractAligned.docx",
+      "bytes": 793349,
+      "sha256": "e22e15c52aff6b4590a5fba298d13516c27b37b944d3b3e779d82124b1ffc1f2"
+    },
+    "source_docx": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx",
+      "bytes": 786150,
+      "sha256": "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d"
+    },
+    "protected_docx": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\RelicWeave_V1.47.docx",
+      "bytes": 779513,
+      "sha256": "41f1254e40a2ecabdcfa1c6583af2fce0ae1b0ab980d5f9179bbaf687b7be64b"
+    },
+    "builder": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\master_contract_update_20261009\\build_master_docx.py",
+      "bytes": 60525,
+      "sha256": "7674b99d78395a56228c410b586d631d81613361bb87a4c4b5a6e7f6a13f3436"
+    },
+    "layout_delta_json": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\master_contract_update_20261009\\layout_delta.json",
+      "bytes": 5022,
+      "sha256": "2ff9ffa8f3bbc356aa86bb2d5e3c13bed0b1aea46ffee85ae017487253ae2309"
+    },
+    "layout_delta_md": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\master_contract_update_20261009\\layout_delta.md",
+      "bytes": 1158,
+      "sha256": "0edae996557c1081b7885df65d9e078f85d2fbec451bafc7ec4003a230dbf46b"
+    },
+    "patch_plan_json": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\master_contract_update_20261009\\patch_plan.json",
+      "bytes": 76958,
+      "sha256": "8c611ffcc443f4d4b6374c8ba0c48c92f2034571f651238c1a7fbc8546606e08"
+    },
+    "patch_plan_md": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\master_contract_update_20261009\\patch_plan.md",
+      "bytes": 48099,
+      "sha256": "022df9010ceaa51da02cfe9ef8dd35300289298db25fb06718dba7a3c48272ca"
+    },
+    "render_log": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\master_contract_update_20261009\\render.log",
+      "bytes": 3298,
+      "sha256": "c9043dcbd8f6730902294596315d7df2051e5880f0a16f21f54dfc912bb00592"
+    },
+    "prefinal_review_md": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\master_contract_update_20261009\\prefinal_layout_snapshot\\independent_source_review.md",
+      "bytes": 4212,
+      "sha256": "c1062f4f2d90218311d836dcda606c59ac065687ecd2ea754f0851deefd6bb12"
+    },
+    "prefinal_review_json": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\master_contract_update_20261009\\prefinal_layout_snapshot\\independent_source_review.json",
+      "bytes": 11149,
+      "sha256": "5b22c032ede5d126843973fe6ddc1cf99d2dce78c95b6660b07299c8232a8768"
+    },
+    "prefinal_receipt": {
+      "path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\master_contract_update_20261009\\prefinal_layout_snapshot\\authoring_receipt.json",
+      "bytes": 205283,
+      "sha256": "5d6865ef5e80abdb187c4c5c1217d3f2d6ba8bbb452435c49327726ebbaddeb8"
+    }
+  },
+  "layout_delta_claims": {
+    "status": "APPLIED",
+    "input_docx_sha256": "e22e15c52aff6b4590a5fba298d13516c27b37b944d3b3e779d82124b1ffc1f2",
+    "output_docx_sha256": "164b65c96aa7701a0ad6036fc25c6402dc8bf86c8581c35d258c42eb17fc5a2d",
+    "input_document_xml_sha256": "a1612bdbe43a9d2566a6ea79da4c7538189f994176c52468a0622ecc812ac015",
+    "output_document_xml_sha256": "e1d1d492f13e2e37f5e32ffb914faf2cb07338594b1b955996fbf9356e916b64",
+    "changed_package_parts": [
+      "word/document.xml"
+    ],
+    "only_target_table_width_values_changed": true,
+    "visible_text_identical": true,
+    "row_heights_added": 0
+  },
+  "independent_checks": {
+    "candidate_sha_matches_delta": true,
+    "prefinal_snapshot_sha_matches_delta": true,
+    "zip_part_names_and_order_identical": true,
+    "changed_parts_vs_e22": [
+      "word/document.xml"
+    ],
+    "other_22_parts_raw_byte_identical_to_e22": true,
+    "header_footer_core_bytes_identical_to_e22": true,
+    "document_xml_well_formed": true,
+    "only_target_gridcol_and_tcw_width_values_differ": true,
+    "all_w_t_values_and_attributes_identical": true,
+    "field_instruction_and_code_sequences_identical": true,
+    "body_child_tags_identical": true,
+    "bookmark_and_hyperlink_sequences_identical": true,
+    "frozen_42_source_locator_texts_and_hashes_match": true,
+    "38_actual_replacements_still_match_plan": true,
+    "all_non_target_body_text_preserved": true,
+    "inserted_note_contract_section_table_nav_and_final_insert_match_plan": true,
+    "table_row_cell_grid_alignment_valid": true
+  },
+  "tables": [
+    {
+      "key": "evidence_channel_metric_table",
+      "body_index": 1277,
+      "table_index_1based": 95,
+      "rows_columns": [
+        8,
+        5
+      ],
+      "old_grid_twips": [
+        798,
+        2299,
+        2298,
+        2298,
+        2299
+      ],
+      "new_grid_twips": [
+        2100,
+        2299,
+        1500,
+        1794,
+        2299
+      ],
+      "all_cell_width_rows_match_grid": true,
+      "new_widths_match_delta": true,
+      "tblW_old_new": [
+        [
+          "dxa",
+          9994
+        ],
+        [
+          "dxa",
+          9994
+        ]
+      ],
+      "layout_old_new": [
+        "fixed",
+        "fixed"
+      ],
+      "grid_sums_old_new": [
+        9992,
+        9992
+      ],
+      "row_height_records_old_new": [
+        0,
+        0
+      ],
+      "table_text_sha256_old_new": [
+        "d438323c2cb22ac6c48508877aaa318edc04b6c1431d0b3bd6bed4e4898bf388",
+        "d438323c2cb22ac6c48508877aaa318edc04b6c1431d0b3bd6bed4e4898bf388"
+      ],
+      "only_table_width_attributes_differ": true,
+      "changed_grid_values": 3,
+      "changed_cell_values": 24
+    },
+    {
+      "key": "3d_feature_metric_table",
+      "body_index": 1296,
+      "table_index_1based": 99,
+      "rows_columns": [
+        7,
+        5
+      ],
+      "old_grid_twips": [
+        798,
+        2299,
+        2298,
+        2298,
+        2299
+      ],
+      "new_grid_twips": [
+        2300,
+        1548,
+        1547,
+        2298,
+        2299
+      ],
+      "all_cell_width_rows_match_grid": true,
+      "new_widths_match_delta": true,
+      "tblW_old_new": [
+        [
+          "dxa",
+          9994
+        ],
+        [
+          "dxa",
+          9994
+        ]
+      ],
+      "layout_old_new": [
+        "fixed",
+        "fixed"
+      ],
+      "grid_sums_old_new": [
+        9992,
+        9992
+      ],
+      "row_height_records_old_new": [
+        0,
+        0
+      ],
+      "table_text_sha256_old_new": [
+        "1e4b08afc51debcc1bf00407b0785f8a7ea2e17ca350447bd919aac7036a501a",
+        "1e4b08afc51debcc1bf00407b0785f8a7ea2e17ca350447bd919aac7036a501a"
+      ],
+      "only_table_width_attributes_differ": true,
+      "changed_grid_values": 3,
+      "changed_cell_values": 21
+    }
+  ],
+  "inherited_geometry_note": "Both target tables already had w:tblW=9994 twips and grid/cell-column sum=9992 twips in the e22 prefinal snapshot. The 2-twip (0.1 pt) difference remains identical before/after; table width is fixed, tblLayout=fixed was already present, and the patch keeps each row cell width equal to its grid column. This is inherited, not a patch-introduced mismatch.",
+  "prior_review": "Prefinal review remains separately preserved at prefinal_layout_snapshot/independent_source_review.md/json and in the current root temp files; this static precheck does not reissue its earlier prefinal output PASS as final.",
+  "render": {
+    "render_directory": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\master_contract_update_20261009\\final_render_layout",
+    "pdf_exists": false,
+    "file_count": 0,
+    "last_render_exit_code": 1,
+    "log_sha256": "c9043dcbd8f6730902294596315d7df2051e5880f0a16f21f54dfc912bb00592",
+    "assessment": "The final layout render produced no PDF (last recorded RENDER_EXIT_CODE=1). No renderer was run by this reviewer; layout and visual review remain pending."
+  },
+  "builder_review": {
+    "builder_sha256": "7674b99d78395a56228c410b586d631d81613361bb87a4c4b5a6e7f6a13f3436",
+    "read_only_reviewed": true,
+    "finding": "The layout helper pins input e22 and final output path, identifies the two tables by markers/headers, refuses gridSpan or missing/misaligned tcW, enforces fixed table width/layout and unchanged grid total, patches only gridCol and tcW numeric attributes, checks visible text and width-masked XML equality, checks body/bookmark/hyperlink sequences, then verifies a single document.xml package delta."
+  },
+  "notes": [
+    "No DOCX was modified by this reviewer.",
+    "No Git operation, test, CLI, solver, training, or LibreOffice invocation was run by this reviewer.",
+    "Layout render and visual QA are not signed off."
+  ]
+}

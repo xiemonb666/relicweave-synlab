@@ -1,0 +1,173 @@
+{
+  "schema": "master_contract_docx_render_environment.v1",
+  "scope": "read-only environment and prior render audit; no document or source edits, no marker invocation, no rendering",
+  "baseline": {
+    "master_docx": "C:/Users/xiemo/Desktop/ShardForge/RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx",
+    "baseline_render_input": "C:/Users/xiemo/Desktop/ShardForge/tmp/v147_user_merge_20261007/fresh_merge_layout_final_candidate.docx",
+    "master_and_render_input_sha256": "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d",
+    "docx_bytes": 786150,
+    "render_dir": "C:/Users/xiemo/Desktop/ShardForge/tmp/v147_user_merge_20261007/fresh_merge_layout_final_render",
+    "render_log": "C:/Users/xiemo/Desktop/ShardForge/tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/render.log",
+    "pdf": "C:/Users/xiemo/Desktop/ShardForge/tmp/v147_user_merge_20261007/fresh_merge_layout_final_render/fresh_merge_layout_final_candidate.pdf",
+    "pdf_sha256": "e59568eebaac585dae6404bdacafd95fff7b4f796eb02c85f4a5a1aeca54fffd",
+    "pdf_bytes": 8100637,
+    "pdf_pages": 225,
+    "pdf_page_size": "612 x 792 pt (Letter)",
+    "png_count": 225,
+    "png_dimensions_px": [
+      1547,
+      2002
+    ],
+    "qa_coverage_file": "C:/Users/xiemo/Desktop/ShardForge/tmp/v147_user_merge_20261007/LAYOUT_FINAL_QA_COVERAGE.json",
+    "qa_status": "PASS",
+    "page_rows": 225,
+    "individually_inspected_pages": 225,
+    "page_png_sha_matches": 225,
+    "clean_pass_pages": 225,
+    "issues": 0,
+    "qa_group_ranges": [
+      [
+        1,
+        18
+      ],
+      [
+        19,
+        36
+      ],
+      [
+        37,
+        54
+      ],
+      [
+        55,
+        72
+      ],
+      [
+        73,
+        90
+      ],
+      [
+        91,
+        108
+      ],
+      [
+        109,
+        126
+      ],
+      [
+        127,
+        144
+      ],
+      [
+        145,
+        162
+      ],
+      [
+        163,
+        180
+      ],
+      [
+        181,
+        198
+      ],
+      [
+        199,
+        216
+      ],
+      [
+        217,
+        225
+      ]
+    ],
+    "latest_render_uses_docx_sha_same_as_current_master": true,
+    "qa_binds_docx_and_page_png_hashes": true,
+    "qa_records_pdf_sha256": false
+  },
+  "runtime": {
+    "dependency_loader_bundle": "26.1007.11041",
+    "python": "C:/Users/xiemo/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
+    "node": "C:/Users/xiemo/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+    "renderer": "C:/Users/xiemo/.codex/plugins/cache/openai-primary-runtime/documents/26.1007.11041/skills/documents/render_docx.py",
+    "bundled_libreoffice_exe": "C:/Users/xiemo/Desktop/ShardForge/third_party/doc-render-runtime/LibreOffice-26.8.0/program/soffice.exe",
+    "bundled_libreoffice_exe_exists": true,
+    "prior_render_log_confirms_this_libreoffice_path_was_used": true,
+    "poppler_bin": "C:/Users/xiemo/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/poppler/Library/bin",
+    "poppler_pdfinfo_exists": true,
+    "poppler_pdftoppm_exists": true
+  },
+  "render_recommendation": {
+    "output_dir": "C:/Users/xiemo/Desktop/ShardForge/tmp/master_contract_update_20261009/final_render",
+    "scratch_dir": "C:/Users/xiemo/Desktop/ShardForge/tmp/master_contract_update_20261009/render_scratch",
+    "args": [
+      "--output_dir",
+      "<fresh output dir>",
+      "--emit_pdf",
+      "--verbose"
+    ],
+    "default_width_px": 1600,
+    "default_height_px": 2000,
+    "override_dpi_recommended": false,
+    "reason_for_emit_pdf": "Persist the PDF so its SHA-256 can be recorded together with the final DOCX SHA-256 and each page PNG SHA-256.",
+    "windows_path_order": [
+      "C:/Users/xiemo/Desktop/ShardForge/third_party/doc-render-runtime/LibreOffice-26.8.0/program",
+      "C:/Users/xiemo/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/poppler/Library/bin",
+      "C:/Windows/System32"
+    ],
+    "temp_vars": [
+      "TEMP",
+      "TMP",
+      "TMPDIR"
+    ],
+    "isolated_config_vars": [
+      "XDG_CONFIG_HOME",
+      "XDG_CACHE_HOME",
+      "APPDATA",
+      "LOCALAPPDATA"
+    ],
+    "libreoffice_profile": "render_docx.py internally creates a unique soffice_profile_* and convert directory; its LO subprocess environment sets HOME to the unique profile."
+  },
+  "page_review": {
+    "method": "Open every page PNG individually at original detail/100%; contact sheets, OCR, and spot checks cannot replace per-page review.",
+    "suggested_chunk_size": "12–18 pages; the proven 18-page partition leaves a final 9-page chunk for 225 pages.",
+    "record_fields_per_page": [
+      "page_number",
+      "final_docx_sha256",
+      "render_pdf_sha256",
+      "page_png_sha256",
+      "reviewer",
+      "inspected_at_original_detail",
+      "status",
+      "issues"
+    ],
+    "main_agent_review": "Independently open pages containing actual edits; include neighboring pages where pagination changed."
+  },
+  "font_evidence": {
+    "current_master_ooxml_font_names": [
+      "DejaVu Sans Mono",
+      "Liberation Sans",
+      "Noto Sans CJK SC",
+      "Noto Sans SC",
+      "Cambria",
+      "ＭＳ 明朝"
+    ],
+    "current_windows_gdi_relevant_fonts_seen": [
+      "Noto Sans SC"
+    ],
+    "current_windows_gdi_relevant_fonts_not_seen": [
+      "Liberation Sans",
+      "Droid Sans Fallback",
+      "DejaVu Sans Mono"
+    ],
+    "prior_font_receipt": "C:/Users/xiemo/Desktop/ShardForge/tmp/review_20261005/doc_renderer_environment/font_runtime/fontfixed_render_receipt.txt",
+    "prior_font_receipt_scope": "V1.46 SHA 85f3bb0e6115e208ce51c666d77ee756a4e2b74d67e8d039283574bb6764b531; session-only Liberation Sans and Droid Sans Fallback font registration; full 205-page render and embedded-font check passed; all five fonts removed after run.",
+    "latest_v147_render_font_inventory_recorded": false,
+    "note": "The 10/07 V1.47 render and 225-page visual QA are clean, but the render log does not identify font registration or include a PDF font inventory. Reuse the existing toolchain; do not rerun the old installer/setup. If the final changed pages show substitution, assess with the retained font assets and session-scoped process used by the prior font script."
+  },
+  "writer_marker": {
+    "script": "C:/Users/xiemo/.codex/plugins/cache/openai-primary-runtime/documents/26.1007.11041/skills/documents/container_tools/mark_artifact_operation_started.mjs",
+    "command": "& 'C:/Users/xiemo/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe' 'C:/Users/xiemo/.codex/plugins/cache/openai-primary-runtime/documents/26.1007.11041/skills/documents/container_tools/mark_artifact_operation_started.mjs' --operation-kind edit --expected-output-count 1 --output-format docx",
+    "timing": "The writer runs it successfully exactly once immediately before the first DOCX editing/authoring command.",
+    "invoked_by_this_subtask": false
+  },
+  "potential_log_warning": "The successful 10/07 render.log contains 'Could not find platform independent libraries <prefix>'; it still produced the complete render and the 225-page QA gate passed."
+}

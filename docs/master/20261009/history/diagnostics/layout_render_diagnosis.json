@@ -1,0 +1,86 @@
+{
+  "schema": "layout_render_diagnosis.v1",
+  "scope": "read-only diagnosis only; renderer was not rerun; DOCX and existing render/scratch directories were not modified",
+  "failed_render": {
+    "input_docx": "C:/Users/xiemo/Desktop/ShardForge/RelicWeave_V1.48_ContractAligned.docx",
+    "input_bytes": 793425,
+    "input_sha256": "164b65c96aa7701a0ad6036fc25c6402dc8bf86c8581c35d258c42eb17fc5a2d",
+    "render_directory": "C:/Users/xiemo/Desktop/ShardForge/tmp/master_contract_update_20261009/final_render_layout",
+    "render_directory_empty_after_failure": true,
+    "top_level_log": "C:/Users/xiemo/Desktop/ShardForge/tmp/master_contract_update_20261009/render.log",
+    "detailed_log": "C:/Users/xiemo/Desktop/ShardForge/tmp/master_contract_update_20261009/render_scratch/layout/render.log",
+    "renderer_path": "C:/Users/xiemo/.codex/plugins/cache/openai-primary-runtime/documents/26.1007.11041/skills/documents/render_docx.py",
+    "renderer_exit_code": 1,
+    "libreoffice_path": "C:/Users/xiemo/Desktop/ShardForge/third_party/doc-render-runtime/LibreOffice-26.8.0/program/soffice.exe",
+    "libreoffice_profile": "C:/Users/xiemo/Desktop/ShardForge/tmp/master_contract_update_20261009/render_scratch/layout/tmp/soffice_profile_79a22znw",
+    "libreoffice_convert_dir": "C:/Users/xiemo/Desktop/ShardForge/tmp/master_contract_update_20261009/render_scratch/layout/tmp/soffice_convert_u9z4nirf",
+    "conversion_log": {
+      "docx_to_pdf_return_code": 0,
+      "docx_to_pdf_stdout_reports_pdf_export": true,
+      "docx_to_odt_return_code": 0,
+      "docx_to_odt_stdout_reports_odt_export": true,
+      "odt_to_pdf_return_code": 0,
+      "odt_to_pdf_stdout_reports_pdf_export": true,
+      "packaged_renderer_result": "Failed to produce PDF for rasterization (direct and ODT fallback); no nonempty PDF candidate found."
+    }
+  },
+  "scratch_and_process_evidence": {
+    "failed_runner_scratch": "C:/Users/xiemo/Desktop/ShardForge/tmp/master_contract_update_20261009/render_scratch/layout",
+    "failed_runner_residuals": [
+      "Only render.log, NVIDIA cache files, and LibreOffice lu*.tmp artifacts were present; TemporaryDirectory profile/convert folders had been cleaned after renderer failure."
+    ],
+    "current_docx_direct_probe": {
+      "output_dir": "C:/Users/xiemo/Desktop/ShardForge/tmp/master_contract_update_20261009/render_scratch/layout_probe/convert",
+      "log": "C:/Users/xiemo/Desktop/ShardForge/tmp/master_contract_update_20261009/render_scratch/layout_probe/lo_probe.log",
+      "log_return_code": 0,
+      "log_reports_pdf_export": true,
+      "final_pdf_exists": false,
+      "residuals": [
+        ".~lock.RelicWeave_V1.48_ContractAligned.pdf# (150 bytes)",
+        "lu971246nxh.tmp (0 bytes)"
+      ],
+      "crash_dump": "C:/Users/xiemo/Desktop/ShardForge/tmp/master_contract_update_20261009/render_scratch/layout_probe/profile/crash/75aee33d-2f52-4aad-91e5-5a719bf8fef5.dmp",
+      "crash_dump_time_local": "2026-10-09 04:02:19",
+      "crash_dump_metadata": "LibreOffice 26.8.0.3, build bce0998afefdbc355585ca324285661a2170ba77; dump.ini has no stack or exception detail."
+    },
+    "active_libreoffice_processes_now": 0,
+    "transient_process_observation": {
+      "process_ids": [
+        23868,
+        28096
+      ],
+      "executable": "C:/Users/xiemo/Desktop/ShardForge/third_party/doc-render-runtime/LibreOffice-26.8.0/program/soffice.exe",
+      "command": "At the time of one process snapshot, these were a soffice.exe/soffice.bin pair converting the prefinal_layout_snapshot DOCX into render_scratch/layout_base_probe/convert with a separate profile; both had exited by the later snapshot."
+    }
+  },
+  "control_probe": {
+    "input_docx": "C:/Users/xiemo/Desktop/ShardForge/tmp/master_contract_update_20261009/prefinal_layout_snapshot/RelicWeave_V1.48_ContractAligned.docx",
+    "input_bytes": 793349,
+    "input_sha256": "e22e15c52aff6b4590a5fba298d13516c27b37b944d3b3e779d82124b1ffc1f2",
+    "output_pdf": "C:/Users/xiemo/Desktop/ShardForge/tmp/master_contract_update_20261009/render_scratch/layout_base_probe/convert/RelicWeave_V1.48_ContractAligned.pdf",
+    "output_pdf_bytes": 8167718,
+    "output_pdf_sha256": "bb830270aa5d95492d6ba2fed225cae85454ccc047b4d211dd381385ee44be59",
+    "output_pdf_pages": 228,
+    "output_pdf_page_size_pt": [
+      612,
+      792
+    ],
+    "significance": "Same bundled LibreOffice executable produced a valid PDF for the earlier prefinal DOCX; this is not a render or visual QA pass for the current DOCX."
+  },
+  "interpretation": {
+    "likely_cause": "The evidence points to the current table-width-patched DOCX causing LibreOffice's export worker to fail before finalizing a nonempty PDF, while the soffice.exe launcher/log still reports return code 0.",
+    "confidence": "probable, not proven",
+    "evidence": [
+      "The failed packaged run and current-DOCX direct probe both used the required bundled LibreOffice absolute path.",
+      "Current-DOCX logs report export success but the expected PDF is absent; the direct probe left a PDF lock and zero-byte temp plus a LibreOffice crash dump.",
+      "The older prefinal DOCX converted successfully through the same bundled executable to a 228-page PDF.",
+      "The stderr text 'Could not find platform independent libraries <prefix>' appears in earlier successful conversions too, so it does not distinguish this failure."
+    ],
+    "unresolved": "The crash dump metadata provides version/build and hardware facts but no stack trace; exact failing OOXML element is not established by this environment-only inspection."
+  },
+  "suggestions": [
+    "Treat this as a DOCX-specific LibreOffice export failure rather than switching to the user's desktop LibreOffice or reinstalling the renderer.",
+    "Correlate the failure against the two table-width patches by checking their OOXML width/grid/cell-width consistency; if needed, isolate one patch at a time using disposable copies, then use the bundled executable and a fresh unique profile/output directory.",
+    "Only restart full rendering and prepare new QA pins after a nonempty final PDF is actually present and its page count matches the new PNG set."
+  ]
+}

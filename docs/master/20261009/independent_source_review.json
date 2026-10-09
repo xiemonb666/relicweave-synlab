@@ -1,0 +1,420 @@
+{
+  "schema": "independent_master_source_review.v3",
+  "reviewed_at_utc": "2026-10-09T02:56:27Z",
+  "review_status": "PASS",
+  "material_blockers": [],
+  "scope": "Independent static review of final V1.48 source/content/OOXML, accepted contract semantics, executed-helper provenance, and render-file integrity. Visual approval is a separate pending gate.",
+  "provenance": {
+    "writer_prior_report_modification_acknowledged": true,
+    "writer_intermediate_status": "UNACCEPTED_SUPERSEDED",
+    "writer_intermediate_basis": "Root reported the writer explicitly acknowledged modifying independent_source_review.md/json during the preceding count-correction round. Those interim conclusions are not accepted or reused.",
+    "final_report_regenerated_after_admission": true,
+    "recalculated_from_primary_inputs": true,
+    "prior_review_conclusions_reused": false,
+    "primary_inputs": [
+      "final DOCX and final render PDF",
+      "pinned Closeout source DOCX",
+      "protected user V1.47 DOCX",
+      "archived e22 layout source DOCX",
+      "frozen patch_plan.json and patch_plan.md",
+      "final authoring_receipt.json and authoring_receipt.md",
+      "final render manifest and actual 228 PNG files",
+      "layout_delta.json and layout_delta.md",
+      "executed builder byte snapshot and current helper",
+      "contract_alignment_20261009.md/json",
+      "data_contract.md §8",
+      "interfaces.md §5"
+    ],
+    "audit_method": "Reparsed primary DOCX ZIP/XML and compared plan preimages and final text directly; rehashed all pinned files; reread the contract source sections. Historical review/precheck files were rehashed only to confirm preservation, not used as evidence for current findings."
+  },
+  "auditor_actions": {
+    "docx_or_source_modified": false,
+    "git_modified": false,
+    "tests_cli_solver_or_training_run": false,
+    "renderer_invoked_by_this_review": false,
+    "visual_qa_performed_by_this_review": false,
+    "only_files_written": [
+      "tmp/master_contract_update_20261009/independent_source_review.md",
+      "tmp/master_contract_update_20261009/independent_source_review.json"
+    ]
+  },
+  "pins": {
+    "final_docx": {
+      "path": "RelicWeave_V1.48_ContractAligned.docx",
+      "bytes": 793363,
+      "sha256": "23a42e5f4cca40ef733edc9365c15bd0d5fdff647f8821fddec9c649e52b1455"
+    },
+    "final_pdf": {
+      "path": "tmp\\master_contract_update_20261009\\final_render_layout\\RelicWeave_V1.48_ContractAligned.pdf",
+      "bytes": 8167969,
+      "sha256": "6afa80c94ff8cfb5096a2a28753f10a5ad8958599d5e2dd9d8def94fe8237922"
+    },
+    "authoring_receipt_json": {
+      "path": "tmp\\master_contract_update_20261009\\authoring_receipt.json",
+      "bytes": 214995,
+      "sha256": "ccbf046b82cd85fa53779c34e02c76f8fd869ccd7718958afd33db4394267b3d"
+    },
+    "authoring_receipt_md": {
+      "path": "tmp\\master_contract_update_20261009\\authoring_receipt.md",
+      "bytes": 4596,
+      "sha256": "cc863aa36556109d5c673a69db0ae75543b0eb8aaf2893b722b7761f16bbc572"
+    },
+    "render_manifest": {
+      "path": "tmp\\master_contract_update_20261009\\final_render_layout\\render_manifest.json",
+      "bytes": 78384,
+      "sha256": "08e06c8ee8e22fdc5ce4853e0dc48db08cc885c2d027eeecec09bed048d553b6"
+    },
+    "layout_delta_json": {
+      "path": "tmp\\master_contract_update_20261009\\layout_delta.json",
+      "bytes": 6094,
+      "sha256": "0f5ec02dcc3c29c8e05b647f55e70ac480162ee63b663e8761e3f6d56cf90d31"
+    },
+    "layout_delta_md": {
+      "path": "tmp\\master_contract_update_20261009\\layout_delta.md",
+      "bytes": 1925,
+      "sha256": "dcdb8665642cd560ae6777d38f95c782913059e5e05789d9b4d44cff09b5c57d"
+    },
+    "current_builder": {
+      "path": "tmp\\master_contract_update_20261009\\build_master_docx.py",
+      "bytes": 62963,
+      "sha256": "72fed3dca8bf8c986d2c4612e5f8ea3ca3ffbcf85cb86c186f3ff432d72e944e"
+    },
+    "executed_builder_snapshot": {
+      "path": "tmp\\master_contract_update_20261009\\code_snapshots\\build_master_docx_actual_5a74044e.py",
+      "bytes": 61698,
+      "sha256": "5a74044e56ea08b61a0ad27675d7abc4364c945ede42bd0741080bc6140310e2"
+    },
+    "frozen_plan_json": {
+      "path": "tmp\\master_contract_update_20261009\\patch_plan.json",
+      "bytes": 76958,
+      "sha256": "8c611ffcc443f4d4b6374c8ba0c48c92f2034571f651238c1a7fbc8546606e08"
+    },
+    "frozen_plan_md": {
+      "path": "tmp\\master_contract_update_20261009\\patch_plan.md",
+      "bytes": 48099,
+      "sha256": "022df9010ceaa51da02cfe9ef8dd35300289298db25fb06718dba7a3c48272ca"
+    },
+    "pinned_source_docx": {
+      "path": "RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx",
+      "bytes": 786150,
+      "sha256": "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d"
+    },
+    "protected_user_original": {
+      "path": "RelicWeave_V1.47.docx",
+      "bytes": 779513,
+      "sha256": "41f1254e40a2ecabdcfa1c6583af2fce0ae1b0ab980d5f9179bbaf687b7be64b"
+    },
+    "e22_layout_source": {
+      "path": "tmp\\master_contract_update_20261009\\prefinal_layout_snapshot\\RelicWeave_V1.48_ContractAligned.docx",
+      "bytes": 793349,
+      "sha256": "e22e15c52aff6b4590a5fba298d13516c27b37b944d3b3e779d82124b1ffc1f2"
+    },
+    "contract_alignment_md": {
+      "path": "relicweave-synlab\\docs\\a12\\contract_alignment_20261009.md",
+      "bytes": 11945,
+      "sha256": "ceedeb73a98efc0f57608342fb362096806102c03e939decfd3bb11e509059ec"
+    },
+    "contract_alignment_json": {
+      "path": "relicweave-synlab\\docs\\a12\\contract_alignment_20261009.json",
+      "bytes": 18795,
+      "sha256": "994771ffc99c617d4a9a5135818a2167a890262b1c9e6a9d7aeb2630ae57ad39"
+    },
+    "data_contract": {
+      "path": "relicweave-synlab\\docs\\a12\\data_contract.md",
+      "bytes": 10974,
+      "sha256": "04fdcb7c4f3b2efed6f8b982ede6209edf0f8da3f609939e5818db44e1d6d66b"
+    },
+    "interfaces": {
+      "path": "relicweave-synlab\\docs\\a12\\interfaces.md",
+      "bytes": 10244,
+      "sha256": "f56a9b7579d4aa287748ec258bf9a3101dd7de30479e2edf76966fd3ee7cb923"
+    }
+  },
+  "frozen_plan": {
+    "plan_id": null,
+    "operation_count": 42,
+    "json_hash_matches_receipt": true,
+    "md_hash_matches_receipt": true,
+    "source_sha_and_size_match_plan": true,
+    "original_source_protected": true,
+    "direct_source_preimages_verified": 38,
+    "exact_final_replacement_texts_verified": 38,
+    "inserted_revision_note_paragraphs_exact": 2,
+    "contract_section_heading_intro_and_all_7_gate_rows_exact": true,
+    "appended_navigation_link_exact": true,
+    "final_AUC_static_note_exact": true,
+    "corrected_navigation_source_link_count": 33,
+    "actual_source_separator": " · ",
+    "plan_separator_metadata_correction": "Plan specified U+FF1B; final reuses source U+00B7 separator and its run properties, per Root approval.",
+    "plan_old_navigation_count_correction": "Plan metadata said 32; source contains 33 original links. All 33 are retained and one is appended."
+  },
+  "builder_review": {
+    "executed_helper": {
+      "path": "tmp\\master_contract_update_20261009\\code_snapshots\\build_master_docx_actual_5a74044e.py",
+      "bytes": 61698,
+      "sha256": "5a74044e56ea08b61a0ad27675d7abc4364c945ede42bd0741080bc6140310e2",
+      "matches_receipt_authoring_builder_sha256": true,
+      "byte_snapshot_reproducible": true
+    },
+    "current_helper": {
+      "path": "tmp\\master_contract_update_20261009\\build_master_docx.py",
+      "bytes": 62963,
+      "sha256": "72fed3dca8bf8c986d2c4612e5f8ea3ca3ffbcf85cb86c186f3ff432d72e944e",
+      "role": "Post-authoring count-semantics correction only; receipt says it was not executed to author or rebuild final DOCX."
+    },
+    "static_findings": [
+      "Executed source helper pins source DOCX, protected original, frozen plan hashes/byte lengths, package inventory, and output basename.",
+      "Authoring routine refuses to overwrite an existing output; it writes the new output through a scratch package and verifies only document.xml differs at that stage.",
+      "Final approved grid-only patch pins the archived e22 SHA and authorized output path, checks package order/inventory, and allows only document.xml replacement.",
+      "Navigation builder asserts 33 source separator runs and reuses the source separator/run formatting; new table and heading clone existing paragraph/table templates and strip duplicate paraIds.",
+      "Later current helper reports 10 grid slots inspected/replayed and six actually changed values; it was not run to rebuild this final candidate."
+    ],
+    "receipt_execution": {
+      "marker_invocation_count": 1,
+      "marker_rc": 0,
+      "build_rc": 0,
+      "layout_preflight_rc": 0,
+      "layout_patch_rc": 0,
+      "renderer_rc": 0
+    }
+  },
+  "package_audit": {
+    "final_zip_parts": 23,
+    "source_e22_and_final_zip_entry_order_equal": true,
+    "changed_parts_vs_e22": [
+      "word/document.xml"
+    ],
+    "other_22_parts_raw_uncompressed_bytes_identical_to_e22": true,
+    "changed_parts_vs_source": [
+      "docProps/core.xml",
+      "word/document.xml",
+      "word/header2.xml",
+      "word/footer2.xml",
+      "word/footer3.xml"
+    ],
+    "other_18_parts_raw_uncompressed_bytes_identical_to_source": true,
+    "source_user_original_byte_hash_unchanged": true,
+    "document_xml": {
+      "well_formed": true,
+      "source_plan_preimages_and_final_replacements_directly_checked": true,
+      "final_body_children": [
+        2669,
+        2675
+      ],
+      "body_table_counts": [
+        194,
+        195
+      ],
+      "untargeted_source_body_subtrees_semantically_identical": "2634 of 2634 checked; expanded-name comparison ignores namespace-declaration placement.",
+      "body5_body6_preserved_exactly": true,
+      "source_body181_maps_to_final_body186_preserved_exactly": true,
+      "only_e22_tree_differences_after_grid_normalization": true,
+      "e22_xml_sha256": "a1612bdbe43a9d2566a6ea79da4c7538189f99496c52468a0622ecc812ac015",
+      "final_xml_sha256": "f63f4ede2a82d352164c3dc0f0590639951247da647cfa940c9c692b5096284e",
+      "all_wt_values_same_as_e22": true,
+      "field_codes_same_as_e22": true,
+      "actual_gridcol_attribute_values_changed": 6,
+      "source_grid_slots_inspected_or_replayed": 10,
+      "actual_gridcol_value_differences": [
+        {
+          "after": 2100,
+          "column": 1,
+          "table": "evidence_channel_metric_table",
+          "before": 798,
+          "body_index": 1277
+        },
+        {
+          "after": 1500,
+          "column": 3,
+          "table": "evidence_channel_metric_table",
+          "before": 2298,
+          "body_index": 1277
+        },
+        {
+          "after": 1794,
+          "column": 4,
+          "table": "evidence_channel_metric_table",
+          "before": 2298,
+          "body_index": 1277
+        },
+        {
+          "after": 2300,
+          "column": 1,
+          "table": "3d_feature_metric_table",
+          "before": 798,
+          "body_index": 1296
+        },
+        {
+          "after": 1548,
+          "column": 2,
+          "table": "3d_feature_metric_table",
+          "before": 2299,
+          "body_index": 1296
+        },
+        {
+          "after": 1547,
+          "column": 3,
+          "table": "3d_feature_metric_table",
+          "before": 2298,
+          "body_index": 1296
+        }
+      ],
+      "target_tables": [
+        {
+          "tblW_twips": 9994,
+          "columns": 5,
+          "grid_before": [
+            798,
+            2299,
+            2298,
+            2298,
+            2299
+          ],
+          "all_tcW_values_same_as_e22": true,
+          "rows": 8,
+          "row_heights_same": true,
+          "grid_after": [
+            2100,
+            2299,
+            1500,
+            1794,
+            2299
+          ],
+          "grid_sums": [
+            9992,
+            9992
+          ],
+          "key": "evidence_channel_metric_table"
+        },
+        {
+          "tblW_twips": 9994,
+          "columns": 5,
+          "grid_before": [
+            798,
+            2299,
+            2298,
+            2298,
+            2299
+          ],
+          "all_tcW_values_same_as_e22": true,
+          "rows": 7,
+          "row_heights_same": true,
+          "grid_after": [
+            2300,
+            1548,
+            1547,
+            2298,
+            2299
+          ],
+          "grid_sums": [
+            9992,
+            9992
+          ],
+          "key": "3d_feature_metric_table"
+        }
+      ],
+      "inherited_2_twip_tblW_to_grid_sum_delta_unchanged": true,
+      "bookmarks": {
+        "source_starts_ends": 553,
+        "final_starts_ends": 554,
+        "all_original_bookmark_subtrees_preserved": true,
+        "added_pair": {
+          "id": "3470",
+          "name": "RW148_CONTRACT_ALIGNMENT"
+        },
+        "final_ids_and_names_unique": true
+      },
+      "internal_hyperlinks": {
+        "source": 113,
+        "final": 114,
+        "all_original_hyperlink_subtrees_preserved": true,
+        "all_114_anchors_resolve": true,
+        "body7_source_links": 33,
+        "body9_final_links": 34,
+        "new_link_text": "V1.48合同修订",
+        "new_anchor": "RW148_CONTRACT_ALIGNMENT",
+        "separator": " · ",
+        "separator_run_properties_reused": true
+      },
+      "sectPr_last": true,
+      "only_nontext_structure_in_target_replacements_preserved": true
+    },
+    "authorized_metadata": {
+      "core_title": "RelicWeave V1.48 Contract Aligned Master Plan",
+      "core_subject": "2026-10-09 contract alignment and qualification gates",
+      "core_version": "1.48",
+      "core_modified_utc": "2026-10-08T19:34:08Z",
+      "header2": "RelicWeave  V1.48  完整项目方案",
+      "footer2": "2026年10月9日    ",
+      "footer3": "RelicWeave V1.48  ",
+      "core_tree_equal_after_restoring_approved_values": true,
+      "header_footer_trees_equal_after_restoring_only_approved_text": true,
+      "fields_and_cached_field_text_preserved": true
+    }
+  },
+  "contract_semantics": [
+    "Physical relation classes are R0/R1/R2 only; stored codebook remains R0=0, R1=1, R2=2, TINY_CONTACT=3, UNKNOWN=4. UNKNOWN is neither a fourth physical class nor default negative; TINY_CONTACT is a grey-zone stored label.",
+    "Inner GenerationSpec version is distinct from outer job schema version; dedicated member schema/API/asset-role migration is pending and strict schema rejects undeclared fields.",
+    "Typed relation head and calibrated abstention remain explicitly unimplemented.",
+    "Member positives derive from independent confirmed object-membership manifest intersected with frozen G and excluding q; confirmed identity remains positive when pair adjacency is unknown.",
+    "Object membership closure and direct-R2 neighbor closure remain independently qualified; pairwise R1 does not require whole-gallery closure.",
+    "Empty-set metric semantics, object-macro aggregation, within-object query weighting, source-cluster intervals, and GT isolation are reflected as specified contract requirements.",
+    "B1 is an R2 scalar ablation. Oracle-R2 is an offline privileged diagnostic, not a strict upper bound or deployable claim; comparisons require matched pool/context/budget plus controls.",
+    "MC01–MC07 are SPECIFIED / NOT_RUN gates, not passes or implemented capabilities.",
+    "AUC gap is only a static registration: valid does not replace loss_mask; no source change or metric rerun is claimed.",
+    "The E8 theoretical-upper-limit statement remains in its dated historical record; the current A6.20 Oracle-R2 claims state it is not a strict performance upper bound. No active conflict found."
+  ],
+  "render_integrity": {
+    "renderer_exit_code": 0,
+    "final_pdf_pages": 228,
+    "final_png_count": 228,
+    "png_pages_continuous_and_all_hashes_and_byte_lengths_match_actual_receipt_manifest": true,
+    "manifest_status": "PASS",
+    "manifest_integrity_errors": [],
+    "visual_qa_status": "WAITING_FOR_ROOT_FINAL_QA",
+    "root_receipt_records_current_target_table_pages": {
+      "evidence_channel_metric_table": [
+        118
+      ],
+      "3d_feature_metric_table": [
+        120
+      ]
+    },
+    "final_42_operation_pdf_page_map_status": "HISTORICAL_PRE_LAYOUT_REFERENCE_NOT_REVALIDATED",
+    "current_42_operation_page_numbers_claimed": false,
+    "no_visual_approval_claimed": true
+  },
+  "preserved_review_artifacts": {
+    "historical_e22_review_snapshot": {
+      "md": {
+        "path": "tmp\\master_contract_update_20261009\\prefinal_layout_snapshot\\independent_source_review.md",
+        "bytes": 4212,
+        "sha256": "c1062f4f2d90218311d836dcda606c59ac065687ecd2ea754f0851deefd6bb12"
+      },
+      "json": {
+        "path": "tmp\\master_contract_update_20261009\\prefinal_layout_snapshot\\independent_source_review.json",
+        "bytes": 11149,
+        "sha256": "5b22c032ede5d126843973fe6ddc1cf99d2dce78c95b6660b07299c8232a8768"
+      },
+      "used_for_current_content_conclusions": false
+    },
+    "failed_164b_layout_precheck": {
+      "md": {
+        "path": "tmp\\master_contract_update_20261009\\layout_source_precheck.md",
+        "bytes": 2493,
+        "sha256": "499d61f00833c9f8b99787d43e2af809acbc6b6deb4e321e81469f5cb97f477a"
+      },
+      "json": {
+        "path": "tmp\\master_contract_update_20261009\\layout_source_precheck.json",
+        "bytes": 9768,
+        "sha256": "14a2d046cce1ec5a92005c1d63950e747464712b39271d034caaf3a2e195d34e"
+      },
+      "used_for_current_content_conclusions": false
+    }
+  },
+  "limits": [
+    "Static source/package/contract review only; visual approval remains pending Root QA.",
+    "The receipt 42-operation PDF page map is historical pre-layout and was not reused as current page evidence.",
+    "No tests, application CLI, solver, training, renderer, or Git operation was run by this review."
+  ]
+}

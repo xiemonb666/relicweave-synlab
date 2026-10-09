@@ -1,0 +1,250 @@
+{
+  "status": "APPLIED",
+  "input_document_xml_sha256": "a1612bdbe43a9d2566a6ea79da4c7538189f994176c52468a0622ecc812ac015",
+  "output_document_xml_sha256": "f63f4ede2a82d352164c3dc0f0590639951247da647cfa940c9c692b5096284e",
+  "visible_text_identical": true,
+  "body_child_tags_identical": true,
+  "bookmark_and_hyperlink_sequences_identical": true,
+  "only_target_tblGrid_gridCol_values_changed": true,
+  "all_tcPr_tcW_widths_preserved": true,
+  "row_heights_added": 0,
+  "tables": [
+    {
+      "key": "evidence_channel_metric_table",
+      "body_index": 1277,
+      "table_index_1based": 95,
+      "markers": [
+        "pat_inter",
+        "thick_rmse_rel"
+      ],
+      "raw_markers": [
+        "pat_inter",
+        "thick_rmse_rel",
+        "Top-200"
+      ],
+      "headers": [
+        "证据通道",
+        "GT vs 非GT",
+        "AUC",
+        "Top-200精确率",
+        "实测判断"
+      ],
+      "row_count": 8,
+      "column_count": 5,
+      "table_width_twips": 9994,
+      "layout_type": "fixed",
+      "grid_widths_twips": [
+        798,
+        2299,
+        2298,
+        2298,
+        2299
+      ],
+      "tc_widths_by_row_twips": [
+        [
+          798,
+          2299,
+          2298,
+          2298,
+          2299
+        ],
+        [
+          798,
+          2299,
+          2298,
+          2298,
+          2299
+        ],
+        [
+          798,
+          2299,
+          2298,
+          2298,
+          2299
+        ],
+        [
+          798,
+          2299,
+          2298,
+          2298,
+          2299
+        ],
+        [
+          798,
+          2299,
+          2298,
+          2298,
+          2299
+        ],
+        [
+          798,
+          2299,
+          2298,
+          2298,
+          2299
+        ],
+        [
+          798,
+          2299,
+          2298,
+          2298,
+          2299
+        ],
+        [
+          798,
+          2299,
+          2298,
+          2298,
+          2299
+        ]
+      ],
+      "target_widths_twips": [
+        2100,
+        2299,
+        1500,
+        1794,
+        2299
+      ],
+      "grid_total_twips": 9992,
+      "text_sha256": "d438323c2cb22ac6c48508877aaa318edc04b6c1431d0b3bd6bed4e4898bf388",
+      "row_heights": [
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        []
+      ],
+      "grid_columns_updated": 5,
+      "cell_widths_updated": 0,
+      "tc_widths_preserved": true,
+      "new_grid_total_twips": 9992,
+      "grid_slots_inspected_or_replayed": 5,
+      "grid_column_attribute_values_actually_changed": 3,
+      "grid_columns_updated_semantics": "Legacy grid_columns_updated is the number of gridCol slots inspected/replayed, not the number of @w:w values that differ."
+    },
+    {
+      "key": "3d_feature_metric_table",
+      "body_index": 1296,
+      "table_index_1based": 99,
+      "markers": [
+        "thick_trigram_inter",
+        "curv_K_inter"
+      ],
+      "raw_markers": [
+        "thick_trigram_inter",
+        "curv_K_inter",
+        "P@200"
+      ],
+      "headers": [
+        "3D证据",
+        "AUC",
+        "P@200",
+        "裁定",
+        "大白话"
+      ],
+      "row_count": 7,
+      "column_count": 5,
+      "table_width_twips": 9994,
+      "layout_type": "fixed",
+      "grid_widths_twips": [
+        798,
+        2299,
+        2298,
+        2298,
+        2299
+      ],
+      "tc_widths_by_row_twips": [
+        [
+          798,
+          2299,
+          2298,
+          2298,
+          2299
+        ],
+        [
+          798,
+          2299,
+          2298,
+          2298,
+          2299
+        ],
+        [
+          798,
+          2299,
+          2298,
+          2298,
+          2299
+        ],
+        [
+          798,
+          2299,
+          2298,
+          2298,
+          2299
+        ],
+        [
+          798,
+          2299,
+          2298,
+          2298,
+          2299
+        ],
+        [
+          798,
+          2299,
+          2298,
+          2298,
+          2299
+        ],
+        [
+          798,
+          2299,
+          2298,
+          2298,
+          2299
+        ]
+      ],
+      "target_widths_twips": [
+        2300,
+        1548,
+        1547,
+        2298,
+        2299
+      ],
+      "grid_total_twips": 9992,
+      "text_sha256": "1e4b08afc51debcc1bf00407b0785f8a7ea2e17ca350447bd919aac7036a501a",
+      "row_heights": [
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        []
+      ],
+      "grid_columns_updated": 5,
+      "cell_widths_updated": 0,
+      "tc_widths_preserved": true,
+      "new_grid_total_twips": 9992,
+      "grid_slots_inspected_or_replayed": 5,
+      "grid_column_attribute_values_actually_changed": 3,
+      "grid_columns_updated_semantics": "Legacy grid_columns_updated is the number of gridCol slots inspected/replayed, not the number of @w:w values that differ."
+    }
+  ],
+  "input_docx_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\master_contract_update_20261009\\prefinal_layout_snapshot\\RelicWeave_V1.48_ContractAligned.docx",
+  "input_docx_sha256": "e22e15c52aff6b4590a5fba298d13516c27b37b944d3b3e779d82124b1ffc1f2",
+  "output_docx_path": "C:\\Users\\xiemo\\Desktop\\ShardForge\\RelicWeave_V1.48_ContractAligned.docx",
+  "output_docx_sha256": "23a42e5f4cca40ef733edc9365c15bd0d5fdff647f8821fddec9c649e52b1455",
+  "output_docx_bytes": 793363,
+  "changed_package_parts": [
+    "word/document.xml"
+  ],
+  "other_22_package_parts_raw_bytes_preserved": true,
+  "supersedes_failed_combined_grid_tcw_candidate_sha256": "164b65c96aa7701a0ad6036fc25c6402dc8bf86c8581c35d258c42eb17fc5a2d",
+  "failed_combined_candidate_preserved_at": "C:\\Users\\xiemo\\Desktop\\ShardForge\\tmp\\master_contract_update_20261009\\render_scratch\\layout_variants\\grid_tcW_both.docx",
+  "total_grid_slots_inspected_or_replayed": 10,
+  "total_grid_column_attribute_values_actually_changed": 6
+}

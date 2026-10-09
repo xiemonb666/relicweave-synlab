@@ -1,0 +1,980 @@
+{
+  "plan_id": "MASTER_CONTRACT_UPDATE_20261009",
+  "status": "READY_FOR_WRITER_REVIEW",
+  "source_docx": {
+    "path": "RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx",
+    "bytes": 786150,
+    "sha256": "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d",
+    "expected_sha256": "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d"
+  },
+  "output_docx": "RelicWeave_V1.48_ContractAligned.docx",
+  "version_title": "V1.48 A12合同对齐修订版（2026-10-09）",
+  "scope": "只把已验收的2026-10-09合同修订回写到新master副本；停止新功能开发仍有效。此计划不授权源码、Git、测试、训练、CLI、solver、历史receipt或原V1.47/V1.46修改。",
+  "source_structure": {
+    "zip_parts": 23,
+    "body_direct_children": 2669,
+    "bookmarkStart": 553,
+    "internal_hyperlinks": 113,
+    "tables": 194,
+    "sectPr": 1,
+    "body7_navigation_hyperlinks": 33,
+    "expected_after_patch": {
+      "internal_hyperlinks": 114,
+      "body7_navigation_hyperlinks": 34,
+      "bookmarkStart": 554
+    }
+  },
+  "revision_decisions": [
+    "当前内层GenerationSpec为synlab.v3，规范序列化键schema；schema_id也可输入；schema_version仅API外层job envelope。train/diagnose/pool/store/asset/package/deploy版本独立。无v2 reader/migrator或rw-schema adapter/字段映射。",
+    "物理关系仅R0/R1/R2；合法存储码R0=0,R1=1,R2=2,TINY_CONTACT=3,UNKNOWN=4。UNKNOWN是未确认/拒判状态，TINY_CONTACT是数值灰区；均非第四物理类别、默认负例或模型维度扩展。",
+    "relation valid/loss_mask/pair_valid与点对应有效性分开；mapping_valid只作逻辑称呼，实际CorrespondenceSample.valid导出corr_valid。",
+    "成员真值V_G来自独立已确认object-membership manifest ∩ 冻结G，再排除q；不从R1/R2边并集构造。邻接UNKNOWN不否定已确认成员；pairwise R1不要求整个G闭合，成员闭合与R2邻片闭合独立。",
+    "A12.22及member专用schema/API/CLI/role/metrics仍SPECIFIED / NOT_RUN；A17是job/checkpoint恢复，不是成员恢复。",
+    "B1仍为R2 scalar-feedback消融；Oracle-R2是匹配池/上下文/预算下的离线特权诊断，不保证严格性能上界。",
+    "typed relation head与calibrated abstention当前未实现。AUC valid/loss_mask缺口仅登记，不改源码和历史指标。",
+    "MC01–MC07均SPECIFIED / NOT_RUN，不新增A37、不改A01–A36历史PASS/FAIL/STOP/NOT_ESTABLISHED；PG/VF/A12完成度与0个物理合格完整数据包不变。"
+  ],
+  "non_targets_and_preservation": [
+    "RelicWeave_V1.47.docx与RelicWeave_V1.46.docx原文件不改；源master hash固定为给定SHA。",
+    "保留body[5]/body[6]的V1.47历史叙事；body[1]仅更新封面版本/日期，body[6]后插入V1.48修订说明。",
+    "保留用户创新方向、历史实验、历史数值、ORACLE_ACTION名称/数值、冻结试验判决、A01–A36结果、QA/FAIL/STOP/NOT_*、原书签/导航/超链接关系/media、styles和sectPr。UA-IFRMN仍RESEARCH_CANDIDATE。",
+    "原全部113条内部w:hyperlink（均含w:anchor），其中BODY[7]的33条导航链接，与553个现有书签全部保留；仅追加一条内部导航link和一对新bookmark。写后应为114个内部w:hyperlink、BODY[7]为34条导航链接、554个bookmarkStart。原有rels/media不重写。",
+    "建议只重写word/document.xml；其余原始23个ZIP part逐字节拷贝。所有新文本复用既有段落/表格样式。",
+    "保留B1作为R2 scalar-feedback ablation；保留A17 dated snapshots差异但不据此推断当前状态；保留0 qualified full-pack历史结论。",
+    "不因AUC静态缺陷重算或改写历史指标；不对body[576]关系标签存储示例做全局删除。"
+  ],
+  "unmodified_readonly_loci": [
+    {
+      "locator": "BODY[181]",
+      "note": "Root已核读原文：R0/R1/R2多正例分类语义正确，原样保护；不作为待修项，不要求writer扩审。"
+    },
+    {
+      "locator": "BODY[332-333]",
+      "note": "现文已区分三类物理关系与独立UNKNOWN、GT在线隔离及R2不传递；仅作为语义保护，不重写。"
+    },
+    {
+      "locator": "BODY[576]",
+      "note": "含关系存储/真值示例R0/R1/R2/UNKNOWN；保留其存储示例资格，不全局删UNKNOWN。"
+    },
+    {
+      "locator": "BODY[854-856]",
+      "note": "成员章节已有研究模式/方案语境；除已定位交叉冲突外保留。"
+    },
+    {
+      "locator": "BODY[631], BODY[1618], BODY[2189]",
+      "note": "schema_version appears in artifact/recipe/manifest contexts per prior crosswalk; do not globally replace without a proven GenerationSpec inner sample conflict."
+    }
+  ],
+  "operations": [
+    {
+      "action": "replace_paragraph_text",
+      "locator": {
+        "body_index": 1,
+        "kind": "paragraph",
+        "ooxml": "BODY[1]/w:p (BODY direct-child index is zero-based)"
+      },
+      "replacement_text": "V1.48 A12合同对齐修订版  2026年10月9日",
+      "reason": "更新输出版本与修订日期；V1.47封面只作为源文件历史保留。",
+      "section": "cover",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style."
+      ],
+      "original_visible_text": "V1.47 整器物成员恢复 × 高退化鲁棒检索 × 竞赛/论文双主线整合版  2026年10月7日",
+      "original_text_sha256": "ff3d9b5db5e8c50e9961437a08cc9d4392b6da282dda0f1bc3e7469dc7b48861"
+    },
+    {
+      "action": "insert_after_anchor",
+      "locator": {
+        "body_index": 6,
+        "kind": "paragraph",
+        "ooxml": "BODY[6]/w:p (BODY direct-child index is zero-based)"
+      },
+      "inserted_content": {
+        "paragraphs": [
+          "V1.48（2026年10月9日）合同回写：按已验收的A12合同勘误统一当前内层GenerationSpec版本、关系物理分类与存储码、成员真值/闭合/指标及Oracle-R2诊断资格，并把MC01–MC07列为SPECIFIED / NOT_RUN。",
+          "本次仅修订方案正文与验收门，不实施新功能；A01–A36及其历史PASS/FAIL/STOP/NOT_ESTABLISHED、历史数值与ORACLE_ACTION名称/冻结判决均不变。PG/VF/A12完成度及0个物理合格完整数据包记录不变。A17仅指job/checkpoint恢复；两份日期快照不证明当前状态，也不构成成员恢复证据。"
+        ]
+      },
+      "reason": "在V1.47历史叙事之后标出V1.48当前合同状态，同时保留body[5]/[6]原叙事。",
+      "section": "revision_note",
+      "must_preserve": [
+        "Do not alter the anchor node or any existing following node.",
+        "Insert between the anchor and its next body child; reuse adjacent styles and keep body sectPr last."
+      ],
+      "original_visible_text": "V1.47（2026年10月7日）为 A12、VesselForge 与 PG-Frag 的实现收口和证据归位版：维持三项目的独立边界，补入本轮实现状态、诊断证据及资格缺口。PG-Frag 当前仅有 virgin elastic 固定裂面 bridge 与未形成断开的开口历史 toy；12 状态中 step_index=0..7 尚非全点损伤（step_index=7 的 D 范围为 2/3–1），只有 step_index=8..11 全点 D=1，但 bulk 仍承载。moving-front 单次运行因审计字段错配在 wrench、KKT、G 之前停止。VesselForge 证据限于解析族、几何候选、条件证明、理想曲线距离和来源审阅；A12 计数仍以软件 QA 与未校准数据为主。本次未新增模型成绩或完整物理合格包；历史指标、FAIL、STOP、NOT_ESTABLISHED 判决和既有导航继续保留。",
+      "original_text_sha256": "f25cecb49e34995952355c22a366e72c0d67ea160e9ec0531f3991c64ac675fe"
+    },
+    {
+      "action": "insert_contract_section_and_gate_table",
+      "locator": {
+        "after_body_index": 106,
+        "before_body_index": 107,
+        "anchor_kind": "table",
+        "ooxml": "/w:document/w:body/*[BODY-index=106] followed by new section before BODY[107]"
+      },
+      "heading": "1.4 V1.48合同对齐与验收门（2026-10-09）",
+      "bookmark": {
+        "name": "RW148_CONTRACT_ALIGNMENT",
+        "placement": "heading paragraph",
+        "id_rule": "choose an unused numeric w:id greater than the current maximum; add matching bookmarkEnd"
+      },
+      "intro": "本节记录已验收的合同边界及新增门。MC01–MC07均为新合同要求，状态SPECIFIED / NOT_RUN；不新增A37、不翻转A01–A36，也不恢复已停止的新功能开发。本节修订口径优先于相关V1.47旧合同表述；其它项目主线及历史记录继续保留。",
+      "table": {
+        "columns": [
+          "门",
+          "验收要求",
+          "状态/当前缺口"
+        ],
+        "rows": [
+          {
+            "id": "MC01",
+            "name": "独立成员真值与闭合",
+            "acceptance": "从独立且已确认的object-membership manifest与冻结G求交并排除q；身份已确认但pair邻接未知仍为member-positive；成员闭合与R2邻片闭合独立。",
+            "gap": "当前无成员manifest或closure资格实现。",
+            "status": "SPECIFIED / NOT_RUN"
+          },
+          {
+            "id": "MC02",
+            "name": "版本化成员schema/API/role",
+            "acceptance": "先注册专用版本化member schema/API/asset role；严格GenerationSpec继续拒绝未声明成员字段。",
+            "gap": "当前无成员schema、role、API或CLI。",
+            "status": "SPECIFIED / NOT_RUN"
+          },
+          {
+            "id": "MC03",
+            "name": "GT隔离",
+            "acceptance": "线上只接合法Obs、opaque路由引用、冻结版本与公开预算；GT答案/ID/完整图/GT派生奖励仅离线，并验证无泄漏。",
+            "gap": "未见成员专属评测/生成器泄漏测试。",
+            "status": "SPECIFIED / NOT_RUN"
+          },
+          {
+            "id": "MC04",
+            "name": "成员集合语义fixture",
+            "acceptance": "覆盖R1-only正例、R2不传递、排除q、UNKNOWN双维状态、邻接未知但身份已确认及开闭集资格。",
+            "gap": "现有pair/R2 fixture不能证明成员集合语义。",
+            "status": "SPECIFIED / NOT_RUN"
+          },
+          {
+            "id": "MC05",
+            "name": "成员指标与空集",
+            "acceptance": "手算非空GT/空预测、空GT、双空；object内query等权后object macro；区间按source cluster聚类。",
+            "gap": "现有指标为pair/R2指标。",
+            "status": "SPECIFIED / NOT_RUN"
+          },
+          {
+            "id": "MC06",
+            "name": "多轮、预算与对照",
+            "acceptance": "记录hypothesis/hash、逐轮add/remove、cost/stop；B1只作R2 scalar消融；Oracle-R2是离线特权诊断、不保证严格上界，匹配候选池/上下文/预算并配shuffle/equal-context/predicted/corrupted对照。",
+            "gap": "episode_trace是观察轨迹，无成员状态、基线或对应对照。",
+            "status": "SPECIFIED / NOT_RUN"
+          },
+          {
+            "id": "MC07",
+            "name": "关系AUC任务mask",
+            "acceptance": "关系指标使用relation task mask；valid不替代loss_mask；不得把全部UNKNOWN并为负类。",
+            "gap": "discrimination_auc当前筛valid而不筛loss_mask；本轮仅登记静态缺口。",
+            "status": "SPECIFIED / NOT_RUN"
+          }
+        ]
+      },
+      "reason": "把七项合同验收门放在总方案前部可达位置，便于导航且避免只追加勘误而留下正文矛盾。",
+      "section": "revision_section_and_MC01_MC07",
+      "must_preserve": [
+        "Keep body[106] table byte/OOXML subtree unchanged and insert new heading/intro/table after it, before original body[107].",
+        "Reuse existing heading, body, and table styles; do not edit styles.xml or any unrelated part.",
+        "Add one bookmark pair only; choose collision-free numeric id and preserve all 553 existing bookmark pairs.",
+        "All seven gates remain SPECIFIED / NOT_RUN; do not label as passed or implemented.",
+        "Keep final w:sectPr as final body child."
+      ],
+      "anchor_visible_text": "信息层主要位置V1.47处理规则现行目标与执行口径总纲第1–10章、A1–A12及B/C/D执行正文允许更新；V1.47优先，用于现在做什么、为什么做、如何验收。长期科研候选A6创新维护区、A12研究支线允许追加、降级、停止；RESEARCH_CANDIDATE不等于已实现或已证明。冻结实验数据附录A/B/C及正文引用的历史数值、hash、FAIL/STOP/NOT_*只允许补充来源、解释边界和新复算记录；禁止删除、润色或用新口径覆盖旧数值。旧规划与旧默认值历史附录中的旧设备、排期、岗位、下一步建议不再指导现行执行；为可追溯性保留，不与V1.47现行口径并列使用。新任务扩展整器物成员恢复、高退化鲁棒检索、R2→R1关系推理从V1.47起生效；除非专门复跑，不能反向声称旧实验已经验证这些目标。",
+      "anchor_text_sha256": "2dc2fbac4f51bfd6a205cd7a70bf082a6284b278eb6411cd45fadd99622cecfe",
+      "following_body_index": 107
+    },
+    {
+      "action": "append_internal_navigation_link",
+      "locator": {
+        "body_index": 7,
+        "kind": "paragraph",
+        "insertion_point": "after existing final internal hyperlink anchor RW147_10_3",
+        "ooxml": "BODY[7]/w:p (BODY direct-child index is zero-based)"
+      },
+      "link_text": "V1.48合同修订",
+      "bookmark_anchor": "RW148_CONTRACT_ALIGNMENT",
+      "separator_text": "；",
+      "reason": "给新增V1.48合同段增加正文内导航入口。",
+      "section": "navigation",
+      "must_preserve": [
+        "Retain all existing 32 internal hyperlinks and their order/anchors; append one hyperlink only.",
+        "Keep the paragraph properties, existing bookmark markup, relationships, and existing link text unchanged.",
+        "Use w:hyperlink/@w:anchor; no external relationship is required."
+      ],
+      "original_visible_text": "V1.47新增内容导航： · 1.3 · 2.0 · 2.2.2 · 2.4 · A6.14 · A6.15 · A6.15.1 · A6.16 · A6.17 · A6.18 · A6.19 · A6.20 · A6.20.1 · A6.21 · A6.22 · A6.23 · A6.24 · A6.25 · A6.26 · A6.27 · A6.28 · EXP10 · EXP11 · EXP12 · A12.21 · A12.22 · A12.23 · B2.3 · D6.5 · D10.2 · 10.1 · 10.2 · 10.3",
+      "original_text_sha256": "6adb0121336d7189f5d7c2e3ea04a66837cda70d42bd6cfb1dc232904aa7109c"
+    },
+    {
+      "action": "replace_paragraph_text",
+      "locator": {
+        "body_index": 921,
+        "kind": "paragraph",
+        "ooxml": "BODY[921]/w:p (BODY direct-child index is zero-based)"
+      },
+      "replacement_text": "当前生成配置为内层synlab.v3，规范序列化键为schema；模型内部字段schema_id也可输入。schema_version属于API外层job envelope，不是GenerationSpec字段。train、diagnose、pool、store、asset、package、deploy版本彼此独立；synlab.training_package_deploy.v2不等于生成配置synlab.v2。当前没有synlab.v2配置读取/迁移，也没有rw-schema-1.1到A12 pack的adapter、字段映射或migrator证据；新版本不覆盖旧资产或历史hash。",
+      "reason": "纠正第9章把rw-schema-1.1/synlab.v2称为现行生成合同并误述迁移能力。",
+      "section": "version_contract",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style."
+      ],
+      "original_visible_text": "现行数据合同rw-schema-1.1，合成合同synlab.v2，新增完整邻片闭合、三类关系、输入来源、近远U、焦点／标定档及分层对应版本。旧1.0只读迁移并记录旧hash，不覆盖旧资产或成绩。发布关联模型、库、GT、QA、校准、策略、固件、接线与能力版本。",
+      "original_text_sha256": "0d7a445df42bddd5b847f7068ca5ec0e5470e9f11bae573c23bcef5af1a6938e"
+    },
+    {
+      "action": "replace_paragraph_text",
+      "locator": {
+        "body_index": 2110,
+        "kind": "paragraph",
+        "ooxml": "BODY[2110]/w:p (BODY direct-child index is zero-based)"
+      },
+      "replacement_text": "数据release与主方案分别管理。当前生成配置使用内层synlab.v3，规范键schema（模型字段schema_id也可输入）；schema_version仅属API外层job envelope。rw-schema-1.1与synlab.v2兼容读取/迁移均无已验证reader、adapter或字段映射，保持pending。母体几何位移、标签、单位、顺序或权限语义变化必须新发布，不回写旧hash；100母体兼容集与新算法回归通过后再决定重生成。",
+      "reason": "移除‘synlab.v2只读可用’暗示，同时保留release/hash与100母体兼容决策。",
+      "section": "G25.3 version contract",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style."
+      ],
+      "original_visible_text": "数据release与主方案V1.45分别管理。rw-schema-1.1保留三标签、31轴及对应时序；V1.45新增算子与训练配方采用synlab.v3，synlab.v2按旧定义只读。母体几何位移、标签、单位、顺序或权限语义变化必须新发布，不回写旧hash；100母体兼容集与新算法回归通过后决定重生成。",
+      "original_text_sha256": "706ee444b4af5e62b7b141394a54e8b217723ad4416b3632769de131c937d5d0"
+    },
+    {
+      "action": "replace_paragraph_text",
+      "locator": {
+        "body_index": 2146,
+        "kind": "paragraph",
+        "ooxml": "BODY[2146]/w:p (BODY direct-child index is zero-based)"
+      },
+      "replacement_text": "以下是G30.1拟议配置设计示例，不表示现有仓库已拥有这些命令或可执行该样例。当前可执行生成配置以configs/a12与严格GenerationSpec为准：内层synlab.v3，规范键schema（模型内部schema_id也可输入）；schema_version仅用于API外层job envelope。G30.1示例保留其设计身份，但其中release_id、单数unit、顶层mother及backend等字段与当前GenerationSpec不匹配，尚无字段映射；当前也没有synlab.v2读取/迁移或rw-schema-1.1到A12 pack的adapter/migrator。仅改样例键名不能使其可执行；实施前须完成字段注册、约束、doctor/validate/dry-run及回归证据。",
+      "reason": "保留G30.1样例而明确其v2旧设计与当前字段不匹配，防止仅改字符串伪装成可执行配置。",
+      "section": "G30.1 qualification",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style."
+      ],
+      "original_visible_text": "以下是拟实现配置合同，补充规格见G30.5至G30.8；不表示现有仓库已经拥有这些命令。开发时用schema验证未知键、单位、范围、backend、storage上限和跨字段约束，启动大任务前先doctor、validate、dry-run。V1.45新增pattern、operator、sampling和training执行卡字段需发布synlab.v3，旧synlab.v2及rw-schema-1.1仍按原冻结定义读取，不静默回写。",
+      "original_text_sha256": "498238887dce40737ac2f9fc8e56eac15fe378838edebea2ed28224cd2451e01"
+    },
+    {
+      "action": "replace_paragraph_text",
+      "locator": {
+        "body_index": 2147,
+        "kind": "paragraph",
+        "ooxml": "BODY[2147]/w:p (BODY direct-child index is zero-based)"
+      },
+      "replacement_text": "schema: synlab.v3",
+      "reason": "统一G30.1拟议样例与当前内层版本；这仍是拟议样例，改键/版本不使其可执行，旧synlab.v2样例原样留在旧V1.47文件，且op7记载的未映射字段/无migrator资格保持。",
+      "section": "G30.1 legacy sample",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style."
+      ],
+      "original_visible_text": "schema_version: synlab.v2",
+      "original_text_sha256": "d94c58106c1ce39c4f18964375108a2f168994ecfb8fd06e6306960627ce328b"
+    },
+    {
+      "action": "replace_paragraph_text",
+      "locator": {
+        "body_index": 2242,
+        "kind": "paragraph",
+        "ooxml": "BODY[2242]/w:p (BODY direct-child index is zero-based)"
+      },
+      "replacement_text": "下列参数与pilot样例仍属G30.5设计提案，不替代G4完整类型注册表，也不表示当前可执行。连续场存固定系数或可重建recipe，scale／RMS／波长须生成后测量，分区权重用平方毫米。内层版本键为schema；schema_version仅在API外层job envelope。任何新增字段须先注册到专用严格schema并通过约束验证。样例中的release_id、unit、mother、backend等字段没有当前GenerationSpec映射；synlab.v2与rw-schema-1.1迁移器/adapter仍未实现，不能称为已保留的迁移能力。",
+      "reason": "修正G30.5把schema_version当内层键并声称保留已有迁移器的问题，保留pilot设计资格。",
+      "section": "G30.5 qualification",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style."
+      ],
+      "original_visible_text": "参数用明确的_mm、_px、_deg、_ev或无量纲后缀，连续场存固定系数或可重建recipe。下列示例用于pilot，不替代G4完整类型注册表。scale／RMS／波长都要在实际生成后测量；分区权重用平方毫米。新增字段在synlab.v3中验证并保留旧版本迁移器。",
+      "original_text_sha256": "5b18004ace097a9528a3ecd08a08743ebfcdd6ee24a1400ff775e578c6213960"
+    },
+    {
+      "action": "replace_paragraph_text",
+      "locator": {
+        "body_index": 2243,
+        "kind": "paragraph",
+        "ooxml": "BODY[2243]/w:p (BODY direct-child index is zero-based)"
+      },
+      "replacement_text": "schema: synlab.v3",
+      "reason": "把G30.5内层示例键改为schema；body[2242]明确该pilot仍为未注册设计，不表示能直接执行。",
+      "section": "G30.5 sample",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style."
+      ],
+      "original_visible_text": "schema_version: synlab.v3",
+      "original_text_sha256": "78daa511f359b3532a96571ea6adfd668218fc6a618281fcfc695f91dc5cf924"
+    },
+    {
+      "action": "replace_cell_paragraph_text",
+      "locator": {
+        "body_index": 2355,
+        "kind": "table_cell_paragraph",
+        "row": 5,
+        "cell": 1,
+        "paragraph": 0,
+        "ooxml": "BODY[2355]/w:tbl/w:tr[6]/w:tc[2]/w:p[1] (BODY index and JSON row/cell/p indices are zero-based; XPath child positions are one-based)"
+      },
+      "replacement_text": "当前生成配置：内层synlab.v3（规范键schema；schema_id也可输入）。synlab.v2/rw-schema-1.1兼容读取、字段映射及迁移器未验证，均为pending；artifact/package/deploy版本独立。",
+      "reason": "H2当前schema规则仍引用rw-schema-1.1/synlab.v2与旧只读迁移，和现行合同冲突。",
+      "section": "H2 schema summary",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style.",
+        "Keep table grid, row/cell order, tcPr, row properties, and all untargeted cell paragraphs unchanged."
+      ],
+      "original_visible_text": "rw-schema-1.1／synlab.v2；旧只读迁移",
+      "original_text_sha256": "03f8915e08ea2002ed782d3b063346a891f87157a4c6c493c4b16f4b29f8712b"
+    },
+    {
+      "action": "replace_paragraph_text",
+      "locator": {
+        "body_index": 109,
+        "kind": "paragraph",
+        "ooxml": "BODY[109]/w:p (BODY direct-child index is zero-based)"
+      },
+      "replacement_text": "物理pair关系只有R0/R1/R2：R0为不同器物，R1为同器物且该pair无直接历史断裂接触，R2为原碎裂事件当前叶子片间直接历史邻接；UNKNOWN是关系/来源未确认的独立状态。存储标签码合法保留R0=0、R1=1、R2=2、TINY_CONTACT=3、UNKNOWN=4；该码表不等于模型类别数，UNKNOWN不是R0或默认负例，TINY_CONTACT是数值灰区而非第四种物理关系。historical_R2用于邻片检索；current_fit_valid用于当前实体贴合；evidence_visible用于当前观测对应。磨损不能事后删去历史正例提高召回。仅点／边接触和微小灰区接触单列，邻接不传递并允许多个邻片。",
+      "reason": "明确物理三分类、存储五码、UNKNOWN/TINY_CONTACT语义，并保留历史R2/current fit/visibility分离。",
+      "section": "relation ontology",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style."
+      ],
+      "original_visible_text": "R0是不同物理器物，R1是同器物且无直接历史断裂接触，R2是原碎裂事件当前叶子片间直接历史邻接，UNKNOWN是关系未确认。historical_R2用于邻片检索；current_fit_valid用于当前实体贴合；evidence_visible用于当前观测对应。磨损不能事后删去历史正例提高召回。仅点／边接触和微小灰区接触单列，邻接不传递并允许多个邻片。",
+      "original_text_sha256": "21787bd84c732ab4eb1dd9743f4968ac248982508e915fcd9ec49d87e27a05d8"
+    },
+    {
+      "action": "replace_paragraph_text",
+      "locator": {
+        "body_index": 201,
+        "kind": "paragraph",
+        "ooxml": "BODY[201]/w:p (BODY direct-child index is zero-based)"
+      },
+      "replacement_text": "以下是拟议研究训练路线，typed relation head当前未实现，且新功能开发仍暂停。若后续获准实施，可冻结感知骨干并训练投影与关系头，先验证关系分类，再验证多正例列表排序，最后按消融决定是否组合。物理posterior仅覆盖R0/R1/R2；UNKNOWN/TINY_CONTACT按各自relation loss_mask处理，不作为默认负例。R1与相似外观R0困难负例只从训练母体挖掘。",
+      "reason": "将A5关系头训练说明明确降为未来提案且未实现；不取消原训练路线内容。",
+      "section": "A5 relation head",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style."
+      ],
+      "original_visible_text": "首轮冻结感知骨干，仅训练投影与关系头。先单独验证关系分类，再验证多正例列表排序，最后按消融决定是否组合。UNKNOWN退出监督分母；R1和相似外观R0困难负例只从训练母体挖掘。",
+      "original_text_sha256": "84985d3801c574e211ddfa5e2fb4939ba97940bd1af4e1d06d4fbe1576fdbc25"
+    },
+    {
+      "action": "replace_paragraph_text",
+      "locator": {
+        "body_index": 211,
+        "kind": "paragraph",
+        "ooxml": "BODY[211]/w:p (BODY direct-child index is zero-based)"
+      },
+      "replacement_text": "拟议的片对typed relation head若实现，先用三类交叉熵，relation_logits只输出R0、R1、R2三个物理关系logit；当前没有该typed head或校准abstention接口。adjacency_score可由R2相对另两类logit差定义，定义须冻结，校准后才解释为概率。排序附加项使用同一查询所有已确认R2与已确认R1/R0的成对softplus差；UNKNOWN/TINY_CONTACT不得当默认负例，UNKNOWN/abstention为独立决策状态。",
+      "reason": "明确三logit只属拟议typed head、当前未实现；避免和UNKNOWN存储状态混为四类输出。",
+      "section": "relation head proposal",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style."
+      ],
+      "original_visible_text": "片对分类先用三类交叉熵，relation_logits输出R0、R1、R2三个logit。adjacency_score可以由R2相对其他两类的logit差得到，具体定义冻结，校准后才解释为概率。排序附加项使用同一查询所有已确认R2与已确认R1／R0的成对softplus差，不将UNKNOWN作为负例。",
+      "original_text_sha256": "7a81d2cbdf5459a03f27401864755c5be302c1acc1b5e0d9d4e46dfacc07429b"
+    },
+    {
+      "action": "replace_cell_paragraph_text",
+      "locator": {
+        "body_index": 319,
+        "kind": "table_cell_paragraph",
+        "row": 2,
+        "cell": 1,
+        "paragraph": 0,
+        "ooxml": "BODY[319]/w:tbl/w:tr[3]/w:tc[2]/w:p[1] (BODY index and JSON row/cell/p indices are zero-based; XPath child positions are one-based)"
+      },
+      "replacement_text": "保存候选直接邻接的边级latent e_ij、R0/R1/R2三类物理posterior、独立UNKNOWN/abstain状态与原因、几何互补、fracture visibility、pose/gap/contact、质量与来源。此为研究设计；typed relation head当前未实现。",
+      "reason": "该单元把UNKNOWN写进四类posterior，构成物理输出冲突。",
+      "section": "A6.15 M_R2",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style.",
+        "Keep table grid, row/cell order, tcPr, row properties, and all untargeted cell paragraphs unchanged."
+      ],
+      "original_visible_text": "保存候选直接邻接的边级 latent e_ij、R0/R1/R2/UNKNOWN posterior、几何互补、fracture visibility、pose/gap/contact、质量与来源。",
+      "original_text_sha256": "21b341e4d3b0f51585081255e803dff3be32f11063444f1dc24b3c7e0ba5c3d5"
+    },
+    {
+      "action": "replace_cell_paragraph_text",
+      "locator": {
+        "body_index": 319,
+        "kind": "table_cell_paragraph",
+        "row": 4,
+        "cell": 1,
+        "paragraph": 0,
+        "ooxml": "BODY[319]/w:tbl/w:tr[5]/w:tc[2]/w:p[1] (BODY index and JSON row/cell/p indices are zero-based; XPath child positions are one-based)"
+      },
+      "replacement_text": "节点是碎片或当前局部组件；边可保存R0/R1/R2三类物理posterior、独立UNKNOWN未确认状态、latent relation、evidence support/contradiction、质量和时间版本。UNKNOWN可存储但不是第四种物理类别；本图为研究候选。",
+      "reason": "软图存储允许UNKNOWN，但不得将其说成第四种物理posterior。",
+      "section": "A6.15 graph memory",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style.",
+        "Keep table grid, row/cell order, tcPr, row properties, and all untargeted cell paragraphs unchanged."
+      ],
+      "original_visible_text": "节点是碎片或当前局部组件；边保存 R0/R1/R2/UNKNOWN 分布、latent relation、evidence support/contradiction、质量和时间版本。",
+      "original_text_sha256": "2a16760c5ae00e8986e36c471e15e0a503401b99bde2b97373d43ed7a71e4a44"
+    },
+    {
+      "action": "replace_paragraph_text",
+      "locator": {
+        "body_index": 324,
+        "kind": "paragraph",
+        "ooxml": "BODY[324]/w:p (BODY direct-child index is zero-based)"
+      },
+      "replacement_text": "Step 2 — 形成Soft R2 edges（研究提案，当前typed relation head未实现）：若实施，relation head输出R0/R1/R2三类物理posterior与relation latent；UNKNOWN/abstention及原因作为独立决策状态。3D可用时再通过几何互补／接触verifier产生额外证据，但verifier不直接覆盖网络posterior。",
+      "reason": "移除R0/R1/R2/UNKNOWN四类posterior说法并标记尚未实现。",
+      "section": "A6.15 Step 2",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style."
+      ],
+      "original_visible_text": "Step 2 — 形成 Soft R2 edges：relation head 输出 R0/R1/R2/UNKNOWN posterior 与 relation latent；3D 可用时再通过几何互补／接触 verifier 产生额外证据，但 verifier 不直接覆盖网络 posterior。",
+      "original_text_sha256": "904dcb6d21af63c8a7ce106b9e769dcc2c96b7e70ee5a264d05c0673ebcd915d"
+    },
+    {
+      "action": "replace_paragraph_text",
+      "locator": {
+        "body_index": 327,
+        "kind": "paragraph",
+        "ooxml": "BODY[327]/w:p (BODY direct-child index is zero-based)"
+      },
+      "replacement_text": "Step 5 — Candidate-conditioned recurrent reasoning（研究提案，当前typed relation head未实现）：对每个待判候选读取其自身token、相关R2 Local Memory、Vessel Memory与关系图路径，更新R0/R1/R2三类物理posterior；UNKNOWN/abstention与原因独立记录，不作为第四类物理posterior。",
+      "reason": "移除候选循环中的四类posterior冲突并保留研究路线。",
+      "section": "A6.15 Step 5",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style."
+      ],
+      "original_visible_text": "Step 5 — Candidate-conditioned recurrent reasoning：对每个待判候选读取其自身 token、相关 R2 Local Memory、Vessel Memory 与关系图路径，更新 R0/R1/R2/UNKNOWN posterior。",
+      "original_text_sha256": "6b8c73f16cee8f7248fc0a81c998163145cf80c6ae8e76771d8f2c6f8c729f3f"
+    },
+    {
+      "action": "replace_paragraph_text",
+      "locator": {
+        "body_index": 334,
+        "kind": "paragraph",
+        "ooxml": "BODY[334]/w:p (BODY direct-child index is zero-based)"
+      },
+      "replacement_text": "研究实现上建议把same-vessel与direct-contact解耦成两个相关但不同的头：P_same(i,j)表示器物身份兼容，P_R2(i,j)表示直接历史邻接；再由拟议typed relation head输出R0/R1/R2三类物理关系posterior，并将认识论UNKNOWN/abstention作为独立拒判状态。此关系头与校准拒判当前均未实现。多跳图只影响P_same或vessel compatibility，不会错误地让R2具备传递性。",
+      "reason": "保留A5未来关系头研究路线，同时准确声明typed head与calibrated abstain尚未实现。",
+      "section": "A5 relation head status",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style."
+      ],
+      "original_visible_text": "研究实现上建议把 same-vessel 与 direct-contact 解耦成两个相关但不同的头：P_same(i,j) 表示器物身份兼容，P_R2(i,j) 表示直接历史邻接；随后由typed relation head输出R0/R1/R2物理关系后验，并将认识论UNKNOWN/abstention作为独立拒判状态。这样多跳图只影响 P_same 或 vessel compatibility，不会错误地让 R2 具备传递性。",
+      "original_text_sha256": "1fb11edb2b039f468050dc6c225d54ab9deaf738daf4b836927aaa66572788e3"
+    },
+    {
+      "action": "replace_cell_paragraph_text",
+      "locator": {
+        "body_index": 338,
+        "kind": "table_cell_paragraph",
+        "row": 2,
+        "cell": 1,
+        "paragraph": 0,
+        "ooxml": "BODY[338]/w:tbl/w:tr[3]/w:tc[2]/w:p[1] (BODY index and JSON row/cell/p indices are zero-based; XPath child positions are one-based)"
+      },
+      "replacement_text": "拟议B2反馈e_ij relation latent + R0/R1/R2三类物理posterior + provenance mask；UNKNOWN/abstention为独立状态。typed posterior当前未实现。",
+      "reason": "将B2的typed posterior表述限定为未来提案，并标明未实现。",
+      "section": "B2 typed posterior",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style.",
+        "Keep table grid, row/cell order, tcPr, row properties, and all untargeted cell paragraphs unchanged."
+      ],
+      "original_visible_text": "反馈 e_ij relation latent + typed posterior + provenance mask。",
+      "original_text_sha256": "7dd14a41ec04cc0cde7b5e1a13f2d0e17400f31da878ce241bd3d27f3cf6d4d9"
+    },
+    {
+      "action": "replace_cell_paragraph_text",
+      "locator": {
+        "body_index": 348,
+        "kind": "table_cell_paragraph",
+        "row": 7,
+        "cell": 1,
+        "paragraph": 0,
+        "ooxml": "BODY[348]/w:tbl/w:tr[8]/w:tc[2]/w:p[1] (BODY index and JSON row/cell/p indices are zero-based; XPath child positions are one-based)"
+      },
+      "replacement_text": "当三类物理posterior不稳定、证据冲突或coverage不足时，可由独立决策层输出UNKNOWN/ABSTAIN及reason并补采；UNKNOWN不是第四种物理类别，也不等同于TINY_CONTACT存储码。校准abstention当前未实现。",
+      "reason": "区分三类物理关系与独立拒判状态，同时保留补采规则。",
+      "section": "UNKNOWN decision state",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style.",
+        "Keep table grid, row/cell order, tcPr, row properties, and all untargeted cell paragraphs unchanged."
+      ],
+      "original_visible_text": "posterior 不稳定、强冲突或 evidence coverage 不足时输出 UNKNOWN / 补采。",
+      "original_text_sha256": "c3f78b328a6acd00e70cfddc593828d39a11dcda18af2eb669362eb7c4e7cf4c"
+    },
+    {
+      "action": "replace_cell_paragraph_text",
+      "locator": {
+        "body_index": 352,
+        "kind": "table_cell_paragraph",
+        "row": 1,
+        "cell": 1,
+        "paragraph": 0,
+        "ooxml": "BODY[352]/w:tbl/w:tr[2]/w:tc[2]/w:p[1] (BODY index and JSON row/cell/p indices are zero-based; XPath child positions are one-based)"
+      },
+      "replacement_text": "完全不使用关系记忆。输入q,c；候选设计输出R0/R1/R2三类物理分数，UNKNOWN/abstain作为独立决策状态。typed relation head当前未实现。",
+      "reason": "T0基线原文把UNKNOWN放入四类输出。",
+      "section": "A6.20 T0",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style.",
+        "Keep table grid, row/cell order, tcPr, row properties, and all untargeted cell paragraphs unchanged."
+      ],
+      "original_visible_text": "完全不使用关系记忆。输入 q,c，输出 R0/R1/R2/UNKNOWN。",
+      "original_text_sha256": "30bd8158401f9f239e3462e68297dde79201d02ef6d4ef33490abdfe1f0d3239"
+    },
+    {
+      "action": "replace_cell_paragraph_text",
+      "locator": {
+        "body_index": 352,
+        "kind": "table_cell_paragraph",
+        "row": 2,
+        "cell": 2,
+        "paragraph": 0,
+        "ooxml": "BODY[352]/w:tbl/w:tr[3]/w:tc[3]/w:p[1] (BODY index and JSON row/cell/p indices are zero-based; XPath child positions are one-based)"
+      },
+      "replacement_text": "该阶段仅为Oracle-R2离线特权诊断，不是严格性能上界或可部署性能。须匹配候选池、上下文与预算，并加入equal-context、shuffle、predicted-R2及corrupted-R2对照；无稳定增益则暂停该路线。",
+      "reason": "把Oracle-R2“可利用上限”改为匹配条件下离线诊断，保留go/no-go意图。",
+      "section": "A6.20 Oracle gate",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style.",
+        "Keep table grid, row/cell order, tcPr, row properties, and all untargeted cell paragraphs unchanged."
+      ],
+      "original_visible_text": "回答最关键问题：如果邻片信息正确，R1 是否存在足够大的可利用上限？若无明显增益，整条路线停止。",
+      "original_text_sha256": "bcdb0f93f9f72cb59b3d79a9597773982d6a112efe2598e18b2af810e9faaf13"
+    },
+    {
+      "action": "replace_cell_paragraph_text",
+      "locator": {
+        "body_index": 368,
+        "kind": "table_cell_paragraph",
+        "row": 3,
+        "cell": 1,
+        "paragraph": 0,
+        "ooxml": "BODY[368]/w:tbl/w:tr[4]/w:tc[2]/w:p[1] (BODY index and JSON row/cell/p indices are zero-based; XPath child positions are one-based)"
+      },
+      "replacement_text": "Soft Typed Relation Graph Memory：可修正关系图保存R0/R1/R2三类物理posterior、独立UNKNOWN未确认状态、latent、quality与provenance；不把UNKNOWN作第四种物理关系。RESEARCH_CANDIDATE，当前typed relation head未实现。",
+      "reason": "澄清UNKNOWN作为图存储状态而非第四类posterior，保留创新候选。",
+      "section": "A6.23 INNO-34",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style.",
+        "Keep table grid, row/cell order, tcPr, row properties, and all untargeted cell paragraphs unchanged."
+      ],
+      "original_visible_text": "Soft Typed Relation Graph Memory：R0/R1/R2/UNKNOWN + latent + quality + provenance 的可修正关系图。",
+      "original_text_sha256": "315e100be2c92319d8da795ce86fdc8b8d73ed0591c70694346fef937285e33c"
+    },
+    {
+      "action": "replace_cell_paragraph_text",
+      "locator": {
+        "body_index": 1627,
+        "kind": "table_cell_paragraph",
+        "row": 6,
+        "cell": 2,
+        "paragraph": 0,
+        "ooxml": "BODY[1627]/w:tbl/w:tr[7]/w:tc[3]/w:p[1] (BODY index and JSON row/cell/p indices are zero-based; XPath child positions are one-based)"
+      },
+      "replacement_text": "来源GT不得混入feature；点对应valid与来源GT分别审查。点对应有效性仅以mapping_valid作本合同逻辑称呼，不是当前schema列；实际字段为CorrespondenceSample.valid，导出名corr_valid。relation valid/loss_mask、padding pair_valid与点对应valid分别记录。",
+      "reason": "修正mapping_valid可能被误读为真实schema列，并清楚分离任务mask。",
+      "section": "training field mapping validity",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style.",
+        "Keep table grid, row/cell order, tcPr, row properties, and all untargeted cell paragraphs unchanged."
+      ],
+      "original_visible_text": "来源GT与观测对应valid独立，不能混入feature",
+      "original_text_sha256": "698b395b61805c1653a6dee7ec335fd325a0bc9632537c18ee23f2d2ce79a79a"
+    },
+    {
+      "action": "replace_cell_paragraph_text",
+      "locator": {
+        "body_index": 1627,
+        "kind": "table_cell_paragraph",
+        "row": 7,
+        "cell": 1,
+        "paragraph": 0,
+        "ooxml": "BODY[1627]/w:tbl/w:tr[8]/w:tc[2]/w:p[1] (BODY index and JSON row/cell/p indices are zero-based; XPath child positions are one-based)"
+      },
+      "replacement_text": "int8存储标签码：R0=0、R1=1、R2=2、TINY_CONTACT=3、UNKNOWN=4；物理relation logits仍仅R0/R1/R2三类。",
+      "reason": "补齐合法存储码TINY_CONTACT=3及UNKNOWN=4，并与三类物理logits分开。",
+      "section": "training field relation storage codes",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style.",
+        "Keep table grid, row/cell order, tcPr, row properties, and all untargeted cell paragraphs unchanged."
+      ],
+      "original_visible_text": "int8枚举R0 R1 R2 UNKNOWN",
+      "original_text_sha256": "43923e7b643751c94ac3287137a03a293b160dbc766ef13f87bedf8c0151230d"
+    },
+    {
+      "action": "replace_cell_paragraph_text",
+      "locator": {
+        "body_index": 1627,
+        "kind": "table_cell_paragraph",
+        "row": 7,
+        "cell": 2,
+        "paragraph": 0,
+        "ooxml": "BODY[1627]/w:tbl/w:tr[8]/w:tc[3]/w:p[1] (BODY index and JSON row/cell/p indices are zero-based; XPath child positions are one-based)"
+      },
+      "replacement_text": "UNKNOWN=4由relation loss_mask按任务排除，不编码成R0；TINY_CONTACT=3为灰区码，按relation valid/loss_mask处理。二者均非默认负例。relation valid、loss_mask、padding pair_valid与point correspondence valid互相独立。",
+      "reason": "修正UNKNOWN/TINY_CONTACT与关系监督mask的边界。",
+      "section": "training field masks",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style.",
+        "Keep table grid, row/cell order, tcPr, row properties, and all untargeted cell paragraphs unchanged."
+      ],
+      "original_visible_text": "UNKNOWN通过loss_mask剔除，不编码成R0",
+      "original_text_sha256": "5f20fb8b8a7a872d29817e279380c27ba21f8ed6ba756446ee23f6a66b627549"
+    },
+    {
+      "action": "replace_cell_paragraph_text",
+      "locator": {
+        "body_index": 120,
+        "kind": "table_cell_paragraph",
+        "row": 11,
+        "cell": 1,
+        "paragraph": 0,
+        "ooxml": "BODY[120]/w:tbl/w:tr[12]/w:tc[2]/w:p[1] (BODY index and JSON row/cell/p indices are zero-based; XPath child positions are one-based)"
+      },
+      "replacement_text": "VesselRecall衡量找回冻结图库内真实同器成员的比例。V_G(q)由独立、已确认的object-membership GT manifest与冻结图库G求交后排除q；不得由已标R1/R2邻接边并集构造。身份已确认但pair邻接未知的候选仍是member-positive。",
+      "reason": "将Vessel Recall分母改为独立成员真值来源，防止用邻接边推导成员。",
+      "section": "member metrics table",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style.",
+        "Keep table grid, row/cell order, tcPr, row properties, and all untargeted cell paragraphs unchanged."
+      ],
+      "original_visible_text": "预测器物成员集合中找回数据库内真实同器物成员的比例；分母为冻结且闭合的V_G(q)。",
+      "original_text_sha256": "632ef6faf99fa38b8b09b260c6abff6d66b49eadeedf2b96861dd75c64a0dda6"
+    },
+    {
+      "action": "replace_cell_paragraph_text",
+      "locator": {
+        "body_index": 120,
+        "kind": "table_cell_paragraph",
+        "row": 11,
+        "cell": 2,
+        "paragraph": 0,
+        "ooxml": "BODY[120]/w:tbl/w:tr[12]/w:tc[3]/w:p[1] (BODY index and JSON row/cell/p indices are zero-based; XPath child positions are one-based)"
+      },
+      "replacement_text": "建议报告目标：object内query等权，再按object macro汇总；区间按独立source cluster聚类。当前为目标口径，成员指标实现尚未发现。并报告成员数量分层；query加权均值仅作补充。",
+      "reason": "补齐目标聚合层级与source-cluster CI资格。",
+      "section": "member metrics table",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style.",
+        "Keep table grid, row/cell order, tcPr, row properties, and all untargeted cell paragraphs unchanged."
+      ],
+      "original_visible_text": "长期核心目标；按母体等权宏平均，并报告成员数分层。",
+      "original_text_sha256": "b181ca6642e4efe36c89df17e34cb30a0a3ba7afe1aedfee54468c7f9191e5c1"
+    },
+    {
+      "action": "replace_paragraph_text",
+      "locator": {
+        "body_index": 128,
+        "kind": "paragraph",
+        "ooxml": "BODY[128]/w:p (BODY direct-child index is zero-based)"
+      },
+      "replacement_text": "对query q，冻结图库为G；V_G(q)为独立且已确认的object-membership GT manifest成员与G的交集，并排除q；预测集合记为V_hat(q)。V_G不能由R1/R2 adjacency边并集构造；身份已确认而某pair邻接未知仍为member-positive。R2邻片集合N_G(q)单独定义，V_G与N_G不可混同。VesselRecall=|V_hat∩V_G|/|V_G|，VesselPrecision=|V_hat∩V_G|/|V_hat|，VesselF1为调和平均。只有object membership本身已闭合时才报告闭合成员指标；仅邻片无法证明全体成员。缺失实物已知去向作为审计信息记录；若天然残片无法证明冻结图库内成员全集闭合，可报告候选检索和专家工作流，不能声称库内完整成员恢复率。",
+      "reason": "保留指标定义并替换依赖R1/R2边并集的成员真值推导，明确UNKNOWN邻接仍可正例。",
+      "section": "§2.2.2 member truth",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style."
+      ],
+      "original_visible_text": "对query q定义V_G(q)为冻结图库G中与q属于同一器物的全部可评成员，包含R1和R2但排除q自身；预测集合为V_hat(q)。VesselRecall=|V_hat∩V_G|/|V_G|，VesselPrecision=|V_hat∩V_G|/|V_hat|，VesselF1按二者调和平均。只有object membership已闭合、缺失实物去向已记录且UNKNOWN不被强行归类的母体，才进入Level 3主评测。天然残片若无法证明成员全集完整，可报告候选检索和专家工作流，但不能声称完整器物恢复率。",
+      "original_text_sha256": "9d1c3887c93774d42f4579915e6984a46b4e1c13cc118818fa2e31f49143c9ad"
+    },
+    {
+      "action": "replace_paragraph_text",
+      "locator": {
+        "body_index": 129,
+        "kind": "paragraph",
+        "ooxml": "BODY[129]/w:p (BODY direct-child index is zero-based)"
+      },
+      "replacement_text": "成员集合空值规则：仅当|V_G(q)|>0时按非空闭合GT报告成员召回；此时预测集合为空则Recall=0、Precision=NA、F1=0。|V_G(q)|=0时单列member-absent、false-inclusion与abstention；GT和预测均空只记correct-empty，不把Precision/Recall/F1设为1。开世界样本及未通过完整工作流资格的样本分开计数，不并入Level 3闭合集合主分母。先在object内对query等权，再做object macro；置信区间按独立source cluster聚类，同批次或来源相关时，按更高层来源簇估计。query-weighted均值只作补充。",
+      "reason": "保留已有空集语义并明确目标聚合及source-cluster不确定性。",
+      "section": "§2.2.2 empty metrics",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style."
+      ],
+      "original_visible_text": "分母边界补充：只有|V_G(q)|>0时才按常规闭合集合定义报告成员召回；此时若预测集合为空，Recall=0、Precision=NA、F1=0。若|V_G(q)|=0，应单独报告member-absent判定、false-inclusion数量/率及abstention；真值与预测都为空只记为correct-empty，不能把Precision、Recall或F1伪记为1。开世界样本及未通过完整工作流资格的样本分开计数，不并入Level 3闭合集合主分母。汇总先在每个器物内对query等权平均，再对器物等权宏平均；区间按独立器物聚类估计，若同批次或来源相关则按更高层来源簇估计。query加权均值仅作补充。",
+      "original_text_sha256": "2da69a77eefc523ed4f12e186a7e02ac0241ee52329f0f151cb302deb1913de7"
+    },
+    {
+      "action": "replace_paragraph_text",
+      "locator": {
+        "body_index": 569,
+        "kind": "paragraph",
+        "ooxml": "BODY[569]/w:p (BODY direct-child index is zero-based)"
+      },
+      "replacement_text": "A12.22仍为目标合同，状态SPECIFIED / NOT_RUN；成员generator、独立member manifest/result role、专用schema/API/CLI及成员指标当前均未实现。未来合成母体可导出独立且已确认的object-membership manifest、R1/R2 typed relation graph、可见/不可见断面、缺失材料及母体属性；episode generator仅为方案。对query q，V_G(q)由manifest与冻结G求交并排除q，不由R1/R2边并集推导；身份已确认但邻接未知仍是member-positive，成员闭合与R2邻片闭合分开。线上只接合法Obs、opaque路由引用、冻结版本和公开成本/预算；GT答案、mother/object ID、完整GT图与GT派生奖励只用于离线truth/training/evaluator。不得把建议字段直接塞入严格GenerationSpec，先注册独立版本化schema/API/role再实现验收。成员验收对应第1.4节MC01–MC06；MC07适用于关系指标。",
+      "reason": "将A12.22从当前执行式语气改为已指定未运行的目标合同，落地独立成员真值和实现边界。",
+      "section": "A12.22 status and member contract",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style."
+      ],
+      "original_visible_text": "每个合成母体除R2边外，还必须导出完整member set、R1/R2 typed relation graph、可见/不可见断面、缺失材料和母体级属性。episode生成器把多个母体混成gallery，随机选择query并控制同器物成员数、R1/R2比例、hard negative密度、器型相似度、材质相似度和退化分布；训练端只看合法Obs，评测端用完整Truth计算Vessel Precision/Recall/F1及多轮扩展轨迹。这样A12的数据价值从“更多pair”升级为“可控整器物关系规模”。",
+      "original_text_sha256": "07a23a3840ee2188970c5c298a1d6fd0c93d4d71ca1ca4d53db15dffd43c4b84"
+    },
+    {
+      "action": "replace_paragraph_text",
+      "locator": {
+        "body_index": 596,
+        "kind": "paragraph",
+        "ooxml": "BODY[596]/w:p (BODY direct-child index is zero-based)"
+      },
+      "replacement_text": "Level 3评测要求每个eligible object拥有独立、已确认的object-membership member_manifest：object_id、全部已入库fragment_id、已知missing_fragment/碎屑去向、member_set_complete、R2边集合、R1定义域、UNKNOWN/争议关系、复核者、label_version与hash。V_G(q)只从该manifest与冻结gallery G求交后排除q派生，不能从模型结果或R1/R2 adjacency边并集反推。仅当冻结G内member归属已闭合时，母体进入Level 3完整成员恢复主分母；原器物仍有碎片遗失或未入库不会自动排除，只须记录已知去向。",
+      "reason": "明确独立成员manifest、冻结gallery求交与不由邻接边建成员集合。",
+      "section": "§2.0 member manifest",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style."
+      ],
+      "original_visible_text": "Level 3评测要求每个eligible object拥有member_manifest：object_id、全部已入库fragment_id、已知missing_fragment/碎屑去向、member_set_complete、R2边集合、R1定义域、UNKNOWN/争议关系、复核者、label_version与hash。V_G(q)从该manifest派生，不能从模型结果反推。仅当冻结图库G内的member归属尚未闭合时，母体才排除Level 3完整成员恢复主分母；原器物仍有碎片遗失或未入库不会自动排除，只须把已知去向作为审计信息记录。",
+      "original_text_sha256": "5e6504d1cc2ceacefd2a0a63dbab161bc4ea14a5308ac2e758bff17ea9d32a49"
+    },
+    {
+      "action": "replace_paragraph_text",
+      "locator": {
+        "body_index": 597,
+        "kind": "paragraph",
+        "ooxml": "BODY[597]/w:p (BODY direct-child index is zero-based)"
+      },
+      "replacement_text": "R1是“同器物且无直接历史断裂接触”，不是“暂时拼不上”。pairwise R1只要求该pair身份已确认且该pair直接历史邻接有充分排除证据，不要求整个gallery成员集合闭合。member_set闭合与R2关系闭合必须分开审计：先确认哪些fragment属于object，再确认哪些pair有历史直接接触。R2缺边不能自动把pair改为R1；邻接证据不足保留UNKNOWN。",
+      "reason": "明确pairwise R1不要求whole-gallery闭合，分开成员与邻片闭合。",
+      "section": "§2.0 closure rules",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style."
+      ],
+      "original_visible_text": "R1是“同器物且无直接历史断裂接触”，不是“暂时拼不上”。因此member_set闭合和R2关系闭合必须分开审计：先确认哪些fragment属于该object，再确认哪些pair有历史直接接触。R2缺边不能自动把pair改成R1；证据不足保留UNKNOWN。",
+      "original_text_sha256": "251cf9a3a009912db80340feb0b95f671fbadbb6a0890d2940fd512e38b66fd6"
+    },
+    {
+      "action": "replace_paragraph_text",
+      "locator": {
+        "body_index": 349,
+        "kind": "paragraph",
+        "ooxml": "BODY[349]/w:p (BODY direct-child index is zero-based)"
+      },
+      "replacement_text": "A6.20 训练路线：Oracle-R2离线特权诊断 → 预测关系闭环 → 人工腐化鲁棒性",
+      "reason": "标题中的“关系上限”把Oracle描述为严格上限；改为离线特权诊断。",
+      "section": "A6.20 title",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style."
+      ],
+      "original_visible_text": "A6.20 训练路线：Oracle 关系上限 → 预测关系闭环 → 人工腐化鲁棒性",
+      "original_text_sha256": "3629881ba8959603e417d97e6ad49b16e748669d9901f79f80d72a5c235ceb6f"
+    },
+    {
+      "action": "replace_paragraph_text",
+      "locator": {
+        "body_index": 351,
+        "kind": "paragraph",
+        "ooxml": "BODY[351]/w:p (BODY direct-child index is zero-based)"
+      },
+      "replacement_text": "Oracle-R2是特权离线诊断条件，用于检查在给定上下文下已知关系信息是否有用；它不是严格性能上界，也不是可部署性能。比较必须匹配candidate pool、context count、quality、fields、budget与source correlation，并加入shuffle-neighbor、equal-context、predicted-R2及corrupted-R2对照；可行时加入等量GT-R1对照。无法匹配则标为未决、不可归因。真实合格数据与闭合GT足以先做静态/上下文信息测试；物理pack只作为物理合成或物理预训练主张的门槛。",
+      "reason": "扩充匹配对照并保持非严格上界的诊断资格。",
+      "section": "Oracle-R2 controls",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style."
+      ],
+      "original_visible_text": "Oracle-R2是特权离线诊断条件，用于检查已知关系上下文是否有信息；它不是严格的信息论上界，也不是可部署性能。比较必须匹配candidate pool、context count、quality、fields、budget与source correlation，并加入shuffle-neighbor对照及可行时的等量GT-R1对照；无法匹配则标为未决、不可归因。真实合格数据与闭合GT足以先做静态/上下文信息测试；物理pack只作为物理合成或物理预训练主张的门槛。",
+      "original_text_sha256": "0021fc40797a9cf233f460e90abd3b6db682acdaadbf6ec7f1c261e9f9758fec"
+    },
+    {
+      "action": "replace_paragraph_text",
+      "locator": {
+        "body_index": 360,
+        "kind": "paragraph",
+        "ooxml": "BODY[360]/w:p (BODY direct-child index is zero-based)"
+      },
+      "replacement_text": "推荐把Oracle-R2在匹配候选池、上下文与预算下的离线诊断作为第一道go/no-go门，衡量正确邻接上下文是否带来稳定R1增益；它不是严格性能上界或可部署性能。只有匹配控制下存在稳定增益，后续latent feedback、图记忆、vessel memory和multi-hop reasoning才进入研究；若无稳定增益则暂停。第二道门是predicted-R2与corruption curve：若预测边加入后拖累R1，优先研究校准、验证和revision，不扩主干。",
+      "reason": "将“正确邻接上下文最多能给多少信息”的严格上限语气改成有预算/上下文匹配的go/no-go诊断。",
+      "section": "Oracle-R2 go/no-go",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style."
+      ],
+      "original_visible_text": "推荐把 Oracle-R2 gap 作为第一道 go/no-go 门。它直接测量“正确邻接上下文最多能给 R1 带来多少信息”。只有这个上限足够大，后续关于 latent feedback、图记忆、vessel memory 和 multi-hop reasoning 的工程投入才有意义。第二道门是 predicted-R2 与 corruption curve：如果真实预测边一加入就把 R1 拖垮，则优先研究校准、验证和 revision，而不是继续扩主干。",
+      "original_text_sha256": "b9b1cbfda125691dfe6b29f2c891af926ccb18926345ea187b92f0d645046349"
+    },
+    {
+      "action": "replace_cell_paragraph_text",
+      "locator": {
+        "body_index": 120,
+        "kind": "table_cell_paragraph",
+        "row": 15,
+        "cell": 2,
+        "paragraph": 0,
+        "ooxml": "BODY[120]/w:tbl/w:tr[16]/w:tc[3]/w:p[1] (BODY index and JSON row/cell/p indices are zero-based; XPath child positions are one-based)"
+      },
+      "replacement_text": "离线Oracle-R2特权诊断；与Predicted-R2和Corrupted-R2按相同候选池/上下文/预算对照。非严格性能上界、非部署性能；只有匹配控制下的稳定增益才支持继续研究。",
+      "reason": "表格仍把Oracle-R2称为上限，需匹配既定决策。",
+      "section": "Oracle metric table",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style.",
+        "Keep table grid, row/cell order, tcPr, row properties, and all untargeted cell paragraphs unchanged."
+      ],
+      "original_visible_text": "先做Oracle-R2上限，再做Predicted-R2与Corrupted-R2；若Oracle也无增益则暂停该机制。",
+      "original_text_sha256": "9efbf3886e465cba2641980fa6a004591f6d3ae54b78f96f5da72eb27035cd13"
+    },
+    {
+      "action": "replace_cell_paragraph_text",
+      "locator": {
+        "body_index": 359,
+        "kind": "table_cell_paragraph",
+        "row": 1,
+        "cell": 0,
+        "paragraph": 0,
+        "ooxml": "BODY[359]/w:tbl/w:tr[2]/w:tc[1]/w:p[1] (BODY index and JSON row/cell/p indices are zero-based; XPath child positions are one-based)"
+      },
+      "replacement_text": "Oracle-R2离线特权诊断",
+      "reason": "更正现行研究提案名称的上限暗示；历史ORACLE_ACTION名称、数值和判决均不改。",
+      "section": "A6.20 Oracle experiment",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style.",
+        "Keep table grid, row/cell order, tcPr, row properties, and all untargeted cell paragraphs unchanged."
+      ],
+      "original_visible_text": "Oracle-R2 上限实验",
+      "original_text_sha256": "a29b75cff4e118b97e3775d675e9d045befe49c79f2e9cf6bd5bf292309697a2"
+    },
+    {
+      "action": "replace_exact_fragment",
+      "locator": {
+        "body_index": 365,
+        "kind": "table_cell_paragraph",
+        "row": 3,
+        "cell": 1,
+        "paragraph": 0,
+        "ooxml": "BODY[365]/w:tbl/w:tr[4]/w:tc[2]/w:p[1] (BODY index and JSON row/cell/p indices are zero-based; XPath child positions are one-based)"
+      },
+      "expected_fragment": "Oracle-R2 无上限",
+      "replacement_fragment": "Oracle-R2在匹配池/上下文/预算下未见稳定增益",
+      "reason": "将本行oracle失败条件改成与匹配控制一致的经验性表述，保留同格其余历史失败原因。",
+      "section": "A6.20 negative findings",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style.",
+        "Keep table grid, row/cell order, tcPr, row properties, and all untargeted cell paragraphs unchanged.",
+        "Keep all other fragments in this cell byte/text-identical, including the other negative findings."
+      ],
+      "original_visible_text": "Oracle-R2 无上限；predicted-R2 噪声抵消收益；Vessel Memory 形成 shortcut；多跳扩展造成 graph over-smoothing；relation latent 无法优于标量；可反悔机制成本过高。",
+      "original_text_sha256": "b7912bec89f49cef6d471a2eadb91dcbf9d634e98cbf67395ade961fbebc790e"
+    },
+    {
+      "action": "replace_paragraph_text",
+      "locator": {
+        "body_index": 942,
+        "kind": "paragraph",
+        "ooxml": "BODY[942]/w:p (BODY direct-child index is zero-based)"
+      },
+      "replacement_text": "优先顺序由实验决定而不是由想法“看起来高级”决定。先跑EXP10退化曲线和EXP11整器物任务，确认问题本身有足够难度和方法空间；再用EXP12在匹配候选池、上下文、预算和对照下判断R2上下文是否稳定给R1带来增益。若离线Oracle-R2特权诊断在匹配控制下显示稳定收益，Predicted-R2也能在错边下保持收益，则UA-IFRMN可升级为方法主线；这不是严格性能上界。若关系机制不成立，但A12的物理退化预训练在真实域稳定增益，则把Synthetic-to-Real转为主线。",
+      "reason": "把论文主线判据中的Oracle严格上限改为匹配上下文诊断，并保留路线决策条件。",
+      "section": "research route",
+      "must_preserve": [
+        "Keep the existing paragraph node, pPr, paragraph style, and surrounding order.",
+        "Keep bookmarks, hyperlinks, fields, and non-text XML children; change only the targeted visible text content.",
+        "Retain existing run formatting where possible; new text uses adjacent paragraph/run style."
+      ],
+      "original_visible_text": "优先顺序由实验决定而不是由想法“看起来高级”决定。先跑EXP10退化曲线和EXP11整器物任务，确认问题本身有足够难度和方法空间；再用EXP12判断R2上下文是否真的给R1带来信息。若Oracle-R2上限明显、Predicted-R2能在错边下保持收益，则UA-IFRMN可升级为方法主线；若关系机制不成立，但A12的物理退化预训练在真实域稳定增益，则把Synthetic-to-Real转为主线。",
+      "original_text_sha256": "f740e41c9e4ebb84df9d5f4939ef8835828b6720972a1ac302210fc08b03115c"
+    },
+    {
+      "action": "insert_after_anchor",
+      "locator": {
+        "body_index": 466,
+        "kind": "paragraph",
+        "ooxml": "BODY[466]/w:p (BODY direct-child index is zero-based)"
+      },
+      "inserted_content": {
+        "paragraphs": [
+          "静态合同登记：synlab/relations/negatives.py:892–928的discrimination_auc筛valid但未筛loss_mask；truth producer可令TINY_CONTACT为valid=true、loss_mask=false，使灰区进入非R2类。此项只列MC07 / SPECIFIED / NOT_RUN；本次不改源码、不重算历史指标，也不把UNKNOWN整体并作负类。"
+        ]
+      },
+      "reason": "把AUC mask语义缺口放在A9.1指标约定附近，保持只登记、不改源码/历史数值。",
+      "section": "MC07 AUC note",
+      "must_preserve": [
+        "Do not alter the anchor node or any existing following node.",
+        "Insert between the anchor and its next body child; reuse adjacent styles and keep body sectPr last."
+      ],
+      "original_visible_text": "R1误排可先定义为Top10中R1数量除有效候选位数量，并另报R1排在第一名或首名R2之前的查询比例。UNKNOWN位单独统计且不强当R1，定义写入metrics_contract。最终论文主指标数量有限，其他指标作为诊断。",
+      "original_text_sha256": "dbc4b06ae8b46f8e2a55284817b1d3a74216d2886dde99afe99ddc415c21eb5f"
+    }
+  ],
+  "operation_count": 42,
+  "writer_checks": [
+    "Before every replace, compare current target text SHA-256 to original_text_sha256; abort an operation on mismatch.",
+    "For exact-fragment operation, verify full original paragraph SHA and exact fragment before replacement; retain surrounding text.",
+    "After writing, confirm all 113 original internal w:hyperlink elements (all carry w:anchor), including all 33 BODY[7] navigation links, plus the appended link: 114 total and BODY[7]=34. Confirm the original 553 bookmarkStart elements plus the new RW148_CONTRACT_ALIGNMENT pair: 554 bookmarkStart elements, with no dangling bookmark or hyperlink.",
+    "Confirm original body[5]/[6] visible texts and all non-target body/table XML stay unchanged; sectPr remains final body child.",
+    "Confirm output opens as valid DOCX; render and inspect pages around cover, inserted section, A12.22, version examples, relation tables, and new AUC note.",
+    "Confirm all ZIP entries except word/document.xml are byte-identical; report new output SHA/size separately from immutable source SHA.",
+    "Do not run tests/CLI/training/solver/numerical evaluation or alter source/Git as part of this writeback."
+  ]
+}
