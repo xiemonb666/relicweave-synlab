@@ -50,3 +50,7 @@
 /tests/test_reference_generator.py -text
 /tools/handover/archive_workspace_support.py -text
 /tools/handover/prepare_delivery_stage.py -text
+
+# Preserve original bytes of legacy artifacts newly archived at the pause checkpoint.
+"/docs/a12/REFERENCE_MATERIALS_20261015.json" -text
+"/docs/a12/REFERENCE_PATTERN_STYLES_20261015.json" -text
