@@ -4,9 +4,9 @@
 
 | 仓库 | 默认发布分支 | 固定代码/README 检查点 |
 |---|---|---|
-| [vesselforge](https://github.com/xiemonb666/vesselforge) | `backup/forge-work-20261003` | [feff8fdadbc5](https://github.com/xiemonb666/vesselforge/commit/feff8fdadbc51ccfefe9768f6beb39c8f1578642) |
-| [pgfrag](https://github.com/xiemonb666/pgfrag) | `backup/forge-work-20261003` | [4ac29dd0f8d2](https://github.com/xiemonb666/pgfrag/commit/4ac29dd0f8d2da1988e0e545ac919e3174fcf3dc) |
-| [relicweave-synlab](https://github.com/xiemonb666/relicweave-synlab) | `main` | [7cc08f0cbb4a](https://github.com/xiemonb666/relicweave-synlab/commit/7cc08f0cbb4a0693abb11b0a1590c4b1246cd232) |
+| [vesselforge](https://github.com/xiemonb666/vesselforge) | `backup/forge-work-20261003` | [e489fb1ded49](https://github.com/xiemonb666/vesselforge/commit/e489fb1ded49759b495d22fc3ea238257410cb01) |
+| [pgfrag](https://github.com/xiemonb666/pgfrag) | `backup/forge-work-20261003` | [4ce695383979](https://github.com/xiemonb666/pgfrag/commit/4ce6953839790853aa6d6cb47621da5cff4eb496) |
+| [relicweave-synlab](https://github.com/xiemonb666/relicweave-synlab) | `main` | [41d08277d4da](https://github.com/xiemonb666/relicweave-synlab/commit/41d08277d4da73b5a5b6115fe6f0aaf102ce47e9) |
 
 三仓均为原有 private repository，没有更改可见性。A12 的 `main` 与 `backup/forge-work-20261003` 已同步；VF/PG 的默认分支为 `backup/forge-work-20261003`。更新采用 fast-forward，没有 force push。GitHub 默认分支 README blob 已逐仓与本地提交核对一致。
 
@@ -27,3 +27,5 @@
 离线测试范围为 VF 66、PG 55、A12 90，共 **211** 项；这是 focused checks，不是全仓测试或物理资格。几何 run05 PASS、旧数值控制、外观代理与未运行实验均明确区分。素材来源精修、真实材质校准、完整纹样及真实破裂链仍需继续完成。
 
 机器可读的 GitHub refs、README blob、方案哈希和归档哈希见 [DELIVERY_RECEIPT.json](DELIVERY_RECEIPT.json)。
+
+全量新增文件字节复核覆盖 6,403 个文件，零差异。已修复 782 个旧归档文件的 Git 换行转换，保留原始输入/收据/日志字节；本地功能源码及实验结果没有改写。详见 [完整字节检查](ALL_NEW_FILE_BYTE_AUDIT_FINAL.json) 与 [转换修复记录](LEGACY_BYTE_PRESERVATION.json)。
