@@ -1,0 +1,302 @@
+{
+  "schema": "shardforge.bluewhite_bowl_sourced_panel_study.v1",
+  "purpose": "finite photo-derived blue-white appearance panel on the actual sampled VF bowl outer meridian",
+  "design_status": "NEW_SYNTHETIC_DESIGN_ON_BOWL_CANDIDATE; vase-derived source panel is not a historical bowl pattern",
+  "interpretation_limits": {
+    "source_is_already_fired_photo_normalized_appearance_proxy": true,
+    "prefire_pigment_recovered": false,
+    "camera_lighting_glaze_projection_and_vase_curvature_removed": false,
+    "unseen_source_geometry_or_symbolism_inferred": false,
+    "complete_circumferential_motif_reconstructed": false,
+    "additional_spread_is_stylized_and_may_double_count_original_fired_spread": true,
+    "firing_chemistry_or_optical_coefficients_calibrated": false,
+    "bowl_candidate_is_source_scan_or_exact_cad_reconstruction": false,
+    "bowl_geometry_or_material_mechanics_modified": false
+  },
+  "source": {
+    "institution": "The Metropolitan Museum of Art",
+    "object_id": 50899,
+    "title": "Vase with dragon",
+    "collection_url": "https://www.metmuseum.org/art/collection/search/50899",
+    "source_photo_path": "relicweave-synlab\\synlab\\patterns\\resources\\bluewhite_20261015\\source\\met_50899_O2_original.jpg",
+    "source_photo_sha256": "3228f553358887829ef0a3eff0036293f8df6e311bf1e5da0b48c3fe02f2f28b",
+    "projection_crop_path": "relicweave-synlab\\synlab\\patterns\\resources\\bluewhite_20261015\\derived\\met_50899_O2_dragon_projection_crop.png",
+    "projection_crop_sha256": "f9845558272540118089a3ff7a084372e0aceeebf9223796af7c19ea4d673f3d",
+    "mask_path": "relicweave-synlab\\synlab\\patterns\\resources\\bluewhite_20261015\\derived\\met_50899_O2_dragon_cobalt_fired_photo_mask.png",
+    "mask_sha256": "bc166ca1adf15907f8049f39e81a8cfe75486818e231a2d4b998c49797782da5",
+    "normalized_density_sha256": "8a5ae72369f61d55abbb5a4130d65b5c62a97b8d17ca72752cffaed7efd55bdd",
+    "mask_shape_px": [
+      1160,
+      2000
+    ],
+    "mask_semantics": "continuous blue-excess chroma proxy from an already-fired photo; tonal values retained; not recovered pre-fire pigment",
+    "mask_pixel_value_range": [
+      0.0,
+      1.0
+    ],
+    "mask_tonal_standard_deviation": 0.27343109488691897,
+    "partial_photo_crop_preserved_without_inpainting_or_repair": true
+  },
+  "geometry": {
+    "reference_asset_path": "vesselforge\\experiments\\continuation_20261015\\reference_forms\\outputs\\daily_aberdeen_108x53_v6_final",
+    "reference_object": {
+      "collection": "Aberdeen City Museums",
+      "dimension_evidence": "Official museum catalog record; the listed dimensions are catalog measurements.",
+      "medium": "Limoges porcelain and celadon",
+      "object_number": "ABDMS095708.121",
+      "object_url": "https://emuseum.aberdeencity.gov.uk/objects/186848/porcelain-small-footed-bowl",
+      "period": "2007–2009",
+      "reported_dimensions_mm": {
+        "foot_outer_diameter": 31.0,
+        "overall_height": 53.0,
+        "rim_outer_diameter": 108.0
+      },
+      "title": "Porcelain Small Footed Bowl",
+      "visual_reference_note": "The reference reviewer reports that the lower-angle gallery photo shows a visibly taller foot and raised lower base. The 7 mm candidate foot height is a visual design assumption, not a catalog measurement."
+    },
+    "candidate_status": "SIZE_REFERENCE_GEOMETRY_CANDIDATE_ONLY",
+    "candidate_geometry_status": "PASS_STRUCTURAL_CAD_ONLY",
+    "source_profile_fidelity": "NOT_ESTABLISHED; dimensions and photographs do not define the complete meridian or construction.",
+    "geometry_source_sha256": "b1ce6521290073fae7b48103d95333782d4d42e031a302d8c38ed2f5c0db17f3",
+    "geometry_array_sha256": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+    "outer_profile_rzs_sha256": "d34eeed404ea51cf60f028ebf6b08682eae4d577de14deb7a77fb0433e076305",
+    "chart_name": "reference_body_outer_meridian_polyline",
+    "chart_declared_s_definition_metadata": "arclength mm along the labelled profile from the base centre",
+    "chart_s_total_mm": 65.89338225995594,
+    "profile_shape": [
+      641,
+      3
+    ],
+    "profile_order_first_rz_mm": [
+      53.96592582628907,
+      51.74118095489748
+    ],
+    "profile_order_last_rz_mm": [
+      10.5,
+      8.0
+    ],
+    "panel_s_origin": "first stored profile sample; this actual profile runs from outer rim toward foot",
+    "profile_arclength_recomputed_from_rz_mm": 65.89338225995594,
+    "profile_sampling_status": "FINITE_POLYLINE_APPROXIMATION_NOT_AN_EXACT_ARCLENGTH_CERTIFICATE"
+  },
+  "panel_design": {
+    "source_mapping": "X=r(s)*wrapped(theta-theta0), Y=s-s0",
+    "metric": "dell^2=(dX-a*dY)^2+dY^2; determinant is one but the map shears",
+    "placement_center_s_mm": 32.94669112997797,
+    "placement_center_theta_rad": 3.141592653589793,
+    "physical_arc_width_mm": 45.0,
+    "meridian_height_mm": 26.0,
+    "image_top_toward": "lower_s",
+    "panel_s_bounds_mm": [
+      19.94669112997797,
+      45.94669112997797
+    ],
+    "declared_halo_minimum_mm": 2.0,
+    "panel_width_is_less_than_2pi_min_radius": true,
+    "max_abs_shear_a_on_actual_polyline": 0.6366500408217057,
+    "shear_convention": "segmentwise finite-polyline dr/ds; maximum over panel band at the declared |X|=width/2 and each intersected segment's lower-radius endpoint",
+    "azimuthal_seam_away_from_panel": true,
+    "one_finite_partial_panel_no_repeat": true,
+    "mapping_distortion": "source x coordinate is local cylindrical arc distance; no perspective or photo-curvature correction is available"
+  },
+  "appearance_model": {
+    "equation": "total=(1-m)*c0 + exp(duration*A^-1*L)*(m*c0)",
+    "solver": "SciPy expm_multiply on conservative metric-aware surface-of-revolution FV graph",
+    "diffusivity_s_mm2_per_effective_unit": 0.02,
+    "diffusivity_theta_mm2_per_effective_unit": 0.08,
+    "effective_s_diffusion_mm2": 0.02,
+    "effective_theta_diffusion_mm2": 0.08,
+    "duration_dimensionless_effective_process_index": 1.0,
+    "mobile_fraction": 0.25,
+    "bound_fraction": 0.75,
+    "controls_are_empirical_not_measured_material_chemistry": true,
+    "boundary_conditions": {
+      "meridian": "no flux at outer chart ends",
+      "azimuth": "periodic"
+    },
+    "post_pde_blur_or_sharpening": false,
+    "color_law": "white_linear_rgb * exp(-dimensionless_tau_rgb * normalized_density)",
+    "glaze_white_linear_rgb": [
+      0.94,
+      0.91,
+      0.84
+    ],
+    "dimensionless_tau_rgb": [
+      3.04,
+      2.56,
+      0.93
+    ],
+    "color_coefficients_are_calibrated_optical_constants": false
+  },
+  "grid_levels": {
+    "coarse": {
+      "shape_n_s_n_theta": [
+        128,
+        512
+      ],
+      "cells": 65536,
+      "ds_mm": 0.5147920489059058,
+      "dtheta_rad": 0.01227184630308513,
+      "minimum_radius_mm": 10.75739312542738,
+      "maximum_radius_mm": 53.89855514547751,
+      "area_weighted_mass": {
+        "initial_area_weighted_mass": 169.60216777869553,
+        "final_area_weighted_mass": 169.60216777869556,
+        "relative_mass_drift": 1.6757869196276972e-16,
+        "mobile_bleed_peak_outside_initial_support": 0.058462866729056304,
+        "bound_core_peak": 0.75,
+        "total_peak": 0.9927544807928015,
+        "initial_fraction_of_panel_area_nonzero": 0.3332811893916735
+      },
+      "support_and_halo": {
+        "initial_nonzero_cell_count": 1664,
+        "initial_nonzero_area_mm2_discrete": 389.938991588258,
+        "initial_nonzero_area_threshold": 0.0,
+        "initial_area_weighted_loading_mass": 169.60216777869553,
+        "panel_footprint_area_mm2_continuum": 1170.0,
+        "initial_support_s_bounds_mm": [
+          22.3934541274069,
+          45.559096328172664
+        ],
+        "initial_support_local_x_bounds_mm": [
+          -17.90864515568631,
+          20.194963528301944
+        ],
+        "blank_meridian_halo_to_outer_chart_ends_mm": [
+          19.94669112997797,
+          19.94669112997797
+        ],
+        "initial_support_inside_panel_only": true,
+        "support_area_is_discrete_grid_measure": true
+      },
+      "mass_receipt": {
+        "initial_total": 169.60216777869553,
+        "initial_bound": 127.20162583402168,
+        "initial_mobile": 42.40054194467388,
+        "final_bound": 127.20162583402168,
+        "final_mobile": 42.40054194467388,
+        "final_total": 169.60216777869556,
+        "relative_final_total_drift": 1.6757869196276972e-16
+      },
+      "budget": {
+        "grid_cells": 65536,
+        "operator_nnz_upper_bound": 326656,
+        "estimated_peak_working_bytes": 46071808,
+        "max_grid_cells": 256000,
+        "max_operator_nnz": 1280000,
+        "max_memory_bytes": 536870912,
+        "actual_stiffness_nnz": 326656,
+        "actual_generator_nnz": 326656,
+        "stiffness_max_abs_row_sum": 6.418476861114186e-17,
+        "generator_max_abs_row_sum": 18.514603226238176,
+        "first_band_radius_mm": 53.89855514547751,
+        "radius_min_mm": 10.75739312542738,
+        "radius_max_mm": 53.89855514547751,
+        "first_band_excludes_pole": true,
+        "minimum_interior_axial_face_radius_mm": 11.01475279687476,
+        "cell_area_source": "caller_supplied_profile_integrated_discrete_cell_measure",
+        "axial_boundary_condition": "no_flux_at_both_ends",
+        "azimuth_boundary_condition": "periodic",
+        "edge_diffusivity": "harmonic_mean",
+        "axial_face_radius": "arithmetic_midpoint_between_true_arclength_centers"
+      },
+      "field_archive": "bluewhite_panel_coarse.npz",
+      "grid_receipt": "bluewhite_panel_coarse_receipt.json"
+    },
+    "fine": {
+      "shape_n_s_n_theta": [
+        240,
+        1024
+      ],
+      "cells": 245760,
+      "ds_mm": 0.2745557594164831,
+      "dtheta_rad": 0.006135923151542565,
+      "minimum_radius_mm": 10.637277424245616,
+      "maximum_radius_mm": 53.93017906493729,
+      "area_weighted_mass": {
+        "initial_area_weighted_mass": 171.20927243121318,
+        "final_area_weighted_mass": 171.20927243121315,
+        "relative_mass_drift": 1.660056667890053e-16,
+        "mobile_bleed_peak_outside_initial_support": 0.10966615572015503,
+        "bound_core_peak": 0.75,
+        "total_peak": 0.9927699775213248,
+        "initial_fraction_of_panel_area_nonzero": 0.3325145774807307
+      },
+      "support_and_halo": {
+        "initial_nonzero_cell_count": 6225,
+        "initial_nonzero_area_mm2_discrete": 389.0420556524549,
+        "initial_nonzero_area_threshold": 0.0,
+        "initial_area_weighted_loading_mass": 171.20927243121318,
+        "panel_footprint_area_mm2_continuum": 1170.0,
+        "initial_support_s_bounds_mm": [
+          22.101738633026887,
+          45.713533942844435
+        ],
+        "initial_support_local_x_bounds_mm": [
+          -17.993032812879555,
+          20.316741331564735
+        ],
+        "blank_meridian_halo_to_outer_chart_ends_mm": [
+          19.94669112997797,
+          19.94669112997797
+        ],
+        "initial_support_inside_panel_only": true,
+        "support_area_is_discrete_grid_measure": true
+      },
+      "mass_receipt": {
+        "initial_total": 171.20927243121318,
+        "initial_bound": 128.40695432340988,
+        "initial_mobile": 42.802318107803295,
+        "final_bound": 128.40695432340988,
+        "final_mobile": 42.80231810780326,
+        "final_total": 171.20927243121315,
+        "relative_final_total_drift": 1.660056667890053e-16
+      },
+      "budget": {
+        "grid_cells": 245760,
+        "operator_nnz_upper_bound": 1226752,
+        "estimated_peak_working_bytes": 172883968,
+        "max_grid_cells": 256000,
+        "max_operator_nnz": 1280000,
+        "max_memory_bytes": 536870912,
+        "actual_stiffness_nnz": 1226752,
+        "actual_generator_nnz": 1226752,
+        "stiffness_max_abs_row_sum": 9.454242944073599e-17,
+        "generator_max_abs_row_sum": 75.64952149811174,
+        "first_band_radius_mm": 53.93017906493729,
+        "radius_min_mm": 10.637277424245616,
+        "radius_max_mm": 53.93017906493729,
+        "first_band_excludes_pole": true,
+        "minimum_interior_axial_face_radius_mm": 10.7745497241318,
+        "cell_area_source": "caller_supplied_profile_integrated_discrete_cell_measure",
+        "axial_boundary_condition": "no_flux_at_both_ends",
+        "azimuth_boundary_condition": "periodic",
+        "edge_diffusivity": "harmonic_mean",
+        "axial_face_radius": "arithmetic_midpoint_between_true_arclength_centers"
+      },
+      "field_archive": "bluewhite_panel_fine.npz",
+      "grid_receipt": "bluewhite_panel_fine_receipt.json"
+    }
+  },
+  "grid_sensitivity": {
+    "comparison_domain": "same physical X/s sample raster over declared panel bounds",
+    "sample_shape": [
+      101,
+      221
+    ],
+    "initial_density_mean_absolute_difference": 0.02792887607307731,
+    "initial_density_root_mean_square_difference": 0.06921074595790981,
+    "spread_density_mean_absolute_difference": 0.023657491600375682,
+    "spread_density_root_mean_square_difference": 0.05837811462051303,
+    "initial_mass_relative_difference_coarse_vs_fine": 0.009386785129662505,
+    "spread_mass_relative_difference_coarse_vs_fine": 0.009386785129662173,
+    "fine_grid_maximum_cells": 256000,
+    "fine_grid_estimated_peak_sparse_working_bytes": 172883968,
+    "fine_grid_memory_budget_bytes": 536870912
+  },
+  "outputs": {
+    "unwrapped_preview": "bluewhite_panel_unwrapped.png",
+    "density_cross_section_plot": "density_cross_section_mm.png",
+    "density_cross_section_csv": "density_cross_section_mm.csv"
+  }
+}

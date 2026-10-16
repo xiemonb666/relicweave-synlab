@@ -1,0 +1,478 @@
+{
+  "candidate_dimensions_mm": {
+    "foot_outer_diameter_mm": 34.0,
+    "overall_height_mm": 53.0,
+    "rim_outer_diameter_mm": 108.0
+  },
+  "design_assumptions": {
+    "body_end_handle_height_fraction": 0.22,
+    "body_floor_radius_mm": 10.5,
+    "body_floor_z_mm": 10.0,
+    "body_start_handle_fraction": 0.72,
+    "foot_contact_width_mm": 2.2,
+    "foot_height_mm": 7.5,
+    "rim_tangent_degrees": 75.0,
+    "underside_recess_z_mm": 6.5,
+    "wall_thickness_mm": 2.0
+  },
+  "interpretation": "A reference-guided design candidate combining an unchanged VF size-reference geometry with independent documented style recipes; not an exact source-object clone.",
+  "known": [
+    "The mesh is a VF generated candidate whose listed envelope dimensions are source-recorded or family-anchor dimensions.",
+    "Triangle tags are bound through source B-rep face indices and exact meridian segment indices.",
+    "Pattern/material output uses existing deterministic SynLab APIs and explicit independent seeds."
+  ],
+  "material_source": {
+    "controls": {
+      "body_albedo_linear_rgb": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "linear_rgb_0_1",
+        "value": [
+          0.774,
+          0.77,
+          0.751
+        ]
+      },
+      "body_ior": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "1",
+        "value": 1.56
+      },
+      "body_roughness": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "1",
+        "value": 0.34
+      },
+      "coating_albedo_linear_rgb": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "linear_rgb_0_1",
+        "value": [
+          0.34,
+          0.49,
+          0.44
+        ]
+      },
+      "coating_band_mm": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "mm",
+        "value": 0.22
+      },
+      "coating_ior": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "1",
+        "value": 1.51
+      },
+      "coating_present": {
+        "source_measurement": "Celadon is named in the object medium; layer geometry and properties are not specified.",
+        "status": "SOURCE_FACT",
+        "unit": "categorical",
+        "value": true
+      },
+      "coating_roughness": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "1",
+        "value": 0.2
+      },
+      "coating_transmission": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "1",
+        "value": 0.02
+      },
+      "grain_amount": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "1",
+        "value": 0.04
+      },
+      "grain_scale_mm": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "mm",
+        "value": 0.18
+      },
+      "physical_glaze_thickness_mm": {
+        "source_measurement": null,
+        "status": "UNKNOWN",
+        "unit": "mm",
+        "value": null
+      },
+      "pore_amount": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "1",
+        "value": 0.03
+      },
+      "pore_scale_mm": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "mm",
+        "value": 0.5
+      }
+    },
+    "layer_semantics": {
+      "bare_body_surface_tags": [
+        "foot",
+        "base",
+        "interface",
+        "attachment"
+      ],
+      "coated_surface_tags": [
+        "outer_wall",
+        "inner_wall",
+        "rim"
+      ],
+      "depth_band_parameter": "DESIGN_CHOICE_FOR_EXPLICIT_VOLUME_QUERY_ONLY",
+      "mode": "SHADING_LAYER",
+      "note": "Original coated surface tags change sampled appearance only; no solid glaze is modeled.",
+      "physical_solid_status": "NOT_CREATED",
+      "physical_thickness_status": "UNKNOWN",
+      "surface_policy": "original_surface_tags-v1",
+      "surface_query_depth_mm": 0.0,
+      "volume_query_depth": "EXPLICIT_CALLER_DEPTH_REQUIRED"
+    },
+    "material_class": "porcelain",
+    "material_class_evidence_status": "SOURCE_FACT",
+    "mechanics_status": "UNKNOWN",
+    "optical_measurements_status": "UNKNOWN",
+    "process_compatibility": {
+      "firing_schedule": "UNKNOWN",
+      "forming_process": "SOURCE_FACT",
+      "glaze_chemistry": "UNKNOWN",
+      "source_material_class": "SOURCE_FACT"
+    },
+    "profile_seed": 2026101605,
+    "schema": "shardforge.reference_material_profile.v1",
+    "seed_ref": "[2026101605,\"material\",\"daily_aberdeen_porcelain_celadon\"]",
+    "source_object": {
+      "accessed_date": "2026-10-15",
+      "facts": [
+        {
+          "evidence": "object record",
+          "field": "medium",
+          "value": "Limoges porcelain and celadon"
+        },
+        {
+          "evidence": "object record",
+          "field": "maker",
+          "value": "Chris Keenan"
+        },
+        {
+          "evidence": "object record",
+          "field": "date",
+          "value": "2007–2009"
+        },
+        {
+          "evidence": "object record",
+          "field": "height_mm",
+          "value": 53
+        },
+        {
+          "evidence": "object record",
+          "field": "overall_diameter_mm",
+          "value": 108
+        },
+        {
+          "evidence": "object record",
+          "field": "foot_ring_diameter_mm",
+          "value": 31
+        },
+        {
+          "evidence": "qualitative observation of the primary object photographs; not colorimetry",
+          "field": "visual_observation",
+          "value": "pale blue-green interior and exterior, dark rust upper band, pale foot"
+        }
+      ],
+      "institution": "Aberdeen City Museums and Galleries",
+      "object_id": "ABDMS095708.121",
+      "rights_note": "The object page identifies copyrighted images; this recipe records metadata and qualitative observations only.",
+      "source_id": "aberdeen_ABDMS095708.121",
+      "title": "Porcelain Small Footed Bowl",
+      "unknowns": [
+        "full inner and outer meridian",
+        "wall, base, rim, and foot cross-sections",
+        "forming and firing schedule",
+        "celadon glaze chemistry and measured thickness",
+        "spectral reflectance, roughness, and index of refraction",
+        "lot-specific mechanical properties"
+      ],
+      "url": "https://emuseum.aberdeencity.gov.uk/objects/186848/porcelain-small-footed-bowl"
+    },
+    "style_id": "daily_aberdeen_porcelain_celadon",
+    "style_name": "Daily footed porcelain bowl with celadon"
+  },
+  "native_face_lineage": {
+    "native_face_roles": {
+      "0": "base",
+      "1": "body_inner",
+      "10": "foot",
+      "11": "foot",
+      "12": "foot",
+      "13": "foot",
+      "14": "base",
+      "2": "rim",
+      "3": "body_outer",
+      "4": "body_outer",
+      "5": "body_outer",
+      "6": "body_outer",
+      "7": "foot",
+      "8": "foot",
+      "9": "foot"
+    },
+    "native_face_source_segment_indices": {
+      "0": [
+        0
+      ],
+      "1": [
+        1
+      ],
+      "10": [
+        10
+      ],
+      "11": [
+        11
+      ],
+      "12": [
+        12
+      ],
+      "13": [
+        13
+      ],
+      "14": [
+        14
+      ],
+      "2": [
+        2
+      ],
+      "3": [
+        3
+      ],
+      "4": [
+        4
+      ],
+      "5": [
+        5
+      ],
+      "6": [
+        6
+      ],
+      "7": [
+        7
+      ],
+      "8": [
+        8
+      ],
+      "9": [
+        9
+      ]
+    }
+  },
+  "pattern_source": {
+    "caller_overrides": {
+      "line_width_mm": 1.3,
+      "s_margin_frac": 0.12,
+      "spacing_mm": 12.0
+    },
+    "chart": {
+      "area_mm2": 15598.398845430573,
+      "circumferential_metric": {
+        "circumference_max_mm": 339.0779122400829,
+        "circumference_min_mm": 65.97344572538564,
+        "metric_scale_at_r_max": 1.39358762498971,
+        "metric_scale_at_r_min": 0.27114646581795065,
+        "radius_max_mm": 53.96592582628908,
+        "radius_min_mm": 10.499999999999998
+      },
+      "kind": "revolve",
+      "name": "reference_body_outer_meridian_polyline",
+      "region_mask": true,
+      "s_periodic": false,
+      "s_range_mm": [
+        0.0,
+        66.99970524157246
+      ],
+      "s_range_source": "measured_from_mesh",
+      "surface_tag": "outer_wall",
+      "surface_tag_index": 0,
+      "u_periodic": true,
+      "uv_to_xyz": false,
+      "x_period_mm": 243.31294721606517
+    },
+    "distribution_claim": "none; defaults are documented recipe choices, not learned estimates",
+    "evidence_status": "SOURCE_DESCRIPTION_AND_PRODUCT_PHOTOGRAPH_REVIEWED",
+    "generation_mode": "SYNTHETIC_REFERENCE_GUIDED",
+    "known": [
+      "The product is a daily-use rice bowl; page gives diameter, height, capacity, maker and place.",
+      "The maker names the hand-painted vertical tokusa motif and its horsetail reference.",
+      "Pattern surface is the exterior wall; its circumferential repetition is implemented with PAT03's periodic integer count."
+    ],
+    "mapping": {
+      "allowed_families": [
+        "PAT03"
+      ],
+      "defaults": {
+        "line_width_mm": 1.0,
+        "s_margin_frac": 0.1,
+        "spacing_mm": 10.0
+      },
+      "family": "PAT03",
+      "override_ranges": {
+        "line_width_mm": [
+          0.5,
+          3.0
+        ],
+        "s_margin_frac": [
+          0.0,
+          0.35
+        ],
+        "spacing_mm": [
+          5.0,
+          30.0
+        ]
+      },
+      "params": {
+        "n_groups": 1,
+        "thin_ratio": 1.0,
+        "tilt_deg": 0.0
+      },
+      "surface_tag": "outer_wall",
+      "zone": "outer-wall body with a modest edge margin; stripes follow the meridian and repeat around azimuth"
+    },
+    "mother_id": "daily_broad_foot_tokusa",
+    "mother_vessel_id": "REFERENCE:daily",
+    "motif_and_meaning": "The maker connects tokusa to horsetail grass and its upward growth; the series text associates the motif with success and prosperity. This is source-reported context, not a claim about every tokusa use.",
+    "palette_limits": "No photo-derived RGB, reflectance, glaze BRDF, brush-bleed or pigment-diffusion calibration.",
+    "palette_status": "SOURCE_DESCRIPTION_GUIDED_UNCALIBRATED_DESIGN_PROXY",
+    "process": "Maker describes hand-painted tokusa vertical stripes on a sandy, iron-heavy body with rusty underglaze.",
+    "source_url": "https://www.hasamiyaki.jp/en/item/sabitokusa-chawan/",
+    "style_id": "daily_hasami_tokusa",
+    "surface_tag": "outer_wall",
+    "unknown": [
+      "Exact stripe count, spacing, width, brush profile, stroke order, pigment composition and firing schedule.",
+      "Calibrated color, reflectance, glaze thickness, surface roughness and batch-to-batch variation.",
+      "Full wall section and exact product meridian."
+    ]
+  },
+  "schema": "synlab.reference_instance_provenance.v1",
+  "section_geometry_details": {
+    "base": {
+      "central_base_thickness_mm": 3.5,
+      "inside_floor_z_mm": 10.0,
+      "recessed_underside_z_mm": 6.5,
+      "status": "DESIGN_ASSUMPTION"
+    },
+    "body_profile": {
+      "curve": "cubic Bezier",
+      "end_handle_height_fraction_of_overall_height": 0.22,
+      "end_handle_length_mm": 11.66,
+      "inner_control_points_rz_mm": [
+        [
+          10.5,
+          10.0
+        ],
+        [
+          40.404533405071874,
+          10.0
+        ],
+        [
+          49.016244107815545,
+          40.99612391057198
+        ],
+        [
+          52.034074173710934,
+          52.25881904510252
+        ]
+      ],
+      "start_handle_fraction_of_floor_to_inner_lip_radial_span": 0.72,
+      "start_handle_length_mm": 29.90453340507187,
+      "status": "DESIGN_ASSUMPTION; adjustable visual profile control, not measured from source"
+    },
+    "foot": {
+      "contact_annulus_radii_mm": [
+        14.3,
+        16.5
+      ],
+      "contact_width_mm": 2.1999999999999993,
+      "corner_radius_mm": 0.5,
+      "height_mm": 7.5,
+      "outer_diameter_mm": 34.0,
+      "status": "DESIGN_ASSUMPTION unless expressly measured in source record",
+      "underside_recess_z_mm": 6.5
+    },
+    "lip": {
+      "actual_cap_extrema_rz_mm": {
+        "max_radius": 54.0,
+        "max_z": 53.0
+      },
+      "body_inner_endpoint_rz_mm": [
+        52.034074173710934,
+        52.25881904510252
+      ],
+      "body_outer_endpoint_rz_mm": [
+        53.965925826289066,
+        51.74118095489748
+      ],
+      "center_formula": "(D_outer/2 - t/2, H - t/2)",
+      "center_rz_mm": [
+        53.0,
+        52.0
+      ],
+      "construction": "semicircular cap tangent to the inner and outer body at the declared tangent angle",
+      "radius_mm": 1.0,
+      "tangent_angle_degrees": 75.0
+    },
+    "normal_offset_error_scope": "maximum of t=0.25, 0.5 and 0.75 checks per accepted cubic subcurve; no continuous or global error bound is claimed",
+    "normal_offset_fit_acceptance_sample_mm": 0.005,
+    "normal_offset_fit_max_sampled_deviation_mm": 0.004198334692703086,
+    "outer_normal_offset_mm": 2.0,
+    "wall_thickness_status": "DESIGN_ASSUMPTION; exact normal-offset formula supplies cubic control points, with finite sampled fit diagnostics and no continuous/global error certificate"
+  },
+  "source_dimensions_mm": {
+    "foot_outer_diameter": 31.0,
+    "overall_height": 53.0,
+    "rim_outer_diameter": 108.0
+  },
+  "source_file_sha256": {
+    "face_lineage.json": "4b98dfed5c32c7deade2a35c1287f442dd07ae31faf3b8628a8ed6cc7c945328",
+    "geometry_report.json": "7b01ff2dd727202561ff21db4510c1ad6a54347b0258c22e0a3a2f04a2907c6f",
+    "provenance.json": "38506324f55b379ce037ffdd5a316d90f4b5e241a27c30cf40ee9102bd352463",
+    "section.json": "7975f846108750436f7ee706399e80b96eef1b2f9d20dc75f2631e4039b826e9",
+    "surface.npz": "26a4fc19c3f5d07f956494f532ee9ca2e521988f14d0e64b30d152ee905a3a15"
+  },
+  "source_record": {
+    "collection": "Aberdeen City Museums",
+    "dimension_evidence": "Official museum catalog record; the listed dimensions are catalog measurements.",
+    "medium": "Limoges porcelain and celadon",
+    "object_number": "ABDMS095708.121",
+    "object_url": "https://emuseum.aberdeencity.gov.uk/objects/186848/porcelain-small-footed-bowl",
+    "period": "2007–2009",
+    "reported_dimensions_mm": {
+      "foot_outer_diameter": 31.0,
+      "overall_height": 53.0,
+      "rim_outer_diameter": 108.0
+    },
+    "title": "Porcelain Small Footed Bowl",
+    "visual_reference_note": "The reference reviewer reports that the lower-angle gallery photo shows a visibly taller foot and raised lower base. The 7 mm candidate foot height is a visual design assumption, not a catalog measurement."
+  },
+  "source_rights_status": "NOT_SPECIFIED_FOR_GENERATED_CANDIDATE_MESH; source-record rights are preserved in the linked record",
+  "surface_tag_map": {
+    "0": "outer_wall",
+    "1": "inner_wall",
+    "2": "rim",
+    "3": "foot",
+    "4": "base",
+    "5": "attachment",
+    "6": "interface"
+  },
+  "unknown": [
+    "Exact source-object meridian and local construction are not established.",
+    "Optical colorimetry, glaze chemistry, glaze thickness, forming/firing history, and mechanical properties are unknown.",
+    "Appearance composition is not a calibrated physical shader or coupled material-pattern model."
+  ]
+}

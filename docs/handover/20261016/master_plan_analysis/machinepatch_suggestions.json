@@ -1,0 +1,181 @@
+{
+  "schema_version": "1.0",
+  "source_document": "RelicWeave_V1.48_ContractAligned.docx",
+  "source_sha256": "23a42e5f4cca40ef733edc9365c15bd0d5fdff647f8821fddec9c649e52b1455",
+  "mirror_document": "relicweave-synlab/docs/master/20261009/RelicWeave_V1.48_ContractAligned.docx",
+  "mirror_sha256": "23a42e5f4cca40ef733edc9365c15bd0d5fdff647f8821fddec9c649e52b1455",
+  "locator_convention": "All paragraph indices are 0-based python-docx Document.paragraphs indices from the original unmodified source. Table is 0-based Document.tables index; row is 0-based; cell is 0-based within row or null for whole row/paragraph. Apply against a copy, preferably reverse document index order for insertions.",
+  "patches": [
+    {
+      "id": "title_progress_subtitle",
+      "operation": "replace_text",
+      "part": "word/document.xml",
+      "bodyparagraphindex": 1,
+      "table": null,
+      "cell": null,
+      "oldtext": "V1.48 A12合同对齐修订版  2026年10月9日",
+      "replacement": "V1.48 A12合同对齐修订版｜2026年10月16日工程进度修订（原合同版：2026年10月9日）",
+      "reason": "维持V1.48合同版身份并标出新增进度修订日期；原10-09归档保持不覆盖。"
+    },
+    {
+      "id": "mark_opening_state_historical",
+      "operation": "replace_text",
+      "part": "word/document.xml",
+      "bodyparagraphindex": 8,
+      "table": null,
+      "cell": null,
+      "oldtext": "本次仅修订方案正文与验收门，不实施新功能；A01–A36及其历史PASS/FAIL/STOP/NOT_ESTABLISHED、历史数值与ORACLE_ACTION名称/冻结判决均不变。PG/VF/A12完成度及0个物理合格完整数据包记录不变。A17仅指job/checkpoint恢复；两份日期快照不证明当前状态，也不构成成员恢复证据。",
+      "replacement": "V1.48（2026-10-09）仅修订方案正文与验收门，不实施新功能；A01–A36及其历史PASS/FAIL/STOP/NOT_ESTABLISHED、历史数值与ORACLE_ACTION名称/冻结判决均保持原样。本文记录的PG/VF/A12状态及0个物理合格完整数据包是截至2026-10-09的快照，不代表当前进度；当前状态见前置“2026-10-16工程进度修订”。A17仅指job/checkpoint恢复；V1.47/V1.48日期快照不证明当前状态，也不构成成员恢复证据。",
+      "reason": "消除“完成度记录不变”被误读为2026-10-16现状的风险，同时保留合同历史。"
+    },
+    {
+      "id": "insert_current_front_snapshot",
+      "operation": "insert_before",
+      "part": "word/document.xml",
+      "bodyparagraphindex": 9,
+      "table": null,
+      "cell": null,
+      "oldtext": "V1.47新增内容导航： · 1.3 · 2.0 · 2.2.2 · 2.4 · A6.14 · A6.15 · A6.15.1 · A6.16 · A6.17 · A6.18 · A6.19 · A6.20 · A6.20.1 · A6.21 · A6.22 · A6.23 · A6.24 · A6.25 · A6.26 · A6.27 · A6.28 · EXP10 · EXP11 · EXP12 · A12.21 · A12.22 · A12.23 · B2.3 · D6.5 · D10.2 · 10.1 · 10.2 · 10.3 · V1.48合同修订",
+      "replacement": "当前状态快照（截至2026-10-16）\n本快照按 docs/continuation/20261016/STATUS.md 与其后最新交付验证补记。总体目标仍开放。真实日常与考古器型、多参数几何、来源感知材质、具有内容且跨表面连续的真实纹样及外部资源精修仍是要求；本快照记录的是阶段交付，不代表这些目标全部完成。\nVesselForge：已有 Aberdeen v6、Met 18.56.44 v2 来源指导候选及三个独立器型变体。v6 run05 网格诊断为 86,624 个正体积 T4、CAD体积差 0.240308%，44,182 个外表三角保留 16 个 source FID/role；此为几何/来源身份结果，不是历史器物重建或物理资格。Apsida 衍生扫描仍有 7 个 pinched vertex links，仅限视觉参考。Hasami Tokusa 和素 Jun 有来源指导图案；Hacilar 实际区域/motif 尚未表达。Met 50899 龙纹是烧成照片的局部外观代理，不是初始颜料复原或完整纹样。\nA12：source_resolved_stationary_v1 为可选来源细节路径；蓝白面板技术切片及 55 项聚焦检查通过。它不代表历史纹样恢复、校准釉料/化学、完整整器连续纹样或真实检索收益；照片裁切仍未完成精修。A12/SyntheticLab 的真实迁移与完整物理包资格未建立。\nPG-Frag：旧 Akantu/弱缝控制包含 native evolution、2 个闭合碎片和 6 个 A12 RGB-D 研究视图，但物理资格为 false，不可外推到新母器。run05 是 v6 几何/分区网格诊断；v5 零步与零载荷运行不是断裂结果。母器绑定工具链 55 项检查（含 9 项 mother_binding）通过，但实际 run05 母器绑定未验收。reference_v6_preflight 当前只有准备脚本、输入和失败准备副本，未见 native run receipt/result；新 v6 native preflight 和新母器应力驱动断裂均未完成。\n外禀插入：旧 96-T4 coupon 的 step 652 负耗散由记录的负向原生向量功解释，但方向反转/完全开口跃迁及质量重组观察仍需处理。动能 getter 会触发质量重组；未来复现须保留 C/D getter 前后 mass 与运动学快照。h、h/2、h/4 campaign 仍待基线审查和授权，h/8 另行决策。\n进度与暂停：2026-10-07 的 PG-Frag 25–35%、VesselForge 30–40%、A12 30–40%仅保留为历史工程判断；本次不造新的综合百分比，按交付物和资格门报告。完整合格物理包仍为 0。MC01–MC07 保持 SPECIFIED / NOT_RUN；A01–A36 与历史判决不变。用户已暂停功能开发；本轮仅更新方案和分析/交接文档，不运行求解器或新实验。“P0/已准备/待执行”不构成重启授权。",
+      "reason": "提供可读的现行状态前置快照，明确历史边界、停开发范围和未完成资格门。"
+    },
+    {
+      "id": "append_current_project_rows_to_1_2_ledger",
+      "operation": "append_rows_after",
+      "part": "word/document.xml",
+      "bodyparagraphindex": 100,
+      "table": 2,
+      "row": 7,
+      "cell": null,
+      "oldtext": "DIY台与学习补采 | 当前为方案 | 未采购、未搭建、未验证均不改写为完成",
+      "replacement": [
+        [
+          "VesselForge",
+          "Aberdeen v6、Met 18.56.44 v2 来源指导候选及三个器型变体；v6 run05 有 86,624 T4、0.240308% CAD体积差、16 个 source FID/role。",
+          "几何/来源身份技术门通过；候选非历史器物重建或物理资格。器型、纹样、材料与外部资源精修仍未全签收。"
+        ],
+        [
+          "PG-Frag",
+          "旧 native 弱缝控制有 2 个闭合碎片和 6 个 A12 RGB-D 研究视图；v6 run05 是网格诊断；mother_binding 工具链 55 项检查（含 9 项）通过。",
+          "旧控制 physical_pass=false；新母器应力驱动断裂未完成。v6 native preflight 尚无 run receipt/result；实际 run05 母器绑定未验收。"
+        ],
+        [
+          "A12 / SyntheticLab",
+          "source_resolved_stationary_v1 蓝白细节路径为 opt-in；蓝白面板技术切片与 55 项聚焦检查通过。",
+          "不等于完整整器纹样、校准化学、实物迁移收益或物理合格包；当前合格物理包总数仍为 0。"
+        ]
+      ],
+      "reason": "让1.2事实台账包含三条当前项目状态；详细边界见前置状态快照和 continuation/20261016/STATUS.md。"
+    },
+    {
+      "id": "scope_current_pause_clause",
+      "operation": "replace_text",
+      "part": "word/document.xml",
+      "bodyparagraphindex": 104,
+      "table": null,
+      "cell": null,
+      "oldtext": "本轮范围仅为V1.47文档收口、研究候选转移与可行性审阅，不启动新开发、运行或新增数值结论。新列为P0的研究候选只表示后续研究优先级，不覆盖当前PG-Frag、VesselForge与A12的物理实现、资格和资源优先级，也不自动重开已停止工作；重新进入开发须由用户明确发起，并另行冻结范围与证据门槛。",
+      "replacement": "V1.47文档收口时的历史范围记录：当时仅做文档收口、研究候选转移与可行性审阅，不启动新开发、运行或新增数值结论；P0仅表示研究优先级，不覆盖子项目物理实现、资格和资源优先级，也不自动重开已停止工作。\n截至2026-10-16，用户已暂停功能开发；当前授权范围限于更新总方案及分析/交接文档，不包括功能开发、求解器运行或新实验。P0、已准备或待执行状态均不构成重启授权。后续开发或实验须由用户明确发起，并另行冻结范围与证据门槛。",
+      "reason": "将历史文档范围与当前用户暂停指示分开，明确允许的文档工作和暂停边界。"
+    },
+    {
+      "id": "mark_a12_19_as_20261007_historical",
+      "operation": "replace_fragment",
+      "part": "word/document.xml",
+      "bodyparagraphindex": 510,
+      "table": null,
+      "cell": null,
+      "oldtext": "A12.19 当前状态（2026-10-07）",
+      "replacement": "A12.19 历史状态快照（截至2026-10-07；当前状态见前置快照）",
+      "reason": "保留 10-07 指标与工程记录，不将其标成当前状态。"
+    },
+    {
+      "id": "reclassify_a12_old_percentages",
+      "operation": "replace_fragment",
+      "part": "word/document.xml",
+      "bodyparagraphindex": 510,
+      "table": null,
+      "cell": null,
+      "oldtext": "负责人给出的工程进度估计仍为 PG-Frag 25–35%、VesselForge 30–40%、A12 30–40%；这些比例是工程判断，不代表物理准确度或资格覆盖率。",
+      "replacement": "负责人于2026-10-07给出的工程进度估计为 PG-Frag 25–35%、VesselForge 30–40%、A12 30–40%，仅保留为历史工程判断，不代表物理准确度或资格覆盖率；截至2026-10-16不发布新的综合百分比，当前进度按交付物、状态和资格门记录。",
+      "reason": "明确旧百分比时点，并遵守不虚构新百分比的要求。"
+    },
+    {
+      "id": "a12_current_addendum",
+      "operation": "insert_before",
+      "part": "word/document.xml",
+      "bodyparagraphindex": 514,
+      "table": null,
+      "cell": null,
+      "oldtext": "A12.21 V1.47退化性能曲线：把SyntheticLab变成“物理退化压力测试仪”",
+      "replacement": "2026-10-16状态补记：source_resolved_stationary_v1 蓝白来源细节路径为 opt-in，55 项聚焦检查通过，技术面板获审阅；此项是外观组成切片，不是完整器物纹样、初始颜料/烧成化学复原或真实检索迁移。母器绑定 helper 的 9 项测试包含在 55 项验证内，但实际 run05 母器绑定尚未验收。真实迁移、端到端检索收益和完整物理合格包仍未建立；进度详见前置快照与 1.2 台账。",
+      "reason": "补记10-16之后的真实工程结果，避免继续引用 10-07 的状态作为当前。"
+    },
+    {
+      "id": "mark_a12_20_as_historical",
+      "operation": "replace_fragment",
+      "part": "word/document.xml",
+      "bodyparagraphindex": 513,
+      "table": null,
+      "cell": null,
+      "oldtext": "A12.20 当前实施与资格边界（2026-10-07）",
+      "replacement": "A12.20 历史实施与资格边界（截至2026-10-07；当前状态见前置快照）",
+      "reason": "保留原资格边界记录，指向当前进度快照。"
+    },
+    {
+      "id": "mark_g31_closeout_as_historical",
+      "operation": "replace_fragment",
+      "part": "word/document.xml",
+      "bodyparagraphindex": 2183,
+      "table": null,
+      "cell": null,
+      "oldtext": "G31.1 V1.47 收口核对（2026-10-07）",
+      "replacement": "G31.1 V1.47 历史收口核对（截至2026-10-07；当前状态见前置快照）",
+      "reason": "避免把 G31.1 的旧资格清单误读成 10-16 当前状态。"
+    },
+    {
+      "id": "mark_vesselforge_20261007_status_historical",
+      "operation": "replace_fragment",
+      "part": "word/document.xml",
+      "bodyparagraphindex": 2229,
+      "table": null,
+      "cell": null,
+      "oldtext": "VesselForge 当前状态（2026-10-07）",
+      "replacement": "VesselForge 历史状态快照（截至2026-10-07；当前状态见前置快照）",
+      "reason": "保留旧 CAD/来源审阅记录而不覆盖新候选与 v6 mesh 证据。"
+    },
+    {
+      "id": "vesselforge_current_appendix_addendum",
+      "operation": "insert_before",
+      "part": "word/document.xml",
+      "bodyparagraphindex": 2230,
+      "table": null,
+      "cell": null,
+      "oldtext": "I1 两个项目的共同定位与设计原则",
+      "replacement": "2026-10-16 状态补记：Aberdeen v6 与 Met 18.56.44 v2 为来源指导候选，另有三个独立器型变体及 STEP、表面、剖面、谱系和结构报告。v6 run05 通过几何/来源身份诊断（86,624 正体积 T4、0.240308% CAD 体积差、16 个 source FID/role），不构成历史原器重建或物理资格。多参数日常/考古器型、真实语义纹样、校准材质和所有外部资源精修仍有缺口；Apsida 扫描只准作视觉参考，Hacilar motif 尚未表达。详见前置当前快照。",
+      "reason": "把附录 I 的项目状态与架构目标分开，避免主线技术门升级为生产资格。"
+    },
+    {
+      "id": "mark_pgfrag_20261007_status_historical",
+      "operation": "replace_fragment",
+      "part": "word/document.xml",
+      "bodyparagraphindex": 2356,
+      "table": null,
+      "cell": null,
+      "oldtext": "PG-Frag 当前状态（2026-10-07）",
+      "replacement": "PG-Frag 历史状态快照（截至2026-10-07；当前状态见前置快照）",
+      "reason": "保留旧弱缝与 moving-front 失败记录，避免与 10-16 新交付混淆。"
+    },
+    {
+      "id": "pgfrag_current_appendix_addendum",
+      "operation": "insert_before",
+      "part": "word/document.xml",
+      "bodyparagraphindex": 2357,
+      "table": null,
+      "cell": null,
+      "oldtext": "J1 两个项目的共同定位与设计原则",
+      "replacement": "2026-10-16 状态补记：旧 native 弱缝控制的 2 个闭合碎片及 6 个 A12 RGB-D 视图仍是研究控制，physical_pass=false、pretrain_eligible=false。v6 run05 仅是几何/分区网格；母器绑定工具链 55 项检查（含 9 项）通过，但实际 run05 母器绑定与新母器应力驱动断裂均未验收。reference_v6_preflight 的最新目录只有输入、运行脚本和失败准备副本，没有 native run receipt/result；不得记录为已执行的 v6 native preflight。旧 coupon step 652 负耗散和 C/D getter 观察风险见 docs/continuation/20261016/EXTRINSIC_EVENT_MATH.md；h、h/2、h/4 campaign 未获准启动。详见前置状态快照。",
+      "reason": "准确区分代码/工具交付、母器绑定、求解器 preflight 与物理断裂。"
+    }
+  ]
+}

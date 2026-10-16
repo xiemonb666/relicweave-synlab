@@ -35,7 +35,8 @@ from ..roles import (FRAME_WORLD, ROLE_MATERIAL_PROFILE, SCHEMA_MATERIAL, UNIT_M
 from ..schemas.runtime import LayerSpec, MaterialSample
 from ..storage.store import AssetStore, AssetRecord, QA_PASS
 from . import catalogue  # noqa: F401  (import registers M01..M12 and L01..L04)
-from .fields import field_stack
+from .fields import (FIELD_KERNEL_VERSION_LEGACY, FIELD_KERNEL_VERSION_LOGICAL_U64,
+                     field_stack)
 
 STAGE = "materials.api"
 
@@ -54,6 +55,7 @@ UNKNOWN_REASON = ("no calibrated test campaign exists in this programme; noise a
 TAG_INNER = "inner_wall"
 TAG_INTERFACE = "interface"
 TAG_ATTACHMENT = "attachment"
+_REFERENCE_SURFACE_POLICY_VERSION = 1
 
 
 # ---------------------------------------------------------------------------------------
@@ -202,6 +204,21 @@ def validate_profile(profile: Mapping[str, Any]) -> None:
         if key not in reference:
             raise SynLabError(ErrorCode.SCHEMA_INVALID,
                               f"material profile reference is missing {key!r}", stage=STAGE)
+    surface_policy = _validate_coating_surface_policy(profile.get("coating_surface_policy"))
+    if surface_policy is not None and reference.get("mode") != "original_surface_tags":
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          "semantic coating policy requires outer_reference.mode="
+                          "'original_surface_tags'", stage=STAGE)
+    field_version = profile.get("field_kernel_version")
+    if (field_version is not None
+            and (isinstance(field_version, bool)
+                 or not isinstance(field_version, (int, np.integer))
+                 or int(field_version) not in (FIELD_KERNEL_VERSION_LEGACY,
+                                               FIELD_KERNEL_VERSION_LOGICAL_U64))):
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          f"unsupported field_kernel_version {field_version!r}", stage=STAGE,
+                          measurements={"supported": [FIELD_KERNEL_VERSION_LEGACY,
+                                                        FIELD_KERNEL_VERSION_LOGICAL_U64]})
 
 
 def default_material_params(material_id: str) -> dict[str, Any]:
@@ -212,12 +229,14 @@ def default_material_params(material_id: str) -> dict[str, Any]:
 # the pure field query
 # ---------------------------------------------------------------------------------------
 def material_at(profile: Mapping[str, Any], points_mm: Any,
-                surface_tag: Any) -> MaterialSample:
+                surface_tag: Any, *, depth_mm: Any | None = None) -> MaterialSample:
     """Sample the frozen material field at mother millimetres (plan 8.1).
 
     This is a pure function: it draws no randomness, keeps no state, and depends only on the
-    profile and the query coordinates.  Grain, pores and colour therefore continue across a
-    fracture boundary, because both fragments evaluate the same closed-form field.
+    profile and the query coordinates. Grain, pores and colour therefore continue across a
+    fracture boundary, because both fragments evaluate the same closed-form field. Versioned
+    source-conditioned profiles query original surfaces at depth zero by semantic tag; only
+    ``surface_tag="volume"`` accepts an explicit ``depth_mm`` override.
     """
     if not isinstance(profile, Mapping):
         raise SynLabError(ErrorCode.SCHEMA_INVALID, "material_at needs a material profile dict",
@@ -242,6 +261,17 @@ def material_at(profile: Mapping[str, Any], points_mm: Any,
     reference = dict(profile.get("outer_reference") or {})
     seed_salt = int(profile.get("field_salt", 0))
 
+    field_kernel_version = profile.get("field_kernel_version", FIELD_KERNEL_VERSION_LEGACY)
+    if (isinstance(field_kernel_version, bool)
+            or not isinstance(field_kernel_version, (int, np.integer))
+            or int(field_kernel_version) not in (FIELD_KERNEL_VERSION_LEGACY,
+                                                  FIELD_KERNEL_VERSION_LOGICAL_U64)):
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          f"unsupported field_kernel_version {field_kernel_version!r}",
+                          stage=f"{STAGE}.material_at",
+                          measurements={"supported": [FIELD_KERNEL_VERSION_LEGACY,
+                                                        FIELD_KERNEL_VERSION_LOGICAL_U64]})
+    field_kernel_version = int(field_kernel_version)
     fields = field_stack(
         pts, seed_salt=seed_salt,
         grain_scale_mm=float(stats.get("grain_scale_mm", 2.0)),
@@ -250,12 +280,16 @@ def material_at(profile: Mapping[str, Any], points_mm: Any,
         aggregate_density=float(stats.get("aggregate_density_per_mm3", 0.0)),
         fiber_direction=stats.get("fiber_direction"),
         fiber_period_mm=float(stats.get("fiber_period_mm", 0.0)),
+        kernel_version=field_kernel_version,
     )
     grain, porosity, spots = fields["grain"], fields["porosity"], fields["spots"]
     direction = fields["direction"]
 
-    depth = _layer_depths(pts, tags, reference, layers)
-    layer_ids, active = _assign_layers(depth, tags, layers)
+    surface_policy = _validate_coating_surface_policy(profile.get("coating_surface_policy"))
+    depth_override = _normalise_depth_override(depth_mm, tags, surface_policy, n)
+    depth = _layer_depths(pts, tags, reference, layers, policy=surface_policy,
+                          depth_override=depth_override)
+    layer_ids, active = _assign_layers(depth, tags, layers, policy=surface_policy)
     layer_index = np.zeros(n, dtype=np.int64)
     order = {int(layer["layer_id"]): i for i, layer in enumerate(layers)}
     for k in range(n):
@@ -317,9 +351,19 @@ def _normalise_tags(surface_tag: Any, n: int) -> np.ndarray:
 
 
 def _layer_depths(points: np.ndarray, tags: np.ndarray, reference: Mapping[str, Any],
-                  layers: Sequence[Mapping[str, Any]]) -> np.ndarray:
+                  layers: Sequence[Mapping[str, Any]], *,
+                  policy: Mapping[str, Any] | None = None,
+                  depth_override: np.ndarray | None = None) -> np.ndarray:
     """Depth below the outermost surface, in millimetres, for every query point."""
     depth = np.zeros(points.shape[0], dtype=np.float64)
+    if policy is not None:
+        # Source-conditioned profiles query original mesh faces by semantic tag. Their
+        # coordinate lies on the source surface, so radial distance from an idealized axis
+        # must never be mistaken for coating depth. Volume samples are a separate, explicit
+        # query using caller-supplied depth.
+        if depth_override is not None:
+            depth[:] = depth_override
+        return depth
     coated = _coatable_mask(tags)
     if not np.any(coated):
         return depth
@@ -337,9 +381,15 @@ def _layer_depths(points: np.ndarray, tags: np.ndarray, reference: Mapping[str, 
     return depth
 
 
-def _coatable_mask(tags: np.ndarray) -> np.ndarray:
-    """Coating exists on outer surfaces only (plan 8.2: a new section exposes the body)."""
+def _coatable_mask(tags: np.ndarray, *,
+                   policy: Mapping[str, Any] | None = None) -> np.ndarray:
+    """Return the active coating mask, preserving legacy semantics without a policy."""
     lowered = np.array([str(t) for t in tags], dtype=object)
+    if policy is not None:
+        coated = set(policy["coated_tags"])
+        volume_tag = str(policy["volume_tag"])
+        return np.array([(tag in coated) or (tag == volume_tag) for tag in lowered],
+                        dtype=bool)
     mask = np.ones(len(lowered), dtype=bool)
     for kind in (TAG_INNER, TAG_INTERFACE):
         mask &= lowered != kind
@@ -347,15 +397,16 @@ def _coatable_mask(tags: np.ndarray) -> np.ndarray:
 
 
 def _assign_layers(depth: np.ndarray, tags: np.ndarray,
-                   layers: Sequence[Mapping[str, Any]]) -> tuple[np.ndarray, np.ndarray]:
+                   layers: Sequence[Mapping[str, Any]], *,
+                   policy: Mapping[str, Any] | None = None) -> tuple[np.ndarray, np.ndarray]:
     """Outermost layer wins; ``layers`` is ordered outermost first.
 
-    A point that is not on a coatable surface (inner wall, new fracture interface, the
-    attachment) always reports the innermost entry, which is the body material: the plan
-    requires a new section to expose the body and forbids reusing the decoration on it.
+    Under legacy profiles, the frozen outer-surface mask applies. Versioned reference profiles
+    provide an explicit semantic mask, where coated inner/outer/rim faces are distinct from
+    foot/base and new fracture-interface body samples.
     """
     ids = np.asarray([int(layer["layer_id"]) for layer in layers], dtype=np.int32)
-    active = _coatable_mask(tags)
+    active = _coatable_mask(tags, policy=policy)
     out = np.full(depth.shape[0], int(ids[-1]), dtype=np.int32)
     remaining = np.ones(depth.shape[0], dtype=bool)
     cursor = np.zeros(depth.shape[0], dtype=np.float64)
@@ -369,6 +420,107 @@ def _assign_layers(depth: np.ndarray, tags: np.ndarray,
         cursor = np.where(remaining, cursor + thickness, cursor)
     out[~active] = int(ids[-1])
     return out, active
+
+
+def _validate_coating_surface_policy(value: Any) -> dict[str, Any] | None:
+    """Validate the opt-in, versioned semantic surface policy on reference profiles."""
+    if value is None:
+        return None
+    if not isinstance(value, Mapping):
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          "coating_surface_policy must be an object",
+                          stage=f"{STAGE}.material_at")
+    version = value.get("version")
+    mode = value.get("mode")
+    if (isinstance(version, bool) or not isinstance(version, (int, np.integer))
+            or int(version) != _REFERENCE_SURFACE_POLICY_VERSION
+            or mode != "original_surface_tags"):
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          "unsupported coating_surface_policy version or mode",
+                          stage=f"{STAGE}.material_at",
+                          measurements={"version": version, "mode": mode,
+                                        "supported_version": _REFERENCE_SURFACE_POLICY_VERSION,
+                                        "supported_mode": "original_surface_tags"})
+    result = dict(value)
+    for name in ("coated_tags", "bare_body_tags"):
+        tags = result.get(name)
+        if (not isinstance(tags, (list, tuple))
+                or any(not isinstance(tag, str) or not tag for tag in tags)
+                or len(set(tags)) != len(tags)):
+            raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                              f"coating_surface_policy.{name} must be unique non-empty strings",
+                              stage=f"{STAGE}.material_at")
+        result[name] = list(tags)
+    volume_tag = result.get("volume_tag")
+    if not isinstance(volume_tag, str) or not volume_tag:
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          "coating_surface_policy.volume_tag must be a non-empty string",
+                          stage=f"{STAGE}.material_at")
+    known = set(result["coated_tags"]) | set(result["bare_body_tags"])
+    if set(result["coated_tags"]) & set(result["bare_body_tags"]):
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          "coated_tags and bare_body_tags must not overlap",
+                          stage=f"{STAGE}.material_at")
+    if volume_tag in known:
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          "volume_tag must be distinct from semantic surface tags",
+                          stage=f"{STAGE}.material_at")
+    surface_depth = result.get("surface_query_depth_mm", 0.0)
+    if (isinstance(surface_depth, bool)
+            or not isinstance(surface_depth, (int, float, np.integer, np.floating))
+            or not np.isfinite(float(surface_depth)) or float(surface_depth) != 0.0):
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          "original semantic surface queries must have depth zero",
+                          stage=f"{STAGE}.material_at",
+                          measurements={"surface_query_depth_mm": surface_depth})
+    return result
+
+
+def _normalise_depth_override(depth_mm: Any | None, tags: np.ndarray,
+                              policy: Mapping[str, Any] | None,
+                              n: int) -> np.ndarray | None:
+    if depth_mm is None:
+        if policy is not None:
+            volume_tag = str(policy["volume_tag"])
+            if np.any(tags == volume_tag):
+                raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                                  "volume material queries require explicit depth_mm",
+                                  stage=f"{STAGE}.material_at",
+                                  measurements={"volume_tag": volume_tag})
+            known = set(policy["coated_tags"]) | set(policy["bare_body_tags"])
+            unknown = sorted({str(tag) for tag in tags if str(tag) not in known})
+            if unknown:
+                raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                                  f"unsupported semantic surface tags {unknown}",
+                                  stage=f"{STAGE}.material_at",
+                                  measurements={"known_tags": sorted(known)})
+        return None
+    if policy is None:
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          "depth_mm overrides are supported only by versioned reference profiles",
+                          stage=f"{STAGE}.material_at")
+    volume_tag = str(policy["volume_tag"])
+    if not np.all(tags == volume_tag):
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          "depth_mm may be supplied only for explicit volume-tag queries",
+                          stage=f"{STAGE}.material_at",
+                          measurements={"volume_tag": volume_tag})
+    try:
+        values = np.asarray(depth_mm, dtype=np.float64)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          "depth_mm must contain numeric values",
+                          stage=f"{STAGE}.material_at") from exc
+    if values.ndim == 0:
+        values = np.full(n, float(values), dtype=np.float64)
+    else:
+        values = values.ravel()
+    if values.shape != (n,) or not np.all(np.isfinite(values)) or np.any(values < 0.0):
+        raise SynLabError(ErrorCode.SCHEMA_INVALID,
+                          "depth_mm must be a finite non-negative scalar or one value per point",
+                          stage=f"{STAGE}.material_at",
+                          measurements={"shape": values.shape, "point_count": n})
+    return values
 
 
 # ---------------------------------------------------------------------------------------

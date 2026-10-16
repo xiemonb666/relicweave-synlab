@@ -1,0 +1,62 @@
+[
+  {
+    "argv": [
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\experiments\\continuation_20261015\\reference_forms\\build_reference_candidates.py",
+      "--preset",
+      "daily",
+      "--output",
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\experiments\\continuation_20261015\\reference_forms\\outputs\\reference_generation_outputs_v2\\daily_baseline_tokusa",
+      "--overrides-json",
+      "{\"name\":\"recipe_daily_baseline_tokusa\"}"
+    ],
+    "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge",
+    "duration_seconds": 12.384257199999979,
+    "exit_code": 0,
+    "instance": "daily_baseline_tokusa",
+    "output": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\experiments\\continuation_20261015\\reference_forms\\outputs\\reference_generation_outputs_v2\\daily_baseline_tokusa",
+    "stderr": "",
+    "stdout": "{\n  \"output\": \"C:\\\\Users\\\\xiemo\\\\Desktop\\\\ShardForge\\\\vesselforge\\\\experiments\\\\continuation_20261015\\\\reference_forms\\\\outputs\\\\reference_generation_outputs_v2\\\\daily_baseline_tokusa\",\n  \"preset\": \"daily\",\n  \"candidate_status\": \"PASS_STRUCTURAL_CAD_ONLY\",\n  \"design_parameters\": {\n    \"name\": \"recipe_daily_baseline_tokusa\",\n    \"rim_outer_diameter_mm\": 108.0,\n    \"overall_height_mm\": 53.0,\n    \"wall_thickness_mm\": 2.0,\n    \"foot_outer_diameter_mm\": 31.0,\n    \"foot_height_mm\": 7.0,\n    \"body_floor_radius_mm\": 10.5,\n    \"body_floor_z_mm\": 10.0,\n    \"underside_recess_z_mm\": 6.5,\n    \"foot_contact_width_mm\": 2.0,\n    \"rim_tangent_degrees\": 75.0,\n    \"normal_offset_fit_tolerance_mm\": 0.005,\n    \"body_start_handle_fraction\": 0.6,\n    \"body_end_handle_height_fraction\": 0.22\n  },\n  \"checks\": {\n    \"one_valid_solid\": true,\n    \"one_closed_shell\": true,\n    \"positive_volume\": true,\n    \"all_native_faces_have_one_role\": true,\n    \"step_round_trip_one_solid\": true,\n    \"outer_dimensions_within_0_1mm\": true,\n    \"foot_contact_touches_z0\": true,\n    \"mesh_is_watertight\": true,\n    \"cavity_center_is_empty\": true,\n    \"body_wall_probe_is_material\": true,\n    \"foot_and_base_probes_are_material\": true,\n    \"outside_probe_is_empty\": true\n  },\n  \"volume_mm3\": 32987.77282909537,\n  \"artifact_sha256\": {\n    \"solid.step\": \"1c50bc29a22af064b0d0972d11173a1410891ff17d6b39afcdeb2bec230bda3d\",\n    \"surface.npz\": \"b1ce6521290073fae7b48103d95333782d4d42e031a302d8c38ed2f5c0db17f3\",\n    \"section.json\": \"5466882b72bf319233124728556ef9a54218f2b192b714955b44a9ced860cf12\",\n    \"face_lineage.json\": \"9e6c789989cb0f5f42ed9c37f0264bc02899a9c29f571254938a4781640bcfd2\",\n    \"preview.png\": \"26ad791c7a9eceb93b57595c104c9b34eb1c83078f18417ca5b456c95b876d61\"\n  },\n  \"output_bytes\": 601660\n}\n",
+    "timeout_seconds": 60
+  },
+  {
+    "argv": [
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\experiments\\continuation_20261015\\reference_forms\\build_reference_candidates.py",
+      "--preset",
+      "daily",
+      "--output",
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\experiments\\continuation_20261015\\reference_forms\\outputs\\reference_generation_outputs_v2\\daily_deep_jun_plain",
+      "--overrides-json",
+      "{\"name\":\"recipe_daily_deep_jun_plain\",\"overall_height_mm\":62.0}"
+    ],
+    "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge",
+    "duration_seconds": 4.851553500000023,
+    "exit_code": 0,
+    "instance": "daily_deep_jun_plain",
+    "output": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\experiments\\continuation_20261015\\reference_forms\\outputs\\reference_generation_outputs_v2\\daily_deep_jun_plain",
+    "stderr": "",
+    "stdout": "{\n  \"output\": \"C:\\\\Users\\\\xiemo\\\\Desktop\\\\ShardForge\\\\vesselforge\\\\experiments\\\\continuation_20261015\\\\reference_forms\\\\outputs\\\\reference_generation_outputs_v2\\\\daily_deep_jun_plain\",\n  \"preset\": \"daily\",\n  \"candidate_status\": \"PASS_STRUCTURAL_CAD_ONLY\",\n  \"design_parameters\": {\n    \"name\": \"recipe_daily_deep_jun_plain\",\n    \"rim_outer_diameter_mm\": 108.0,\n    \"overall_height_mm\": 62.0,\n    \"wall_thickness_mm\": 2.0,\n    \"foot_outer_diameter_mm\": 31.0,\n    \"foot_height_mm\": 7.0,\n    \"body_floor_radius_mm\": 10.5,\n    \"body_floor_z_mm\": 10.0,\n    \"underside_recess_z_mm\": 6.5,\n    \"foot_contact_width_mm\": 2.0,\n    \"rim_tangent_degrees\": 75.0,\n    \"normal_offset_fit_tolerance_mm\": 0.005,\n    \"body_start_handle_fraction\": 0.6,\n    \"body_end_handle_height_fraction\": 0.22\n  },\n  \"checks\": {\n    \"one_valid_solid\": true,\n    \"one_closed_shell\": true,\n    \"positive_volume\": true,\n    \"all_native_faces_have_one_role\": true,\n    \"step_round_trip_one_solid\": true,\n    \"outer_dimensions_within_0_1mm\": true,\n    \"foot_contact_touches_z0\": true,\n    \"mesh_is_watertight\": true,\n    \"cavity_center_is_empty\": true,\n    \"body_wall_probe_is_material\": true,\n    \"foot_and_base_probes_are_material\": true,\n    \"outside_probe_is_empty\": true\n  },\n  \"volume_mm3\": 36672.78612721891,\n  \"artifact_sha256\": {\n    \"solid.step\": \"1913b2ef78b2ce824d1d2351085bb11f285f4f10587e1e195993280c427832fb\",\n    \"surface.npz\": \"efbe58712fdeed02c2213f763d63be35f572f311fe3a2efdaa793c059a8e3043\",\n    \"section.json\": \"e304a1c312382378433ab2b9780a9485eb9e8da55f230408463035a0b31ae549\",\n    \"face_lineage.json\": \"9e6c789989cb0f5f42ed9c37f0264bc02899a9c29f571254938a4781640bcfd2\",\n    \"preview.png\": \"d46388074de1ad88d349c2d27f6b24d5570e981a8ce982a547f515d667fac804\"\n  },\n  \"output_bytes\": 607594\n}\n",
+    "timeout_seconds": 60
+  },
+  {
+    "argv": [
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\experiments\\continuation_20261015\\reference_forms\\build_reference_candidates.py",
+      "--preset",
+      "daily",
+      "--output",
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\experiments\\continuation_20261015\\reference_forms\\outputs\\reference_generation_outputs_v2\\daily_broad_foot_tokusa",
+      "--overrides-json",
+      "{\"body_start_handle_fraction\":0.72,\"foot_contact_width_mm\":2.2,\"foot_height_mm\":7.5,\"foot_outer_diameter_mm\":34.0,\"name\":\"recipe_daily_broad_foot_tokusa\"}"
+    ],
+    "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge",
+    "duration_seconds": 4.153261499999985,
+    "exit_code": 0,
+    "instance": "daily_broad_foot_tokusa",
+    "output": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\experiments\\continuation_20261015\\reference_forms\\outputs\\reference_generation_outputs_v2\\daily_broad_foot_tokusa",
+    "stderr": "",
+    "stdout": "{\n  \"output\": \"C:\\\\Users\\\\xiemo\\\\Desktop\\\\ShardForge\\\\vesselforge\\\\experiments\\\\continuation_20261015\\\\reference_forms\\\\outputs\\\\reference_generation_outputs_v2\\\\daily_broad_foot_tokusa\",\n  \"preset\": \"daily\",\n  \"candidate_status\": \"PASS_STRUCTURAL_CAD_ONLY\",\n  \"design_parameters\": {\n    \"name\": \"recipe_daily_broad_foot_tokusa\",\n    \"rim_outer_diameter_mm\": 108.0,\n    \"overall_height_mm\": 53.0,\n    \"wall_thickness_mm\": 2.0,\n    \"foot_outer_diameter_mm\": 34.0,\n    \"foot_height_mm\": 7.5,\n    \"body_floor_radius_mm\": 10.5,\n    \"body_floor_z_mm\": 10.0,\n    \"underside_recess_z_mm\": 6.5,\n    \"foot_contact_width_mm\": 2.2,\n    \"rim_tangent_degrees\": 75.0,\n    \"normal_offset_fit_tolerance_mm\": 0.005,\n    \"body_start_handle_fraction\": 0.72,\n    \"body_end_handle_height_fraction\": 0.22\n  },\n  \"checks\": {\n    \"one_valid_solid\": true,\n    \"one_closed_shell\": true,\n    \"positive_volume\": true,\n    \"all_native_faces_have_one_role\": true,\n    \"step_round_trip_one_solid\": true,\n    \"outer_dimensions_within_0_1mm\": true,\n    \"foot_contact_touches_z0\": true,\n    \"mesh_is_watertight\": true,\n    \"cavity_center_is_empty\": true,\n    \"body_wall_probe_is_material\": true,\n    \"foot_and_base_probes_are_material\": true,\n    \"outside_probe_is_empty\": true\n  },\n  \"volume_mm3\": 34579.27650001056,\n  \"artifact_sha256\": {\n    \"solid.step\": \"70910a9969354f6eb00b5017458535216fd7b8d27d1eac41849f8946d2599861\",\n    \"surface.npz\": \"26a4fc19c3f5d07f956494f532ee9ca2e521988f14d0e64b30d152ee905a3a15\",\n    \"section.json\": \"7975f846108750436f7ee706399e80b96eef1b2f9d20dc75f2631e4039b826e9\",\n    \"face_lineage.json\": \"4b98dfed5c32c7deade2a35c1287f442dd07ae31faf3b8628a8ed6cc7c945328\",\n    \"preview.png\": \"a3b0ee062d6d887b1857cb0b3ac94c05bdd792899caf51b02a972c829830998e\"\n  },\n  \"output_bytes\": 593736\n}\n",
+    "timeout_seconds": 60
+  }
+]

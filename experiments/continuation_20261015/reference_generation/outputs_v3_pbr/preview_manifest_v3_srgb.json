@@ -1,0 +1,293 @@
+{
+  "files": [
+    {
+      "bundle": "daily_baseline_tokusa",
+      "bundle_manifest_sha256": "afa3e07a9452062af469f08225af5cd2de4c8b76efbb2ed5eb3bd3e9347cbbde",
+      "color_space": "linear RGB fields converted to sRGB8 texture/cell colors; VTK displays sRGB colors",
+      "display_normals": {
+        "method": "area-weighted normals accumulated over original shared source mesh vertices before UV triangle-corner duplication",
+        "smoothing_groups": "exact source CAD face ancestry; adjacent serialized segment faces blend only at C1 section joins (dot >= 0.9995)",
+        "source_face_id_array_sha256": "c5d40c34fb16bc89adc71c4bbee80fe6e835442c5d667013916e7cb5b8ca8d80",
+        "source_geometry_mutated": false
+      },
+      "faces": 25598,
+      "geometry_array_sha256": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+      "legend": "Glaze appearance on outer wall, inside wall/floor, and rim; bare body on foot and exterior underside",
+      "pbr_material_parameters": {
+        "base": {
+          "ior_median_from_material_face_field": 1.559999942779541,
+          "ior_range": [
+            1.559999942779541,
+            1.559999942779541
+          ],
+          "roughness_median_from_combined_face_field": 0.40194717049598694,
+          "roughness_range": [
+            0.3898794651031494,
+            0.4254276752471924
+          ]
+        },
+        "foot": {
+          "ior_median_from_material_face_field": 1.559999942779541,
+          "ior_range": [
+            1.559999942779541,
+            1.559999942779541
+          ],
+          "roughness_median_from_combined_face_field": 0.4008103907108307,
+          "roughness_range": [
+            0.3884883224964142,
+            0.4280507564544678
+          ]
+        },
+        "inner_wall": {
+          "ior_median_from_material_face_field": 1.5099999904632568,
+          "ior_range": [
+            1.5099999904632568,
+            1.5099999904632568
+          ],
+          "roughness_median_from_combined_face_field": 0.1808631718158722,
+          "roughness_range": [
+            0.16929876804351807,
+            0.20318493247032166
+          ]
+        },
+        "outer_wall": {
+          "ior_median_from_material_face_field": 1.5099999904632568,
+          "ior_range": [
+            1.5099999904632568,
+            1.5099999904632568
+          ],
+          "roughness_median_from_combined_face_field": 0.18026923388242722,
+          "roughness_range": [
+            0.019999999552965164,
+            0.204498291015625
+          ]
+        },
+        "rim": {
+          "ior_median_from_material_face_field": 1.5099999904632568,
+          "ior_range": [
+            1.5099999904632568,
+            1.5099999904632568
+          ],
+          "roughness_median_from_combined_face_field": 0.18086257576942444,
+          "roughness_range": [
+            0.16843681037425995,
+            0.20642057061195374
+          ]
+        }
+      },
+      "pbr_parameter_status": "per-region medians from source-conditioned design fields; uncalibrated appearance proxy",
+      "preview": "preview_v3_srgb_4view.png",
+      "renderer": "VTK PBR appearance proxy; outer chart texture and per-region face appearance",
+      "sha256": "12f5c88d95515a1f0f1ba136adb69fac32120ee10c9f13cb8f2add2d5c26de00",
+      "texture_grid": [
+        512,
+        1024
+      ],
+      "view_definitions": [
+        "Side · orthographic",
+        "Top · orthographic",
+        "Lit 3D · perspective",
+        "Underside · orthographic"
+      ]
+    },
+    {
+      "bundle": "daily_deep_jun_plain",
+      "bundle_manifest_sha256": "2e3c621df657292a17620f298a50518f4ab785653922ee7dd272f74272b40c89",
+      "color_space": "linear RGB fields converted to sRGB8 texture/cell colors; VTK displays sRGB colors",
+      "display_normals": {
+        "method": "area-weighted normals accumulated over original shared source mesh vertices before UV triangle-corner duplication",
+        "smoothing_groups": "exact source CAD face ancestry; adjacent serialized segment faces blend only at C1 section joins (dot >= 0.9995)",
+        "source_face_id_array_sha256": "c98c1661151ad1e794995b0244fb06b72719ad4c5e2c37e9011c9d4733106c56",
+        "source_geometry_mutated": false
+      },
+      "faces": 25906,
+      "geometry_array_sha256": "180c485e988507f33ad489b9bfea7742645adca82646ee273d469a9830acf402",
+      "legend": "Glaze appearance on outer wall, inside wall/floor, and rim; bare body on foot and exterior underside",
+      "pbr_material_parameters": {
+        "base": {
+          "ior_median_from_material_face_field": 1.5399999618530273,
+          "ior_range": [
+            1.5399999618530273,
+            1.5399999618530273
+          ],
+          "roughness_median_from_combined_face_field": 0.5826058089733124,
+          "roughness_range": [
+            0.5647169351577759,
+            0.6227998733520508
+          ]
+        },
+        "foot": {
+          "ior_median_from_material_face_field": 1.5399999618530273,
+          "ior_range": [
+            1.5399999618530273,
+            1.5399999618530273
+          ],
+          "roughness_median_from_combined_face_field": 0.5819881558418274,
+          "roughness_range": [
+            0.5579814910888672,
+            0.6258152723312378
+          ]
+        },
+        "inner_wall": {
+          "ior_median_from_material_face_field": 1.5199999809265137,
+          "ior_range": [
+            1.5199999809265137,
+            1.5199999809265137
+          ],
+          "roughness_median_from_combined_face_field": 0.24107816070318222,
+          "roughness_range": [
+            0.21939821541309357,
+            0.28190863132476807
+          ]
+        },
+        "outer_wall": {
+          "ior_median_from_material_face_field": 1.5199999809265137,
+          "ior_range": [
+            1.5199999809265137,
+            1.5199999809265137
+          ],
+          "roughness_median_from_combined_face_field": 0.24125999212265015,
+          "roughness_range": [
+            0.21742764115333557,
+            0.2808818519115448
+          ]
+        },
+        "rim": {
+          "ior_median_from_material_face_field": 1.5199999809265137,
+          "ior_range": [
+            1.5199999809265137,
+            1.5199999809265137
+          ],
+          "roughness_median_from_combined_face_field": 0.241519957780838,
+          "roughness_range": [
+            0.21657584607601166,
+            0.2851395308971405
+          ]
+        }
+      },
+      "pbr_parameter_status": "per-region medians from source-conditioned design fields; uncalibrated appearance proxy",
+      "preview": "preview_v3_srgb_4view.png",
+      "renderer": "VTK PBR appearance proxy; outer chart texture and per-region face appearance",
+      "sha256": "d67d6fa98e5d9b8332c93af42a365fc7e2836a889018595f2df4d844f426feb7",
+      "texture_grid": [
+        512,
+        1024
+      ],
+      "view_definitions": [
+        "Side · orthographic",
+        "Top · orthographic",
+        "Lit 3D · perspective",
+        "Underside · orthographic"
+      ]
+    },
+    {
+      "bundle": "daily_broad_foot_tokusa",
+      "bundle_manifest_sha256": "b72acec496aee1c0b5ff81098c46d268133f96e20b11bfcaf554907a8907fc9b",
+      "color_space": "linear RGB fields converted to sRGB8 texture/cell colors; VTK displays sRGB colors",
+      "display_normals": {
+        "method": "area-weighted normals accumulated over original shared source mesh vertices before UV triangle-corner duplication",
+        "smoothing_groups": "exact source CAD face ancestry; adjacent serialized segment faces blend only at C1 section joins (dot >= 0.9995)",
+        "source_face_id_array_sha256": "d5b8ce08a46c9689aad218dee9c7af772de393b645e6cf0e22d66d14c2432154",
+        "source_geometry_mutated": false
+      },
+      "faces": 25144,
+      "geometry_array_sha256": "5b11c6b834837deb1c32c2f064be17960c3497be501b8713955a145e5cf56dfc",
+      "legend": "Glaze appearance on outer wall, inside wall/floor, and rim; bare body on foot and exterior underside",
+      "pbr_material_parameters": {
+        "base": {
+          "ior_median_from_material_face_field": 1.559999942779541,
+          "ior_range": [
+            1.559999942779541,
+            1.559999942779541
+          ],
+          "roughness_median_from_combined_face_field": 0.40043067932128906,
+          "roughness_range": [
+            0.39175915718078613,
+            0.42424020171165466
+          ]
+        },
+        "foot": {
+          "ior_median_from_material_face_field": 1.559999942779541,
+          "ior_range": [
+            1.559999942779541,
+            1.559999942779541
+          ],
+          "roughness_median_from_combined_face_field": 0.40075260400772095,
+          "roughness_range": [
+            0.38825535774230957,
+            0.4272504448890686
+          ]
+        },
+        "inner_wall": {
+          "ior_median_from_material_face_field": 1.5099999904632568,
+          "ior_range": [
+            1.5099999904632568,
+            1.5099999904632568
+          ],
+          "roughness_median_from_combined_face_field": 0.20082547515630722,
+          "roughness_range": [
+            0.18875384330749512,
+            0.22810469567775726
+          ]
+        },
+        "outer_wall": {
+          "ior_median_from_material_face_field": 1.5099999904632568,
+          "ior_range": [
+            1.5099999904632568,
+            1.5099999904632568
+          ],
+          "roughness_median_from_combined_face_field": 0.20017414540052414,
+          "roughness_range": [
+            0.019999999552965164,
+            0.22785398364067078
+          ]
+        },
+        "rim": {
+          "ior_median_from_material_face_field": 1.5099999904632568,
+          "ior_range": [
+            1.5099999904632568,
+            1.5099999904632568
+          ],
+          "roughness_median_from_combined_face_field": 0.20078887790441513,
+          "roughness_range": [
+            0.1884438395500183,
+            0.2246047556400299
+          ]
+        }
+      },
+      "pbr_parameter_status": "per-region medians from source-conditioned design fields; uncalibrated appearance proxy",
+      "preview": "preview_v3_srgb_4view.png",
+      "renderer": "VTK PBR appearance proxy; outer chart texture and per-region face appearance",
+      "sha256": "db78c61267a4064d5abc5a51e4a45faa16ec3efd2d879c04049a749e5faa60bb",
+      "texture_grid": [
+        512,
+        1024
+      ],
+      "view_definitions": [
+        "Side · orthographic",
+        "Top · orthographic",
+        "Lit 3D · perspective",
+        "Underside · orthographic"
+      ]
+    }
+  ],
+  "geometry_changed": false,
+  "normal_policy": "source shared-vertex normals computed before UV duplication; only source CAD ancestry and C1 section joins are blended",
+  "physical_rendering_claim": "NONE",
+  "preview_revision": "v3_srgb",
+  "preview_views": [
+    "Side · orthographic",
+    "Top · orthographic",
+    "Lit 3D · perspective",
+    "Underside · orthographic"
+  ],
+  "renderer": "VTK PBR appearance proxy with continuous outer-wall texture and source-conditioned per-region appearance",
+  "schema": "synlab.reference_generation_preview_manifest.v4",
+  "side_view_direction": [
+    0.0,
+    -1.0,
+    0.0
+  ],
+  "surface_finish_legend": "outer wall / inside wall and floor / rim receive glaze appearance; foot / exterior underside remain bare body",
+  "texture_color_conversion": "linear RGB appearance samples converted to sRGB8 texture/cell colors for display"
+}

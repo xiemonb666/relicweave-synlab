@@ -1,0 +1,16 @@
+experiment_id: E-SYN-04
+title: 材料与品种留出
+question: 未见材料族或未见器型上，固定预算的模型表现如何分层？
+frozen:
+  train_set: excludes the held-out material/vessel ids entirely (lineage-level holdout)
+  budget: equal steps and equal exposure across arms
+primary_metric: CovRecallAtK (macro over strata)
+secondary_metrics: [HitAtK, PoolCovAtM, worst_stratum_metric]
+estimand: paired difference between seen and held-out strata at equal budget
+alpha: 0.05
+statistical_unit: shape_lineage
+reporting: macro average AND worst stratum are both reported; a macro gain hiding a collapsed stratum is not a pass
+sample_size:
+  plan: at least 3 material ids and 3 vessel ids held out when coverage allows
+  power_status: PILOT_PENDING
+status: PRE_REGISTERED

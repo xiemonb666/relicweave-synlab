@@ -1,0 +1,17 @@
+experiment_id: E-SYN-05
+title: 断裂后端与纹样留出
+question: 训练中未见过的断裂后端或纹样族，模型是否仍能恢复邻片（是否学到生成器捷径）？
+frozen:
+  size_and_budget: fixed across arms
+  candidate_pool: same gallery construction rule
+primary_metric: CovRecallAtK
+secondary_metrics: [HitAtK, PoolCovAtM, background_only_baseline]
+estimand: paired difference on held-out backends/patterns versus seen ones
+alpha: 0.05
+statistical_unit: shape_lineage
+required_controls:
+  - background-only inputs must not contain the target silhouette
+  - silhouette-only baseline reported separately as a shape baseline
+  - repeated pattern templates reused across independent mothers, with lighting/background balanced across positive and negative groups
+notes: perfect complementarity of the shared cutter is an upper bound and must not be presented as generalization to damaged real fragments
+status: PRE_REGISTERED

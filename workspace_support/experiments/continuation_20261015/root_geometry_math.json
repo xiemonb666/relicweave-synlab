@@ -1,0 +1,102 @@
+{
+  "schema": "shardforge.root_bowl_geometry_math.v1",
+  "scope": "independent_geometry_and_initial_state_only",
+  "source_sha256": "4b5dddd0cdbeb6783e0fef22df0152049836331ea86ab2483f4a7333479e1f27",
+  "asset_checks": [
+    {
+      "pattern": "three_bands",
+      "manifest_sha256": "0b33ba3dc1bdd12c05b65f73c4c570ab6e4b566702dcb5b33958b426e756ee67",
+      "vertices": 102038,
+      "triangles": 204072,
+      "edges": 306108,
+      "euler_characteristic": 2,
+      "all_edges_two_opposite_uses": true,
+      "mesh_signed_volume_mm3": 2546.5994394221957,
+      "mesh_volume_relative_error": 7.264261737131533e-05,
+      "all_manifest_payload_digests_verified": true
+    },
+    {
+      "pattern": "four_bands",
+      "manifest_sha256": "2fc26967acb7eb9e635080a056d6e96d23f3635579d367be57fe4258214c897e",
+      "vertices": 102038,
+      "triangles": 204072,
+      "edges": 306108,
+      "euler_characteristic": 2,
+      "all_edges_two_opposite_uses": true,
+      "mesh_signed_volume_mm3": 2546.5994394221957,
+      "mesh_volume_relative_error": 7.264261737131533e-05,
+      "all_manifest_payload_digests_verified": true
+    }
+  ],
+  "analytic_volume_mm3": 2546.7844445101255,
+  "lattice": {
+    "point_count": 2516,
+    "h_m": 0.001,
+    "delta_m": 0.0025,
+    "volume_mm3": 2516.0,
+    "mass_kg": 0.005786800000000001,
+    "candidate_pairs": 70672,
+    "geometric_exclusion_pairs": 24,
+    "retained_pairs": 70648,
+    "minimum_degree": 23,
+    "maximum_degree": 76,
+    "center_of_mass_m": [
+      3.5272531961288636e-17,
+      1.0148643314101032e-17,
+      0.0068624801271860054
+    ]
+  },
+  "material_formula": {
+    "K_pa": 46666666666.666664,
+    "c_N_m6": 6.844935792496235e+21,
+    "epsilon_c": 0.00019023794624226838
+  },
+  "loading": [
+    {
+      "alpha_s_1": 0.0,
+      "initial_kinetic_energy_J": 0.0,
+      "momentum_kg_mps": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_momentum_kg_m2ps": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "max_initial_speed_mps": 0.0
+    },
+    {
+      "alpha_s_1": 100.0,
+      "initial_kinetic_energy_J": 0.001092906093750002,
+      "momentum_kg_mps": [
+        1.35415157277545e-17,
+        4.711620769102046e-21,
+        -2.5032152200760612e-34
+      ],
+      "angular_momentum_kg_m2ps": [
+        1.0649950386620231e-23,
+        4.466775307786349e-22,
+        1.852884572118782e-22
+      ],
+      "max_initial_speed_mps": 1.1516971173012474
+    },
+    {
+      "alpha_s_1": 300.0,
+      "initial_kinetic_energy_J": 0.009836154843750018,
+      "momentum_kg_mps": [
+        4.37069000783219e-19,
+        1.937587866844212e-20,
+        -9.227912772599154e-33
+      ],
+      "angular_momentum_kg_m2ps": [
+        -6.57608586979657e-23,
+        -1.6080391108030858e-21,
+        6.154223757394526e-22
+      ],
+      "max_initial_speed_mps": 3.455091351903744
+    }
+  ],
+  "physical_fracture_and_training_qualification": "NOT_ASSESSED_BY_THIS_CALCULATION"
+}

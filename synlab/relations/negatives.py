@@ -896,10 +896,13 @@ def discrimination_auc(pool: Any, relations: Sequence[Mapping[str, Any]], *,
 
     Every fragment is encoded with :func:`synlab.relations.sampler.legal_retrieval_vector` (the
     module's own legal, observable-only retrieval vector; a payload that cannot form one is
-    reported unavailable, never zero-filled).  Each labelled pair is scored by cosine similarity
-    and the AUC of "true adjacency vs everything else" is reported with a **mother-clustered**
-    bootstrap interval (the unit is the independent mother, plan 19.4) plus the raw counts, so
-    the reader can see how small the sample is.
+    reported unavailable, never zero-filled). Only relation kinds R0/R1/R2 with ``valid=True``
+    and a resolved ``loss_mask=True`` enter the metric. A missing mask defaults to true to retain
+    the legacy semantics of legal R0/R1/R2 rows and the ``RelationEdge.loss_mask`` default;
+    missing ``valid`` and ``kind`` remain false and UNKNOWN, respectively. Each scored pair is
+    assigned positive/negative by ``positive_kinds`` and scored by cosine similarity. AUC is
+    reported with a **mother-clustered** bootstrap interval (the unit is the independent mother,
+    plan 19.4) plus denominator counts. TINY_CONTACT and UNKNOWN are never folded into negatives.
     """
     from .sampler import legal_retrieval_vector
 
@@ -912,23 +915,80 @@ def discrimination_auc(pool: Any, relations: Sequence[Mapping[str, Any]], *,
             unavailable.append(str(fid))
         else:
             vectors[str(fid)] = np.asarray(vector, dtype=np.float64)
-    lookup = _relation_lookup(relations)
     mother_of = dict(getattr(pool, "mother_of", {}) or {})
     pairs: list[dict[str, Any]] = []
+    excluded_by_kind = 0
+    excluded_by_valid = 0
+    excluded_by_loss_mask = 0
+    relation_eligible = 0
+    eligible_self_pairs = 0
+    eligible_pairs_missing_features = 0
+    legal_kinds = {RELATION_R0, RELATION_R1, RELATION_R2}
+    positive_kind_set = set(positive_kinds)
     for row in relations:
-        a, b = str(row.get("query", "")), str(row.get("candidate", ""))
-        if a == b or a not in vectors or b not in vectors:
-            continue
         kind = str(row.get("kind", RELATION_UNKNOWN))
+        if kind not in legal_kinds:
+            excluded_by_kind += 1
+            continue
         if not bool(row.get("valid", False)):
+            excluded_by_valid += 1
+            continue
+        # RelationEdge.loss_mask defaults to True, and legacy legal R0/R1/R2 fixtures omit it.
+        # Keep that compatibility while honoring every explicit false value.
+        if not bool(row.get("loss_mask", True)):
+            excluded_by_loss_mask += 1
+            continue
+        relation_eligible += 1
+        a, b = str(row.get("query", "")), str(row.get("candidate", ""))
+        if a == b:
+            eligible_self_pairs += 1
+            continue
+        if a not in vectors or b not in vectors:
+            eligible_pairs_missing_features += 1
             continue
         score = float(np.dot(vectors[a], vectors[b]))
         pairs.append({"a": a, "b": b, "kind": kind, "score": score,
-                      "positive": kind in set(positive_kinds),
+                      "positive": kind in positive_kind_set,
                       "mother_a": mother_of.get(a, ""), "mother_b": mother_of.get(b, "")})
+    positives = [p for p in pairs if p["positive"]]
+    negatives = [p for p in pairs if not p["positive"]]
+    denominator = {
+        "input_relations": len(relations),
+        "excluded_by_kind": excluded_by_kind,
+        "excluded_by_valid": excluded_by_valid,
+        "excluded_by_loss_mask": excluded_by_loss_mask,
+        "relation_eligible": relation_eligible,
+        "eligible_self_pairs": eligible_self_pairs,
+        "eligible_pairs_missing_features": eligible_pairs_missing_features,
+        "scorable_pairs": len(pairs),
+        "positive_pairs": len(positives),
+        "negative_pairs": len(negatives),
+    }
+    common = {
+        "metric_version": "relations.discrimination_auc.v2",
+        "scorer": "relations.sampler.legal_retrieval_vector (cosine)",
+        "feature_dim": int(next(iter(vectors.values())).size) if vectors else None,
+        "fragments_with_features": len(vectors),
+        "fragments_without_features": len(unavailable),
+        "unavailable_fragments": sorted(unavailable),
+        "pairs": len(pairs), "positives": len(positives), "negatives": len(negatives),
+        "positive_kinds": list(positive_kinds),
+        "negative_kinds": sorted({p["kind"] for p in negatives}),
+        "denominator": denominator,
+        "auc_denominator": ("scorable pairs after legal kind (R0/R1/R2), valid, resolved "
+                            "loss_mask, distinct endpoints, and encodable features"),
+    }
     if not pairs:
-        return {"ok": False, "status": "NOT_RUN", "reason": "no pair has two encodable fragments",
-                "unavailable_fragments": sorted(unavailable), "features_available": len(vectors)}
+        if relation_eligible:
+            reason = ("no eligible relation has distinct endpoints with encodable features; "
+                      "AUC denominator is 0")
+        else:
+            reason = ("no relation passed kind in R0/R1/R2, valid, and resolved loss_mask; "
+                      "AUC denominator is 0")
+        return {**common, "ok": False, "status": "NOT_RUN", "reason": reason,
+                "features_available": len(vectors), "clusters": 0,
+                "auc": None, "accuracy_at_median_threshold": None, "auc_interval": None,
+                "bootstrap_requested": int(bootstrap), "per_pair": []}
     scores = np.asarray([p["score"] for p in pairs], dtype=np.float64)
     labels = np.asarray([p["positive"] for p in pairs], dtype=bool)
     auc = _auc(scores, labels)
@@ -962,22 +1022,16 @@ def discrimination_auc(pool: Any, relations: Sequence[Mapping[str, Any]], *,
                     "high": float(np.percentile(draws, 97.5)),
                     "replicates": len(draws), "degenerate_draws": degenerate,
                     "unit": "mother_cluster", "confidence": 0.95}
-    positives = [p for p in pairs if p["positive"]]
-    negatives = [p for p in pairs if not p["positive"]]
     accuracy = None
-    if positives and negatives:
+    if auc is not None:
         threshold = float(np.median(scores))
         accuracy = float(np.mean((scores >= threshold) == labels))
     return {
-        "ok": auc is not None, "status": "MEASURED" if auc is not None else "NOT_ESTABLISHED",
-        "scorer": "relations.sampler.legal_retrieval_vector (cosine)",
-        "feature_dim": int(next(iter(vectors.values())).size),
-        "fragments_with_features": len(vectors),
-        "fragments_without_features": len(unavailable),
-        "unavailable_fragments": sorted(unavailable),
-        "pairs": len(pairs), "positives": len(positives), "negatives": len(negatives),
-        "positive_kinds": list(positive_kinds),
-        "negative_kinds": sorted({p["kind"] for p in negatives}),
+        **common,
+        "ok": auc is not None,
+        "status": "MEASURED" if auc is not None else "NOT_ESTABLISHED",
+        "reason": None if auc is not None else
+                  "AUC requires at least one positive and one negative scorable pair",
         "clusters": len(keys), "clusters_note": "independent mothers (plan 19.4 unit; one "
                                                 "cluster per mother, cf. diagnostics.stats)",
         "auc": auc, "accuracy_at_median_threshold": accuracy,

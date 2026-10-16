@@ -1,0 +1,401 @@
+{
+  "limitations": [
+    "Mesh effect is measured for the supplied parameter value and base parameters only.",
+    "No effect at one value does not prove a field is globally inert; fields may be conditional.",
+    "The probe does not establish source, daily-use, archaeological or physical validity."
+  ],
+  "method": "same-seed baseline and single-parameter variant using existing create_mother",
+  "probes": [
+    {
+      "base_parameter_adjustments": [],
+      "base_params": {},
+      "baseline_bounds_mm": [
+        [
+          -100.72219615473908,
+          -101.32992038808705,
+          8.038
+        ],
+        [
+          102.04801380068864,
+          101.44028956734066,
+          85.58933847894936
+        ]
+      ],
+      "baseline_face_count": 4128,
+      "baseline_geometry_hash": "sha256:10d49e0ea3ea6cd7245cf9586bf8ed86603497f9ee95824eb1da0a3d5a3765e8",
+      "baseline_value": 0.02,
+      "baseline_volume_mm3": 184886.97199239724,
+      "behavioral_probe": "measured_same_seed_mesh_comparison",
+      "changes_mesh": true,
+      "parameter": "warp_amplitude",
+      "realized_value": 0.0,
+      "registry_declared_shape_driver": false,
+      "requested_value": 0.0,
+      "variant_bounds_mm": [
+        [
+          -101.17956286388566,
+          -101.25707292924452,
+          8.038
+        ],
+        [
+          101.59064709154204,
+          101.51313702618319,
+          85.58933847894936
+        ]
+      ],
+      "variant_face_count": 4128,
+      "variant_geometry_hash": "sha256:97865eed7acb165df30db1781b64642820523b1ae31c5084315b956186a98e0a",
+      "variant_parameter_adjustments": [],
+      "variant_volume_mm3": 184886.3606723492,
+      "vessel_id": "V01"
+    },
+    {
+      "base_parameter_adjustments": [],
+      "base_params": {},
+      "baseline_bounds_mm": [
+        [
+          -100.72219615473908,
+          -101.32992038808705,
+          8.038
+        ],
+        [
+          102.04801380068864,
+          101.44028956734066,
+          85.58933847894936
+        ]
+      ],
+      "baseline_face_count": 4128,
+      "baseline_geometry_hash": "sha256:10d49e0ea3ea6cd7245cf9586bf8ed86603497f9ee95824eb1da0a3d5a3765e8",
+      "baseline_value": 0.8,
+      "baseline_volume_mm3": 184886.97199239724,
+      "behavioral_probe": "measured_same_seed_mesh_comparison",
+      "changes_mesh": true,
+      "parameter": "warp_eccentricity_mm",
+      "realized_value": 0.0,
+      "registry_declared_shape_driver": false,
+      "requested_value": 0.0,
+      "variant_bounds_mm": [
+        [
+          -100.92773826856727,
+          -101.45795243655638,
+          8.038
+        ],
+        [
+          101.84247168686045,
+          101.31225751887132,
+          85.58933847894936
+        ]
+      ],
+      "variant_face_count": 4128,
+      "variant_geometry_hash": "sha256:c576f279a12857bd23d6e75d99b56577006296eb77919f27782d7efb573d356b",
+      "variant_parameter_adjustments": [],
+      "variant_volume_mm3": 184886.97199239722,
+      "vessel_id": "V01"
+    },
+    {
+      "base_parameter_adjustments": [],
+      "base_params": {},
+      "baseline_bounds_mm": [
+        [
+          -100.72219615473908,
+          -101.32992038808705,
+          8.038
+        ],
+        [
+          102.04801380068864,
+          101.44028956734066,
+          85.58933847894936
+        ]
+      ],
+      "baseline_face_count": 4128,
+      "baseline_geometry_hash": "sha256:10d49e0ea3ea6cd7245cf9586bf8ed86603497f9ee95824eb1da0a3d5a3765e8",
+      "baseline_value": 2,
+      "baseline_volume_mm3": 184886.97199239724,
+      "behavioral_probe": "measured_same_seed_mesh_comparison",
+      "changes_mesh": true,
+      "parameter": "warp_lobes",
+      "realized_value": 6,
+      "registry_declared_shape_driver": false,
+      "requested_value": 6,
+      "variant_bounds_mm": [
+        [
+          -100.72219615473908,
+          -101.32992038808705,
+          8.038
+        ],
+        [
+          102.04801380068864,
+          101.44028956734066,
+          85.58933847894936
+        ]
+      ],
+      "variant_face_count": 4128,
+      "variant_geometry_hash": "sha256:3e4f90d3343ae617f3e0a5b90735816b3673393763da578978386e957bfdcdc3",
+      "variant_parameter_adjustments": [],
+      "variant_volume_mm3": 184886.76348251317,
+      "vessel_id": "V01"
+    },
+    {
+      "base_parameter_adjustments": [],
+      "base_params": {},
+      "baseline_bounds_mm": [
+        [
+          -95.63828029526734,
+          -96.38590473875705,
+          1.2185795307159424
+        ],
+        [
+          144.02834187694378,
+          96.93213420167265,
+          124.25963592529297
+        ]
+      ],
+      "baseline_face_count": 5486,
+      "baseline_geometry_hash": "sha256:06c11f821ab8ed73485146f47250556a23d1be7d0f51fe75f176fc3270ffd0d0",
+      "baseline_value": true,
+      "baseline_volume_mm3": 227834.10711187727,
+      "behavioral_probe": "measured_same_seed_mesh_comparison",
+      "changes_mesh": true,
+      "parameter": "with_handle",
+      "realized_value": false,
+      "registry_declared_shape_driver": false,
+      "requested_value": false,
+      "variant_bounds_mm": [
+        [
+          -95.63828197910198,
+          -96.38590642498448,
+          1.2185794736794553
+        ],
+        [
+          97.6797603458746,
+          96.93213589999209,
+          99.04576930225788
+        ]
+      ],
+      "variant_face_count": 3456,
+      "variant_geometry_hash": "sha256:247727526a7a8180a2dcb1e21be72a48a390afa6e425baba49259deadf28b06e",
+      "variant_parameter_adjustments": [],
+      "variant_volume_mm3": 221020.0895822945,
+      "vessel_id": "V04"
+    },
+    {
+      "base_parameter_adjustments": [],
+      "base_params": {},
+      "baseline_bounds_mm": [
+        [
+          -116.19619828087563,
+          -56.2596786656867,
+          0.06549030374545041
+        ],
+        [
+          115.68089431252962,
+          54.98362397787102,
+          45.08724436401823
+        ]
+      ],
+      "baseline_face_count": 354,
+      "baseline_geometry_hash": "sha256:f91c1bd0adb3549a90e12bfd216657d5ad7bc2fa0089e6fe8e9219ad182929ba",
+      "baseline_value": 6.0,
+      "baseline_volume_mm3": 1112616.0343209861,
+      "behavioral_probe": "measured_same_seed_mesh_comparison",
+      "changes_mesh": true,
+      "parameter": "groove_width_mm",
+      "realized_value": 14.0,
+      "registry_declared_shape_driver": false,
+      "requested_value": 14.0,
+      "variant_bounds_mm": [
+        [
+          -116.19619828087563,
+          -56.2596786656867,
+          0.15205123496928583
+        ],
+        [
+          115.68089431252962,
+          54.983689056715306,
+          45.08724436401823
+        ]
+      ],
+      "variant_face_count": 362,
+      "variant_geometry_hash": "sha256:ad8992dad8cb5496c521bdb1e4eb7f0cfde3c9bc8a43c6691d51ebe5b76293a7",
+      "variant_parameter_adjustments": [],
+      "variant_volume_mm3": 1095313.8548701475,
+      "vessel_id": "V18"
+    },
+    {
+      "base_parameter_adjustments": [],
+      "base_params": {
+        "aeration_holes": 4
+      },
+      "baseline_bounds_mm": [
+        [
+          -116.19619828087563,
+          -56.2596786656867,
+          0.06549030374545041
+        ],
+        [
+          115.68089431252962,
+          54.98362397787102,
+          45.71363019131123
+        ]
+      ],
+      "baseline_face_count": 754,
+      "baseline_geometry_hash": "sha256:3d8ee23324a4c333e369972aedec22178cef5020478548e7c3f8171b7bd28deb",
+      "baseline_value": 8.0,
+      "baseline_volume_mm3": 1110800.5821844514,
+      "behavioral_probe": "measured_same_seed_mesh_comparison",
+      "changes_mesh": true,
+      "parameter": "hole_diameter_mm",
+      "realized_value": 14.0,
+      "registry_declared_shape_driver": false,
+      "requested_value": 14.0,
+      "variant_bounds_mm": [
+        [
+          -116.19619828087563,
+          -56.2596786656867,
+          0.06549030374545041
+        ],
+        [
+          115.68089431252962,
+          54.98362397787102,
+          45.72784308729204
+        ]
+      ],
+      "variant_face_count": 754,
+      "variant_geometry_hash": "sha256:69076394d42e340a6f443ff2c569a38a6ea26a658c1d3b2cd41ceaace37fb26e",
+      "variant_parameter_adjustments": [],
+      "variant_volume_mm3": 1092580.3012238499,
+      "vessel_id": "V18"
+    },
+    {
+      "base_parameter_adjustments": [],
+      "base_params": {},
+      "baseline_bounds_mm": [
+        [
+          -59.067749106472434,
+          -25.62442420297048,
+          7.322117328643799
+        ],
+        [
+          59.26742545407444,
+          24.487575308748266,
+          176.9978790283203
+        ]
+      ],
+      "baseline_face_count": 4624,
+      "baseline_geometry_hash": "sha256:96532679c5ffbb8077e82fcf3772c3497e224e5ff89955b71afcce530355483a",
+      "baseline_value": 180.0,
+      "baseline_volume_mm3": 124078.62625072029,
+      "behavioral_probe": "measured_same_seed_mesh_comparison",
+      "changes_mesh": false,
+      "parameter": "diameter_mm",
+      "realized_value": 280.0,
+      "registry_declared_shape_driver": false,
+      "requested_value": 280.0,
+      "variant_bounds_mm": [
+        [
+          -59.067749106472434,
+          -25.62442420297048,
+          7.322117328643799
+        ],
+        [
+          59.26742545407444,
+          24.487575308748266,
+          176.9978790283203
+        ]
+      ],
+      "variant_face_count": 4624,
+      "variant_geometry_hash": "sha256:96532679c5ffbb8077e82fcf3772c3497e224e5ff89955b71afcce530355483a",
+      "variant_parameter_adjustments": [],
+      "variant_volume_mm3": 124078.62625072029,
+      "vessel_id": "V23"
+    },
+    {
+      "base_parameter_adjustments": [],
+      "base_params": {},
+      "baseline_bounds_mm": [
+        [
+          -59.067749106472434,
+          -25.62442420297048,
+          7.322117328643799
+        ],
+        [
+          59.26742545407444,
+          24.487575308748266,
+          176.9978790283203
+        ]
+      ],
+      "baseline_face_count": 4624,
+      "baseline_geometry_hash": "sha256:96532679c5ffbb8077e82fcf3772c3497e224e5ff89955b71afcce530355483a",
+      "baseline_value": 4.0,
+      "baseline_volume_mm3": 124078.62625072029,
+      "behavioral_probe": "measured_same_seed_mesh_comparison",
+      "changes_mesh": false,
+      "parameter": "wall_mm",
+      "realized_value": 8.0,
+      "registry_declared_shape_driver": false,
+      "requested_value": 8.0,
+      "variant_bounds_mm": [
+        [
+          -59.067749106472434,
+          -25.62442420297048,
+          7.322117328643799
+        ],
+        [
+          59.26742545407444,
+          24.487575308748266,
+          176.9978790283203
+        ]
+      ],
+      "variant_face_count": 4624,
+      "variant_geometry_hash": "sha256:96532679c5ffbb8077e82fcf3772c3497e224e5ff89955b71afcce530355483a",
+      "variant_parameter_adjustments": [],
+      "variant_volume_mm3": 124078.62625072029,
+      "vessel_id": "V23"
+    },
+    {
+      "base_parameter_adjustments": [],
+      "base_params": {},
+      "baseline_bounds_mm": [
+        [
+          -59.067749106472434,
+          -25.62442420297048,
+          7.322117328643799
+        ],
+        [
+          59.26742545407444,
+          24.487575308748266,
+          176.9978790283203
+        ]
+      ],
+      "baseline_face_count": 4624,
+      "baseline_geometry_hash": "sha256:96532679c5ffbb8077e82fcf3772c3497e224e5ff89955b71afcce530355483a",
+      "baseline_value": 6.5,
+      "baseline_volume_mm3": 124078.62625072029,
+      "behavioral_probe": "measured_same_seed_mesh_comparison",
+      "changes_mesh": false,
+      "parameter": "base_mm",
+      "realized_value": 12.0,
+      "registry_declared_shape_driver": false,
+      "requested_value": 12.0,
+      "variant_bounds_mm": [
+        [
+          -59.067749106472434,
+          -25.62442420297048,
+          7.322117328643799
+        ],
+        [
+          59.26742545407444,
+          24.487575308748266,
+          176.9978790283203
+        ]
+      ],
+      "variant_face_count": 4624,
+      "variant_geometry_hash": "sha256:96532679c5ffbb8077e82fcf3772c3497e224e5ff89955b71afcce530355483a",
+      "variant_parameter_adjustments": [],
+      "variant_volume_mm3": 124078.62625072029,
+      "vessel_id": "V23"
+    }
+  ],
+  "schema": "a12_shape_effect_probe_audit.v1",
+  "seed": 81
+}

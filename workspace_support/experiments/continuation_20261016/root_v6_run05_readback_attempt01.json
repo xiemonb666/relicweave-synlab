@@ -1,0 +1,8 @@
+{
+  "status": "ROOT_READBACK_ASSERTION_TOO_STRICT",
+  "failed_check": "MSH ASCII versus NPZ binary coordinate array exact equality",
+  "maximum_observed_absolute_difference_m": 6.938893903907228e-18,
+  "maximum_observed_relative_difference": 5.199725151545226e-16,
+  "correction": "Source identity remains original integer tags and exact ordered connectivity. The coordinate round-trip check declares rtol=8e-16 and atol=1e-30 m, reflecting ASCII serialization precision. No source artifact, geometry gate, solver parameter or meshing output changed.",
+  "solver_launched": false
+}

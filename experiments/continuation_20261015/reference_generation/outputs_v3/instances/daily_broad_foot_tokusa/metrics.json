@@ -1,0 +1,79 @@
+{
+  "bare_source_tags_present": [
+    "base",
+    "foot"
+  ],
+  "bounds_mm": [
+    [
+      -53.99984769515638,
+      -53.966952446967554,
+      -1.1102230246251565e-16
+    ],
+    [
+      53.99984769515638,
+      53.96695244696755,
+      52.99984769515639
+    ]
+  ],
+  "coated_source_tags_present": [
+    "inner_wall",
+    "outer_wall",
+    "rim"
+  ],
+  "continuous_outer_texture": {
+    "arclength_status": "FINITE_POLYLINE_APPROXIMATION_NOT_AN_EXACT_ARCLENGTH_CERTIFICATE",
+    "color_space": "LINEAR_SRGB_PRIMARIES",
+    "general_chart_validation": {
+      "maximum_allowed_s_error_mm": 1e-07,
+      "maximum_periodic_u_error": 1.1102230246251565e-16,
+      "maximum_s_error_mm": 3.552713678800501e-15,
+      "method": "ORIGINAL_UNMODIFIED_GENERAL_CHART_UV_AND_REGION_MASK",
+      "passed": true,
+      "sample_count": 25,
+      "source_chart_membership_true": 25
+    },
+    "geometry_changed": false,
+    "grid_sampling": "CELL_CENTERED_UNIFORM_FINITE_POLYLINE_ARCLENGTH_X_PERIODIC_AZIMUTH",
+    "grid_shape_s_theta": [
+      512,
+      1024
+    ],
+    "pattern_region_cell_count": 56288,
+    "periodic_seam_validation": {
+      "comparison": "FIRST_AND_LAST_AZIMUTH_PIXEL_CENTERS_VS_INTERIOR_NEIGHBORS",
+      "interior_neighbor_p99_linear_rgb_delta": 0.2267637848854065,
+      "maximum_allowed_linear_rgb_delta": 0.34024567732810973,
+      "maximum_linear_rgb_delta": 0.010273396968841553,
+      "mean_linear_rgb_delta": 0.000695063907187432,
+      "passed": true
+    },
+    "profile_status": "ANALYTIC_SOURCE_CUBIC_BEZIER_SAMPLED_AS_FINITE_POLYLINE",
+    "source_material_profile_hash": "sha256:de512e267c4b67a5519c8eae790bcabbe364275cc1ea964ccb9a60f5f5a7f707",
+    "source_pattern_recipe_hash": "sha256:1144cf3dc969efe84f279d5ce67632959c3856987b8f566d229ad4c7e3e09816"
+  },
+  "dimensions_mm": [
+    107.99969539031277,
+    107.93390489393511,
+    52.99984769515639
+  ],
+  "geometry_array_sha256_after": "5b11c6b834837deb1c32c2f064be17960c3497be501b8713955a145e5cf56dfc",
+  "geometry_array_sha256_before": "5b11c6b834837deb1c32c2f064be17960c3497be501b8713955a145e5cf56dfc",
+  "geometry_unchanged": true,
+  "material_layer_triangle_counts": {
+    "body": 13412,
+    "source_named_surface_finish": 11732
+  },
+  "max_abs_pattern_height_mm": 0.0,
+  "outer_face_texture_uv": {
+    "maximum_periodic_u_span_after_unwrap": 0.027777791023254395,
+    "passed": true,
+    "triangle_count": 1894
+  },
+  "pattern_region_triangle_count": 186,
+  "pattern_style_triangle_count": 1894,
+  "physical_properties_status": "UNKNOWN",
+  "signed_volume_mm3": 34510.80815090676,
+  "training_export_status": "NOT_REQUESTED_NOT_EXPORTED",
+  "triangle_count": 25144,
+  "vertex_count": 12574
+}

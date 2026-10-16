@@ -1,0 +1,995 @@
+"""Closed shared-cutter construction: cut basis, finite Fourier height field, watertight C.
+
+Contract (plan 10.1 / 30.4):
+
+* one deterministic height field ``w = h(u, v)`` built from a low-frequency bend plus 3-5
+  finite Fourier bands, amplitudes around ``[0.02, 0.3] mm`` and wavelengths in
+  ``[0.2, 3.0] mm``;
+* the shared surface is closed towards negative ``w`` into a **watertight solid** whose
+  sides and bottom stay far away from the material;
+* the triangulation is verified by evaluating the analytic ``h`` at triangle edge
+  midpoints and triangle interior points; any cell over the ``0.01 mm`` budget is
+  subdivided with shared edges (**no T-junctions**);
+* exceeding the cell / face budget raises ``PRECISION_BUDGET_EXCEEDED``.  The shortest
+  wavelength is **never** silently relaxed; failure is ``PRECISION_NOT_REALIZED``.
+"""
+
+from __future__ import annotations
+
+from collections import Counter
+from dataclasses import dataclass, field
+from typing import Any
+
+import numpy as np
+import trimesh
+
+from ..canonical import hash_json
+from ..errors import ErrorCode, SynLabError
+from ..schemas.runtime import CutBasis
+from .spec import (
+    AMP_MAX_MM,
+    AMP_MIN_MM,
+    DEFAULT_ERROR_BUDGET_MM,
+    DEFAULT_MAX_CUTTER_CELLS,
+    DEFAULT_MAX_CUTTER_TRIANGLES,
+    WAVELENGTH_MAX_MM,
+    WAVELENGTH_MIN_MM,
+)
+
+__all__ = [
+    "CutBasis",
+    "FourierBand",
+    "HeightField",
+    "build_basis",
+    "basis_transforms",
+    "make_height_field",
+    "build_closed_cutter",
+]
+
+_EPS = 1.0e-12#: minimum samples per shortest wavelength for the shared surface (plan 10.1: "0.2 mm
+#: wavelength needs about 0.025 mm spacing", i.e. eight points per wavelength).
+POINTS_PER_WAVELENGTH = 8.0
+_MIN_FRAME_MARGIN_CELLS = 1
+#: barycentric probes for the interpolation-error check: centroid, three interior thirds and
+#: the three edge midpoints (plan 10.1 step 4).
+_ERROR_BARY = np.array([
+    [1 / 3, 1 / 3, 1 / 3],
+    [0.5, 0.25, 0.25], [0.25, 0.5, 0.25], [0.25, 0.25, 0.5],
+    [0.5, 0.5, 0.0], [0.5, 0.0, 0.5], [0.0, 0.5, 0.5],
+])
+
+
+# ---------------------------------------------------------------------------- basis
+
+
+def _orthonormal_from(normal: np.ndarray, reference: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    n = np.asarray(normal, dtype=np.float64)
+    n = n / max(float(np.linalg.norm(n)), _EPS)
+    r = np.asarray(reference, dtype=np.float64)
+    r = r - n * float(r @ n)
+    if float(np.linalg.norm(r)) < 1.0e-9:
+        alt = np.array([1.0, 0.0, 0.0]) if abs(n[0]) < 0.9 else np.array([0.0, 1.0, 0.0])
+        r = alt - n * float(alt @ n)
+    e_u = r / max(float(np.linalg.norm(r)), _EPS)
+    e_v = np.cross(n, e_u)
+    e_v = e_v / max(float(np.linalg.norm(e_v)), _EPS)
+    return e_u, e_v
+
+
+def build_basis(
+    points_mm: np.ndarray,
+    normal: np.ndarray,
+    *,
+    anchor: np.ndarray | None = None,
+    pad_ratio: float = 0.15,
+    pad_min_mm: float = 5.0,
+    depth_margin_mm: float = 2.0,
+    basis_id: str = "",
+    meta: dict[str, Any] | None = None,
+) -> CutBasis:
+    """Build a right-handed cut basis ``(e_u, e_v, n)`` covering ``points_mm``.
+
+    ``e_u`` follows the largest-variance material direction orthogonalised against ``n`` so
+    hand-computed fixtures can predict the local frame.  The (u, v) rectangle is padded so
+    the cutter sides never touch the material.
+    """
+    pts = np.asarray(points_mm, dtype=np.float64).reshape(-1, 3)
+    if pts.shape[0] < 3:
+        raise SynLabError(ErrorCode.MOTHER_INVALID, "cut basis needs >= 3 material points",
+                          stage="fracture.cut.basis")
+    n = np.asarray(normal, dtype=np.float64)
+    n = n / max(float(np.linalg.norm(n)), _EPS)
+    if anchor is None:
+        anchor = pts.mean(axis=0)
+    anchor = np.asarray(anchor, dtype=np.float64).reshape(3)
+    centred = pts - anchor
+    cov = centred.T @ centred
+    vals, vecs = np.linalg.eigh(cov)
+    reference = vecs[:, int(np.argmax(vals))]
+    e_u, e_v = _orthonormal_from(n, reference)
+    u = centred @ e_u
+    v = centred @ e_v
+    w = centred @ n
+    du = float(u.max() - u.min())
+    dv = float(v.max() - v.min())
+    pad = max(pad_ratio * max(du, dv, 1.0), pad_min_mm)
+    u_range = (float(u.min()) - pad, float(u.max()) + pad)
+    v_range = (float(v.min()) - pad, float(v.max()) + pad)
+    meta_out = dict(meta or {})
+    meta_out.update({
+        "w_min_mm": float(w.min()),
+        "w_max_mm": float(w.max()),
+        "material_u_range": [float(u.min()), float(u.max())],
+        "material_v_range": [float(v.min()), float(v.max())],
+        "pad_mm": pad,
+        "depth_margin_mm": depth_margin_mm,
+        "material_extent_mm": [du, dv, float(w.max() - w.min())],
+    })
+    basis = CutBasis(
+        origin=anchor, e_u=e_u, e_v=e_v, normal=n, u_range=u_range, v_range=v_range,
+        h_scale_mm=0.0, basis_id=basis_id or "", meta=meta_out,
+    )
+    if not basis.basis_id:
+        basis.basis_id = hash_json({
+            "origin": [float(x) for x in anchor], "e_u": [float(x) for x in e_u],
+            "e_v": [float(x) for x in e_v], "n": [float(x) for x in n],
+            "u": [float(x) for x in u_range], "v": [float(x) for x in v_range],
+        })[:32]
+    return basis
+
+
+def basis_transforms(basis: CutBasis) -> tuple[np.ndarray, np.ndarray]:
+    """Return ``(R, t)`` with ``local = R @ world + t`` for the cut basis."""
+    R = np.stack([basis.e_u, basis.e_v, basis.normal], axis=0)
+    t = -R @ np.asarray(basis.origin, dtype=np.float64)
+    return R, t
+
+
+# ---------------------------------------------------------------------------- height field
+
+
+@dataclass
+class FourierBand:
+    amplitude_mm: float
+    wavelength_mm: float
+    direction: np.ndarray  # (2,) unit
+    phase: float
+
+    @property
+    def k(self) -> float:
+        return 2.0 * np.pi / float(self.wavelength_mm)
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "amplitude_mm": float(self.amplitude_mm),
+            "wavelength_mm": float(self.wavelength_mm),
+            "direction": np.asarray(self.direction, dtype=np.float64).tolist(),
+            "phase": float(self.phase),
+        }
+
+
+@dataclass
+class HeightField:
+    """``h(u, v)`` = frozen finite Fourier sum minus its material-band mean."""
+
+    basis: CutBasis
+    bands: list[FourierBand]
+    bend: list[FourierBand]
+    mean_mm: float
+    target_rms_mm: float
+    realized_rms_mm: float
+    wavelength_min_mm: float
+    max_slope: float
+    meta: dict[str, Any] = field(default_factory=dict)
+
+    def raw(self, u: np.ndarray, v: np.ndarray) -> np.ndarray:
+        u = np.asarray(u, dtype=np.float64)
+        v = np.asarray(v, dtype=np.float64)
+        out = np.zeros(np.broadcast(u, v).shape, dtype=np.float64)
+        for band in self.bend:
+            k = band.k
+            out = out + band.amplitude_mm * np.cos(
+                k * (band.direction[0] * u + band.direction[1] * v) + band.phase)
+        for band in self.bands:
+            k = band.k
+            out = out + band.amplitude_mm * np.cos(
+                k * (band.direction[0] * u + band.direction[1] * v) + band.phase)
+        return out
+
+    def __call__(self, u: np.ndarray, v: np.ndarray) -> np.ndarray:
+        return self.raw(u, v) - self.mean_mm
+
+    def gradient(self, u: np.ndarray, v: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+        u = np.asarray(u, dtype=np.float64)
+        v = np.asarray(v, dtype=np.float64)
+        du = np.zeros(np.broadcast(u, v).shape, dtype=np.float64)
+        dv = np.zeros_like(du)
+        for band in list(self.bend) + list(self.bands):
+            k = band.k
+            arg = k * (band.direction[0] * u + band.direction[1] * v) + band.phase
+            s = -band.amplitude_mm * k * np.sin(arg)
+            du = du + s * band.direction[0]
+            dv = dv + s * band.direction[1]
+        return du, dv
+
+    def curvature_bound(self) -> float:
+        """Upper bound of ``|h_aa|`` along any unit direction ``a`` in the (u, v) plane."""
+        total = 0.0
+        for band in list(self.bend) + list(self.bands):
+            total += band.amplitude_mm * band.k ** 2
+        return float(total)
+
+    def analytic_error_bound(self, cell_mm: float) -> float:
+        """Conservative linear-interpolation error bound for a cell of size ``cell_mm``."""
+        return 0.125 * self.curvature_bound() * float(cell_mm) ** 2
+
+    @property
+    def is_flat(self) -> bool:
+        return not self.bands and not self.bend
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "bands": [b.as_dict() for b in self.bands],
+            "bend": [b.as_dict() for b in self.bend],
+            "mean_mm": float(self.mean_mm),
+            "target_rms_mm": float(self.target_rms_mm),
+            "realized_rms_mm": float(self.realized_rms_mm),
+            "wavelength_min_mm": (None if self.is_flat else float(self.wavelength_min_mm)),
+            "max_slope": float(self.max_slope),
+            "amplitude_max_mm": float(max((b.amplitude_mm for b in self.bands), default=0.0)),
+            "curvature_bound": float(self.curvature_bound()),
+            "flat": bool(self.is_flat),
+            "meta": self.meta,
+        }
+
+
+def make_height_field(
+    basis: CutBasis,
+    rng: np.random.Generator,
+    *,
+    target_rms_mm: float,
+    n_bands: int | None = None,
+    band_grid: int = 41,
+    wavelength_min_mm: float = WAVELENGTH_MIN_MM,
+    wavelength_max_mm: float = WAVELENGTH_MAX_MM,
+) -> HeightField:
+    """Sample one frozen coefficient set (plan 10.1 step 3); never called per query.
+
+    ``wavelength_min_mm`` is the *shortest* admitted wavelength.  The caller may raise it
+    (a frozen config's ``min_feature_wavelength_mm``); it is never lowered below the
+    package guard, and the realized shortest wavelength is reported so a resource failure
+    is attributable instead of silent.
+    """
+    target_rms_mm = float(max(float(target_rms_mm), 0.0))
+    wl_min = float(max(float(wavelength_min_mm), WAVELENGTH_MIN_MM))
+    wl_max = float(max(float(wavelength_max_mm), wl_min * 1.05))
+    if target_rms_mm <= 0.0:
+        basis.h_scale_mm = 0.0
+        return HeightField(
+            basis=basis, bands=[], bend=[], mean_mm=0.0, target_rms_mm=0.0,
+            realized_rms_mm=0.0, wavelength_min_mm=float("inf"), max_slope=0.0,
+            meta={"zero_amplitude": True, "n_bands": 0,
+                  "reason": "zero target RMS => analytically flat shared surface"},
+        )
+    n_bands = int(n_bands) if n_bands else int(rng.integers(3, 6))
+    n_bands = int(np.clip(n_bands, 3, 5))
+    if not (AMP_MIN_MM - 1e-12) <= target_rms_mm <= (AMP_MAX_MM + 1e-12):
+        raise SynLabError(
+            ErrorCode.SCHEMA_INVALID,
+            f"target_rms_mm={target_rms_mm} outside the frozen amplitude window "
+            f"[{AMP_MIN_MM}, {AMP_MAX_MM}] mm",
+            stage="fracture.cut.height_field",
+            measurements={"target_rms_mm": target_rms_mm},
+        )
+    bend: list[FourierBand] = []
+    for _ in range(2):
+        theta = float(rng.uniform(0.0, 2.0 * np.pi))
+        wavelength = float(rng.uniform(wl_max, 4.0 * wl_max))
+        phase = float(rng.uniform(0.0, 2.0 * np.pi))
+        bend.append(FourierBand(0.05 * target_rms_mm, wavelength,
+                                np.array([np.cos(theta), np.sin(theta)]), phase))
+    edges = np.geomspace(wl_min, wl_max, n_bands + 1)
+    bands: list[FourierBand] = []
+    for index in range(n_bands):
+        wavelength = float(np.exp(rng.uniform(np.log(edges[index]), np.log(edges[index + 1]))))
+        theta = float(rng.uniform(0.0, 2.0 * np.pi))
+        phase = float(rng.uniform(0.0, 2.0 * np.pi))
+        bands.append(FourierBand(1.0, wavelength,
+                                 np.array([np.cos(theta), np.sin(theta)]), phase))
+    wavelength_min = float(min(b.wavelength_mm for b in bands))
+    u_lo, u_hi = basis.meta.get("material_u_range", basis.u_range)
+    v_lo, v_hi = basis.meta.get("material_v_range", basis.v_range)
+    grid_u = np.linspace(float(u_lo), float(u_hi), int(band_grid))
+    grid_v = np.linspace(float(v_lo), float(v_hi), int(band_grid))
+    gu, gv = np.meshgrid(grid_u, grid_v, indexing="ij")
+    probe = np.zeros_like(gu)
+    for band in bands:
+        k = band.k
+        probe = probe + band.amplitude_mm * np.cos(
+            k * (band.direction[0] * gu + band.direction[1] * gv) + band.phase)
+    rms = float(np.sqrt(np.mean((probe - probe.mean()) ** 2)))
+    scale = float(target_rms_mm / max(rms, 1e-12))
+    for band in bands:
+        band.amplitude_mm = float(band.amplitude_mm * scale)
+    mean_mm = float((probe * scale).mean())
+    height = HeightField(
+        basis=basis, bands=bands, bend=bend, mean_mm=mean_mm,
+        target_rms_mm=target_rms_mm, realized_rms_mm=0.0,
+        wavelength_min_mm=wavelength_min, max_slope=0.0,
+        meta={"n_bands": n_bands, "band_grid": int(band_grid), "zero_amplitude": False,
+              "wavelength_min_mm": float(wavelength_min),
+              "wavelength_max_mm": float(max(b.wavelength_mm for b in bands)),
+              "admitted_wavelength_window_mm": [wl_min, wl_max]},
+    )
+    centred = height(gu, gv)
+    height.realized_rms_mm = float(np.sqrt(np.mean(centred ** 2)))
+    grad_u, grad_v = height.gradient(gu, gv)
+    height.max_slope = float(np.max(np.hypot(grad_u, grad_v)))
+    amp_max = float(max(b.amplitude_mm for b in bands))
+    if amp_max > AMP_MAX_MM * 1.75:
+        raise SynLabError(
+            ErrorCode.SCHEMA_INVALID,
+            f"normalised band amplitude {amp_max:.4f} mm exceeds the amplitude guard",
+            stage="fracture.cut.height_field",
+            measurements={"amp_max_mm": amp_max, "target_rms_mm": target_rms_mm},
+        )
+    height.meta["amplitude_max_mm"] = amp_max
+    basis.h_scale_mm = float(target_rms_mm)
+    return height
+
+
+# ---------------------------------------------------------------------------- quadtree
+
+
+def _rows_in(rows: np.ndarray, table: np.ndarray) -> np.ndarray:
+    """Row-membership test: exact, and cheap because ``table`` is small next to ``rows``."""
+    if table.size == 0 or rows.size == 0:
+        return np.zeros(rows.shape[0], dtype=bool)
+    wanted = {tuple(int(x) for x in row) for row in np.asarray(table).reshape(-1, 3)}
+    return np.fromiter((tuple(int(x) for x in row) in wanted for row in rows),
+                       dtype=bool, count=rows.shape[0])
+
+
+class _Quadtree:
+    """Dyadic quadtree over the (u, v) rectangle with explicit vertex-index bookkeeping.
+
+    Invariants enforced to a fixed point (plan 10.1 step 4):
+
+    * a cell whose linear-interpolation error exceeds the budget is refined;
+    * an edge is split iff it has **two** adjacent leaf cells and both are at least as fine
+      as the edge itself -> every split edge is shared by exactly two cells;
+    * a cell is refined as soon as one of its own edges is split -> **no T-junctions**.
+    """
+
+    def __init__(self, u0: float, u1: float, v0: float, v1: float, root_level: int):
+        self.u0, self.u1, self.v0, self.v1 = float(u0), float(u1), float(v0), float(v1)
+        #: dyadic level of the root grid.  ``root_level``/``side``/``hx``/``hy`` describe the
+        #: grid the stored cell indices live on and never change, so a level-``l`` cell always
+        #: measures ``hx / 2 ** l``.
+        self.root_level = int(root_level)
+        #: how many times the whole grid has been re-rooted by :meth:`refine_all_to`.  Cells
+        #: keep their indices across a re-rooting, so the *true* dyadic level of a stored
+        #: cell is ``grid_level + level`` — only the key lattice needs that number.
+        self.grid_level = 0
+        self.side = 1 << self.root_level
+        self.hx = (self.u1 - self.u0) / self.side
+        self.hy = (self.v1 - self.v0) / self.side
+        self.refined: set[tuple[int, int, int]] = set()
+
+    # -------------------------------------------------------------- geometry
+    def cell_size(self, level: int) -> tuple[float, float]:
+        """Edge lengths of a level-``level`` cell (``level`` = subdivisions from the root).
+
+        ``hx``/``hy`` are the root grid's cell size and ``side`` its resolution; a cell at
+        ``level`` is ``2 ** level`` times smaller.  ``root_level`` is only the dyadic level of
+        that root grid: it is *not* used here, because using it would silently rescale every
+        cell the moment the grid is refined and the shared key lattice would stop matching
+        the cell lattices.
+        """
+        scale = 1 << int(level)
+        return self.hx / scale, self.hy / scale
+
+    #: absolute dyadic level of a relative ``level`` cell (re-rootings + subdivisions)
+    def absolute_level(self, level: int) -> int:
+        return self.grid_level + int(level)
+
+    def key_span(self, level: int, key_level: int) -> int:
+        """Halvings between a stored cell's own indexes and the shared key grid.
+
+        A cell's local index unit is ``cell_size(level) / 2 ** span`` and one single key grid
+        is shared by every generation exactly when that unit is the same for them all.  With
+        ``cell_size(level) = hx / 2 ** level`` and ``hx = extent / side`` this means
+        ``span = key_level - level``: the key grid is measured on the *stored* index grid, so
+        neither ``root_level`` nor the re-rooting counter may enter here.
+        """
+        span = int(key_level) - int(level)
+        if span < 1:
+            raise SynLabError(
+                ErrorCode.PRECISION_NOT_REALIZED,
+                f"cell level {level} reaches the key level {key_level}: no headroom left to "
+                f"share vertices between generations",
+                stage="fracture.cut.key_span",
+                measurements={"level": int(level), "key_level": int(key_level),
+                              "side": int(self.side)},
+            )
+        return span
+
+    def cell_uv(self, i: int, j: int, level: int) -> tuple[float, float, float, float]:
+        hx, hy = self.cell_size(level)
+        return (self.u0 + i * hx, self.u0 + (i + 1) * hx,
+                self.v0 + j * hy, self.v0 + (j + 1) * hy)
+
+    def is_refined(self, i: int, j: int, level: int) -> bool:
+        return (i, j, level) in self.refined
+
+    def descend(self, i: int, j: int, level: int) -> tuple[int, int, int]:
+        while self.is_refined(i, j, level):
+            i, j, level = 2 * i, 2 * j, level + 1
+        return i, j, level
+
+    def leaves(self) -> list[tuple[int, int, int]]:
+        out: list[tuple[int, int, int]] = []
+        stack = [(i, j, 0) for i in range(self.side) for j in range(self.side)]
+        while stack:
+            i, j, level = stack.pop()
+            if self.is_refined(i, j, level):
+                stack.extend([(2 * i, 2 * j, level + 1), (2 * i + 1, 2 * j, level + 1),
+                              (2 * i, 2 * j + 1, level + 1), (2 * i + 1, 2 * j + 1, level + 1)])
+            else:
+                out.append((i, j, level))
+        return out
+
+    def leaves_at_level(self, level: int) -> np.ndarray:
+        """Every leaf cell sitting exactly at ``level`` as an ``(N,3)`` integer block.
+
+        The walk is the same recursive descent as :meth:`leaves` — a slot at ``level`` is a
+        leaf only when no ancestor on its chain was refined.  ``descend`` cannot answer this
+        (it stops at the first unrefined ancestor, which is not the requested level), and a
+        level comparison against the refined set cannot either (cell indices at different
+        levels live on different grids).
+        """
+        level = int(level)
+        out: list[tuple[int, int, int]] = []
+        side = self.side >> level
+        if side <= 0 or level < 0:
+            return np.zeros((0, 3), dtype=np.int64)
+        for si in range(side):
+            for sj in range(side):
+                path: list[tuple[int, int, int]] = []
+                for c in range(level + 1):
+                    path.append((si >> (level - c), sj >> (level - c), c))
+                path.reverse()
+                if not any(node in self.refined for node in path):
+                    out.append(path[-1])
+        return np.asarray(out, dtype=np.int64).reshape(-1, 3)
+
+    def refine_bulk(self, cells: np.ndarray) -> None:
+        """Mark many cells refined at once (one ``set.update`` for the whole generation)."""
+        block = np.asarray(cells, dtype=np.int64).reshape(-1, 3)
+        if block.shape[0] == 0:
+            return
+        self.refined.update((int(i), int(j), int(level)) for i, j, level in block)
+
+    def refine_all_to(self, target_level: int) -> None:
+        """Refine every current leaf until the tree is uniform at relative ``target_level``.
+
+        Refining the whole tree once moves every stored cell exactly one level deeper, so
+        ``grid_level`` advances and the whole index set is relabelled by ``level - 1``.  Stored
+        levels therefore always stay relative to the *current* root grid (``cell_size`` stays
+        exact), while ``absolute_level`` still reports the true dyadic level.  A loop that
+        only marked cells never terminated; one that advances a counter without relabelling
+        silently makes every cell ``2 ** k`` too large.
+        """
+        level_cap = self.grid_level + 30
+        while self.grid_level < target_level:
+            if self.grid_level >= level_cap:  # pragma: no cover - defensive
+                raise SynLabError(
+                    ErrorCode.PRECISION_BUDGET_EXCEEDED,
+                    f"quadtree seeding did not advance past level {self.grid_level}",
+                    stage="fracture.cut.refine_all_to",
+                    measurements={"grid_level": int(self.grid_level),
+                                  "target_level": int(target_level)},
+                )
+            for i, j, level in self.leaves():
+                self.refined.add((i, j, level))
+            if self.refined:
+                self.refined = {(i // 2, j // 2, level - 1) for i, j, level in self.refined}
+            self.grid_level += 1
+
+    def neighbour(self, i: int, j: int, level: int, orient: str,
+                  lo: bool) -> tuple[int, int, int] | None:
+        """Leaf cell sharing the given edge; ``None`` when the edge is on the frame."""
+        side = 1 << level
+        if orient == "v":
+            ni = i - 1 if lo else i + 1
+            if not (0 <= ni < side):
+                return None
+            nj = j
+        else:
+            nj = j - 1 if lo else j + 1
+            if not (0 <= nj < side):
+                return None
+            ni = i
+        i0, j0, level0 = ni, nj, level
+        while level0 > 0:
+            i0, j0, level0 = i0 // 2, j0 // 2, level0 - 1
+        ci, cj, cl = i0, j0, level0
+        while cl < level:
+            bit = level - cl - 1
+            ci = 2 * ci + ((i0 >> bit) & 1)
+            cj = 2 * cj + ((j0 >> bit) & 1)
+            cl += 1
+        return self.descend(ci, cj, cl)
+
+    def edge_split(self, i: int, j: int, level: int, orient: str, lo: bool) -> bool:
+        a = self.neighbour(i, j, level, orient, lo)
+        b = self.neighbour(i, j, level, orient, not lo)
+        return a is not None and b is not None and a[2] >= level and b[2] >= level
+
+    def edge_splits(self, i: int, j: int, level: int) -> tuple[bool, bool, bool, bool]:
+        return (
+            self.edge_split(i, j, level, "v", True),
+            self.edge_split(i, j, level, "u", True),
+            self.edge_split(i, j, level, "v", False),
+            self.edge_split(i, j, level, "u", False),
+        )
+
+    def split_count(self, i: int, j: int, level: int) -> int:
+        return int(sum(self.edge_splits(i, j, level)))
+
+    # -------------------------------------------------------------- triangulation
+    def cell_triangles(self, i: int, j: int, level: int,
+                       span: int) -> tuple[np.ndarray, np.ndarray]:
+        """Return ``(grid_ij, triangles)`` for one leaf cell.
+
+        ``grid_ij`` rows are *global* integer coordinates on the shared key grid, and ``span``
+        is how many halvings separate the cell's own index grid from it (see
+        :meth:`key_span`).  Because the key is global, a vertex is shared with any neighbour
+        that computes the same integer pair, at any refinement level, by construction.
+        """
+        half = 1 << (span - 1)
+        c00 = (i << span, j << span)
+        c10 = (c00[0] + (1 << span), c00[1])
+        c11 = (c00[0] + (1 << span), c00[1] + (1 << span))
+        c01 = (c00[0], c00[1] + (1 << span))
+        m_v0 = (c00[0], c00[1] + half)              # left edge midpoint
+        m_u0 = (c00[0] + half, c00[1])              # bottom edge midpoint
+        m_v1 = (c00[0] + (1 << span), c00[1] + half)  # right edge midpoint
+        m_u1 = (c00[0] + half, c00[1] + (1 << span))  # top edge midpoint
+        s = self.edge_splits(i, j, level)
+        n_split = int(sum(s))
+        if n_split == 0:
+            pts = [c00, c10, c11, c01]
+            tris = [(0, 1, 2), (0, 2, 3)]
+        elif n_split == 1:
+            if s[0]:      # left edge split
+                pts = [c00, c10, c11, c01, m_v0]
+                tris = [(0, 4, 3), (4, 1, 2), (4, 2, 3)]
+            elif s[1]:    # bottom edge split
+                pts = [c00, c10, c11, c01, m_u0]
+                tris = [(0, 1, 4), (1, 2, 4), (4, 2, 3)]
+            elif s[2]:    # right edge split
+                pts = [c00, c10, c11, c01, m_v1]
+                tris = [(0, 1, 2), (0, 2, 4), (4, 2, 3)]
+            else:         # top edge split
+                pts = [c00, c10, c11, c01, m_u1]
+                tris = [(0, 1, 4), (0, 4, 3), (4, 2, 3)]
+        elif n_split == 2 and s[0] and s[2]:
+            pts = [c00, c10, c11, c01, m_v0, m_v1]
+            tris = [(0, 4, 1), (4, 2, 1), (4, 5, 2), (4, 3, 5), (0, 3, 4)]
+        elif n_split == 2 and s[1] and s[3]:
+            pts = [c00, c10, c11, c01, m_u0, m_u1]
+            tris = [(0, 1, 5), (0, 5, 2), (0, 2, 4), (4, 2, 3), (5, 4, 2)]
+        elif n_split == 2:
+            if s[0] and s[1]:
+                pts = [c00, c10, c11, c01, m_v0, m_u0]
+                tris = [(0, 5, 4), (5, 1, 4), (1, 2, 4), (4, 2, 3)]
+            elif s[1] and s[2]:
+                pts = [c00, c10, c11, c01, m_u0, m_v1]
+                tris = [(0, 1, 5), (5, 2, 4), (1, 4, 5), (4, 2, 3)]
+            elif s[2] and s[3]:
+                pts = [c00, c10, c11, c01, m_v1, m_u1]
+                tris = [(0, 1, 4), (4, 2, 5), (4, 5, 3), (3, 5, 0)]
+            else:
+                pts = [c00, c10, c11, c01, m_u1, m_v0]
+                tris = [(0, 5, 1), (1, 5, 4), (5, 3, 4), (4, 3, 2)]
+        else:  # 3 or 4 split edges -> fan from the cell centre
+            centre = (c00[0] + half, c00[1] + half)
+            pts = [c00, c10, c11, c01, centre, m_v0, m_u0, m_v1, m_u1]
+            ring = [(0, 6), (6, 1), (1, 7), (7, 2), (2, 8), (8, 3), (3, 5), (5, 0)]
+            flag = {"v0": s[0], "u0": s[1], "v1": s[2], "u1": s[3]}
+            names = ["u0", "v1", "u1", "v0", "u0", "v1", "u1", "v0"]
+            ring = [seg for name, seg in zip(names, ring) if flag[name]]
+            tris = [(seg[0], seg[1], 4) for seg in ring]
+        return np.asarray(pts, dtype=np.int64), np.asarray(tris, dtype=np.int64)
+
+
+# ---------------------------------------------------------------------------- cutter
+
+
+def build_closed_cutter(
+    basis: CutBasis,
+    height: HeightField,
+    *,
+    error_budget_mm: float = DEFAULT_ERROR_BUDGET_MM,
+    max_cells: int = DEFAULT_MAX_CUTTER_CELLS,
+    max_triangles: int = DEFAULT_MAX_CUTTER_TRIANGLES,
+    root_level: int = 2,
+    cap_level: int = 1,
+) -> tuple[trimesh.Trimesh, dict[str, Any]]:
+    """Build the closed shared cutter body ``C`` plus its verified triangulation report."""
+    u0, u1 = float(basis.u_range[0]), float(basis.u_range[1])
+    v0, v1 = float(basis.v_range[0]), float(basis.v_range[1])
+    mu0, mu1 = (float(x) for x in basis.meta.get("material_u_range", (u0, u1)))
+    mv0, mv1 = (float(x) for x in basis.meta.get("material_v_range", (v0, v1)))
+    w_min = float(basis.meta.get("w_min_mm", -1.0))
+    depth_margin = float(basis.meta.get("depth_margin_mm", 2.0))
+    budget = float(error_budget_mm)
+    max_over = budget * (1.0 + 1e-9)
+    pad_ratio = float(basis.meta.get("pad_ratio", 0.25))
+    pad = min(mu0 - u0, u1 - mu1, mv0 - v0, v1 - mv1)
+    frame_margin = max(2.0 * max((u1 - u0), (v1 - v0)) / (1 << int(root_level)), 1e-6)
+    if pad <= 0.0:
+        raise SynLabError(
+            ErrorCode.PRECISION_BUDGET_EXCEEDED,
+            "the material rectangle touches the cutter frame; the shared cut surface would "
+            "be clipped",
+            stage="fracture.cut.frame_margin",
+            measurements={"u_range": [u0, u1], "material_u_range": [mu0, mu1],
+                          "v_range": [v0, v1], "material_v_range": [mv0, mv1]},
+        )
+    # keep the root cells small compared with the side padding so the outer frame stays coarse
+    root_level = int(np.clip(np.ceil(np.log2(max((u1 - u0), (v1 - v0)) / max(0.25 * pad, 1e-6))),
+                             2, 8))
+    tree = _Quadtree(u0, u1, v0, v1, root_level)
+    del pad_ratio, frame_margin
+
+    # ---------------------------------------------------------------- seed level
+    if height.is_flat:
+        start_level = tree.root_level
+        seed_rule = "flat"
+    else:
+        # Two necessary conditions, both frozen (plan 10.1 steps 3-4):
+        #   (a) sampling: a linear interpolant cannot resolve a sinusoid a cell spans several
+        #       times, so the cell edge must stay below a fixed fraction of the *shortest*
+        #       wavelength.  Without this a curvature-only seed happily proposes cells wider
+        #       than the wavelength, where the kappa*d^2/8 bound no longer applies at all;
+        #   (b) curvature: error <= kappa * d^2 / 8.
+        # The seed takes the finer of the two; the verified fixed point below still has to
+        # confirm every single cell against the analytic h.  ``start_level`` is expressed on
+        # the tree's *absolute* dyadic scale and mapped onto the stored grid by
+        # ``refine_all_to``.
+        by_wavelength = float(height.wavelength_min_mm) / POINTS_PER_WAVELENGTH
+        by_curvature = float(np.sqrt(8.0 * max_over / max(height.curvature_bound(), 1e-15)))
+        needed = float(min(by_wavelength, by_curvature))
+        root_cell = max((u1 - u0), (v1 - v0)) / (1 << tree.root_level)
+        growth = np.log2(max(root_cell / max(needed, 1e-9), 1.0))
+        start_level = tree.root_level + int(np.ceil(max(growth, 0.0)))
+        start_level = int(min(start_level, tree.root_level + 20))
+        seed_rule = "wavelength" if by_wavelength <= by_curvature else "curvature"
+    tree.refine_all_to(start_level)
+    #: deepest generation allowed, counted on the *stored* (relative) level grid.
+    max_level = (start_level - tree.grid_level) + 12
+    #: dyadic reference level for the global vertex key table, measured on the stored level
+    #: grid: one vertex is then identified by one integer pair no matter which leaf created it.
+    key_level = max_level
+
+    def leaf_span_for(level: int) -> int:
+        return tree.key_span(level, key_level)
+
+    def cell_errors(cells: np.ndarray, level: int) -> np.ndarray:
+        """Verified interpolation error per cell for a whole generation at one level.
+
+        Vectorised over the generation: every cell's triangles are triangulated with the
+        shared global vertex key, the analytic ``h`` is evaluated at the frozen barycentric
+        probes (centroid, interior thirds, edge midpoints) and the worst deviation of the
+        linear interpolant is returned per cell.
+        """
+        block = np.asarray(cells, dtype=np.int64).reshape(-1, 3)
+        if block.shape[0] == 0:
+            return np.zeros(0, dtype=np.float64)
+        span = leaf_span_for(level)
+        counts = np.zeros(block.shape[0], dtype=np.int64)
+        probe_uv: list[np.ndarray] = []
+        probe_w: list[np.ndarray] = []
+        for row in range(block.shape[0]):
+            pts_ij, tris = tree.cell_triangles(int(block[row, 0]), int(block[row, 1]),
+                                               level, span)
+            u, v = _cell_uv(tree, level, span, pts_ij)
+            pts = np.stack([u, v, height(u, v)], axis=1)
+            tri_pts = pts[tris]                                  # (T,3,3)
+            samp = np.einsum("bk,tkc->tbc", _ERROR_BARY, tri_pts)  # (T,7,3)
+            flat = samp.reshape(-1, 3)
+            probe_uv.append(flat[:, 0:2])
+            probe_w.append(flat[:, 2])
+            counts[row] = flat.shape[0]
+        uu = np.concatenate([uv[:, 0] for uv in probe_uv])
+        vv = np.concatenate([uv[:, 1] for uv in probe_uv])
+        ww = np.concatenate(probe_w)
+        deviation = np.abs(height(uu, vv) - ww)
+        starts = np.concatenate([[0], np.cumsum(counts)[:-1]])
+        return np.maximum.reduceat(deviation, starts)
+
+    # ---------------------------------------------------------------- fixed point
+    iterations = 0
+    cells_tested = 0
+    while True:
+        iterations += 1
+        changed = False
+        # one authoritative walk of the tree per pass; cells are grouped by level so that every
+        # newly created child is examined in the *same* pass (a loop that only re-walked the
+        # levels it saw at the start of the pass silently left over-budget cells unchecked)
+        groups: dict[int, list[tuple[int, int, int]]] = {}
+        for cell in tree.leaves():
+            groups.setdefault(cell[2], []).append(cell)
+        for level in sorted(groups):
+            block = np.asarray(groups[level], dtype=np.int64).reshape(-1, 3)
+            marked = np.zeros(block.shape[0], dtype=bool)
+            for row in range(block.shape[0]):
+                if tree.split_count(int(block[row, 0]), int(block[row, 1]), level) > 0:
+                    marked[row] = True            # a split edge must not leave a T-junction
+            todo = block[~marked]
+            cells_tested += int(todo.shape[0])
+            if todo.shape[0]:
+                errors = cell_errors(todo, level)
+                over = errors > max_over
+                over_here = over & (level >= max_level)
+                if bool(np.any(over_here)):
+                    raise SynLabError(
+                        ErrorCode.PRECISION_NOT_REALIZED,
+                        f"refinement hit the level cap {max_level} without meeting the "
+                        f"{budget} mm interpolation budget",
+                        stage="fracture.cut.refine",
+                        measurements={"level_cap": max_level, "budget_mm": budget,
+                                      "wavelength_min_mm": height.wavelength_min_mm,
+                                      "worst_error_mm": float(np.max(errors[over_here]))},
+                    )
+                unmarked = np.nonzero(~marked)[0]
+                marked[unmarked[over]] = True
+            if bool(np.any(marked)):
+                tree.refine_bulk(block[marked])
+                changed = True
+                leaves_now = len(tree.leaves())
+                if leaves_now > max_cells * 4:
+                    raise SynLabError(
+                        ErrorCode.PRECISION_BUDGET_EXCEEDED,
+                        f"cutter refinement exceeded the cell budget ({max_cells}) while "
+                        f"chasing a {budget} mm budget at wavelength "
+                        f"{height.wavelength_min_mm:.4f} mm; the shortest wavelength is not "
+                        "relaxed",
+                        stage="fracture.cut.refine",
+                        measurements={"max_cells": max_cells, "cells": int(leaves_now),
+                                      "budget_mm": budget,
+                                      "wavelength_min_mm": height.wavelength_min_mm},
+                    )
+        if not changed:
+            break
+        if iterations > 60:
+            raise SynLabError(ErrorCode.PRECISION_NOT_REALIZED,
+                              "cutter refinement did not reach a fixed point",
+                              stage="fracture.cut.refine")
+
+    leaves = tree.leaves()
+    if len(leaves) > max_cells:
+        raise SynLabError(
+            ErrorCode.PRECISION_BUDGET_EXCEEDED,
+            f"cutter needs {len(leaves)} cells > budget {max_cells} for a {budget} mm budget "
+            f"at wavelength {height.wavelength_min_mm:.4f} mm",
+            stage="fracture.cut.budget",
+            measurements={"cells": len(leaves), "max_cells": max_cells,
+                          "wavelength_min_mm": height.wavelength_min_mm, "budget_mm": budget},
+        )
+    leaf_level = max(level for (_, _, level) in leaves)
+    # ---------------------------------------------------------------- bottom cap level
+    boundary_preview: list[tuple[int, int, int, str, bool, bool]] = []
+    for i, j, level in leaves:
+        splits = tree.edge_splits(i, j, level)
+        for orient, lo, split in (("v", True, splits[0]), ("u", True, splits[1]),
+                                  ("v", False, splits[2]), ("u", False, splits[3])):
+            if tree.neighbour(i, j, level, orient, lo) is None or split:
+                boundary_preview.append((i, j, level, orient, lo, split))
+    del boundary_preview, cap_level
+    bottom_w = float(w_min - depth_margin)
+    # ---------------------------------------------------------------- assemble
+    #
+    # The solid is built as a genuine closed 2-manifold without any cap/side bookkeeping
+    # mismatches (plan 10.1 step 5): every top-surface vertex gets exactly one bottom
+    # counterpart directly below it, every top face gets its mirrored bottom face with
+    # reversed winding, and every top edge that is used *once* (i.e. lies on the top
+    # silhouette) gets a two-triangle side quad.  Edges are therefore shared by exactly two
+    # faces by construction, at any refinement pattern.
+    top_index: dict[tuple[int, int], int] = {}
+    bottom_index: dict[int, int] = {}
+    vertices: list[tuple[float, float, float]] = []
+
+    def top_vertex(level: int, gi: int, gj: int) -> int:
+        """Vertex at global key-grid coordinates (``gi``, ``gj``) of a level cell.
+
+        Cell-local indices are meaningless across generations: a level-``l`` cell's index
+        unit is smaller than a coarse cell's, so the pair is scaled onto the shared key grid
+        before it is used as an identity.  Without this a coarse cell and a refined neighbour
+        would create two vertices for the same world point.
+        """
+        shift = leaf_span_for(level)
+        key = (int(gi) << shift, int(gj) << shift)
+        found = top_index.get(key)
+        if found is None:
+            u, v = _cell_uv(tree, level, shift, np.array([[int(gi), int(gj)]], dtype=np.int64))
+            found = len(vertices)
+            vertices.append((float(u[0]), float(v[0]), float(height(u, v)[0])))
+            top_index[key] = found
+        return found
+    def bottom_vertex(top: int) -> int:
+        found = bottom_index.get(top)
+        if found is None:
+            u, v, _ = vertices[top]
+            found = len(vertices)
+            vertices.append((float(u), float(v), bottom_w))
+            bottom_index[top] = found
+        return found
+
+    top_faces: list[tuple[int, int, int]] = []
+    #: *directed* top edges exactly as the top faces wind them, so the side quads can be
+    #: oriented from the same winding instead of guessing an outward direction per edge
+    top_edge_use: Counter[tuple[int, int]] = Counter()
+    #: vertex triplets of every top triangle *as assembled*, so the verification below checks
+    #: the triangles that are actually exported rather than a second key-table lookup
+    top_triangles_pts: list[tuple[int, int, int]] = []
+    for i, j, level in leaves:
+        pts_ij, tris = tree.cell_triangles(i, j, level, leaf_span_for(level))
+        local = [top_vertex(level, int(p[0]), int(p[1])) for p in pts_ij]
+        for tri in tris:
+            face = (int(local[tri[0]]), int(local[tri[1]]), int(local[tri[2]]))
+            if len({face[0], face[1], face[2]}) < 3:
+                continue                      # degenerate: no geometric content
+            top_faces.append(face)
+            top_triangles_pts.append(face)
+            for k in range(3):
+                top_edge_use[(face[k], face[(k + 1) % 3])] += 1
+
+    bottom_faces: list[tuple[int, int, int]] = []
+    side_faces: list[tuple[int, int, int]] = []
+    for face in top_faces:
+        mirror = tuple(bottom_vertex(v) for v in face)
+        bottom_faces.append((mirror[0], mirror[2], mirror[1]))
+    for (a, b), uses in top_edge_use.items():
+        if uses != 1 or (b, a) in top_edge_use:
+            continue                          # interior edge (or inconsistent use): no side
+        ba, bb = bottom_vertex(a), bottom_vertex(b)
+        # top face traverses a -> b, so the bottom face traverses ba -> bb; the side quad is
+        # then b -> a -> ba -> bb, which shares every edge with opposite direction
+        side_faces.append((b, a, ba))
+        side_faces.append((b, ba, bb))
+
+    verts = np.asarray(vertices, dtype=np.float64)
+    faces = np.asarray(top_faces + bottom_faces + side_faces, dtype=np.int64)
+    volume = float(np.einsum(
+        "ij,ij->i", np.cross(verts[faces[:, 1]] - verts[faces[:, 0]],
+                             verts[faces[:, 2]] - verts[faces[:, 0]]),
+        verts[faces[:, 0]]).sum() / 6.0)
+    if volume < 0.0:
+        # the silhouette winding choice is only globally consistent up to an overall sign;
+        # flip every face at once so the solid is outward-oriented (never per-face patching)
+        faces = faces[:, ::-1].copy()
+        volume = -volume
+    if faces.shape[0] > int(max_triangles):
+        raise SynLabError(
+            ErrorCode.PRECISION_BUDGET_EXCEEDED,
+            f"cutter triangle count {faces.shape[0]} exceeds the budget {max_triangles}",
+            stage="fracture.cut.budget",
+            measurements={"triangles": int(faces.shape[0]), "max_triangles": int(max_triangles)},
+        )
+
+    # ---------------------------------------------------------------- verification
+    tri_index = np.asarray(top_triangles_pts, dtype=np.int64).reshape(-1, 3)
+    tri_pts = verts[tri_index]                                     # (T,3,3)
+    samp = np.einsum("bk,tkc->tbc", _ERROR_BARY, tri_pts)          # (T,7,3)
+    deviation = np.abs(height(samp[:, :, 0], samp[:, :, 1]) - samp[:, :, 2])
+    realized = float(np.max(deviation))
+    top_checked = int(tri_index.shape[0])
+    if realized > max_over:
+        worst = int(np.unravel_index(int(np.argmax(deviation)), deviation.shape)[0])
+        corner = samp[worst][int(np.argmax(deviation[worst]))]
+        raise SynLabError(
+            ErrorCode.PRECISION_NOT_REALIZED,
+            f"realized interpolation error {realized:.6f} mm exceeds the {budget} mm budget",
+            stage="fracture.cut.verify",
+            measurements={
+                "realized_error_mm": realized,
+                "budget_mm": budget,
+                "worst_probe_uv_mm": [float(corner[0]), float(corner[1])],
+                "worst_triangle_uv_mm": np.round(tri_pts[worst][:, 0:2], 9).tolist(),
+                "worst_triangle_w_mm": np.round(tri_pts[worst][:, 2], 9).tolist(),
+                "leaf_level": int(leaf_level),
+                "key_level": int(key_level),
+            },
+        )
+
+    counter: Counter[tuple[int, int]] = Counter()
+    for tri in faces:
+        for k in range(3):
+            a, b = int(tri[k]), int(tri[(k + 1) % 3])
+            counter[(min(a, b), max(a, b))] += 1
+    bad_edges = {e: n for e, n in counter.items() if n != 2}
+    local_mesh = trimesh.Trimesh(vertices=verts, faces=faces, process=False)
+    if bad_edges:
+        raise SynLabError(
+            ErrorCode.CUTTER_NOT_CLOSED,
+            f"cutter is not watertight: {len(bad_edges)} edges with != 2 incident faces",
+            stage="fracture.cut.verify",
+            measurements={"bad_edges": len(bad_edges), "faces": int(faces.shape[0]),
+                          "edge_use_histogram": {str(k): int(v) for k, v in
+                                                 Counter(counter.values()).items()}},
+        )
+    if not bool(local_mesh.is_winding_consistent):
+        raise SynLabError(ErrorCode.CUTTER_NOT_CLOSED, "cutter triangle winding is inconsistent",
+                          stage="fracture.cut.verify")
+    volume = float(local_mesh.volume)
+    if volume <= 0.0:
+        raise SynLabError(
+            ErrorCode.CUTTER_NOT_CLOSED,
+            f"cutter signed volume {volume} <= 0 (inward orientation)",
+            stage="fracture.cut.verify", measurements={"volume_mm3": volume},
+        )
+
+    R, t = basis_transforms(basis)
+    origin = np.asarray(basis.origin, dtype=np.float64).reshape(3)
+    world = verts @ R + origin[None, :]
+    roundtrip = float(np.max(np.abs(basis.to_local(world) - verts))) if getattr(verts, 'size', 0) else 0.0
+    if roundtrip > 1.0e-6:
+        raise SynLabError(ErrorCode.CUTTER_NOT_CLOSED,
+                          "cutter world frame does not round-trip through the cut basis "
+                          f"(max {roundtrip:.3e} mm)", stage="fracture.cut.frame",
+                          measurements={"frame_roundtrip_mm": roundtrip})
+    mesh = trimesh.Trimesh(vertices=world, faces=faces, process=False)
+    mesh.metadata = dict(mesh.metadata or {})
+    report = {
+        "requested_error_mm": budget,
+        "realized_error_mm": float(realized),
+        "error_samples": int(top_checked * len(_ERROR_BARY)),
+        "watertight": True,
+        "winding_consistent": True,
+        "signed_volume_mm3": volume,
+        "degenerate_faces": int(np.sum(local_mesh.area_faces <= 0.0)),
+        "edge_use_histogram": {str(k): int(v) for k, v in sorted(Counter(counter.values()).items())},
+        "cells": len(leaves),
+        "leaf_level": int(leaf_level),
+        "root_level": int(root_level),
+        "grid_level": int(tree.grid_level),
+        "start_level": int(start_level),
+        "seed_rule": str(seed_rule),
+        "points_per_wavelength": float(POINTS_PER_WAVELENGTH),
+        "seed_cell_mm": float(max((u1 - u0), (v1 - v0)) / (1 << int(start_level))),
+        "refine_iterations": int(iterations),
+        "cells_tested": int(cells_tested),
+        "triangles": int(faces.shape[0]),
+        "vertices": int(verts.shape[0]),
+        "top_triangles": len(top_faces),
+        "bottom_triangles": len(bottom_faces),
+        "side_triangles": len(side_faces),
+        "bottom_w_mm": bottom_w,
+        "w_range_mm": [float(verts[:, 2].min()), float(verts[:, 2].max())],
+        "planned_spacing_mm": [float(tree.hx), float(tree.hy)],
+        "max_cells": int(max_cells),
+        "max_triangles": int(max_triangles),
+        "key_level": int(key_level),
+        "max_level": int(max_level),
+        "height_field": height.as_dict(),
+        "cutter_local_hash": hash_json({"v": np.round(verts, 12).tolist(), "f": faces.tolist()}),
+    }
+    return mesh, report
+
+
+def _cell_uv(tree: _Quadtree, level: int, span: int,
+             grid_ij: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Map global dyadic integer coordinates to world (u, v).
+
+    ``span`` is the number of halvings between the cell's own index grid and the *key* grid
+    (see :meth:`_Quadtree.key_span`): a key unit is ``cell_size(level) / 2 ** span`` wide and
+    is the same world length for every cell generation, which is what lets one vertex be
+    identified by one integer pair no matter which leaf created it.
+    """
+    hx, hy = tree.cell_size(level)
+    step_u = hx / float(1 << span)
+    step_v = hy / float(1 << span)
+    return tree.u0 + grid_ij[:, 0] * step_u, tree.v0 + grid_ij[:, 1] * step_v

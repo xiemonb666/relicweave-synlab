@@ -1,0 +1,1266 @@
+{
+  "schema": "shardforge.reference_material_samples.v2",
+  "seed": 20261015,
+  "mother_coordinate_points_mm": [
+    [
+      30.0,
+      0.0,
+      11.0
+    ],
+    [
+      28.0,
+      0.0,
+      27.0
+    ],
+    [
+      54.0,
+      0.0,
+      53.0
+    ],
+    [
+      15.5,
+      0.0,
+      0.0
+    ]
+  ],
+  "query_note": "All rows query the same mother coordinates through the pure material_at field. Versioned ceramic reference profiles select original outer_wall, inner_wall, and rim faces by semantic tag at query depth zero; foot/base and interface expose bare body. Volume queries require explicit depth_mm. Landmark coordinates are bounded by source dimensions but are not registered to source meshes.",
+  "reference_profiles": {
+    "daily_aberdeen_porcelain_celadon": {
+      "profile_hash": "sha256:cd9a0c4f64911a5fed4d0daf7f6720c52d48bda6b6d8cd2eb24257be2834c40d",
+      "source_id": "aberdeen_ABDMS095708.121",
+      "optical_measurements_status": "UNKNOWN",
+      "mechanics_status": "UNKNOWN",
+      "field_kernel": "value_noise+aggregate+fiber;splitmix64-logical-u64-v2",
+      "field_kernel_version": 2,
+      "coating_surface_policy": {
+        "version": 1,
+        "mode": "original_surface_tags",
+        "coated_tags": [
+          "outer_wall",
+          "inner_wall",
+          "rim"
+        ],
+        "bare_body_tags": [
+          "foot",
+          "base",
+          "interface",
+          "attachment"
+        ],
+        "volume_tag": "volume",
+        "surface_query_depth_mm": 0.0,
+        "volume_query_depth": "EXPLICIT_CALLER_DEPTH_REQUIRED"
+      },
+      "layer_semantics": {
+        "mode": "SHADING_LAYER",
+        "surface_policy": "original_surface_tags-v1",
+        "coated_surface_tags": [
+          "outer_wall",
+          "inner_wall",
+          "rim"
+        ],
+        "bare_body_surface_tags": [
+          "foot",
+          "base",
+          "interface",
+          "attachment"
+        ],
+        "surface_query_depth_mm": 0.0,
+        "volume_query_depth": "EXPLICIT_CALLER_DEPTH_REQUIRED",
+        "depth_band_parameter": "DESIGN_CHOICE_FOR_EXPLICIT_VOLUME_QUERY_ONLY",
+        "physical_solid_status": "NOT_CREATED",
+        "physical_thickness_status": "UNKNOWN",
+        "note": "Original coated surface tags change sampled appearance only; no solid glaze is modeled."
+      },
+      "outer_wall": {
+        "layer_id": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "layer_name": [
+          "source_named_surface_finish",
+          "source_named_surface_finish",
+          "source_named_surface_finish",
+          "source_named_surface_finish"
+        ],
+        "albedo": [
+          [
+            0.3369724452495575,
+            0.48565757274627686,
+            0.43611061573028564
+          ],
+          [
+            0.3352341949939728,
+            0.48316439986228943,
+            0.43387752771377563
+          ],
+          [
+            0.3319818675518036,
+            0.47849953174591064,
+            0.4296993315219879
+          ],
+          [
+            0.3345693051815033,
+            0.4822107255458832,
+            0.4330233633518219
+          ]
+        ],
+        "roughness": [
+          0.1452646255493164,
+          0.140813946723938,
+          0.13369204103946686,
+          0.13935799896717072
+        ],
+        "transmission": [
+          0.02,
+          0.02,
+          0.02,
+          0.02
+        ],
+        "ior": [
+          1.5099999904632568,
+          1.5099999904632568,
+          1.5099999904632568,
+          1.5099999904632568
+        ],
+        "grain": [
+          0.559196412563324,
+          0.5271316170692444,
+          0.28973472118377686,
+          0.47859978675842285
+        ],
+        "porosity": [
+          0.08590276539325714,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "direction": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "layer_depth_mm": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "inner_wall": {
+        "layer_id": [
+          2
+        ],
+        "layer_name": [
+          "source_named_surface_finish"
+        ],
+        "albedo": [
+          [
+            0.3352341949939728,
+            0.48316439986228943,
+            0.43387752771377563
+          ]
+        ],
+        "roughness": [
+          0.140813946723938
+        ],
+        "transmission": [
+          0.02
+        ],
+        "ior": [
+          1.5099999904632568
+        ],
+        "grain": [
+          0.5271316170692444
+        ],
+        "porosity": [
+          0.0
+        ],
+        "direction": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "layer_depth_mm": [
+          0.0
+        ]
+      },
+      "rim": {
+        "layer_id": [
+          2
+        ],
+        "layer_name": [
+          "source_named_surface_finish"
+        ],
+        "albedo": [
+          [
+            0.3319818675518036,
+            0.47849953174591064,
+            0.4296993315219879
+          ]
+        ],
+        "roughness": [
+          0.13369204103946686
+        ],
+        "transmission": [
+          0.02
+        ],
+        "ior": [
+          1.5099999904632568
+        ],
+        "grain": [
+          0.28973472118377686
+        ],
+        "porosity": [
+          0.0
+        ],
+        "direction": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "layer_depth_mm": [
+          0.0
+        ]
+      },
+      "foot": {
+        "layer_id": [
+          1
+        ],
+        "layer_name": [
+          "body"
+        ],
+        "albedo": [
+          [
+            0.7617274522781372,
+            0.7577908635139465,
+            0.7390921115875244
+          ]
+        ],
+        "roughness": [
+          0.39935800433158875
+        ],
+        "transmission": [
+          0.0
+        ],
+        "ior": [
+          1.559999942779541
+        ],
+        "grain": [
+          0.6285997629165649
+        ],
+        "porosity": [
+          0.0
+        ],
+        "direction": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "layer_depth_mm": [
+          0.0
+        ]
+      },
+      "new_interface_same_mother_points": {
+        "layer_id": [
+          1
+        ],
+        "layer_name": [
+          "body"
+        ],
+        "albedo": [
+          [
+            0.7671582102775574,
+            0.7631935477256775,
+            0.7443615198135376
+          ]
+        ],
+        "roughness": [
+          0.40526461601257324
+        ],
+        "transmission": [
+          0.0
+        ],
+        "ior": [
+          1.559999942779541
+        ],
+        "grain": [
+          0.7091963887214661
+        ],
+        "porosity": [
+          0.08590276539325714
+        ],
+        "direction": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "layer_depth_mm": [
+          0.0
+        ]
+      }
+    },
+    "historical_met_jun_stoneware_glaze": {
+      "profile_hash": "sha256:7dce1c32fa669108f30abc4605934a4be544138f2ef69b7b4081dfe2a89ca9c6",
+      "source_id": "met_18.56.44",
+      "optical_measurements_status": "UNKNOWN",
+      "mechanics_status": "UNKNOWN",
+      "field_kernel": "value_noise+aggregate+fiber;splitmix64-logical-u64-v2",
+      "field_kernel_version": 2,
+      "coating_surface_policy": {
+        "version": 1,
+        "mode": "original_surface_tags",
+        "coated_tags": [
+          "outer_wall",
+          "inner_wall",
+          "rim"
+        ],
+        "bare_body_tags": [
+          "foot",
+          "base",
+          "interface",
+          "attachment"
+        ],
+        "volume_tag": "volume",
+        "surface_query_depth_mm": 0.0,
+        "volume_query_depth": "EXPLICIT_CALLER_DEPTH_REQUIRED"
+      },
+      "layer_semantics": {
+        "mode": "SHADING_LAYER",
+        "surface_policy": "original_surface_tags-v1",
+        "coated_surface_tags": [
+          "outer_wall",
+          "inner_wall",
+          "rim"
+        ],
+        "bare_body_surface_tags": [
+          "foot",
+          "base",
+          "interface",
+          "attachment"
+        ],
+        "surface_query_depth_mm": 0.0,
+        "volume_query_depth": "EXPLICIT_CALLER_DEPTH_REQUIRED",
+        "depth_band_parameter": "DESIGN_CHOICE_FOR_EXPLICIT_VOLUME_QUERY_ONLY",
+        "physical_solid_status": "NOT_CREATED",
+        "physical_thickness_status": "UNKNOWN",
+        "note": "Original coated surface tags change sampled appearance only; no solid glaze is modeled."
+      },
+      "outer_wall": {
+        "layer_id": [
+          2,
+          2,
+          2,
+          2
+        ],
+        "layer_name": [
+          "source_named_surface_finish",
+          "source_named_surface_finish",
+          "source_named_surface_finish",
+          "source_named_surface_finish"
+        ],
+        "albedo": [
+          [
+            0.2620168924331665,
+            0.3590601980686188,
+            0.45610347390174866
+          ],
+          [
+            0.2669253349304199,
+            0.3657865524291992,
+            0.4646477997303009
+          ],
+          [
+            0.2607213258743286,
+            0.3572847843170166,
+            0.4538482129573822
+          ],
+          [
+            0.26594725251197815,
+            0.3644462525844574,
+            0.46294525265693665
+          ]
+        ],
+        "roughness": [
+          0.16032470762729645,
+          0.17399880290031433,
+          0.15735767781734467,
+          0.17364078760147095
+        ],
+        "transmission": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "ior": [
+          1.5199999809265137,
+          1.5199999809265137,
+          1.5199999809265137,
+          1.5199999809265137
+        ],
+        "grain": [
+          0.5054117441177368,
+          0.7232697606086731,
+          0.3240772783756256,
+          0.23332597315311432
+        ],
+        "porosity": [
+          0.0,
+          0.007912393659353256,
+          0.1263582557439804,
+          0.47967687249183655
+        ],
+        "direction": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "layer_depth_mm": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "inner_wall": {
+        "layer_id": [
+          2
+        ],
+        "layer_name": [
+          "source_named_surface_finish"
+        ],
+        "albedo": [
+          [
+            0.2669253349304199,
+            0.3657865524291992,
+            0.4646477997303009
+          ]
+        ],
+        "roughness": [
+          0.17399880290031433
+        ],
+        "transmission": [
+          0.0
+        ],
+        "ior": [
+          1.5199999809265137
+        ],
+        "grain": [
+          0.7232697606086731
+        ],
+        "porosity": [
+          0.007912393659353256
+        ],
+        "direction": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "layer_depth_mm": [
+          0.0
+        ]
+      },
+      "rim": {
+        "layer_id": [
+          2
+        ],
+        "layer_name": [
+          "source_named_surface_finish"
+        ],
+        "albedo": [
+          [
+            0.2607213258743286,
+            0.3572847843170166,
+            0.4538482129573822
+          ]
+        ],
+        "roughness": [
+          0.15735767781734467
+        ],
+        "transmission": [
+          0.0
+        ],
+        "ior": [
+          1.5199999809265137
+        ],
+        "grain": [
+          0.3240772783756256
+        ],
+        "porosity": [
+          0.1263582557439804
+        ],
+        "direction": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "layer_depth_mm": [
+          0.0
+        ]
+      },
+      "foot": {
+        "layer_id": [
+          1
+        ],
+        "layer_name": [
+          "body"
+        ],
+        "albedo": [
+          [
+            0.21669776737689972,
+            0.24624747037887573,
+            0.26594725251197815
+          ]
+        ],
+        "roughness": [
+          0.5936408042907715
+        ],
+        "transmission": [
+          0.0
+        ],
+        "ior": [
+          1.5399999618530273
+        ],
+        "grain": [
+          0.3833259642124176
+        ],
+        "porosity": [
+          0.47967687249183655
+        ],
+        "direction": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "layer_depth_mm": [
+          0.0
+        ]
+      },
+      "new_interface_same_mother_points": {
+        "layer_id": [
+          1
+        ],
+        "layer_name": [
+          "body"
+        ],
+        "albedo": [
+          [
+            0.21349525451660156,
+            0.2426082342863083,
+            0.2620168924331665
+          ]
+        ],
+        "roughness": [
+          0.5803247094154358
+        ],
+        "transmission": [
+          0.0
+        ],
+        "ior": [
+          1.5399999618530273
+        ],
+        "grain": [
+          0.6554117798805237
+        ],
+        "porosity": [
+          0.0
+        ],
+        "direction": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "layer_depth_mm": [
+          0.0
+        ]
+      }
+    },
+    "historical_smithsonian_colonoware_unglazed": {
+      "profile_hash": "sha256:f43a8c42bf661ce850f402f70aab4cda4fbd15ab217f65b22bc4ec55f095e7f7",
+      "source_id": "smithsonian_NMAAHC_2017.108.1.1",
+      "optical_measurements_status": "UNKNOWN",
+      "mechanics_status": "UNKNOWN",
+      "field_kernel": "value_noise+aggregate+fiber;splitmix64-logical-u64-v2",
+      "field_kernel_version": 2,
+      "coating_surface_policy": {
+        "version": 1,
+        "mode": "original_surface_tags",
+        "coated_tags": [],
+        "bare_body_tags": [
+          "outer_wall",
+          "inner_wall",
+          "rim",
+          "foot",
+          "base",
+          "interface",
+          "attachment"
+        ],
+        "volume_tag": "volume",
+        "surface_query_depth_mm": 0.0,
+        "volume_query_depth": "EXPLICIT_CALLER_DEPTH_REQUIRED"
+      },
+      "layer_semantics": {
+        "mode": "SHADING_LAYER",
+        "surface_policy": "original_surface_tags-v1",
+        "coated_surface_tags": [],
+        "bare_body_surface_tags": [
+          "outer_wall",
+          "inner_wall",
+          "rim",
+          "foot",
+          "base",
+          "interface",
+          "attachment"
+        ],
+        "surface_query_depth_mm": 0.0,
+        "physical_solid_status": "NOT_APPLICABLE_SOURCE_IS_UNGLAZED"
+      },
+      "outer_wall": {
+        "layer_id": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "layer_name": [
+          "body",
+          "body",
+          "body",
+          "body"
+        ],
+        "albedo": [
+          [
+            0.3374716639518738,
+            0.19537833333015442,
+            0.11545083671808243
+          ],
+          [
+            0.34020760655403137,
+            0.19696229696273804,
+            0.11638680845499039
+          ],
+          [
+            0.3380821645259857,
+            0.1957317739725113,
+            0.1156596839427948
+          ],
+          [
+            0.3510865569114685,
+            0.2032606452703476,
+            0.12010855972766876
+          ]
+        ],
+        "roughness": [
+          0.8300694823265076,
+          0.8360692858695984,
+          0.8314082622528076,
+          0.859926700592041
+        ],
+        "transmission": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "ior": [
+          1.5199999809265137,
+          1.5199999809265137,
+          1.5199999809265137,
+          1.5199999809265137
+        ],
+        "grain": [
+          0.5506946444511414,
+          0.6106928586959839,
+          0.5640823841094971,
+          0.849266767501831
+        ],
+        "porosity": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "direction": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "layer_depth_mm": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "inner_wall": {
+        "layer_id": [
+          1
+        ],
+        "layer_name": [
+          "body"
+        ],
+        "albedo": [
+          [
+            0.34020760655403137,
+            0.19696229696273804,
+            0.11638680845499039
+          ]
+        ],
+        "roughness": [
+          0.8360692858695984
+        ],
+        "transmission": [
+          0.0
+        ],
+        "ior": [
+          1.5199999809265137
+        ],
+        "grain": [
+          0.6106928586959839
+        ],
+        "porosity": [
+          0.0
+        ],
+        "direction": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "layer_depth_mm": [
+          0.0
+        ]
+      },
+      "rim": {
+        "layer_id": [
+          1
+        ],
+        "layer_name": [
+          "body"
+        ],
+        "albedo": [
+          [
+            0.3380821645259857,
+            0.1957317739725113,
+            0.1156596839427948
+          ]
+        ],
+        "roughness": [
+          0.8314082622528076
+        ],
+        "transmission": [
+          0.0
+        ],
+        "ior": [
+          1.5199999809265137
+        ],
+        "grain": [
+          0.5640823841094971
+        ],
+        "porosity": [
+          0.0
+        ],
+        "direction": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "layer_depth_mm": [
+          0.0
+        ]
+      },
+      "foot": {
+        "layer_id": [
+          1
+        ],
+        "layer_name": [
+          "body"
+        ],
+        "albedo": [
+          [
+            0.3510865569114685,
+            0.2032606452703476,
+            0.12010855972766876
+          ]
+        ],
+        "roughness": [
+          0.859926700592041
+        ],
+        "transmission": [
+          0.0
+        ],
+        "ior": [
+          1.5199999809265137
+        ],
+        "grain": [
+          0.849266767501831
+        ],
+        "porosity": [
+          0.0
+        ],
+        "direction": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "layer_depth_mm": [
+          0.0
+        ]
+      },
+      "new_interface_same_mother_points": {
+        "layer_id": [
+          1
+        ],
+        "layer_name": [
+          "body"
+        ],
+        "albedo": [
+          [
+            0.3374716639518738,
+            0.19537833333015442,
+            0.11545083671808243
+          ]
+        ],
+        "roughness": [
+          0.8300694823265076
+        ],
+        "transmission": [
+          0.0
+        ],
+        "ior": [
+          1.5199999809265137
+        ],
+        "grain": [
+          0.5506946444511414
+        ],
+        "porosity": [
+          0.0
+        ],
+        "direction": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "layer_depth_mm": [
+          0.0
+        ]
+      }
+    }
+  },
+  "catalogue_comparators": {
+    "catalogue_wood": {
+      "profile_hash": "sha256:3a7ce9773f893e7c164a2fcc56419965bd25a1b6f3f11dfa0fc467fdd1a8b161",
+      "catalogue_material_id": "M11",
+      "source_status": "SYNTHETIC_CATALOGUE_PROFILE",
+      "field_kernel": "value_noise+aggregate+fiber",
+      "field_kernel_version": 1,
+      "outer_wall": {
+        "layer_id": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "layer_name": [
+          "body",
+          "body",
+          "body",
+          "body"
+        ],
+        "albedo": [
+          [
+            0.3503650426864624,
+            0.25444263219833374,
+            0.16670331358909607
+          ],
+          [
+            0.3398462235927582,
+            0.24694262444972992,
+            0.1621292382478714
+          ],
+          [
+            0.3236081898212433,
+            0.23536480963230133,
+            0.15506820380687714
+          ],
+          [
+            0.3530791997909546,
+            0.25637781620025635,
+            0.16788354516029358
+          ]
+        ],
+        "roughness": [
+          0.6843447089195251,
+          0.6676007509231567,
+          0.6417530179023743,
+          0.6886650919914246
+        ],
+        "transmission": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "ior": [
+          1.5,
+          1.5,
+          1.5,
+          1.5
+        ],
+        "grain": [
+          0.4288395345211029,
+          0.35273078083992004,
+          0.23524105548858643,
+          0.4484775960445404
+        ],
+        "porosity": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "direction": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "layer_depth_mm": [
+          50.0,
+          52.0,
+          26.0,
+          64.5
+        ]
+      },
+      "new_interface_same_mother_points": {
+        "layer_id": [
+          1
+        ],
+        "layer_name": [
+          "body"
+        ],
+        "albedo": [
+          [
+            0.35306429862976074,
+            0.2551174461841583,
+            0.16400405764579773
+          ]
+        ],
+        "roughness": [
+          0.7443447113037109
+        ],
+        "transmission": [
+          0.0
+        ],
+        "ior": [
+          1.5
+        ],
+        "grain": [
+          0.5788395404815674
+        ],
+        "porosity": [
+          0.0
+        ],
+        "direction": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "layer_depth_mm": [
+          0.0
+        ]
+      }
+    },
+    "catalogue_metal": {
+      "profile_hash": "sha256:7fd629cd3f72cfaee7d41d1d8a190dfcb3f100be7a63e043a2c2d6f934c927fc",
+      "catalogue_material_id": "M12",
+      "source_status": "SYNTHETIC_CATALOGUE_PROFILE",
+      "field_kernel": "value_noise+aggregate+fiber",
+      "field_kernel_version": 1,
+      "outer_wall": {
+        "layer_id": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "layer_name": [
+          "body",
+          "body",
+          "body",
+          "body"
+        ],
+        "albedo": [
+          [
+            0.5395179390907288,
+            0.550757884979248,
+            0.5619202256202698
+          ],
+          [
+            0.5459989905357361,
+            0.5573739409446716,
+            0.5687004327774048
+          ],
+          [
+            0.5426103472709656,
+            0.5539147257804871,
+            0.5651553869247437
+          ],
+          [
+            0.5443913340568542,
+            0.5557328462600708,
+            0.5670186281204224
+          ]
+        ],
+        "roughness": [
+          0.21194906532764435,
+          0.2274688333272934,
+          0.21935421228408813,
+          0.22361914813518524
+        ],
+        "transmission": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "ior": [
+          1.600000023841858,
+          1.600000023841858,
+          1.600000023841858,
+          1.600000023841858
+        ],
+        "grain": [
+          0.14936336874961853,
+          0.34336039423942566,
+          0.24192766845226288,
+          0.2952394485473633
+        ],
+        "porosity": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "direction": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "layer_depth_mm": [
+          50.0,
+          52.0,
+          26.0,
+          64.5
+        ]
+      },
+      "new_interface_same_mother_points": {
+        "layer_id": [
+          1
+        ],
+        "layer_name": [
+          "body"
+        ],
+        "albedo": [
+          [
+            0.5395179390907288,
+            0.550757884979248,
+            0.5619978308677673
+          ]
+        ],
+        "roughness": [
+          0.27194908261299133
+        ],
+        "transmission": [
+          0.0
+        ],
+        "ior": [
+          1.600000023841858
+        ],
+        "grain": [
+          0.299363374710083
+        ],
+        "porosity": [
+          0.0
+        ],
+        "direction": [
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "layer_depth_mm": [
+          0.0
+        ]
+      }
+    }
+  },
+  "process_compatibility": [
+    {
+      "material_class": "porcelain",
+      "process": "ceramic_glaze_firing",
+      "status": "COMPATIBLE_SUBSTRATE_CLASS",
+      "effect_scope": "surface_finish",
+      "basis": "clay ceramic substrate class; object-specific firing compatibility remains unknown"
+    },
+    {
+      "material_class": "stoneware",
+      "process": "ceramic_glaze_firing",
+      "status": "COMPATIBLE_SUBSTRATE_CLASS",
+      "effect_scope": "surface_finish",
+      "basis": "clay ceramic substrate class; object-specific firing compatibility remains unknown"
+    },
+    {
+      "material_class": "earthenware",
+      "process": "ceramic_glaze_firing",
+      "status": "COMPATIBLE_SUBSTRATE_CLASS",
+      "effect_scope": "surface_finish",
+      "basis": "clay ceramic substrate class; object-specific firing compatibility remains unknown"
+    },
+    {
+      "material_class": "wood",
+      "process": "ceramic_glaze_firing",
+      "status": "INCOMPATIBLE_FOR_CLAY_BODY_GLAZE",
+      "effect_scope": "not_applied",
+      "basis": "the named process requires a clay ceramic body; metal vitreous enamelling is a separate process"
+    },
+    {
+      "material_class": "metal",
+      "process": "ceramic_glaze_firing",
+      "status": "INCOMPATIBLE_FOR_CLAY_BODY_GLAZE",
+      "effect_scope": "not_applied",
+      "basis": "the named process requires a clay ceramic body; metal vitreous enamelling is a separate process"
+    },
+    {
+      "material_class": "porcelain",
+      "process": "surface_paint",
+      "status": "COMPATIBLE_AS_APPEARANCE_OPERATION",
+      "effect_scope": "SHADING_LAYER",
+      "basis": "generic surface appearance operation; no object-specific paint recipe is asserted"
+    },
+    {
+      "material_class": "stoneware",
+      "process": "engrave_body",
+      "status": "GEOMETRY_CHANGING_DESIGN_OPERATION",
+      "effect_scope": "GEOMETRIC_LAYER",
+      "basis": "engraving removes or displaces substrate; material-specific tool/process limits are unknown"
+    }
+  ],
+  "mechanics": {
+    "status": "UNKNOWN",
+    "automatic_physics_card": false,
+    "note": "Primary studies are partial condition-specific comparators; no values are promoted to any named object or project lot."
+  }
+}

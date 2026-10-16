@@ -1,0 +1,454 @@
+{
+  "composition_policy": {
+    "appearance_transfer": "pattern albedo ratio and roughness delta over material sample; appearance-only approximation",
+    "coating_claim": "appearance layer selection only; no physical glaze thickness or mechanics claim",
+    "fresh_interface": "body material only; no glaze and no original-surface pattern",
+    "geometry_effect": "none; source geometry remains byte-value-identical in canonical array representation",
+    "material_field": "source-conditioned material profile sampled at original triangle centroids and lineage tags",
+    "pattern_field": "existing pattern evaluator, applied only to the style's declared source surface tag"
+  },
+  "controls_requested": {
+    "material": {
+      "coating_roughness": 0.18
+    },
+    "pattern": {
+      "line_width_mm": 1.0,
+      "spacing_mm": 10.0
+    }
+  },
+  "generation_mode": "NEW_REFERENCE_GUIDED_DESIGN",
+  "material": {
+    "coating_surface_policy": {
+      "bare_body_tags": [
+        "foot",
+        "base",
+        "interface",
+        "attachment"
+      ],
+      "coated_tags": [
+        "outer_wall",
+        "inner_wall",
+        "rim"
+      ],
+      "mode": "original_surface_tags",
+      "surface_query_depth_mm": 0.0,
+      "version": 1,
+      "volume_query_depth": "EXPLICIT_CALLER_DEPTH_REQUIRED",
+      "volume_tag": "volume"
+    },
+    "material_id": "M04",
+    "profile_hash": "sha256:759611659fb32cee8a19378351b448ca4548182b6a3b3a5eb8cf04ed77867f32",
+    "source_conditioned": {
+      "controls": {
+        "body_albedo_linear_rgb": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "linear_rgb_0_1",
+          "value": [
+            0.774,
+            0.77,
+            0.751
+          ]
+        },
+        "body_ior": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "1",
+          "value": 1.56
+        },
+        "body_roughness": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "1",
+          "value": 0.34
+        },
+        "coating_albedo_linear_rgb": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "linear_rgb_0_1",
+          "value": [
+            0.34,
+            0.49,
+            0.44
+          ]
+        },
+        "coating_band_mm": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "mm",
+          "value": 0.22
+        },
+        "coating_ior": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "1",
+          "value": 1.51
+        },
+        "coating_present": {
+          "source_measurement": "Celadon is named in the object medium; layer geometry and properties are not specified.",
+          "status": "SOURCE_FACT",
+          "unit": "categorical",
+          "value": true
+        },
+        "coating_roughness": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "1",
+          "value": 0.18
+        },
+        "coating_transmission": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "1",
+          "value": 0.02
+        },
+        "grain_amount": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "1",
+          "value": 0.04
+        },
+        "grain_scale_mm": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "mm",
+          "value": 0.18
+        },
+        "physical_glaze_thickness_mm": {
+          "source_measurement": null,
+          "status": "UNKNOWN",
+          "unit": "mm",
+          "value": null
+        },
+        "pore_amount": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "1",
+          "value": 0.03
+        },
+        "pore_scale_mm": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "mm",
+          "value": 0.5
+        }
+      },
+      "layer_semantics": {
+        "bare_body_surface_tags": [
+          "foot",
+          "base",
+          "interface",
+          "attachment"
+        ],
+        "coated_surface_tags": [
+          "outer_wall",
+          "inner_wall",
+          "rim"
+        ],
+        "depth_band_parameter": "DESIGN_CHOICE_FOR_EXPLICIT_VOLUME_QUERY_ONLY",
+        "mode": "SHADING_LAYER",
+        "note": "Original coated surface tags change sampled appearance only; no solid glaze is modeled.",
+        "physical_solid_status": "NOT_CREATED",
+        "physical_thickness_status": "UNKNOWN",
+        "surface_policy": "original_surface_tags-v1",
+        "surface_query_depth_mm": 0.0,
+        "volume_query_depth": "EXPLICIT_CALLER_DEPTH_REQUIRED"
+      },
+      "material_class": "porcelain",
+      "material_class_evidence_status": "SOURCE_FACT",
+      "mechanics_status": "UNKNOWN",
+      "optical_measurements_status": "UNKNOWN",
+      "process_compatibility": {
+        "firing_schedule": "UNKNOWN",
+        "forming_process": "SOURCE_FACT",
+        "glaze_chemistry": "UNKNOWN",
+        "source_material_class": "SOURCE_FACT"
+      },
+      "profile_seed": 2026101501,
+      "schema": "shardforge.reference_material_profile.v1",
+      "seed_ref": "[2026101501,\"material\",\"daily_aberdeen_porcelain_celadon\"]",
+      "source_object": {
+        "accessed_date": "2026-10-15",
+        "facts": [
+          {
+            "evidence": "object record",
+            "field": "medium",
+            "value": "Limoges porcelain and celadon"
+          },
+          {
+            "evidence": "object record",
+            "field": "maker",
+            "value": "Chris Keenan"
+          },
+          {
+            "evidence": "object record",
+            "field": "date",
+            "value": "2007–2009"
+          },
+          {
+            "evidence": "object record",
+            "field": "height_mm",
+            "value": 53
+          },
+          {
+            "evidence": "object record",
+            "field": "overall_diameter_mm",
+            "value": 108
+          },
+          {
+            "evidence": "object record",
+            "field": "foot_ring_diameter_mm",
+            "value": 31
+          },
+          {
+            "evidence": "qualitative observation of the primary object photographs; not colorimetry",
+            "field": "visual_observation",
+            "value": "pale blue-green interior and exterior, dark rust upper band, pale foot"
+          }
+        ],
+        "institution": "Aberdeen City Museums and Galleries",
+        "object_id": "ABDMS095708.121",
+        "rights_note": "The object page identifies copyrighted images; this recipe records metadata and qualitative observations only.",
+        "source_id": "aberdeen_ABDMS095708.121",
+        "title": "Porcelain Small Footed Bowl",
+        "unknowns": [
+          "full inner and outer meridian",
+          "wall, base, rim, and foot cross-sections",
+          "forming and firing schedule",
+          "celadon glaze chemistry and measured thickness",
+          "spectral reflectance, roughness, and index of refraction",
+          "lot-specific mechanical properties"
+        ],
+        "url": "https://emuseum.aberdeencity.gov.uk/objects/186848/porcelain-small-footed-bowl"
+      },
+      "style_id": "daily_aberdeen_porcelain_celadon",
+      "style_name": "Daily footed porcelain bowl with celadon"
+    },
+    "style_id": "daily_aberdeen_porcelain_celadon"
+  },
+  "pattern": {
+    "family_id": "PAT03",
+    "params": {
+      "circumferential_count_integer": 25,
+      "complexity": 1,
+      "footprint": {
+        "candidates": {
+          "mesh_edge_mm/2": 0.5270427067658326
+        },
+        "clamp_max_mm": 0.225,
+        "footprint_mm": 0.225,
+        "source": "mesh_edge_mm/2=0.527043"
+      },
+      "footprint_mm": 0.225,
+      "footprint_source": "mesh_edge_mm/2=0.527043",
+      "groups": [
+        {
+          "azimuthal_wavelength_mm": 9.80628229126291,
+          "n_int": 25,
+          "odd_count_snapped_from": null,
+          "paint_index": 0,
+          "phase_turns": 0.0,
+          "seam_closes_exactly": true,
+          "snap_rule": "no alternation: count unchanged",
+          "spacing_achieved_mm": 9.80628229126291,
+          "spacing_deviation_frac": -0.019371770873708984,
+          "spacing_deviation_mm": -0.19371770873708982,
+          "spacing_requested_mm": 10.0,
+          "tan_theta": 0.0,
+          "theta_achieved_deg": 0.0,
+          "theta_deg": 0.0,
+          "thin_ratio": 1.0,
+          "width_mm": 1.0
+        }
+      ],
+      "line_width_mm": 1.0,
+      "measured": {},
+      "n_groups": 1,
+      "n_stripes_requested": null,
+      "paint_roughness": 0.58,
+      "region_sample_report": {
+        "count": 440,
+        "density_per_mm2": 0.06,
+        "region_area_mm2": 15678.21180825833,
+        "source": "trimesh.Trimesh.sample (area weighted, tagged faces)"
+      },
+      "requested_footprint_mm": 0.225,
+      "s_periodic": false,
+      "spacing_achieved_mm": 9.80628229126291,
+      "spacing_requested_mm": 10.0,
+      "spectrum": {
+        "band_coverage_note": "five octave bands above the dominant frequency; the residual is the energy above the highest band (or outside it)",
+        "bands": [
+          {
+            "band": 0,
+            "energy": 0.008278534878600462,
+            "energy_fraction": 0.20752091811378423,
+            "f_hi": 0.1019754449544012,
+            "f_lo": 0.0,
+            "peak_f_mm_inv": 0.1019754449544012,
+            "peak_wavelength_mm": 9.806282291262908
+          },
+          {
+            "band": 1,
+            "energy": 0.011741251707914086,
+            "energy_fraction": 0.29432204731415995,
+            "f_hi": 0.2039508899088024,
+            "f_lo": 0.1019754449544012,
+            "peak_f_mm_inv": 0.2039508899088024,
+            "peak_wavelength_mm": 4.903141145631454
+          },
+          {
+            "band": 2,
+            "energy": 0.019872744817853633,
+            "energy_fraction": 0.49815701818231917,
+            "f_hi": 0.4079017798176048,
+            "f_lo": 0.2039508899088024,
+            "peak_f_mm_inv": 0.3059263348632036,
+            "peak_wavelength_mm": 3.268760763754303
+          },
+          {
+            "band": 3,
+            "energy": 6.528868152500995e-10,
+            "energy_fraction": 1.6366141269189206e-08,
+            "f_hi": 0.8158035596352096,
+            "f_lo": 0.4079017798176048,
+            "peak_f_mm_inv": 0.4118860333332314,
+            "peak_wavelength_mm": 2.4278560550048125
+          },
+          {
+            "band": 4,
+            "energy": 9.4128150737868e-13,
+            "energy_fraction": 2.3595431495937978e-11,
+            "f_hi": 1.6316071192704191,
+            "f_lo": 0.8158035596352096,
+            "peak_f_mm_inv": 0.8258665165437877,
+            "peak_wavelength_mm": 1.2108494290154208
+          }
+        ],
+        "dominant_f_mm_inv": 0.1019754449544012,
+        "dominant_wavelength_mm": 9.806282291262908,
+        "grid": {
+          "ds_mm": 0.5522085982434544,
+          "dx_mm": 1.2768596733415247,
+          "n_s": 96,
+          "n_x": 192
+        },
+        "high_frequency_residual": 0.0,
+        "mean": 0.10198652975205348,
+        "method": "numpy.fft.rfft2 on the frozen field sampled on a uniform chart grid",
+        "min_wavelength_definition": "smallest octave band centre carrying >=5% of the energy",
+        "min_wavelength_mm": 3.268760763754303,
+        "nyquist_wavelength_mm": 2.5537193466830495,
+        "octave_band_coverage": 1.0,
+        "s_axis_periodic": false,
+        "status": "OK",
+        "total_energy": 0.039892532058196276,
+        "window": "profile axis is open: Hann window, energy compensated",
+        "x_axis_periodic": true
+      },
+      "texture_mm_per_px": null
+    },
+    "recipe_hash": "sha256:d57f010eb8da978e2fe302a45b5d59c3e229b32a0ff575dbd208b12472f81b3b",
+    "reference_style": {
+      "caller_overrides": {
+        "line_width_mm": 1.0,
+        "spacing_mm": 10.0
+      },
+      "chart": {
+        "area_mm2": 15678.21180825833,
+        "circumferential_metric": {
+          "circumference_max_mm": 338.83448925258625,
+          "circumference_min_mm": 65.97344572538564,
+          "metric_scale_at_r_max": 1.3821119122971899,
+          "metric_scale_at_r_min": 0.26910685932084955,
+          "radius_max_mm": 53.92718385456679,
+          "radius_min_mm": 10.499999999999998
+        },
+        "kind": "revolve",
+        "name": "reference_body_outer_meridian_polyline",
+        "region_mask": true,
+        "s_periodic": false,
+        "s_range_mm": [
+          0.0,
+          67.20732887109644
+        ],
+        "s_range_source": "measured_from_mesh",
+        "surface_tag": "outer_wall",
+        "surface_tag_index": 0,
+        "u_periodic": true,
+        "uv_to_xyz": false,
+        "x_period_mm": 245.15705728157275
+      },
+      "distribution_claim": "none; defaults are documented recipe choices, not learned estimates",
+      "evidence_status": "SOURCE_DESCRIPTION_AND_PRODUCT_PHOTOGRAPH_REVIEWED",
+      "generation_mode": "SYNTHETIC_REFERENCE_GUIDED",
+      "known": [
+        "The product is a daily-use rice bowl; page gives diameter, height, capacity, maker and place.",
+        "The maker names the hand-painted vertical tokusa motif and its horsetail reference.",
+        "Pattern surface is the exterior wall; its circumferential repetition is implemented with PAT03's periodic integer count."
+      ],
+      "mapping": {
+        "allowed_families": [
+          "PAT03"
+        ],
+        "defaults": {
+          "line_width_mm": 1.0,
+          "s_margin_frac": 0.1,
+          "spacing_mm": 10.0
+        },
+        "family": "PAT03",
+        "override_ranges": {
+          "line_width_mm": [
+            0.5,
+            3.0
+          ],
+          "s_margin_frac": [
+            0.0,
+            0.35
+          ],
+          "spacing_mm": [
+            5.0,
+            30.0
+          ]
+        },
+        "params": {
+          "n_groups": 1,
+          "thin_ratio": 1.0,
+          "tilt_deg": 0.0
+        },
+        "surface_tag": "outer_wall",
+        "zone": "outer-wall body with a modest edge margin; stripes follow the meridian and repeat around azimuth"
+      },
+      "mother_id": "family_daily_full_belly_v1",
+      "mother_vessel_id": "REFERENCE:daily_full_belly",
+      "motif_and_meaning": "The maker connects tokusa to horsetail grass and its upward growth; the series text associates the motif with success and prosperity. This is source-reported context, not a claim about every tokusa use.",
+      "palette_limits": "No photo-derived RGB, reflectance, glaze BRDF, brush-bleed or pigment-diffusion calibration.",
+      "palette_status": "SOURCE_DESCRIPTION_GUIDED_UNCALIBRATED_DESIGN_PROXY",
+      "process": "Maker describes hand-painted tokusa vertical stripes on a sandy, iron-heavy body with rusty underglaze.",
+      "source_url": "https://www.hasamiyaki.jp/en/item/sabitokusa-chawan/",
+      "style_id": "daily_hasami_tokusa",
+      "surface_tag": "outer_wall",
+      "unknown": [
+        "Exact stripe count, spacing, width, brush profile, stroke order, pigment composition and firing schedule.",
+        "Calibrated color, reflectance, glaze thickness, surface roughness and batch-to-batch variation.",
+        "Full wall section and exact product meridian."
+      ]
+    },
+    "seed_ref": "[2026101502,\"family_daily_full_belly_v1\",\"daily_hasami_tokusa\",\"pattern\"]",
+    "style_id": "daily_hasami_tokusa"
+  },
+  "schema": "synlab.reference_instance_recipe.v1",
+  "seeds": {
+    "material": 2026101501,
+    "pattern": 2026101502
+  },
+  "source_geometry": {
+    "candidate_status": "PARAMETRIC_DAILY_FAMILY_VARIANT_ONLY",
+    "directory_name": "family_daily_full_belly_v1",
+    "frame": "radius_mm_vs_z_mm; revolved about Z axis; Z-up",
+    "geometry_array_sha256": "471cb0dcf827907dfeb435357bf2137146e2098e9174bb480884b8d76ca08144",
+    "geometry_source_sha256": "212d28a6f40e15fc7da9f127b66315fd0f2094295b67052c65bad811e4c212d9",
+    "refinement_status": "SOURCE_PROFILE_FIDELITY_NOT_ESTABLISHED",
+    "source_profile_fidelity": "NOT_ESTABLISHED; dimensions and photographs do not define the complete meridian or construction."
+  }
+}

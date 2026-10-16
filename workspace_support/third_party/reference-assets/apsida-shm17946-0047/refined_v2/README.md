@@ -1,0 +1,5 @@
+# Apsida SHM 17946:0047 exact-coordinate-weld candidate
+
+This folder holds a geometry-only derivative of the official Apsida 3D model. Source: [Apsida item 49281](https://apsida.cut.ac.cy/items/show/49281); attribution “Medelhavsmuseet, SHM 17946:0047; via Apsida / Digital Heritage Research Lab”; license CC BY-SA 4.0. Preserve ShareAlike and attribution on derivatives. The unchanged source ZIP, full OBJ, MTL, and license record are in the parent folder.
+
+The candidate merges only exactly equal XYZ positions in the V1 main component and omits only the four zero-area faces which become fewer than three unique indices. It does not rescale, smooth, repair, cap, decimate, or alter connected handles/foot/body. Native coordinate unit is **UNKNOWN**; any metre-to-millimetre interpretation is an uncalibrated scale hypothesis. This is a derivative for review, not proof of physical truth, complete capture, or measured wall thickness. See [the v2 audit and receipt](../../../vesselforge/experiments/continuation_20261015/scanned_anchor_audit/refinement_v2/README.md) for exact maps, topology outcome, and limits.

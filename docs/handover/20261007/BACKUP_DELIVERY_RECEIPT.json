@@ -1,0 +1,321 @@
+{
+  "schema": "backup_delivery_receipt_v1",
+  "status": "complete",
+  "created_utc": "2026-10-08",
+  "receipt_path": "docs/handover/20261007/BACKUP_DELIVERY_RECEIPT.json",
+  "self_membership": {
+    "included_in_recorded_code_commits": false,
+    "fourth_commit_created": false,
+    "self_hash_cycle": false
+  },
+  "code_commit_set": {
+    "branch": "backup/forge-work-20261003",
+    "repositories": [
+      {
+        "repository": "pgfrag",
+        "remote": "https://github.com/xiemonb666/pgfrag.git",
+        "commit": "21aa69dd131031944a3139b482abf6a0069da023",
+        "parent": "cc0e79773ce34bdebe9124d3fe60c078a85a2f5d",
+        "changed_paths": 1576,
+        "push_returncode": 0,
+        "remote_head": "21aa69dd131031944a3139b482abf6a0069da023",
+        "commit_url": "https://github.com/xiemonb666/pgfrag/commit/21aa69dd131031944a3139b482abf6a0069da023"
+      },
+      {
+        "repository": "vesselforge",
+        "remote": "https://github.com/xiemonb666/vesselforge.git",
+        "commit": "73116cf40bd8620e3142667dccd644cc16c47aac",
+        "parent": "30b7e23aa696eafb3a39f9368de55382c9206069",
+        "changed_paths": 428,
+        "push_returncode": 0,
+        "remote_head": "73116cf40bd8620e3142667dccd644cc16c47aac",
+        "commit_url": "https://github.com/xiemonb666/vesselforge/commit/73116cf40bd8620e3142667dccd644cc16c47aac"
+      },
+      {
+        "repository": "relicweave-synlab",
+        "remote": "https://github.com/xiemonb666/relicweave-synlab.git",
+        "commit": "8271f53ae668468368b7fc61de53e7e5502a112e",
+        "parent": "7cfb7fbb63c0d9170871f72cbfd8586a4c416c56",
+        "changed_paths": 4736,
+        "push_returncode": 0,
+        "post_push_ls_remote_returncode": 0,
+        "remote_head": "8271f53ae668468368b7fc61de53e7e5502a112e",
+        "committed_blob_matches": 4736,
+        "tracked_index_clean": true,
+        "commit_url": "https://github.com/xiemonb666/relicweave-synlab/commit/8271f53ae668468368b7fc61de53e7e5502a112e"
+      }
+    ]
+  },
+  "manifest_and_verification": {
+    "action_manifest": {
+      "path": "docs/backup/20261007/CONTROL_ACTION_MANIFEST.json",
+      "workspace_source": "tmp/backup_coordinator/closeout_20261007/explicit_action_manifest.json",
+      "bytes": 10340581,
+      "sha256": "89b7b6ce06a9253ea75ecdda65ec34c0cc5ed2c55a525687da7d8950b0278376",
+      "actions": 6746,
+      "source_bytes": 145827644
+    },
+    "inventory": {
+      "workspace_path": "tmp/backup_coordinator/closeout_20261007/inventory.json",
+      "bytes": 24715066,
+      "sha256": "27e2aba7fdb0e6c877335c431fdda727ad2b8941fe95fc98a9e4765b126cc0fb"
+    },
+    "credential_scan": {
+      "workspace_path": "tmp/backup_coordinator/closeout_20261007/independent_final_credential_scan_20261008_v3.json",
+      "bytes": 1024,
+      "sha256": "ff99feb862f931c89ff342b8e5a02a277979d9e486bc74b07eec2425b698943c",
+      "known_public_example_only": {
+        "source": "tmp/backup_coordinator/closeout_20261007/execute_closeout_backup.py",
+        "line": 237,
+        "sample_byte_length": 20,
+        "sample_sha256": "1a5d44a2dca19669d72edf4c4f1c27c4c1ca4b4408fbb17f6ce4ad452d78ddb3",
+        "official_reference": "https://docs.aws.amazon.com/sdkref/latest/guide/file-format.html",
+        "general_exemption": false
+      }
+    },
+    "supplementary_manifest": {
+      "workspace_path": "tmp/backup_coordinator/closeout_20261007/SUPPLEMENTARY_EXPORT_MANIFEST.json",
+      "bytes": 2424,
+      "sha256": "e69e6e429682e24bf0d26c59a585c69f3b023b4aee6e9a2d6b144318873ce254"
+    },
+    "independent_postverify": {
+      "workspace_path": "tmp/backup_coordinator/closeout_20261007/independent_final_postverify_20261008.json",
+      "bytes": 4491,
+      "sha256": "9effc2947774bd91cafde433d8b476b968204190be8c4e54b80d862642038f02",
+      "status": "PASS",
+      "source_records": 8646,
+      "unique_destinations": 6784,
+      "tracked_source_mappings": 1968,
+      "evidence_references": 100,
+      "alias_mappings": 28,
+      "raw_source_snapshots": 90,
+      "forbidden_paths": 0
+    },
+    "execution_receipt": {
+      "workspace_path": "tmp/backup_coordinator/closeout_20261007/execution_receipt.json",
+      "bytes": 8027422,
+      "sha256": "328dad965f2d919c529cbbe0187cac325c3afbd305e96ce4855f2c3a7583f336",
+      "status": "complete"
+    }
+  },
+  "canonical_exports": [
+    {
+      "role": "coverage_export",
+      "path": "docs/handover/20261007/CODE_COVERAGE.md",
+      "bytes": 1395,
+      "sha256": "0fe20cca8f66ceab20f2c197e48e1a651018412ea49c5128d2908a89be0c9c6d"
+    },
+    {
+      "role": "source_map",
+      "path": "workspace_backup/20261007/WORKSPACE_SOURCE_MAP.json",
+      "bytes": 7172256,
+      "sha256": "6120f0fd16eb9b296e60eeaf68e86786a5b9f1a14aacb9a93eab24f1cd61d768"
+    },
+    {
+      "role": "frozen_control_copy",
+      "path": "docs/backup/20261007/CONTROL_ACTION_MANIFEST.json",
+      "bytes": 10340581,
+      "sha256": "89b7b6ce06a9253ea75ecdda65ec34c0cc5ed2c55a525687da7d8950b0278376"
+    }
+  ],
+  "documents": [
+    {
+      "name": "RelicWeave_V1.47.docx",
+      "bytes": 779513,
+      "sha256": "41f1254e40a2ecabdcfa1c6583af2fce0ae1b0ab980d5f9179bbaf687b7be64b",
+      "archive_path": "workspace_backup/20261007/RelicWeave_V1.47.docx"
+    },
+    {
+      "name": "RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx",
+      "bytes": 786150,
+      "sha256": "883c831648d0697f456228f4d862deda8a36ff9740ecd6aadb3a3ebfdfdffc7d",
+      "archive_path": "workspace_backup/20261007/RelicWeave_V1.47_A12_VesselForge_PGFrag_Closeout.docx",
+      "visual_qa": "225 of 225 pages pass; included in 238-page aggregate"
+    },
+    {
+      "name": "RelicWeave_V1.46_A12_VesselForge_PGFrag_Integrated_NavFixed.docx",
+      "bytes": 733634,
+      "sha256": "15978a3956fa33e8048cc54c1dad6878a7e19d9c71b84415dcaf8732f041a3b4",
+      "archive_path": "workspace_backup/20261007/RelicWeave_V1.46_A12_VesselForge_PGFrag_Integrated_NavFixed.docx"
+    },
+    {
+      "name": "RelicWeave_V1.46_Implementation_Update_20261005.docx",
+      "bytes": 738618,
+      "sha256": "85f3bb0e6115e208ce51c666d77ee756a4e2b74d67e8d039283574bb6764b531",
+      "archive_path": "workspace_backup/20261007/RelicWeave_V1.46_Implementation_Update_20261005.docx"
+    },
+    {
+      "name": "RelicWeave_V1.44_Optimized_Complete_Plan.docx",
+      "bytes": 546163,
+      "sha256": "4507ead923d60cc8dc20c2a31e532394f4d8ab406a5703bf09eeb606ab6f6374",
+      "archive_path": "workspace_backup/20261007/RelicWeave_V1.44_Optimized_Complete_Plan.docx"
+    },
+    {
+      "name": "PGFrag_VesselForge_Guide_v11.docx",
+      "bytes": 67529,
+      "sha256": "1eb926d3be9d081f236db2b0c47f573a9e283e51295e9bb2969b5c0d32224d19",
+      "archive_path": "workspace_backup/20261007/PGFrag_VesselForge_Guide_v11.docx"
+    },
+    {
+      "name": "PGFrag_VesselForge_Guide_v12.docx",
+      "bytes": 72348,
+      "sha256": "8dc9eb4abeaf11161c049d1e798d529884ccffe2bdf638af1f5c301f2a0a4509",
+      "archive_path": "workspace_backup/20261007/PGFrag_VesselForge_Guide_v12.docx"
+    },
+    {
+      "name": "RelicWeave_A12_VesselForge_PGFrag_Handover_20261007.docx",
+      "bytes": 64641,
+      "sha256": "c8b4e57340c7c9d485aeb5c6aa298ba90ac166870c9d8d0a7d414d35051f7fd2",
+      "archive_path": "docs/handover/20261007/RelicWeave_A12_VesselForge_PGFrag_Handover_20261007.docx",
+      "visual_qa": "13 of 13 pages pass; included in 238-page aggregate"
+    },
+    {
+      "name": "HANDOVER.md",
+      "bytes": 41396,
+      "sha256": "f226a153f8aed2da04e07298f1277cd74071370d52cf74a4967702c2792f7a53",
+      "archive_path": "docs/handover/20261007/HANDOVER.md"
+    }
+  ],
+  "local_archives": {
+    "source_zip": {
+      "path": "local_backups/20261008/selected_project_sources_20261008_6c9830bd.zip",
+      "bytes": 58060401,
+      "sha256": "54f3cc323892c35c9d3ae41a373760b93220c54d1adee16d9a5262b5c7ffbaa7",
+      "receipt": {
+        "path": "local_backups/20261008/selected_project_sources_20261008_6c9830bd.receipt.json",
+        "bytes": 1331,
+        "sha256": "d66b6804e4e75b04e849e2d371e6be0d9edd319971321c13c86a034d54802f00"
+      },
+      "unique_source_items": 6742,
+      "source_map_rows": 6748,
+      "missing_map_rows": 0,
+      "entry_hash_checks": "PASS"
+    },
+    "git_bundles": [
+      {
+        "repository": "pgfrag",
+        "path": "local_backups/20261008/pgfrag_21aa69dd131031944a3139b482abf6a0069da023.bundle",
+        "bytes": 141433241,
+        "sha256": "2e077621822345780217df12470562d1b18f0e6fec9bb1bf7aefa9d19a28e256",
+        "head": "21aa69dd131031944a3139b482abf6a0069da023",
+        "branch": "backup/forge-work-20261003",
+        "bundle_verify_returncode": 0,
+        "list_heads_returncode": 0,
+        "complete_history": true
+      },
+      {
+        "repository": "vesselforge",
+        "path": "local_backups/20261008/vesselforge_73116cf40bd8620e3142667dccd644cc16c47aac.bundle",
+        "bytes": 7398049,
+        "sha256": "ef8ae54e0939f7e29a2ab1b22b7ad1b4dc9cb6c0ca003bb941e2f0c80896919b",
+        "head": "73116cf40bd8620e3142667dccd644cc16c47aac",
+        "branch": "backup/forge-work-20261003",
+        "bundle_verify_returncode": 0,
+        "list_heads_returncode": 0,
+        "complete_history": true
+      },
+      {
+        "repository": "relicweave-synlab",
+        "path": "local_backups/20261008/relicweave-synlab_8271f53ae668468368b7fc61de53e7e5502a112e.bundle",
+        "bytes": 111367478,
+        "sha256": "ae4c37802f980f6e9a7c9a67931c65f7f119127830fa31ae19762aa515884c06",
+        "head": "8271f53ae668468368b7fc61de53e7e5502a112e",
+        "branch": "backup/forge-work-20261003",
+        "bundle_verify_returncode": 0,
+        "list_heads_returncode": 0,
+        "complete_history": true
+      }
+    ]
+  },
+  "local_only_metadata": [
+    {
+      "path": "tmp/backup_coordinator/closeout_20261007/independent_credential_scan_current_inventory_20261007.json",
+      "bytes": 837,
+      "sha256": "da7fd676389232bb0e2a4f694e90079787a3c6c4577a79655e14a5638303d5e8",
+      "git_archived": false,
+      "preservation": "original workspace path plus local source ZIP"
+    },
+    {
+      "path": "tmp/backup_coordinator/closeout_20261007/stale_coverage_before_fix_20261008/independent_final_credential_scan_20261008.json",
+      "bytes": 1024,
+      "sha256": "512e6fd3c28d52a1577c3fc0e5086b03265b79f1a34e36c96e9f04af652f716a",
+      "git_archived": false,
+      "preservation": "original workspace path plus local source ZIP"
+    }
+  ],
+  "font_helper_aliases": {
+    "original_directory": "tmp/review_20261005/doc_renderer_environment/font_runtime",
+    "byte_identical_alias_directory": "tmp/backup_coordinator/closeout_20261007/retained_authored_helpers/doc_renderer_environment/font_tools",
+    "git_archive_prefix": "workspace_backup/20261007/tmp/review_20261005/doc_renderer_environment/font_tools",
+    "verified_alias_count": 6,
+    "files": [
+      "create_font_probe.py",
+      "extract_fontfixed_01_locations.py",
+      "inspect_full_pdf_fonts.py",
+      "refine_fontfixed_locations_pdfplumber.py",
+      "run_font_probe_then_full.ps1",
+      "verify_pdf_font_probe.py"
+    ],
+    "original_paths_preserved": true,
+    "restore_mapping": "WORKSPACE_SOURCE_MAP.json"
+  },
+  "execution_recovery": {
+    "execution_receipt_workspace_path": "tmp/backup_coordinator/closeout_20261007/execution_receipt.json",
+    "pre_longpaths_receipt_snapshot": {
+      "path": "local_backups/20261008/prelongpath_execution_receipt_c99ff599ede8.json",
+      "bytes": 5615904,
+      "sha256": "c99ff599ede8a0e600443e5a1eb74db6024d4ecc7b8b806acae5cc2e149427e7"
+    },
+    "frozen_executor_sha256": "9a27e1a9980fb99c144ee3dd63fe3c38405aa9b78eb03179c3ebceaba7cc1306",
+    "source_modified": false,
+    "git_process_configuration": {
+      "core.longpaths": "true",
+      "core.autocrlf": "false",
+      "http.version": "HTTP/1.1 for bounded remote operations",
+      "http.lowSpeedLimit": 1024,
+      "http.lowSpeedTime_seconds": 20,
+      "scope": "per command or controlled process only; no persistent repository/global/registry change"
+    },
+    "synlab_recovery": {
+      "initial_add_failure": "Windows long-path failure; resumed with process-scoped core.longpaths=true after exact staged-set verification",
+      "precommit_remote_read": {
+        "returncode": null,
+        "outcome": "transport failure; no success or remote state inferred",
+        "observed_error": "Schannel server closed abruptly (missing close_notify); expected flush after ref listing"
+      },
+      "in_memory_namespace_alias": "supplementary_root_go_confirmed assigned to root_go_supplementary_confirmed; both carried the same approved supplementary SHA",
+      "local_commit_returncode": 0,
+      "local_commit_elapsed_seconds": 2.297,
+      "push_returncode": 0,
+      "push_elapsed_seconds": 10.265,
+      "post_push_ls_remote_returncode": 0,
+      "post_push_ls_remote_elapsed_seconds": 4.656,
+      "commit_stdout": {
+        "path": "tmp/backup_coordinator/closeout_20261007/syn_local_commit_20261008T012821Z.stdout.bin",
+        "bytes": 527259,
+        "sha256": "d832a7930bb773d428cd2dd9d98d480dc397e633dcfab0cfbf1b3bdec7447495"
+      },
+      "commit_stderr": {
+        "path": "tmp/backup_coordinator/closeout_20261007/syn_local_commit_20261008T012821Z.stderr.bin",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "push_stderr": {
+        "path": "tmp/backup_coordinator/closeout_20261007/syn_push_20261008T013102Z.stderr.bin",
+        "bytes": 133,
+        "sha256": "6bc0a9e87834ae340395b03b036d7666e10c56a6eafaa525ccb4d9eda77d74c3"
+      },
+      "remote_query_stdout": {
+        "path": "tmp/backup_coordinator/closeout_20261007/syn_ls_remote_20261008T013124Z.stdout.bin",
+        "bytes": 79,
+        "sha256": "f3a19c2ea1890ff546e7a77e3cc231af80c5c909a878784d06d0f679f98032fe"
+      }
+    }
+  },
+  "scope_and_limits": {
+    "unaccepted_or_active_source_code": "preserved as archival source where included by the full-code coverage manifest; backup does not imply acceptance or qualification",
+    "runtime_and_installation_material": "not included; virtual environments, node_modules, caches, build/runtime payloads and installers require separate installation",
+    "scientific_status": "No new tests, solver runs, CAD runs, or qualification were performed during closeout backup.",
+    "metadata_sidecars": "This delivery receipt is outside the three recorded code commits; no fourth commit or self-hash update is made."
+  }
+}

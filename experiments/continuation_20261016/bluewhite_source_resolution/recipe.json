@@ -1,0 +1,58 @@
+{
+  "schema": "synlab.footed_bowl_reference_generation_recipe.v2",
+  "recipe_id": "met_50899_source_resolved_stationary_pair",
+  "family": "footed_bowl",
+  "geometry": {
+    "preset": "daily",
+    "design_model": "FootedBowlDesign"
+  },
+  "instances": [
+    {
+      "name": "met50899_source_resolved_no_spread",
+      "design": {
+        "model": "FootedBowlDesign",
+        "overrides": {
+          "name": "met50899_source_resolved_no_spread"
+        }
+      },
+      "material": {
+        "style_id": "historical_met_50899_porcelain_clear_underglaze",
+        "controls": {}
+      },
+      "pattern": {
+        "style_id": "met_50899_partial_dragon_panel",
+        "controls": {
+          "continuous_sampling_mode": "source_resolved_stationary_v1",
+          "duration": 0.0
+        }
+      },
+      "seeds": {
+        "material": 2026101601,
+        "pattern": 2026101602
+      }
+    },
+    {
+      "name": "met50899_source_resolved_default_spread",
+      "design": {
+        "model": "FootedBowlDesign",
+        "overrides": {
+          "name": "met50899_source_resolved_default_spread"
+        }
+      },
+      "material": {
+        "style_id": "historical_met_50899_porcelain_clear_underglaze",
+        "controls": {}
+      },
+      "pattern": {
+        "style_id": "met_50899_partial_dragon_panel",
+        "controls": {
+          "continuous_sampling_mode": "source_resolved_stationary_v1"
+        }
+      },
+      "seeds": {
+        "material": 2026101601,
+        "pattern": 2026101602
+      }
+    }
+  ]
+}

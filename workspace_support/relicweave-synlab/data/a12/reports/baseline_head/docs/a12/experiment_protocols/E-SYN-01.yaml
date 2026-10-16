@@ -1,0 +1,29 @@
+experiment_id: E-SYN-01
+title: 真值、权限与信号核验
+question: 合法输入是否可学习？浅基线能否在固定母体上恢复真邻片集合？
+frozen:
+  mothers: fixed roster (dev split, frozen before run)
+  candidate_pool: fixed gallery with full historical R2
+  features: a12.obs.v1 legal inputs only
+primary_metric: PoolCovAtM
+secondary_metrics: [HitAtK, CovRecallAtK, ConditionalCovAtK, R1FalsePositive]
+estimand: paired macro difference in PoolCovAtM between legal-input baseline and (a) shuffled-label control, (b) truth-injected control
+null_delta: 0.0
+target_delta: 0.03
+alpha: 0.05
+power: 0.8
+statistical_unit: shape_lineage
+comparisons:
+  - id: legal_vs_shuffled_labels
+    correction: holm_for_registered_comparisons
+  - id: legal_vs_truth_injected_control
+    correction: holm_for_registered_comparisons
+required_controls:
+  - leakage negative control (metadata permutation, ID renaming)
+  - same-mother-only gallery check
+sample_size:
+  plan: 8-12 pilot mothers for variance, then power-based freeze
+  power_status: PILOT_PENDING
+stopping_rule: stop when either comparison's CI excludes null in the negative direction, or the frozen budget is exhausted
+status: PRE_REGISTERED
+notes: the truth-injected control must FAIL the leakage audit by construction; if it passes, the whitelist is broken

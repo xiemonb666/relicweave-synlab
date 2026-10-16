@@ -1,0 +1,131 @@
+{
+  "baseline_comparison": true,
+  "baseline_position_comparison": "UNKNOWN_no_per_step_native_position_frames",
+  "complete_1707_step_case": false,
+  "contact_key_audit": "see phase_evidence.jsonl: cohesive contact is canonical; contact is legacy diagnostic only",
+  "contact_key_audit_samples": [
+    {
+      "cohesive_contact_J": 0.0,
+      "cohesive_contact_status": "ok",
+      "contact_alias_J": 0.0,
+      "contact_alias_status": "ok",
+      "phase": "C",
+      "step": 650
+    },
+    {
+      "cohesive_contact_J": 0.0,
+      "cohesive_contact_status": "ok",
+      "contact_alias_J": 0.0,
+      "contact_alias_status": "ok",
+      "phase": "D",
+      "step": 650
+    },
+    {
+      "cohesive_contact_J": 0.0,
+      "cohesive_contact_status": "ok",
+      "contact_alias_J": 0.0,
+      "contact_alias_status": "ok",
+      "phase": "C",
+      "step": 652
+    },
+    {
+      "cohesive_contact_J": 0.0,
+      "cohesive_contact_status": "ok",
+      "contact_alias_J": 0.0,
+      "contact_alias_status": "ok",
+      "phase": "D",
+      "step": 652
+    }
+  ],
+  "first_negative_dissipated_phase": {
+    "dissipated_J": -5.572968137645039e-05,
+    "phase": "D",
+    "prescribed_boundary_time_s": 3.8195664909197426e-05,
+    "step": 652,
+    "time_before_step_s": null
+  },
+  "first_negative_dissipated_step": 652,
+  "first_negative_dissipated_trace_D_J": -5.572968137645039e-05,
+  "full_trace": "trace.csv",
+  "manifest_sha256": "21b563069550e2091474fe94877bd3ceaae094ac4c92aed3900ecdd94702dd68",
+  "native_material_update_phase": "UNKNOWN_unless observed field values changed across phases",
+  "native_traction_opening_damage": {
+    "damage_or_history": "UNKNOWN_no public no-argument damage/history field was identified; no private ABI or guessed field name used",
+    "opening": {
+      "first_sample": {
+        "material": "material_1:MaterialCohesiveLinear3D",
+        "phase": "A",
+        "shape": [
+          0,
+          3
+        ],
+        "step": 647
+      },
+      "last_sample": {
+        "material": "material_1:MaterialCohesiveLinear3D",
+        "phase": "D",
+        "shape": [
+          24,
+          3
+        ],
+        "step": 654
+      },
+      "observed_material_types": [
+        "material_1:MaterialCohesiveLinear3D"
+      ],
+      "public_getter_samples_ok": 32,
+      "status": "available",
+      "step650_C_to_D_change": {
+        "basis": "difference of directly returned native getter arrays; not a constitutive recomputation",
+        "max_abs_change": 0.0,
+        "shape": [
+          24,
+          3
+        ]
+      }
+    },
+    "traction": {
+      "first_sample": {
+        "material": "material_1:MaterialCohesiveLinear3D",
+        "phase": "A",
+        "shape": [
+          0,
+          3
+        ],
+        "step": 647
+      },
+      "last_sample": {
+        "material": "material_1:MaterialCohesiveLinear3D",
+        "phase": "D",
+        "shape": [
+          24,
+          3
+        ],
+        "step": 654
+      },
+      "observed_material_types": [
+        "material_1:MaterialCohesiveLinear3D"
+      ],
+      "public_getter_samples_ok": 32,
+      "status": "available",
+      "step650_C_to_D_change": {
+        "basis": "difference of directly returned native getter arrays; not a constitutive recomputation",
+        "max_abs_change": 66509259.31404454,
+        "shape": [
+          24,
+          3
+        ]
+      }
+    }
+  },
+  "phase_evidence": "phase_evidence.jsonl",
+  "run_id": "coarse654_20261004_01",
+  "solver_attempts": 1,
+  "solver_retries": 0,
+  "source_diff": "../experiments/cohesive_event_probe_20261004/run_contract_instrumented.diff",
+  "source_sha256": "67dd1eb98acc5f5369b9cbf1a9bfbd7f6681068172e537768e788274cb10652d",
+  "status": "DIAGNOSTIC_EARLY_STOP_NOT_COMPLETE",
+  "steps_after_first_insertion": 2,
+  "steps_completed": 654,
+  "wheel_source_identity": "UNKNOWN_installed akantu 5.0.7.post1 vs reviewed v5.0.7 tag"
+}

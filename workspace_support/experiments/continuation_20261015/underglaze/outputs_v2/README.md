@@ -1,0 +1,3 @@
+# Refined underglaze appearance proxy
+
+Run `run_underglaze_refined.py` from the workspace root with the `relicweave-synlab` virtual environment. This v2 output uses a 30 × 20 mm **design-scale** local crop of the Met 50899 fired-photo dragon-head support proxy. It keeps 75% of the projected brush field bound and diffuses 25% with the metric-aware FV operator. All coefficients and the local cylindrical chart are sensitivity-study controls, not measured glaze or vessel parameters. See `receipt.json` for hashes, controls, limits, numerical receipts, and output semantics. The original experiment receipt and preview in the parent folder are unchanged.

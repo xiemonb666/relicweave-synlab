@@ -1,0 +1,72 @@
+{
+  "files": [
+    {
+      "bundle": "daily_baseline_tokusa",
+      "bundle_manifest_sha256": "4b1f75f188e9b0ba08936699a7f8a166c3f4eb4347e01fe5da5e3a5b58776132",
+      "faces": 25598,
+      "geometry_array_sha256": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+      "preview": "preview_4view.png",
+      "renderer": "VTK lit perspective + orthographic side/top/underside; source chart texture and per-face edge appearance",
+      "sha256": "ba8af4a7673750c210aeeda59d8746e09ec4cf83c11bf8f9681f4e503840233d",
+      "texture_grid": [
+        512,
+        1024
+      ],
+      "view_definitions": [
+        "Side · orthographic",
+        "Top · orthographic",
+        "Lit 3D · perspective",
+        "Underside · orthographic"
+      ]
+    },
+    {
+      "bundle": "daily_deep_jun_plain",
+      "bundle_manifest_sha256": "ffe0d119f737aeba0205ea36da32574f7c0dc90e161216935993acd7c0f1df73",
+      "faces": 25906,
+      "geometry_array_sha256": "180c485e988507f33ad489b9bfea7742645adca82646ee273d469a9830acf402",
+      "preview": "preview_4view.png",
+      "renderer": "VTK lit perspective + orthographic side/top/underside; source chart texture and per-face edge appearance",
+      "sha256": "1ec0e9afceddea3fe39612ebed763f51f7e675e1be251e62e67d4be5488382cf",
+      "texture_grid": [
+        512,
+        1024
+      ],
+      "view_definitions": [
+        "Side · orthographic",
+        "Top · orthographic",
+        "Lit 3D · perspective",
+        "Underside · orthographic"
+      ]
+    },
+    {
+      "bundle": "daily_broad_foot_tokusa",
+      "bundle_manifest_sha256": "98b73bdc8b1aa52a8f2a37a04360e80dd18b1c7a9d91bcdeb2b97dfeb90e7869",
+      "faces": 25144,
+      "geometry_array_sha256": "5b11c6b834837deb1c32c2f064be17960c3497be501b8713955a145e5cf56dfc",
+      "preview": "preview_4view.png",
+      "renderer": "VTK lit perspective + orthographic side/top/underside; source chart texture and per-face edge appearance",
+      "sha256": "de8560f7a7532ec11bb2605965eb47fc9d656a1fb33cc941f7ceaf6583a7530e",
+      "texture_grid": [
+        512,
+        1024
+      ],
+      "view_definitions": [
+        "Side · orthographic",
+        "Top · orthographic",
+        "Lit 3D · perspective",
+        "Underside · orthographic"
+      ]
+    }
+  ],
+  "geometry_changed": false,
+  "physical_rendering_claim": "NONE",
+  "preview_views": [
+    "Side · orthographic",
+    "Top · orthographic",
+    "Lit 3D · perspective",
+    "Underside · orthographic"
+  ],
+  "renderer": "VTK texture mapped from continuous 512x1024 outer-wall chart samples; non-outer regions retain source per-face fields",
+  "schema": "synlab.reference_generation_preview_manifest.v3",
+  "texture_color_conversion": "linear RGB appearance samples converted to sRGB8 PNG for display"
+}

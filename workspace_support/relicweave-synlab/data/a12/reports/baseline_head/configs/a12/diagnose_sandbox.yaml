@@ -1,0 +1,29 @@
+schema: synlab.diagnose.v1
+protocol_id: sandbox_axis_scan_v1
+checkpoint_ref: null
+release_ref: data/a12/releases/sandbox_release/manifest.json
+evaluation_split: dev
+candidate_pool_ref: data/a12/pools/sandbox_dev.json
+axes: [P01, P02, P03, P04, P05, P06, P07, P08, I01, I02, I03, I04, I05, I06, I07, I08, I09, I10, G01, G02, G03, G04, G05, G06, G07, G08, X01, X02, X03, X04, X05]
+levels: [0, 1, 2, 3, 4]
+paired_basis: true
+input_profile: SENSOR_PROXY
+observation_route: proxy_scan
+perturbation_side: QUERY_ONLY
+variant_map_ref: configs/a12/diagnostic_variants.json
+query_roster_ref: data/a12/pools/sandbox_dev_queries.json
+include_pipeline_failures_in_primary_denominator: true
+fixed_query_ids: true
+seed_kind: observation_basis
+seeds: [11, 23, 47]
+training_replicates_ref: null
+metrics: [HitAtK, CovRecallAtK, PoolCovAtM, R1FalsePositive, AbsentRejectRisk, QueryCost]
+statistics:
+  unit: shape_lineage
+  bootstrap_replicates: 2000
+  confidence: 0.95
+  multiple_testing: holm_for_registered_comparisons
+  report_all_attempts: true
+confirmation:
+  open: false
+  require_frozen_protocol: true

@@ -1,0 +1,39 @@
+{
+  "status": "INDEPENDENT_ZERO_STEP_READBACK_PASS",
+  "source_native_receipt_sha256": "822023b1d8407290b6e620cfdf78dca84f10d0f4fb644b3af7db663aa3c8943b",
+  "solver_steps": 0,
+  "native_nodes": 18634,
+  "tets": 56139,
+  "cohesive_facets": 541,
+  "qp_count": 1623,
+  "tetrahedral_volume_m3": 3.25173910350476e-05,
+  "rho_times_volume_kg": 0.07478999938060947,
+  "native_lumped_mass_kg": 0.07478999938060946,
+  "interface_one_side_area_m2": 0.0003880800592225199,
+  "paired_rest_coordinates_equal": true,
+  "reference_net_unit_force": [
+    1.19522447494802e-15,
+    0.0,
+    0.0
+  ],
+  "reference_net_unit_torque_about_com": [
+    0.0,
+    -3.354561521954052e-12,
+    -1.186309060154881e-12
+  ],
+  "all_dofs_free": true,
+  "selected_dt_s": 2.22182723071454e-09,
+  "forecast_steps": 22504,
+  "placeholder_weak_law_design_scales": {
+    "nominal_sigma_times_area_N": 3880.800592225199,
+    "Gc_times_discrete_area_J": 0.002949408450091151,
+    "bilinear_final_opening_m": 1.5199999999999998e-06,
+    "Eprime_Gc_over_sigma_squared_m": 0.005674666666666666,
+    "interpretation": "dimensional weak-law scales, not specimen measurements, a cohesive-zone resolution certificate or a new loading prescription"
+  },
+  "limitations": [
+    "v5 geometry/resource diagnostic; no evolution",
+    "uncalibrated placeholder material",
+    "exterior surface ancestry is still unbound on this mesh"
+  ]
+}

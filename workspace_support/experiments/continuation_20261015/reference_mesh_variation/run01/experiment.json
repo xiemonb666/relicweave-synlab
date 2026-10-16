@@ -1,0 +1,243 @@
+{
+  "schema": "vesselforge.reference_mesh_variation_experiment.v1",
+  "source": {
+    "source_name": "Footed bowl, SHM 17946:0047",
+    "source_url": "https://apsida.cut.ac.cy/items/show/49281",
+    "license_id": "CC BY-SA 4.0",
+    "attribution": "Medelhavsmuseet, SHM 17946:0047; via Apsida / Digital Heritage Research Lab",
+    "raw_source_sha256": "c03413172398ae5280fae3d1759f505b38bc97a1561e510fcfb4b99d97c57232",
+    "scale_evidence": "The OBJ declares no units. Explicit candidate calibration is 1 raw unit = 1 m (1000 mm/raw unit), inferred from reported catalog height 119 mm versus raw Z span 0.119432; this is not a calibrated unit declaration, and reported rim/base diameters do not match this candidate exactly.",
+    "source_component_count": 389,
+    "raw_geometry_npz_sha256": "f5044bbb781fcead97dfb73d35755caf24fdb8547341757c6fa329dd938671e2",
+    "source_obj_attribute_counts": {
+      "vt": 342151,
+      "vn": 326647,
+      "faces": 651814
+    },
+    "source_vertex_rgb_sha256": "6ba878de9c49b55ef6e92974f9f2442e5a240cbca1cb3f2eb042bad67e1766b4",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "catalog_reported_dimensions_mm": {
+      "height": 119.0,
+      "base_diameter": 70.0,
+      "rim_diameter": 160.0
+    }
+  },
+  "frame": {
+    "center_source_coordinates": [
+      0.05191771229236255,
+      -0.007930005189105168,
+      0.077194
+    ],
+    "axis_unit_vector": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "interpretation": "candidate upright Z axis; not a source-declared frame"
+  },
+  "inherited_source_audit": {
+    "edge_connected_components": 389,
+    "largest_component_face_count": 643336,
+    "largest_component_fraction_of_faces": 0.9869932219927771,
+    "largest_component_fraction_of_area": 0.9995088000610689,
+    "degenerate_triangle_count": 4,
+    "exact_duplicate_xyz_vertex_count": 25,
+    "boundary_edge_count": 0,
+    "nonmanifold_edge_count": 0,
+    "source_surface_only": true,
+    "note": "All original face indices and vertices are retained. Component diagnostics inherit directly from the source audit; no component is discarded or repaired."
+  },
+  "view_contract": {
+    "camera_projection": "parallel",
+    "parallel_scale_mm": 109.09648000000001,
+    "same_camera_and_physical_scale_for_all_variants": true,
+    "views": [
+      "side",
+      "front",
+      "top",
+      "oblique"
+    ]
+  },
+  "variants": {
+    "base_anchor": {
+      "controls": {
+        "height_scale": 1.0,
+        "radial_scale": 1.0,
+        "belly_fullness": 0.0,
+        "upperbody_width": 0.0,
+        "mouth_width": 0.0,
+        "foot_width": 0.0
+      },
+      "target_height_mm": 119.43200000000002,
+      "derived_geometry_sha256": "bde1e25cc72a15a94203ca257df1a1ee1dd5ea78312867142757b653d3f6ea95",
+      "derived_mesh_npz_sha256": "fdd9a88e36fb16928cdb0c780b9942cc77caa4ac95fbf216e0fc4917877f2dd7",
+      "bounds_mm": {
+        "min": [
+          -79.34071229236254,
+          -78.20799481089485,
+          -59.716
+        ],
+        "max": [
+          81.09528770763744,
+          80.03800518910518,
+          59.71600000000001
+        ],
+        "extent": [
+          160.43599999999998,
+          158.24600000000004,
+          119.43200000000002
+        ]
+      },
+      "sampled_jacobian_metrics": {
+        "sample_count": 20000,
+        "sample_indices_sha256": "b7731f20487ede6e3eafc156e003122a7a0efc952f9535f29d3ebb781f59ee0f",
+        "determinant_min": 999999999.9999993,
+        "determinant_max": 999999999.9999993,
+        "singular_value_min_sampled": 1000.0,
+        "singular_value_max_sampled": 1000.0,
+        "radial_scale_min_sampled": 1000.0,
+        "radial_scale_max_sampled": 1000.0,
+        "scope_note": "Pointwise analytic Jacobians sampled at deterministic original vertices; these values are not a global wall-thickness or between-vertex certificate."
+      },
+      "mesh_file": "base_anchor\\mesh.npz",
+      "receipt_file": "base_anchor\\receipt.json",
+      "views_file": "base_anchor\\views.png",
+      "source_color_views_file": "base_anchor\\source_color_views.png"
+    },
+    "fuller_belly": {
+      "controls": {
+        "height_scale": 1.0,
+        "radial_scale": 1.0,
+        "belly_fullness": 0.055,
+        "upperbody_width": 0.0,
+        "mouth_width": 0.0,
+        "foot_width": 0.0
+      },
+      "target_height_mm": 119.43200000000002,
+      "derived_geometry_sha256": "e6ecd8e63ef2c28a446d42a1c434a81eb5509666d57af516d66599a11aca860d",
+      "derived_mesh_npz_sha256": "41632102b7de1b5a8a1091561d4daaab5e0f3ef2a5c7f2e6f59cf1fd2c868fc4",
+      "bounds_mm": {
+        "min": [
+          -80.57858980034452,
+          -79.29490783290636,
+          -59.716
+        ],
+        "max": [
+          81.60302736263655,
+          80.55261486913047,
+          59.71600000000001
+        ],
+        "extent": [
+          162.18161716298107,
+          159.84752270203683,
+          119.43200000000002
+        ]
+      },
+      "sampled_jacobian_metrics": {
+        "sample_count": 20000,
+        "sample_indices_sha256": "b7731f20487ede6e3eafc156e003122a7a0efc952f9535f29d3ebb781f59ee0f",
+        "determinant_min": 1004619764.4167787,
+        "determinant_max": 1116278070.3533077,
+        "singular_value_min_sampled": 955.9656510314968,
+        "singular_value_max_sampled": 1081.478998335659,
+        "radial_scale_min_sampled": 1002.3072205749987,
+        "radial_scale_max_sampled": 1056.5406146255364,
+        "scope_note": "Pointwise analytic Jacobians sampled at deterministic original vertices; these values are not a global wall-thickness or between-vertex certificate."
+      },
+      "mesh_file": "fuller_belly\\mesh.npz",
+      "receipt_file": "fuller_belly\\receipt.json",
+      "views_file": "fuller_belly\\views.png",
+      "source_color_views_file": "fuller_belly\\source_color_views.png"
+    },
+    "broader_upper_and_rim": {
+      "controls": {
+        "height_scale": 1.0,
+        "radial_scale": 1.0,
+        "belly_fullness": 0.0,
+        "upperbody_width": 0.035,
+        "mouth_width": 0.045,
+        "foot_width": 0.0
+      },
+      "target_height_mm": 119.43200000000002,
+      "derived_geometry_sha256": "57d821a11e7f949c07a157e7efb0efef98c552b55e8d3ddd69c51de06cf4b915",
+      "derived_mesh_npz_sha256": "5f8284dd3e33923c2ee9349ee64672e76a9ef47fbc7f3a9aafaaae2dd9ff41a7",
+      "bounds_mm": {
+        "min": [
+          -84.5884680477925,
+          -83.36275488402491,
+          -59.716
+        ],
+        "max": [
+          86.45014758084807,
+          85.34784446463718,
+          59.71600000000001
+        ],
+        "extent": [
+          171.03861562864057,
+          168.71059934866207,
+          119.43200000000002
+        ]
+      },
+      "sampled_jacobian_metrics": {
+        "sample_count": 20000,
+        "sample_indices_sha256": "b7731f20487ede6e3eafc156e003122a7a0efc952f9535f29d3ebb781f59ee0f",
+        "determinant_min": 1000001931.0762824,
+        "determinant_max": 1141028617.9650986,
+        "singular_value_min_sampled": 904.5624429990355,
+        "singular_value_max_sampled": 1167.3661034247516,
+        "radial_scale_min_sampled": 1000.0009655376749,
+        "radial_scale_max_sampled": 1068.189411090139,
+        "scope_note": "Pointwise analytic Jacobians sampled at deterministic original vertices; these values are not a global wall-thickness or between-vertex certificate."
+      },
+      "mesh_file": "broader_upper_and_rim\\mesh.npz",
+      "receipt_file": "broader_upper_and_rim\\receipt.json",
+      "views_file": "broader_upper_and_rim\\views.png",
+      "source_color_views_file": "broader_upper_and_rim\\source_color_views.png"
+    },
+    "broader_foot": {
+      "controls": {
+        "height_scale": 1.0,
+        "radial_scale": 1.0,
+        "belly_fullness": 0.0,
+        "upperbody_width": 0.0,
+        "mouth_width": 0.0,
+        "foot_width": 0.055
+      },
+      "target_height_mm": 119.43200000000002,
+      "derived_geometry_sha256": "8d20fbe56279bdb143e8cfad233e83b9fe0ee684c8f5f76199d58af4cf8c9e32",
+      "derived_mesh_npz_sha256": "24fae7f479a4a28ead23bbda73c7c8e03fbb738490e16a4565b31d52037bc853",
+      "bounds_mm": {
+        "min": [
+          -79.34071229236551,
+          -78.20799481089703,
+          -59.716
+        ],
+        "max": [
+          81.0952877076418,
+          80.0380051891118,
+          59.71600000000001
+        ],
+        "extent": [
+          160.4360000000073,
+          158.24600000000885,
+          119.43200000000002
+        ]
+      },
+      "sampled_jacobian_metrics": {
+        "sample_count": 20000,
+        "sample_indices_sha256": "b7731f20487ede6e3eafc156e003122a7a0efc952f9535f29d3ebb781f59ee0f",
+        "determinant_min": 1000000000.0000206,
+        "determinant_max": 1116278070.4010007,
+        "singular_value_min_sampled": 980.5804217654637,
+        "singular_value_max_sampled": 1066.9859543099885,
+        "radial_scale_min_sampled": 1000.0000000000098,
+        "radial_scale_max_sampled": 1056.5406146481089,
+        "scope_note": "Pointwise analytic Jacobians sampled at deterministic original vertices; these values are not a global wall-thickness or between-vertex certificate."
+      },
+      "mesh_file": "broader_foot\\mesh.npz",
+      "receipt_file": "broader_foot\\receipt.json",
+      "views_file": "broader_foot\\views.png",
+      "source_color_views_file": "broader_foot\\source_color_views.png"
+    }
+  }
+}

@@ -1,0 +1,528 @@
+{
+  "cad_invocations_file": "cad_invocations.json",
+  "canonical_recipe_sha256": "5f4c473b5e2bfc865471fca8b774ea1ba367ed65659789a7783308aeefd93a63",
+  "design_model": "FootedBowlDesign",
+  "family": "footed_bowl",
+  "generated_geometry_root": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\experiments\\continuation_20261015\\reference_forms\\outputs\\reference_generation_bluewhite_reference_generation_outputs_v1",
+  "geometry_preset": "daily",
+  "instances": [
+    {
+      "bundle": "instances\\met50899_panel_no_spread",
+      "bundle_bytes": 6609441,
+      "bundle_manifest_sha256": "d2c30323f18aafa88bd4920e9288e8fc2118cd3fb7f378193a629046d0d31b46",
+      "cad_duration_seconds": 5.3027340000007825,
+      "continuous_texture_validation": {
+        "arclength_status": "FINITE_POLYLINE_APPROXIMATION_NOT_AN_EXACT_ARCLENGTH_CERTIFICATE",
+        "bluewhite_field_receipt_sha256": "0fc67ede8b9ac6e5f1e20457bc6ac78563103b19437a04e1740ef23d80d0531c",
+        "color_space": "LINEAR_SRGB_PRIMARIES",
+        "general_chart_validation": {
+          "maximum_allowed_s_error_mm": 1e-07,
+          "maximum_periodic_u_error": 1.1102230246251565e-16,
+          "maximum_s_error_mm": 3.552713678800501e-15,
+          "method": "ORIGINAL_UNMODIFIED_GENERAL_CHART_UV_AND_REGION_MASK",
+          "passed": true,
+          "sample_count": 25,
+          "source_chart_membership_true": 25
+        },
+        "geometry_changed": false,
+        "grid_sampling": "CELL_CENTERED_UNIFORM_FINITE_POLYLINE_ARCLENGTH_X_PERIODIC_AZIMUTH",
+        "grid_shape_s_theta": [
+          512,
+          1024
+        ],
+        "pattern_region_cell_count": 13640,
+        "periodic_seam_validation": {
+          "comparison": "FIRST_AND_LAST_AZIMUTH_PIXEL_CENTERS_VS_INTERIOR_NEIGHBORS",
+          "interior_neighbor_p99_linear_rgb_delta": 0.084830142557621,
+          "maximum_allowed_linear_rgb_delta": 0.1273452138364315,
+          "maximum_linear_rgb_delta": 0.01665639877319336,
+          "mean_linear_rgb_delta": 0.003326692618429661,
+          "passed": true
+        },
+        "pigment_density_sha256": "0f9123bf33662071025f11055a43a743dd72d08b37c9edf8d7127d7b778d0be3",
+        "profile_status": "ANALYTIC_SOURCE_CUBIC_BEZIER_SAMPLED_AS_FINITE_POLYLINE",
+        "source_material_profile_hash": "sha256:cd385b7eb06321e191df9f9b443923bd66f0d83d151ecacc3ee93854274a2128",
+        "source_pattern_recipe_hash": null
+      },
+      "design_model": "FootedBowlDesign",
+      "design_overrides": {
+        "name": "met50899_panel_no_spread"
+      },
+      "deterministic_replay": {
+        "face_fields_bitwise_equal": true,
+        "field_array_sha256": "63e0fe1dd95ec5dcf4cb6c2df84c81c3fcdd10de1cea7f7d356c28f992b62df3",
+        "passed": true,
+        "texture_arrays_bitwise_equal": true,
+        "texture_linear_rgb_sha256": "c90a1b73b804a6f8c7f207d7103312f8292fe79d60c408966a82c75a7c1f05bd"
+      },
+      "dimensions_mm": [
+        107.99969539031277,
+        107.93390489393511,
+        52.99984769515639
+      ],
+      "family": "footed_bowl",
+      "files": {
+        "appearance_texture.npz": "8202d5c0ea12da4c94b8db31e4a3e6af23a78202fb66bc1232a810760b642542",
+        "bluewhite_panel_fields.npz": "d348a563cdd9c32ad6fb698f3430efbeab600de04750d34d404d544044982dcc",
+        "bluewhite_panel_receipt.json": "33648d297b037ca3f33f421550104537f49892c0bf80889abc68c8b6e0512c61",
+        "geometry_and_fields.npz": "0dd9b86f5a4607299b2f7340a7dab9d37762e145398471ea126d8b4877c96e8a",
+        "manifest.json": "d2c30323f18aafa88bd4920e9288e8fc2118cd3fb7f378193a629046d0d31b46",
+        "metrics.json": "8c07b59fb6423e1dedf03fdeaade83ee6fd7d07d178d4530cd7ec039e69fe0c4",
+        "outer_texture_srgb.png": "b353dab2a132d7f49fb5a58b87fe89bd5b3b3b2068ed37e97f4eb0391c9ec1e6",
+        "preview_bluewhite_v1_4view.png": "7f103e2f07b890f836f78dcc094b066aa63e9d20c3d41073a3f1d5a4cd9861bf",
+        "provenance.json": "336b47f0cccacbf3cab7a9b749a4fdb450fe2131de4f0e941507f2a4e1595221",
+        "recipe.json": "e75bc4ab28d493c90143029d667616ba4386fb537bb62bbf6ba6eaff60cbd2ab",
+        "sha256_receipt.json": "53771dfaf2af9f3fb7b1b72a14e65a670c4c2324ba19373ab7bc77e9e3d570de"
+      },
+      "geometry_array_sha256_after_appearance": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+      "geometry_array_sha256_before_appearance": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+      "geometry_preset": "daily",
+      "geometry_unchanged": true,
+      "instance_id": "met50899_panel_no_spread",
+      "material_controls": {},
+      "material_layer_triangle_counts": {
+        "body": 13600,
+        "clear_glaze_appearance_proxy": 11998
+      },
+      "material_style": "historical_met_50899_porcelain_clear_underglaze",
+      "pattern_controls": {
+        "duration": 0.0
+      },
+      "pattern_region_triangle_count": 40,
+      "pattern_style": "met_50899_partial_dragon_panel",
+      "preview_sha256": "7f103e2f07b890f836f78dcc094b066aa63e9d20c3d41073a3f1d5a4cd9861bf",
+      "seeds": {
+        "material": 2026101601,
+        "pattern": 2026101602
+      },
+      "signed_volume_mm3": 32985.51424547626,
+      "source_geometry_directory": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\experiments\\continuation_20261015\\reference_forms\\outputs\\reference_generation_bluewhite_reference_generation_outputs_v1\\met50899_panel_no_spread",
+      "source_geometry_file_sha256": {
+        "face_lineage.json": "9e6c789989cb0f5f42ed9c37f0264bc02899a9c29f571254938a4781640bcfd2",
+        "geometry_report.json": "b9e33cb0b47fbe79564f2ed50119ce6a83e1d94a7782cecfda845d5c4110c7ec",
+        "provenance.json": "edae8af5cde4b81a73d8f1cfde9beb4de34c7344817e5ebc27b9c2368c4ec624",
+        "section.json": "ecc68dec476652eb238915545324f5f7602ea5eb172640476e3fcf8d9fad42b8",
+        "surface.npz": "b1ce6521290073fae7b48103d95333782d4d42e031a302d8c38ed2f5c0db17f3"
+      }
+    },
+    {
+      "bundle": "instances\\met50899_panel_default_spread",
+      "bundle_bytes": 8178772,
+      "bundle_manifest_sha256": "94c887ad20cc5d52e1cee4bd58c6877d955623967f408dd6b99f94b3d6286b67",
+      "cad_duration_seconds": 3.9579517999991367,
+      "continuous_texture_validation": {
+        "arclength_status": "FINITE_POLYLINE_APPROXIMATION_NOT_AN_EXACT_ARCLENGTH_CERTIFICATE",
+        "bluewhite_field_receipt_sha256": "16d065db9edb40b70f64a742f1d0940e642e6252c2a976880e5be129e78f5286",
+        "color_space": "LINEAR_SRGB_PRIMARIES",
+        "general_chart_validation": {
+          "maximum_allowed_s_error_mm": 1e-07,
+          "maximum_periodic_u_error": 1.1102230246251565e-16,
+          "maximum_s_error_mm": 3.552713678800501e-15,
+          "method": "ORIGINAL_UNMODIFIED_GENERAL_CHART_UV_AND_REGION_MASK",
+          "passed": true,
+          "sample_count": 25,
+          "source_chart_membership_true": 25
+        },
+        "geometry_changed": false,
+        "grid_sampling": "CELL_CENTERED_UNIFORM_FINITE_POLYLINE_ARCLENGTH_X_PERIODIC_AZIMUTH",
+        "grid_shape_s_theta": [
+          512,
+          1024
+        ],
+        "pattern_region_cell_count": 14804,
+        "periodic_seam_validation": {
+          "comparison": "FIRST_AND_LAST_AZIMUTH_PIXEL_CENTERS_VS_INTERIOR_NEIGHBORS",
+          "interior_neighbor_p99_linear_rgb_delta": 0.07171887159347534,
+          "maximum_allowed_linear_rgb_delta": 0.10767830739021302,
+          "maximum_linear_rgb_delta": 0.01665639877319336,
+          "mean_linear_rgb_delta": 0.003326692618429661,
+          "passed": true
+        },
+        "pigment_density_sha256": "d6a43decdc78b2f0a973225c4af58d60def315a8cb28e02fa9b54ed9a5eef363",
+        "profile_status": "ANALYTIC_SOURCE_CUBIC_BEZIER_SAMPLED_AS_FINITE_POLYLINE",
+        "source_material_profile_hash": "sha256:cd385b7eb06321e191df9f9b443923bd66f0d83d151ecacc3ee93854274a2128",
+        "source_pattern_recipe_hash": null
+      },
+      "design_model": "FootedBowlDesign",
+      "design_overrides": {
+        "name": "met50899_panel_default_spread"
+      },
+      "deterministic_replay": {
+        "face_fields_bitwise_equal": true,
+        "field_array_sha256": "8ec322301eac22941a798e070d3ff650e6a195c26756df985db6e66527285c5c",
+        "passed": true,
+        "texture_arrays_bitwise_equal": true,
+        "texture_linear_rgb_sha256": "a67bac13f3ffd4468a2d73ac07bdf937422e272431c6f6a2112d06c2ed7233a8"
+      },
+      "dimensions_mm": [
+        107.99969539031277,
+        107.93390489393511,
+        52.99984769515639
+      ],
+      "family": "footed_bowl",
+      "files": {
+        "appearance_texture.npz": "7e78f117202560181b276c286c213a28ab8ebee5bff0fa040126a66a1fba7c7e",
+        "bluewhite_panel_fields.npz": "7c542b6a597407711e22150ceebc05a4c90eadb8a90c848f151dcba160e71235",
+        "bluewhite_panel_receipt.json": "cf6e153d0e4619783f055dc2067bb1efc6e79949be7e4740f36062e377192aeb",
+        "geometry_and_fields.npz": "b2b28019f1929ebc8c31f0085c845ca93d81dff1911b852236f25c955dbdea30",
+        "manifest.json": "94c887ad20cc5d52e1cee4bd58c6877d955623967f408dd6b99f94b3d6286b67",
+        "metrics.json": "8caa2af3316f9c9e0802ee0bbebb0f56af553ba2b1e91ad4a7ccc9432a9ff2ae",
+        "outer_texture_srgb.png": "afe9fa51c739fca7186607c032811c0c3251f78f33cbbaaf411e105710410a65",
+        "preview_bluewhite_v1_4view.png": "47d491667ce3c34494b8bad6172ab638e75caf077e6dc936f6fcab39b02b126d",
+        "provenance.json": "d3ef5c73824b1c9a7e8602558d02bfd81950a9f39302cb078e5512d4e43086c2",
+        "recipe.json": "969753546a5a8e37b015112c7d77a83cbc10c48f1fe3f9b092e7ff4069148a2f",
+        "sha256_receipt.json": "17c83aeb32283eab750c4771a74668657d4932b6df08b76efd8d68b4c6f09f77"
+      },
+      "geometry_array_sha256_after_appearance": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+      "geometry_array_sha256_before_appearance": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+      "geometry_preset": "daily",
+      "geometry_unchanged": true,
+      "instance_id": "met50899_panel_default_spread",
+      "material_controls": {},
+      "material_layer_triangle_counts": {
+        "body": 13600,
+        "clear_glaze_appearance_proxy": 11998
+      },
+      "material_style": "historical_met_50899_porcelain_clear_underglaze",
+      "pattern_controls": {},
+      "pattern_region_triangle_count": 45,
+      "pattern_style": "met_50899_partial_dragon_panel",
+      "preview_sha256": "47d491667ce3c34494b8bad6172ab638e75caf077e6dc936f6fcab39b02b126d",
+      "seeds": {
+        "material": 2026101601,
+        "pattern": 2026101602
+      },
+      "signed_volume_mm3": 32985.51424547626,
+      "source_geometry_directory": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\experiments\\continuation_20261015\\reference_forms\\outputs\\reference_generation_bluewhite_reference_generation_outputs_v1\\met50899_panel_default_spread",
+      "source_geometry_file_sha256": {
+        "face_lineage.json": "9e6c789989cb0f5f42ed9c37f0264bc02899a9c29f571254938a4781640bcfd2",
+        "geometry_report.json": "6fb8cac4215e0d85f83e7324c2ec46d06f5d7ba80ed2e76d2ceda3a5feb181c8",
+        "provenance.json": "63e76269300cda94ea85e7ec45a616632adca7d43a65b555aee6b47e91d71fc1",
+        "section.json": "ff344cf7edc6e5ceb061add78e43560086195248ed097ada173fe09bcaec41d6",
+        "surface.npz": "b1ce6521290073fae7b48103d95333782d4d42e031a302d8c38ed2f5c0db17f3"
+      }
+    }
+  ],
+  "output_bytes": 15177916,
+  "previews": {
+    "files": [
+      {
+        "bundle": "met50899_panel_no_spread",
+        "bundle_manifest_sha256": "d2c30323f18aafa88bd4920e9288e8fc2118cd3fb7f378193a629046d0d31b46",
+        "color_space": "linear RGB fields converted to sRGB8 texture/cell colors; VTK displays sRGB colors",
+        "display_normals": {
+          "method": "area-weighted normals accumulated over original shared source mesh vertices before UV triangle-corner duplication",
+          "smoothing_groups": "exact source CAD face ancestry; adjacent serialized segment faces blend only at C1 section joins (dot >= 0.9995)",
+          "source_face_id_array_sha256": "c5d40c34fb16bc89adc71c4bbee80fe6e835442c5d667013916e7cb5b8ca8d80",
+          "source_geometry_mutated": false
+        },
+        "faces": 25598,
+        "geometry_array_sha256": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+        "legend": "Glaze appearance on outer wall, inside wall/floor, and rim; bare body on foot and exterior underside",
+        "pbr_material_parameters": {
+          "base": {
+            "ior_median_from_material_face_field": 1.559999942779541,
+            "ior_range": [
+              1.559999942779541,
+              1.559999942779541
+            ],
+            "roughness_median_from_combined_face_field": 0.42143920063972473,
+            "roughness_range": [
+              0.4122181534767151,
+              0.441415399312973
+            ]
+          },
+          "foot": {
+            "ior_median_from_material_face_field": 1.559999942779541,
+            "ior_range": [
+              1.559999942779541,
+              1.559999942779541
+            ],
+            "roughness_median_from_combined_face_field": 0.4210704267024994,
+            "roughness_range": [
+              0.4076640009880066,
+              0.4486341178417206
+            ]
+          },
+          "inner_wall": {
+            "ior_median_from_material_face_field": 1.5,
+            "ior_range": [
+              1.5,
+              1.5
+            ],
+            "roughness_median_from_combined_face_field": 0.11059363931417465,
+            "roughness_range": [
+              0.09961022436618805,
+              0.13646091520786285
+            ]
+          },
+          "outer_wall": {
+            "ior_median_from_material_face_field": 1.5,
+            "ior_range": [
+              1.5,
+              1.5
+            ],
+            "roughness_median_from_combined_face_field": 0.11068277433514595,
+            "roughness_range": [
+              0.09868372976779938,
+              0.1360214203596115
+            ]
+          },
+          "rim": {
+            "ior_median_from_material_face_field": 1.5,
+            "ior_range": [
+              1.5,
+              1.5
+            ],
+            "roughness_median_from_combined_face_field": 0.1108734980225563,
+            "roughness_range": [
+              0.09787528216838837,
+              0.13702566921710968
+            ]
+          }
+        },
+        "pbr_parameter_status": "per-region medians from source-conditioned design fields; uncalibrated appearance proxy",
+        "preview": "preview_bluewhite_v1_4view.png",
+        "renderer": "VTK PBR appearance proxy; outer chart texture and per-region face appearance",
+        "sha256": "7f103e2f07b890f836f78dcc094b066aa63e9d20c3d41073a3f1d5a4cd9861bf",
+        "texture_grid": [
+          512,
+          1024
+        ],
+        "view_definitions": [
+          "Side · orthographic",
+          "Top · orthographic",
+          "Lit 3D · perspective · panel-facing",
+          "Underside · orthographic"
+        ],
+        "view_specs": [
+          {
+            "camera_direction": [
+              0.0,
+              -1.0,
+              0.0
+            ],
+            "orthographic": true,
+            "title": "Side · orthographic",
+            "view_up": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "camera_direction": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "orthographic": true,
+            "title": "Top · orthographic",
+            "view_up": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          },
+          {
+            "camera_direction": [
+              -1.0,
+              0.0,
+              0.55
+            ],
+            "orthographic": false,
+            "title": "Lit 3D · perspective · panel-facing",
+            "view_up": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "camera_direction": [
+              0.0,
+              0.0,
+              -1.0
+            ],
+            "orthographic": true,
+            "title": "Underside · orthographic",
+            "view_up": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        ]
+      },
+      {
+        "bundle": "met50899_panel_default_spread",
+        "bundle_manifest_sha256": "94c887ad20cc5d52e1cee4bd58c6877d955623967f408dd6b99f94b3d6286b67",
+        "color_space": "linear RGB fields converted to sRGB8 texture/cell colors; VTK displays sRGB colors",
+        "display_normals": {
+          "method": "area-weighted normals accumulated over original shared source mesh vertices before UV triangle-corner duplication",
+          "smoothing_groups": "exact source CAD face ancestry; adjacent serialized segment faces blend only at C1 section joins (dot >= 0.9995)",
+          "source_face_id_array_sha256": "c5d40c34fb16bc89adc71c4bbee80fe6e835442c5d667013916e7cb5b8ca8d80",
+          "source_geometry_mutated": false
+        },
+        "faces": 25598,
+        "geometry_array_sha256": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+        "legend": "Glaze appearance on outer wall, inside wall/floor, and rim; bare body on foot and exterior underside",
+        "pbr_material_parameters": {
+          "base": {
+            "ior_median_from_material_face_field": 1.559999942779541,
+            "ior_range": [
+              1.559999942779541,
+              1.559999942779541
+            ],
+            "roughness_median_from_combined_face_field": 0.42143920063972473,
+            "roughness_range": [
+              0.4122181534767151,
+              0.441415399312973
+            ]
+          },
+          "foot": {
+            "ior_median_from_material_face_field": 1.559999942779541,
+            "ior_range": [
+              1.559999942779541,
+              1.559999942779541
+            ],
+            "roughness_median_from_combined_face_field": 0.4210704267024994,
+            "roughness_range": [
+              0.4076640009880066,
+              0.4486341178417206
+            ]
+          },
+          "inner_wall": {
+            "ior_median_from_material_face_field": 1.5,
+            "ior_range": [
+              1.5,
+              1.5
+            ],
+            "roughness_median_from_combined_face_field": 0.11059363931417465,
+            "roughness_range": [
+              0.09961022436618805,
+              0.13646091520786285
+            ]
+          },
+          "outer_wall": {
+            "ior_median_from_material_face_field": 1.5,
+            "ior_range": [
+              1.5,
+              1.5
+            ],
+            "roughness_median_from_combined_face_field": 0.11068277433514595,
+            "roughness_range": [
+              0.09868372976779938,
+              0.1360214203596115
+            ]
+          },
+          "rim": {
+            "ior_median_from_material_face_field": 1.5,
+            "ior_range": [
+              1.5,
+              1.5
+            ],
+            "roughness_median_from_combined_face_field": 0.1108734980225563,
+            "roughness_range": [
+              0.09787528216838837,
+              0.13702566921710968
+            ]
+          }
+        },
+        "pbr_parameter_status": "per-region medians from source-conditioned design fields; uncalibrated appearance proxy",
+        "preview": "preview_bluewhite_v1_4view.png",
+        "renderer": "VTK PBR appearance proxy; outer chart texture and per-region face appearance",
+        "sha256": "47d491667ce3c34494b8bad6172ab638e75caf077e6dc936f6fcab39b02b126d",
+        "texture_grid": [
+          512,
+          1024
+        ],
+        "view_definitions": [
+          "Side · orthographic",
+          "Top · orthographic",
+          "Lit 3D · perspective · panel-facing",
+          "Underside · orthographic"
+        ],
+        "view_specs": [
+          {
+            "camera_direction": [
+              0.0,
+              -1.0,
+              0.0
+            ],
+            "orthographic": true,
+            "title": "Side · orthographic",
+            "view_up": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "camera_direction": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "orthographic": true,
+            "title": "Top · orthographic",
+            "view_up": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          },
+          {
+            "camera_direction": [
+              -1.0,
+              0.0,
+              0.55
+            ],
+            "orthographic": false,
+            "title": "Lit 3D · perspective · panel-facing",
+            "view_up": [
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          {
+            "camera_direction": [
+              0.0,
+              0.0,
+              -1.0
+            ],
+            "orthographic": true,
+            "title": "Underside · orthographic",
+            "view_up": [
+              0.0,
+              1.0,
+              0.0
+            ]
+          }
+        ]
+      }
+    ],
+    "manifest": "preview_manifest_bluewhite_v1.json",
+    "manifest_sha256": "81c3209c7c9358fb95102f92c56afafe23ea382154ed7ff830711efe27c8037d"
+  },
+  "recipe_file": "recipe.json",
+  "schema": "synlab.reference_generation_experiment.v2",
+  "scope": {
+    "appearance": "Existing source-conditioned SynLab material and either a buildable reference-pattern style or the explicit Met 50899 photo-derived blue-white panel route, sampled on unchanged CAD sources.",
+    "chart": "Finite-polyline chart arclength is validated against the original general-purpose chart on selected points.",
+    "geometry": "2 new recipe-driven FootedBowlDesign candidate(s) from the existing VesselForge CAD driver.",
+    "interpretation": "Mixed-source reference-guided design candidates; not exact museum, maker, or archaeological object clones.",
+    "native_fracture": "NOT_RUN",
+    "physical_materials": "No calibrated optical values, chemistry, thickness, forming or firing mechanics are asserted. The blue-white panel is an already-fired-photo appearance proxy with uncalibrated spread/color controls.",
+    "refinement": "Original source geometry and profile are retained; appearance composition performs no vertex, face, or topology edits.",
+    "resource_limits": {
+      "cad_timeout_seconds_per_instance": 60,
+      "experiment_bytes": 268435456,
+      "instance_bytes": 67108864,
+      "recipe_bytes": 1048576
+    },
+    "training_export": "NONE"
+  },
+  "status": "REFERENCE_GUIDED_DESIGN_CANDIDATE"
+}

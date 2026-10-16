@@ -1,0 +1,877 @@
+{
+  "akantu_version": "5.0.7-post1",
+  "dump_field_fallback": "UNKNOWN unless dump documentation exposes a cohesive traction/opening/history field; no private API used",
+  "eligible_face_slots": 232,
+  "eligible_interface_facets": 8,
+  "energy_key_public_probe": {
+    "bulk_potential_J": {
+      "requested_key": "potential",
+      "status": "ok",
+      "value_J": 0.0
+    },
+    "cohesive_contact_native_key_J": {
+      "requested_key": "cohesive contact",
+      "status": "ok",
+      "value_J": 0.0
+    },
+    "cohesive_dissipated_J": {
+      "requested_key": "dissipated",
+      "status": "ok",
+      "value_J": 0.0
+    },
+    "cohesive_reversible_J": {
+      "requested_key": "reversible",
+      "status": "ok",
+      "value_J": 0.0
+    },
+    "contact_alias_diagnostic_J": {
+      "requested_key": "contact",
+      "status": "ok",
+      "value_J": 0.0
+    },
+    "kinetic_J": {
+      "requested_key": "kinetic",
+      "status": "ok",
+      "value_J": 0.0
+    }
+  },
+  "initial_native_cohesive_count": 0,
+  "material_access": {
+    "errors": [],
+    "material_getter": "getMaterial",
+    "nb_material_method": "UNKNOWN"
+  },
+  "material_objects": [
+    {
+      "fields": {
+        "getStress": {
+          "doc": "getStress(self: akantu.py11_akantu.Material, el_type: akantu.py11_akantu.ElementType, ghost_type: akantu.py11_akantu.GhostType = <GhostType._not_ghost: 0>) -> AkaArray",
+          "noarg_call_status": "not_called_signature_unknown",
+          "signature_error": "ValueError('no signature found for builtin <built-in method getStress of PyCapsule object at 0x7e0bea262bb0>')",
+          "signature_status": "unknown",
+          "status": "public_method"
+        }
+      },
+      "index": 0,
+      "type": "MaterialLinearElastic3D"
+    }
+  ],
+  "mesh_nodes": 45,
+  "model_public_api": {
+    "addDumpField": {
+      "doc": "addDumpField(self: akantu.py11_akantu.Model, arg0: str) -> None",
+      "type": "method"
+    },
+    "addDumpFieldToDumper": {
+      "doc": "addDumpFieldToDumper(self: akantu.py11_akantu.Model, arg0: str, arg1: str) -> None",
+      "type": "method"
+    },
+    "addDumpFieldVector": {
+      "doc": "addDumpFieldVector(self: akantu.py11_akantu.Model, arg0: str) -> None",
+      "type": "method"
+    },
+    "addDumpFieldVectorToDumper": {
+      "doc": "addDumpFieldVectorToDumper(self: akantu.py11_akantu.Model, arg0: str, arg1: str) -> None",
+      "type": "method"
+    },
+    "addDumpGroupField": {
+      "doc": "addDumpGroupField(self: akantu.py11_akantu.Model, field_id: str, group_name: str) -> None",
+      "type": "method"
+    },
+    "addDumpGroupFieldVector": {
+      "doc": "addDumpGroupFieldVector(self: akantu.py11_akantu.Model, field_id: str, group_name: str) -> None",
+      "type": "method"
+    },
+    "assembleInternalForces": {
+      "doc": "assembleInternalForces(self: akantu.py11_akantu.SolidMechanicsModel) -> None",
+      "type": "method"
+    },
+    "checkCohesiveStress": {
+      "doc": "checkCohesiveStress(self: akantu.py11_akantu.SolidMechanicsModelCohesive) -> int",
+      "type": "method"
+    },
+    "dump": {
+      "doc": "dump(*args, **kwargs)\nOverloaded function.\n\n1. dump(self: akantu.py11_akantu.Model) -> None\n\n2. dump(self: akantu.py11_akantu.Model, step: int) -> None\n\n3. dump(self: akantu.py11_akantu.Model, time: float, step: int) -> None\n\n4. dump(self: akantu.py11_akantu.Model, dumper_name: str) -> None\n\n5. dump(self: akantu.py11_akantu.Model, dumper_name: str, step: int) -> None\n\n6. dump(self: akantu.py11_akantu.Model, dumper_name: str, time: float, step: int) -> None",
+      "type": "method"
+    },
+    "dumpGroup": {
+      "doc": "dumpGroup(self: akantu.py11_akantu.Model, group_name: str) -> None",
+      "type": "method"
+    },
+    "getDisplacement": {
+      "doc": "getDisplacement(self: akantu.py11_akantu.SolidMechanicsModel) -> AkaArray",
+      "type": "method"
+    },
+    "getEnergy": {
+      "doc": "getEnergy(*args, **kwargs)\nOverloaded function.\n\n1. getEnergy(self: akantu.py11_akantu.SolidMechanicsModel, energy_id: str) -> float\n\n2. getEnergy(self: akantu.py11_akantu.SolidMechanicsModel, energy_id: str, group_id: str) -> float",
+      "type": "method"
+    },
+    "getExternalForce": {
+      "doc": "getExternalForce(self: akantu.py11_akantu.SolidMechanicsModel) -> AkaArray",
+      "type": "method"
+    },
+    "getInternalForce": {
+      "doc": "getInternalForce(*args, **kwargs)\nOverloaded function.\n\n1. getInternalForce(self: akantu.py11_akantu.SolidMechanicsModel) -> AkaArray\n\n2. getInternalForce(self: akantu.py11_akantu.SolidMechanicsModel) -> AkaArray",
+      "type": "method"
+    },
+    "getMaterial": {
+      "doc": "getMaterial(*args, **kwargs)\nOverloaded function.\n\n1. getMaterial(self: akantu.py11_akantu.SolidMechanicsModel, material_id: int) -> akantu::Material\n\n2. getMaterial(self: akantu.py11_akantu.SolidMechanicsModel, material_name: str) -> akantu::Material\n\n3. getMaterial(self: akantu.py11_akantu.SolidMechanicsModel, element: akantu.py11_akantu.Element) -> akantu::Material",
+      "type": "method"
+    },
+    "getMaterialByElement": {
+      "doc": "getMaterialByElement(self: akantu.py11_akantu.SolidMechanicsModel) -> akantu.py11_akantu.ElementTypeMapArrayInt",
+      "type": "method"
+    },
+    "getMaterialIndex": {
+      "doc": "getMaterialIndex(self: akantu.py11_akantu.SolidMechanicsModel, arg0: str) -> int",
+      "type": "method"
+    },
+    "getMaterialSelector": {
+      "doc": "getMaterialSelector(self: akantu.py11_akantu.SolidMechanicsModel) -> akantu.py11_akantu.ConstitutiveLawSelector",
+      "type": "method"
+    },
+    "getNbMaterials": {
+      "doc": "getNbMaterials(self: akantu.py11_akantu.SolidMechanicsModel) -> int",
+      "type": "method"
+    },
+    "getPreviousDisplacement": {
+      "doc": "getPreviousDisplacement(self: akantu.py11_akantu.SolidMechanicsModel) -> AkaArray",
+      "type": "method"
+    },
+    "getStableTimeStep": {
+      "doc": "getStableTimeStep(self: akantu.py11_akantu.SolidMechanicsModel) -> float",
+      "type": "method"
+    },
+    "getStressOnFacets": {
+      "doc": "getStressOnFacets(self: akantu.py11_akantu.SolidMechanicsModelCohesive, type: akantu.py11_akantu.ElementType, ghost_type: akantu.py11_akantu.GhostType = <GhostType._not_ghost: 0>) -> AkaArray",
+      "type": "method"
+    },
+    "getTimeStepSolver": {
+      "doc": "getTimeStepSolver(self: akantu.py11_akantu.ModelSolver, solver_id: str = '') -> akantu.py11_akantu.TimeStepSolver",
+      "type": "method"
+    },
+    "getVelocity": {
+      "doc": "getVelocity(self: akantu.py11_akantu.SolidMechanicsModel) -> AkaArray",
+      "type": "method"
+    },
+    "reassignMaterial": {
+      "doc": "reassignMaterial(self: akantu.py11_akantu.SolidMechanicsModel) -> None",
+      "type": "method"
+    },
+    "registerNewMaterial": {
+      "doc": "registerNewMaterial(self: akantu.py11_akantu.SolidMechanicsModel, material_name: str, material_type: str, option: str = '') -> None",
+      "type": "method"
+    },
+    "setBaseNameToDumper": {
+      "doc": "setBaseNameToDumper(self: akantu.py11_akantu.Model, arg0: str, arg1: str) -> None",
+      "type": "method"
+    },
+    "setMaterialSelector": {
+      "doc": "setMaterialSelector(self: akantu.py11_akantu.SolidMechanicsModel, arg0: akantu.py11_akantu.ConstitutiveLawSelector) -> None",
+      "type": "method"
+    },
+    "setTimeStep": {
+      "doc": "setTimeStep(self: akantu.py11_akantu.SolidMechanicsModel, time_step: float, solver_id: str = '') -> None",
+      "type": "method"
+    }
+  },
+  "module_cohesive_material_classes": {
+    "DefaultMaterialCohesiveSelector": {
+      "doc": null,
+      "public_methods": {
+        "setFallback": {
+          "doc": "setFallback(*args, **kwargs)\nOverloaded function.\n\n1. setFallback(self: akantu.py11_akantu.ConstitutiveLawSelector, arg0: int) -> None\n\n2. setFallback(self: akantu.py11_akantu.ConstitutiveLawSelector, arg0: akantu.py11_akantu.ConstitutiveLawSelector) -> None",
+          "status": "public_method"
+        }
+      },
+      "type": "pybind11_type"
+    },
+    "MaterialCohesive": {
+      "doc": null,
+      "public_methods": {
+        "getBool": {
+          "doc": "getBool(self: akantu.py11_akantu.ParameterRegistry, arg0: str) -> bool",
+          "status": "public_method"
+        },
+        "getElementFilter": {
+          "doc": "getElementFilter(self: akantu.py11_akantu.ConstitutiveLawInternalHandler) -> akantu.py11_akantu.ElementTypeMapArrayInt",
+          "status": "public_method"
+        },
+        "getFacetFilter": {
+          "doc": "getFacetFilter(*args, **kwargs)\nOverloaded function.\n\n1. getFacetFilter(self: akantu.py11_akantu.MaterialCohesive) -> akantu.py11_akantu.ElementTypeMapArrayInt\n\n2. getFacetFilter(self: akantu.py11_akantu.MaterialCohesive, type: akantu.py11_akantu.ElementType, ghost_type: akantu.py11_akantu.GhostType = <GhostType._not_ghost: 0>) -> AkaArray",
+          "status": "public_method"
+        },
+        "getGradU": {
+          "doc": "getGradU(self: akantu.py11_akantu.Material, el_type: akantu.py11_akantu.ElementType, ghost_type: akantu.py11_akantu.GhostType = <GhostType._not_ghost: 0>) -> AkaArray",
+          "status": "public_method"
+        },
+        "getInt": {
+          "doc": "getInt(self: akantu.py11_akantu.ParameterRegistry, arg0: str) -> int",
+          "status": "public_method"
+        },
+        "getInternalInt": {
+          "doc": "getInternalInt(self: akantu.py11_akantu.ConstitutiveLawInternalHandler, arg0: str) -> akantu.py11_akantu.InternalFieldInt",
+          "status": "public_method"
+        },
+        "getInternalReal": {
+          "doc": "getInternalReal(self: akantu.py11_akantu.ConstitutiveLawInternalHandler, arg0: str) -> akantu.py11_akantu.InternalFieldReal",
+          "status": "public_method"
+        },
+        "getMatrix": {
+          "doc": "getMatrix(self: akantu.py11_akantu.ParameterRegistry, arg0: str) -> numpy.ndarray[numpy.float64[m, n]]",
+          "status": "public_method"
+        },
+        "getModel": {
+          "doc": "getModel(self: akantu.py11_akantu.Material) -> akantu.py11_akantu.SolidMechanicsModel",
+          "status": "public_method"
+        },
+        "getOpening": {
+          "doc": "getOpening(self: akantu.py11_akantu.MaterialCohesive, type: akantu.py11_akantu.ElementType, ghost_type: akantu.py11_akantu.GhostType = <GhostType._not_ghost: 0>) -> AkaArray",
+          "status": "public_method"
+        },
+        "getPotentialEnergy": {
+          "doc": "getPotentialEnergy(*args, **kwargs)\nOverloaded function.\n\n1. getPotentialEnergy(self: akantu.py11_akantu.Material, el_type: akantu.py11_akantu.ElementType) -> AkaArray\n\n2. getPotentialEnergy(self: akantu.py11_akantu.Material, element: akantu.py11_akantu.Element) -> float\n\n3. getPotentialEnergy(self: akantu.py11_akantu.Material) -> float",
+          "status": "public_method"
+        },
+        "getPushWaveSpeed": {
+          "doc": "getPushWaveSpeed(self: akantu.py11_akantu.Material, arg0: akantu.py11_akantu.Element) -> float",
+          "status": "public_method"
+        },
+        "getReal": {
+          "doc": "getReal(self: akantu.py11_akantu.ParameterRegistry, arg0: str) -> float",
+          "status": "public_method"
+        },
+        "getShearWaveSpeed": {
+          "doc": "getShearWaveSpeed(self: akantu.py11_akantu.Material, arg0: akantu.py11_akantu.Element) -> float",
+          "status": "public_method"
+        },
+        "getSpatialDimension": {
+          "doc": "getSpatialDimension(self: akantu.py11_akantu.ConstitutiveLawInternalHandler) -> int",
+          "status": "public_method"
+        },
+        "getStress": {
+          "doc": "getStress(self: akantu.py11_akantu.Material, el_type: akantu.py11_akantu.ElementType, ghost_type: akantu.py11_akantu.GhostType = <GhostType._not_ghost: 0>) -> AkaArray",
+          "status": "public_method"
+        },
+        "getString": {
+          "doc": "getString(self: akantu.py11_akantu.ParameterRegistry, arg0: str) -> str",
+          "status": "public_method"
+        },
+        "getTraction": {
+          "doc": "getTraction(self: akantu.py11_akantu.MaterialCohesive, type: akantu.py11_akantu.ElementType, ghost_type: akantu.py11_akantu.GhostType = <GhostType._not_ghost: 0>) -> AkaArray",
+          "status": "public_method"
+        },
+        "initMaterial": {
+          "doc": "initMaterial(self: akantu.py11_akantu.Material) -> None",
+          "status": "public_method"
+        },
+        "registerInternalInt": {
+          "doc": "registerInternalInt(self: akantu.py11_akantu.ConstitutiveLawInternalHandler, arg0: str, arg1: int) -> akantu.py11_akantu.InternalFieldInt",
+          "status": "public_method"
+        },
+        "registerInternalReal": {
+          "doc": "registerInternalReal(self: akantu.py11_akantu.ConstitutiveLawInternalHandler, arg0: str, arg1: int) -> akantu.py11_akantu.InternalFieldReal",
+          "status": "public_method"
+        },
+        "registerParamReal": {
+          "doc": "registerParamReal(*args, **kwargs)\nOverloaded function.\n\n1. registerParamReal(self: akantu.py11_akantu.ParameterRegistry, arg0: str, arg1: int, arg2: str) -> None\n\n2. registerParamReal(self: akantu.py11_akantu.ParameterRegistry, arg0: float, arg1: str, arg2: int, arg3: str) -> None",
+          "status": "public_method"
+        },
+        "setBool": {
+          "doc": "setBool(self: akantu.py11_akantu.ConstitutiveLawakantu::SolidMechanicsModel, name: str, value: bool) -> None",
+          "status": "public_method"
+        },
+        "setInt": {
+          "doc": "setInt(self: akantu.py11_akantu.ConstitutiveLawakantu::SolidMechanicsModel, name: str, value: int) -> None",
+          "status": "public_method"
+        },
+        "setRandom": {
+          "doc": "setRandom(self: akantu.py11_akantu.ParameterRegistry, arg0: str, arg1: float, arg2: akantu.py11_akantu.RandomDistributionType.RandomDistributionTypes, arg3: float, arg4: float) -> None",
+          "status": "public_method"
+        },
+        "setReal": {
+          "doc": "setReal(self: akantu.py11_akantu.ConstitutiveLawakantu::SolidMechanicsModel, name: str, value: float) -> None",
+          "status": "public_method"
+        },
+        "setString": {
+          "doc": "setString(self: akantu.py11_akantu.ConstitutiveLawakantu::SolidMechanicsModel, name: str, value: str) -> None",
+          "status": "public_method"
+        }
+      },
+      "type": "pybind11_type"
+    },
+    "MaterialCohesiveLinear2D": {
+      "doc": null,
+      "public_methods": {
+        "getBool": {
+          "doc": "getBool(self: akantu.py11_akantu.ParameterRegistry, arg0: str) -> bool",
+          "status": "public_method"
+        },
+        "getElementFilter": {
+          "doc": "getElementFilter(self: akantu.py11_akantu.ConstitutiveLawInternalHandler) -> akantu.py11_akantu.ElementTypeMapArrayInt",
+          "status": "public_method"
+        },
+        "getFacetFilter": {
+          "doc": "getFacetFilter(*args, **kwargs)\nOverloaded function.\n\n1. getFacetFilter(self: akantu.py11_akantu.MaterialCohesive) -> akantu.py11_akantu.ElementTypeMapArrayInt\n\n2. getFacetFilter(self: akantu.py11_akantu.MaterialCohesive, type: akantu.py11_akantu.ElementType, ghost_type: akantu.py11_akantu.GhostType = <GhostType._not_ghost: 0>) -> AkaArray",
+          "status": "public_method"
+        },
+        "getGradU": {
+          "doc": "getGradU(self: akantu.py11_akantu.Material, el_type: akantu.py11_akantu.ElementType, ghost_type: akantu.py11_akantu.GhostType = <GhostType._not_ghost: 0>) -> AkaArray",
+          "status": "public_method"
+        },
+        "getInt": {
+          "doc": "getInt(self: akantu.py11_akantu.ParameterRegistry, arg0: str) -> int",
+          "status": "public_method"
+        },
+        "getInternalInt": {
+          "doc": "getInternalInt(self: akantu.py11_akantu.ConstitutiveLawInternalHandler, arg0: str) -> akantu.py11_akantu.InternalFieldInt",
+          "status": "public_method"
+        },
+        "getInternalReal": {
+          "doc": "getInternalReal(self: akantu.py11_akantu.ConstitutiveLawInternalHandler, arg0: str) -> akantu.py11_akantu.InternalFieldReal",
+          "status": "public_method"
+        },
+        "getMatrix": {
+          "doc": "getMatrix(self: akantu.py11_akantu.ParameterRegistry, arg0: str) -> numpy.ndarray[numpy.float64[m, n]]",
+          "status": "public_method"
+        },
+        "getModel": {
+          "doc": "getModel(self: akantu.py11_akantu.Material) -> akantu.py11_akantu.SolidMechanicsModel",
+          "status": "public_method"
+        },
+        "getOpening": {
+          "doc": "getOpening(self: akantu.py11_akantu.MaterialCohesive, type: akantu.py11_akantu.ElementType, ghost_type: akantu.py11_akantu.GhostType = <GhostType._not_ghost: 0>) -> AkaArray",
+          "status": "public_method"
+        },
+        "getPotentialEnergy": {
+          "doc": "getPotentialEnergy(*args, **kwargs)\nOverloaded function.\n\n1. getPotentialEnergy(self: akantu.py11_akantu.Material, el_type: akantu.py11_akantu.ElementType) -> AkaArray\n\n2. getPotentialEnergy(self: akantu.py11_akantu.Material, element: akantu.py11_akantu.Element) -> float\n\n3. getPotentialEnergy(self: akantu.py11_akantu.Material) -> float",
+          "status": "public_method"
+        },
+        "getPushWaveSpeed": {
+          "doc": "getPushWaveSpeed(self: akantu.py11_akantu.Material, arg0: akantu.py11_akantu.Element) -> float",
+          "status": "public_method"
+        },
+        "getReal": {
+          "doc": "getReal(self: akantu.py11_akantu.ParameterRegistry, arg0: str) -> float",
+          "status": "public_method"
+        },
+        "getShearWaveSpeed": {
+          "doc": "getShearWaveSpeed(self: akantu.py11_akantu.Material, arg0: akantu.py11_akantu.Element) -> float",
+          "status": "public_method"
+        },
+        "getSpatialDimension": {
+          "doc": "getSpatialDimension(self: akantu.py11_akantu.ConstitutiveLawInternalHandler) -> int",
+          "status": "public_method"
+        },
+        "getStress": {
+          "doc": "getStress(self: akantu.py11_akantu.Material, el_type: akantu.py11_akantu.ElementType, ghost_type: akantu.py11_akantu.GhostType = <GhostType._not_ghost: 0>) -> AkaArray",
+          "status": "public_method"
+        },
+        "getString": {
+          "doc": "getString(self: akantu.py11_akantu.ParameterRegistry, arg0: str) -> str",
+          "status": "public_method"
+        },
+        "getTraction": {
+          "doc": "getTraction(self: akantu.py11_akantu.MaterialCohesive, type: akantu.py11_akantu.ElementType, ghost_type: akantu.py11_akantu.GhostType = <GhostType._not_ghost: 0>) -> AkaArray",
+          "status": "public_method"
+        },
+        "initMaterial": {
+          "doc": "initMaterial(self: akantu.py11_akantu.Material) -> None",
+          "status": "public_method"
+        },
+        "registerInternalInt": {
+          "doc": "registerInternalInt(self: akantu.py11_akantu.ConstitutiveLawInternalHandler, arg0: str, arg1: int) -> akantu.py11_akantu.InternalFieldInt",
+          "status": "public_method"
+        },
+        "registerInternalReal": {
+          "doc": "registerInternalReal(self: akantu.py11_akantu.ConstitutiveLawInternalHandler, arg0: str, arg1: int) -> akantu.py11_akantu.InternalFieldReal",
+          "status": "public_method"
+        },
+        "registerParamReal": {
+          "doc": "registerParamReal(*args, **kwargs)\nOverloaded function.\n\n1. registerParamReal(self: akantu.py11_akantu.ParameterRegistry, arg0: str, arg1: int, arg2: str) -> None\n\n2. registerParamReal(self: akantu.py11_akantu.ParameterRegistry, arg0: float, arg1: str, arg2: int, arg3: str) -> None",
+          "status": "public_method"
+        },
+        "setBool": {
+          "doc": "setBool(self: akantu.py11_akantu.ConstitutiveLawakantu::SolidMechanicsModel, name: str, value: bool) -> None",
+          "status": "public_method"
+        },
+        "setInt": {
+          "doc": "setInt(self: akantu.py11_akantu.ConstitutiveLawakantu::SolidMechanicsModel, name: str, value: int) -> None",
+          "status": "public_method"
+        },
+        "setRandom": {
+          "doc": "setRandom(self: akantu.py11_akantu.ParameterRegistry, arg0: str, arg1: float, arg2: akantu.py11_akantu.RandomDistributionType.RandomDistributionTypes, arg3: float, arg4: float) -> None",
+          "status": "public_method"
+        },
+        "setReal": {
+          "doc": "setReal(self: akantu.py11_akantu.ConstitutiveLawakantu::SolidMechanicsModel, name: str, value: float) -> None",
+          "status": "public_method"
+        },
+        "setString": {
+          "doc": "setString(self: akantu.py11_akantu.ConstitutiveLawakantu::SolidMechanicsModel, name: str, value: str) -> None",
+          "status": "public_method"
+        }
+      },
+      "type": "pybind11_type"
+    },
+    "MaterialCohesiveLinear3D": {
+      "doc": null,
+      "public_methods": {
+        "getBool": {
+          "doc": "getBool(self: akantu.py11_akantu.ParameterRegistry, arg0: str) -> bool",
+          "status": "public_method"
+        },
+        "getElementFilter": {
+          "doc": "getElementFilter(self: akantu.py11_akantu.ConstitutiveLawInternalHandler) -> akantu.py11_akantu.ElementTypeMapArrayInt",
+          "status": "public_method"
+        },
+        "getFacetFilter": {
+          "doc": "getFacetFilter(*args, **kwargs)\nOverloaded function.\n\n1. getFacetFilter(self: akantu.py11_akantu.MaterialCohesive) -> akantu.py11_akantu.ElementTypeMapArrayInt\n\n2. getFacetFilter(self: akantu.py11_akantu.MaterialCohesive, type: akantu.py11_akantu.ElementType, ghost_type: akantu.py11_akantu.GhostType = <GhostType._not_ghost: 0>) -> AkaArray",
+          "status": "public_method"
+        },
+        "getGradU": {
+          "doc": "getGradU(self: akantu.py11_akantu.Material, el_type: akantu.py11_akantu.ElementType, ghost_type: akantu.py11_akantu.GhostType = <GhostType._not_ghost: 0>) -> AkaArray",
+          "status": "public_method"
+        },
+        "getInt": {
+          "doc": "getInt(self: akantu.py11_akantu.ParameterRegistry, arg0: str) -> int",
+          "status": "public_method"
+        },
+        "getInternalInt": {
+          "doc": "getInternalInt(self: akantu.py11_akantu.ConstitutiveLawInternalHandler, arg0: str) -> akantu.py11_akantu.InternalFieldInt",
+          "status": "public_method"
+        },
+        "getInternalReal": {
+          "doc": "getInternalReal(self: akantu.py11_akantu.ConstitutiveLawInternalHandler, arg0: str) -> akantu.py11_akantu.InternalFieldReal",
+          "status": "public_method"
+        },
+        "getMatrix": {
+          "doc": "getMatrix(self: akantu.py11_akantu.ParameterRegistry, arg0: str) -> numpy.ndarray[numpy.float64[m, n]]",
+          "status": "public_method"
+        },
+        "getModel": {
+          "doc": "getModel(self: akantu.py11_akantu.Material) -> akantu.py11_akantu.SolidMechanicsModel",
+          "status": "public_method"
+        },
+        "getOpening": {
+          "doc": "getOpening(self: akantu.py11_akantu.MaterialCohesive, type: akantu.py11_akantu.ElementType, ghost_type: akantu.py11_akantu.GhostType = <GhostType._not_ghost: 0>) -> AkaArray",
+          "status": "public_method"
+        },
+        "getPotentialEnergy": {
+          "doc": "getPotentialEnergy(*args, **kwargs)\nOverloaded function.\n\n1. getPotentialEnergy(self: akantu.py11_akantu.Material, el_type: akantu.py11_akantu.ElementType) -> AkaArray\n\n2. getPotentialEnergy(self: akantu.py11_akantu.Material, element: akantu.py11_akantu.Element) -> float\n\n3. getPotentialEnergy(self: akantu.py11_akantu.Material) -> float",
+          "status": "public_method"
+        },
+        "getPushWaveSpeed": {
+          "doc": "getPushWaveSpeed(self: akantu.py11_akantu.Material, arg0: akantu.py11_akantu.Element) -> float",
+          "status": "public_method"
+        },
+        "getReal": {
+          "doc": "getReal(self: akantu.py11_akantu.ParameterRegistry, arg0: str) -> float",
+          "status": "public_method"
+        },
+        "getShearWaveSpeed": {
+          "doc": "getShearWaveSpeed(self: akantu.py11_akantu.Material, arg0: akantu.py11_akantu.Element) -> float",
+          "status": "public_method"
+        },
+        "getSpatialDimension": {
+          "doc": "getSpatialDimension(self: akantu.py11_akantu.ConstitutiveLawInternalHandler) -> int",
+          "status": "public_method"
+        },
+        "getStress": {
+          "doc": "getStress(self: akantu.py11_akantu.Material, el_type: akantu.py11_akantu.ElementType, ghost_type: akantu.py11_akantu.GhostType = <GhostType._not_ghost: 0>) -> AkaArray",
+          "status": "public_method"
+        },
+        "getString": {
+          "doc": "getString(self: akantu.py11_akantu.ParameterRegistry, arg0: str) -> str",
+          "status": "public_method"
+        },
+        "getTraction": {
+          "doc": "getTraction(self: akantu.py11_akantu.MaterialCohesive, type: akantu.py11_akantu.ElementType, ghost_type: akantu.py11_akantu.GhostType = <GhostType._not_ghost: 0>) -> AkaArray",
+          "status": "public_method"
+        },
+        "initMaterial": {
+          "doc": "initMaterial(self: akantu.py11_akantu.Material) -> None",
+          "status": "public_method"
+        },
+        "registerInternalInt": {
+          "doc": "registerInternalInt(self: akantu.py11_akantu.ConstitutiveLawInternalHandler, arg0: str, arg1: int) -> akantu.py11_akantu.InternalFieldInt",
+          "status": "public_method"
+        },
+        "registerInternalReal": {
+          "doc": "registerInternalReal(self: akantu.py11_akantu.ConstitutiveLawInternalHandler, arg0: str, arg1: int) -> akantu.py11_akantu.InternalFieldReal",
+          "status": "public_method"
+        },
+        "registerParamReal": {
+          "doc": "registerParamReal(*args, **kwargs)\nOverloaded function.\n\n1. registerParamReal(self: akantu.py11_akantu.ParameterRegistry, arg0: str, arg1: int, arg2: str) -> None\n\n2. registerParamReal(self: akantu.py11_akantu.ParameterRegistry, arg0: float, arg1: str, arg2: int, arg3: str) -> None",
+          "status": "public_method"
+        },
+        "setBool": {
+          "doc": "setBool(self: akantu.py11_akantu.ConstitutiveLawakantu::SolidMechanicsModel, name: str, value: bool) -> None",
+          "status": "public_method"
+        },
+        "setInt": {
+          "doc": "setInt(self: akantu.py11_akantu.ConstitutiveLawakantu::SolidMechanicsModel, name: str, value: int) -> None",
+          "status": "public_method"
+        },
+        "setRandom": {
+          "doc": "setRandom(self: akantu.py11_akantu.ParameterRegistry, arg0: str, arg1: float, arg2: akantu.py11_akantu.RandomDistributionType.RandomDistributionTypes, arg3: float, arg4: float) -> None",
+          "status": "public_method"
+        },
+        "setReal": {
+          "doc": "setReal(self: akantu.py11_akantu.ConstitutiveLawakantu::SolidMechanicsModel, name: str, value: float) -> None",
+          "status": "public_method"
+        },
+        "setString": {
+          "doc": "setString(self: akantu.py11_akantu.ConstitutiveLawakantu::SolidMechanicsModel, name: str, value: str) -> None",
+          "status": "public_method"
+        }
+      },
+      "type": "pybind11_type"
+    },
+    "MaterialCohesiveLinearFriction2D": {
+      "doc": null,
+      "public_methods": {
+        "getBool": {
+          "doc": "getBool(self: akantu.py11_akantu.ParameterRegistry, arg0: str) -> bool",
+          "status": "public_method"
+        },
+        "getElementFilter": {
+          "doc": "getElementFilter(self: akantu.py11_akantu.ConstitutiveLawInternalHandler) -> akantu.py11_akantu.ElementTypeMapArrayInt",
+          "status": "public_method"
+        },
+        "getFacetFilter": {
+          "doc": "getFacetFilter(*args, **kwargs)\nOverloaded function.\n\n1. getFacetFilter(self: akantu.py11_akantu.MaterialCohesive) -> akantu.py11_akantu.ElementTypeMapArrayInt\n\n2. getFacetFilter(self: akantu.py11_akantu.MaterialCohesive, type: akantu.py11_akantu.ElementType, ghost_type: akantu.py11_akantu.GhostType = <GhostType._not_ghost: 0>) -> AkaArray",
+          "status": "public_method"
+        },
+        "getGradU": {
+          "doc": "getGradU(self: akantu.py11_akantu.Material, el_type: akantu.py11_akantu.ElementType, ghost_type: akantu.py11_akantu.GhostType = <GhostType._not_ghost: 0>) -> AkaArray",
+          "status": "public_method"
+        },
+        "getInt": {
+          "doc": "getInt(self: akantu.py11_akantu.ParameterRegistry, arg0: str) -> int",
+          "status": "public_method"
+        },
+        "getInternalInt": {
+          "doc": "getInternalInt(self: akantu.py11_akantu.ConstitutiveLawInternalHandler, arg0: str) -> akantu.py11_akantu.InternalFieldInt",
+          "status": "public_method"
+        },
+        "getInternalReal": {
+          "doc": "getInternalReal(self: akantu.py11_akantu.ConstitutiveLawInternalHandler, arg0: str) -> akantu.py11_akantu.InternalFieldReal",
+          "status": "public_method"
+        },
+        "getMatrix": {
+          "doc": "getMatrix(self: akantu.py11_akantu.ParameterRegistry, arg0: str) -> numpy.ndarray[numpy.float64[m, n]]",
+          "status": "public_method"
+        },
+        "getModel": {
+          "doc": "getModel(self: akantu.py11_akantu.Material) -> akantu.py11_akantu.SolidMechanicsModel",
+          "status": "public_method"
+        },
+        "getOpening": {
+          "doc": "getOpening(self: akantu.py11_akantu.MaterialCohesive, type: akantu.py11_akantu.ElementType, ghost_type: akantu.py11_akantu.GhostType = <GhostType._not_ghost: 0>) -> AkaArray",
+          "status": "public_method"
+        },
+        "getPotentialEnergy": {
+          "doc": "getPotentialEnergy(*args, **kwargs)\nOverloaded function.\n\n1. getPotentialEnergy(self: akantu.py11_akantu.Material, el_type: akantu.py11_akantu.ElementType) -> AkaArray\n\n2. getPotentialEnergy(self: akantu.py11_akantu.Material, element: akantu.py11_akantu.Element) -> float\n\n3. getPotentialEnergy(self: akantu.py11_akantu.Material) -> float",
+          "status": "public_method"
+        },
+        "getPushWaveSpeed": {
+          "doc": "getPushWaveSpeed(self: akantu.py11_akantu.Material, arg0: akantu.py11_akantu.Element) -> float",
+          "status": "public_method"
+        },
+        "getReal": {
+          "doc": "getReal(self: akantu.py11_akantu.ParameterRegistry, arg0: str) -> float",
+          "status": "public_method"
+        },
+        "getShearWaveSpeed": {
+          "doc": "getShearWaveSpeed(self: akantu.py11_akantu.Material, arg0: akantu.py11_akantu.Element) -> float",
+          "status": "public_method"
+        },
+        "getSpatialDimension": {
+          "doc": "getSpatialDimension(self: akantu.py11_akantu.ConstitutiveLawInternalHandler) -> int",
+          "status": "public_method"
+        },
+        "getStress": {
+          "doc": "getStress(self: akantu.py11_akantu.Material, el_type: akantu.py11_akantu.ElementType, ghost_type: akantu.py11_akantu.GhostType = <GhostType._not_ghost: 0>) -> AkaArray",
+          "status": "public_method"
+        },
+        "getString": {
+          "doc": "getString(self: akantu.py11_akantu.ParameterRegistry, arg0: str) -> str",
+          "status": "public_method"
+        },
+        "getTraction": {
+          "doc": "getTraction(self: akantu.py11_akantu.MaterialCohesive, type: akantu.py11_akantu.ElementType, ghost_type: akantu.py11_akantu.GhostType = <GhostType._not_ghost: 0>) -> AkaArray",
+          "status": "public_method"
+        },
+        "initMaterial": {
+          "doc": "initMaterial(self: akantu.py11_akantu.Material) -> None",
+          "status": "public_method"
+        },
+        "registerInternalInt": {
+          "doc": "registerInternalInt(self: akantu.py11_akantu.ConstitutiveLawInternalHandler, arg0: str, arg1: int) -> akantu.py11_akantu.InternalFieldInt",
+          "status": "public_method"
+        },
+        "registerInternalReal": {
+          "doc": "registerInternalReal(self: akantu.py11_akantu.ConstitutiveLawInternalHandler, arg0: str, arg1: int) -> akantu.py11_akantu.InternalFieldReal",
+          "status": "public_method"
+        },
+        "registerParamReal": {
+          "doc": "registerParamReal(*args, **kwargs)\nOverloaded function.\n\n1. registerParamReal(self: akantu.py11_akantu.ParameterRegistry, arg0: str, arg1: int, arg2: str) -> None\n\n2. registerParamReal(self: akantu.py11_akantu.ParameterRegistry, arg0: float, arg1: str, arg2: int, arg3: str) -> None",
+          "status": "public_method"
+        },
+        "setBool": {
+          "doc": "setBool(self: akantu.py11_akantu.ConstitutiveLawakantu::SolidMechanicsModel, name: str, value: bool) -> None",
+          "status": "public_method"
+        },
+        "setInt": {
+          "doc": "setInt(self: akantu.py11_akantu.ConstitutiveLawakantu::SolidMechanicsModel, name: str, value: int) -> None",
+          "status": "public_method"
+        },
+        "setRandom": {
+          "doc": "setRandom(self: akantu.py11_akantu.ParameterRegistry, arg0: str, arg1: float, arg2: akantu.py11_akantu.RandomDistributionType.RandomDistributionTypes, arg3: float, arg4: float) -> None",
+          "status": "public_method"
+        },
+        "setReal": {
+          "doc": "setReal(self: akantu.py11_akantu.ConstitutiveLawakantu::SolidMechanicsModel, name: str, value: float) -> None",
+          "status": "public_method"
+        },
+        "setString": {
+          "doc": "setString(self: akantu.py11_akantu.ConstitutiveLawakantu::SolidMechanicsModel, name: str, value: str) -> None",
+          "status": "public_method"
+        }
+      },
+      "type": "pybind11_type"
+    },
+    "MaterialCohesiveLinearFriction3D": {
+      "doc": null,
+      "public_methods": {
+        "getBool": {
+          "doc": "getBool(self: akantu.py11_akantu.ParameterRegistry, arg0: str) -> bool",
+          "status": "public_method"
+        },
+        "getElementFilter": {
+          "doc": "getElementFilter(self: akantu.py11_akantu.ConstitutiveLawInternalHandler) -> akantu.py11_akantu.ElementTypeMapArrayInt",
+          "status": "public_method"
+        },
+        "getFacetFilter": {
+          "doc": "getFacetFilter(*args, **kwargs)\nOverloaded function.\n\n1. getFacetFilter(self: akantu.py11_akantu.MaterialCohesive) -> akantu.py11_akantu.ElementTypeMapArrayInt\n\n2. getFacetFilter(self: akantu.py11_akantu.MaterialCohesive, type: akantu.py11_akantu.ElementType, ghost_type: akantu.py11_akantu.GhostType = <GhostType._not_ghost: 0>) -> AkaArray",
+          "status": "public_method"
+        },
+        "getGradU": {
+          "doc": "getGradU(self: akantu.py11_akantu.Material, el_type: akantu.py11_akantu.ElementType, ghost_type: akantu.py11_akantu.GhostType = <GhostType._not_ghost: 0>) -> AkaArray",
+          "status": "public_method"
+        },
+        "getInt": {
+          "doc": "getInt(self: akantu.py11_akantu.ParameterRegistry, arg0: str) -> int",
+          "status": "public_method"
+        },
+        "getInternalInt": {
+          "doc": "getInternalInt(self: akantu.py11_akantu.ConstitutiveLawInternalHandler, arg0: str) -> akantu.py11_akantu.InternalFieldInt",
+          "status": "public_method"
+        },
+        "getInternalReal": {
+          "doc": "getInternalReal(self: akantu.py11_akantu.ConstitutiveLawInternalHandler, arg0: str) -> akantu.py11_akantu.InternalFieldReal",
+          "status": "public_method"
+        },
+        "getMatrix": {
+          "doc": "getMatrix(self: akantu.py11_akantu.ParameterRegistry, arg0: str) -> numpy.ndarray[numpy.float64[m, n]]",
+          "status": "public_method"
+        },
+        "getModel": {
+          "doc": "getModel(self: akantu.py11_akantu.Material) -> akantu.py11_akantu.SolidMechanicsModel",
+          "status": "public_method"
+        },
+        "getOpening": {
+          "doc": "getOpening(self: akantu.py11_akantu.MaterialCohesive, type: akantu.py11_akantu.ElementType, ghost_type: akantu.py11_akantu.GhostType = <GhostType._not_ghost: 0>) -> AkaArray",
+          "status": "public_method"
+        },
+        "getPotentialEnergy": {
+          "doc": "getPotentialEnergy(*args, **kwargs)\nOverloaded function.\n\n1. getPotentialEnergy(self: akantu.py11_akantu.Material, el_type: akantu.py11_akantu.ElementType) -> AkaArray\n\n2. getPotentialEnergy(self: akantu.py11_akantu.Material, element: akantu.py11_akantu.Element) -> float\n\n3. getPotentialEnergy(self: akantu.py11_akantu.Material) -> float",
+          "status": "public_method"
+        },
+        "getPushWaveSpeed": {
+          "doc": "getPushWaveSpeed(self: akantu.py11_akantu.Material, arg0: akantu.py11_akantu.Element) -> float",
+          "status": "public_method"
+        },
+        "getReal": {
+          "doc": "getReal(self: akantu.py11_akantu.ParameterRegistry, arg0: str) -> float",
+          "status": "public_method"
+        },
+        "getShearWaveSpeed": {
+          "doc": "getShearWaveSpeed(self: akantu.py11_akantu.Material, arg0: akantu.py11_akantu.Element) -> float",
+          "status": "public_method"
+        },
+        "getSpatialDimension": {
+          "doc": "getSpatialDimension(self: akantu.py11_akantu.ConstitutiveLawInternalHandler) -> int",
+          "status": "public_method"
+        },
+        "getStress": {
+          "doc": "getStress(self: akantu.py11_akantu.Material, el_type: akantu.py11_akantu.ElementType, ghost_type: akantu.py11_akantu.GhostType = <GhostType._not_ghost: 0>) -> AkaArray",
+          "status": "public_method"
+        },
+        "getString": {
+          "doc": "getString(self: akantu.py11_akantu.ParameterRegistry, arg0: str) -> str",
+          "status": "public_method"
+        },
+        "getTraction": {
+          "doc": "getTraction(self: akantu.py11_akantu.MaterialCohesive, type: akantu.py11_akantu.ElementType, ghost_type: akantu.py11_akantu.GhostType = <GhostType._not_ghost: 0>) -> AkaArray",
+          "status": "public_method"
+        },
+        "initMaterial": {
+          "doc": "initMaterial(self: akantu.py11_akantu.Material) -> None",
+          "status": "public_method"
+        },
+        "registerInternalInt": {
+          "doc": "registerInternalInt(self: akantu.py11_akantu.ConstitutiveLawInternalHandler, arg0: str, arg1: int) -> akantu.py11_akantu.InternalFieldInt",
+          "status": "public_method"
+        },
+        "registerInternalReal": {
+          "doc": "registerInternalReal(self: akantu.py11_akantu.ConstitutiveLawInternalHandler, arg0: str, arg1: int) -> akantu.py11_akantu.InternalFieldReal",
+          "status": "public_method"
+        },
+        "registerParamReal": {
+          "doc": "registerParamReal(*args, **kwargs)\nOverloaded function.\n\n1. registerParamReal(self: akantu.py11_akantu.ParameterRegistry, arg0: str, arg1: int, arg2: str) -> None\n\n2. registerParamReal(self: akantu.py11_akantu.ParameterRegistry, arg0: float, arg1: str, arg2: int, arg3: str) -> None",
+          "status": "public_method"
+        },
+        "setBool": {
+          "doc": "setBool(self: akantu.py11_akantu.ConstitutiveLawakantu::SolidMechanicsModel, name: str, value: bool) -> None",
+          "status": "public_method"
+        },
+        "setInt": {
+          "doc": "setInt(self: akantu.py11_akantu.ConstitutiveLawakantu::SolidMechanicsModel, name: str, value: int) -> None",
+          "status": "public_method"
+        },
+        "setRandom": {
+          "doc": "setRandom(self: akantu.py11_akantu.ParameterRegistry, arg0: str, arg1: float, arg2: akantu.py11_akantu.RandomDistributionType.RandomDistributionTypes, arg3: float, arg4: float) -> None",
+          "status": "public_method"
+        },
+        "setReal": {
+          "doc": "setReal(self: akantu.py11_akantu.ConstitutiveLawakantu::SolidMechanicsModel, name: str, value: float) -> None",
+          "status": "public_method"
+        },
+        "setString": {
+          "doc": "setString(self: akantu.py11_akantu.ConstitutiveLawakantu::SolidMechanicsModel, name: str, value: str) -> None",
+          "status": "public_method"
+        }
+      },
+      "type": "pybind11_type"
+    },
+    "MaterialCohesiveRulesSelector": {
+      "doc": null,
+      "public_methods": {
+        "setFallback": {
+          "doc": "setFallback(*args, **kwargs)\nOverloaded function.\n\n1. setFallback(self: akantu.py11_akantu.ConstitutiveLawSelector, arg0: int) -> None\n\n2. setFallback(self: akantu.py11_akantu.ConstitutiveLawSelector, arg0: akantu.py11_akantu.ConstitutiveLawSelector) -> None",
+          "status": "public_method"
+        }
+      },
+      "type": "pybind11_type"
+    },
+    "MeshDataMaterialCohesiveSelector": {
+      "doc": null,
+      "public_methods": {
+        "setFallback": {
+          "doc": "setFallback(*args, **kwargs)\nOverloaded function.\n\n1. setFallback(self: akantu.py11_akantu.ConstitutiveLawSelector, arg0: int) -> None\n\n2. setFallback(self: akantu.py11_akantu.ConstitutiveLawSelector, arg0: akantu.py11_akantu.ConstitutiveLawSelector) -> None",
+          "status": "public_method"
+        }
+      },
+      "type": "pybind11_type"
+    }
+  },
+  "numpy_version": "2.5.3",
+  "preflight_status": "PASS_no_solver_steps",
+  "python": "/mnt/c/Users/xiemo/Desktop/ShardForge/third_party/akantu-runtime/venv/bin/python",
+  "python_version": "3.12.15",
+  "run_id": "coarse654_20261004_01",
+  "snapshot_integrity": {
+    "captured_utc_before_solver": "2026-10-03T23:51:39.521530+00:00",
+    "manifest_sha256_actual": "21b563069550e2091474fe94877bd3ceaae094ac4c92aed3900ecdd94702dd68",
+    "manifest_sha256_expected": "21b563069550e2091474fe94877bd3ceaae094ac4c92aed3900ecdd94702dd68",
+    "manifest_source_expected_runner_sha256": "67dd1eb98acc5f5369b9cbf1a9bfbd7f6681068172e537768e788274cb10652d",
+    "run_id": "coarse654_20261004_01",
+    "snapshot_pairs": [
+      {
+        "identical": true,
+        "original_bytes": 29542,
+        "original_exists": true,
+        "original_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_capability/run_contract.py",
+        "original_sha256": "67dd1eb98acc5f5369b9cbf1a9bfbd7f6681068172e537768e788274cb10652d",
+        "snapshot_bytes": 29542,
+        "snapshot_exists": true,
+        "snapshot_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/relicweave-synlab/tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/snapshot/run_contract.original.py",
+        "snapshot_sha256": "67dd1eb98acc5f5369b9cbf1a9bfbd7f6681068172e537768e788274cb10652d"
+      },
+      {
+        "identical": true,
+        "original_bytes": 4757,
+        "original_exists": true,
+        "original_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/relicweave-synlab/tmp/review_20261004/implementation/cohesive_capability/manifest.json",
+        "original_sha256": "21b563069550e2091474fe94877bd3ceaae094ac4c92aed3900ecdd94702dd68",
+        "snapshot_bytes": 4757,
+        "snapshot_exists": true,
+        "snapshot_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/relicweave-synlab/tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/snapshot/manifest.json",
+        "snapshot_sha256": "21b563069550e2091474fe94877bd3ceaae094ac4c92aed3900ecdd94702dd68"
+      },
+      {
+        "identical": true,
+        "original_bytes": 3605,
+        "original_exists": true,
+        "original_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_capability/input/block_2x2x4mm.msh",
+        "original_sha256": "b98402c5a7b7af36b8e5e8a2a90c7db689cb1af86a089c8e1b9a0dbf07ba2638",
+        "snapshot_bytes": 3605,
+        "snapshot_exists": true,
+        "snapshot_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/relicweave-synlab/tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/snapshot/input/block_2x2x4mm.msh",
+        "snapshot_sha256": "b98402c5a7b7af36b8e5e8a2a90c7db689cb1af86a089c8e1b9a0dbf07ba2638"
+      },
+      {
+        "identical": true,
+        "original_bytes": 291,
+        "original_exists": true,
+        "original_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_capability/input/material.dat",
+        "original_sha256": "c300c3091ac323eba756f2d7bfbf55e888c68d6b10f5fcb9763c0e6b6194305f",
+        "snapshot_bytes": 291,
+        "snapshot_exists": true,
+        "snapshot_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/relicweave-synlab/tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/snapshot/input/material.dat",
+        "snapshot_sha256": "c300c3091ac323eba756f2d7bfbf55e888c68d6b10f5fcb9763c0e6b6194305f"
+      },
+      {
+        "identical": true,
+        "original_bytes": 488,
+        "original_exists": true,
+        "original_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_capability/input/generated_geometry.json",
+        "original_sha256": "eec01312e181581c1d433b2619b6fd8a4a42677769c4dbc25053d0a2c355188b",
+        "snapshot_bytes": 488,
+        "snapshot_exists": true,
+        "snapshot_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/relicweave-synlab/tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/snapshot/input/generated_geometry.json",
+        "snapshot_sha256": "eec01312e181581c1d433b2619b6fd8a4a42677769c4dbc25053d0a2c355188b"
+      },
+      {
+        "identical": true,
+        "original_bytes": 395637,
+        "original_exists": true,
+        "original_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/relicweave-synlab/tmp/review_20261004/implementation/cohesive_capability/modeI_dt/trace.csv",
+        "original_sha256": "82fbd48e66aac6fce3a97d45dc6e50e819ef45b38fdfe75b6d00b62e483ad0d9",
+        "snapshot_bytes": 395637,
+        "snapshot_exists": true,
+        "snapshot_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/relicweave-synlab/tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/reference/trace.csv",
+        "snapshot_sha256": "82fbd48e66aac6fce3a97d45dc6e50e819ef45b38fdfe75b6d00b62e483ad0d9"
+      },
+      {
+        "identical": true,
+        "original_bytes": 3167,
+        "original_exists": true,
+        "original_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/relicweave-synlab/tmp/review_20261004/implementation/cohesive_capability/modeI_dt/status.json",
+        "original_sha256": "4616bd48c93ddb35e546867022ede1b152ce75f1d40ca0309c12764ac18c0a84",
+        "snapshot_bytes": 3167,
+        "snapshot_exists": true,
+        "snapshot_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/relicweave-synlab/tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/reference/status.json",
+        "snapshot_sha256": "4616bd48c93ddb35e546867022ede1b152ce75f1d40ca0309c12764ac18c0a84"
+      }
+    ],
+    "snapshot_pairs_identical": true,
+    "solver_attempts": 0,
+    "solver_cap_steps": 654,
+    "source_sha256_actual": "67dd1eb98acc5f5369b9cbf1a9bfbd7f6681068172e537768e788274cb10652d",
+    "source_sha256_expected": "67dd1eb98acc5f5369b9cbf1a9bfbd7f6681068172e537768e788274cb10652d"
+  },
+  "solver_steps": 0
+}

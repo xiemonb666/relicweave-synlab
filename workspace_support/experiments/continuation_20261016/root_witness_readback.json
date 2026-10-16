@@ -1,0 +1,20 @@
+{
+  "status": "INDEPENDENT_SOURCE_QUADRATURE_AND_RECORDED_ANCESTRY_PASS",
+  "receipt_sha256": "f7478ea8fc5916bcd2e1e95232f052469f96b09c3a642f9d5aa3ee763e8af5fc",
+  "source_step_sha256": "1cd34bc5f5b3cf8b6b937afeb7345b982c9de01165f0d570ca11b83f3ea31c0e",
+  "named_step_sha256": "32b2735010a086eb809674ca07bc4cd0dc5ca499e3adc539eedeca7657e1df9d",
+  "quadrature_orders": [
+    64,
+    128
+  ],
+  "source_surface_area_mm2": 32881.91205061623,
+  "maximum_native_face_area_relative_error_vs_source_quadrature": 2.1623054777217453e-13,
+  "source_volume_mm3": 32987.772829095375,
+  "source_complete_central_cut_area_mm2": 383.20016765987657,
+  "occ_cut_area_relative_error_vs_source_quadrature": 1.2048516084798432e-06,
+  "cut_area_comparison_relative_tolerance": 1e-05,
+  "exterior_surfaces": 45,
+  "source_faces": 16,
+  "raw_map_exclusive_coverage_verified": true,
+  "scope": "Independent source-curve quadrature, hashes and receipt raw-map arithmetic; OCC operation not rerun; no mesh, material, fracture or specimen fidelity qualification."
+}

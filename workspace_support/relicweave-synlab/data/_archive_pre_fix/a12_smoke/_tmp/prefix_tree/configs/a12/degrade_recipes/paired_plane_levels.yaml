@@ -1,0 +1,14 @@
+schema: synlab.v3
+recipe_id: paired_plane_levels
+basis_policy: paired_across_levels
+source_role: physical
+operators:
+  - axis_id: P03
+    stage: PHYSICAL
+    level: 2
+    variant: depth_mm
+measurement:
+  save_baseline: true
+  save_effect_statistics: true
+  save_label_versions: true
+  save_spurious_mask: research_label_only

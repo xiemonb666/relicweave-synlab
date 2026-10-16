@@ -1,0 +1,36 @@
+{
+  "run_id": "coarse654_20261004_01",
+  "actual_host_command": "wsl.exe -d Ubuntu -- env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 /mnt/c/Users/xiemo/Desktop/ShardForge/third_party/akantu-runtime/venv/bin/python /mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_event_probe_20261004/probe_driver.py --run",
+  "actual_wsl_argv": [
+    "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_event_probe_20261004/probe_driver.py",
+    "--run"
+  ],
+  "external_exit_code": 0,
+  "solver_attempts": 1,
+  "retries": 0,
+  "elapsed_s": 2.932817415999999,
+  "final_driver_source": {
+    "bytes": 46087,
+    "path": "C:/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_event_probe_20261004/probe_driver.py",
+    "sha256": "65fb7e4a4590d1cbb0a015a4ff35a0b5261528926394c5a2cac692cf76e42be6"
+  },
+  "executed_driver_snapshot": {
+    "byte_identical": true,
+    "bytes": 46087,
+    "path": "snapshot/probe_driver.executed.py",
+    "sha256": "65fb7e4a4590d1cbb0a015a4ff35a0b5261528926394c5a2cac692cf76e42be6"
+  },
+  "frozen_runner_sha256": "67dd1eb98acc5f5369b9cbf1a9bfbd7f6681068172e537768e788274cb10652d",
+  "frozen_manifest_sha256": "21b563069550e2091474fe94877bd3ceaae094ac4c92aed3900ecdd94702dd68",
+  "source_input_baseline_snapshot_pairs_identical": true,
+  "preflight": "PASS; no solver steps; public getOpening/getTraction accessors available",
+  "final_driver_static_compile": "PASS before sole solver attempt",
+  "raw_evidence": [
+    "run_status.json",
+    "phase_evidence.jsonl",
+    "trace.csv",
+    "dense_states/",
+    "baseline_comparison.json",
+    "pre_run_snapshot_integrity.json"
+  ]
+}

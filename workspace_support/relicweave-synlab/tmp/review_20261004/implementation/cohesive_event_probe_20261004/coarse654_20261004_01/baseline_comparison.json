@@ -1,0 +1,67 @@
+{
+  "baseline_trace_sha256": "82fbd48e66aac6fce3a97d45dc6e50e819ef45b38fdfe75b6d00b62e483ad0d9",
+  "comparison_tolerances": {
+    "counts": "exact",
+    "energy": "zero baseline: abs<=1e-12 J; otherwise both abs<=1e-12 J and relative<=1e-10",
+    "nonenergy_float": "zero baseline: abs<=1e-12; otherwise relative<=1e-10"
+  },
+  "error_count": 0,
+  "errors_first_100": [],
+  "maxima_by_field": {
+    "actuator_force_estimate_N": {
+      "max_abs": 0.0,
+      "max_rel": 0.0
+    },
+    "bulk_potential_J": {
+      "max_abs": 0.0,
+      "max_rel": 0.0
+    },
+    "bulk_tetrahedra": {
+      "max_abs": 0.0,
+      "max_rel": 0.0
+    },
+    "cohesive_dissipated_J": {
+      "max_abs": 0.0,
+      "max_rel": 0.0
+    },
+    "cohesive_elements": {
+      "max_abs": 0.0,
+      "max_rel": 0.0
+    },
+    "cohesive_insertions_cumulative": {
+      "max_abs": 0.0,
+      "max_rel": 0.0
+    },
+    "cohesive_insertions_this_step": {
+      "max_abs": 0.0,
+      "max_rel": 0.0
+    },
+    "cohesive_reversible_J": {
+      "max_abs": 0.0,
+      "max_rel": 0.0
+    },
+    "kinetic_J": {
+      "max_abs": 0.0,
+      "max_rel": 0.0
+    },
+    "mass_component_0_kg": {
+      "max_abs": 0.0,
+      "max_rel": 0.0
+    },
+    "mass_component_1_kg": {
+      "max_abs": 0.0,
+      "max_rel": 0.0
+    },
+    "mass_component_2_kg": {
+      "max_abs": 0.0,
+      "max_rel": 0.0
+    },
+    "mesh_nodes": {
+      "max_abs": 0.0,
+      "max_rel": 0.0
+    }
+  },
+  "passed": true,
+  "position_comparison": "UNKNOWN_no_per_step_baseline_native_position_frames",
+  "rows_compared_1_through_654": 654
+}

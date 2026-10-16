@@ -1,0 +1,361 @@
+{
+  "composition_policy": {
+    "appearance_transfer": "pattern albedo ratio and roughness delta over material sample; appearance-only approximation",
+    "coating_claim": "appearance layer selection only; no physical glaze thickness or mechanics claim",
+    "fresh_interface": "body material only; no glaze and no original-surface pattern",
+    "geometry_effect": "none; source geometry remains byte-value-identical in canonical array representation",
+    "material_field": "source-conditioned material profile sampled at original triangle centroids and lineage tags",
+    "pattern_field": "existing pattern evaluator, applied only to the style's declared source surface tag"
+  },
+  "controls_requested": {
+    "material": {
+      "coating_roughness": 0.24
+    },
+    "pattern": {
+      "s_margin_frac": 0.02
+    }
+  },
+  "generation_mode": "NEW_REFERENCE_GUIDED_DESIGN",
+  "material": {
+    "coating_surface_policy": {
+      "bare_body_tags": [
+        "foot",
+        "base",
+        "interface",
+        "attachment"
+      ],
+      "coated_tags": [
+        "outer_wall",
+        "inner_wall",
+        "rim"
+      ],
+      "mode": "original_surface_tags",
+      "surface_query_depth_mm": 0.0,
+      "version": 1,
+      "volume_query_depth": "EXPLICIT_CALLER_DEPTH_REQUIRED",
+      "volume_tag": "volume"
+    },
+    "material_id": "M03",
+    "profile_hash": "sha256:312b12693a141585f91d5aefef3a98c47ea4d8ab42365fe0b57ae966b23ef722",
+    "source_conditioned": {
+      "controls": {
+        "body_albedo_linear_rgb": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "linear_rgb_0_1",
+          "value": [
+            0.22,
+            0.25,
+            0.27
+          ]
+        },
+        "body_ior": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "1",
+          "value": 1.54
+        },
+        "body_roughness": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "1",
+          "value": 0.52
+        },
+        "coating_albedo_linear_rgb": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "linear_rgb_0_1",
+          "value": [
+            0.27,
+            0.37,
+            0.47
+          ]
+        },
+        "coating_band_mm": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "mm",
+          "value": 0.35
+        },
+        "coating_ior": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "1",
+          "value": 1.52
+        },
+        "coating_present": {
+          "source_measurement": "The medium names a blue-gray glaze; layer geometry and properties are not specified.",
+          "status": "SOURCE_FACT",
+          "unit": "categorical",
+          "value": true
+        },
+        "coating_roughness": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "1",
+          "value": 0.24
+        },
+        "coating_transmission": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "1",
+          "value": 0.0
+        },
+        "grain_amount": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "1",
+          "value": 0.08
+        },
+        "grain_scale_mm": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "mm",
+          "value": 0.8
+        },
+        "physical_glaze_thickness_mm": {
+          "source_measurement": null,
+          "status": "UNKNOWN",
+          "unit": "mm",
+          "value": null
+        },
+        "pore_amount": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "1",
+          "value": 0.06
+        },
+        "pore_scale_mm": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "mm",
+          "value": 6.0
+        }
+      },
+      "layer_semantics": {
+        "bare_body_surface_tags": [
+          "foot",
+          "base",
+          "interface",
+          "attachment"
+        ],
+        "coated_surface_tags": [
+          "outer_wall",
+          "inner_wall",
+          "rim"
+        ],
+        "depth_band_parameter": "DESIGN_CHOICE_FOR_EXPLICIT_VOLUME_QUERY_ONLY",
+        "mode": "SHADING_LAYER",
+        "note": "Original coated surface tags change sampled appearance only; no solid glaze is modeled.",
+        "physical_solid_status": "NOT_CREATED",
+        "physical_thickness_status": "UNKNOWN",
+        "surface_policy": "original_surface_tags-v1",
+        "surface_query_depth_mm": 0.0,
+        "volume_query_depth": "EXPLICIT_CALLER_DEPTH_REQUIRED"
+      },
+      "material_class": "stoneware",
+      "material_class_evidence_status": "SOURCE_FACT",
+      "mechanics_status": "UNKNOWN",
+      "optical_measurements_status": "UNKNOWN",
+      "process_compatibility": {
+        "firing_schedule": "UNKNOWN",
+        "forming_process": "UNKNOWN",
+        "glaze_chemistry": "UNKNOWN",
+        "source_material_class": "SOURCE_FACT"
+      },
+      "profile_seed": 2026101503,
+      "schema": "shardforge.reference_material_profile.v1",
+      "seed_ref": "[2026101503,\"material\",\"historical_met_jun_stoneware_glaze\"]",
+      "source_object": {
+        "accessed_date": "2026-10-15",
+        "facts": [
+          {
+            "evidence": "object record",
+            "field": "medium",
+            "value": "Stoneware with blue-gray glaze (Jun ware)"
+          },
+          {
+            "evidence": "object record",
+            "field": "date",
+            "value": "12th–13th century"
+          },
+          {
+            "evidence": "object record",
+            "field": "height_mm",
+            "value": 54
+          },
+          {
+            "evidence": "object record",
+            "field": "diameter_mm",
+            "value": 111
+          },
+          {
+            "evidence": "object record",
+            "field": "rim_diameter_mm",
+            "value": 111
+          },
+          {
+            "evidence": "object record",
+            "field": "foot_diameter_mm",
+            "value": 54
+          }
+        ],
+        "institution": "The Metropolitan Museum of Art",
+        "object_id": "18.56.44",
+        "rights_note": "The Met marks the object image Public Domain and its Open Access data available for reuse.",
+        "source_id": "met_18.56.44",
+        "title": "Bowl",
+        "unknowns": [
+          "full inner and outer meridian",
+          "wall, base, rim, and foot cross-sections",
+          "forming and firing schedule",
+          "glaze chemistry and measured thickness",
+          "spectral reflectance, roughness, and index of refraction",
+          "lot-specific mechanical properties"
+        ],
+        "url": "https://www.metmuseum.org/art/collection/search/52389"
+      },
+      "style_id": "historical_met_jun_stoneware_glaze",
+      "style_name": "Jun ware blue-gray glazed stoneware bowl"
+    },
+    "style_id": "historical_met_jun_stoneware_glaze"
+  },
+  "pattern": {
+    "family_id": "PAT01",
+    "params": {
+      "base_color": [
+        0.3,
+        0.36,
+        0.42
+      ],
+      "base_roughness": 0.42,
+      "basis": null,
+      "color_amount": 0.05,
+      "complexity": 1,
+      "footprint": {
+        "candidates": {
+          "mesh_edge_mm/2": 0.5270427067658321
+        },
+        "clamp_max_mm": 0.25397214078028274,
+        "footprint_mm": 0.25397214078028274,
+        "source": "mesh_edge_mm/2=0.527043"
+      },
+      "footprint_mm": 0.25397214078028274,
+      "footprint_source": "mesh_edge_mm/2=0.527043",
+      "line_width_mm": 1.12876507013459,
+      "measured": {},
+      "paint_roughness": 0.62,
+      "plain": true,
+      "region_sample_report": {
+        "count": 472,
+        "density_per_mm2": 0.06,
+        "region_area_mm2": 16968.050598167607,
+        "source": "trimesh.Trimesh.sample (area weighted, tagged faces)"
+      },
+      "requested_footprint_mm": 0.25397214078028274,
+      "roughness_basis": null,
+      "roughness_variation": 0.0,
+      "s_periodic": false,
+      "spectrum": {
+        "grid": {
+          "ds_mm": 0.7206857317835741,
+          "dx_mm": 1.223827836672646,
+          "n_s": 96,
+          "n_x": 192
+        },
+        "mean": 0.0,
+        "status": "FLAT_FIELD",
+        "total_energy": 0.0
+      },
+      "texture_mm_per_px": null
+    },
+    "recipe_hash": "sha256:6b2bd7abd1a166e4e06eb8de1167bfabc96878df119617cbe06e6fa65189c40c",
+    "reference_style": {
+      "caller_overrides": {
+        "s_margin_frac": 0.02
+      },
+      "chart": {
+        "area_mm2": 16968.050598167607,
+        "circumferential_metric": {
+          "circumference_max_mm": 339.0779122400829,
+          "circumference_min_mm": 65.97344572538564,
+          "metric_scale_at_r_max": 1.4430385876158847,
+          "metric_scale_at_r_min": 0.28076800199331803,
+          "radius_max_mm": 53.96592582628908,
+          "radius_min_mm": 10.499999999999998
+        },
+        "kind": "revolve",
+        "name": "reference_body_outer_meridian_polyline",
+        "region_mask": true,
+        "s_periodic": false,
+        "s_range_mm": [
+          0.0,
+          72.93004240692787
+        ],
+        "s_range_source": "measured_from_mesh",
+        "surface_tag": "outer_wall",
+        "surface_tag_index": 0,
+        "u_periodic": true,
+        "uv_to_xyz": false,
+        "x_period_mm": 234.97494464114803
+      },
+      "distribution_claim": "none; defaults are documented recipe choices, not learned estimates",
+      "evidence_status": "CATALOGUE_DESCRIPTION_AND_PRODUCT_PHOTOGRAPH_REVIEWED",
+      "generation_mode": "SYNTHETIC_REFERENCE_GUIDED",
+      "known": [
+        "The Met records the period, stoneware, blue-gray Jun glaze, height, rim diameter and foot diameter.",
+        "The adapter contributes no geometric decoration and selects only the named exterior wall chart."
+      ],
+      "mapping": {
+        "allowed_families": [
+          "PAT01"
+        ],
+        "defaults": {
+          "s_margin_frac": 0.0
+        },
+        "family": "PAT01",
+        "override_ranges": {
+          "s_margin_frac": [
+            0.0,
+            0.2
+          ]
+        },
+        "params": {
+          "low_freq_color": false,
+          "roughness_variation": 0.0
+        },
+        "surface_tag": "outer_wall",
+        "zone": "full measured outer-wall chart; no motif overlay"
+      },
+      "mother_id": "family_daily_deep_v1",
+      "mother_vessel_id": "REFERENCE:daily_deep",
+      "motif_and_meaning": "No painted or incised motif is documented for this catalogued bowl; this adapter encodes an unpatterned outer-wall field only.",
+      "palette_limits": "A flat blue-gray PAT01 albedo proxy only; no glaze layer, pooling, opalescence, crazing, chemistry, thickness or firing physics.",
+      "palette_status": "SOURCE_DESCRIPTION_GUIDED_UNCALIBRATED_DESIGN_PROXY",
+      "process": "Catalogue identifies stoneware with blue-gray glaze (Jun ware). It does not give this bowl's glaze recipe or firing schedule.",
+      "source_url": "https://www.metmuseum.org/art/collection/search/52389",
+      "style_id": "historical_met_jun_plain",
+      "surface_tag": "outer_wall",
+      "unknown": [
+        "Complete section, local wall thickness, glaze chemistry/thickness, firing schedule and calibrated BRDF/color.",
+        "The catalogue does not document an object-specific motif or a glaze distribution for this single bowl."
+      ]
+    },
+    "seed_ref": "[2026101504,\"family_daily_deep_v1\",\"historical_met_jun_plain\",\"pattern\"]",
+    "style_id": "historical_met_jun_plain"
+  },
+  "schema": "synlab.reference_instance_recipe.v1",
+  "seeds": {
+    "material": 2026101503,
+    "pattern": 2026101504
+  },
+  "source_geometry": {
+    "candidate_status": "PARAMETRIC_DAILY_FAMILY_VARIANT_ONLY",
+    "directory_name": "family_daily_deep_v1",
+    "frame": "radius_mm_vs_z_mm; revolved about Z axis; Z-up",
+    "geometry_array_sha256": "180c485e988507f33ad489b9bfea7742645adca82646ee273d469a9830acf402",
+    "geometry_source_sha256": "efbe58712fdeed02c2213f763d63be35f572f311fe3a2efdaa793c059a8e3043",
+    "refinement_status": "SOURCE_PROFILE_FIDELITY_NOT_ESTABLISHED",
+    "source_profile_fidelity": "NOT_ESTABLISHED; dimensions and photographs do not define the complete meridian or construction."
+  }
+}

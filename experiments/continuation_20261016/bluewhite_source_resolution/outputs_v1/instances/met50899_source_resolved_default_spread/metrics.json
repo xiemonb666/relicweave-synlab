@@ -1,0 +1,98 @@
+{
+  "bare_source_tags_present": [
+    "base",
+    "foot"
+  ],
+  "bluewhite_panel_persisted_field_array_sha256": {
+    "bound_density": "dc7e7f7bf556e0eb2646deec6a58760255089e6b8cce28da6922c4b80f89a122",
+    "cell_area_mm2": "32a6bf8badac9d1b339af5dfc1d3bc591fa9b8dc27100d096ad5c7d00b77cd92",
+    "initial_density": "6883a6f792fd1d6e9d88ef5583f1d832a588323dcb2c59e719c8e0e323bdf157",
+    "linear_rgb": "c5becbc72e517f39e27a481f1bc848506a85a01f9a733fa535b0fad55afaa99b",
+    "mobile_density": "e62f48212d9910f24098e1020b07a315e1e042db43f026d35cbbf01e21880ac0",
+    "normalized_source_density": "d52d69842289d1591d173f7cd7f71c0250dda3e550479ffdc89023cc346ac2e4",
+    "radius_mm": "a862dea775f4ee5f5035f68523f7b6f0f80d225128f53f013b11deac1fd0aa20",
+    "s_centers_mm": "c511da56ac3f54f5aac56a8f41d6e33f35769d1a4380e74d3dce7aaaa51ff7bb",
+    "theta_centers_rad": "bbda85330f74140ed1cd97bf1974727e9c4af930398fa594d21c6f3001e70b6c",
+    "total_density": "7278725ebbee57fb9dc386a36ab13aa6f4ededf4db43cdae12052ad50ddb0575"
+  },
+  "bluewhite_panel_status": "SOURCE_PHOTO_APPEARANCE_PROXY",
+  "bounds_mm": [
+    [
+      -53.99984769515638,
+      -53.966952446967554,
+      -2.220446049250313e-16
+    ],
+    [
+      53.99984769515638,
+      53.96695244696755,
+      52.99984769515639
+    ]
+  ],
+  "coated_source_tags_present": [
+    "inner_wall",
+    "outer_wall",
+    "rim"
+  ],
+  "continuous_outer_texture": {
+    "arclength_status": "FINITE_POLYLINE_APPROXIMATION_NOT_AN_EXACT_ARCLENGTH_CERTIFICATE",
+    "bluewhite_field_receipt_sha256": "7e35762dc13f038c18ce6a41477839d523db5fe38d72143b1561b8e7fc5a19f3",
+    "color_space": "LINEAR_SRGB_PRIMARIES",
+    "general_chart_validation": {
+      "maximum_allowed_s_error_mm": 1e-07,
+      "maximum_periodic_u_error": 1.1102230246251565e-16,
+      "maximum_s_error_mm": 7.216449660063518e-16,
+      "method": "ORIGINAL_UNMODIFIED_GENERAL_CHART_UV_AND_REGION_MASK",
+      "passed": true,
+      "sample_count": 25,
+      "source_chart_membership_true": 25
+    },
+    "geometry_changed": false,
+    "grid_sampling": "CELL_CENTERED_UNIFORM_FINITE_POLYLINE_ARCLENGTH_X_PERIODIC_AZIMUTH",
+    "grid_shape_s_theta": [
+      480,
+      2048
+    ],
+    "pattern_region_cell_count": 27659,
+    "periodic_seam_validation": {
+      "comparison": "FIRST_AND_LAST_AZIMUTH_PIXEL_CENTERS_VS_INTERIOR_NEIGHBORS",
+      "interior_neighbor_p99_linear_rgb_delta": 0.044397205114364624,
+      "maximum_allowed_linear_rgb_delta": 0.06669580767154694,
+      "maximum_linear_rgb_delta": 0.008481979370117188,
+      "mean_linear_rgb_delta": 0.0018551035318523645,
+      "passed": true
+    },
+    "pigment_density_sha256": "67bf8a36b4a98806b65c8505236da63eaf188240a910aba280cea8b3fd20f225",
+    "profile_status": "ANALYTIC_SOURCE_CUBIC_BEZIER_SAMPLED_AS_FINITE_POLYLINE",
+    "source_material_profile_hash": "sha256:cd385b7eb06321e191df9f9b443923bd66f0d83d151ecacc3ee93854274a2128",
+    "source_pattern_recipe_hash": null,
+    "texture_output_preflight_upper_bound_bytes": 19726336
+  },
+  "dimensions_mm": [
+    107.99969539031277,
+    107.93390489393511,
+    52.99984769515639
+  ],
+  "geometry_array_sha256_after": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+  "geometry_array_sha256_before": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+  "geometry_unchanged": true,
+  "material_layer_triangle_counts": {
+    "body": 13600,
+    "clear_glaze_appearance_proxy": 11998
+  },
+  "max_abs_pattern_height_mm": 0.0,
+  "outer_face_texture_uv": {
+    "maximum_periodic_u_span_after_unwrap": 0.022222250699996948,
+    "passed": true,
+    "triangle_count": 2078
+  },
+  "pattern_albedo_field_semantics": "per-channel exp(-tau_rgb * face_pigment_density) multiplicative transfer",
+  "pattern_ior_unchanged": true,
+  "pattern_region_triangle_count": 45,
+  "pattern_roughness_unchanged": true,
+  "pattern_style_triangle_count": 2078,
+  "physical_properties_status": "UNKNOWN",
+  "signed_volume_mm3": 32985.51424547626,
+  "training_export_status": "NOT_REQUESTED_NOT_EXPORTED",
+  "triangle_count": 25598,
+  "vertex_count": 12801
+}

@@ -1,0 +1,377 @@
+{
+  "files": [
+    {
+      "bundle": "met50899_panel_no_spread",
+      "bundle_manifest_sha256": "d2c30323f18aafa88bd4920e9288e8fc2118cd3fb7f378193a629046d0d31b46",
+      "color_space": "linear RGB fields converted to sRGB8 texture/cell colors; VTK displays sRGB colors",
+      "display_normals": {
+        "method": "area-weighted normals accumulated over original shared source mesh vertices before UV triangle-corner duplication",
+        "smoothing_groups": "exact source CAD face ancestry; adjacent serialized segment faces blend only at C1 section joins (dot >= 0.9995)",
+        "source_face_id_array_sha256": "c5d40c34fb16bc89adc71c4bbee80fe6e835442c5d667013916e7cb5b8ca8d80",
+        "source_geometry_mutated": false
+      },
+      "faces": 25598,
+      "geometry_array_sha256": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+      "legend": "Glaze appearance on outer wall, inside wall/floor, and rim; bare body on foot and exterior underside",
+      "pbr_material_parameters": {
+        "base": {
+          "ior_median_from_material_face_field": 1.559999942779541,
+          "ior_range": [
+            1.559999942779541,
+            1.559999942779541
+          ],
+          "roughness_median_from_combined_face_field": 0.42143920063972473,
+          "roughness_range": [
+            0.4122181534767151,
+            0.441415399312973
+          ]
+        },
+        "foot": {
+          "ior_median_from_material_face_field": 1.559999942779541,
+          "ior_range": [
+            1.559999942779541,
+            1.559999942779541
+          ],
+          "roughness_median_from_combined_face_field": 0.4210704267024994,
+          "roughness_range": [
+            0.4076640009880066,
+            0.4486341178417206
+          ]
+        },
+        "inner_wall": {
+          "ior_median_from_material_face_field": 1.5,
+          "ior_range": [
+            1.5,
+            1.5
+          ],
+          "roughness_median_from_combined_face_field": 0.11059363931417465,
+          "roughness_range": [
+            0.09961022436618805,
+            0.13646091520786285
+          ]
+        },
+        "outer_wall": {
+          "ior_median_from_material_face_field": 1.5,
+          "ior_range": [
+            1.5,
+            1.5
+          ],
+          "roughness_median_from_combined_face_field": 0.11068277433514595,
+          "roughness_range": [
+            0.09868372976779938,
+            0.1360214203596115
+          ]
+        },
+        "rim": {
+          "ior_median_from_material_face_field": 1.5,
+          "ior_range": [
+            1.5,
+            1.5
+          ],
+          "roughness_median_from_combined_face_field": 0.1108734980225563,
+          "roughness_range": [
+            0.09787528216838837,
+            0.13702566921710968
+          ]
+        }
+      },
+      "pbr_parameter_status": "per-region medians from source-conditioned design fields; uncalibrated appearance proxy",
+      "preview": "preview_bluewhite_v1_4view.png",
+      "renderer": "VTK PBR appearance proxy; outer chart texture and per-region face appearance",
+      "sha256": "7f103e2f07b890f836f78dcc094b066aa63e9d20c3d41073a3f1d5a4cd9861bf",
+      "texture_grid": [
+        512,
+        1024
+      ],
+      "view_definitions": [
+        "Side · orthographic",
+        "Top · orthographic",
+        "Lit 3D · perspective · panel-facing",
+        "Underside · orthographic"
+      ],
+      "view_specs": [
+        {
+          "camera_direction": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "orthographic": true,
+          "title": "Side · orthographic",
+          "view_up": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "camera_direction": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "orthographic": true,
+          "title": "Top · orthographic",
+          "view_up": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "camera_direction": [
+            -1.0,
+            0.0,
+            0.55
+          ],
+          "orthographic": false,
+          "title": "Lit 3D · perspective · panel-facing",
+          "view_up": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "camera_direction": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "orthographic": true,
+          "title": "Underside · orthographic",
+          "view_up": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    {
+      "bundle": "met50899_panel_default_spread",
+      "bundle_manifest_sha256": "94c887ad20cc5d52e1cee4bd58c6877d955623967f408dd6b99f94b3d6286b67",
+      "color_space": "linear RGB fields converted to sRGB8 texture/cell colors; VTK displays sRGB colors",
+      "display_normals": {
+        "method": "area-weighted normals accumulated over original shared source mesh vertices before UV triangle-corner duplication",
+        "smoothing_groups": "exact source CAD face ancestry; adjacent serialized segment faces blend only at C1 section joins (dot >= 0.9995)",
+        "source_face_id_array_sha256": "c5d40c34fb16bc89adc71c4bbee80fe6e835442c5d667013916e7cb5b8ca8d80",
+        "source_geometry_mutated": false
+      },
+      "faces": 25598,
+      "geometry_array_sha256": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+      "legend": "Glaze appearance on outer wall, inside wall/floor, and rim; bare body on foot and exterior underside",
+      "pbr_material_parameters": {
+        "base": {
+          "ior_median_from_material_face_field": 1.559999942779541,
+          "ior_range": [
+            1.559999942779541,
+            1.559999942779541
+          ],
+          "roughness_median_from_combined_face_field": 0.42143920063972473,
+          "roughness_range": [
+            0.4122181534767151,
+            0.441415399312973
+          ]
+        },
+        "foot": {
+          "ior_median_from_material_face_field": 1.559999942779541,
+          "ior_range": [
+            1.559999942779541,
+            1.559999942779541
+          ],
+          "roughness_median_from_combined_face_field": 0.4210704267024994,
+          "roughness_range": [
+            0.4076640009880066,
+            0.4486341178417206
+          ]
+        },
+        "inner_wall": {
+          "ior_median_from_material_face_field": 1.5,
+          "ior_range": [
+            1.5,
+            1.5
+          ],
+          "roughness_median_from_combined_face_field": 0.11059363931417465,
+          "roughness_range": [
+            0.09961022436618805,
+            0.13646091520786285
+          ]
+        },
+        "outer_wall": {
+          "ior_median_from_material_face_field": 1.5,
+          "ior_range": [
+            1.5,
+            1.5
+          ],
+          "roughness_median_from_combined_face_field": 0.11068277433514595,
+          "roughness_range": [
+            0.09868372976779938,
+            0.1360214203596115
+          ]
+        },
+        "rim": {
+          "ior_median_from_material_face_field": 1.5,
+          "ior_range": [
+            1.5,
+            1.5
+          ],
+          "roughness_median_from_combined_face_field": 0.1108734980225563,
+          "roughness_range": [
+            0.09787528216838837,
+            0.13702566921710968
+          ]
+        }
+      },
+      "pbr_parameter_status": "per-region medians from source-conditioned design fields; uncalibrated appearance proxy",
+      "preview": "preview_bluewhite_v1_4view.png",
+      "renderer": "VTK PBR appearance proxy; outer chart texture and per-region face appearance",
+      "sha256": "47d491667ce3c34494b8bad6172ab638e75caf077e6dc936f6fcab39b02b126d",
+      "texture_grid": [
+        512,
+        1024
+      ],
+      "view_definitions": [
+        "Side · orthographic",
+        "Top · orthographic",
+        "Lit 3D · perspective · panel-facing",
+        "Underside · orthographic"
+      ],
+      "view_specs": [
+        {
+          "camera_direction": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "orthographic": true,
+          "title": "Side · orthographic",
+          "view_up": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "camera_direction": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "orthographic": true,
+          "title": "Top · orthographic",
+          "view_up": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "camera_direction": [
+            -1.0,
+            0.0,
+            0.55
+          ],
+          "orthographic": false,
+          "title": "Lit 3D · perspective · panel-facing",
+          "view_up": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "camera_direction": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "orthographic": true,
+          "title": "Underside · orthographic",
+          "view_up": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        }
+      ]
+    }
+  ],
+  "geometry_changed": false,
+  "normal_policy": "source shared-vertex normals computed before UV duplication; only source CAD ancestry and C1 section joins are blended",
+  "physical_rendering_claim": "NONE",
+  "preview_revision": "bluewhite_v1",
+  "preview_views": [
+    "Side · orthographic",
+    "Top · orthographic",
+    "Lit 3D · perspective · panel-facing",
+    "Underside · orthographic"
+  ],
+  "renderer": "VTK PBR appearance proxy with continuous outer-wall texture and source-conditioned per-region appearance",
+  "schema": "synlab.reference_generation_preview_manifest.v4",
+  "side_view_direction": [
+    0.0,
+    -1.0,
+    0.0
+  ],
+  "surface_finish_legend": "outer wall / inside wall and floor / rim receive glaze appearance; foot / exterior underside remain bare body",
+  "texture_color_conversion": "linear RGB appearance samples converted to sRGB8 texture/cell colors for display",
+  "view_specs": [
+    {
+      "camera_direction": [
+        0.0,
+        -1.0,
+        0.0
+      ],
+      "orthographic": true,
+      "title": "Side · orthographic",
+      "view_up": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "camera_direction": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "orthographic": true,
+      "title": "Top · orthographic",
+      "view_up": [
+        0.0,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "camera_direction": [
+        -1.0,
+        0.0,
+        0.55
+      ],
+      "orthographic": false,
+      "title": "Lit 3D · perspective · panel-facing",
+      "view_up": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "camera_direction": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "orthographic": true,
+      "title": "Underside · orthographic",
+      "view_up": [
+        0.0,
+        1.0,
+        0.0
+      ]
+    }
+  ]
+}

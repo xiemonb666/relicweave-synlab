@@ -1,0 +1,60 @@
+native_source_path = "C:\\Users\\xiemo\\Desktop\\ShardForge\\pgfrag\\experiments\\native_contact_minimal\\run_native_contact_minimal.jl"
+original_runtime_output_path = "C:\\Users\\xiemo\\Desktop\\ShardForge\\SynLab\\tmp\\review_20261004\\implementation\\native_contact_minimal\\nocontact_control"
+current_archive_path = "C:\\Users\\xiemo\\Desktop\\ShardForge\\relicweave-synlab\\tmp\\review_20261004\\implementation\\native_contact_minimal\\nocontact_control"
+submit_completed = true
+native_data_handler = "ThreadsMultibodyDataHandler; submit return; one chunk/body"
+stability_bound_multiplier = 1.0
+contact_penalty_factor = 0.0
+step_count = 240
+initial_center_b_z_m = -0.00225
+solver_dt_s = 2.275049540751186e-5
+initial_center_a_z_m = 0.00225
+poisson_ratio = 0.25
+preflight_is_contact_success = false
+process_exit_code = 0
+native_case_argv = ["nocontact_control", "C:\\Users\\xiemo\\Desktop\\ShardForge\\SynLab\\tmp\\review_20261004\\implementation\\native_contact_minimal\\nocontact_control"]
+density_kg_per_m3 = 1000.0
+external_force_max_abs_N_per_m3 = 0.0
+fracture_energy_J_per_m2 = 1.0
+case = "nocontact_control"
+native_submit_api = "submit(Job(ms, VelocityVerlet(...)); quiet=true)"
+end_time_s = 0.005460118897802846
+total_points = 16
+young_modulus_Pa = 1.0e6
+contact_enabled = false
+initial_speed_m_per_s = 0.2
+initial_min_point_distance_m = 0.0025
+schema = "native_contact_minimal.case.v1"
+boundary_condition_count = 0
+cube_edge_m = 0.004
+points_per_body = 8
+horizon_m = 0.003
+point_spacing_m = 0.002
+no_failure = true
+native_material_stability_bound_s = 4.550099081502372e-5
+contact_radius_m = 0.0
+
+[active_bond_counts_by_body.b]
+directed_total = 48
+active = 48
+broken = 0
+
+[active_bond_counts_by_body.a]
+directed_total = 48
+active = 48
+broken = 0
+
+[point_state_units]
+final_position = "m"
+native_final_b_int = "N/m^3"
+mass = "kg"
+rest_position = "m"
+velocity = "m/s"
+displacement = "m"
+
+[source_hashes_sha256]
+native_contact_script = "bb5a3de1f3e87335032f7eb07cbbb9f57f91c59e32ba4fd72fd35a3adbd9b202"
+julia_manifest = "eb7d8902b84cfc64faaa0d45b0e6a3ae8534a252d06399f3db074da5a738e594"
+upstream_contact_unit_test = "b2f17a77b75c9667e4d3a50b6880cae8cc9f9d6d55a9374e52a5802b981ec3f0"
+vendored_contact_physics = "177250862210b0057ced9a2420c54786348de29f034e6be905bcd51ac413f72b"
+julia_project = "eebff26de1f99a56b29a43ad767d2877bba5b6a0e4a03de1f909eab00f59f4ae"

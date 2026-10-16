@@ -1,0 +1,45 @@
+{
+  "schema": "shardforge.pause_delivery_validation.v1",
+  "as_of_date": "2026-10-16",
+  "purpose": "Offline software checks for the user-requested pause and GitHub handover",
+  "development_paused": true,
+  "solver_or_new_experiment_launched": false,
+  "functional_code_changed_during_delivery": false,
+  "total_focused_tests_passed": 211,
+  "full_repository_suite_claimed": false,
+  "raw_terminal_transcript": "Tool execution outputs in the delivery conversation; no separate JUnit/XML transcript was requested or generated",
+  "suites": [
+    {
+      "repository": "vesselforge",
+      "interpreter_at_execution": "third_party/vesselforge-runtime/venv/Scripts/python.exe",
+      "command_from_repository_root": "python -m pytest tests/test_face_witness.py tests/test_named_step.py tests/test_step_partition.py tests/test_reference_mesh.py tests/test_revolved_profile.py tests/test_spherical_bowl.py tests/test_tetra_audit.py -q",
+      "passed": 66,
+      "duration_seconds": 18.70,
+      "exit_code": 0
+    },
+    {
+      "repository": "pgfrag",
+      "interpreter_at_execution": "relicweave-synlab/.venv/Scripts/python.exe",
+      "environment": {"PYTHONPATH": "src"},
+      "command_from_repository_root": "python -m pytest tests/test_mother_binding.py tests/test_facet_ancestry.py tests/test_cohesive_mesh.py tests/test_cohesive_stability.py tests/test_cohesive_fragments.py tests/test_cohesive_vessel.py -q",
+      "passed": 55,
+      "duration_seconds": 1.07,
+      "exit_code": 0,
+      "limitation": "Includes nine mother_binding fixture checks. No actual run05 binding acceptance or native initialization/evolution is established by them."
+    },
+    {
+      "repository": "relicweave-synlab",
+      "interpreter_at_execution": "relicweave-synlab/.venv/Scripts/python.exe",
+      "command_from_repository_root": "python -m pytest tests/test_bluewhite_panel.py tests/test_reference_generator.py tests/test_design_space.py tests/a12/materials/test_reference_materials.py tests/a12/patterns/test_reference_styles.py tests/a12/patterns/test_underglaze.py tests/a12/relations/test_discrimination_auc_mask_20261015.py tests/a12/integrations/test_native_bowl.py tests/a12/integrations/test_native_cohesive.py -q",
+      "passed": 90,
+      "exit_code": 0,
+      "count_confirmation": "Separate collect-only call with pytest addopts cleared confirmed 90 tests; the successful run used the same nine test files."
+    }
+  ],
+  "qualification": {
+    "physical_validation": "NOT_ESTABLISHED",
+    "new_realistic_mother_fracture": "NOT_COMPLETED",
+    "complete_qualified_physical_packages": 0,
+    "training_eligibility_promoted_by_this_check": false
+  }
+}

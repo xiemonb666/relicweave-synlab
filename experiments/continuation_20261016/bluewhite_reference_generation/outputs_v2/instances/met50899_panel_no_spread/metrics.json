@@ -1,0 +1,96 @@
+{
+  "bare_source_tags_present": [
+    "base",
+    "foot"
+  ],
+  "bluewhite_panel_persisted_field_array_sha256": {
+    "bound_density": "dc7e7f7bf556e0eb2646deec6a58760255089e6b8cce28da6922c4b80f89a122",
+    "cell_area_mm2": "32a6bf8badac9d1b339af5dfc1d3bc591fa9b8dc27100d096ad5c7d00b77cd92",
+    "initial_density": "6883a6f792fd1d6e9d88ef5583f1d832a588323dcb2c59e719c8e0e323bdf157",
+    "linear_rgb": "d5ce46d9050ee87f05095a67613ff4e4d9427b520fafd4434dd0764a1499a19c",
+    "mobile_density": "12ba056661fd348b0c694a3c4b1ece4803d1450d4a68075783444d46500a8db2",
+    "radius_mm": "a862dea775f4ee5f5035f68523f7b6f0f80d225128f53f013b11deac1fd0aa20",
+    "s_centers_mm": "c511da56ac3f54f5aac56a8f41d6e33f35769d1a4380e74d3dce7aaaa51ff7bb",
+    "theta_centers_rad": "bbda85330f74140ed1cd97bf1974727e9c4af930398fa594d21c6f3001e70b6c",
+    "total_density": "2d09b56407c5de68fe104a8dcf2e92a0a202f9e4e6dad00528bc760cb4ed8245"
+  },
+  "bluewhite_panel_status": "SOURCE_PHOTO_APPEARANCE_PROXY",
+  "bounds_mm": [
+    [
+      -53.99984769515638,
+      -53.966952446967554,
+      -2.220446049250313e-16
+    ],
+    [
+      53.99984769515638,
+      53.96695244696755,
+      52.99984769515639
+    ]
+  ],
+  "coated_source_tags_present": [
+    "inner_wall",
+    "outer_wall",
+    "rim"
+  ],
+  "continuous_outer_texture": {
+    "arclength_status": "FINITE_POLYLINE_APPROXIMATION_NOT_AN_EXACT_ARCLENGTH_CERTIFICATE",
+    "bluewhite_field_receipt_sha256": "0fc67ede8b9ac6e5f1e20457bc6ac78563103b19437a04e1740ef23d80d0531c",
+    "color_space": "LINEAR_SRGB_PRIMARIES",
+    "general_chart_validation": {
+      "maximum_allowed_s_error_mm": 1e-07,
+      "maximum_periodic_u_error": 1.1102230246251565e-16,
+      "maximum_s_error_mm": 3.552713678800501e-15,
+      "method": "ORIGINAL_UNMODIFIED_GENERAL_CHART_UV_AND_REGION_MASK",
+      "passed": true,
+      "sample_count": 25,
+      "source_chart_membership_true": 25
+    },
+    "geometry_changed": false,
+    "grid_sampling": "CELL_CENTERED_UNIFORM_FINITE_POLYLINE_ARCLENGTH_X_PERIODIC_AZIMUTH",
+    "grid_shape_s_theta": [
+      512,
+      1024
+    ],
+    "pattern_region_cell_count": 13640,
+    "periodic_seam_validation": {
+      "comparison": "FIRST_AND_LAST_AZIMUTH_PIXEL_CENTERS_VS_INTERIOR_NEIGHBORS",
+      "interior_neighbor_p99_linear_rgb_delta": 0.084830142557621,
+      "maximum_allowed_linear_rgb_delta": 0.1273452138364315,
+      "maximum_linear_rgb_delta": 0.01665639877319336,
+      "mean_linear_rgb_delta": 0.003326692618429661,
+      "passed": true
+    },
+    "pigment_density_sha256": "0f9123bf33662071025f11055a43a743dd72d08b37c9edf8d7127d7b778d0be3",
+    "profile_status": "ANALYTIC_SOURCE_CUBIC_BEZIER_SAMPLED_AS_FINITE_POLYLINE",
+    "source_material_profile_hash": "sha256:cd385b7eb06321e191df9f9b443923bd66f0d83d151ecacc3ee93854274a2128",
+    "source_pattern_recipe_hash": null
+  },
+  "dimensions_mm": [
+    107.99969539031277,
+    107.93390489393511,
+    52.99984769515639
+  ],
+  "geometry_array_sha256_after": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+  "geometry_array_sha256_before": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+  "geometry_unchanged": true,
+  "material_layer_triangle_counts": {
+    "body": 13600,
+    "clear_glaze_appearance_proxy": 11998
+  },
+  "max_abs_pattern_height_mm": 0.0,
+  "outer_face_texture_uv": {
+    "maximum_periodic_u_span_after_unwrap": 0.022222250699996948,
+    "passed": true,
+    "triangle_count": 2078
+  },
+  "pattern_albedo_field_semantics": "per-channel exp(-tau_rgb * face_pigment_density) multiplicative transfer",
+  "pattern_ior_unchanged": true,
+  "pattern_region_triangle_count": 40,
+  "pattern_roughness_unchanged": true,
+  "pattern_style_triangle_count": 2078,
+  "physical_properties_status": "UNKNOWN",
+  "signed_volume_mm3": 32985.51424547626,
+  "training_export_status": "NOT_REQUESTED_NOT_EXPORTED",
+  "triangle_count": 25598,
+  "vertex_count": 12801
+}

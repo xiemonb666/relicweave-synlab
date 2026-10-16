@@ -1,0 +1,226 @@
+{
+  "status": "REJECTED_MESH_SURFACE_ERROR_DIAGNOSTIC",
+  "source_section_sha256": "668a3843e6454f9a952e4cd02b80ae3fa1b9e94693557cbd36c008a96868e6fb",
+  "source_lineage_sha256": "9e6c789989cb0f5f42ed9c37f0264bc02899a9c29f571254938a4781640bcfd2",
+  "failed_mesh_npz_sha256": "aa9aa97c500853ecae010b5e330392ba277dd2bb21f236efbed1696a6dcac3bb",
+  "origin_m": [
+    0,
+    0,
+    0
+  ],
+  "cad_volume_m3": 3.29877728290943e-05,
+  "mesh_volume_m3": 3.26165668670291e-05,
+  "signed_volume_error_m3": -3.712059620651997e-07,
+  "relative_volume_error": 0.011252834921241071,
+  "per_fid": [
+    {
+      "fid": "original-brep-face-002",
+      "role": "rim",
+      "segment_indices": [
+        2
+      ],
+      "cad_surface_volume_contribution_m3": 1.4720461849731536e-05,
+      "mesh_surface_volume_contribution_m3": 1.4374029901792925e-05,
+      "volume_contribution_error_m3": -3.464319479386105e-07,
+      "cad_area_m2": 0.0010494304825580546,
+      "mesh_area_m2": 0.0008160527873825353,
+      "relative_area_error": -0.22238509272824442
+    },
+    {
+      "fid": "original-brep-face-001",
+      "role": "body_inner",
+      "segment_indices": [
+        1
+      ],
+      "cad_surface_volume_contribution_m3": -7.906686031130121e-05,
+      "mesh_surface_volume_contribution_m3": -7.897349759509908e-05,
+      "volume_contribution_error_m3": 9.33627162021263e-08,
+      "cad_area_m2": 0.014061113637872892,
+      "mesh_area_m2": 0.014058648387250605,
+      "relative_area_error": -0.00017532399536597813
+    },
+    {
+      "fid": "original-brep-face-005",
+      "role": "body_outer",
+      "segment_indices": [
+        5
+      ],
+      "cad_surface_volume_contribution_m3": 1.4836141371075297e-05,
+      "mesh_surface_volume_contribution_m3": 1.4808061996059614e-05,
+      "volume_contribution_error_m3": -2.8079375015683695e-08,
+      "cad_area_m2": 0.003952971307961725,
+      "mesh_area_m2": 0.003952219787738971,
+      "relative_area_error": -0.00019011527385497128
+    },
+    {
+      "fid": "original-brep-face-004",
+      "role": "body_outer",
+      "segment_indices": [
+        4
+      ],
+      "cad_surface_volume_contribution_m3": 3.6610918835780516e-05,
+      "mesh_surface_volume_contribution_m3": 3.658528489300284e-05,
+      "volume_contribution_error_m3": -2.56339427776744e-08,
+      "cad_area_m2": 0.004788881052409403,
+      "mesh_area_m2": 0.004788300718149948,
+      "relative_area_error": -0.00012118368635680118
+    },
+    {
+      "fid": "original-brep-face-003",
+      "role": "body_outer",
+      "segment_indices": [
+        3
+      ],
+      "cad_surface_volume_contribution_m3": 4.450167067084429e-05,
+      "mesh_surface_volume_contribution_m3": 4.44775285089949e-05,
+      "volume_contribution_error_m3": -2.4142161849395594e-08,
+      "cad_area_m2": 0.004075392331114734,
+      "mesh_area_m2": 0.004074904565917956,
+      "relative_area_error": -0.00011968545777906069
+    },
+    {
+      "fid": "original-brep-face-006",
+      "role": "body_outer",
+      "segment_indices": [
+        6
+      ],
+      "cad_surface_volume_contribution_m3": 2.561476981920205e-07,
+      "mesh_surface_volume_contribution_m3": 2.437346490549015e-07,
+      "volume_contribution_error_m3": -1.2413049137119003e-08,
+      "cad_area_m2": 0.0013846628254279957,
+      "mesh_area_m2": 0.001384352108639776,
+      "relative_area_error": -0.00022439888073385418
+    },
+    {
+      "fid": "original-brep-face-011",
+      "role": "foot",
+      "segment_indices": [
+        11
+      ],
+      "cad_surface_volume_contribution_m3": 2.464018753312017e-07,
+      "mesh_surface_volume_contribution_m3": 2.3944320142721234e-07,
+      "volume_contribution_error_m3": -6.958673903989356e-09,
+      "cad_area_m2": 7.559282933496412e-05,
+      "mesh_area_m2": 6.818623410807323e-05,
+      "relative_area_error": -0.09798012975636966
+    },
+    {
+      "fid": "original-brep-face-007",
+      "role": "body_outer",
+      "segment_indices": [
+        7
+      ],
+      "cad_surface_volume_contribution_m3": -1.6936409419930648e-06,
+      "mesh_surface_volume_contribution_m3": -1.7005446000217633e-06,
+      "volume_contribution_error_m3": -6.9036580286985585e-09,
+      "cad_area_m2": 0.0009161021883917729,
+      "mesh_area_m2": 0.0009158012815140341,
+      "relative_area_error": -0.00032846431495487397
+    },
+    {
+      "fid": "original-brep-face-009",
+      "role": "foot",
+      "segment_indices": [
+        9
+      ],
+      "cad_surface_volume_contribution_m3": 3.5819021392143705e-07,
+      "mesh_surface_volume_contribution_m3": 3.514808046501195e-07,
+      "volume_contribution_error_m3": -6.709409271317529e-09,
+      "cad_area_m2": 7.559282933496208e-05,
+      "mesh_area_m2": 6.818623410807319e-05,
+      "relative_area_error": -0.09798012975634578
+    },
+    {
+      "fid": "original-brep-face-000",
+      "role": "base",
+      "segment_indices": [
+        0
+      ],
+      "cad_surface_volume_contribution_m3": 1.154535300194249e-06,
+      "mesh_surface_volume_contribution_m3": 1.1483289039128838e-06,
+      "volume_contribution_error_m3": -6.206396281365237e-09,
+      "cad_area_m2": 0.0003463605900582747,
+      "mesh_area_m2": 0.00034449867117386523,
+      "relative_area_error": -0.005375666105939446
+    },
+    {
+      "fid": "original-brep-face-013",
+      "role": "foot",
+      "segment_indices": [
+        13
+      ],
+      "cad_surface_volume_contribution_m3": -1.678759627771325e-07,
+      "mesh_surface_volume_contribution_m3": -1.72831446183999e-07,
+      "volume_contribution_error_m3": -4.955483406866518e-09,
+      "cad_area_m2": 6.258163228028508e-05,
+      "mesh_area_m2": 5.705816657657233e-05,
+      "relative_area_error": -0.08826017319226745
+    },
+    {
+      "fid": "original-brep-face-014",
+      "role": "foot",
+      "segment_indices": [
+        14
+      ],
+      "cad_surface_volume_contribution_m3": -1.963495408493621e-06,
+      "mesh_surface_volume_contribution_m3": -1.9586074599561895e-06,
+      "volume_contribution_error_m3": 4.887948537431454e-09,
+      "cad_area_m2": 0.00047123889803846896,
+      "mesh_area_m2": 0.0004709142096216602,
+      "relative_area_error": -0.0006890102199972623
+    },
+    {
+      "fid": "original-brep-face-010",
+      "role": "foot",
+      "segment_indices": [
+        10
+      ],
+      "cad_surface_volume_contribution_m3": 3.019070540099791e-06,
+      "mesh_surface_volume_contribution_m3": 3.014423800246768e-06,
+      "volume_contribution_error_m3": -4.6467398530229075e-09,
+      "cad_area_m2": 0.0005843362335677014,
+      "mesh_area_m2": 0.0005840829349745679,
+      "relative_area_error": -0.00043348089435931467
+    },
+    {
+      "fid": "original-brep-face-015",
+      "role": "base",
+      "segment_indices": [
+        15
+      ],
+      "cad_surface_volume_contribution_m3": -1.0635600129340445e-06,
+      "mesh_surface_volume_contribution_m3": -1.0591916903765634e-06,
+      "volume_contribution_error_m3": 4.368322557481067e-09,
+      "cad_area_m2": 0.0004908738521234052,
+      "mesh_area_m2": 0.0004888577032507215,
+      "relative_area_error": -0.004107264756438543
+    },
+    {
+      "fid": "original-brep-face-008",
+      "role": "foot",
+      "segment_indices": [
+        8
+      ],
+      "cad_surface_volume_contribution_m3": 1.23966711142304e-06,
+      "mesh_surface_volume_contribution_m3": 1.2389229995245275e-06,
+      "volume_contribution_error_m3": -7.44111898512515e-10,
+      "cad_area_m2": 0.0003708521715405572,
+      "mesh_area_m2": 0.0003698712365432123,
+      "relative_area_error": -0.002645083601020951
+    },
+    {
+      "fid": "original-brep-face-012",
+      "role": "foot",
+      "segment_indices": [
+        12
+      ],
+      "cad_surface_volume_contribution_m3": 0.0,
+      "mesh_surface_volume_contribution_m3": -8.307785766893409e-23,
+      "volume_contribution_error_m3": -8.307785766893409e-23,
+      "cad_area_m2": 0.00017592918860102842,
+      "mesh_area_m2": 0.00017580265230861982,
+      "relative_area_error": -0.0007192455863339279
+    }
+  ],
+  "scope": "Divergence theorem at a declared origin; per-face signed contributions depend on origin, their sum does not. Failed mesh remains excluded from simulation. No gate changed."
+}

@@ -1,0 +1,203 @@
+{
+  "schema": "relicweave.cross_repository_pause_state.v1",
+  "as_of_date": "2026-10-16",
+  "state": "DEVELOPMENT_PAUSED_FOR_HANDOVER",
+  "overall_goal_status": "OPEN",
+  "qualified_complete_physical_package_count": 0,
+  "documentation_location": "relicweave-synlab/docs/handover/20261016 (final A12 handover entry)",
+  "workspace_source_archive": ["relicweave-synlab/workspace_support/docs/continuation/", "relicweave-synlab/workspace_support/experiments/"],
+  "path_basis": "Workspace-relative evidence paths assume the three repositories are siblings under a shared workspace root; A12 continuation links are repository-relative after publication.",
+  "subtask_scope": "Cross-repository handover and evidence indexing; this documentation adds no solver or experiment result.",
+  "repositories_at_review": [
+    {
+      "name": "vesselforge",
+      "branch": "backup/forge-work-20261003",
+      "remote_default_branch": "backup/forge-work-20261003"
+    },
+    {
+      "name": "pgfrag",
+      "branch": "backup/forge-work-20261003",
+      "remote_default_branch": "backup/forge-work-20261003"
+    },
+    {
+      "name": "relicweave-synlab",
+      "branch": "backup/forge-work-20261003",
+      "remote_default_branch": "main",
+      "current_HEAD_vs_origin_main": {
+        "ahead_by_commits": 16,
+        "origin_main_is_ancestor": true,
+        "fast_forward_possible": true,
+        "force_push_needed": false
+      }
+    }
+  ],
+  "offline_validation": {
+    "evidence": "docs/handover/20261016/PAUSE_VALIDATION.json",
+    "total_focused_tests_passed": 211,
+    "full_repository_suite_claimed": false,
+    "solver_or_new_experiment_launched": false,
+    "functional_code_changed_during_delivery": false,
+    "suites": {
+      "vesselforge": {"test_files": 7, "passed": 66, "duration_seconds": 18.70, "exit_code": 0},
+      "pgfrag": {"test_files": 6, "passed": 55, "duration_seconds": 1.07, "exit_code": 0},
+      "relicweave-synlab": {"test_files": 9, "passed": 90, "duration_seconds": null, "exit_code": 0}
+    },
+    "scope_note": "The A12 source-resolution 55-check set is earlier and separate. The nine PG mother_binding checks validate the software fixture only; they do not accept the actual run05 mother."
+  },
+  "confirmed_completed_scoped_evidence": [
+    {
+      "id": "reference_v6_run05_mesh",
+      "status": "ROOT_INDEPENDENT_V6_RUN05_GEOMETRY_READBACK_PASS",
+      "scope": "Geometry, source-face ancestry, mesh serialization and independent arithmetic only; not mother fidelity, calibrated material, solver evolution, fracture, fragments or training.",
+      "evidence": [
+        "vesselforge/experiments/continuation_20261016/reference_v6_tetra/run05/partition_output/result.json",
+        "experiments/continuation_20261016/root_v6_run05_readback.json"
+      ],
+      "counts": {
+        "positive_tetrahedra": 86624,
+        "msh_t4_referenced_nodes": 25579,
+        "npz_node_rows": 25748,
+        "npz_nodes_unused_and_absent_from_msh": 169,
+        "interface_triangles": 356,
+        "exterior_triangles": 44182,
+        "source_face_ids": 16
+      },
+      "cad_mesh_relative_volume_error": 0.0024030799686800552
+    },
+    {
+      "id": "bluewhite_source_resolution",
+      "status": "FOCUSED_SOFTWARE_AND_TECHNICAL_PREVIEW_SLICE_PASS",
+      "scope": "55 focused panel/generator/underglaze/material checks and source-detail retention receipt; not finished ornament, historical attribution, firing chemistry or physical qualification.",
+      "output_bytes": 27304078,
+      "sampling_mode": "source_resolved_stationary_v1 (opt-in; legacy default retained)",
+      "evidence": [
+        "relicweave-synlab/experiments/continuation_20261016/bluewhite_source_resolution/README.md",
+        "relicweave-synlab/experiments/continuation_20261016/bluewhite_source_resolution/outputs_v1/experiment_manifest.json"
+      ]
+    },
+    {
+      "id": "extrinsic_zero_step_shape_preflight",
+      "status": "VERIFIED_COUPON_AFFINE_TRI3",
+      "scope": "One frozen 96-T4 coupon, eight planar Tri3 facets, area/3 measure for that coupon only; zero solver steps.",
+      "solver_steps": 0,
+      "cohesive_checks": 0,
+      "evidence": "pgfrag/data/continuation_20261016/extrinsic_onset_refinement/shape_only_preflight/shape_only_preflight.json"
+    },
+    {
+      "id": "generic_mother_binding",
+      "status": "READ_ONLY_BINDING_VALIDATED",
+      "scope": "Structural CAD/run05 source binding validator only. Root acceptance of this actual run05 binding as a complete mother is not established; preview absent as nonbinding artifact, no fracture/observation/material qualification. The 9 passing tests cover the validator contract, not mother acceptance.",
+      "physical_pass": false,
+      "pretrain_eligible": false,
+      "evidence": [
+        "experiments/continuation_20261016/generic_mother_binding/run05_binding/binding_receipt.json",
+        "experiments/continuation_20261016/generic_mother_binding/run05_binding/experiment_receipt.json",
+        "experiments/continuation_20261016/generic_mother_binding/run05_binding/binding_arrays.npz",
+        "relicweave-synlab/workspace_support/experiments/continuation_20261016/generic_mother_binding/run05_binding/ (A12 published archive copy; receipt/array hashes match workspace source)"
+      ],
+      "receipt_hashes": {
+        "experiment_receipt_sha256": "11b2d4351bf833d9b4bf6fab90073f15edd84bd375fcdb8e693a12cf09afd1d6",
+        "binding_receipt_sha256": "66d245e9734abdb5095d768bca4f0771427f3a12f8f3408c7054cab7364ab273",
+        "binding_arrays_sha256": "2a91442387d1440dab6cf5bff8ea4e7cfe91b7e90ed9ea6e99f345adf61c7d35"
+      }
+    }
+  ],
+  "prepared_but_not_launched": [
+    {
+      "id": "reference_v6_native_initialization_preflight",
+      "control_status": "READY_FOR_SINGLE_NATIVE_INITIALIZATION_PREFLIGHT",
+      "budget_status": "WHOLE_OUTPUT_FORECAST_PASS_RUN_NOT_STARTED",
+      "preparation_failures_before_native_start": [
+        "pgfrag/data/continuation_20261016/reference_v6_preflight/preparation_failure_01.json",
+        "pgfrag/data/continuation_20261016/reference_v6_preflight/preparation_failure_02.json"
+      ],
+      "preparation_failure_scope": "Both failures occurred before native process start; a later READY receipt does not erase these preparation failures.",
+      "actual_native_run_started": false,
+      "result_or_execution_record_exists": false,
+      "scope_if_resumed": "One initialization-only --preflight-only invocation; zero solver evolution; no fracture qualification.",
+      "evidence": [
+        "pgfrag/data/continuation_20261016/reference_v6_preflight/run_control.json",
+        "pgfrag/data/continuation_20261016/reference_v6_preflight/preflight_budget.json",
+        "pgfrag/experiments/continuation_20261016/reference_v6_preflight/"
+      ]
+    },
+    {
+      "id": "extrinsic_onset_refinement_campaign",
+      "protocol_status": "FROZEN_FOR_ROOT_REVIEW_NO_CAMPAIGN_LAUNCHED",
+      "prepare_status": "PREPARED_NO_MODEL_NO_SOLVER_STEPS",
+      "requested_matrix": ["h", "h/2", "h/4"],
+      "common_endpoint": "666*h",
+      "h_over_8": "Reserved for a separate decision; not part of the current matrix.",
+      "actual_campaign_started": false,
+      "evidence": [
+        "pgfrag/data/continuation_20261016/extrinsic_onset_refinement/frozen_protocol.json",
+        "pgfrag/data/continuation_20261016/extrinsic_onset_refinement/prepare_validation.json",
+        "pgfrag/experiments/continuation_20261016/extrinsic_onset_refinement/README.md"
+      ]
+    },
+    {
+      "id": "full_size_aberdeen_v6_native_evolution",
+      "status": "NOT_STARTED",
+      "scope": "No full-size realistic mother native evolution or fracture has completed."
+    }
+  ],
+  "known_failures_or_not_established": [
+    {
+      "id": "apsida_scan_refinement_v3",
+      "status": "FAIL_UNQUALIFIED_SCAN_USE_AS_VISUAL_REFERENCE_ONLY",
+      "reason": "Seven pinched vertex links remain."
+    },
+    {
+      "id": "historical_extrinsic_coupon_step652",
+      "status": "NEGATIVE_NATIVE_DISSIPATION_UNRESOLVED",
+      "reason": "Signed work from 651D to 652D is negative; 22 of 24 QPs have negative increments. No new onset campaign result exists."
+    },
+    {
+      "id": "complete_qualification",
+      "status": "NOT_ESTABLISHED",
+      "items": ["full-source-profile fidelity", "calibrated ceramic material", "realistic-mother fracture", "mesh/time/orientation convergence", "finished ornament", "whole-model A12 leakage/admission", "production or pretrain eligibility"]
+    }
+  ],
+  "research_only_control": {
+    "closed_native_components": 2,
+    "software_rgbd_views": 6,
+    "observed_points": 8216,
+    "physical_pass": false,
+    "pretrain_eligible": false,
+    "deployment_eligible": false,
+    "production_a12_complete": false,
+    "evidence": "relicweave-synlab/data/continuation_20261015/native_cohesive_v6_dataset/"
+  },
+  "environment_facts": {
+    "platform": "Windows plus WSL Ubuntu",
+    "akantu_python": "3.12.15",
+    "akantu_numpy": "2.5.3",
+    "akantu_runtime_wheel": "5.0.7-post1",
+    "inspected_akantu_source_tag": "v5.0.7 (distinct provenance; exact wheel/source identity not established)",
+    "known_portability_issue": "Some experiment launchers and older handovers hard-code the current workspace or WSL mount; installation is not yet fully reproducible on a new host.",
+    "active_project_python_or_wsl_solver_observed_at_pause": false,
+    "raw_data_retained_locally_approx_bytes": 6800000000,
+    "raw_data_policy_note": "A local manifest preserves about 6.8 GB of raw data; do not automatically commit all raw data as project code. Review source/license/size and intended use item by item.",
+    "exclude_external_runtime_cache": "_temp_matplotlib"
+  },
+  "overall_plan_document": {
+    "path": "RelicWeave_V1.48_ContractAligned.docx",
+    "pages": 228,
+    "sha256": "23a42e5f4cca40ef733edc9365c15bd0d5fdff647f8821fddec9c649e52b1455",
+    "word_original_open_and_locked_at_pause": true,
+    "python_read_only_extraction_matches_archival_copy": true,
+    "updated_copy_path": "relicweave-synlab/docs/master/20261016/RelicWeave_V1.48_Engineering_Update_20261016.docx",
+    "updated_copy_bytes": 795023,
+    "updated_copy_sha256": "b134f7a781b62bbf8946a269343d8eeedbc87c2697c83dcb55e0ab83cf97fd62",
+    "original_preserved": true,
+    "next_action": "Keep the date-based update and the 2026-10-09 V1.48 original separate; do not overwrite the historical file."
+  },
+  "handover_layout_and_boundaries": [
+    "The final handover entry is relicweave-synlab/docs/handover/20261016; continuation status/math documents are published under relicweave-synlab/docs/continuation, while shared workspace source documents and root experiment support are archived separately under relicweave-synlab/workspace_support/docs/continuation and relicweave-synlab/workspace_support/experiments.",
+    "A12 continuation links are repository-relative after publication; cross-repository evidence links require the shared workspace-root layout or the GitHub refs recorded separately in DELIVERY_RECEIPT.",
+    "The 2026-10-16 plan update is a separate dated file; preserve the 2026-10-09 V1.48 original.",
+    "The GitHub delivery state and final branch/commit refs belong in DELIVERY_RECEIPT, separate from this pause snapshot.",
+    "Review raw data by use, license, and size; exclude _temp_matplotlib external runtime cache.",
+    "Keep both prepared-but-not-launched experiments unstarted while development is paused."
+  ]
+}

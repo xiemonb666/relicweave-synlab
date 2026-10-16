@@ -1,0 +1,611 @@
+{
+  "schema": "shardforge.underglaze_motif_demo.v1",
+  "purpose": "metric-aware surface pigment spread and uncalibrated appearance comparison",
+  "source": {
+    "institution": "The Metropolitan Museum of Art",
+    "object_id": 50899,
+    "title": "Vase with dragon",
+    "collection_url": "https://www.metmuseum.org/art/collection/search/50899",
+    "mask_variants": {
+      "continuous_photo": {
+        "mask_path_from_workspace": "relicweave-synlab\\synlab\\patterns\\resources\\bluewhite_20261015\\derived\\met_50899_O2_dragon_cobalt_fired_photo_mask.png",
+        "mask_sha256": "bc166ca1adf15907f8049f39e81a8cfe75486818e231a2d4b998c49797782da5",
+        "mask_semantics": "continuous cobalt-chroma mask from fired photo",
+        "interpretation": "projected layout seed; not pre-firing brushwork or physical pigment concentration"
+      },
+      "strong_support": {
+        "mask_path_from_workspace": "relicweave-synlab\\synlab\\patterns\\resources\\bluewhite_20261015\\derived\\met_50899_O2_dragon_strong_cobalt_support_proxy.png",
+        "mask_sha256": "a71ff127b69a8e447942f317c6aea3fe43803aebf0a11a009a4c2675deb5395a",
+        "mask_semantics": "binary high-chroma support proxy thresholded from fired photo",
+        "interpretation": "projected layout seed; not pre-firing brushwork or physical pigment concentration"
+      }
+    }
+  },
+  "transform_limitations": {
+    "additional_spread": "stylized post-firing appearance transformation",
+    "double_diffusion_risk": true,
+    "firing_reconstruction": false,
+    "unseen_surface_wrap_reconstruction": false,
+    "photo_lighting_glaze_camera_effects_removed": false
+  },
+  "geometry": {
+    "profile": "illustrative smooth bulb-and-neck surface of revolution",
+    "meridian_coordinate": "dense profile-derived true arclength, in mm",
+    "radius_profile_sampling": "interpolated from a 80001-point meridian evaluation",
+    "exact_area_method": "high-resolution trapezoidal integral of r(s) over each cell, times dtheta",
+    "first_band_excludes_axis": true,
+    "body_band_s_bounds_mm": [
+      0.0,
+      128.0
+    ],
+    "initial_motif_s_bounds_mm": [
+      22.0,
+      106.0
+    ],
+    "blank_meridian_halo_mm_each_side": 22.0,
+    "radius_range_mm": [
+      21.830094741590354,
+      51.999999999999794
+    ],
+    "cell_area_range_mm2": [
+      0.2857710013135835,
+      0.6806784075824306
+    ],
+    "cell_area_source": "high-resolution profile-integrated area per azimuth wedge",
+    "local_edge_zoom_s_bounds_mm": [
+      68.0,
+      106.0
+    ],
+    "local_edge_zoom_azimuth_cells": 80,
+    "geometry_modified_by_diffusion": false
+  },
+  "diffusion": {
+    "operator": "A dc/dt = L c; H = A^-1/2 L A^-1/2",
+    "solver": "scipy.sparse.linalg.expm_multiply",
+    "diffusivity_s_mm2_per_effective_unit": 0.1,
+    "diffusivity_theta_mm2_per_effective_unit": 0.5,
+    "duration_is": "dimensionless effective process index, not temperature/time",
+    "effective_diffusion_mm2": {
+      "no_spread": {
+        "s": 0.0,
+        "theta": 0.0
+      },
+      "low": {
+        "s": 0.4,
+        "theta": 2.0
+      },
+      "high": {
+        "s": 1.6,
+        "theta": 8.0
+      }
+    },
+    "spread_level_selection": "fixed display-sensitivity probes; not calibrated to measured fired width",
+    "density": "dimensionless normalized mask support, initial range [0, 1]",
+    "boundary_conditions": {
+      "meridian": "no-flux at physical band ends",
+      "azimuth": "periodic; exactly n_theta cells"
+    },
+    "stages_by_mask_variant": {
+      "continuous_photo": {
+        "no_spread": {
+          "schema": "synlab.underglaze.diffusion_receipt.v1",
+          "model": "metric_surface_of_revolution_finite_volume_sparse_exponential",
+          "solver": "scipy.sparse.linalg.expm_multiply",
+          "concentration_units": "caller_defined_pigment_loading_units",
+          "diffusivity_units": "mm^2_per_effective_process_unit",
+          "duration_units": "dimensionless_effective_process_index",
+          "duration": 0.0,
+          "integrated_diffusion_units": "mm^2",
+          "grid": {
+            "n_s": 160,
+            "n_theta": 384,
+            "ds_mm": 0.8,
+            "dtheta_rad": 0.016362461737446838,
+            "cell_area_min_mm2": 0.2857710013135835,
+            "cell_area_max_mm2": 0.6806784075824306,
+            "first_band_radius_mm": 21.830094741590354,
+            "radius_min_mm": 21.830094741590354,
+            "radius_max_mm": 51.999999999999794,
+            "first_band_excludes_pole": true
+          },
+          "diffusivity": {
+            "s_min_mm2_per_effective_unit": 0.1,
+            "s_max_mm2_per_effective_unit": 0.1,
+            "theta_min_mm2_per_effective_unit": 0.5,
+            "theta_max_mm2_per_effective_unit": 0.5,
+            "effective_s_diffusion_min_mm2": 0.0,
+            "effective_s_diffusion_max_mm2": 0.0,
+            "effective_theta_diffusion_min_mm2": 0.0,
+            "effective_theta_diffusion_max_mm2": 0.0
+          },
+          "boundary_conditions": {
+            "s": "no_flux_at_both_ends",
+            "theta": "periodic"
+          },
+          "operator": {
+            "grid_cells": 61440,
+            "operator_nnz_upper_bound": 306432,
+            "estimated_peak_working_bytes": 43204608,
+            "max_grid_cells": 256000,
+            "max_operator_nnz": 1280000,
+            "max_memory_bytes": 536870912,
+            "actual_stiffness_nnz": 306432,
+            "actual_generator_nnz": 306432,
+            "stiffness_max_abs_row_sum": 3.3306690738754696e-16,
+            "first_band_radius_mm": 21.830094741590354,
+            "radius_min_mm": 21.830094741590354,
+            "radius_max_mm": 51.999999999999794,
+            "first_band_excludes_pole": true,
+            "minimum_interior_axial_face_radius_mm": 21.98049796417371,
+            "cell_area_source": "caller_supplied_profile_integrated_discrete_cell_measure",
+            "axial_boundary_condition": "no_flux_at_both_ends",
+            "azimuth_boundary_condition": "periodic",
+            "edge_diffusivity": "harmonic_mean",
+            "axial_face_radius": "arithmetic_midpoint_between_true_arclength_centers",
+            "stiffness_symmetric_by_paired_face_assembly": true,
+            "generator_symmetric_by_area_similarity_transform": true,
+            "negative_semidefinite_by_nonnegative_graph_conductances": true,
+            "conductances_nonnegative": true
+          },
+          "mass": {
+            "before": 3927.6103845776015,
+            "after_solver_before_roundoff_clip": 3927.6103845776015,
+            "after_roundoff_clip": 3927.6103845776015,
+            "absolute_solver_drift": 0.0,
+            "relative_solver_drift": 0.0,
+            "absolute_final_drift_after_clip": 0.0,
+            "relative_final_drift_after_clip": 0.0,
+            "roundoff_clip_added_mass": -0.0
+          },
+          "roundoff": {
+            "minimum_solver_concentration": 0.0,
+            "negative_cell_count": 0,
+            "absolute_clip_tolerance": 2.842170943040401e-14,
+            "material_negative_values_clipped": false
+          },
+          "appearance_calibration": "not_applicable_to_diffusion_field",
+          "claims": {
+            "firing_reconstruction": false,
+            "mechanical_geometry_change": false
+          }
+        },
+        "low": {
+          "schema": "synlab.underglaze.diffusion_receipt.v1",
+          "model": "metric_surface_of_revolution_finite_volume_sparse_exponential",
+          "solver": "scipy.sparse.linalg.expm_multiply",
+          "concentration_units": "caller_defined_pigment_loading_units",
+          "diffusivity_units": "mm^2_per_effective_process_unit",
+          "duration_units": "dimensionless_effective_process_index",
+          "duration": 4.0,
+          "integrated_diffusion_units": "mm^2",
+          "grid": {
+            "n_s": 160,
+            "n_theta": 384,
+            "ds_mm": 0.8,
+            "dtheta_rad": 0.016362461737446838,
+            "cell_area_min_mm2": 0.2857710013135835,
+            "cell_area_max_mm2": 0.6806784075824306,
+            "first_band_radius_mm": 21.830094741590354,
+            "radius_min_mm": 21.830094741590354,
+            "radius_max_mm": 51.999999999999794,
+            "first_band_excludes_pole": true
+          },
+          "diffusivity": {
+            "s_min_mm2_per_effective_unit": 0.1,
+            "s_max_mm2_per_effective_unit": 0.1,
+            "theta_min_mm2_per_effective_unit": 0.5,
+            "theta_max_mm2_per_effective_unit": 0.5,
+            "effective_s_diffusion_min_mm2": 0.4,
+            "effective_s_diffusion_max_mm2": 0.4,
+            "effective_theta_diffusion_min_mm2": 2.0,
+            "effective_theta_diffusion_max_mm2": 2.0
+          },
+          "boundary_conditions": {
+            "s": "no_flux_at_both_ends",
+            "theta": "periodic"
+          },
+          "operator": {
+            "grid_cells": 61440,
+            "operator_nnz_upper_bound": 306432,
+            "estimated_peak_working_bytes": 43204608,
+            "max_grid_cells": 256000,
+            "max_operator_nnz": 1280000,
+            "max_memory_bytes": 536870912,
+            "actual_stiffness_nnz": 306432,
+            "actual_generator_nnz": 306432,
+            "stiffness_max_abs_row_sum": 3.3306690738754696e-16,
+            "first_band_radius_mm": 21.830094741590354,
+            "radius_min_mm": 21.830094741590354,
+            "radius_max_mm": 51.999999999999794,
+            "first_band_excludes_pole": true,
+            "minimum_interior_axial_face_radius_mm": 21.98049796417371,
+            "cell_area_source": "caller_supplied_profile_integrated_discrete_cell_measure",
+            "axial_boundary_condition": "no_flux_at_both_ends",
+            "azimuth_boundary_condition": "periodic",
+            "edge_diffusivity": "harmonic_mean",
+            "axial_face_radius": "arithmetic_midpoint_between_true_arclength_centers",
+            "stiffness_symmetric_by_paired_face_assembly": true,
+            "generator_symmetric_by_area_similarity_transform": true,
+            "negative_semidefinite_by_nonnegative_graph_conductances": true,
+            "conductances_nonnegative": true
+          },
+          "mass": {
+            "before": 3927.6103845776015,
+            "after_solver_before_roundoff_clip": 3927.6103845775956,
+            "after_roundoff_clip": 3927.6103845775956,
+            "absolute_solver_drift": 5.9117155615240335e-12,
+            "relative_solver_drift": 1.5051685331970152e-15,
+            "absolute_final_drift_after_clip": 5.9117155615240335e-12,
+            "relative_final_drift_after_clip": 1.5051685331970152e-15,
+            "roundoff_clip_added_mass": 2.3766146508582183e-80
+          },
+          "roundoff": {
+            "minimum_solver_concentration": -7.034563694790544e-80,
+            "negative_cell_count": 105,
+            "absolute_clip_tolerance": 2.842170943040401e-14,
+            "material_negative_values_clipped": false
+          },
+          "appearance_calibration": "not_applicable_to_diffusion_field",
+          "claims": {
+            "firing_reconstruction": false,
+            "mechanical_geometry_change": false
+          }
+        },
+        "high": {
+          "schema": "synlab.underglaze.diffusion_receipt.v1",
+          "model": "metric_surface_of_revolution_finite_volume_sparse_exponential",
+          "solver": "scipy.sparse.linalg.expm_multiply",
+          "concentration_units": "caller_defined_pigment_loading_units",
+          "diffusivity_units": "mm^2_per_effective_process_unit",
+          "duration_units": "dimensionless_effective_process_index",
+          "duration": 16.0,
+          "integrated_diffusion_units": "mm^2",
+          "grid": {
+            "n_s": 160,
+            "n_theta": 384,
+            "ds_mm": 0.8,
+            "dtheta_rad": 0.016362461737446838,
+            "cell_area_min_mm2": 0.2857710013135835,
+            "cell_area_max_mm2": 0.6806784075824306,
+            "first_band_radius_mm": 21.830094741590354,
+            "radius_min_mm": 21.830094741590354,
+            "radius_max_mm": 51.999999999999794,
+            "first_band_excludes_pole": true
+          },
+          "diffusivity": {
+            "s_min_mm2_per_effective_unit": 0.1,
+            "s_max_mm2_per_effective_unit": 0.1,
+            "theta_min_mm2_per_effective_unit": 0.5,
+            "theta_max_mm2_per_effective_unit": 0.5,
+            "effective_s_diffusion_min_mm2": 1.6,
+            "effective_s_diffusion_max_mm2": 1.6,
+            "effective_theta_diffusion_min_mm2": 8.0,
+            "effective_theta_diffusion_max_mm2": 8.0
+          },
+          "boundary_conditions": {
+            "s": "no_flux_at_both_ends",
+            "theta": "periodic"
+          },
+          "operator": {
+            "grid_cells": 61440,
+            "operator_nnz_upper_bound": 306432,
+            "estimated_peak_working_bytes": 43204608,
+            "max_grid_cells": 256000,
+            "max_operator_nnz": 1280000,
+            "max_memory_bytes": 536870912,
+            "actual_stiffness_nnz": 306432,
+            "actual_generator_nnz": 306432,
+            "stiffness_max_abs_row_sum": 3.3306690738754696e-16,
+            "first_band_radius_mm": 21.830094741590354,
+            "radius_min_mm": 21.830094741590354,
+            "radius_max_mm": 51.999999999999794,
+            "first_band_excludes_pole": true,
+            "minimum_interior_axial_face_radius_mm": 21.98049796417371,
+            "cell_area_source": "caller_supplied_profile_integrated_discrete_cell_measure",
+            "axial_boundary_condition": "no_flux_at_both_ends",
+            "azimuth_boundary_condition": "periodic",
+            "edge_diffusivity": "harmonic_mean",
+            "axial_face_radius": "arithmetic_midpoint_between_true_arclength_centers",
+            "stiffness_symmetric_by_paired_face_assembly": true,
+            "generator_symmetric_by_area_similarity_transform": true,
+            "negative_semidefinite_by_nonnegative_graph_conductances": true,
+            "conductances_nonnegative": true
+          },
+          "mass": {
+            "before": 3927.6103845776015,
+            "after_solver_before_roundoff_clip": 3927.6103845776106,
+            "after_roundoff_clip": 3927.6103845776106,
+            "absolute_solver_drift": 9.094947017729282e-12,
+            "relative_solver_drift": 2.3156438972261773e-15,
+            "absolute_final_drift_after_clip": 9.094947017729282e-12,
+            "relative_final_drift_after_clip": 2.3156438972261773e-15,
+            "roundoff_clip_added_mass": -0.0
+          },
+          "roundoff": {
+            "minimum_solver_concentration": 6.588025014555701e-83,
+            "negative_cell_count": 0,
+            "absolute_clip_tolerance": 2.842170943040401e-14,
+            "material_negative_values_clipped": false
+          },
+          "appearance_calibration": "not_applicable_to_diffusion_field",
+          "claims": {
+            "firing_reconstruction": false,
+            "mechanical_geometry_change": false
+          }
+        }
+      },
+      "strong_support": {
+        "no_spread": {
+          "schema": "synlab.underglaze.diffusion_receipt.v1",
+          "model": "metric_surface_of_revolution_finite_volume_sparse_exponential",
+          "solver": "scipy.sparse.linalg.expm_multiply",
+          "concentration_units": "caller_defined_pigment_loading_units",
+          "diffusivity_units": "mm^2_per_effective_process_unit",
+          "duration_units": "dimensionless_effective_process_index",
+          "duration": 0.0,
+          "integrated_diffusion_units": "mm^2",
+          "grid": {
+            "n_s": 160,
+            "n_theta": 384,
+            "ds_mm": 0.8,
+            "dtheta_rad": 0.016362461737446838,
+            "cell_area_min_mm2": 0.2857710013135835,
+            "cell_area_max_mm2": 0.6806784075824306,
+            "first_band_radius_mm": 21.830094741590354,
+            "radius_min_mm": 21.830094741590354,
+            "radius_max_mm": 51.999999999999794,
+            "first_band_excludes_pole": true
+          },
+          "diffusivity": {
+            "s_min_mm2_per_effective_unit": 0.1,
+            "s_max_mm2_per_effective_unit": 0.1,
+            "theta_min_mm2_per_effective_unit": 0.5,
+            "theta_max_mm2_per_effective_unit": 0.5,
+            "effective_s_diffusion_min_mm2": 0.0,
+            "effective_s_diffusion_max_mm2": 0.0,
+            "effective_theta_diffusion_min_mm2": 0.0,
+            "effective_theta_diffusion_max_mm2": 0.0
+          },
+          "boundary_conditions": {
+            "s": "no_flux_at_both_ends",
+            "theta": "periodic"
+          },
+          "operator": {
+            "grid_cells": 61440,
+            "operator_nnz_upper_bound": 306432,
+            "estimated_peak_working_bytes": 43204608,
+            "max_grid_cells": 256000,
+            "max_operator_nnz": 1280000,
+            "max_memory_bytes": 536870912,
+            "actual_stiffness_nnz": 306432,
+            "actual_generator_nnz": 306432,
+            "stiffness_max_abs_row_sum": 3.3306690738754696e-16,
+            "first_band_radius_mm": 21.830094741590354,
+            "radius_min_mm": 21.830094741590354,
+            "radius_max_mm": 51.999999999999794,
+            "first_band_excludes_pole": true,
+            "minimum_interior_axial_face_radius_mm": 21.98049796417371,
+            "cell_area_source": "caller_supplied_profile_integrated_discrete_cell_measure",
+            "axial_boundary_condition": "no_flux_at_both_ends",
+            "azimuth_boundary_condition": "periodic",
+            "edge_diffusivity": "harmonic_mean",
+            "axial_face_radius": "arithmetic_midpoint_between_true_arclength_centers",
+            "stiffness_symmetric_by_paired_face_assembly": true,
+            "generator_symmetric_by_area_similarity_transform": true,
+            "negative_semidefinite_by_nonnegative_graph_conductances": true,
+            "conductances_nonnegative": true
+          },
+          "mass": {
+            "before": 1959.8583235996193,
+            "after_solver_before_roundoff_clip": 1959.8583235996193,
+            "after_roundoff_clip": 1959.8583235996193,
+            "absolute_solver_drift": 0.0,
+            "relative_solver_drift": 0.0,
+            "absolute_final_drift_after_clip": 0.0,
+            "relative_final_drift_after_clip": 0.0,
+            "roundoff_clip_added_mass": -0.0
+          },
+          "roundoff": {
+            "minimum_solver_concentration": 0.0,
+            "negative_cell_count": 0,
+            "absolute_clip_tolerance": 2.842170943040401e-14,
+            "material_negative_values_clipped": false
+          },
+          "appearance_calibration": "not_applicable_to_diffusion_field",
+          "claims": {
+            "firing_reconstruction": false,
+            "mechanical_geometry_change": false
+          }
+        },
+        "low": {
+          "schema": "synlab.underglaze.diffusion_receipt.v1",
+          "model": "metric_surface_of_revolution_finite_volume_sparse_exponential",
+          "solver": "scipy.sparse.linalg.expm_multiply",
+          "concentration_units": "caller_defined_pigment_loading_units",
+          "diffusivity_units": "mm^2_per_effective_process_unit",
+          "duration_units": "dimensionless_effective_process_index",
+          "duration": 4.0,
+          "integrated_diffusion_units": "mm^2",
+          "grid": {
+            "n_s": 160,
+            "n_theta": 384,
+            "ds_mm": 0.8,
+            "dtheta_rad": 0.016362461737446838,
+            "cell_area_min_mm2": 0.2857710013135835,
+            "cell_area_max_mm2": 0.6806784075824306,
+            "first_band_radius_mm": 21.830094741590354,
+            "radius_min_mm": 21.830094741590354,
+            "radius_max_mm": 51.999999999999794,
+            "first_band_excludes_pole": true
+          },
+          "diffusivity": {
+            "s_min_mm2_per_effective_unit": 0.1,
+            "s_max_mm2_per_effective_unit": 0.1,
+            "theta_min_mm2_per_effective_unit": 0.5,
+            "theta_max_mm2_per_effective_unit": 0.5,
+            "effective_s_diffusion_min_mm2": 0.4,
+            "effective_s_diffusion_max_mm2": 0.4,
+            "effective_theta_diffusion_min_mm2": 2.0,
+            "effective_theta_diffusion_max_mm2": 2.0
+          },
+          "boundary_conditions": {
+            "s": "no_flux_at_both_ends",
+            "theta": "periodic"
+          },
+          "operator": {
+            "grid_cells": 61440,
+            "operator_nnz_upper_bound": 306432,
+            "estimated_peak_working_bytes": 43204608,
+            "max_grid_cells": 256000,
+            "max_operator_nnz": 1280000,
+            "max_memory_bytes": 536870912,
+            "actual_stiffness_nnz": 306432,
+            "actual_generator_nnz": 306432,
+            "stiffness_max_abs_row_sum": 3.3306690738754696e-16,
+            "first_band_radius_mm": 21.830094741590354,
+            "radius_min_mm": 21.830094741590354,
+            "radius_max_mm": 51.999999999999794,
+            "first_band_excludes_pole": true,
+            "minimum_interior_axial_face_radius_mm": 21.98049796417371,
+            "cell_area_source": "caller_supplied_profile_integrated_discrete_cell_measure",
+            "axial_boundary_condition": "no_flux_at_both_ends",
+            "azimuth_boundary_condition": "periodic",
+            "edge_diffusivity": "harmonic_mean",
+            "axial_face_radius": "arithmetic_midpoint_between_true_arclength_centers",
+            "stiffness_symmetric_by_paired_face_assembly": true,
+            "generator_symmetric_by_area_similarity_transform": true,
+            "negative_semidefinite_by_nonnegative_graph_conductances": true,
+            "conductances_nonnegative": true
+          },
+          "mass": {
+            "before": 1959.8583235996193,
+            "after_solver_before_roundoff_clip": 1959.858323599617,
+            "after_roundoff_clip": 1959.858323599617,
+            "absolute_solver_drift": 2.2737367544323206e-12,
+            "relative_solver_drift": 1.16015363307293e-15,
+            "absolute_final_drift_after_clip": 2.2737367544323206e-12,
+            "relative_final_drift_after_clip": 1.16015363307293e-15,
+            "roundoff_clip_added_mass": 1.480722407263703e-79
+          },
+          "roundoff": {
+            "minimum_solver_concentration": -4.3986372129135775e-79,
+            "negative_cell_count": 79,
+            "absolute_clip_tolerance": 2.842170943040401e-14,
+            "material_negative_values_clipped": false
+          },
+          "appearance_calibration": "not_applicable_to_diffusion_field",
+          "claims": {
+            "firing_reconstruction": false,
+            "mechanical_geometry_change": false
+          }
+        },
+        "high": {
+          "schema": "synlab.underglaze.diffusion_receipt.v1",
+          "model": "metric_surface_of_revolution_finite_volume_sparse_exponential",
+          "solver": "scipy.sparse.linalg.expm_multiply",
+          "concentration_units": "caller_defined_pigment_loading_units",
+          "diffusivity_units": "mm^2_per_effective_process_unit",
+          "duration_units": "dimensionless_effective_process_index",
+          "duration": 16.0,
+          "integrated_diffusion_units": "mm^2",
+          "grid": {
+            "n_s": 160,
+            "n_theta": 384,
+            "ds_mm": 0.8,
+            "dtheta_rad": 0.016362461737446838,
+            "cell_area_min_mm2": 0.2857710013135835,
+            "cell_area_max_mm2": 0.6806784075824306,
+            "first_band_radius_mm": 21.830094741590354,
+            "radius_min_mm": 21.830094741590354,
+            "radius_max_mm": 51.999999999999794,
+            "first_band_excludes_pole": true
+          },
+          "diffusivity": {
+            "s_min_mm2_per_effective_unit": 0.1,
+            "s_max_mm2_per_effective_unit": 0.1,
+            "theta_min_mm2_per_effective_unit": 0.5,
+            "theta_max_mm2_per_effective_unit": 0.5,
+            "effective_s_diffusion_min_mm2": 1.6,
+            "effective_s_diffusion_max_mm2": 1.6,
+            "effective_theta_diffusion_min_mm2": 8.0,
+            "effective_theta_diffusion_max_mm2": 8.0
+          },
+          "boundary_conditions": {
+            "s": "no_flux_at_both_ends",
+            "theta": "periodic"
+          },
+          "operator": {
+            "grid_cells": 61440,
+            "operator_nnz_upper_bound": 306432,
+            "estimated_peak_working_bytes": 43204608,
+            "max_grid_cells": 256000,
+            "max_operator_nnz": 1280000,
+            "max_memory_bytes": 536870912,
+            "actual_stiffness_nnz": 306432,
+            "actual_generator_nnz": 306432,
+            "stiffness_max_abs_row_sum": 3.3306690738754696e-16,
+            "first_band_radius_mm": 21.830094741590354,
+            "radius_min_mm": 21.830094741590354,
+            "radius_max_mm": 51.999999999999794,
+            "first_band_excludes_pole": true,
+            "minimum_interior_axial_face_radius_mm": 21.98049796417371,
+            "cell_area_source": "caller_supplied_profile_integrated_discrete_cell_measure",
+            "axial_boundary_condition": "no_flux_at_both_ends",
+            "azimuth_boundary_condition": "periodic",
+            "edge_diffusivity": "harmonic_mean",
+            "axial_face_radius": "arithmetic_midpoint_between_true_arclength_centers",
+            "stiffness_symmetric_by_paired_face_assembly": true,
+            "generator_symmetric_by_area_similarity_transform": true,
+            "negative_semidefinite_by_nonnegative_graph_conductances": true,
+            "conductances_nonnegative": true
+          },
+          "mass": {
+            "before": 1959.8583235996193,
+            "after_solver_before_roundoff_clip": 1959.8583235996239,
+            "after_roundoff_clip": 1959.8583235996239,
+            "absolute_solver_drift": 4.547473508864641e-12,
+            "relative_solver_drift": 2.32030726614586e-15,
+            "absolute_final_drift_after_clip": 4.547473508864641e-12,
+            "relative_final_drift_after_clip": 2.32030726614586e-15,
+            "roundoff_clip_added_mass": -0.0
+          },
+          "roundoff": {
+            "minimum_solver_concentration": 1.4915236055093496e-96,
+            "negative_cell_count": 0,
+            "absolute_clip_tolerance": 2.842170943040401e-14,
+            "material_negative_values_clipped": false
+          },
+          "appearance_calibration": "not_applicable_to_diffusion_field",
+          "claims": {
+            "firing_reconstruction": false,
+            "mechanical_geometry_change": false
+          }
+        }
+      }
+    }
+  },
+  "appearance": {
+    "mapping": "glaze_white_linear_rgb * exp(-tau_rgb * normalized_density)",
+    "color_space": "linear RGB before display encoding",
+    "glaze_white_linear_rgb": [
+      0.94,
+      0.91,
+      0.84
+    ],
+    "dimensionless_tau_rgb": [
+      3.04,
+      2.56,
+      0.93
+    ],
+    "coefficient_basis": "art-direction anchor toward the existing cobalt-white linear palette; not optical calibration",
+    "display_encoding": "linear RGB converted to sRGB transfer function only",
+    "status": "UNCALIBRATED_APPEARANCE_SURROGATE",
+    "roughness_separate_and_unchanged": true,
+    "geometry_height_or_material_thickness_changed": false
+  },
+  "outputs": {
+    "comparison_png": "motif_spread_comparison.png",
+    "saved_scalar_and_linear_rgb_fields": "motif_spread_fields.npz",
+    "fields_array_order": "(meridian_arclength_cell, periodic_azimuth_cell)"
+  }
+}

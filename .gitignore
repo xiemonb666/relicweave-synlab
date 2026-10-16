@@ -25,3 +25,7 @@ _*.py
 _*.txt
 
 *.egg-info/
+
+# Reviewed shared source archive; undo recursive data/tmp/third_party ignores here only.
+!workspace_support/
+!workspace_support/**

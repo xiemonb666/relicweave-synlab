@@ -1,0 +1,211 @@
+# ---------------------------------------------------------------------------------------
+# configs/a12/diversity.yaml -- 合成数据变量化配置（新文件，不改任何冻结配置）
+#
+# 这份文件只回答一个问题：**每一条谱系在它自己的冻结种子上，应该随机抽哪些变量。**
+# 它不改变任何质量门、不改变 `configs/a12/next_experiment.yaml`（冻结）、也不放宽任何
+# audit：抽取失败一律按"声明了但没抽到"记入 coverage 行，绝不静默取默认值。
+#
+# 接线点（synlab/pipeline.py，最小接线，全部默认关闭）：
+#   * `_div_resolve_config()`      -- 解析本文件；`None` 时**一个字节都不读**，
+#                                     既有调用方的行为逐位不变。
+#   * `plan_generation(..., diversity=)` -- 为每条谱系抽一份变量表，
+#                                     存进 `LineagePlan.variables`，并在
+#                                     `<store>/reports/diversity_plan.json` 落盘。
+#   * `build_one_mother(..., diversity=)` -- 第 2b 步（花纹）、第 4 步（断裂事件）、
+#                                     第 7 步（观测）、第 9 步（退化）消费这些变量，
+#                                     并把抽到的值写进 coverage 行 `row["diversity"]`。
+#   * `run_generation(..., diversity=)` -- 总开关；等价的环境变量
+#                                     `SYNLAB_DIVERSITY=1|0|<path>`。
+#
+# 硬件包线来源（**不是**本文档自创）：
+#   `configs/a12/capture_contract.json` 生成自 V1.44 需求文档第 6 章（DIY 采集台 C1-C15）：
+#     * `working_distance_and_resolution.acceptance_distances_cm = [10, 15, 20, 25]`
+#     * `working_distance_and_resolution.closeup_local_cm     = [5, 10]`
+#     * `lighting.real_capture_light_modes = [WHITE_DIFFUSE, LEFT_GRAZE, RIGHT_GRAZE,
+#                                            CROSS_POL, NORMAL_REFLECT]`  (count = 5)
+#   相机档位的**运行时注册表**是 `synlab.cameras.api.camera_profiles()`
+#   （CAM_GLOBAL_V3 380 mm / CAM_MID_V3 220 mm / CAM_LOCAL_V3 140 mm，全部
+#   `calibrated=false` / `STRESS_UNCALIBRATED`）。
+#   两者不是同一套数字，所以 `observation.working_distance_source` 让每条谱系**显式**
+#   声明自己用的是哪一套，合并统计时不会把两个来源混成一个。
+# ---------------------------------------------------------------------------------------
+schema: synlab.diversity.v1
+enabled: true
+
+#: 变量表的语义标签，与 `pipeline.data_semantics()` 并列写入资产 meta，批次可程序化区分。
+data_semantics: diversity_v1
+
+#: 所有子流都由它派生：`seed64(master_seed, lineage_id, "<group>")`。
+#: 必须与生成 spec 的 `master_seed` 一致，否则 `reproducibility.check` 会拒绝。
+master_seed: 20261001
+
+# =======================================================================================
+# 1. 事件变量（最高优先级：切面法向 / 位置 / 事件数 / 二次破碎）
+#
+# 现状（实测，见 docs/a12/diversity_report.md §2）：`fracture.api._default_basis` 在
+# `spec.plane_normal is None` 时**完全不用 rng**（源码里写着 `del rng`），法向是母体
+# 顶点/面内容的 hash 函数：azimuth = 2*pi*u1, normal = (cos, sin, -0.25+0.5*u2)。
+# 因此"事件随机性"根本不来自事件层。这里把法向/位置**显式**抽出来传给
+# `FractureSpec.plane_normal / plane_point`，让事件层真的随机。
+# =======================================================================================
+event:
+  #: 允许的后端；二者都已实现且都经过 conservation gate。
+  #: `secondary_fracture` = 主切 + 对最大块再做一次独立子切（真·二次破碎），
+  #: 它由 `n_events >= 2` 触发（不是由某个概率字段悄悄触发）。
+  backends: [plane_shared_cut, rough_shared_cut]
+  #: 谱系内事件数：1 或 2。2 ⇒ backend 强制 secondary_fracture。
+  n_events_choices: [1, 2]
+  n_events_weights: [0.75, 0.25]
+  #: 目标碎片数区间（**声明值**）。本构建的 `fracture` 层没有"按目标片数迭代切"的实现，
+  #: 所以这个区间只决定 n_events 与后端，并被**如实**记录为声明值；
+  #: 它不会被伪造成"实测达到了 N 片"。
+  target_piece_range: [2, 6]
+  #: 二次破碎概率（**声明值**，同样如实记录；真实二次破碎由 n_events=2 决定）。
+  secondary_probability_range: [0.15, 0.35]
+
+  plane:
+    #: 球面均匀法向（Marsaglia / 归一化三维标准正态）。
+    #: `azimuth_uniform` = 方位角在 [0,2pi) 均匀，z 分量按 `z_law` 抽。
+    normal_sampling: sphere_uniform
+    #: z 分量（相对水平面）的分布。'sine_uniform' = 球面均匀在 z 上的边缘分布；
+    #: 'bounded' = 在 [z_min, z_max] 上均匀（避免正上方/正下方的退化切面）。
+    z_law: bounded
+    z_min: -0.85
+    z_max: 0.85
+    #: 切面位置：沿法向相对**母体包围球半径**的偏移比例。
+    #: 0 = 过质心；±1 = 恰好过包围球切点（会把母体切成空集，所以收窄）。
+    offset_law: uniform
+    offset_range: [-0.30, 0.30]
+    #: 位置单位说明：offset 乘以"母体顶点云的等效半径" R = mean|v - centroid|，
+    #: 这个 R 是**实测**出来的，记录在 meta 里，不是硬编码的器型尺寸。
+    offset_radius_stat: mean_vertex_distance
+
+  rough:
+    #: 只有 backend = rough_shared_cut 时生效（plane 的 target_rms 恒为 0）。
+    target_rms_mm_range: [0.02, 0.30]
+    n_bands_choices: [1, 2, 3]
+    error_budget_mm: 0.01
+
+# =======================================================================================
+# 2. 参数变量
+#
+# 现状：`mothers.api.sample_parameters` **已经是**逐器型 LHS（SciPy LatinHypercube +
+# 可行性门）。所以这里**不重新实现**采样，只做两件事：
+#   (a) 声明"这就是本谱系的参数来源"，把覆盖率当作**被测量的量**而不是被假设的量
+#       （见 `data/a12/reports/diversity_after.json` 的
+#        `parameter_layer.lhs_strata_coverage`）；
+#   (b) 当 (a) 实测出不可接受的覆盖率时，`resample_if_coverage_below` 触发一次
+#       重新抽取（同一子流，可复现），并把两次都记进 meta。
+# =======================================================================================
+parameters:
+  source: mothers.api.sample_parameters
+  method: latin_hypercube
+  #: 十等分分层占用率：每条器型在每个连续参数上应占满 10 个分层；
+  #: 低于此比例就重抽一次（`max_resample` 次）。
+  lhs_strata: 10
+  resample_if_coverage_below: 0.60
+  max_resample: 1
+
+# =======================================================================================
+# 3. 花纹变量
+#
+# 现状（实测）：`pipeline._build_pattern_recipe` 传 `params: {}`，于是每个花纹族的
+# **每个参数都取模型默认值**（`params.py` 里的 Field(default=...)）：线宽、间距、
+# 复杂度、相位、方向全部固定；配色在 6 个 `PALETTE_IDS` 里均匀抽。
+# 这里把族参数显式抽出来，经 `build_pattern(..., payload["params"])` 传入。
+# =======================================================================================
+pattern:
+  #: 逐谱系抽取的族参数。每条都是"族模型自己声明的、有 Feasible 区间的"量；
+  #: 抽出来的值仍要过族模型校验，非法即拒绝（不夹取）。
+  params:
+    line_width_mm: {law: uniform, range: [0.9, 2.2]}
+    spacing_mm:    {law: uniform, range: [8.0, 22.0]}
+    complexity:    {law: choice,  choices: [1, 2, 3]}
+  #: 相位：逐谱系均匀（族声明了 phase_* 才生效，否则被模型忽略并如实记录）。
+  phase_s_mm: {law: uniform, range: [0.0, 360.0]}
+  #: 方向：逐谱系均匀（同上，族声明了 tilt_deg/orientation_deg 才生效）。
+  orientation_deg: {law: uniform, range: [0.0, 180.0]}
+  #: 配色：从 `patterns.params.PALETTE_IDS` 里逐谱系抽（当前 6 个）。
+  palette: {law: choice_from_registry, registry: patterns.params.PALETTE_IDS}
+  #: 花纹族本身由 spec 的 pattern_id 决定（保持冻结配置的意图），这里不重抽。
+
+# =======================================================================================
+# 4. 观测变量
+# =======================================================================================
+observation:
+  #: 相机档位。`source: both` = 逐谱系先抽来源再抽档位：
+  #:   'registry_tier' -> `camera_profiles()` 的 3 个已声明虚拟档位（140/220/380 mm）
+  #:   'documented_envelope' -> capture_contract 的验收距离 [100,150,200,250] 与近摄 [50,100]
+  working_distance_source: both
+  working_distance_source_weights: [0.5, 0.5]
+  documented_envelope_mm: [50, 100, 150, 200, 250]
+  registry_tiers: [GLOBAL, MID, LOCAL]
+  #: 由抽到的工作距离**按同一薄透镜关系**重算 f_px：
+  #: f_px(d) = f_px(base) * d / d_base。这句话的含义与后果都写在报告里：
+  #: 它改变的是工作距离/视野/景深与 mm/px；registry 自带的 K 在 base 距离上**逐位保持**。
+  scale_focal_px_with_distance: true
+
+  #: 灯态：capture_contract 的 5 个真实枚举。每个枚举映射到一个**真实**的方向/颜色/环境
+  #: （不是只改个标签）。映射表写在报告里，向量本身记录进每次抽取的结果。
+  light_modes: [WHITE_DIFFUSE, LEFT_GRAZE, RIGHT_GRAZE, CROSS_POL, NORMAL_REFLECT]
+  light_intensity_jitter: [0.85, 1.15]
+
+  #: 视图数：故意包含非 4 的倍数，让 `make_view_frames` 的 4 层 x N 方位网格本身变化。
+  view_count_choices: [6, 8, 10, 12, 14, 16]
+  #: 交付分辨率档（长边 px）。渲染网格按同一长宽比缩放，不做裁剪放大。
+  delivered_long_edge_choices: [256, 384, 512, 640, 768]
+  delivered_aspect: [4, 3]
+
+  #: 对焦误差：由 `ImagingSpec` 的两个**真实**旋钮表达，二者都在硬件包线的定性规则内
+  #: （capture_contract: "对焦不要落在物体表面上，要留足够景深"）：
+  #:   focus_offset_mm -> 采样焦点相对目标的偏移（与 profile 的 DoF 半宽比较后记录），
+  #:   defocus_sigma_px -> 由偏移量换算的 PSF sigma（薄透镜 CoC，见报告公式）。
+  focus_error:
+    focus_offset_frac_of_dof: {law: uniform, range: [-0.6, 0.6]}
+    max_defocus_sigma_px: 1.2
+
+  #: 曝光/噪声档：都在 `ImagingSpec` 已实现的范围内，且**逐谱系**抽。
+  exposure_ev: {law: uniform, range: [-0.75, 0.75]}
+  read_noise_sigma: {law: uniform, range: [0.0, 0.02]}
+  effective_gain: {law: uniform, range: [0.8, 1.6]}
+
+# =======================================================================================
+# 5. 退化变量
+#
+# 现状：`configs/a12/degrade_diversity.yaml` 的 `per_lineage.selection: declared` 让
+# **每条谱系都物化同一组 9 条轴 x 5 个档位**（实测 distinct axis subsets = 1）。
+# 这里改成逐谱系**抽子集 + 抽档位**，并强制保留 level 0（恒等）。
+# =======================================================================================
+degradation:
+  #: 可用轴池。必须全部存在于 `synlab.degrade.registry` 的 31 轴注册表里，
+  #: 且**覆盖各阶段**（PHYSICAL/OPTICS/SENSOR/ISP/GEOMETRY_OBS/FEATURE_PROTOCOL）。
+  axis_pool:
+    - {axis_id: P03, family: P, stage: PHYSICAL,         variant: smooth_recession_field}
+    - {axis_id: P06, family: P, stage: PHYSICAL,         variant: contamination_field}
+    - {axis_id: I01, family: I, stage: OPTICS,           variant: gaussian_psf}
+    - {axis_id: I02, family: I, stage: OPTICS,           variant: motion_blur}
+    - {axis_id: I03, family: I, stage: SENSOR,           variant: photon_scale}
+    - {axis_id: I05, family: I, stage: ISP,              variant: fixed_direction_wb}
+    - {axis_id: I09, family: I, stage: ISP,              variant: antialiased_downsample}
+    - {axis_id: G01, family: G, stage: GEOMETRY_OBS,     variant: correlated_depth_error}
+    - {axis_id: G05, family: G, stage: GEOMETRY_OBS,     variant: qem_decimation}
+    - {axis_id: G08, family: G, stage: GEOMETRY_OBS,     variant: bump}
+    - {axis_id: X01, family: X, stage: FEATURE_PROTOCOL, variant: presence_removal}
+    - {axis_id: X04, family: X, stage: FEATURE_PROTOCOL, variant: regression_bias}
+  #: 每条谱系抽多少条轴（含 level 0 的恒等档一起物化）。
+  axes_per_lineage_range: [3, 7]
+  #: 每条轴抽多少档（从该轴自己的 LEVEL_COUNT 里抽，**必须**含 0）。
+  levels_per_axis_range: [2, 5]
+  #: 恒等档永远保留：'level 0 是恒等' 是本项目的硬约束，不能被抽样抽掉。
+  always_include_level_zero: true
+
+# =======================================================================================
+# 6. 可复现
+# =======================================================================================
+reproducibility:
+  #: 逐谱系子流名。抽取只读这些子流，不读也不推进别的模块的流。
+  substreams: [event, pattern, camera, light, sensor, diversity]
+  #: 同 seed 必须逐位复现：这条由 tests/a12/integration/test_diversity_variables.py 断言。
+  require_bitwise_replay: true
+  #: 每条谱系的变量表落盘位置（相对 store 根）。
+  plan_ref: reports/diversity_plan.json

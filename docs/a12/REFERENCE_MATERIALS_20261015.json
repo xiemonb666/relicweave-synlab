@@ -1,0 +1,540 @@
+{
+  "schema": "shardforge.reference_material_catalogue.v2",
+  "created_date": "2026-10-15",
+  "timezone": "Asia/Shanghai",
+  "scope": "Four source-conditioned ceramic appearance recipes using the existing A12 material field engine. No material test, calibrated optical measurement, or mechanical calibration was performed. New reference profiles use original semantic surface tags and explicit field-kernel version 2.",
+  "implementation": {
+    "module": "synlab.materials.reference_materials",
+    "list_api": "list_reference_materials()",
+    "build_api": "reference_material(style_id, controls=None, seed=0)",
+    "sample_api": "sample_reference_material(profile, points_mm, surface_tag, *, depth_mm=None)",
+    "field_query": "synlab.materials.api.material_at(profile, points_mm, surface_tag, *, depth_mm=None)",
+    "coordinate_contract": "All material fields are sampled in the same mother millimetre coordinates. Original surface faces query at zero depth by semantic tag; volume samples require explicit depth_mm. Query-time sampling is deterministic and draws no randomness.",
+    "coating_surface_policy": {
+      "version": 1,
+      "mode": "original_surface_tags",
+      "coated_tags": [
+        "outer_wall",
+        "inner_wall",
+        "rim"
+      ],
+      "bare_body_tags": [
+        "foot",
+        "base",
+        "new_fracture",
+        "interface",
+        "attachment"
+      ],
+      "volume_tag": "volume",
+      "surface_query_depth_mm": 0.0,
+      "volume_query_depth": "EXPLICIT_CALLER_DEPTH_REQUIRED",
+      "foot_base_policy": "style-specific; these profiles leave foot and base bare"
+    },
+    "field_kernel": {
+      "version": 2,
+      "name": "value_noise+aggregate+fiber;splitmix64-logical-u64-v2",
+      "reason": "Version 1 signed arithmetic shifts capped lattice values below 0.5, making the existing 0.62 pore threshold unreachable.",
+      "legacy_profiles": "Profiles without field_kernel_version retain version 1 for asset replay.",
+      "porosity_threshold_changed": false
+    }
+  },
+  "global_evidence_boundary": {
+    "optical_measurements_status": "UNKNOWN",
+    "physical_glaze_thickness_status": "UNKNOWN",
+    "mechanics_status": "UNKNOWN",
+    "numeric_appearance_controls_status": "DESIGN_CHOICE",
+    "mechanical_values_promoted": false,
+    "shading_layers_create_solid_geometry": false,
+    "coating_surface_depth_semantics": "Semantic original-surface query at depth 0; no physical glaze thickness is inferred.",
+    "field_kernel_v2": "New reference profiles only; old catalogue profiles and assets remain on version 1."
+  },
+  "references": [
+    {
+      "style_id": "daily_aberdeen_porcelain_celadon",
+      "name": "Daily footed porcelain bowl with celadon",
+      "material_id": "M04",
+      "material_class": "porcelain",
+      "material_class_evidence_status": "SOURCE_FACT",
+      "source": {
+        "source_id": "aberdeen_ABDMS095708.121",
+        "institution": "Aberdeen City Museums and Galleries",
+        "object_id": "ABDMS095708.121",
+        "title": "Porcelain Small Footed Bowl",
+        "url": "https://emuseum.aberdeencity.gov.uk/objects/186848/porcelain-small-footed-bowl",
+        "source_facts": {
+          "medium": "Limoges porcelain and celadon",
+          "maker": "Chris Keenan",
+          "date": "2007–2009",
+          "height_mm": 53,
+          "overall_diameter_mm": 108,
+          "foot_ring_diameter_mm": 31,
+          "qualitative_visual_observation": "pale blue-green interior and exterior, dark rust upper band, pale foot; not colorimetry"
+        },
+        "unknowns": [
+          "full inner and outer meridian",
+          "wall, base, rim, and foot cross-sections",
+          "forming and firing schedule",
+          "celadon glaze chemistry and measured thickness",
+          "spectral reflectance, roughness, and index of refraction",
+          "lot-specific mechanical properties"
+        ],
+        "accessed_date": "2026-10-15",
+        "rights_note": "Record metadata and qualitative observations only; the museum page identifies copyrighted images.",
+        "query_landmark_note": "Test/experiment points are within the source H/D/foot envelope but are not registered to the museum mesh; the full section is unknown.",
+        "qualitative_visual_boundary": "Primary photographs show pale blue-green interior/exterior, dark rust upper band, and pale foot; no colorimetry is inferred. The current single celadon layer does not model the regional rust band."
+      },
+      "appearance_control_defaults": {
+        "body_albedo_linear_rgb": [
+          0.774,
+          0.77,
+          0.751
+        ],
+        "body_roughness": 0.34,
+        "body_ior": 1.56,
+        "grain_scale_mm": 0.18,
+        "pore_scale_mm": 0.5,
+        "grain_amount": 0.04,
+        "pore_amount": 0.03,
+        "coating_albedo_linear_rgb": [
+          0.34,
+          0.49,
+          0.44
+        ],
+        "coating_roughness": 0.14,
+        "coating_ior": 1.51,
+        "coating_transmission": 0.02,
+        "coating_band_mm": 0.22,
+        "status": "DESIGN_CHOICE"
+      },
+      "layer_semantics": {
+        "mode": "SHADING_LAYER",
+        "surface_policy": "original_surface_tags-v1",
+        "coated_surface_tags": [
+          "outer_wall",
+          "inner_wall",
+          "rim"
+        ],
+        "bare_body_surface_tags": [
+          "foot",
+          "base",
+          "interface",
+          "attachment"
+        ],
+        "surface_query_depth_mm": 0.0,
+        "volume_query_depth": "EXPLICIT_CALLER_DEPTH_REQUIRED",
+        "depth_band_semantics": "DESIGN_CHOICE_FOR_EXPLICIT_VOLUME_QUERY_ONLY",
+        "physical_solid_status": "NOT_CREATED",
+        "physical_thickness_status": "UNKNOWN"
+      },
+      "mechanics": {
+        "status": "UNKNOWN",
+        "reason": "No lot-matched density, E, nu, strength, KIC, or direct Gc measurements for this object."
+      },
+      "field_kernel": {
+        "version": 2,
+        "name": "value_noise+aggregate+fiber;splitmix64-logical-u64-v2"
+      },
+      "coating_surface_policy": {
+        "version": 1,
+        "mode": "original_surface_tags",
+        "coated_tags": [
+          "outer_wall",
+          "inner_wall",
+          "rim"
+        ],
+        "bare_body_tags": [
+          "foot",
+          "base",
+          "interface",
+          "attachment"
+        ],
+        "volume_tag": "volume",
+        "volume_requires_explicit_depth_mm": true
+      }
+    },
+    {
+      "style_id": "historical_met_50899_porcelain_clear_underglaze",
+      "name": "Met 50899 porcelain with clear-glaze appearance proxy",
+      "material_id": "M04",
+      "material_class": "porcelain",
+      "material_class_evidence_status": "SOURCE_FACT",
+      "source": {
+        "source_id": "met_29.149.50",
+        "institution": "The Metropolitan Museum of Art",
+        "object_id": "50899",
+        "accession_number": "29.149.50",
+        "title": "Vase with dragon",
+        "url": "https://www.metmuseum.org/art/collection/search/50899",
+        "source_facts": {
+          "object_name": "Vase",
+          "accession_number": "29.149.50",
+          "culture": "China",
+          "date": "late 18th century; Qianlong period (1736–95), Qing dynasty (1644–1911)",
+          "medium": "Porcelain painted in underglaze cobalt blue (Jingdezhen ware)",
+          "height_mm": 184,
+          "object_image_rights": "Public Domain",
+          "visual_observation": "The retained O2 photograph shows a pale warm-white body, blue decoration, and bright surface reflections; photograph observation only, not colorimetry."
+        },
+        "unknowns": [
+          "overall diameter, maximum width, full inner and outer meridian, and local cross-sections",
+          "whether a distinct clear glaze layer is present and its composition or measured thickness",
+          "forming and firing schedule",
+          "spectral reflectance, roughness, and index of refraction",
+          "lot-specific mechanical properties"
+        ],
+        "accessed_date": "2026-10-15",
+        "rights_note": "The Met object page identifies the object image as Public Domain; the photograph is used only for qualitative appearance context.",
+        "visual_observation_boundary": "The pale warm-white body and bright reflections are photograph observations only; no white-point, colorimetry, gloss, or glaze property is inferred."
+      },
+      "geometry_binding": {
+        "status": "NOT_APPLIED",
+        "source_height_mm": 184,
+        "r_outer_mm": null,
+        "r_inner_mm": null,
+        "diameter_invented": false,
+        "geometry_rescaled": false,
+        "note": "Only source height is known. It is retained as metadata; no diameter is invented and material sampling does not rescale or reconstruct object geometry."
+      },
+      "appearance_control_defaults": {
+        "body_albedo_linear_rgb": [
+          0.88,
+          0.86,
+          0.8
+        ],
+        "body_roughness": 0.36,
+        "body_ior": 1.56,
+        "grain_scale_mm": 0.18,
+        "pore_scale_mm": 0.5,
+        "grain_amount": 0.03,
+        "pore_amount": 0.02,
+        "coating_albedo_linear_rgb": [
+          0.96,
+          0.95,
+          0.91
+        ],
+        "coating_roughness": 0.11,
+        "coating_ior": 1.5,
+        "coating_transmission": 0.02,
+        "coating_band_mm": 0.2,
+        "status": "DESIGN_CHOICE"
+      },
+      "coating_presence": {
+        "profile_layer_exists": true,
+        "source_status": "DESIGN_CHOICE",
+        "note": "A clear/pale appearance-only layer is a rendering proxy; the object record names underglaze cobalt but does not describe a distinct clear-glaze layer or its properties.",
+        "physical_thickness_mm": null,
+        "physical_thickness_status": "UNKNOWN"
+      },
+      "process_compatibility": {
+        "source_material_class": "SOURCE_FACT",
+        "forming_process": "UNKNOWN",
+        "firing_schedule": "UNKNOWN",
+        "glaze_chemistry": "UNKNOWN",
+        "source_named_decoration": {
+          "process": "underglaze_cobalt",
+          "status": "SOURCE_FACT",
+          "source_measurement": "Porcelain painted in underglaze cobalt blue (Jingdezhen ware)",
+          "compatibility": {
+            "material_class": "porcelain",
+            "process": "underglaze_cobalt",
+            "status": "COMPATIBLE_SUBSTRATE_CLASS",
+            "effect_scope": "SEPARATE_APPEARANCE_LAYER",
+            "basis": "ceramic substrate class supports a separately composed underglaze-cobalt appearance; object-specific pigment formulation and firing behavior remain unknown"
+          },
+          "appearance_composition": "SEPARATE_FROM_SUBSTRATE_PROFILE"
+        }
+      },
+      "layer_semantics": {
+        "mode": "SHADING_LAYER",
+        "surface_policy": "original_surface_tags-v1",
+        "coated_surface_tags": [
+          "outer_wall",
+          "inner_wall",
+          "rim"
+        ],
+        "bare_body_surface_tags": [
+          "foot",
+          "base",
+          "new_fracture",
+          "interface",
+          "attachment"
+        ],
+        "surface_query_depth_mm": 0.0,
+        "volume_query_depth": "EXPLICIT_CALLER_DEPTH_REQUIRED",
+        "depth_band_parameter": "DESIGN_CHOICE_FOR_EXPLICIT_VOLUME_QUERY_ONLY",
+        "physical_solid_status": "NOT_CREATED",
+        "physical_thickness_status": "UNKNOWN",
+        "note": "The clear/pale appearance-only layer is a design proxy and is not a claim about glaze chemistry, physical thickness, or a separately documented clear glaze."
+      },
+      "mechanics": {
+        "status": "UNKNOWN",
+        "reason": "No lot-matched density, E, nu, strength, KIC, or direct Gc measurements for this object."
+      },
+      "field_kernel": {
+        "version": 2,
+        "name": "value_noise+aggregate+fiber;splitmix64-logical-u64-v2"
+      },
+      "coating_surface_policy": {
+        "version": 1,
+        "mode": "original_surface_tags",
+        "coated_tags": [
+          "outer_wall",
+          "inner_wall",
+          "rim"
+        ],
+        "bare_body_tags": [
+          "foot",
+          "base",
+          "new_fracture",
+          "interface",
+          "attachment"
+        ],
+        "volume_tag": "volume",
+        "volume_requires_explicit_depth_mm": true
+      }
+    },
+    {
+      "style_id": "historical_met_jun_stoneware_glaze",
+      "name": "Jun ware blue-gray glazed stoneware bowl",
+      "material_id": "M03",
+      "material_class": "stoneware",
+      "material_class_evidence_status": "SOURCE_FACT",
+      "source": {
+        "source_id": "met_18.56.44",
+        "institution": "The Metropolitan Museum of Art",
+        "object_id": "18.56.44",
+        "title": "Bowl",
+        "url": "https://www.metmuseum.org/art/collection/search/52389",
+        "source_facts": {
+          "medium": "Stoneware with blue-gray glaze (Jun ware)",
+          "date": "12th–13th century",
+          "height_mm": 54,
+          "rim_diameter_mm": 111,
+          "foot_diameter_mm": 54
+        },
+        "unknowns": [
+          "full inner and outer meridian",
+          "wall, base, rim, and foot cross-sections",
+          "forming and firing schedule",
+          "glaze chemistry and measured thickness",
+          "spectral reflectance, roughness, and index of refraction",
+          "lot-specific mechanical properties"
+        ],
+        "accessed_date": "2026-10-15",
+        "rights_note": "The Met marks the object image Public Domain and its Open Access data available for reuse."
+      },
+      "appearance_control_defaults": {
+        "body_albedo_linear_rgb": [
+          0.22,
+          0.25,
+          0.27
+        ],
+        "body_roughness": 0.52,
+        "body_ior": 1.54,
+        "grain_scale_mm": 0.8,
+        "pore_scale_mm": 6.0,
+        "grain_amount": 0.08,
+        "pore_amount": 0.06,
+        "coating_albedo_linear_rgb": [
+          0.27,
+          0.37,
+          0.47
+        ],
+        "coating_roughness": 0.16,
+        "coating_ior": 1.52,
+        "coating_transmission": 0.0,
+        "coating_band_mm": 0.35,
+        "status": "DESIGN_CHOICE"
+      },
+      "layer_semantics": {
+        "mode": "SHADING_LAYER",
+        "surface_policy": "original_surface_tags-v1",
+        "coated_surface_tags": [
+          "outer_wall",
+          "inner_wall",
+          "rim"
+        ],
+        "bare_body_surface_tags": [
+          "foot",
+          "base",
+          "interface",
+          "attachment"
+        ],
+        "surface_query_depth_mm": 0.0,
+        "volume_query_depth": "EXPLICIT_CALLER_DEPTH_REQUIRED",
+        "depth_band_semantics": "DESIGN_CHOICE_FOR_EXPLICIT_VOLUME_QUERY_ONLY",
+        "physical_solid_status": "NOT_CREATED",
+        "physical_thickness_status": "UNKNOWN"
+      },
+      "mechanics": {
+        "status": "UNKNOWN",
+        "reason": "No lot-matched density, E, nu, strength, KIC, or direct Gc measurements for this object."
+      },
+      "field_kernel": {
+        "version": 2,
+        "name": "value_noise+aggregate+fiber;splitmix64-logical-u64-v2"
+      },
+      "coating_surface_policy": {
+        "version": 1,
+        "mode": "original_surface_tags",
+        "coated_tags": [
+          "outer_wall",
+          "inner_wall",
+          "rim"
+        ],
+        "bare_body_tags": [
+          "foot",
+          "base",
+          "interface",
+          "attachment"
+        ],
+        "volume_tag": "volume",
+        "volume_requires_explicit_depth_mm": true
+      }
+    },
+    {
+      "style_id": "historical_smithsonian_colonoware_unglazed",
+      "name": "Colonoware unglazed earthenware pot",
+      "material_id": "M02",
+      "material_class": "earthenware",
+      "material_class_evidence_status": "DESIGN_CLASSIFICATION",
+      "source": {
+        "source_id": "smithsonian_NMAAHC_2017.108.1.1",
+        "institution": "Smithsonian National Museum of African American History and Culture",
+        "object_id": "2017.108.1.1",
+        "title": "Colonoware pot, Cooper River, Charleston County, SC",
+        "url": "https://3d.si.edu/object/3d/colonoware-pot-cooper-river-charleston-county-sc%3A79da3e3f-3ad7-41de-8956-e891d88a3c5f",
+        "catalogue_url": "https://nmaahc.si.edu/object/nmaahc_2017.108.1.1",
+        "source_facts": {
+          "medium": "clay, glue, plaster of Paris and paint",
+          "material_classification": "ceramic pottery; earthenware is the adapter's broad design classification, not a petrographic analysis",
+          "surface": "unglazed",
+          "date": "about 1700–1800",
+          "height_mm": 230,
+          "diameter_mm": 267,
+          "qualitative_form": "rounded body, rounded base, narrow neck, slightly flared rim",
+          "decoration": "stippling band around the neck, irregular vertical stippled lines, outlined geometric shapes, and circular marks",
+          "condition": "cross-mended breaks and plaster base repair; dark stains, paint marks, and localized losses are described"
+        },
+        "unknowns": [
+          "clay recipe, temper, and particle-size distribution",
+          "forming and firing schedule",
+          "porosity and moisture condition",
+          "spectral reflectance, roughness, and index of refraction",
+          "lot-specific mechanical properties",
+          "mesh scale, wall thickness, and complete internal surface coverage"
+        ],
+        "accessed_date": "2026-10-15",
+        "rights_note": "The Smithsonian 3D page identifies public-domain/CC0 reuse; preserve Smithsonian attribution."
+      },
+      "field_proxy": {
+        "material_id": "M02",
+        "status": "DESIGN_PROXY",
+        "note": "Fine-earthenware field controls do not assert the source vessel contains grog, has a measured grain distribution, or has measured porosity."
+      },
+      "appearance_control_defaults": {
+        "body_albedo_linear_rgb": [
+          0.38,
+          0.22,
+          0.13
+        ],
+        "body_roughness": 0.78,
+        "body_ior": 1.52,
+        "grain_scale_mm": 0.55,
+        "pore_scale_mm": 1.1,
+        "grain_amount": 0.12,
+        "pore_amount": 0.2,
+        "status": "DESIGN_CHOICE"
+      },
+      "layer_semantics": {
+        "mode": "SHADING_LAYER",
+        "surface_policy": "original_surface_tags-v1",
+        "coated_surface_tags": [],
+        "bare_body_surface_tags": [
+          "outer_wall",
+          "inner_wall",
+          "rim",
+          "foot",
+          "base",
+          "interface",
+          "attachment"
+        ],
+        "surface_query_depth_mm": 0.0,
+        "physical_solid_status": "NOT_APPLICABLE_SOURCE_IS_UNGLAZED"
+      },
+      "mechanics": {
+        "status": "UNKNOWN",
+        "reason": "No lot-matched density, E, nu, strength, KIC, or direct Gc measurements for this object."
+      },
+      "field_kernel": {
+        "version": 2,
+        "name": "value_noise+aggregate+fiber;splitmix64-logical-u64-v2"
+      },
+      "coating_surface_policy": {
+        "version": 1,
+        "mode": "original_surface_tags",
+        "coated_tags": [],
+        "bare_body_tags": [
+          "outer_wall",
+          "inner_wall",
+          "rim",
+          "foot",
+          "base",
+          "interface",
+          "attachment"
+        ],
+        "volume_tag": "volume",
+        "volume_requires_explicit_depth_mm": true
+      }
+    }
+  ],
+  "mechanics_source_review": {
+    "promotion_status": "NO_AUTOMATIC_PHYSICS_CARD",
+    "primary_references": [
+      {
+        "id": "muller_2015_kalami_clay",
+        "citation": "N. S. Müller, G. Vekinis, P. M. Day, and V. Kilikoglou, The influence of microstructure and texture on the mechanical properties of rock tempered archaeological ceramics, Journal of the European Ceramic Society 35 (2015), 831–843.",
+        "doi_url": "https://doi.org/10.1016/j.jeurceramsoc.2014.09.025",
+        "source_pdf_url": "https://ltt.arizona.edu/sites/ltt.lab.arizona.edu/files/2015%20Mueller%20et%20al%20Mechanical%20of%20rock%20tempered_J%20Eur%20Cer%20Soc.pdf",
+        "limits": [
+          "Experimental Kalami clay briquette under a specified firing condition, not one of the named museum objects.",
+          "Partial condition-specific properties only; fired bulk density, nu, direct tensile strength, and independently measured direct Gc are not all available."
+        ],
+        "card_values_promoted": false
+      },
+      {
+        "id": "martin_marquez_2010_porcelain_stoneware",
+        "citation": "J. Martín-Márquez, J. M. Rincón, and M. Romero, Effect of microstructure on mechanical properties of porcelain stoneware, Journal of the European Ceramic Society 30 (2010), 3063–3069.",
+        "doi_url": "https://doi.org/10.1016/j.jeurceramsoc.2010.07.015",
+        "source_pdf_url": "https://files.core.ac.uk/download/pdf/45451165.pdf",
+        "limits": [
+          "Fast-fired industrial tile body and method-specific measurements, not a museum vessel lot.",
+          "Does not provide a complete condition-matched brittle-fracture card for these objects."
+        ],
+        "card_values_promoted": false
+      }
+    ],
+    "local_method_boundary": "reviews/20261007/ceramic_calibration_sources/CALIBRATION_CONTRACT.md"
+  },
+  "sampled_outputs": {
+    "path": "experiments/continuation_20261015/reference_materials/material_samples.json",
+    "schema": "shardforge.reference_material_samples.v2",
+    "channels": [
+      "layer_id",
+      "layer_name",
+      "albedo",
+      "roughness",
+      "transmission",
+      "ior",
+      "grain",
+      "porosity",
+      "direction",
+      "layer_depth_mm"
+    ],
+    "coordinates_registered_to_source_mesh": false,
+    "groups": {
+      "reference_profiles": "source-conditioned reference styles",
+      "catalogue_comparators": "synthetic M11 wood and M12 metal profiles"
+    }
+  }
+}

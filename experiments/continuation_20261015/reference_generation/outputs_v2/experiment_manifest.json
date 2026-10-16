@@ -1,0 +1,393 @@
+{
+  "cad_invocations_file": "cad_invocations.json",
+  "canonical_recipe_sha256": "ad51feeb70de2dd5db0b5261bde7f39573fd5b1816538a285e4576947fe43978",
+  "design_model": "FootedBowlDesign",
+  "family": "footed_bowl",
+  "generated_geometry_root": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\experiments\\continuation_20261015\\reference_forms\\outputs\\reference_generation_outputs_v2",
+  "geometry_preset": "daily",
+  "instances": [
+    {
+      "bundle": "instances\\daily_baseline_tokusa",
+      "bundle_bytes": 6357687,
+      "bundle_manifest_sha256": "4b1f75f188e9b0ba08936699a7f8a166c3f4eb4347e01fe5da5e3a5b58776132",
+      "cad_duration_seconds": 12.384257199999979,
+      "continuous_texture_validation": {
+        "arclength_status": "FINITE_POLYLINE_APPROXIMATION_NOT_AN_EXACT_ARCLENGTH_CERTIFICATE",
+        "color_space": "LINEAR_SRGB_PRIMARIES",
+        "general_chart_validation": {
+          "maximum_allowed_s_error_mm": 1e-07,
+          "maximum_periodic_u_error": 1.1102230246251565e-16,
+          "maximum_s_error_mm": 3.552713678800501e-15,
+          "method": "ORIGINAL_UNMODIFIED_GENERAL_CHART_UV_AND_REGION_MASK",
+          "passed": true,
+          "sample_count": 25,
+          "source_chart_membership_true": 25
+        },
+        "geometry_changed": false,
+        "grid_sampling": "CELL_CENTERED_UNIFORM_FINITE_POLYLINE_ARCLENGTH_X_PERIODIC_AZIMUTH",
+        "grid_shape_s_theta": [
+          512,
+          1024
+        ],
+        "pattern_region_cell_count": 58410,
+        "periodic_seam_validation": {
+          "comparison": "FIRST_AND_LAST_AZIMUTH_PIXEL_CENTERS_VS_INTERIOR_NEIGHBORS",
+          "interior_neighbor_p99_linear_rgb_delta": 0.28589701652526855,
+          "maximum_allowed_linear_rgb_delta": 0.4289455247879028,
+          "maximum_linear_rgb_delta": 0.009952276945114136,
+          "mean_linear_rgb_delta": 0.0005604447214864194,
+          "passed": true
+        },
+        "profile_status": "ANALYTIC_SOURCE_CUBIC_BEZIER_SAMPLED_AS_FINITE_POLYLINE",
+        "source_material_profile_hash": "sha256:0ccf0bc819b50f3268c294e341a8cd8b8673e8af67c08bff444b63604b9b36e2",
+        "source_pattern_recipe_hash": "sha256:8a1c3dca09a6a3bc59ee47c70bbaa26b06c87442f1e8acd90efd88a98cf2be1d"
+      },
+      "design_model": "FootedBowlDesign",
+      "design_overrides": {
+        "name": "recipe_daily_baseline_tokusa"
+      },
+      "deterministic_replay": {
+        "face_fields_bitwise_equal": true,
+        "field_array_sha256": "c492f14eb622db14eb91466a585e0b45e5e013a03c07b252706c7873f4871d9a",
+        "passed": true,
+        "texture_arrays_bitwise_equal": true,
+        "texture_linear_rgb_sha256": "05070444c5097952558f5a3eac713c1db1e2ee9bf9feba681478544eee233652"
+      },
+      "dimensions_mm": [
+        107.99969539031277,
+        107.93390489393511,
+        52.99984769515639
+      ],
+      "family": "footed_bowl",
+      "files": {
+        "appearance_texture.npz": "3186ce7cac74aa6e9f8078adb6e289d0cf93ccf47f08964132c10beb9fbd7699",
+        "geometry_and_fields.npz": "8ee14abdd9772c70c87d187b6f020f6dab9e94decf0e524f5a84182d6d166d04",
+        "manifest.json": "4b1f75f188e9b0ba08936699a7f8a166c3f4eb4347e01fe5da5e3a5b58776132",
+        "metrics.json": "20d8b41810c437ea4085c809d4d254d58909f608147f7da7f31ad6673b3d18f0",
+        "outer_texture_srgb.png": "91c75ca63ce6a38901a89288eba95e019bb46d5f49ec548d05d07d0e8fe19648",
+        "preview_4view.png": "ba8af4a7673750c210aeeda59d8746e09ec4cf83c11bf8f9681f4e503840233d",
+        "provenance.json": "71c66d9f16a03997ebbbd4280070f19ba9715162463d58ec24ea3b3d398135dd",
+        "recipe.json": "32439a7b5d3fa2fd71478e199614cb91f622776eb9736b6ffc07c74f888f64fc",
+        "sha256_receipt.json": "dedef357d9b0562bcc1cb1536c0d732e0d10c1e9c79a39d90f4152003921039e"
+      },
+      "geometry_array_sha256_after_appearance": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+      "geometry_array_sha256_before_appearance": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+      "geometry_preset": "daily",
+      "geometry_unchanged": true,
+      "instance_id": "daily_baseline_tokusa",
+      "material_controls": {
+        "coating_roughness": 0.18
+      },
+      "material_layer_triangle_counts": {
+        "body": 13688,
+        "source_named_surface_finish": 11910
+      },
+      "material_style": "daily_aberdeen_porcelain_celadon",
+      "pattern_controls": {
+        "line_width_mm": 1.0,
+        "s_margin_frac": 0.1,
+        "spacing_mm": 10.0
+      },
+      "pattern_region_triangle_count": 220,
+      "pattern_style": "daily_hasami_tokusa",
+      "preview_sha256": "ba8af4a7673750c210aeeda59d8746e09ec4cf83c11bf8f9681f4e503840233d",
+      "seeds": {
+        "material": 2026101601,
+        "pattern": 2026101602
+      },
+      "signed_volume_mm3": 32985.51424547626,
+      "source_geometry_directory": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\experiments\\continuation_20261015\\reference_forms\\outputs\\reference_generation_outputs_v2\\daily_baseline_tokusa",
+      "source_geometry_file_sha256": {
+        "face_lineage.json": "9e6c789989cb0f5f42ed9c37f0264bc02899a9c29f571254938a4781640bcfd2",
+        "geometry_report.json": "60ad52dd19720c8de2c78151548bcd8f23049bbd6aa56ffe4359e8b78d9f2ab9",
+        "provenance.json": "ba4b822a1fbfdd69af84b7275f40eba983c364a2041cf374e19d4a24becb7b81",
+        "section.json": "5466882b72bf319233124728556ef9a54218f2b192b714955b44a9ced860cf12",
+        "surface.npz": "b1ce6521290073fae7b48103d95333782d4d42e031a302d8c38ed2f5c0db17f3"
+      }
+    },
+    {
+      "bundle": "instances\\daily_deep_jun_plain",
+      "bundle_bytes": 6330590,
+      "bundle_manifest_sha256": "ffe0d119f737aeba0205ea36da32574f7c0dc90e161216935993acd7c0f1df73",
+      "cad_duration_seconds": 4.851553500000023,
+      "continuous_texture_validation": {
+        "arclength_status": "FINITE_POLYLINE_APPROXIMATION_NOT_AN_EXACT_ARCLENGTH_CERTIFICATE",
+        "color_space": "LINEAR_SRGB_PRIMARIES",
+        "general_chart_validation": {
+          "maximum_allowed_s_error_mm": 1e-07,
+          "maximum_periodic_u_error": 1.1102230246251565e-16,
+          "maximum_s_error_mm": 3.2751579226442118e-15,
+          "method": "ORIGINAL_UNMODIFIED_GENERAL_CHART_UV_AND_REGION_MASK",
+          "passed": true,
+          "sample_count": 25,
+          "source_chart_membership_true": 25
+        },
+        "geometry_changed": false,
+        "grid_sampling": "CELL_CENTERED_UNIFORM_FINITE_POLYLINE_ARCLENGTH_X_PERIODIC_AZIMUTH",
+        "grid_shape_s_theta": [
+          512,
+          1024
+        ],
+        "pattern_region_cell_count": 496640,
+        "periodic_seam_validation": {
+          "comparison": "FIRST_AND_LAST_AZIMUTH_PIXEL_CENTERS_VS_INTERIOR_NEIGHBORS",
+          "interior_neighbor_p99_linear_rgb_delta": 0.007416736334562302,
+          "maximum_allowed_linear_rgb_delta": 0.011225104501843452,
+          "maximum_linear_rgb_delta": 0.006195753812789917,
+          "mean_linear_rgb_delta": 0.0008087269961833954,
+          "passed": true
+        },
+        "profile_status": "ANALYTIC_SOURCE_CUBIC_BEZIER_SAMPLED_AS_FINITE_POLYLINE",
+        "source_material_profile_hash": "sha256:c2710b804ed225cdffad302d23550e1916b398ff79880d79ab4772c56d4500eb",
+        "source_pattern_recipe_hash": "sha256:58638b3ef6b9d12fdf021ec1e7bb2cd4f5926acdf13126581f469c213567da73"
+      },
+      "design_model": "FootedBowlDesign",
+      "design_overrides": {
+        "name": "recipe_daily_deep_jun_plain",
+        "overall_height_mm": 62.0
+      },
+      "deterministic_replay": {
+        "face_fields_bitwise_equal": true,
+        "field_array_sha256": "403ceaf57486c3c023b795e61559f781e47bdf4ebe82959d8fc2c4611d2b2c4a",
+        "passed": true,
+        "texture_arrays_bitwise_equal": true,
+        "texture_linear_rgb_sha256": "ce5745627f155b965c9956b60839a127de12704e36ab9eb8edb4b4a842b9cbbe"
+      },
+      "dimensions_mm": [
+        107.99969539031277,
+        107.93390489393511,
+        61.99984769515639
+      ],
+      "family": "footed_bowl",
+      "files": {
+        "appearance_texture.npz": "78d3a297a9b1ce135b096833f70ab815aa2eabe291d7c4aa99ce42e997984b66",
+        "geometry_and_fields.npz": "ea72126359d7cfdbe53fffc68a096da53380d2a0ee226e23269fbab91dd718b9",
+        "manifest.json": "ffe0d119f737aeba0205ea36da32574f7c0dc90e161216935993acd7c0f1df73",
+        "metrics.json": "62a7714c71981b5ca28fbfe8be0b0a51a3dad80b81af2149ee840b6f71aa32d4",
+        "outer_texture_srgb.png": "3e98eca7a14f1a0fee5071f37bad8599034a9b9ca464df0a9a829fcba0fd3662",
+        "preview_4view.png": "1ec0e9afceddea3fe39612ebed763f51f7e675e1be251e62e67d4be5488382cf",
+        "provenance.json": "1aeca7317ab313c95ea98d9ee8772bfd8c2e5f6704f99672c31bc73ca59d02e9",
+        "recipe.json": "2cd5deaaabf6299350567e4ab13476fb9679bfcca348c4ef1f91d32788fed9b1",
+        "sha256_receipt.json": "dd538c9f2631c41ace5d8af4368ea42bff773304dfe4a17295b15bbd0c0bd7f3"
+      },
+      "geometry_array_sha256_after_appearance": "180c485e988507f33ad489b9bfea7742645adca82646ee273d469a9830acf402",
+      "geometry_array_sha256_before_appearance": "180c485e988507f33ad489b9bfea7742645adca82646ee273d469a9830acf402",
+      "geometry_preset": "daily",
+      "geometry_unchanged": true,
+      "instance_id": "daily_deep_jun_plain",
+      "material_controls": {
+        "coating_roughness": 0.24
+      },
+      "material_layer_triangle_counts": {
+        "body": 13688,
+        "source_named_surface_finish": 12218
+      },
+      "material_style": "historical_met_jun_stoneware_glaze",
+      "pattern_controls": {
+        "s_margin_frac": 0.02
+      },
+      "pattern_region_triangle_count": 1984,
+      "pattern_style": "historical_met_jun_plain",
+      "preview_sha256": "1ec0e9afceddea3fe39612ebed763f51f7e675e1be251e62e67d4be5488382cf",
+      "seeds": {
+        "material": 2026101603,
+        "pattern": 2026101604
+      },
+      "signed_volume_mm3": 36532.06722343312,
+      "source_geometry_directory": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\experiments\\continuation_20261015\\reference_forms\\outputs\\reference_generation_outputs_v2\\daily_deep_jun_plain",
+      "source_geometry_file_sha256": {
+        "face_lineage.json": "9e6c789989cb0f5f42ed9c37f0264bc02899a9c29f571254938a4781640bcfd2",
+        "geometry_report.json": "898d5e40e4d1b839de8bf277faa0f0c3ffa5ae88ff100187ee33b7ea9676b322",
+        "provenance.json": "8ab1997e496e6a42f00de94c1966566ee10598f6d24403c0e1f12fca26b323d9",
+        "section.json": "e304a1c312382378433ab2b9780a9485eb9e8da55f230408463035a0b31ae549",
+        "surface.npz": "efbe58712fdeed02c2213f763d63be35f572f311fe3a2efdaa793c059a8e3043"
+      }
+    },
+    {
+      "bundle": "instances\\daily_broad_foot_tokusa",
+      "bundle_bytes": 6334446,
+      "bundle_manifest_sha256": "98b73bdc8b1aa52a8f2a37a04360e80dd18b1c7a9d91bcdeb2b97dfeb90e7869",
+      "cad_duration_seconds": 4.153261499999985,
+      "continuous_texture_validation": {
+        "arclength_status": "FINITE_POLYLINE_APPROXIMATION_NOT_AN_EXACT_ARCLENGTH_CERTIFICATE",
+        "color_space": "LINEAR_SRGB_PRIMARIES",
+        "general_chart_validation": {
+          "maximum_allowed_s_error_mm": 1e-07,
+          "maximum_periodic_u_error": 1.1102230246251565e-16,
+          "maximum_s_error_mm": 3.552713678800501e-15,
+          "method": "ORIGINAL_UNMODIFIED_GENERAL_CHART_UV_AND_REGION_MASK",
+          "passed": true,
+          "sample_count": 25,
+          "source_chart_membership_true": 25
+        },
+        "geometry_changed": false,
+        "grid_sampling": "CELL_CENTERED_UNIFORM_FINITE_POLYLINE_ARCLENGTH_X_PERIODIC_AZIMUTH",
+        "grid_shape_s_theta": [
+          512,
+          1024
+        ],
+        "pattern_region_cell_count": 56288,
+        "periodic_seam_validation": {
+          "comparison": "FIRST_AND_LAST_AZIMUTH_PIXEL_CENTERS_VS_INTERIOR_NEIGHBORS",
+          "interior_neighbor_p99_linear_rgb_delta": 0.2267637848854065,
+          "maximum_allowed_linear_rgb_delta": 0.34024567732810973,
+          "maximum_linear_rgb_delta": 0.010273396968841553,
+          "mean_linear_rgb_delta": 0.000695063907187432,
+          "passed": true
+        },
+        "profile_status": "ANALYTIC_SOURCE_CUBIC_BEZIER_SAMPLED_AS_FINITE_POLYLINE",
+        "source_material_profile_hash": "sha256:de512e267c4b67a5519c8eae790bcabbe364275cc1ea964ccb9a60f5f5a7f707",
+        "source_pattern_recipe_hash": "sha256:1144cf3dc969efe84f279d5ce67632959c3856987b8f566d229ad4c7e3e09816"
+      },
+      "design_model": "FootedBowlDesign",
+      "design_overrides": {
+        "body_start_handle_fraction": 0.72,
+        "foot_contact_width_mm": 2.2,
+        "foot_height_mm": 7.5,
+        "foot_outer_diameter_mm": 34.0,
+        "name": "recipe_daily_broad_foot_tokusa"
+      },
+      "deterministic_replay": {
+        "face_fields_bitwise_equal": true,
+        "field_array_sha256": "f254faa5ab43926378e3ef43acb94abacef4dbb65664c03e8f3916baed5738e4",
+        "passed": true,
+        "texture_arrays_bitwise_equal": true,
+        "texture_linear_rgb_sha256": "be8762b00a03368e78bcb3ef7f26dd181fa7511986267b3225be0682b2e7ae26"
+      },
+      "dimensions_mm": [
+        107.99969539031277,
+        107.93390489393511,
+        52.99984769515639
+      ],
+      "family": "footed_bowl",
+      "files": {
+        "appearance_texture.npz": "78d790d06969032716b018517f037dfe8ad5cafe656c70f0abe61ad8eb6b974f",
+        "geometry_and_fields.npz": "f1b64fbe3100a86b1cd8dc37ec48020a0239b408aebda3ff826cb32061952e95",
+        "manifest.json": "98b73bdc8b1aa52a8f2a37a04360e80dd18b1c7a9d91bcdeb2b97dfeb90e7869",
+        "metrics.json": "9f5e8b764e3195436f28db52c436044a6ad996d2b227c04744c68c86aedf5ceb",
+        "outer_texture_srgb.png": "ad5570cc9ec95d547de4aceab7bb820f25a367bba0f8088ce278b6ff1dd3da6b",
+        "preview_4view.png": "de8560f7a7532ec11bb2605965eb47fc9d656a1fb33cc941f7ceaf6583a7530e",
+        "provenance.json": "ebec991ab90fb6815c1692ac99f9622757f78cbf83a5106b351e672adfe69ea5",
+        "recipe.json": "0333d3522a067db0feef9c9727d9049826b7457e796a3bd1a971595dae624c8f",
+        "sha256_receipt.json": "afdce954d52593d8dbd3039048a79a015e1728d68693904f480afd3e723b3ae7"
+      },
+      "geometry_array_sha256_after_appearance": "5b11c6b834837deb1c32c2f064be17960c3497be501b8713955a145e5cf56dfc",
+      "geometry_array_sha256_before_appearance": "5b11c6b834837deb1c32c2f064be17960c3497be501b8713955a145e5cf56dfc",
+      "geometry_preset": "daily",
+      "geometry_unchanged": true,
+      "instance_id": "daily_broad_foot_tokusa",
+      "material_controls": {
+        "coating_roughness": 0.2
+      },
+      "material_layer_triangle_counts": {
+        "body": 13500,
+        "source_named_surface_finish": 11644
+      },
+      "material_style": "daily_aberdeen_porcelain_celadon",
+      "pattern_controls": {
+        "line_width_mm": 1.3,
+        "s_margin_frac": 0.12,
+        "spacing_mm": 12.0
+      },
+      "pattern_region_triangle_count": 186,
+      "pattern_style": "daily_hasami_tokusa",
+      "preview_sha256": "de8560f7a7532ec11bb2605965eb47fc9d656a1fb33cc941f7ceaf6583a7530e",
+      "seeds": {
+        "material": 2026101605,
+        "pattern": 2026101606
+      },
+      "signed_volume_mm3": 34510.80815090676,
+      "source_geometry_directory": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\experiments\\continuation_20261015\\reference_forms\\outputs\\reference_generation_outputs_v2\\daily_broad_foot_tokusa",
+      "source_geometry_file_sha256": {
+        "face_lineage.json": "4b98dfed5c32c7deade2a35c1287f442dd07ae31faf3b8628a8ed6cc7c945328",
+        "geometry_report.json": "7b01ff2dd727202561ff21db4510c1ad6a54347b0258c22e0a3a2f04a2907c6f",
+        "provenance.json": "38506324f55b379ce037ffdd5a316d90f4b5e241a27c30cf40ee9102bd352463",
+        "section.json": "7975f846108750436f7ee706399e80b96eef1b2f9d20dc75f2631e4039b826e9",
+        "surface.npz": "26a4fc19c3f5d07f956494f532ee9ca2e521988f14d0e64b30d152ee905a3a15"
+      }
+    }
+  ],
+  "output_bytes": 19567521,
+  "previews": {
+    "files": [
+      {
+        "bundle": "daily_baseline_tokusa",
+        "bundle_manifest_sha256": "4b1f75f188e9b0ba08936699a7f8a166c3f4eb4347e01fe5da5e3a5b58776132",
+        "faces": 25598,
+        "geometry_array_sha256": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+        "preview": "preview_4view.png",
+        "renderer": "VTK lit perspective + orthographic side/top/underside; source chart texture and per-face edge appearance",
+        "sha256": "ba8af4a7673750c210aeeda59d8746e09ec4cf83c11bf8f9681f4e503840233d",
+        "texture_grid": [
+          512,
+          1024
+        ],
+        "view_definitions": [
+          "Side · orthographic",
+          "Top · orthographic",
+          "Lit 3D · perspective",
+          "Underside · orthographic"
+        ]
+      },
+      {
+        "bundle": "daily_deep_jun_plain",
+        "bundle_manifest_sha256": "ffe0d119f737aeba0205ea36da32574f7c0dc90e161216935993acd7c0f1df73",
+        "faces": 25906,
+        "geometry_array_sha256": "180c485e988507f33ad489b9bfea7742645adca82646ee273d469a9830acf402",
+        "preview": "preview_4view.png",
+        "renderer": "VTK lit perspective + orthographic side/top/underside; source chart texture and per-face edge appearance",
+        "sha256": "1ec0e9afceddea3fe39612ebed763f51f7e675e1be251e62e67d4be5488382cf",
+        "texture_grid": [
+          512,
+          1024
+        ],
+        "view_definitions": [
+          "Side · orthographic",
+          "Top · orthographic",
+          "Lit 3D · perspective",
+          "Underside · orthographic"
+        ]
+      },
+      {
+        "bundle": "daily_broad_foot_tokusa",
+        "bundle_manifest_sha256": "98b73bdc8b1aa52a8f2a37a04360e80dd18b1c7a9d91bcdeb2b97dfeb90e7869",
+        "faces": 25144,
+        "geometry_array_sha256": "5b11c6b834837deb1c32c2f064be17960c3497be501b8713955a145e5cf56dfc",
+        "preview": "preview_4view.png",
+        "renderer": "VTK lit perspective + orthographic side/top/underside; source chart texture and per-face edge appearance",
+        "sha256": "de8560f7a7532ec11bb2605965eb47fc9d656a1fb33cc941f7ceaf6583a7530e",
+        "texture_grid": [
+          512,
+          1024
+        ],
+        "view_definitions": [
+          "Side · orthographic",
+          "Top · orthographic",
+          "Lit 3D · perspective",
+          "Underside · orthographic"
+        ]
+      }
+    ],
+    "manifest": "preview_manifest.json",
+    "manifest_sha256": "aec937da0866b0082d018a92045b02940e00d6708f87635085c6b3cc572f5805"
+  },
+  "recipe_file": "recipe.json",
+  "schema": "synlab.reference_generation_experiment.v2",
+  "scope": {
+    "appearance": "Existing source-conditioned SynLab material and reference-pattern APIs sampled on those unchanged CAD sources.",
+    "chart": "Finite-polyline chart arclength is validated against the original general-purpose chart on selected points.",
+    "geometry": "Three new recipe-driven FootedBowlDesign candidates from the existing VesselForge CAD driver.",
+    "interpretation": "Mixed-source reference-guided design candidates; not exact museum, maker, or archaeological object clones.",
+    "native_fracture": "NOT_RUN",
+    "physical_materials": "No calibrated optical values, chemistry, thickness, forming or firing mechanics are asserted.",
+    "refinement": "Original source geometry and profile are retained; appearance composition performs no vertex, face, or topology edits.",
+    "resource_limits": {
+      "cad_timeout_seconds_per_instance": 60,
+      "experiment_bytes": 268435456,
+      "instance_bytes": 67108864,
+      "recipe_bytes": 1048576
+    },
+    "training_export": "NONE"
+  },
+  "status": "REFERENCE_GUIDED_DESIGN_CANDIDATE"
+}

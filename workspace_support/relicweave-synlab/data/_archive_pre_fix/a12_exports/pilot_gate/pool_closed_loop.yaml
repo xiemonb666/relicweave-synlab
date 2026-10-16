@@ -1,0 +1,19 @@
+schema: synlab.pool.v1
+# Verification gallery for the fresh closed-loop store (single mother, split "train").
+# The shipped configs/a12/pool_*.yaml exclude training lineages, which is correct for a
+# train/dev evaluation gallery but leaves a *one-mother* store with an empty gallery; this config
+# keeps the training lineage so the pool build (and therefore the `relations_complete` gate) can
+# actually be exercised.  It changes no frozen config: it lives under data/a12_exports/.
+pool_id: pool_closed_loop
+gallery_version: v1
+scope: FULL
+split: dev
+lineage_ids: []
+size_target: 200
+exclude_training_lineages: false
+nested_sizes: [8, 16]
+mate_removed_variant: false
+query_per_mother: 1
+refinement_candidates: [10, 20, 50]
+top_k: [1, 5, 10]
+note: "closed-loop verification gallery; mirrors tools/closed_loop.py::step_build_pool."

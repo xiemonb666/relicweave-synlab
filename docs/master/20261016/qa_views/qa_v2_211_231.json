@@ -1,0 +1,36 @@
+{
+  "render_version": "render_v2",
+  "checked_pages": [211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231],
+  "verdict": "pass_no_new_visual_regressions",
+  "summary": "逐页查看了 211–231 的 21 张 PNG。正文清晰可读，无新增裁切、缺字或重叠。每页页脚日期均为 2026年10月16日，页码与图像页号一致，日期区域在 21 页渲染中一致。",
+  "pages": [
+    {"page": 211, "content_readable": true, "new_clipping": false, "footer": "2026年10月16日 211 / 231", "note": "I7 表格与正文清晰；末行延续到下一页的既有分页保持可读。"},
+    {"page": 212, "content_readable": true, "new_clipping": false, "footer": "2026年10月16日 212 / 231", "note": "I8 架构与代码示例清晰；续表片段未新增裁切。"},
+    {"page": 213, "content_readable": true, "new_clipping": false, "footer": "2026年10月16日 213 / 231", "note": "能力清单、资产契约和表格清晰。"},
+    {"page": 214, "content_readable": true, "new_clipping": false, "footer": "2026年10月16日 214 / 231", "note": "路线图和验收指标表格清晰，列宽未见新增问题。"},
+    {"page": 215, "content_readable": true, "new_clipping": false, "footer": "2026年10月16日 215 / 231", "note": "指标表格及页底结论框文字清楚；结论框跨页情况与 v1 相同。"},
+    {"page": 216, "content_readable": true, "new_clipping": false, "footer": "2026年10月16日 216 / 231", "note": "结论框续文与参考资料可读，页脚未被遮挡。"},
+    {"page": 217, "content_readable": true, "new_clipping": false, "footer": "2026年10月16日 217 / 231", "note": "参考资料及附录说明清晰，页尾留白正常。"},
+    {"page": 218, "content_readable": true, "new_clipping": false, "footer": "2026年10月16日 218 / 231", "note": "附录 J 状态补记清楚可读，与历史快照以日期和“状态补记”标签区分。"},
+    {"page": 219, "content_readable": true, "new_clipping": false, "footer": "2026年10月16日 219 / 231", "note": "通用化原则与复用规范清晰。"},
+    {"page": 220, "content_readable": true, "new_clipping": false, "footer": "2026年10月16日 220 / 231", "note": "算法接入、禁止事项及升级机制清晰。"},
+    {"page": 221, "content_readable": true, "new_clipping": false, "footer": "2026年10月16日 221 / 231", "note": "系统关系图、输入契约及表格清晰。"},
+    {"page": 222, "content_readable": true, "new_clipping": false, "footer": "2026年10月16日 222 / 231", "note": "动态断裂方法表可读；无日期修改导致的新裁切。"},
+    {"page": 223, "content_readable": true, "new_clipping": false, "footer": "2026年10月16日 223 / 231", "note": "表格续行及软件比较内容可读；该续行已由根审判定为非阻塞。"},
+    {"page": 224, "content_readable": true, "new_clipping": false, "footer": "2026年10月16日 224 / 231", "note": "材料表与断裂流程示例清晰；页顶表格位置与 v1 相同，未见新增裁切。"},
+    {"page": 225, "content_readable": true, "new_clipping": false, "footer": "2026年10月16日 225 / 231", "note": "断裂后端说明续文及精度配置表格可读；该段落延续已由根审判定为非阻塞。"},
+    {"page": 226, "content_readable": true, "new_clipping": false, "footer": "2026年10月16日 226 / 231", "note": "PG-Frag 架构与目录树清晰。"},
+    {"page": 227, "content_readable": true, "new_clipping": false, "footer": "2026年10月16日 227 / 231", "note": "标准契约与实现路线表格清晰。"},
+    {"page": 228, "content_readable": true, "new_clipping": false, "footer": "2026年10月16日 228 / 231", "note": "验收指标和技术选型表格清晰，页脚日期与页码完整。"},
+    {"page": 229, "content_readable": true, "new_clipping": false, "footer": "2026年10月16日 229 / 231", "note": "技术选型结论框与参考资料清晰。"},
+    {"page": 230, "content_readable": true, "new_clipping": false, "footer": "2026年10月16日 230 / 231", "note": "参考资料清晰，页脚日期与页码完整。"},
+    {"page": 231, "content_readable": true, "new_clipping": false, "footer": "2026年10月16日 231 / 231", "note": "附录 B 说明清晰；末页页脚完整。"}
+  ],
+  "persistent_layout_notes": [
+    {"pages": [211, 212], "status": "unchanged_from_v1", "detail": "I7.2 表格行跨页续接，文字可读。"},
+    {"pages": [215, 216], "status": "unchanged_from_v1", "detail": "黄色结论框跨页，续文可读。"},
+    {"pages": [221, 222], "status": "unchanged_from_v1", "detail": "输入契约表重复表头后有一行空白。"},
+    {"pages": [222, 223], "status": "readable_non_blocking_per_root_review", "detail": "动态断裂方法表行跨页续接，续页可读。"},
+    {"pages": [224, 225], "status": "readable_non_blocking_per_root_review", "detail": "DEM 说明跨页续接，续句可读。"}
+  ]
+}

@@ -1,0 +1,153 @@
+{
+  "schema": "synlab.reference_pattern_styles.v1",
+  "date": "2026-10-15",
+  "generation_mode": "SYNTHETIC_REFERENCE_GUIDED",
+  "distribution_claim": "No learned distribution is claimed from the reviewed objects.",
+  "styles": [
+    {
+      "style_id": "daily_hasami_tokusa",
+      "display_name": "Hasami Sabi Togusa rice bowl stripes",
+      "evidence_status": "SOURCE_DESCRIPTION_AND_PRODUCT_PHOTOGRAPH_REVIEWED",
+      "render_status": "SYNTHETIC_REFERENCE_GUIDED",
+      "source": {
+        "title": "Rice Bowl / SABI TOGUSA",
+        "url": "https://www.hasamiyaki.jp/en/item/sabitokusa-chawan/",
+        "publisher": "Maruhiro / HASAMI",
+        "reported_object": "13 cm diameter x 6 cm, 300 cc pottery rice bowl; Rizaemon Kiln, Hasami"
+      },
+      "process": "Maker describes hand-painted tokusa vertical stripes on a sandy, iron-heavy body with rusty underglaze.",
+      "motif_and_meaning": "The maker connects tokusa to horsetail grass and its upward growth; the series text associates the motif with success and prosperity. This is source-reported context, not a claim about every tokusa use.",
+      "visual_notes": "The reviewed product image shows repeated narrow, dark vertical strokes on the exterior bowl wall and an undecorated light interior. The exact stroke count, widths, spacing, and paint chemistry are not reported.",
+      "pattern_mapping": {
+        "family": "PAT03",
+        "allowed_families": [
+          "PAT03"
+        ],
+        "surface_tag": "outer_wall",
+        "zone": "outer-wall body with a modest edge margin; stripes follow the meridian and repeat around azimuth",
+        "params": {
+          "tilt_deg": 0.0,
+          "n_groups": 1,
+          "thin_ratio": 1.0
+        },
+        "defaults": {
+          "line_width_mm": 1.0,
+          "spacing_mm": 10.0,
+          "s_margin_frac": 0.1
+        },
+        "override_ranges": {
+          "line_width_mm": [
+            0.5,
+            3.0
+          ],
+          "spacing_mm": [
+            5.0,
+            30.0
+          ],
+          "s_margin_frac": [
+            0.0,
+            0.35
+          ]
+        }
+      },
+      "palette": {
+        "palette_id": "reference_tokusa_sandy_rust_proxy",
+        "status": "SOURCE_DESCRIPTION_GUIDED_UNCALIBRATED_DESIGN_PROXY",
+        "limits": "No photo-derived RGB, reflectance, glaze BRDF, brush-bleed or pigment-diffusion calibration."
+      },
+      "known": [
+        "The product is a daily-use rice bowl; page gives diameter, height, capacity, maker and place.",
+        "The maker names the hand-painted vertical tokusa motif and its horsetail reference.",
+        "Pattern surface is the exterior wall; its circumferential repetition is implemented with PAT03's periodic integer count."
+      ],
+      "unknown": [
+        "Exact stripe count, spacing, width, brush profile, stroke order, pigment composition and firing schedule.",
+        "Calibrated color, reflectance, glaze thickness, surface roughness and batch-to-batch variation.",
+        "Full wall section and exact product meridian."
+      ]
+    },
+    {
+      "style_id": "historical_met_jun_plain",
+      "display_name": "Met 18.56.44 plain Jun-glazed bowl surface",
+      "evidence_status": "CATALOGUE_DESCRIPTION_AND_PRODUCT_PHOTOGRAPH_REVIEWED",
+      "render_status": "SYNTHETIC_REFERENCE_GUIDED",
+      "source": {
+        "title": "Bowl, 18.56.44",
+        "url": "https://www.metmuseum.org/art/collection/search/52389",
+        "publisher": "The Metropolitan Museum of Art",
+        "reported_object": "China, Jin dynasty (1115-1234), 12th-13th century; stoneware with blue-gray glaze; H 54 mm, rim D 111 mm, foot D 54 mm; Met Open Access / Public Domain image"
+      },
+      "process": "Catalogue identifies stoneware with blue-gray glaze (Jun ware). It does not give this bowl's glaze recipe or firing schedule.",
+      "motif_and_meaning": "No painted or incised motif is documented for this catalogued bowl; this adapter encodes an unpatterned outer-wall field only.",
+      "visual_notes": "The reviewed official photograph shows a continuous blue-gray surface on the bowl. This is a qualitative visual observation, not calibrated color or a section drawing.",
+      "pattern_mapping": {
+        "family": "PAT01",
+        "allowed_families": [
+          "PAT01"
+        ],
+        "surface_tag": "outer_wall",
+        "zone": "full measured outer-wall chart; no motif overlay",
+        "params": {
+          "low_freq_color": false,
+          "roughness_variation": 0.0
+        },
+        "defaults": {
+          "s_margin_frac": 0.0
+        },
+        "override_ranges": {
+          "s_margin_frac": [
+            0.0,
+            0.2
+          ]
+        }
+      },
+      "palette": {
+        "palette_id": "reference_jun_bluegrey_proxy",
+        "status": "SOURCE_DESCRIPTION_GUIDED_UNCALIBRATED_DESIGN_PROXY",
+        "limits": "A flat blue-gray PAT01 albedo proxy only; no glaze layer, pooling, opalescence, crazing, chemistry, thickness or firing physics."
+      },
+      "known": [
+        "The Met records the period, stoneware, blue-gray Jun glaze, height, rim diameter and foot diameter.",
+        "The adapter contributes no geometric decoration and selects only the named exterior wall chart."
+      ],
+      "unknown": [
+        "Complete section, local wall thickness, glaze chemistry/thickness, firing schedule and calibrated BRDF/color.",
+        "The catalogue does not document an object-specific motif or a glaze distribution for this single bowl."
+      ]
+    },
+    {
+      "style_id": "research_met_hacilar_chevron",
+      "display_name": "Met 64.286.3 Hacilar painted vessel (research only)",
+      "evidence_status": "PRIMARY_CATALOGUE_DESCRIPTION_REVIEWED_NOT_MAPPED_TO_RENDERABLE_SOURCE_ZONES",
+      "render_status": "RESEARCH_ONLY_NOT_BUILDABLE",
+      "source": {
+        "title": "Vessel, 64.286.3",
+        "url": "https://www.metmuseum.org/art/collection/search/325698",
+        "publisher": "The Metropolitan Museum of Art",
+        "reported_object": "Southwestern Anatolia, ca. 5600-5400 BCE; ceramic, paint; 112 x 106 x 106 mm; Met Open Access / Public Domain image"
+      },
+      "process": "The catalogue describes hand-made, thin-walled ceramic decorated with red paint on cream slip; workshop production is noted, but this object's pigment recipe and painting sequence are not reported.",
+      "motif_and_meaning": "The source describes two red horizontal rim bands, vertical chevrons in groups of three, and concentric circles around two side projections. It calls the red-on-cream geometric scheme characteristic of Hacilar, while noting the vessel's site is unidentified. No broader symbolic meaning is asserted.",
+      "visual_notes": "A direct photograph was reviewed. The composition is on the vessel exterior and has a rim-framing pair plus grouped vertical chevrons; side projections have concentric-circle decoration. No pattern code is enabled because the current generic outer-wall recipe cannot faithfully map the rim and projection zones on an arbitrary mother.",
+      "pattern_mapping": {
+        "family": null,
+        "allowed_families": [],
+        "surface_tag": null,
+        "zone": "unresolved: rim, exterior wall and projection zones need separate measured charts",
+        "blocked_reason": "Do not substitute PAT07 triangles for chevrons, PAT10 foliage for another motif, or place an interior field on an outer-wall chart. A source-bound mapped motif and geometry-compatible zone layout are required."
+      },
+      "palette": {
+        "status": "NOT_IMPLEMENTED",
+        "limits": "No invented red/cream colors are attached to a buildable recipe."
+      },
+      "known": [
+        "Source description documents the pattern, process family, placement and object dimensions.",
+        "The documented decoration is exterior; the reported vessel has side projections."
+      ],
+      "unknown": [
+        "Object-specific archaeological site, exact chevron proportions/count, pigment composition and application sequence.",
+        "How the current target mother charts would represent rim and projection surfaces; no source-aligned recipe is emitted."
+      ]
+    }
+  ]
+}

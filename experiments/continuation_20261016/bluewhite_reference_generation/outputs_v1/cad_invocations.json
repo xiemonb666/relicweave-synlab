@@ -1,0 +1,42 @@
+[
+  {
+    "argv": [
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\experiments\\continuation_20261015\\reference_forms\\build_reference_candidates.py",
+      "--preset",
+      "daily",
+      "--output",
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\experiments\\continuation_20261015\\reference_forms\\outputs\\reference_generation_bluewhite_reference_generation_outputs_v1\\met50899_panel_no_spread",
+      "--overrides-json",
+      "{\"name\":\"met50899_panel_no_spread\"}"
+    ],
+    "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge",
+    "duration_seconds": 5.3027340000007825,
+    "exit_code": 0,
+    "instance": "met50899_panel_no_spread",
+    "output": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\experiments\\continuation_20261015\\reference_forms\\outputs\\reference_generation_bluewhite_reference_generation_outputs_v1\\met50899_panel_no_spread",
+    "stderr": "",
+    "stdout": "{\n  \"output\": \"C:\\\\Users\\\\xiemo\\\\Desktop\\\\ShardForge\\\\vesselforge\\\\experiments\\\\continuation_20261015\\\\reference_forms\\\\outputs\\\\reference_generation_bluewhite_reference_generation_outputs_v1\\\\met50899_panel_no_spread\",\n  \"preset\": \"daily\",\n  \"candidate_status\": \"PASS_STRUCTURAL_CAD_ONLY\",\n  \"design_parameters\": {\n    \"name\": \"met50899_panel_no_spread\",\n    \"rim_outer_diameter_mm\": 108.0,\n    \"overall_height_mm\": 53.0,\n    \"wall_thickness_mm\": 2.0,\n    \"foot_outer_diameter_mm\": 31.0,\n    \"foot_height_mm\": 7.0,\n    \"body_floor_radius_mm\": 10.5,\n    \"body_floor_z_mm\": 10.0,\n    \"underside_recess_z_mm\": 6.5,\n    \"foot_contact_width_mm\": 2.0,\n    \"rim_tangent_degrees\": 75.0,\n    \"normal_offset_fit_tolerance_mm\": 0.005,\n    \"body_start_handle_fraction\": 0.6,\n    \"body_end_handle_height_fraction\": 0.22\n  },\n  \"checks\": {\n    \"one_valid_solid\": true,\n    \"one_closed_shell\": true,\n    \"positive_volume\": true,\n    \"all_native_faces_have_one_role\": true,\n    \"step_round_trip_one_solid\": true,\n    \"outer_dimensions_within_0_1mm\": true,\n    \"foot_contact_touches_z0\": true,\n    \"mesh_is_watertight\": true,\n    \"cavity_center_is_empty\": true,\n    \"body_wall_probe_is_material\": true,\n    \"foot_and_base_probes_are_material\": true,\n    \"outside_probe_is_empty\": true\n  },\n  \"volume_mm3\": 32987.77282909537,\n  \"artifact_sha256\": {\n    \"solid.step\": \"21941b2f6cfc9bec79668d5455ec4d5a5b8b78b96d756ac1605ee937a7cbb18b\",\n    \"surface.npz\": \"b1ce6521290073fae7b48103d95333782d4d42e031a302d8c38ed2f5c0db17f3\",\n    \"section.json\": \"ecc68dec476652eb238915545324f5f7602ea5eb172640476e3fcf8d9fad42b8\",\n    \"face_lineage.json\": \"9e6c789989cb0f5f42ed9c37f0264bc02899a9c29f571254938a4781640bcfd2\",\n    \"preview.png\": \"26ad791c7a9eceb93b57595c104c9b34eb1c83078f18417ca5b456c95b876d61\"\n  },\n  \"output_bytes\": 601652\n}\n",
+    "timeout_seconds": 60
+  },
+  {
+    "argv": [
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\third_party\\vesselforge-runtime\\venv\\Scripts\\python.exe",
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\experiments\\continuation_20261015\\reference_forms\\build_reference_candidates.py",
+      "--preset",
+      "daily",
+      "--output",
+      "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\experiments\\continuation_20261015\\reference_forms\\outputs\\reference_generation_bluewhite_reference_generation_outputs_v1\\met50899_panel_default_spread",
+      "--overrides-json",
+      "{\"name\":\"met50899_panel_default_spread\"}"
+    ],
+    "cwd": "C:\\Users\\xiemo\\Desktop\\ShardForge",
+    "duration_seconds": 3.9579517999991367,
+    "exit_code": 0,
+    "instance": "met50899_panel_default_spread",
+    "output": "C:\\Users\\xiemo\\Desktop\\ShardForge\\vesselforge\\experiments\\continuation_20261015\\reference_forms\\outputs\\reference_generation_bluewhite_reference_generation_outputs_v1\\met50899_panel_default_spread",
+    "stderr": "",
+    "stdout": "{\n  \"output\": \"C:\\\\Users\\\\xiemo\\\\Desktop\\\\ShardForge\\\\vesselforge\\\\experiments\\\\continuation_20261015\\\\reference_forms\\\\outputs\\\\reference_generation_bluewhite_reference_generation_outputs_v1\\\\met50899_panel_default_spread\",\n  \"preset\": \"daily\",\n  \"candidate_status\": \"PASS_STRUCTURAL_CAD_ONLY\",\n  \"design_parameters\": {\n    \"name\": \"met50899_panel_default_spread\",\n    \"rim_outer_diameter_mm\": 108.0,\n    \"overall_height_mm\": 53.0,\n    \"wall_thickness_mm\": 2.0,\n    \"foot_outer_diameter_mm\": 31.0,\n    \"foot_height_mm\": 7.0,\n    \"body_floor_radius_mm\": 10.5,\n    \"body_floor_z_mm\": 10.0,\n    \"underside_recess_z_mm\": 6.5,\n    \"foot_contact_width_mm\": 2.0,\n    \"rim_tangent_degrees\": 75.0,\n    \"normal_offset_fit_tolerance_mm\": 0.005,\n    \"body_start_handle_fraction\": 0.6,\n    \"body_end_handle_height_fraction\": 0.22\n  },\n  \"checks\": {\n    \"one_valid_solid\": true,\n    \"one_closed_shell\": true,\n    \"positive_volume\": true,\n    \"all_native_faces_have_one_role\": true,\n    \"step_round_trip_one_solid\": true,\n    \"outer_dimensions_within_0_1mm\": true,\n    \"foot_contact_touches_z0\": true,\n    \"mesh_is_watertight\": true,\n    \"cavity_center_is_empty\": true,\n    \"body_wall_probe_is_material\": true,\n    \"foot_and_base_probes_are_material\": true,\n    \"outside_probe_is_empty\": true\n  },\n  \"volume_mm3\": 32987.77282909537,\n  \"artifact_sha256\": {\n    \"solid.step\": \"8d4f17b8b3e001e16e9e165125cf89d28f00c06ad2d22c5bf1c3744a09f7f5e8\",\n    \"surface.npz\": \"b1ce6521290073fae7b48103d95333782d4d42e031a302d8c38ed2f5c0db17f3\",\n    \"section.json\": \"ff344cf7edc6e5ceb061add78e43560086195248ed097ada173fe09bcaec41d6\",\n    \"face_lineage.json\": \"9e6c789989cb0f5f42ed9c37f0264bc02899a9c29f571254938a4781640bcfd2\",\n    \"preview.png\": \"26ad791c7a9eceb93b57595c104c9b34eb1c83078f18417ca5b456c95b876d61\"\n  },\n  \"output_bytes\": 601662\n}\n",
+    "timeout_seconds": 60
+  }
+]

@@ -1,0 +1,659 @@
+{
+  "description": "Fixed-seed same-type parameter perturbations over existing registered A12 models.",
+  "evidence_boundary": {
+    "generator_assumption": "existing registry families and construction builders",
+    "no_real_object_match_claimed": true,
+    "source_dimensions": null,
+    "visual_style": null
+  },
+  "examples": [
+    {
+      "archaeological_attribution": false,
+      "bounds_mm": [
+        [
+          -102.11658348594388,
+          -100.83612045121829,
+          8.038
+        ],
+        [
+          102.19002438189013,
+          100.39769159180314,
+          85.58933847894936
+        ]
+      ],
+      "case": "default",
+      "face_count": 4128,
+      "geometry_hash": "sha256:af65ff4fbe3d03cc0f14ade3d82fa7a15efd8ed8b878332df8222d9e35a61895",
+      "parameter_adjustments": [],
+      "real_world_validation": "NOT_ESTABLISHED",
+      "realized_values": {
+        "base_mm": 6.5,
+        "belly": 0.75,
+        "depth_ratio": 0.42,
+        "diameter_mm": 190.0,
+        "foot_height_ratio": 0.06,
+        "foot_ring_ratio": 0.62,
+        "rim_flare": 0.1,
+        "wall_mm": 4.0,
+        "warp_amplitude": 0.02,
+        "warp_eccentricity_mm": 0.8,
+        "warp_lobes": 2
+      },
+      "requested_overrides": {},
+      "resolved_canonical_values": {
+        "base_mm": 6.5,
+        "belly": 0.75,
+        "depth_ratio": 0.42,
+        "diameter_mm": 190.0,
+        "foot_height_ratio": 0.06,
+        "foot_ring_ratio": 0.62,
+        "rim_flare": 0.1,
+        "wall_mm": 4.0,
+        "warp_amplitude": 0.02,
+        "warp_eccentricity_mm": 0.8,
+        "warp_lobes": 2
+      },
+      "source_class": "SYNTHETIC_CONTROL",
+      "validation_status": "PARAMETRIC_CANDIDATE",
+      "vertex_count": 2065,
+      "vessel_id": "V01",
+      "volume_mm3": 184888.88505425563
+    },
+    {
+      "archaeological_attribution": false,
+      "bounds_mm": [
+        [
+          -102.23002477287267,
+          -100.93329297618676,
+          10.318
+        ],
+        [
+          102.30430710457247,
+          100.48984089758345,
+          125.72285572365334
+        ]
+      ],
+      "case": "deeper_profile",
+      "face_count": 3936,
+      "geometry_hash": "sha256:dcd48ceb9359acd2ffb5f7a1d315a04a373900464ab3bd4b2d9a99a108cf3117",
+      "parameter_adjustments": [],
+      "real_world_validation": "NOT_ESTABLISHED",
+      "realized_values": {
+        "base_mm": 6.5,
+        "belly": 0.75,
+        "depth_ratio": 0.62,
+        "diameter_mm": 190.0,
+        "foot_height_ratio": 0.06,
+        "foot_ring_ratio": 0.62,
+        "rim_flare": 0.1,
+        "wall_mm": 4.0,
+        "warp_amplitude": 0.02,
+        "warp_eccentricity_mm": 0.8,
+        "warp_lobes": 2
+      },
+      "requested_overrides": {
+        "depth_ratio": 0.62
+      },
+      "resolved_canonical_values": {
+        "base_mm": 6.5,
+        "belly": 0.75,
+        "depth_ratio": 0.62,
+        "diameter_mm": 190.0,
+        "foot_height_ratio": 0.06,
+        "foot_ring_ratio": 0.62,
+        "rim_flare": 0.1,
+        "wall_mm": 4.0,
+        "warp_amplitude": 0.02,
+        "warp_eccentricity_mm": 0.8,
+        "warp_lobes": 2
+      },
+      "source_class": "SYNTHETIC_CONTROL",
+      "validation_status": "PARAMETRIC_CANDIDATE",
+      "vertex_count": 1969,
+      "vessel_id": "V01",
+      "volume_mm3": 246925.14887319723
+    },
+    {
+      "archaeological_attribution": false,
+      "bounds_mm": [
+        [
+          -113.72976607140897,
+          -112.28837783775428,
+          8.038
+        ],
+        [
+          113.80250771936115,
+          111.8541233623324,
+          86.0388551313758
+        ]
+      ],
+      "case": "rim_flare",
+      "face_count": 4512,
+      "geometry_hash": "sha256:7f40b4a3a540dd14767aefee588b8d2a06700cd0ce586cab3913a5df952f0b93",
+      "parameter_adjustments": [],
+      "real_world_validation": "NOT_ESTABLISHED",
+      "realized_values": {
+        "base_mm": 6.5,
+        "belly": 0.75,
+        "depth_ratio": 0.42,
+        "diameter_mm": 190.0,
+        "foot_height_ratio": 0.06,
+        "foot_ring_ratio": 0.62,
+        "rim_flare": 0.35,
+        "wall_mm": 4.0,
+        "warp_amplitude": 0.02,
+        "warp_eccentricity_mm": 0.8,
+        "warp_lobes": 2
+      },
+      "requested_overrides": {
+        "rim_flare": 0.35
+      },
+      "resolved_canonical_values": {
+        "base_mm": 6.5,
+        "belly": 0.75,
+        "depth_ratio": 0.42,
+        "diameter_mm": 190.0,
+        "foot_height_ratio": 0.06,
+        "foot_ring_ratio": 0.62,
+        "rim_flare": 0.35,
+        "wall_mm": 4.0,
+        "warp_amplitude": 0.02,
+        "warp_eccentricity_mm": 0.8,
+        "warp_lobes": 2
+      },
+      "source_class": "SYNTHETIC_CONTROL",
+      "validation_status": "PARAMETRIC_CANDIDATE",
+      "vertex_count": 2257,
+      "vessel_id": "V01",
+      "volume_mm3": 205252.27671644292
+    },
+    {
+      "archaeological_attribution": false,
+      "bounds_mm": [
+        [
+          -94.76311833439044,
+          -96.41702139357261,
+          1.2185795307159424
+        ],
+        [
+          145.29012619927622,
+          96.90101754685708,
+          124.25963592529297
+        ]
+      ],
+      "case": "default",
+      "face_count": 5486,
+      "geometry_hash": "sha256:584a9c7cb008f07266f45a8ad0ed6eb2d1d23c309556a37979f21a8b09e80813",
+      "parameter_adjustments": [],
+      "real_world_validation": "NOT_ESTABLISHED",
+      "realized_values": {
+        "base_mm": 6.5,
+        "belly_ratio": 1.0,
+        "diameter_mm": 190.0,
+        "handle_span_ratio": 0.85,
+        "handle_thickness_mm": 7.0,
+        "height_mm": 95.0,
+        "wall_mm": 4.0,
+        "warp_amplitude": 0.02,
+        "warp_eccentricity_mm": 0.8,
+        "warp_lobes": 2,
+        "with_handle": true
+      },
+      "requested_overrides": {},
+      "resolved_canonical_values": {
+        "base_mm": 6.5,
+        "belly_ratio": 1.0,
+        "diameter_mm": 190.0,
+        "handle_span_ratio": 0.85,
+        "handle_thickness_mm": 7.0,
+        "height_mm": 95.0,
+        "wall_mm": 4.0,
+        "warp_amplitude": 0.02,
+        "warp_eccentricity_mm": 0.8,
+        "warp_lobes": 2,
+        "with_handle": true
+      },
+      "source_class": "SYNTHETIC_CONTROL",
+      "validation_status": "PARAMETRIC_CANDIDATE",
+      "vertex_count": 2741,
+      "vessel_id": "V04",
+      "volume_mm3": 227908.84968197937
+    },
+    {
+      "archaeological_attribution": false,
+      "bounds_mm": [
+        [
+          -94.76311833439044,
+          -96.41702139357261,
+          1.2185795307159424
+        ],
+        [
+          147.26667576371676,
+          96.90101754685708,
+          125.9096450805664
+        ]
+      ],
+      "case": "thicker_handle",
+      "face_count": 5452,
+      "geometry_hash": "sha256:ab85614def5acda60d1f87474a94381a07b636c49efaa2ceeef7fba3de24180c",
+      "parameter_adjustments": [],
+      "real_world_validation": "NOT_ESTABLISHED",
+      "realized_values": {
+        "base_mm": 6.5,
+        "belly_ratio": 1.0,
+        "diameter_mm": 190.0,
+        "handle_span_ratio": 0.85,
+        "handle_thickness_mm": 11.0,
+        "height_mm": 95.0,
+        "wall_mm": 4.0,
+        "warp_amplitude": 0.02,
+        "warp_eccentricity_mm": 0.8,
+        "warp_lobes": 2,
+        "with_handle": true
+      },
+      "requested_overrides": {
+        "handle_thickness_mm": 11.0
+      },
+      "resolved_canonical_values": {
+        "base_mm": 6.5,
+        "belly_ratio": 1.0,
+        "diameter_mm": 190.0,
+        "handle_span_ratio": 0.85,
+        "handle_thickness_mm": 11.0,
+        "height_mm": 95.0,
+        "wall_mm": 4.0,
+        "warp_amplitude": 0.02,
+        "warp_eccentricity_mm": 0.8,
+        "warp_lobes": 2,
+        "with_handle": true
+      },
+      "source_class": "SYNTHETIC_CONTROL",
+      "validation_status": "PARAMETRIC_CANDIDATE",
+      "vertex_count": 2724,
+      "vessel_id": "V04",
+      "volume_mm3": 238066.91830840168
+    },
+    {
+      "archaeological_attribution": false,
+      "bounds_mm": [
+        [
+          -94.76312000987076,
+          -96.41702308998431,
+          1.2185794736794553
+        ],
+        [
+          98.55492231510581,
+          96.90101923499226,
+          99.04576930225788
+        ]
+      ],
+      "case": "without_handle",
+      "face_count": 3456,
+      "geometry_hash": "sha256:99ea4b271d7cde7b17d7b50b56e4994f2f1bc415d3d8ef3dbd159340d1650f68",
+      "parameter_adjustments": [],
+      "real_world_validation": "NOT_ESTABLISHED",
+      "realized_values": {
+        "base_mm": 6.5,
+        "belly_ratio": 1.0,
+        "diameter_mm": 190.0,
+        "handle_span_ratio": 0.85,
+        "handle_thickness_mm": 7.0,
+        "height_mm": 95.0,
+        "wall_mm": 4.0,
+        "warp_amplitude": 0.02,
+        "warp_eccentricity_mm": 0.8,
+        "warp_lobes": 2,
+        "with_handle": false
+      },
+      "requested_overrides": {
+        "with_handle": false
+      },
+      "resolved_canonical_values": {
+        "base_mm": 6.5,
+        "belly_ratio": 1.0,
+        "diameter_mm": 190.0,
+        "handle_span_ratio": 0.85,
+        "handle_thickness_mm": 7.0,
+        "height_mm": 95.0,
+        "wall_mm": 4.0,
+        "warp_amplitude": 0.02,
+        "warp_eccentricity_mm": 0.8,
+        "warp_lobes": 2,
+        "with_handle": false
+      },
+      "source_class": "SYNTHETIC_CONTROL",
+      "validation_status": "PARAMETRIC_CANDIDATE",
+      "vertex_count": 1729,
+      "vessel_id": "V04",
+      "volume_mm3": 221026.33554350163
+    },
+    {
+      "archaeological_attribution": false,
+      "bounds_mm": [
+        [
+          -96.08501615001347,
+          -96.02600796758901,
+          3.0188987399093037
+        ],
+        [
+          96.52883253250454,
+          96.16299054889544,
+          184.32819253807884
+        ]
+      ],
+      "case": "default",
+      "face_count": 8160,
+      "geometry_hash": "sha256:c547bf2f50dcb5864ce371676d64762367a7aa82ffd8f4a36c8b4095692af5ae",
+      "parameter_adjustments": [],
+      "real_world_validation": "NOT_ESTABLISHED",
+      "realized_values": {
+        "base_mm": 6.5,
+        "belly_ratio": 1.0,
+        "diameter_mm": 190.0,
+        "height_mm": 180.0,
+        "mouth_ratio": 0.55,
+        "shoulder_position": 0.62,
+        "wall_mm": 4.0,
+        "warp_amplitude": 0.02,
+        "warp_eccentricity_mm": 0.8,
+        "warp_lobes": 2
+      },
+      "requested_overrides": {},
+      "resolved_canonical_values": {
+        "base_mm": 6.5,
+        "belly_ratio": 1.0,
+        "diameter_mm": 190.0,
+        "height_mm": 180.0,
+        "mouth_ratio": 0.55,
+        "shoulder_position": 0.62,
+        "wall_mm": 4.0,
+        "warp_amplitude": 0.02,
+        "warp_eccentricity_mm": 0.8,
+        "warp_lobes": 2
+      },
+      "source_class": "SYNTHETIC_CONTROL",
+      "validation_status": "PARAMETRIC_CANDIDATE",
+      "vertex_count": 4081,
+      "vessel_id": "V06",
+      "volume_mm3": 421953.15799680096
+    },
+    {
+      "archaeological_attribution": false,
+      "bounds_mm": [
+        [
+          -96.07832232828571,
+          -96.0043634271779,
+          3.1896753136585216
+        ],
+        [
+          96.63411980545712,
+          96.17590863395736,
+          184.55955905341318
+        ]
+      ],
+      "case": "higher_shoulder",
+      "face_count": 8160,
+      "geometry_hash": "sha256:9b29acfa7bbf9585a7a0408a2a425d002e69113d3adf03c0d046f0f999b8443a",
+      "parameter_adjustments": [],
+      "real_world_validation": "NOT_ESTABLISHED",
+      "realized_values": {
+        "base_mm": 6.5,
+        "belly_ratio": 1.0,
+        "diameter_mm": 190.0,
+        "height_mm": 180.0,
+        "mouth_ratio": 0.55,
+        "shoulder_position": 0.78,
+        "wall_mm": 4.0,
+        "warp_amplitude": 0.02,
+        "warp_eccentricity_mm": 0.8,
+        "warp_lobes": 2
+      },
+      "requested_overrides": {
+        "shoulder_position": 0.78
+      },
+      "resolved_canonical_values": {
+        "base_mm": 6.5,
+        "belly_ratio": 1.0,
+        "diameter_mm": 190.0,
+        "height_mm": 180.0,
+        "mouth_ratio": 0.55,
+        "shoulder_position": 0.78,
+        "wall_mm": 4.0,
+        "warp_amplitude": 0.02,
+        "warp_eccentricity_mm": 0.8,
+        "warp_lobes": 2
+      },
+      "source_class": "SYNTHETIC_CONTROL",
+      "validation_status": "PARAMETRIC_CANDIDATE",
+      "vertex_count": 4081,
+      "vessel_id": "V06",
+      "volume_mm3": 425721.37348426954
+    },
+    {
+      "archaeological_attribution": false,
+      "bounds_mm": [
+        [
+          -96.21668971011414,
+          -96.15709054038255,
+          3.25
+        ],
+        [
+          96.66274589060521,
+          96.29476442855314,
+          184.15162608330326
+        ]
+      ],
+      "case": "wider_mouth",
+      "face_count": 7200,
+      "geometry_hash": "sha256:e33128fd5655021923759a8e5cda9ebf2fe7d2e3ffde40dd720a70d932ad8408",
+      "parameter_adjustments": [],
+      "real_world_validation": "NOT_ESTABLISHED",
+      "realized_values": {
+        "base_mm": 6.5,
+        "belly_ratio": 1.0,
+        "diameter_mm": 190.0,
+        "height_mm": 180.0,
+        "mouth_ratio": 0.78,
+        "shoulder_position": 0.62,
+        "wall_mm": 4.0,
+        "warp_amplitude": 0.02,
+        "warp_eccentricity_mm": 0.8,
+        "warp_lobes": 2
+      },
+      "requested_overrides": {
+        "mouth_ratio": 0.78
+      },
+      "resolved_canonical_values": {
+        "base_mm": 6.5,
+        "belly_ratio": 1.0,
+        "diameter_mm": 190.0,
+        "height_mm": 180.0,
+        "mouth_ratio": 0.78,
+        "shoulder_position": 0.62,
+        "wall_mm": 4.0,
+        "warp_amplitude": 0.02,
+        "warp_eccentricity_mm": 0.8,
+        "warp_lobes": 2
+      },
+      "source_class": "SYNTHETIC_CONTROL",
+      "validation_status": "PARAMETRIC_CANDIDATE",
+      "vertex_count": 3601,
+      "vessel_id": "V06",
+      "volume_mm3": 422694.2088827975
+    },
+    {
+      "archaeological_attribution": false,
+      "bounds_mm": [
+        [
+          -90.61056566540267,
+          -91.41537576113257,
+          3.206693172454834
+        ],
+        [
+          129.6542179280632,
+          92.02818119416654,
+          184.9327392578125
+        ]
+      ],
+      "case": "default",
+      "face_count": 11654,
+      "geometry_hash": "sha256:190f5f0608c3005f5f0eed32dc8bd3b6e7e07c18a98bb746a85208b8b7532bba",
+      "parameter_adjustments": [],
+      "real_world_validation": "NOT_ESTABLISHED",
+      "realized_values": {
+        "base_mm": 6.5,
+        "belly_ratio": 1.0,
+        "diameter_mm": 180.0,
+        "handle_span_ratio": 0.75,
+        "height_mm": 180.0,
+        "neck_ratio": 0.42,
+        "spout_angle_deg": 38.0,
+        "spout_bore_mm": 14.0,
+        "spout_length_mm": 70.0,
+        "wall_mm": 4.0,
+        "warp_amplitude": 0.02,
+        "warp_eccentricity_mm": 0.8,
+        "warp_lobes": 2
+      },
+      "requested_overrides": {},
+      "resolved_canonical_values": {
+        "base_mm": 6.5,
+        "belly_ratio": 1.0,
+        "diameter_mm": 180.0,
+        "handle_span_ratio": 0.75,
+        "height_mm": 180.0,
+        "neck_ratio": 0.42,
+        "spout_angle_deg": 38.0,
+        "spout_bore_mm": 14.0,
+        "spout_length_mm": 70.0,
+        "wall_mm": 4.0,
+        "warp_amplitude": 0.02,
+        "warp_eccentricity_mm": 0.8,
+        "warp_lobes": 2
+      },
+      "source_class": "SYNTHETIC_CONTROL",
+      "validation_status": "PARAMETRIC_CANDIDATE",
+      "vertex_count": 5827,
+      "vessel_id": "V09",
+      "volume_mm3": 401284.2824629303
+    },
+    {
+      "archaeological_attribution": false,
+      "bounds_mm": [
+        [
+          -90.61056566540267,
+          -91.41537576113257,
+          3.206693172454834
+        ],
+        [
+          174.73133151558696,
+          92.02818119416654,
+          198.40625
+        ]
+      ],
+      "case": "longer_spout",
+      "face_count": 12104,
+      "geometry_hash": "sha256:587582bbb2a37af8ec613c1ce5e8441c60d334ee500bdf2d5c82cdf388293f17",
+      "parameter_adjustments": [],
+      "real_world_validation": "NOT_ESTABLISHED",
+      "realized_values": {
+        "base_mm": 6.5,
+        "belly_ratio": 1.0,
+        "diameter_mm": 180.0,
+        "handle_span_ratio": 0.75,
+        "height_mm": 180.0,
+        "neck_ratio": 0.42,
+        "spout_angle_deg": 38.0,
+        "spout_bore_mm": 14.0,
+        "spout_length_mm": 145.0,
+        "wall_mm": 4.0,
+        "warp_amplitude": 0.02,
+        "warp_eccentricity_mm": 0.8,
+        "warp_lobes": 2
+      },
+      "requested_overrides": {
+        "spout_length_mm": 145.0
+      },
+      "resolved_canonical_values": {
+        "base_mm": 6.5,
+        "belly_ratio": 1.0,
+        "diameter_mm": 180.0,
+        "handle_span_ratio": 0.75,
+        "height_mm": 180.0,
+        "neck_ratio": 0.42,
+        "spout_angle_deg": 38.0,
+        "spout_bore_mm": 14.0,
+        "spout_length_mm": 145.0,
+        "wall_mm": 4.0,
+        "warp_amplitude": 0.02,
+        "warp_eccentricity_mm": 0.8,
+        "warp_lobes": 2
+      },
+      "source_class": "SYNTHETIC_CONTROL",
+      "validation_status": "PARAMETRIC_CANDIDATE",
+      "vertex_count": 6050,
+      "vessel_id": "V09",
+      "volume_mm3": 406812.38371905097
+    },
+    {
+      "archaeological_attribution": false,
+      "bounds_mm": [
+        [
+          -90.61056566540267,
+          -91.41537576113257,
+          3.206693172454834
+        ],
+        [
+          142.12857744052053,
+          92.02818119416654,
+          184.9327392578125
+        ]
+      ],
+      "case": "steeper_spout",
+      "face_count": 11590,
+      "geometry_hash": "sha256:52e580c6cf0d6e013887bdb4f073a46e2d44ab82e5e282611d1bacaf71cac77a",
+      "parameter_adjustments": [],
+      "real_world_validation": "NOT_ESTABLISHED",
+      "realized_values": {
+        "base_mm": 6.5,
+        "belly_ratio": 1.0,
+        "diameter_mm": 180.0,
+        "handle_span_ratio": 0.75,
+        "height_mm": 180.0,
+        "neck_ratio": 0.42,
+        "spout_angle_deg": 55.0,
+        "spout_bore_mm": 14.0,
+        "spout_length_mm": 70.0,
+        "wall_mm": 4.0,
+        "warp_amplitude": 0.02,
+        "warp_eccentricity_mm": 0.8,
+        "warp_lobes": 2
+      },
+      "requested_overrides": {
+        "spout_angle_deg": 55.0
+      },
+      "resolved_canonical_values": {
+        "base_mm": 6.5,
+        "belly_ratio": 1.0,
+        "diameter_mm": 180.0,
+        "handle_span_ratio": 0.75,
+        "height_mm": 180.0,
+        "neck_ratio": 0.42,
+        "spout_angle_deg": 55.0,
+        "spout_bore_mm": 14.0,
+        "spout_length_mm": 70.0,
+        "wall_mm": 4.0,
+        "warp_amplitude": 0.02,
+        "warp_eccentricity_mm": 0.8,
+        "warp_lobes": 2
+      },
+      "source_class": "SYNTHETIC_CONTROL",
+      "validation_status": "PARAMETRIC_CANDIDATE",
+      "vertex_count": 5795,
+      "vessel_id": "V09",
+      "volume_mm3": 401546.3509567557
+    }
+  ],
+  "schema": "a12_design_space_examples.v1",
+  "seed": 20261015
+}

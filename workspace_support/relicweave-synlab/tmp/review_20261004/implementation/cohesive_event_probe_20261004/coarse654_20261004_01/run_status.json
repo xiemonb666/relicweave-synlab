@@ -1,0 +1,177 @@
+{
+  "argv": [
+    "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_event_probe_20261004/probe_driver.py",
+    "--run"
+  ],
+  "baseline_trace_sha256": "82fbd48e66aac6fce3a97d45dc6e50e819ef45b38fdfe75b6d00b62e483ad0d9",
+  "case": "modeI_dt",
+  "comparison_passed": true,
+  "complete_case": false,
+  "cwd": "/mnt/c/Users/xiemo/Desktop/ShardForge",
+  "dt_s": 5.8582308142940834e-08,
+  "elapsed_s": 2.932817415999999,
+  "eligible_facet_slots_total": 232,
+  "eligible_interface_facets": 8,
+  "end_utc": "2026-10-04T00:02:38.507826+00:00",
+  "external_work_definition": "same reaction/displacement trapezoid estimate as baseline; updated at D only, after solveStep",
+  "insertions": [
+    {
+      "api_return": 8,
+      "cohesive_count": 8,
+      "mesh_nodes": 54,
+      "prescribed_boundary_time_s": 3.807850029291154e-05,
+      "step": 650
+    }
+  ],
+  "instrumented_source_sha256": "65fb7e4a4590d1cbb0a015a4ff35a0b5261528926394c5a2cac692cf76e42be6",
+  "native_material_field_update_phase": "UNKNOWN unless values are exposed by public no-argument material getters",
+  "native_state_capture_steps": [
+    647,
+    648,
+    649,
+    650,
+    651,
+    652,
+    653,
+    654
+  ],
+  "original_case_steps": 1707,
+  "phase_evidence": "phase_evidence.jsonl",
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+  "pre_run_snapshot_integrity": {
+    "captured_utc_before_solver": "2026-10-04T00:02:35.473020+00:00",
+    "manifest_sha256_actual": "21b563069550e2091474fe94877bd3ceaae094ac4c92aed3900ecdd94702dd68",
+    "manifest_sha256_expected": "21b563069550e2091474fe94877bd3ceaae094ac4c92aed3900ecdd94702dd68",
+    "manifest_source_expected_runner_sha256": "67dd1eb98acc5f5369b9cbf1a9bfbd7f6681068172e537768e788274cb10652d",
+    "run_id": "coarse654_20261004_01",
+    "snapshot_pairs": [
+      {
+        "identical": true,
+        "original_bytes": 29542,
+        "original_exists": true,
+        "original_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_capability/run_contract.py",
+        "original_sha256": "67dd1eb98acc5f5369b9cbf1a9bfbd7f6681068172e537768e788274cb10652d",
+        "snapshot_bytes": 29542,
+        "snapshot_exists": true,
+        "snapshot_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/relicweave-synlab/tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/snapshot/run_contract.original.py",
+        "snapshot_sha256": "67dd1eb98acc5f5369b9cbf1a9bfbd7f6681068172e537768e788274cb10652d"
+      },
+      {
+        "identical": true,
+        "original_bytes": 29542,
+        "original_exists": true,
+        "original_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_capability/run_contract.py",
+        "original_sha256": "67dd1eb98acc5f5369b9cbf1a9bfbd7f6681068172e537768e788274cb10652d",
+        "snapshot_bytes": 29542,
+        "snapshot_exists": true,
+        "snapshot_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_event_probe_20261004/run_contract.original.py",
+        "snapshot_sha256": "67dd1eb98acc5f5369b9cbf1a9bfbd7f6681068172e537768e788274cb10652d"
+      },
+      {
+        "identical": true,
+        "original_bytes": 4757,
+        "original_exists": true,
+        "original_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/relicweave-synlab/tmp/review_20261004/implementation/cohesive_capability/manifest.json",
+        "original_sha256": "21b563069550e2091474fe94877bd3ceaae094ac4c92aed3900ecdd94702dd68",
+        "snapshot_bytes": 4757,
+        "snapshot_exists": true,
+        "snapshot_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/relicweave-synlab/tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/snapshot/manifest.json",
+        "snapshot_sha256": "21b563069550e2091474fe94877bd3ceaae094ac4c92aed3900ecdd94702dd68"
+      },
+      {
+        "identical": true,
+        "original_bytes": 46087,
+        "original_exists": true,
+        "original_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_event_probe_20261004/probe_driver.py",
+        "original_sha256": "65fb7e4a4590d1cbb0a015a4ff35a0b5261528926394c5a2cac692cf76e42be6",
+        "snapshot_bytes": 46087,
+        "snapshot_exists": true,
+        "snapshot_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/relicweave-synlab/tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/snapshot/probe_driver.executed.py",
+        "snapshot_sha256": "65fb7e4a4590d1cbb0a015a4ff35a0b5261528926394c5a2cac692cf76e42be6"
+      },
+      {
+        "identical": true,
+        "original_bytes": 39416,
+        "original_exists": true,
+        "original_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_event_probe_20261004/probe_driver.preflight.py",
+        "original_sha256": "27720b735f17ff4055b812568f3133d3dadc06fdb73667469bbd3493f0bcfc11",
+        "snapshot_bytes": 39416,
+        "snapshot_exists": true,
+        "snapshot_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/relicweave-synlab/tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/snapshot/probe_driver.preflight.py",
+        "snapshot_sha256": "27720b735f17ff4055b812568f3133d3dadc06fdb73667469bbd3493f0bcfc11"
+      },
+      {
+        "identical": true,
+        "original_bytes": 3605,
+        "original_exists": true,
+        "original_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_capability/input/block_2x2x4mm.msh",
+        "original_sha256": "b98402c5a7b7af36b8e5e8a2a90c7db689cb1af86a089c8e1b9a0dbf07ba2638",
+        "snapshot_bytes": 3605,
+        "snapshot_exists": true,
+        "snapshot_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/relicweave-synlab/tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/snapshot/input/block_2x2x4mm.msh",
+        "snapshot_sha256": "b98402c5a7b7af36b8e5e8a2a90c7db689cb1af86a089c8e1b9a0dbf07ba2638"
+      },
+      {
+        "identical": true,
+        "original_bytes": 291,
+        "original_exists": true,
+        "original_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_capability/input/material.dat",
+        "original_sha256": "c300c3091ac323eba756f2d7bfbf55e888c68d6b10f5fcb9763c0e6b6194305f",
+        "snapshot_bytes": 291,
+        "snapshot_exists": true,
+        "snapshot_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/relicweave-synlab/tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/snapshot/input/material.dat",
+        "snapshot_sha256": "c300c3091ac323eba756f2d7bfbf55e888c68d6b10f5fcb9763c0e6b6194305f"
+      },
+      {
+        "identical": true,
+        "original_bytes": 488,
+        "original_exists": true,
+        "original_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/pgfrag/experiments/cohesive_capability/input/generated_geometry.json",
+        "original_sha256": "eec01312e181581c1d433b2619b6fd8a4a42677769c4dbc25053d0a2c355188b",
+        "snapshot_bytes": 488,
+        "snapshot_exists": true,
+        "snapshot_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/relicweave-synlab/tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/snapshot/input/generated_geometry.json",
+        "snapshot_sha256": "eec01312e181581c1d433b2619b6fd8a4a42677769c4dbc25053d0a2c355188b"
+      },
+      {
+        "identical": true,
+        "original_bytes": 395637,
+        "original_exists": true,
+        "original_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/relicweave-synlab/tmp/review_20261004/implementation/cohesive_capability/modeI_dt/trace.csv",
+        "original_sha256": "82fbd48e66aac6fce3a97d45dc6e50e819ef45b38fdfe75b6d00b62e483ad0d9",
+        "snapshot_bytes": 395637,
+        "snapshot_exists": true,
+        "snapshot_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/relicweave-synlab/tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/reference/trace.csv",
+        "snapshot_sha256": "82fbd48e66aac6fce3a97d45dc6e50e819ef45b38fdfe75b6d00b62e483ad0d9"
+      },
+      {
+        "identical": true,
+        "original_bytes": 3167,
+        "original_exists": true,
+        "original_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/relicweave-synlab/tmp/review_20261004/implementation/cohesive_capability/modeI_dt/status.json",
+        "original_sha256": "4616bd48c93ddb35e546867022ede1b152ce75f1d40ca0309c12764ac18c0a84",
+        "snapshot_bytes": 3167,
+        "snapshot_exists": true,
+        "snapshot_path": "/mnt/c/Users/xiemo/Desktop/ShardForge/relicweave-synlab/tmp/review_20261004/implementation/cohesive_event_probe_20261004/coarse654_20261004_01/reference/status.json",
+        "snapshot_sha256": "4616bd48c93ddb35e546867022ede1b152ce75f1d40ca0309c12764ac18c0a84"
+      }
+    ],
+    "snapshot_pairs_identical": true,
+    "solver_attempts": 0,
+    "solver_cap_steps": 654,
+    "source_sha256_actual": "67dd1eb98acc5f5369b9cbf1a9bfbd7f6681068172e537768e788274cb10652d",
+    "source_sha256_expected": "67dd1eb98acc5f5369b9cbf1a9bfbd7f6681068172e537768e788274cb10652d"
+  },
+  "preflight_driver_sha256": "27720b735f17ff4055b812568f3133d3dadc06fdb73667469bbd3493f0bcfc11",
+  "python": "/mnt/c/Users/xiemo/Desktop/ShardForge/third_party/akantu-runtime/venv/bin/python",
+  "python_version": "3.12.15",
+  "run_id": "coarse654_20261004_01",
+  "solver_attempts": 1,
+  "solver_retries": 0,
+  "start_utc": "2026-10-04T00:02:35.575007+00:00",
+  "status": "DIAGNOSTIC_EARLY_STOP_NOT_COMPLETE",
+  "steps_cap": 654,
+  "steps_completed": 654,
+  "steps_original_case": 1707,
+  "thread_limit": "OMP_NUM_THREADS=1"
+}

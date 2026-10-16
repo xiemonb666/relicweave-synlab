@@ -1,0 +1,478 @@
+{
+  "candidate_dimensions_mm": {
+    "foot_outer_diameter_mm": 31.0,
+    "overall_height_mm": 53.0,
+    "rim_outer_diameter_mm": 108.0
+  },
+  "design_assumptions": {
+    "body_end_handle_height_fraction": 0.22,
+    "body_floor_radius_mm": 10.5,
+    "body_floor_z_mm": 10.0,
+    "body_start_handle_fraction": 0.6,
+    "foot_contact_width_mm": 2.0,
+    "foot_height_mm": 7.0,
+    "rim_tangent_degrees": 75.0,
+    "underside_recess_z_mm": 6.5,
+    "wall_thickness_mm": 2.0
+  },
+  "interpretation": "A reference-guided design candidate combining an unchanged VF size-reference geometry with independent documented style recipes; not an exact source-object clone.",
+  "known": [
+    "The mesh is a VF generated candidate whose listed envelope dimensions are source-recorded or family-anchor dimensions.",
+    "Triangle tags are bound through source B-rep face indices and exact meridian segment indices.",
+    "Pattern/material output uses the deterministic sourced blue-white panel and material APIs; the pattern seed is recorded but unused by this deterministic photo-derived field."
+  ],
+  "material_source": {
+    "controls": {
+      "body_albedo_linear_rgb": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "linear_rgb_0_1",
+        "value": [
+          0.88,
+          0.86,
+          0.8
+        ]
+      },
+      "body_ior": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "1",
+        "value": 1.56
+      },
+      "body_roughness": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "1",
+        "value": 0.36
+      },
+      "coating_albedo_linear_rgb": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "linear_rgb_0_1",
+        "value": [
+          0.96,
+          0.95,
+          0.91
+        ]
+      },
+      "coating_band_mm": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "mm",
+        "value": 0.2
+      },
+      "coating_ior": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "1",
+        "value": 1.5
+      },
+      "coating_present": {
+        "note": "A clear/pale appearance-only layer is a rendering proxy; the object record names underglaze cobalt but does not describe a distinct clear-glaze layer or its properties.",
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "categorical",
+        "value": true
+      },
+      "coating_roughness": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "1",
+        "value": 0.11
+      },
+      "coating_transmission": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "1",
+        "value": 0.02
+      },
+      "grain_amount": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "1",
+        "value": 0.03
+      },
+      "grain_scale_mm": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "mm",
+        "value": 0.18
+      },
+      "physical_glaze_thickness_mm": {
+        "source_measurement": null,
+        "status": "UNKNOWN",
+        "unit": "mm",
+        "value": null
+      },
+      "pore_amount": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "1",
+        "value": 0.02
+      },
+      "pore_scale_mm": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "mm",
+        "value": 0.5
+      }
+    },
+    "layer_semantics": {
+      "bare_body_surface_tags": [
+        "foot",
+        "base",
+        "new_fracture",
+        "interface",
+        "attachment"
+      ],
+      "coated_surface_tags": [
+        "outer_wall",
+        "inner_wall",
+        "rim"
+      ],
+      "depth_band_parameter": "DESIGN_CHOICE_FOR_EXPLICIT_VOLUME_QUERY_ONLY",
+      "mode": "SHADING_LAYER",
+      "note": "The clear/pale appearance-only layer is a design proxy and is not a claim about glaze chemistry, physical thickness, or a separately documented clear glaze.",
+      "physical_solid_status": "NOT_CREATED",
+      "physical_thickness_status": "UNKNOWN",
+      "surface_policy": "original_surface_tags-v1",
+      "surface_query_depth_mm": 0.0,
+      "volume_query_depth": "EXPLICIT_CALLER_DEPTH_REQUIRED"
+    },
+    "material_class": "porcelain",
+    "material_class_evidence_status": "SOURCE_FACT",
+    "mechanics_status": "UNKNOWN",
+    "optical_measurements_status": "UNKNOWN",
+    "process_compatibility": {
+      "firing_schedule": "UNKNOWN",
+      "forming_process": "UNKNOWN",
+      "glaze_chemistry": "UNKNOWN",
+      "source_material_class": "SOURCE_FACT",
+      "source_named_decoration": {
+        "appearance_composition": "SEPARATE_FROM_SUBSTRATE_PROFILE",
+        "compatibility": {
+          "basis": "ceramic substrate class supports a separately composed underglaze-cobalt appearance; object-specific pigment formulation and firing behavior remain unknown",
+          "effect_scope": "SEPARATE_APPEARANCE_LAYER",
+          "material_class": "porcelain",
+          "process": "underglaze_cobalt",
+          "status": "COMPATIBLE_SUBSTRATE_CLASS"
+        },
+        "process": "underglaze_cobalt",
+        "source_measurement": "Porcelain painted in underglaze cobalt blue (Jingdezhen ware)",
+        "status": "SOURCE_FACT"
+      }
+    },
+    "profile_seed": 2026101601,
+    "schema": "shardforge.reference_material_profile.v1",
+    "seed_ref": "[2026101601,\"material\",\"historical_met_50899_porcelain_clear_underglaze\"]",
+    "source_object": {
+      "accessed_date": "2026-10-15",
+      "accession_number": "29.149.50",
+      "facts": [
+        {
+          "evidence": "object record",
+          "field": "object_name",
+          "value": "Vase"
+        },
+        {
+          "evidence": "object record",
+          "field": "accession_number",
+          "value": "29.149.50"
+        },
+        {
+          "evidence": "object record",
+          "field": "culture",
+          "value": "China"
+        },
+        {
+          "evidence": "object record",
+          "field": "date",
+          "value": "late 18th century; Qianlong period (1736–95), Qing dynasty (1644–1911)"
+        },
+        {
+          "evidence": "object record",
+          "field": "medium",
+          "value": "Porcelain painted in underglaze cobalt blue (Jingdezhen ware)"
+        },
+        {
+          "evidence": "object record",
+          "field": "height_mm",
+          "value": 184
+        },
+        {
+          "evidence": "object record",
+          "field": "object_image_rights",
+          "value": "Public Domain"
+        },
+        {
+          "evidence": "qualitative observation of the primary object photograph; illumination, camera, and surface response are not separated; not colorimetry",
+          "field": "visual_observation",
+          "value": "the retained O2 photograph shows a pale warm-white body, blue decoration, and bright surface reflections"
+        }
+      ],
+      "institution": "The Metropolitan Museum of Art",
+      "object_id": "50899",
+      "rights_note": "The Met object page identifies the object image as Public Domain; the photograph is used only for qualitative appearance context.",
+      "source_id": "met_29.149.50",
+      "title": "Vase with dragon",
+      "unknowns": [
+        "overall diameter, maximum width, full inner and outer meridian, and local cross-sections",
+        "whether a distinct clear glaze layer is present and its composition or measured thickness",
+        "forming and firing schedule",
+        "spectral reflectance, roughness, and index of refraction",
+        "lot-specific mechanical properties"
+      ],
+      "url": "https://www.metmuseum.org/art/collection/search/50899",
+      "visual_observation_boundary": "The pale warm-white body and bright reflections are photograph observations only; no white-point, colorimetry, gloss, or glaze property is inferred."
+    },
+    "style_id": "historical_met_50899_porcelain_clear_underglaze",
+    "style_name": "Met 50899 porcelain with clear-glaze appearance proxy"
+  },
+  "native_face_lineage": {
+    "inside_floor_surface_binding": {
+      "basis": "exact axis-to-body_inner section-line lineage; not a nearest-face assignment",
+      "decoration_chart": "NONE; no inside-floor UV/pattern chart is claimed",
+      "source_native_face_index": 0,
+      "source_role": "base",
+      "source_segment_index": 0,
+      "surface_role": "inner_floor",
+      "surface_tag": "inner_wall"
+    },
+    "native_face_roles": {
+      "0": "base",
+      "1": "body_inner",
+      "10": "foot",
+      "11": "foot",
+      "12": "foot",
+      "13": "foot",
+      "14": "foot",
+      "15": "base",
+      "2": "rim",
+      "3": "body_outer",
+      "4": "body_outer",
+      "5": "body_outer",
+      "6": "body_outer",
+      "7": "body_outer",
+      "8": "foot",
+      "9": "foot"
+    },
+    "native_face_smoothing_groups": {
+      "0": 0,
+      "1": 0,
+      "10": 10,
+      "11": 11,
+      "12": 12,
+      "13": 13,
+      "14": 14,
+      "15": 15,
+      "2": 2,
+      "3": 3,
+      "4": 3,
+      "5": 3,
+      "6": 3,
+      "7": 3,
+      "8": 8,
+      "9": 9
+    },
+    "native_face_source_segment_indices": {
+      "0": [
+        0
+      ],
+      "1": [
+        1
+      ],
+      "10": [
+        10
+      ],
+      "11": [
+        11
+      ],
+      "12": [
+        12
+      ],
+      "13": [
+        13
+      ],
+      "14": [
+        14
+      ],
+      "15": [
+        15
+      ],
+      "2": [
+        2
+      ],
+      "3": [
+        3
+      ],
+      "4": [
+        4
+      ],
+      "5": [
+        5
+      ],
+      "6": [
+        6
+      ],
+      "7": [
+        7
+      ],
+      "8": [
+        8
+      ],
+      "9": [
+        9
+      ]
+    },
+    "native_face_surface_roles": {
+      "0": "inner_floor",
+      "1": "body_inner",
+      "10": "foot",
+      "11": "foot",
+      "12": "foot",
+      "13": "foot",
+      "14": "foot",
+      "15": "base",
+      "2": "rim",
+      "3": "body_outer",
+      "4": "body_outer",
+      "5": "body_outer",
+      "6": "body_outer",
+      "7": "body_outer",
+      "8": "foot",
+      "9": "foot"
+    },
+    "smoothing_group_policy": "source CAD faces share display normals only when their serialized adjacent section segments join positionally and their sampled endpoint tangents agree within 0.9995"
+  },
+  "pattern_source": {
+    "field_receipt_sha256": "0fc67ede8b9ac6e5f1e20457bc6ac78563103b19437a04e1740ef23d80d0531c",
+    "known_semantic_motif": "dragon (named by the Met object title)",
+    "source": {
+      "mask_semantics": "continuous blue-excess chroma proxy from an already-fired photo; tonal values retained; not recovered pre-fire pigment",
+      "normalized_density_sha256": "73e914de5476f1f271077b5fbcd63723320069c558e0fed7e9e6af6bb52a5770",
+      "photo_state": "already_fired_photo",
+      "source_id": "met-50899-o2-dragon-continuous-cobalt-chroma",
+      "source_mask_path": "relicweave-synlab\\synlab\\patterns\\resources\\bluewhite_20261015\\derived\\met_50899_O2_dragon_cobalt_fired_photo_mask.png",
+      "source_mask_sha256": "bc166ca1adf15907f8049f39e81a8cfe75486818e231a2d4b998c49797782da5",
+      "source_url": "https://www.metmuseum.org/art/collection/search/50899",
+      "title": "Vase with dragon, already-fired O2 photo-derived crop"
+    },
+    "unseen_wrap_or_symbolic_meaning_inferred": false
+  },
+  "schema": "synlab.reference_instance_provenance.v1",
+  "section_geometry_details": {
+    "base": {
+      "central_base_thickness_mm": 3.5,
+      "inside_floor_z_mm": 10.0,
+      "recessed_underside_z_mm": 6.5,
+      "status": "DESIGN_ASSUMPTION"
+    },
+    "body_profile": {
+      "curve": "cubic Bezier",
+      "end_handle_height_fraction_of_overall_height": 0.22,
+      "end_handle_length_mm": 11.66,
+      "inner_control_points_rz_mm": [
+        [
+          10.5,
+          10.0
+        ],
+        [
+          35.42044450422656,
+          10.0
+        ],
+        [
+          49.016244107815545,
+          40.99612391057198
+        ],
+        [
+          52.034074173710934,
+          52.25881904510252
+        ]
+      ],
+      "start_handle_fraction_of_floor_to_inner_lip_radial_span": 0.6,
+      "start_handle_length_mm": 24.92044450422656,
+      "status": "DESIGN_ASSUMPTION; adjustable visual profile control, not measured from source"
+    },
+    "foot": {
+      "contact_annulus_radii_mm": [
+        13.0,
+        15.0
+      ],
+      "contact_width_mm": 2.0,
+      "corner_radius_mm": 0.5,
+      "height_mm": 7.0,
+      "outer_diameter_mm": 31.0,
+      "status": "DESIGN_ASSUMPTION unless expressly measured in source record",
+      "underside_recess_z_mm": 6.5
+    },
+    "lip": {
+      "actual_cap_extrema_rz_mm": {
+        "max_radius": 54.0,
+        "max_z": 53.0
+      },
+      "body_inner_endpoint_rz_mm": [
+        52.034074173710934,
+        52.25881904510252
+      ],
+      "body_outer_endpoint_rz_mm": [
+        53.965925826289066,
+        51.74118095489748
+      ],
+      "center_formula": "(D_outer/2 - t/2, H - t/2)",
+      "center_rz_mm": [
+        53.0,
+        52.0
+      ],
+      "construction": "semicircular cap tangent to the inner and outer body at the declared tangent angle",
+      "radius_mm": 1.0,
+      "tangent_angle_degrees": 75.0
+    },
+    "normal_offset_error_scope": "maximum of t=0.25, 0.5 and 0.75 checks per accepted cubic subcurve; no continuous or global error bound is claimed",
+    "normal_offset_fit_acceptance_sample_mm": 0.005,
+    "normal_offset_fit_max_sampled_deviation_mm": 0.003350875885189178,
+    "outer_normal_offset_mm": 2.0,
+    "wall_thickness_status": "DESIGN_ASSUMPTION; exact normal-offset formula supplies cubic control points, with finite sampled fit diagnostics and no continuous/global error certificate"
+  },
+  "source_dimensions_mm": {
+    "foot_outer_diameter": 31.0,
+    "overall_height": 53.0,
+    "rim_outer_diameter": 108.0
+  },
+  "source_file_sha256": {
+    "face_lineage.json": "9e6c789989cb0f5f42ed9c37f0264bc02899a9c29f571254938a4781640bcfd2",
+    "geometry_report.json": "b9e33cb0b47fbe79564f2ed50119ce6a83e1d94a7782cecfda845d5c4110c7ec",
+    "provenance.json": "edae8af5cde4b81a73d8f1cfde9beb4de34c7344817e5ebc27b9c2368c4ec624",
+    "section.json": "ecc68dec476652eb238915545324f5f7602ea5eb172640476e3fcf8d9fad42b8",
+    "surface.npz": "b1ce6521290073fae7b48103d95333782d4d42e031a302d8c38ed2f5c0db17f3"
+  },
+  "source_record": {
+    "collection": "Aberdeen City Museums",
+    "dimension_evidence": "Official museum catalog record; the listed dimensions are catalog measurements.",
+    "medium": "Limoges porcelain and celadon",
+    "object_number": "ABDMS095708.121",
+    "object_url": "https://emuseum.aberdeencity.gov.uk/objects/186848/porcelain-small-footed-bowl",
+    "period": "2007–2009",
+    "reported_dimensions_mm": {
+      "foot_outer_diameter": 31.0,
+      "overall_height": 53.0,
+      "rim_outer_diameter": 108.0
+    },
+    "title": "Porcelain Small Footed Bowl",
+    "visual_reference_note": "The reference reviewer reports that the lower-angle gallery photo shows a visibly taller foot and raised lower base. The 7 mm candidate foot height is a visual design assumption, not a catalog measurement."
+  },
+  "source_rights_status": "NOT_SPECIFIED_FOR_GENERATED_CANDIDATE_MESH; source-record rights are preserved in the linked record",
+  "surface_tag_map": {
+    "0": "outer_wall",
+    "1": "inner_wall",
+    "2": "rim",
+    "3": "foot",
+    "4": "base",
+    "5": "attachment",
+    "6": "interface"
+  },
+  "unknown": [
+    "Exact source-object meridian and local construction are not established.",
+    "Optical colorimetry, glaze chemistry, glaze thickness, forming/firing history, and mechanical properties are unknown.",
+    "Appearance composition is not a calibrated physical shader or coupled material-pattern model."
+  ]
+}

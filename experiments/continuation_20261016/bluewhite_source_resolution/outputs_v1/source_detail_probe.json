@@ -1,0 +1,84 @@
+{
+  "continuous_source_quadrature_equality_claimed": false,
+  "fine_grid_convergence_claimed": false,
+  "geometry_array_sha256_shared": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+  "geometry_changed": false,
+  "instances": [
+    {
+      "finite_volume_grid_arrays_bitwise_equal_between_modes": true,
+      "instance_id": "met50899_source_resolved_no_spread",
+      "legacy_comparison_mode": "grid_bilinear_v1",
+      "legacy_grid_bilinear_components": {
+        "bound": 0.5530461188210661,
+        "initial": 0.7373948250947547,
+        "mobile": 0.18434870627368868,
+        "total": 0.7373948250947547
+      },
+      "mobile_transport_is_zero": true,
+      "normalized_density_dtype": "<f8",
+      "normalized_density_sha256": "73e914de5476f1f271077b5fbcd63723320069c558e0fed7e9e6af6bb52a5770",
+      "normalized_density_shape": [
+        1160,
+        2000
+      ],
+      "query_s_mm": 22.9837600954952,
+      "query_theta_rad": 3.2856287983758685,
+      "sampling_mode": "source_resolved_stationary_v1",
+      "source_geometry_array_sha256": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+      "source_mask_sha256": "bc166ca1adf15907f8049f39e81a8cfe75486818e231a2d4b998c49797782da5",
+      "source_pixel_rc": [
+        135,
+        1285
+      ],
+      "source_resolved_components": {
+        "bound": 0.7499999999999973,
+        "initial": 0.9999999999999964,
+        "mobile": 0.2499999999999991,
+        "total": 0.9999999999999964
+      },
+      "total_density_difference_source_resolved_minus_legacy": 0.2626051749052417
+    },
+    {
+      "finite_volume_grid_arrays_bitwise_equal_between_modes": true,
+      "instance_id": "met50899_source_resolved_default_spread",
+      "legacy_comparison_mode": "grid_bilinear_v1",
+      "legacy_grid_bilinear_components": {
+        "bound": 0.5530461188210661,
+        "initial": 0.7373948250947547,
+        "mobile": 0.11083274849564398,
+        "total": 0.6638788673167101
+      },
+      "mobile_transport_is_zero": false,
+      "normalized_density_dtype": "<f8",
+      "normalized_density_sha256": "73e914de5476f1f271077b5fbcd63723320069c558e0fed7e9e6af6bb52a5770",
+      "normalized_density_shape": [
+        1160,
+        2000
+      ],
+      "query_s_mm": 22.9837600954952,
+      "query_theta_rad": 3.2856287983758685,
+      "sampling_mode": "source_resolved_stationary_v1",
+      "source_geometry_array_sha256": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+      "source_mask_sha256": "bc166ca1adf15907f8049f39e81a8cfe75486818e231a2d4b998c49797782da5",
+      "source_pixel_rc": [
+        135,
+        1285
+      ],
+      "source_resolved_components": {
+        "bound": 0.7499999999999973,
+        "initial": 0.9999999999999964,
+        "mobile": 0.11083274849564398,
+        "total": 0.8608327484956413
+      },
+      "total_density_difference_source_resolved_minus_legacy": 0.1969538811789312
+    }
+  ],
+  "mass_scope": "DISCRETE_GRID_MASS_ONLY",
+  "probe_method": "deterministic maximum-density source pixel center mapped through the recorded actual-profile panel transform",
+  "purpose": "off-grid continuous source-detail comparison against legacy grid-bilinear sampling",
+  "schema": "synlab.bluewhite_source_detail_probe.v1",
+  "source_receipts": {
+    "met50899_source_resolved_default_spread": "902d000f8fe25fda07a9b672327877bdf5c78765b26762fb84cac945b1791141",
+    "met50899_source_resolved_no_spread": "df03fe1355309f1a7489a94c19c2491678017ef9893e0aa8d7f71bf353c7dbd1"
+  }
+}

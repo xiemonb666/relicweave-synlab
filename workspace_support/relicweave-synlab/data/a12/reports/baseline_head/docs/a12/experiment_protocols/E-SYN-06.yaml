@@ -1,0 +1,14 @@
+experiment_id: E-SYN-06
+title: 循环机制与反证任务
+question: 等参数、等 FLOPs 下，静态、普通循环与机制消融（质量状态、反证、证据回读）是否有可归因增益？
+frozen:
+  initial_pool: same for every arm
+  action_set: same reachable actions
+  compute: equal parameters, equal FLOPs and equal internal ticks reported separately from external actions
+primary_metric: CovRecallAtK after the same number of internal ticks
+secondary_metrics: [PoolCovAtM, R1FalsePositive, QueryCost, unnecessary_action_count]
+estimand: paired difference between mechanism arm and static baseline
+alpha: 0.05
+statistical_unit: shape_lineage
+required_reporting: internal tick time and external action cost are timed separately
+status: PRE_REGISTERED

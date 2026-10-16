@@ -1,0 +1,111 @@
+{
+  "record_id": "met-50899-o2-dragon-20261015",
+  "purpose": "A provenance-backed real ceramic motif reference and fired-photo cobalt mask for blue-and-white vessel synthesis.",
+  "source": {
+    "institution": "The Metropolitan Museum of Art",
+    "object_id": 50899,
+    "accession_number": "29.149.50",
+    "title": "Vase with dragon",
+    "object_name": "Vase",
+    "culture": "China",
+    "period": "Qing dynasty (1644–1911), Qianlong period (1736–95)",
+    "object_date": "late 18th century",
+    "medium": "Porcelain painted in underglaze cobalt blue (Jingdezhen ware)",
+    "dimensions": "H. 7 1/4 in. (18.4 cm)",
+    "classification": "Ceramics",
+    "credit_line": "Bequest of William Rhinelander Stewart, 1929",
+    "curatorial_department": "Asian Art",
+    "object_page_url": "https://www.metmuseum.org/art/collection/search/50899",
+    "official_api_url": "https://collectionapi.metmuseum.org/public/collection/v1/objects/50899",
+    "api_image_role": "additionalImages[0] (Met O2 view)",
+    "image_asset_url": "https://images.metmuseum.org/CRDImages/as/original/29_149_50_O2_sf.jpg",
+    "rights": {
+      "met_object_page_label": "Public Domain",
+      "api_isPublicDomain": true,
+      "basis": "The Met object page labels the image Public Domain. The Met's Open Access API states that Open Access data and public-domain images are available for unrestricted commercial and noncommercial use without permission or fee.",
+      "api_information_url": "https://metmuseum.github.io/"
+    },
+    "downloaded_source_asset": {
+      "path": "relicweave-synlab/synlab/patterns/resources/bluewhite_20261015/source/met_50899_O2_original.jpg",
+      "bytes": 995155,
+      "dimensions_px": {
+        "width": 2667,
+        "height": 4000
+      },
+      "sha256": "3228f553358887829ef0a3eff0036293f8df6e311bf1e5da0b48c3fe02f2f28b",
+      "source_status": "Original Open Access image retained unchanged for computational motif reference and extraction; not a product-display asset."
+    }
+  },
+  "semantic_motif_record": {
+    "record_basis": "The museum title identifies a dragon. Remaining visual observations below describe only what is visible in the selected O2 photograph and are not curatorial claims.",
+    "primary_motif": "dragon",
+    "visible_body_parts_and_features": [
+      "a prominent head facing toward the viewer's right",
+      "curved horn-like projections, an eye, a muzzle, whisker-like lines, and an open-looking jaw with tooth-like marks",
+      "a long sinuous body curling toward the viewer's left, with scale pattern visible on portions of the body",
+      "small projecting forms near the body that may be limbs or claws; their count and attachment are partly obscured by vessel curvature and the single camera view"
+    ],
+    "motif_relations": [
+      "the head and curling body read as one connected dragon motif across the broad shoulder/body in this view",
+      "dragon fragments at both image edges indicate continuation around the vessel circumference; the complete wrap is not recoverable from this single photograph",
+      "the whole-object view has a separate upper-neck register with blue scrolling forms and a geometric meander-like band; the Met record does not name these secondary forms, and they are outside the extracted crop"
+    ],
+    "layout_and_placement": "The main dragon is painted as a broad horizontal, circumferential body decoration on the bulbous shoulder/body rather than as an isolated centered icon. The O2 photograph shows a front-facing projection with substantial curvature and side-wrap foreshortening.",
+    "known_curatorial_meaning": "The collection record names the motif as a dragon but gives no object-specific interpretation of its symbolic meaning.",
+    "unknown_or_not_asserted": [
+      "symbolic or auspicious meaning of the dragon on this specific vase",
+      "whether the neck scrolls represent clouds or another named motif",
+      "the exact historical service, ritual, or display use of this vase",
+      "the unseen continuation and exact anatomy on the far side of the vessel"
+    ],
+    "use_context": {
+      "documented": "The collection record titles and identifies the object as a vase and classifies it as ceramics.",
+      "specific_function": "Not stated on the object record; no more specific use is inferred."
+    }
+  },
+  "derived_assets": {
+    "processing_script": "experiments/continuation_20261015/bluewhite_motif/extract_met_50899_O2_dragon.py",
+    "crop": {
+      "path": "relicweave-synlab/synlab/patterns/resources/bluewhite_20261015/derived/met_50899_O2_dragon_projection_crop.png",
+      "dimensions_px": {
+        "width": 2000,
+        "height": 1160
+      },
+      "bytes": 1757727,
+      "sha256": "f9845558272540118089a3ff7a084372e0aceeebf9223796af7c19ea4d673f3d",
+      "crop_box_source_px_ltrb": [
+        300,
+        2000,
+        2300,
+        3160
+      ],
+      "description": "Lossless crop centering the dragon on the vessel shoulder/body, with enough side area to show the motif wrapping around the curved form."
+    },
+    "cobalt_mask": {
+      "path": "relicweave-synlab/synlab/patterns/resources/bluewhite_20261015/derived/met_50899_O2_dragon_cobalt_fired_photo_mask.png",
+      "dimensions_px": {
+        "width": 2000,
+        "height": 1160
+      },
+      "bytes": 284531,
+      "sha256": "bc166ca1adf15907f8049f39e81a8cfe75486818e231a2d4b998c49797782da5",
+      "pixel_semantics": "0=no detected cobalt chroma; 255=strong cobalt chroma",
+      "method": "For each cropped RGB pixel, compute E = B - max(R,G), then output round(255 * clamp((E - 6)/(72 - 6), 0, 1)).",
+      "postprocessing": "No blur, diffusion, inpainting, morphology, or semantic redraw is applied."
+    },
+    "strong_cobalt_support_proxy": {
+      "path": "relicweave-synlab/synlab/patterns/resources/bluewhite_20261015/derived/met_50899_O2_dragon_strong_cobalt_support_proxy.png",
+      "dimensions_px": {
+        "width": 2000,
+        "height": 1160
+      },
+      "bytes": 23658,
+      "sha256": "a71ff127b69a8e447942f317c6aea3fe43803aebf0a11a009a4c2675deb5395a",
+      "pixel_semantics": "binary; 255 where B - max(R,G) >= 55 RGB units, else 0",
+      "intended_use": "Optional sharper, hard-edged seed before applying a modeled diffusion step.",
+      "interpretation_limit": "Thresholded high-chroma regions from the fired photograph, not a recovered pre-firing brush deposit."
+    },
+    "processing_report": "experiments/continuation_20261015/bluewhite_motif/extraction_report.json",
+    "interpretation_limit": "The mask is a chroma-selected projection of the already-fired, photographed surface. It retains camera color, glaze response, illumination, photographic softness/compression, and curved-vessel projection. It is not recovered pre-firing brush placement or a measurement of physical pigment diffusion. Use it as a real motif/layout and visible-color seed for synthesis, not as a historical record of the initial deposit."
+  }
+}

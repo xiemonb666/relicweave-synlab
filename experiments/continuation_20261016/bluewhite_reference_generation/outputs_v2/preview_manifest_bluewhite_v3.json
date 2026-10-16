@@ -1,0 +1,1345 @@
+{
+  "files": [
+    {
+      "bundle": "met50899_panel_no_spread",
+      "bundle_manifest_sha256": "76443df3f86621515a845c2eb68ffeb41dfcbebb9e42c02a9acf8ac1731467cc",
+      "color_space": "linear RGB fields converted to sRGB8 texture/cell colors; VTK displays sRGB colors",
+      "display_normals": {
+        "method": "area-weighted normals accumulated over original shared source mesh vertices before UV triangle-corner duplication",
+        "smoothing_groups": "exact source CAD face ancestry; adjacent serialized segment faces blend only at C1 section joins (dot >= 0.9995)",
+        "source_face_id_array_sha256": "c5d40c34fb16bc89adc71c4bbee80fe6e835442c5d667013916e7cb5b8ca8d80",
+        "source_geometry_mutated": false
+      },
+      "faces": 25598,
+      "geometry_array_sha256": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+      "legend": "Glaze appearance on outer wall, inside wall/floor, and rim; bare body on foot and exterior underside",
+      "lighting": {
+        "calibrated_optics": false,
+        "direct_scene_lights": 0,
+        "environment": {
+          "base_fill_linear_rgb": [
+            0.6,
+            0.6,
+            0.6
+          ],
+          "calibration_status": "UNCALIBRATED_PRESENTATION_LIGHTING",
+          "color_space": "LINEAR_RGB_FLOAT",
+          "dimensions_pixels": [
+            64,
+            32
+          ],
+          "image_based_lighting": true,
+          "model": "procedural neutral linear-RGB equirectangular fill with broad softboxes",
+          "schema": "synlab.reference_preview_neutral_studio_environment.v1",
+          "sha256_float32_rgb": "5ebfc7454cbc3cb359453cc90a1911cf2be907accdcda8ca3b2f7ba0b1576f9f",
+          "softbox_linear_rgb": [
+            1.05,
+            1.05,
+            1.05
+          ],
+          "softboxes": [
+            {
+              "columns": [
+                6,
+                23
+              ],
+              "rows": [
+                5,
+                13
+              ]
+            },
+            {
+              "columns": [
+                41,
+                58
+              ],
+              "rows": [
+                4,
+                12
+              ]
+            }
+          ],
+          "spherical_harmonics": false
+        },
+        "mode": "studio_ibl",
+        "purpose": "neutral studio presentation to inspect the rendered appearance",
+        "render_window_srgb_enabled": true
+      },
+      "panel_details": [
+        {
+          "bundle": "met50899_panel_no_spread",
+          "camera": {
+            "center_s_mm": 32.94669112997797,
+            "center_theta_rad": 3.141592653589793,
+            "direction_profile_outward_normal": [
+              -0.7628776048565126,
+              9.342556169287274e-17,
+              -0.6465429297489771
+            ],
+            "focal_point_world_mm": [
+              -38.746012563893814,
+              4.745018026609569e-15,
+              22.78284992962833
+            ],
+            "parallel_scales_mm": [
+              35.1,
+              12.48
+            ],
+            "profile_meridian_length_mm": 65.89338225995594,
+            "projection": "orthographic",
+            "view_up_toward_rim": [
+              -0.6465429297489771,
+              7.917867294284369e-17,
+              0.7628776048565126
+            ]
+          },
+          "environment": {
+            "base_fill_linear_rgb": [
+              0.6,
+              0.6,
+              0.6
+            ],
+            "calibration_status": "UNCALIBRATED_PRESENTATION_LIGHTING",
+            "color_space": "LINEAR_RGB_FLOAT",
+            "dimensions_pixels": [
+              64,
+              32
+            ],
+            "image_based_lighting": true,
+            "model": "procedural neutral linear-RGB equirectangular fill with broad softboxes",
+            "schema": "synlab.reference_preview_neutral_studio_environment.v1",
+            "sha256_float32_rgb": "5ebfc7454cbc3cb359453cc90a1911cf2be907accdcda8ca3b2f7ba0b1576f9f",
+            "softbox_linear_rgb": [
+              1.05,
+              1.05,
+              1.05
+            ],
+            "softboxes": [
+              {
+                "columns": [
+                  6,
+                  23
+                ],
+                "rows": [
+                  5,
+                  13
+                ]
+              },
+              {
+                "columns": [
+                  41,
+                  58
+                ],
+                "rows": [
+                  4,
+                  12
+                ]
+              }
+            ],
+            "spherical_harmonics": false
+          },
+          "geometry_array_sha256": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+          "lighting_mode": "studio_ibl",
+          "native_normal_orientation_check": {
+            "median_dot_with_profile_outward_normal": 0.9955267314201167,
+            "minimum_dot_with_profile_outward_normal": 0.9912208186611049,
+            "nearest_face_centroid_distance_mm": 6.745520417248806,
+            "passed": true,
+            "source_outer_face_normals_checked": 12
+          },
+          "panel_field_file_sha256": "d348a563cdd9c32ad6fb698f3430efbeab600de04750d34d404d544044982dcc",
+          "preview": "preview_bluewhite_v3_panel_detail.png",
+          "renderer": "VTK PBR appearance proxy with neutral linear-RGB studio IBL",
+          "sha256": "58aa6a116d016b9ffaa6afaffa5cb1c5b5cb930801c8543cf4d37ddf2c110017",
+          "source_numeric_panel_receipt_sha256": "0fc67ede8b9ac6e5f1e20457bc6ac78563103b19437a04e1740ef23d80d0531c",
+          "view_definitions": [
+            "Panel normal · full finite motif",
+            "Panel normal · closeup"
+          ]
+        },
+        {
+          "bundle": "met50899_panel_no_spread",
+          "environment": {
+            "base_fill_linear_rgb": [
+              0.6,
+              0.6,
+              0.6
+            ],
+            "calibration_status": "UNCALIBRATED_PRESENTATION_LIGHTING",
+            "color_space": "LINEAR_RGB_FLOAT",
+            "dimensions_pixels": [
+              64,
+              32
+            ],
+            "image_based_lighting": true,
+            "model": "procedural neutral linear-RGB equirectangular fill with broad softboxes",
+            "schema": "synlab.reference_preview_neutral_studio_environment.v1",
+            "sha256_float32_rgb": "5ebfc7454cbc3cb359453cc90a1911cf2be907accdcda8ca3b2f7ba0b1576f9f",
+            "softbox_linear_rgb": [
+              1.05,
+              1.05,
+              1.05
+            ],
+            "softboxes": [
+              {
+                "columns": [
+                  6,
+                  23
+                ],
+                "rows": [
+                  5,
+                  13
+                ]
+              },
+              {
+                "columns": [
+                  41,
+                  58
+                ],
+                "rows": [
+                  4,
+                  12
+                ]
+              }
+            ],
+            "spherical_harmonics": false
+          },
+          "input_material_albedo_linear_rgb": [
+            0.9509134888648987,
+            0.9410196840763092,
+            0.9014091193675995
+          ],
+          "ior": 1.5,
+          "lighting_mode": "studio_ibl",
+          "metallic": 0.0,
+          "preview": "preview_bluewhite_v3_material_swatch.png",
+          "render_window_srgb_enabled": true,
+          "rendered_center_crop_median_srgb8": [
+            210.0,
+            210.0,
+            210.0
+          ],
+          "rendered_center_crop_size_px": [
+            36,
+            36
+          ],
+          "renderer": "VTK PBR appearance proxy with neutral linear-RGB studio IBL",
+          "roughness": 0.11068277433514595,
+          "sha256": "13b460bf83bcb944d810cfdd2e00281dcf3d3f68945647117515f4d9599163b1",
+          "texture_srgb8": [
+            249,
+            248,
+            244
+          ],
+          "view_definitions": [
+            "PBR material swatch · neutral studio IBL"
+          ]
+        }
+      ],
+      "pbr_material_parameters": {
+        "base": {
+          "ior_median_from_material_face_field": 1.559999942779541,
+          "ior_range": [
+            1.559999942779541,
+            1.559999942779541
+          ],
+          "roughness_median_from_combined_face_field": 0.42143920063972473,
+          "roughness_range": [
+            0.4122181534767151,
+            0.441415399312973
+          ]
+        },
+        "foot": {
+          "ior_median_from_material_face_field": 1.559999942779541,
+          "ior_range": [
+            1.559999942779541,
+            1.559999942779541
+          ],
+          "roughness_median_from_combined_face_field": 0.4210704267024994,
+          "roughness_range": [
+            0.4076640009880066,
+            0.4486341178417206
+          ]
+        },
+        "inner_wall": {
+          "ior_median_from_material_face_field": 1.5,
+          "ior_range": [
+            1.5,
+            1.5
+          ],
+          "roughness_median_from_combined_face_field": 0.11059363931417465,
+          "roughness_range": [
+            0.09961022436618805,
+            0.13646091520786285
+          ]
+        },
+        "outer_wall": {
+          "ior_median_from_material_face_field": 1.5,
+          "ior_range": [
+            1.5,
+            1.5
+          ],
+          "roughness_median_from_combined_face_field": 0.11068277433514595,
+          "roughness_range": [
+            0.09868372976779938,
+            0.1360214203596115
+          ]
+        },
+        "rim": {
+          "ior_median_from_material_face_field": 1.5,
+          "ior_range": [
+            1.5,
+            1.5
+          ],
+          "roughness_median_from_combined_face_field": 0.1108734980225563,
+          "roughness_range": [
+            0.09787528216838837,
+            0.13702566921710968
+          ]
+        }
+      },
+      "pbr_parameter_status": "per-region medians from source-conditioned design fields; uncalibrated appearance proxy",
+      "preview": "preview_bluewhite_v3_4view.png",
+      "renderer": "VTK PBR appearance proxy; outer chart texture and per-region face appearance",
+      "sha256": "904db55c554490a3f928315b1496ec8696e0715723b56430cc76c014c591b5b4",
+      "texture_coordinate_conversion": {
+        "renderer_v": "t=1-v for the PNG base-color texture; stored chart UV remains v=s/L",
+        "saved_uv_semantics": "u=wrapped theta/(2*pi); v=s/total_source_meridian_length"
+      },
+      "texture_grid": [
+        512,
+        1024
+      ],
+      "view_definitions": [
+        "Side · orthographic",
+        "Top · orthographic",
+        "Lit 3D · perspective · panel-facing",
+        "Underside · orthographic"
+      ],
+      "view_specs": [
+        {
+          "camera_direction": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "orthographic": true,
+          "title": "Side · orthographic",
+          "view_up": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "camera_direction": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "orthographic": true,
+          "title": "Top · orthographic",
+          "view_up": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "camera_direction": [
+            -1.0,
+            0.0,
+            0.55
+          ],
+          "orthographic": false,
+          "title": "Lit 3D · perspective · panel-facing",
+          "view_up": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "camera_direction": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "orthographic": true,
+          "title": "Underside · orthographic",
+          "view_up": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        }
+      ]
+    },
+    {
+      "bundle": "met50899_panel_default_spread",
+      "bundle_manifest_sha256": "dd8af6797069b12417705e06467331adcb90ea86143240d08f70b1106d9c6a96",
+      "color_space": "linear RGB fields converted to sRGB8 texture/cell colors; VTK displays sRGB colors",
+      "display_normals": {
+        "method": "area-weighted normals accumulated over original shared source mesh vertices before UV triangle-corner duplication",
+        "smoothing_groups": "exact source CAD face ancestry; adjacent serialized segment faces blend only at C1 section joins (dot >= 0.9995)",
+        "source_face_id_array_sha256": "c5d40c34fb16bc89adc71c4bbee80fe6e835442c5d667013916e7cb5b8ca8d80",
+        "source_geometry_mutated": false
+      },
+      "faces": 25598,
+      "geometry_array_sha256": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+      "legend": "Glaze appearance on outer wall, inside wall/floor, and rim; bare body on foot and exterior underside",
+      "lighting": {
+        "calibrated_optics": false,
+        "direct_scene_lights": 0,
+        "environment": {
+          "base_fill_linear_rgb": [
+            0.6,
+            0.6,
+            0.6
+          ],
+          "calibration_status": "UNCALIBRATED_PRESENTATION_LIGHTING",
+          "color_space": "LINEAR_RGB_FLOAT",
+          "dimensions_pixels": [
+            64,
+            32
+          ],
+          "image_based_lighting": true,
+          "model": "procedural neutral linear-RGB equirectangular fill with broad softboxes",
+          "schema": "synlab.reference_preview_neutral_studio_environment.v1",
+          "sha256_float32_rgb": "5ebfc7454cbc3cb359453cc90a1911cf2be907accdcda8ca3b2f7ba0b1576f9f",
+          "softbox_linear_rgb": [
+            1.05,
+            1.05,
+            1.05
+          ],
+          "softboxes": [
+            {
+              "columns": [
+                6,
+                23
+              ],
+              "rows": [
+                5,
+                13
+              ]
+            },
+            {
+              "columns": [
+                41,
+                58
+              ],
+              "rows": [
+                4,
+                12
+              ]
+            }
+          ],
+          "spherical_harmonics": false
+        },
+        "mode": "studio_ibl",
+        "purpose": "neutral studio presentation to inspect the rendered appearance",
+        "render_window_srgb_enabled": true
+      },
+      "panel_details": [
+        {
+          "bundle": "met50899_panel_default_spread",
+          "camera": {
+            "center_s_mm": 32.94669112997797,
+            "center_theta_rad": 3.141592653589793,
+            "direction_profile_outward_normal": [
+              -0.7628776048565126,
+              9.342556169287274e-17,
+              -0.6465429297489771
+            ],
+            "focal_point_world_mm": [
+              -38.746012563893814,
+              4.745018026609569e-15,
+              22.78284992962833
+            ],
+            "parallel_scales_mm": [
+              35.1,
+              12.48
+            ],
+            "profile_meridian_length_mm": 65.89338225995594,
+            "projection": "orthographic",
+            "view_up_toward_rim": [
+              -0.6465429297489771,
+              7.917867294284369e-17,
+              0.7628776048565126
+            ]
+          },
+          "environment": {
+            "base_fill_linear_rgb": [
+              0.6,
+              0.6,
+              0.6
+            ],
+            "calibration_status": "UNCALIBRATED_PRESENTATION_LIGHTING",
+            "color_space": "LINEAR_RGB_FLOAT",
+            "dimensions_pixels": [
+              64,
+              32
+            ],
+            "image_based_lighting": true,
+            "model": "procedural neutral linear-RGB equirectangular fill with broad softboxes",
+            "schema": "synlab.reference_preview_neutral_studio_environment.v1",
+            "sha256_float32_rgb": "5ebfc7454cbc3cb359453cc90a1911cf2be907accdcda8ca3b2f7ba0b1576f9f",
+            "softbox_linear_rgb": [
+              1.05,
+              1.05,
+              1.05
+            ],
+            "softboxes": [
+              {
+                "columns": [
+                  6,
+                  23
+                ],
+                "rows": [
+                  5,
+                  13
+                ]
+              },
+              {
+                "columns": [
+                  41,
+                  58
+                ],
+                "rows": [
+                  4,
+                  12
+                ]
+              }
+            ],
+            "spherical_harmonics": false
+          },
+          "geometry_array_sha256": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+          "lighting_mode": "studio_ibl",
+          "native_normal_orientation_check": {
+            "median_dot_with_profile_outward_normal": 0.9955267314201167,
+            "minimum_dot_with_profile_outward_normal": 0.9912208186611049,
+            "nearest_face_centroid_distance_mm": 6.745520417248806,
+            "passed": true,
+            "source_outer_face_normals_checked": 12
+          },
+          "panel_field_file_sha256": "7c542b6a597407711e22150ceebc05a4c90eadb8a90c848f151dcba160e71235",
+          "preview": "preview_bluewhite_v3_panel_detail.png",
+          "renderer": "VTK PBR appearance proxy with neutral linear-RGB studio IBL",
+          "sha256": "1b8fe9a56d93f18d02e71e211407ba16c0052d7e2d8cf7411327dfb062f2de6f",
+          "source_numeric_panel_receipt_sha256": "16d065db9edb40b70f64a742f1d0940e642e6252c2a976880e5be129e78f5286",
+          "view_definitions": [
+            "Panel normal · full finite motif",
+            "Panel normal · closeup"
+          ]
+        },
+        {
+          "bundle": "met50899_panel_default_spread",
+          "environment": {
+            "base_fill_linear_rgb": [
+              0.6,
+              0.6,
+              0.6
+            ],
+            "calibration_status": "UNCALIBRATED_PRESENTATION_LIGHTING",
+            "color_space": "LINEAR_RGB_FLOAT",
+            "dimensions_pixels": [
+              64,
+              32
+            ],
+            "image_based_lighting": true,
+            "model": "procedural neutral linear-RGB equirectangular fill with broad softboxes",
+            "schema": "synlab.reference_preview_neutral_studio_environment.v1",
+            "sha256_float32_rgb": "5ebfc7454cbc3cb359453cc90a1911cf2be907accdcda8ca3b2f7ba0b1576f9f",
+            "softbox_linear_rgb": [
+              1.05,
+              1.05,
+              1.05
+            ],
+            "softboxes": [
+              {
+                "columns": [
+                  6,
+                  23
+                ],
+                "rows": [
+                  5,
+                  13
+                ]
+              },
+              {
+                "columns": [
+                  41,
+                  58
+                ],
+                "rows": [
+                  4,
+                  12
+                ]
+              }
+            ],
+            "spherical_harmonics": false
+          },
+          "input_material_albedo_linear_rgb": [
+            0.9509134888648987,
+            0.9410196840763092,
+            0.9014091193675995
+          ],
+          "ior": 1.5,
+          "lighting_mode": "studio_ibl",
+          "metallic": 0.0,
+          "preview": "preview_bluewhite_v3_material_swatch.png",
+          "render_window_srgb_enabled": true,
+          "rendered_center_crop_median_srgb8": [
+            210.0,
+            210.0,
+            210.0
+          ],
+          "rendered_center_crop_size_px": [
+            36,
+            36
+          ],
+          "renderer": "VTK PBR appearance proxy with neutral linear-RGB studio IBL",
+          "roughness": 0.11068277433514595,
+          "sha256": "13b460bf83bcb944d810cfdd2e00281dcf3d3f68945647117515f4d9599163b1",
+          "texture_srgb8": [
+            249,
+            248,
+            244
+          ],
+          "view_definitions": [
+            "PBR material swatch · neutral studio IBL"
+          ]
+        }
+      ],
+      "pbr_material_parameters": {
+        "base": {
+          "ior_median_from_material_face_field": 1.559999942779541,
+          "ior_range": [
+            1.559999942779541,
+            1.559999942779541
+          ],
+          "roughness_median_from_combined_face_field": 0.42143920063972473,
+          "roughness_range": [
+            0.4122181534767151,
+            0.441415399312973
+          ]
+        },
+        "foot": {
+          "ior_median_from_material_face_field": 1.559999942779541,
+          "ior_range": [
+            1.559999942779541,
+            1.559999942779541
+          ],
+          "roughness_median_from_combined_face_field": 0.4210704267024994,
+          "roughness_range": [
+            0.4076640009880066,
+            0.4486341178417206
+          ]
+        },
+        "inner_wall": {
+          "ior_median_from_material_face_field": 1.5,
+          "ior_range": [
+            1.5,
+            1.5
+          ],
+          "roughness_median_from_combined_face_field": 0.11059363931417465,
+          "roughness_range": [
+            0.09961022436618805,
+            0.13646091520786285
+          ]
+        },
+        "outer_wall": {
+          "ior_median_from_material_face_field": 1.5,
+          "ior_range": [
+            1.5,
+            1.5
+          ],
+          "roughness_median_from_combined_face_field": 0.11068277433514595,
+          "roughness_range": [
+            0.09868372976779938,
+            0.1360214203596115
+          ]
+        },
+        "rim": {
+          "ior_median_from_material_face_field": 1.5,
+          "ior_range": [
+            1.5,
+            1.5
+          ],
+          "roughness_median_from_combined_face_field": 0.1108734980225563,
+          "roughness_range": [
+            0.09787528216838837,
+            0.13702566921710968
+          ]
+        }
+      },
+      "pbr_parameter_status": "per-region medians from source-conditioned design fields; uncalibrated appearance proxy",
+      "preview": "preview_bluewhite_v3_4view.png",
+      "renderer": "VTK PBR appearance proxy; outer chart texture and per-region face appearance",
+      "sha256": "534418e8688bc14fe76f39e2817c5658f8e792183d82a125d40c993cc6be719c",
+      "texture_coordinate_conversion": {
+        "renderer_v": "t=1-v for the PNG base-color texture; stored chart UV remains v=s/L",
+        "saved_uv_semantics": "u=wrapped theta/(2*pi); v=s/total_source_meridian_length"
+      },
+      "texture_grid": [
+        512,
+        1024
+      ],
+      "view_definitions": [
+        "Side · orthographic",
+        "Top · orthographic",
+        "Lit 3D · perspective · panel-facing",
+        "Underside · orthographic"
+      ],
+      "view_specs": [
+        {
+          "camera_direction": [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          "orthographic": true,
+          "title": "Side · orthographic",
+          "view_up": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "camera_direction": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "orthographic": true,
+          "title": "Top · orthographic",
+          "view_up": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "camera_direction": [
+            -1.0,
+            0.0,
+            0.55
+          ],
+          "orthographic": false,
+          "title": "Lit 3D · perspective · panel-facing",
+          "view_up": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "camera_direction": [
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "orthographic": true,
+          "title": "Underside · orthographic",
+          "view_up": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        }
+      ]
+    }
+  ],
+  "geometry_changed": false,
+  "lighting": {
+    "calibrated_optics": false,
+    "direct_scene_lights": 0,
+    "environment": {
+      "base_fill_linear_rgb": [
+        0.6,
+        0.6,
+        0.6
+      ],
+      "calibration_status": "UNCALIBRATED_PRESENTATION_LIGHTING",
+      "color_space": "LINEAR_RGB_FLOAT",
+      "dimensions_pixels": [
+        64,
+        32
+      ],
+      "image_based_lighting": true,
+      "model": "procedural neutral linear-RGB equirectangular fill with broad softboxes",
+      "schema": "synlab.reference_preview_neutral_studio_environment.v1",
+      "sha256_float32_rgb": "5ebfc7454cbc3cb359453cc90a1911cf2be907accdcda8ca3b2f7ba0b1576f9f",
+      "softbox_linear_rgb": [
+        1.05,
+        1.05,
+        1.05
+      ],
+      "softboxes": [
+        {
+          "columns": [
+            6,
+            23
+          ],
+          "rows": [
+            5,
+            13
+          ]
+        },
+        {
+          "columns": [
+            41,
+            58
+          ],
+          "rows": [
+            4,
+            12
+          ]
+        }
+      ],
+      "spherical_harmonics": false
+    },
+    "purpose": "neutral studio presentation to inspect the rendered appearance",
+    "render_window_srgb_enabled": true
+  },
+  "lighting_mode": "studio_ibl",
+  "normal_policy": "source shared-vertex normals computed before UV duplication; only source CAD ancestry and C1 section joins are blended",
+  "panel_detail_artifacts": [
+    {
+      "bundle": "met50899_panel_no_spread",
+      "camera": {
+        "center_s_mm": 32.94669112997797,
+        "center_theta_rad": 3.141592653589793,
+        "direction_profile_outward_normal": [
+          -0.7628776048565126,
+          9.342556169287274e-17,
+          -0.6465429297489771
+        ],
+        "focal_point_world_mm": [
+          -38.746012563893814,
+          4.745018026609569e-15,
+          22.78284992962833
+        ],
+        "parallel_scales_mm": [
+          35.1,
+          12.48
+        ],
+        "profile_meridian_length_mm": 65.89338225995594,
+        "projection": "orthographic",
+        "view_up_toward_rim": [
+          -0.6465429297489771,
+          7.917867294284369e-17,
+          0.7628776048565126
+        ]
+      },
+      "environment": {
+        "base_fill_linear_rgb": [
+          0.6,
+          0.6,
+          0.6
+        ],
+        "calibration_status": "UNCALIBRATED_PRESENTATION_LIGHTING",
+        "color_space": "LINEAR_RGB_FLOAT",
+        "dimensions_pixels": [
+          64,
+          32
+        ],
+        "image_based_lighting": true,
+        "model": "procedural neutral linear-RGB equirectangular fill with broad softboxes",
+        "schema": "synlab.reference_preview_neutral_studio_environment.v1",
+        "sha256_float32_rgb": "5ebfc7454cbc3cb359453cc90a1911cf2be907accdcda8ca3b2f7ba0b1576f9f",
+        "softbox_linear_rgb": [
+          1.05,
+          1.05,
+          1.05
+        ],
+        "softboxes": [
+          {
+            "columns": [
+              6,
+              23
+            ],
+            "rows": [
+              5,
+              13
+            ]
+          },
+          {
+            "columns": [
+              41,
+              58
+            ],
+            "rows": [
+              4,
+              12
+            ]
+          }
+        ],
+        "spherical_harmonics": false
+      },
+      "geometry_array_sha256": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+      "native_normal_orientation_check": {
+        "median_dot_with_profile_outward_normal": 0.9955267314201167,
+        "minimum_dot_with_profile_outward_normal": 0.9912208186611049,
+        "nearest_face_centroid_distance_mm": 6.745520417248806,
+        "passed": true,
+        "source_outer_face_normals_checked": 12
+      },
+      "panel_field_file_sha256": "d348a563cdd9c32ad6fb698f3430efbeab600de04750d34d404d544044982dcc",
+      "preview": "preview_bluewhite_v3_panel_detail.png",
+      "renderer": "VTK PBR appearance proxy with neutral linear-RGB studio IBL",
+      "sha256": "58aa6a116d016b9ffaa6afaffa5cb1c5b5cb930801c8543cf4d37ddf2c110017",
+      "source_numeric_panel_receipt_sha256": "0fc67ede8b9ac6e5f1e20457bc6ac78563103b19437a04e1740ef23d80d0531c",
+      "view_definitions": [
+        "Panel normal · full finite motif",
+        "Panel normal · closeup"
+      ]
+    },
+    {
+      "bundle": "met50899_panel_no_spread",
+      "environment": {
+        "base_fill_linear_rgb": [
+          0.6,
+          0.6,
+          0.6
+        ],
+        "calibration_status": "UNCALIBRATED_PRESENTATION_LIGHTING",
+        "color_space": "LINEAR_RGB_FLOAT",
+        "dimensions_pixels": [
+          64,
+          32
+        ],
+        "image_based_lighting": true,
+        "model": "procedural neutral linear-RGB equirectangular fill with broad softboxes",
+        "schema": "synlab.reference_preview_neutral_studio_environment.v1",
+        "sha256_float32_rgb": "5ebfc7454cbc3cb359453cc90a1911cf2be907accdcda8ca3b2f7ba0b1576f9f",
+        "softbox_linear_rgb": [
+          1.05,
+          1.05,
+          1.05
+        ],
+        "softboxes": [
+          {
+            "columns": [
+              6,
+              23
+            ],
+            "rows": [
+              5,
+              13
+            ]
+          },
+          {
+            "columns": [
+              41,
+              58
+            ],
+            "rows": [
+              4,
+              12
+            ]
+          }
+        ],
+        "spherical_harmonics": false
+      },
+      "input_material_albedo_linear_rgb": [
+        0.9509134888648987,
+        0.9410196840763092,
+        0.9014091193675995
+      ],
+      "ior": 1.5,
+      "metallic": 0.0,
+      "preview": "preview_bluewhite_v3_material_swatch.png",
+      "render_window_srgb_enabled": true,
+      "rendered_center_crop_median_srgb8": [
+        210.0,
+        210.0,
+        210.0
+      ],
+      "rendered_center_crop_size_px": [
+        36,
+        36
+      ],
+      "renderer": "VTK PBR appearance proxy with neutral linear-RGB studio IBL",
+      "roughness": 0.11068277433514595,
+      "sha256": "13b460bf83bcb944d810cfdd2e00281dcf3d3f68945647117515f4d9599163b1",
+      "texture_srgb8": [
+        249,
+        248,
+        244
+      ],
+      "view_definitions": [
+        "PBR material swatch · neutral studio IBL"
+      ]
+    },
+    {
+      "bundle": "met50899_panel_default_spread",
+      "camera": {
+        "center_s_mm": 32.94669112997797,
+        "center_theta_rad": 3.141592653589793,
+        "direction_profile_outward_normal": [
+          -0.7628776048565126,
+          9.342556169287274e-17,
+          -0.6465429297489771
+        ],
+        "focal_point_world_mm": [
+          -38.746012563893814,
+          4.745018026609569e-15,
+          22.78284992962833
+        ],
+        "parallel_scales_mm": [
+          35.1,
+          12.48
+        ],
+        "profile_meridian_length_mm": 65.89338225995594,
+        "projection": "orthographic",
+        "view_up_toward_rim": [
+          -0.6465429297489771,
+          7.917867294284369e-17,
+          0.7628776048565126
+        ]
+      },
+      "environment": {
+        "base_fill_linear_rgb": [
+          0.6,
+          0.6,
+          0.6
+        ],
+        "calibration_status": "UNCALIBRATED_PRESENTATION_LIGHTING",
+        "color_space": "LINEAR_RGB_FLOAT",
+        "dimensions_pixels": [
+          64,
+          32
+        ],
+        "image_based_lighting": true,
+        "model": "procedural neutral linear-RGB equirectangular fill with broad softboxes",
+        "schema": "synlab.reference_preview_neutral_studio_environment.v1",
+        "sha256_float32_rgb": "5ebfc7454cbc3cb359453cc90a1911cf2be907accdcda8ca3b2f7ba0b1576f9f",
+        "softbox_linear_rgb": [
+          1.05,
+          1.05,
+          1.05
+        ],
+        "softboxes": [
+          {
+            "columns": [
+              6,
+              23
+            ],
+            "rows": [
+              5,
+              13
+            ]
+          },
+          {
+            "columns": [
+              41,
+              58
+            ],
+            "rows": [
+              4,
+              12
+            ]
+          }
+        ],
+        "spherical_harmonics": false
+      },
+      "geometry_array_sha256": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+      "native_normal_orientation_check": {
+        "median_dot_with_profile_outward_normal": 0.9955267314201167,
+        "minimum_dot_with_profile_outward_normal": 0.9912208186611049,
+        "nearest_face_centroid_distance_mm": 6.745520417248806,
+        "passed": true,
+        "source_outer_face_normals_checked": 12
+      },
+      "panel_field_file_sha256": "7c542b6a597407711e22150ceebc05a4c90eadb8a90c848f151dcba160e71235",
+      "preview": "preview_bluewhite_v3_panel_detail.png",
+      "renderer": "VTK PBR appearance proxy with neutral linear-RGB studio IBL",
+      "sha256": "1b8fe9a56d93f18d02e71e211407ba16c0052d7e2d8cf7411327dfb062f2de6f",
+      "source_numeric_panel_receipt_sha256": "16d065db9edb40b70f64a742f1d0940e642e6252c2a976880e5be129e78f5286",
+      "view_definitions": [
+        "Panel normal · full finite motif",
+        "Panel normal · closeup"
+      ]
+    },
+    {
+      "bundle": "met50899_panel_default_spread",
+      "environment": {
+        "base_fill_linear_rgb": [
+          0.6,
+          0.6,
+          0.6
+        ],
+        "calibration_status": "UNCALIBRATED_PRESENTATION_LIGHTING",
+        "color_space": "LINEAR_RGB_FLOAT",
+        "dimensions_pixels": [
+          64,
+          32
+        ],
+        "image_based_lighting": true,
+        "model": "procedural neutral linear-RGB equirectangular fill with broad softboxes",
+        "schema": "synlab.reference_preview_neutral_studio_environment.v1",
+        "sha256_float32_rgb": "5ebfc7454cbc3cb359453cc90a1911cf2be907accdcda8ca3b2f7ba0b1576f9f",
+        "softbox_linear_rgb": [
+          1.05,
+          1.05,
+          1.05
+        ],
+        "softboxes": [
+          {
+            "columns": [
+              6,
+              23
+            ],
+            "rows": [
+              5,
+              13
+            ]
+          },
+          {
+            "columns": [
+              41,
+              58
+            ],
+            "rows": [
+              4,
+              12
+            ]
+          }
+        ],
+        "spherical_harmonics": false
+      },
+      "input_material_albedo_linear_rgb": [
+        0.9509134888648987,
+        0.9410196840763092,
+        0.9014091193675995
+      ],
+      "ior": 1.5,
+      "metallic": 0.0,
+      "preview": "preview_bluewhite_v3_material_swatch.png",
+      "render_window_srgb_enabled": true,
+      "rendered_center_crop_median_srgb8": [
+        210.0,
+        210.0,
+        210.0
+      ],
+      "rendered_center_crop_size_px": [
+        36,
+        36
+      ],
+      "renderer": "VTK PBR appearance proxy with neutral linear-RGB studio IBL",
+      "roughness": 0.11068277433514595,
+      "sha256": "13b460bf83bcb944d810cfdd2e00281dcf3d3f68945647117515f4d9599163b1",
+      "texture_srgb8": [
+        249,
+        248,
+        244
+      ],
+      "view_definitions": [
+        "PBR material swatch · neutral studio IBL"
+      ]
+    }
+  ],
+  "physical_rendering_claim": "NONE",
+  "preview_revision": "bluewhite_v3",
+  "preview_views": [
+    "Side · orthographic",
+    "Top · orthographic",
+    "Lit 3D · perspective · panel-facing",
+    "Underside · orthographic"
+  ],
+  "renderer": "VTK PBR appearance proxy with continuous outer-wall texture and source-conditioned per-region appearance",
+  "schema": "synlab.reference_generation_preview_manifest.v5",
+  "side_view_direction": [
+    0.0,
+    -1.0,
+    0.0
+  ],
+  "surface_finish_legend": "outer wall / inside wall and floor / rim receive glaze appearance; foot / exterior underside remain bare body",
+  "texture_color_conversion": "linear RGB appearance samples converted to sRGB8 texture/cell colors for display",
+  "texture_origin_probe": {
+    "corrected_mapping_matches_marker_orientation": true,
+    "environment": {
+      "base_fill_linear_rgb": [
+        0.6,
+        0.6,
+        0.6
+      ],
+      "calibration_status": "UNCALIBRATED_PRESENTATION_LIGHTING",
+      "color_space": "LINEAR_RGB_FLOAT",
+      "dimensions_pixels": [
+        64,
+        32
+      ],
+      "image_based_lighting": true,
+      "model": "procedural neutral linear-RGB equirectangular fill with broad softboxes",
+      "schema": "synlab.reference_preview_neutral_studio_environment.v1",
+      "sha256_float32_rgb": "5ebfc7454cbc3cb359453cc90a1911cf2be907accdcda8ca3b2f7ba0b1576f9f",
+      "softbox_linear_rgb": [
+        1.05,
+        1.05,
+        1.05
+      ],
+      "softboxes": [
+        {
+          "columns": [
+            6,
+            23
+          ],
+          "rows": [
+            5,
+            13
+          ]
+        },
+        {
+          "columns": [
+            41,
+            58
+          ],
+          "rows": [
+            4,
+            12
+          ]
+        }
+      ],
+      "spherical_harmonics": false
+    },
+    "lighting_mode": "studio_ibl",
+    "marker_png": "texture_origin_marker_bluewhite_v3.png",
+    "marker_png_sha256": "8226848b438db4f346a924bd820dae3cebbf399e6d92dfd0dce202414c921d4f",
+    "measured_screen_corner_medians_srgb8": {
+      "current_chart_uv": {
+        "bottom_left": [
+          210,
+          30,
+          30
+        ],
+        "bottom_right": [
+          30,
+          210,
+          30
+        ],
+        "top_left": [
+          30,
+          30,
+          210
+        ],
+        "top_right": [
+          210,
+          210,
+          30
+        ]
+      },
+      "renderer_converted_uv": {
+        "bottom_left": [
+          30,
+          30,
+          210
+        ],
+        "bottom_right": [
+          210,
+          210,
+          30
+        ],
+        "top_left": [
+          210,
+          30,
+          30
+        ],
+        "top_right": [
+          30,
+          210,
+          30
+        ]
+      }
+    },
+    "observed_png_texture_convention": "texture v=0 samples PNG bottom row; v=1 samples PNG top row",
+    "probe_png": "texture_origin_probe_bluewhite_v3.png",
+    "probe_png_sha256": "7e1d1549bb83264097ecb8c619edb365797a4a87b60eede90c75a5a63db59c9c",
+    "render_window_srgb_enabled": true,
+    "renderer_boundary_conversion": "t=1-v for every outer-chart PNG base-color texture; saved chart UV stays v=s/L",
+    "schema": "synlab.reference_preview_texture_origin_probe.v1",
+    "source_png_corner_colors_srgb8": {
+      "png_bottom_left": [
+        0,
+        0,
+        255
+      ],
+      "png_bottom_right": [
+        255,
+        255,
+        0
+      ],
+      "png_top_left": [
+        255,
+        0,
+        0
+      ],
+      "png_top_right": [
+        0,
+        255,
+        0
+      ]
+    },
+    "stored_chart_coordinate_semantics": "v=s/L; s=0 at rim/top and s=L at foot/bottom"
+  },
+  "view_specs": [
+    {
+      "camera_direction": [
+        0.0,
+        -1.0,
+        0.0
+      ],
+      "orthographic": true,
+      "title": "Side · orthographic",
+      "view_up": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "camera_direction": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "orthographic": true,
+      "title": "Top · orthographic",
+      "view_up": [
+        0.0,
+        1.0,
+        0.0
+      ]
+    },
+    {
+      "camera_direction": [
+        -1.0,
+        0.0,
+        0.55
+      ],
+      "orthographic": false,
+      "title": "Lit 3D · perspective · panel-facing",
+      "view_up": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "camera_direction": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "orthographic": true,
+      "title": "Underside · orthographic",
+      "view_up": [
+        0.0,
+        1.0,
+        0.0
+      ]
+    }
+  ]
+}

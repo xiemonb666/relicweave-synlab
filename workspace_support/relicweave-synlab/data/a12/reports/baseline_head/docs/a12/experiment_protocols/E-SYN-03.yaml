@@ -1,0 +1,23 @@
+experiment_id: E-SYN-03
+title: N 曲线（数据量）
+question: 固定质量与算法，增加独立母体谱系与训练碎片是否改善全库邻片找回？
+frozen:
+  model: fixed architecture and initialization group
+  optimizer: fixed schedule, steps and exposure reported from two viewpoints
+  quality: fixed input profile and degradation recipe
+  candidate_pool: fixed gallery (train subsets are nested prefixes of a frozen lineage order)
+design:
+  breadth: nested independent lineage prefixes (the only axis that answers "more independent objects")
+  depth: fixed lineage, more events/observations per mother (never called "more data")
+  reporting: mother/cluster/event/fragment/edge/view counts all reported
+primary_metric: CovRecallAtK
+estimand: paired macro difference between nested train subsets at fixed steps and at fixed per-mother exposure
+null_delta: 0.0
+target_delta: 0.03
+alpha: 0.05
+statistical_unit: shape_lineage
+sample_size:
+  plan: nested 1k / 10k / 100k accepted fragments when storage and compute allow
+  power_status: PILOT_PENDING
+confounds: capacity, optimizer steps and exposure must be held or reported separately; extra optimization is never reported as a data-size gain
+status: PRE_REGISTERED

@@ -1,0 +1,44 @@
+schema: synlab.pool.v1
+# ---------------------------------------------------------------------------
+# Relation negative / grey-zone pool (task: 关系训练数据的负例/灰区库)
+#
+# Built from the mutually exclusive multi-event library written by
+# `synlab.relations.multi_event` (>= 3 independent fracture events per physical
+# mother, each with its own event id, its own derived seed and its own measured
+# cut plane).  Every label in this pool is read off the measured truth of those
+# events; nothing is declared.
+#
+#   R2           same event, shared new fracture surface above the frozen area threshold
+#   R1           same mother, different (verified mutually exclusive) event
+#   R0           different physical mother
+#   TINY_CONTACT frozen numerical grey zone (see docs/a12/relation_negatives.md: this
+#                corpus could not produce one and the count is reported as 0)
+#   UNKNOWN      a fragment whose clean truth was not computed; loss_mask=false and
+#                never usable as a negative
+#
+# `exclude_training_lineages: false` because this pool is a relation-supervision
+# corpus, not a train/dev hold-out: all four mothers stay in the gallery.
+# `include_unverified: true` so the unresolved-source fragments stay visible and
+# keep every pair that mentions them at UNKNOWN instead of silently disappearing.
+# ---------------------------------------------------------------------------
+pool_id: neglib_events_v1
+gallery_version: neglib_v1
+scope: FULL
+split: dev
+lineage_ids: []
+size_target: 64
+exclude_training_lineages: false
+nested_sizes: [8, 16]
+mate_removed_variant: false
+query_per_mother: 2
+refinement_candidates: [10, 20, 50]
+top_k: [1, 5, 10]
+gallery_distractor_only: false
+include_unverified: true
+seed: 20261002
+notes: >-
+  Pool of the multi-event relation-negative library.  The gallery is the union of every
+  event of four real mothers; the R0/R1/TINY/UNKNOWN split is the one measured by
+  synlab.relations.multi_event, and `distractor_isolated` is a real claim because the
+  distractor lineage (LIN0001_V02_M01_PAT01, split gallery_distractor) is enrolled in no
+  training lineage.

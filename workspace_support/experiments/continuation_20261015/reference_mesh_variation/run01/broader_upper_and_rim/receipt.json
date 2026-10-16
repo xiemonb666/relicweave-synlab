@@ -1,0 +1,116 @@
+{
+  "schema": "vesselforge.reference_mesh_deformation.v1",
+  "source": {
+    "source_name": "Footed bowl, SHM 17946:0047",
+    "source_url": "https://apsida.cut.ac.cy/items/show/49281",
+    "license_id": "CC BY-SA 4.0",
+    "attribution": "Medelhavsmuseet, SHM 17946:0047; via Apsida / Digital Heritage Research Lab",
+    "raw_source_sha256": "c03413172398ae5280fae3d1759f505b38bc97a1561e510fcfb4b99d97c57232",
+    "scale_evidence": "The OBJ declares no units. Explicit candidate calibration is 1 raw unit = 1 m (1000 mm/raw unit), inferred from reported catalog height 119 mm versus raw Z span 0.119432; this is not a calibrated unit declaration, and reported rim/base diameters do not match this candidate exactly.",
+    "source_component_count": 389
+  },
+  "controls": {
+    "height_scale": 1.0,
+    "radial_scale": 1.0,
+    "belly_fullness": 0.0,
+    "upperbody_width": 0.035,
+    "mouth_width": 0.045,
+    "foot_width": 0.0
+  },
+  "transform": {
+    "formula": "y = radial * (source_unit_scale_to_mm * height_scale * radial_scale * exp(local_log_radius(z))) + axis * (source_unit_scale_to_mm * height_scale * axial)",
+    "center_source_coordinates": [
+      0.05191771229236255,
+      -0.007930005189105168,
+      0.077194
+    ],
+    "axis_unit_vector": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "source_axial_bounds_relative_to_center": [
+      -0.059716,
+      0.059716000000000005
+    ],
+    "source_axial_span": 0.11943200000000001,
+    "source_unit_scale_to_mm": 1000.0,
+    "height_scale": 1.0,
+    "radial_scale": 1.0,
+    "target_height_mm": 119.43200000000002,
+    "profile_terms": [
+      {
+        "control": "foot_width",
+        "center_fraction": 0.08,
+        "width_fraction": 0.12
+      },
+      {
+        "control": "belly_fullness",
+        "center_fraction": 0.53,
+        "width_fraction": 0.21
+      },
+      {
+        "control": "upperbody_width",
+        "center_fraction": 0.78,
+        "width_fraction": 0.17
+      },
+      {
+        "control": "mouth_width",
+        "center_fraction": 0.96,
+        "width_fraction": 0.075
+      }
+    ],
+    "analytic_jacobian_determinant": "radial_factor(z)^2 * source_unit_scale_to_mm * height_scale; positive over the continuous field for every accepted control set",
+    "continuous_map_orientation_preserving": true
+  },
+  "mesh": {
+    "source_vertex_count": 326647,
+    "source_face_count": 651814,
+    "derived_vertex_count": 326647,
+    "derived_face_count": 651814,
+    "source_faces_preserved": true,
+    "source_vertex_correspondence_preserved": true,
+    "parts_discarded": false,
+    "source_component_count_reported": 389,
+    "derived_geometry_sha256": "57d821a11e7f949c07a157e7efb0efef98c552b55e8d3ddd69c51de06cf4b915",
+    "vertex_attributes_preserved": true,
+    "vertex_attributes_sha256": "189d166c4fada07837f79ae71d10823fbc8e305860b28c47b5b49384ea8674e5",
+    "vertex_attribute_shape": [
+      326647,
+      3
+    ],
+    "derived_mesh_npz_sha256": "5f8284dd3e33923c2ee9349ee64672e76a9ef47fbc7f3a9aafaaae2dd9ff41a7"
+  },
+  "sampled_jacobian_metrics": {
+    "sample_count": 20000,
+    "sample_indices_sha256": "b7731f20487ede6e3eafc156e003122a7a0efc952f9535f29d3ebb781f59ee0f",
+    "determinant_min": 1000001931.0762824,
+    "determinant_max": 1141028617.9650986,
+    "singular_value_min_sampled": 904.5624429990355,
+    "singular_value_max_sampled": 1167.3661034247516,
+    "radial_scale_min_sampled": 1000.0009655376749,
+    "radial_scale_max_sampled": 1068.189411090139,
+    "scope_note": "Pointwise analytic Jacobians sampled at deterministic original vertices; these values are not a global wall-thickness or between-vertex certificate."
+  },
+  "limitations": [
+    "Uniform or localized stretching also stretches wall thickness; constant physical thickness is not claimed.",
+    "The source is a surface mesh; this mapping does not repair, fill, smooth, decimate, remesh, or reorient it.",
+    "Topological preservation does not establish manifoldness, printability, or physical validity of the source scan."
+  ],
+  "source_audit_inheritance": {
+    "source_connected_components": 389,
+    "derived_connected_components_expected_unchanged": 389,
+    "source_degenerate_triangles": 4,
+    "source_face_array_sha256": "4646fb8de17a6cd8524cc76bfca03bf4ba79bbdc3d553f10a88be96e13a02d44",
+    "face_array_exactly_preserved": true,
+    "vertex_rgb_exactly_preserved": true,
+    "source_obj_attribute_inventory": {
+      "vt": 342151,
+      "vn": 326647,
+      "faces": 651814
+    },
+    "source_vertex_rgb_sha256": "6ba878de9c49b55ef6e92974f9f2442e5a240cbca1cb3f2eb042bad67e1766b4",
+    "raw_geometry_npz_sha256": "f5044bbb781fcead97dfb73d35755caf24fdb8547341757c6fa329dd938671e2",
+    "auxiliary_obj_uv_and_normal_data": "Retained unchanged in the hash-identified source OBJ; derived NPZ carries the original RGB values and indexed triangle geometry."
+  }
+}

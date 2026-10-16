@@ -1,0 +1,463 @@
+{
+  "candidate_dimensions_mm": {
+    "foot_outer_diameter_mm": 31.0,
+    "overall_height_mm": 62.0,
+    "rim_outer_diameter_mm": 108.0
+  },
+  "design_assumptions": {
+    "body_end_handle_height_fraction": 0.22,
+    "body_floor_radius_mm": 10.5,
+    "body_floor_z_mm": 10.0,
+    "body_start_handle_fraction": 0.6,
+    "foot_contact_width_mm": 2.0,
+    "foot_height_mm": 7.0,
+    "foot_outer_diameter_mm": 31.0,
+    "overall_height_mm": 62.0,
+    "rim_outer_diameter_mm": 108.0,
+    "rim_tangent_degrees": 75.0,
+    "underside_recess_z_mm": 6.5,
+    "wall_thickness_mm": 2.0
+  },
+  "interpretation": "A reference-guided design candidate combining an unchanged VF size-reference geometry with independent documented style recipes; not an exact source-object clone.",
+  "known": [
+    "The mesh is a VF generated candidate whose listed envelope dimensions are source-recorded or family-anchor dimensions.",
+    "Triangle tags are bound through source B-rep face indices and exact meridian segment indices.",
+    "Pattern/material output uses existing deterministic SynLab APIs and explicit independent seeds."
+  ],
+  "material_source": {
+    "controls": {
+      "body_albedo_linear_rgb": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "linear_rgb_0_1",
+        "value": [
+          0.22,
+          0.25,
+          0.27
+        ]
+      },
+      "body_ior": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "1",
+        "value": 1.54
+      },
+      "body_roughness": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "1",
+        "value": 0.52
+      },
+      "coating_albedo_linear_rgb": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "linear_rgb_0_1",
+        "value": [
+          0.27,
+          0.37,
+          0.47
+        ]
+      },
+      "coating_band_mm": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "mm",
+        "value": 0.35
+      },
+      "coating_ior": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "1",
+        "value": 1.52
+      },
+      "coating_present": {
+        "source_measurement": "The medium names a blue-gray glaze; layer geometry and properties are not specified.",
+        "status": "SOURCE_FACT",
+        "unit": "categorical",
+        "value": true
+      },
+      "coating_roughness": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "1",
+        "value": 0.24
+      },
+      "coating_transmission": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "1",
+        "value": 0.0
+      },
+      "grain_amount": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "1",
+        "value": 0.08
+      },
+      "grain_scale_mm": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "mm",
+        "value": 0.8
+      },
+      "physical_glaze_thickness_mm": {
+        "source_measurement": null,
+        "status": "UNKNOWN",
+        "unit": "mm",
+        "value": null
+      },
+      "pore_amount": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "1",
+        "value": 0.06
+      },
+      "pore_scale_mm": {
+        "source_measurement": null,
+        "status": "DESIGN_CHOICE",
+        "unit": "mm",
+        "value": 6.0
+      }
+    },
+    "layer_semantics": {
+      "bare_body_surface_tags": [
+        "foot",
+        "base",
+        "interface",
+        "attachment"
+      ],
+      "coated_surface_tags": [
+        "outer_wall",
+        "inner_wall",
+        "rim"
+      ],
+      "depth_band_parameter": "DESIGN_CHOICE_FOR_EXPLICIT_VOLUME_QUERY_ONLY",
+      "mode": "SHADING_LAYER",
+      "note": "Original coated surface tags change sampled appearance only; no solid glaze is modeled.",
+      "physical_solid_status": "NOT_CREATED",
+      "physical_thickness_status": "UNKNOWN",
+      "surface_policy": "original_surface_tags-v1",
+      "surface_query_depth_mm": 0.0,
+      "volume_query_depth": "EXPLICIT_CALLER_DEPTH_REQUIRED"
+    },
+    "material_class": "stoneware",
+    "material_class_evidence_status": "SOURCE_FACT",
+    "mechanics_status": "UNKNOWN",
+    "optical_measurements_status": "UNKNOWN",
+    "process_compatibility": {
+      "firing_schedule": "UNKNOWN",
+      "forming_process": "UNKNOWN",
+      "glaze_chemistry": "UNKNOWN",
+      "source_material_class": "SOURCE_FACT"
+    },
+    "profile_seed": 2026101503,
+    "schema": "shardforge.reference_material_profile.v1",
+    "seed_ref": "[2026101503,\"material\",\"historical_met_jun_stoneware_glaze\"]",
+    "source_object": {
+      "accessed_date": "2026-10-15",
+      "facts": [
+        {
+          "evidence": "object record",
+          "field": "medium",
+          "value": "Stoneware with blue-gray glaze (Jun ware)"
+        },
+        {
+          "evidence": "object record",
+          "field": "date",
+          "value": "12th–13th century"
+        },
+        {
+          "evidence": "object record",
+          "field": "height_mm",
+          "value": 54
+        },
+        {
+          "evidence": "object record",
+          "field": "diameter_mm",
+          "value": 111
+        },
+        {
+          "evidence": "object record",
+          "field": "rim_diameter_mm",
+          "value": 111
+        },
+        {
+          "evidence": "object record",
+          "field": "foot_diameter_mm",
+          "value": 54
+        }
+      ],
+      "institution": "The Metropolitan Museum of Art",
+      "object_id": "18.56.44",
+      "rights_note": "The Met marks the object image Public Domain and its Open Access data available for reuse.",
+      "source_id": "met_18.56.44",
+      "title": "Bowl",
+      "unknowns": [
+        "full inner and outer meridian",
+        "wall, base, rim, and foot cross-sections",
+        "forming and firing schedule",
+        "glaze chemistry and measured thickness",
+        "spectral reflectance, roughness, and index of refraction",
+        "lot-specific mechanical properties"
+      ],
+      "url": "https://www.metmuseum.org/art/collection/search/52389"
+    },
+    "style_id": "historical_met_jun_stoneware_glaze",
+    "style_name": "Jun ware blue-gray glazed stoneware bowl"
+  },
+  "native_face_lineage": {
+    "native_face_roles": {
+      "0": "base",
+      "1": "body_inner",
+      "10": "foot",
+      "11": "foot",
+      "12": "foot",
+      "13": "foot",
+      "14": "foot",
+      "15": "base",
+      "2": "rim",
+      "3": "body_outer",
+      "4": "body_outer",
+      "5": "body_outer",
+      "6": "body_outer",
+      "7": "body_outer",
+      "8": "foot",
+      "9": "foot"
+    },
+    "native_face_source_segment_indices": {
+      "0": [
+        0
+      ],
+      "1": [
+        1
+      ],
+      "10": [
+        10
+      ],
+      "11": [
+        11
+      ],
+      "12": [
+        12
+      ],
+      "13": [
+        13
+      ],
+      "14": [
+        14
+      ],
+      "15": [
+        15
+      ],
+      "2": [
+        2
+      ],
+      "3": [
+        3
+      ],
+      "4": [
+        4
+      ],
+      "5": [
+        5
+      ],
+      "6": [
+        6
+      ],
+      "7": [
+        7
+      ],
+      "8": [
+        8
+      ],
+      "9": [
+        9
+      ]
+    }
+  },
+  "pattern_source": {
+    "caller_overrides": {
+      "s_margin_frac": 0.02
+    },
+    "chart": {
+      "area_mm2": 16968.050598167607,
+      "circumferential_metric": {
+        "circumference_max_mm": 339.0779122400829,
+        "circumference_min_mm": 65.97344572538564,
+        "metric_scale_at_r_max": 1.4430385876158847,
+        "metric_scale_at_r_min": 0.28076800199331803,
+        "radius_max_mm": 53.96592582628908,
+        "radius_min_mm": 10.499999999999998
+      },
+      "kind": "revolve",
+      "name": "reference_body_outer_meridian_polyline",
+      "region_mask": true,
+      "s_periodic": false,
+      "s_range_mm": [
+        0.0,
+        72.93004240692787
+      ],
+      "s_range_source": "measured_from_mesh",
+      "surface_tag": "outer_wall",
+      "surface_tag_index": 0,
+      "u_periodic": true,
+      "uv_to_xyz": false,
+      "x_period_mm": 234.97494464114803
+    },
+    "distribution_claim": "none; defaults are documented recipe choices, not learned estimates",
+    "evidence_status": "CATALOGUE_DESCRIPTION_AND_PRODUCT_PHOTOGRAPH_REVIEWED",
+    "generation_mode": "SYNTHETIC_REFERENCE_GUIDED",
+    "known": [
+      "The Met records the period, stoneware, blue-gray Jun glaze, height, rim diameter and foot diameter.",
+      "The adapter contributes no geometric decoration and selects only the named exterior wall chart."
+    ],
+    "mapping": {
+      "allowed_families": [
+        "PAT01"
+      ],
+      "defaults": {
+        "s_margin_frac": 0.0
+      },
+      "family": "PAT01",
+      "override_ranges": {
+        "s_margin_frac": [
+          0.0,
+          0.2
+        ]
+      },
+      "params": {
+        "low_freq_color": false,
+        "roughness_variation": 0.0
+      },
+      "surface_tag": "outer_wall",
+      "zone": "full measured outer-wall chart; no motif overlay"
+    },
+    "mother_id": "family_daily_deep_v1",
+    "mother_vessel_id": "REFERENCE:daily_deep",
+    "motif_and_meaning": "No painted or incised motif is documented for this catalogued bowl; this adapter encodes an unpatterned outer-wall field only.",
+    "palette_limits": "A flat blue-gray PAT01 albedo proxy only; no glaze layer, pooling, opalescence, crazing, chemistry, thickness or firing physics.",
+    "palette_status": "SOURCE_DESCRIPTION_GUIDED_UNCALIBRATED_DESIGN_PROXY",
+    "process": "Catalogue identifies stoneware with blue-gray glaze (Jun ware). It does not give this bowl's glaze recipe or firing schedule.",
+    "source_url": "https://www.metmuseum.org/art/collection/search/52389",
+    "style_id": "historical_met_jun_plain",
+    "surface_tag": "outer_wall",
+    "unknown": [
+      "Complete section, local wall thickness, glaze chemistry/thickness, firing schedule and calibrated BRDF/color.",
+      "The catalogue does not document an object-specific motif or a glaze distribution for this single bowl."
+    ]
+  },
+  "schema": "synlab.reference_instance_provenance.v1",
+  "section_geometry_details": {
+    "base": {
+      "central_base_thickness_mm": 3.5,
+      "inside_floor_z_mm": 10.0,
+      "recessed_underside_z_mm": 6.5,
+      "status": "DESIGN_ASSUMPTION"
+    },
+    "body_profile": {
+      "curve": "cubic Bezier",
+      "end_handle_height_fraction_of_overall_height": 0.22,
+      "end_handle_length_mm": 13.64,
+      "inner_control_points_rz_mm": [
+        [
+          10.5,
+          10.0
+        ],
+        [
+          35.42044450422656,
+          10.0
+        ],
+        [
+          48.50378239851255,
+          48.08359077451963
+        ],
+        [
+          52.034074173710934,
+          61.25881904510252
+        ]
+      ],
+      "start_handle_fraction_of_floor_to_inner_lip_radial_span": 0.6,
+      "start_handle_length_mm": 24.92044450422656,
+      "status": "DESIGN_ASSUMPTION; adjustable visual profile control, not measured from source"
+    },
+    "foot": {
+      "contact_annulus_radii_mm": [
+        13.0,
+        15.0
+      ],
+      "contact_width_mm": 2.0,
+      "corner_radius_mm": 0.5,
+      "height_mm": 7.0,
+      "outer_diameter_mm": 31.0,
+      "status": "DESIGN_ASSUMPTION unless expressly measured in source record",
+      "underside_recess_z_mm": 6.5
+    },
+    "lip": {
+      "actual_cap_extrema_rz_mm": {
+        "max_radius": 54.0,
+        "max_z": 62.0
+      },
+      "body_inner_endpoint_rz_mm": [
+        52.034074173710934,
+        61.25881904510252
+      ],
+      "body_outer_endpoint_rz_mm": [
+        53.965925826289066,
+        60.74118095489748
+      ],
+      "center_formula": "(D_outer/2 - t/2, H - t/2)",
+      "center_rz_mm": [
+        53.0,
+        61.0
+      ],
+      "construction": "semicircular cap tangent to the inner and outer body at the declared tangent angle",
+      "radius_mm": 1.0,
+      "tangent_angle_degrees": 75.0
+    },
+    "normal_offset_error_scope": "maximum of t=0.25, 0.5 and 0.75 checks per accepted cubic subcurve; no continuous or global error bound is claimed",
+    "normal_offset_fit_acceptance_sample_mm": 0.005,
+    "normal_offset_fit_max_sampled_deviation_mm": 0.0026159869446504723,
+    "outer_normal_offset_mm": 2.0,
+    "wall_thickness_status": "DESIGN_ASSUMPTION; exact normal-offset formula supplies cubic control points, with finite sampled fit diagnostics and no continuous/global error certificate"
+  },
+  "source_dimensions_mm": {
+    "foot_outer_diameter": 31.0,
+    "overall_height": 53.0,
+    "rim_outer_diameter": 108.0
+  },
+  "source_file_sha256": {
+    "face_lineage.json": "9e6c789989cb0f5f42ed9c37f0264bc02899a9c29f571254938a4781640bcfd2",
+    "geometry_report.json": "1dc67385edce05367d92f27cc316874bccc9663c26f63ca157c64a9e3fb3ad64",
+    "provenance.json": "774ad5eb265eaf479cc24bcf0b53a415e938466321422eefda1a8e4e32b40a93",
+    "section.json": "92c9585d92bdcec4774e567deb621aad86c0934c2ee05ffe9e6b32cb5768d2df",
+    "surface.npz": "efbe58712fdeed02c2213f763d63be35f572f311fe3a2efdaa793c059a8e3043"
+  },
+  "source_record": {
+    "collection": "VesselForge design candidate",
+    "dimension_evidence": "Aberdeen dimensions are the family anchor; only candidate overall height changes here.",
+    "object_number": "DESIGN-VARIANT-DAILY-DEEP",
+    "object_url": "https://emuseum.aberdeencity.gov.uk/objects/186848/porcelain-small-footed-bowl",
+    "reported_dimensions_mm": {
+      "foot_outer_diameter": 31.0,
+      "overall_height": 53.0,
+      "rim_outer_diameter": 108.0
+    },
+    "title": "Parametric daily-use bowl family variant",
+    "visual_reference_note": "Generated deeper family variant with the daily candidate rim diameter, wall, and foot held fixed."
+  },
+  "source_rights_status": "NOT_SPECIFIED_FOR_GENERATED_CANDIDATE_MESH; source-record rights are preserved in the linked record",
+  "surface_tag_map": {
+    "0": "outer_wall",
+    "1": "inner_wall",
+    "2": "rim",
+    "3": "foot",
+    "4": "base",
+    "5": "attachment",
+    "6": "interface"
+  },
+  "unknown": [
+    "Exact source-object meridian and local construction are not established.",
+    "Optical colorimetry, glaze chemistry, glaze thickness, forming/firing history, and mechanical properties are unknown.",
+    "Appearance composition is not a calibrated physical shader or coupled material-pattern model."
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "arrays_sha256": "2a91442387d1440dab6cf5bff8ea4e7cfe91b7e90ed9ea6e99f345adf61c7d35",
+  "binding_id": "24231c63f3e8b54763d148f0c4bc3dc8e9e2da34dc167b6988333fe11ee36073",
+  "binding_receipt_sha256": "66d245e9734abdb5095d768bca4f0771427f3a12f8f3408c7054cab7364ab273",
+  "counts": {
+    "exterior_triangle_count": 44182,
+    "interface_triangle_count": 356,
+    "msh_node_count": 25579,
+    "npz_node_count": 25748,
+    "tetrahedron_count": 86624,
+    "unused_node_count": 169
+  },
+  "fracture_created": false,
+  "observations_created": false,
+  "output_bytes": 1330882,
+  "qualification": {
+    "candidate_status": "SIZE_REFERENCE_GEOMETRY_CANDIDATE_ONLY",
+    "deployment_eligible": false,
+    "fracture_status": "NOT_CREATED",
+    "geometry_ancestry_status": "VERIFIED_OCC_WITNESS_ANCESTRY_WITHIN_DECLARED_OCC_TOLERANCES",
+    "observation_status": "NOT_CREATED_BY_GEOMETRY_BINDING",
+    "physical_material_source_statement": "NOT_SPECIFIED; no ceramic density, modulus, Poisson ratio, strength or toughness is inferred.",
+    "physical_material_status": "UNKNOWN",
+    "physical_pass": false,
+    "pretrain_eligible": false,
+    "solver_status": "NOT_ESTABLISHED",
+    "source_profile_fidelity": "NOT_ESTABLISHED; dimensions and photographs do not define the complete meridian or construction.",
+    "structural_geometry_status": "PASS_STRUCTURAL_CAD_ONLY"
+  },
+  "schema": "pgfrag.generic_mother_binding_run_receipt.v1",
+  "solver_run": false,
+  "status": "READ_ONLY_BINDING_VALIDATED",
+  "training_eligible": false,
+  "trusted_audit_receipt_sha256": "ab8e8a0c691a0fa4d31d65e5922ca82900e2bcef4eb7dbba3ef8dd3344e1e7cc"
+}

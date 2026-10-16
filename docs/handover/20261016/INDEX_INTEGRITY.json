@@ -1,0 +1,49 @@
+[
+  {
+    "repository": "vesselforge",
+    "staged_paths": 1313,
+    "staged_present_bytes": 128571832,
+    "protected_byte_bound_paths_checked": 826,
+    "git_blob_byte_mismatches": [],
+    "focused_diff_check_exit_code": 2,
+    "focused_diff_check_lines": 7,
+    "focused_diff_check_sample": [
+      "docs/handover/20261016/PAUSE_AND_RESUME.md:37: new blank line at EOF.",
+      "src/vesselforge/reference_mesh.py:412: new blank line at EOF.",
+      "src/vesselforge/revolved_profile.py:715: new blank line at EOF.",
+      "src/vesselforge/step_partition.py:1210: new blank line at EOF.",
+      "tests/test_revolved_profile.py:165: new blank line at EOF.",
+      "tests/test_spherical_bowl.py:146: new blank line at EOF.",
+      "tests/test_step_partition.py:283: new blank line at EOF."
+    ]
+  },
+  {
+    "repository": "pgfrag",
+    "staged_paths": 2048,
+    "staged_present_bytes": 256046648,
+    "protected_byte_bound_paths_checked": 827,
+    "git_blob_byte_mismatches": [],
+    "focused_diff_check_exit_code": 2,
+    "focused_diff_check_lines": 2,
+    "focused_diff_check_sample": [
+      "src/pgfrag/bowl_dynamics.py:847: new blank line at EOF.",
+      "tests/test_facet_ancestry.py:469: new blank line at EOF."
+    ]
+  },
+  {
+    "repository": "relicweave-synlab",
+    "staged_paths": 3050,
+    "staged_present_bytes": 251032443,
+    "protected_byte_bound_paths_checked": 3013,
+    "git_blob_byte_mismatches": [],
+    "focused_diff_check_exit_code": 2,
+    "focused_diff_check_lines": 5,
+    "focused_diff_check_sample": [
+      "synlab/patterns/bluewhite_panel.py:647: new blank line at EOF.",
+      "synlab/patterns/underglaze.py:556: new blank line at EOF.",
+      "tests/a12/integrations/test_native_bowl.py:468: new blank line at EOF.",
+      "tests/test_bluewhite_panel.py:297: new blank line at EOF.",
+      "tests/test_design_space.py:87: new blank line at EOF."
+    ]
+  }
+]

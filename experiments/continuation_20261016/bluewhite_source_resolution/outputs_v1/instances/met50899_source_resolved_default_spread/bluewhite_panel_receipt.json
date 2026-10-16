@@ -1,0 +1,495 @@
+{
+  "appearance_controls": {
+    "bound_fraction": 0.75,
+    "color_law": "glaze_white_linear_rgb * exp(-tau_rgb * normalized_density)",
+    "continuous_sampling_mode": "source_resolved_stationary_v1",
+    "diffusivity_s_mm2_per_effective_unit": 0.02,
+    "diffusivity_theta_mm2_per_effective_unit": 0.08,
+    "dimensionless_tau_rgb": [
+      3.04,
+      2.56,
+      0.93
+    ],
+    "duration_dimensionless_effective_process_index": 1.0,
+    "effective_K_s_mm2": 0.02,
+    "effective_K_theta_mm2": 0.08,
+    "glaze_white_linear_rgb": [
+      0.94,
+      0.91,
+      0.84
+    ],
+    "mobile_fraction": 0.25,
+    "mobile_fraction_is_measured_chemistry": false,
+    "mobile_transport_is_zero": false,
+    "no_sharpening_or_post_pde_blur": true,
+    "source_resolved_stationary_sampling": true,
+    "tau_is_optical_path_or_measured_coefficient": false
+  },
+  "grid": {
+    "actual_generator_nnz": 1226752,
+    "actual_stiffness_nnz": 1226752,
+    "axial_boundary_condition": "no_flux_at_both_ends",
+    "axial_face_radius": "arithmetic_midpoint_between_true_arclength_centers",
+    "azimuth_boundary_condition": "periodic",
+    "cell_area_source": "caller_supplied_profile_integrated_discrete_cell_measure",
+    "ds_mm": 0.2745557594164831,
+    "dtheta_rad": 0.006135923151542565,
+    "edge_diffusivity": "harmonic_mean",
+    "estimated_peak_working_bytes": 172883968,
+    "first_band_excludes_pole": true,
+    "first_band_radius_mm": 53.93017906493729,
+    "generator_max_abs_row_sum": 75.64952149811174,
+    "grid_cells": 245760,
+    "max_grid_cells": 256000,
+    "max_memory_bytes": 536870912,
+    "max_operator_nnz": 1280000,
+    "minimum_interior_axial_face_radius_mm": 10.7745497241318,
+    "n_s": 240,
+    "n_theta": 1024,
+    "operator_nnz_upper_bound": 1226752,
+    "radius_max_mm": 53.93017906493729,
+    "radius_min_mm": 10.637277424245616,
+    "stiffness_max_abs_row_sum": 9.454242944073599e-17
+  },
+  "interpretation_limits": {
+    "geometry_or_material_mechanics_changed": false,
+    "historical_vase_reproduction": false,
+    "optical_or_firing_calibration": false,
+    "recovered_prefire_pigment": false,
+    "source_state": "already_fired_photo_normalized_appearance_proxy",
+    "synthetic_new_design_on_bowl_candidate": true,
+    "unseen_surface_or_symbolic_meaning_inferred": false
+  },
+  "mass": {
+    "final_bound": 128.40695432340976,
+    "final_mobile": 42.80231810780322,
+    "final_total": 171.20927243121298,
+    "initial_bound": 128.40695432340976,
+    "initial_mobile": 42.80231810780326,
+    "initial_total": 171.20927243121304,
+    "relative_final_total_drift": 3.3201133357801087e-16
+  },
+  "mass_accounting": {
+    "continuous_source_quadrature_equality_claimed": false,
+    "description": "mass values use the finite-volume source and result arrays with the recorded discrete cell areas",
+    "fine_grid_convergence_claimed": false,
+    "scope": "DISCRETE_GRID_MASS_ONLY"
+  },
+  "model": "sourced_photo_proxy_on_actual_sampled_outer_meridian_with_two_fraction_bleed",
+  "panel": {
+    "actual_s_halo_mm": [
+      19.946691129977957,
+      19.946691129977985
+    ],
+    "boundary_halo_mm": 2.0,
+    "center_s_mm": 32.94669112997796,
+    "center_theta_rad": 3.141592653589793,
+    "curvature_mapping_distortion": "source x coordinate is local cylindrical arc distance; no perspective or photo-curvature correction is available",
+    "finite_width_guard": "panel_width_mm < 2*pi*minimum_piecewise_linear_radius_over_panel_band",
+    "height_mm": 26.0,
+    "local_angle_changes_with_r_s": true,
+    "mapping": "single finite panel; x_mm = r(s) * wrapped(theta - center_theta)",
+    "maximum_nonoverlapping_width_mm": 183.43616179317584,
+    "panel_band_minimum_radius_mm": 29.19477189118861,
+    "panel_metric": "dell^2=(dX-a*dY)^2+dY^2; area-preserving but sheared",
+    "periodic_seam_away_from_panel": true,
+    "periodic_seam_clearance_min_angle_rad": 2.3709067210584682,
+    "physical_arc_width_is_row_constant": true,
+    "piecewise_polyline_max_abs_shear_a_bound": 0.6366500408217055,
+    "s_bounds_mm": [
+      19.946691129977957,
+      45.94669112997796
+    ],
+    "shear_bound_convention": "finite piecewise-linear r(s); each intersected segment uses its one-sided constant dr/ds and the declared |X|=width/2; segmentwise bound occurs at its lower-radius endpoint; no smooth-CAD derivative or geometric error certificate is implied",
+    "source_image_top_toward": "lower_s",
+    "theta_half_width_max_rad": 0.7706859325313248,
+    "tiling_or_repetition": false,
+    "width_mm": 45.0
+  },
+  "preview_scene": {
+    "details": [
+      {
+        "bundle": "met50899_source_resolved_default_spread",
+        "camera": {
+          "center_s_mm": 32.94669112997797,
+          "center_theta_rad": 3.141592653589793,
+          "direction_profile_outward_normal": [
+            -0.7628776048565126,
+            9.342556169287274e-17,
+            -0.6465429297489771
+          ],
+          "focal_point_world_mm": [
+            -38.746012563893814,
+            4.745018026609569e-15,
+            22.78284992962833
+          ],
+          "parallel_scales_mm": [
+            35.1,
+            12.48
+          ],
+          "profile_meridian_length_mm": 65.89338225995594,
+          "projection": "orthographic",
+          "view_up_toward_rim": [
+            -0.6465429297489771,
+            7.917867294284369e-17,
+            0.7628776048565126
+          ]
+        },
+        "environment": {
+          "base_fill_linear_rgb": [
+            0.6,
+            0.6,
+            0.6
+          ],
+          "calibration_status": "UNCALIBRATED_PRESENTATION_LIGHTING",
+          "color_space": "LINEAR_RGB_FLOAT",
+          "dimensions_pixels": [
+            64,
+            32
+          ],
+          "image_based_lighting": true,
+          "model": "procedural neutral linear-RGB equirectangular fill with broad softboxes",
+          "schema": "synlab.reference_preview_neutral_studio_environment.v1",
+          "sha256_float32_rgb": "5ebfc7454cbc3cb359453cc90a1911cf2be907accdcda8ca3b2f7ba0b1576f9f",
+          "softbox_linear_rgb": [
+            1.05,
+            1.05,
+            1.05
+          ],
+          "softboxes": [
+            {
+              "columns": [
+                6,
+                23
+              ],
+              "rows": [
+                5,
+                13
+              ]
+            },
+            {
+              "columns": [
+                41,
+                58
+              ],
+              "rows": [
+                4,
+                12
+              ]
+            }
+          ],
+          "spherical_harmonics": false
+        },
+        "geometry_array_sha256": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+        "lighting_mode": "studio_ibl",
+        "native_normal_orientation_check": {
+          "median_dot_with_profile_outward_normal": 0.9955267314201167,
+          "minimum_dot_with_profile_outward_normal": 0.9912208186611049,
+          "nearest_face_centroid_distance_mm": 6.745520417248806,
+          "passed": true,
+          "source_outer_face_normals_checked": 12
+        },
+        "panel_field_file_sha256": "c81b9701555bc061bc621e274b3ec64b6c7441354d866e2a196fddd6b2d71e5c",
+        "preview": "preview_source_resolved_v1_panel_detail.png",
+        "renderer": "VTK PBR appearance proxy with neutral linear-RGB studio IBL",
+        "sha256": "884deac4ab345b558138b41452d80e6be886f6a4b4091100c150a9111af13723",
+        "source_numeric_panel_receipt_sha256": "7e35762dc13f038c18ce6a41477839d523db5fe38d72143b1561b8e7fc5a19f3",
+        "view_definitions": [
+          "Panel normal · full finite motif",
+          "Panel normal · closeup"
+        ]
+      },
+      {
+        "bundle": "met50899_source_resolved_default_spread",
+        "environment": {
+          "base_fill_linear_rgb": [
+            0.6,
+            0.6,
+            0.6
+          ],
+          "calibration_status": "UNCALIBRATED_PRESENTATION_LIGHTING",
+          "color_space": "LINEAR_RGB_FLOAT",
+          "dimensions_pixels": [
+            64,
+            32
+          ],
+          "image_based_lighting": true,
+          "model": "procedural neutral linear-RGB equirectangular fill with broad softboxes",
+          "schema": "synlab.reference_preview_neutral_studio_environment.v1",
+          "sha256_float32_rgb": "5ebfc7454cbc3cb359453cc90a1911cf2be907accdcda8ca3b2f7ba0b1576f9f",
+          "softbox_linear_rgb": [
+            1.05,
+            1.05,
+            1.05
+          ],
+          "softboxes": [
+            {
+              "columns": [
+                6,
+                23
+              ],
+              "rows": [
+                5,
+                13
+              ]
+            },
+            {
+              "columns": [
+                41,
+                58
+              ],
+              "rows": [
+                4,
+                12
+              ]
+            }
+          ],
+          "spherical_harmonics": false
+        },
+        "input_material_albedo_linear_rgb": [
+          0.9509134888648987,
+          0.9410196840763092,
+          0.9014091193675995
+        ],
+        "ior": 1.5,
+        "lighting_mode": "studio_ibl",
+        "metallic": 0.0,
+        "preview": "preview_source_resolved_v1_material_swatch.png",
+        "render_window_srgb_enabled": true,
+        "rendered_center_crop_median_srgb8": [
+          210.0,
+          210.0,
+          210.0
+        ],
+        "rendered_center_crop_size_px": [
+          36,
+          36
+        ],
+        "renderer": "VTK PBR appearance proxy with neutral linear-RGB studio IBL",
+        "roughness": 0.11068277433514595,
+        "sha256": "13b460bf83bcb944d810cfdd2e00281dcf3d3f68945647117515f4d9599163b1",
+        "texture_srgb8": [
+          249,
+          248,
+          244
+        ],
+        "view_definitions": [
+          "PBR material swatch · neutral studio IBL"
+        ]
+      }
+    ],
+    "environment": {
+      "base_fill_linear_rgb": [
+        0.6,
+        0.6,
+        0.6
+      ],
+      "calibration_status": "UNCALIBRATED_PRESENTATION_LIGHTING",
+      "color_space": "LINEAR_RGB_FLOAT",
+      "dimensions_pixels": [
+        64,
+        32
+      ],
+      "image_based_lighting": true,
+      "model": "procedural neutral linear-RGB equirectangular fill with broad softboxes",
+      "schema": "synlab.reference_preview_neutral_studio_environment.v1",
+      "sha256_float32_rgb": "5ebfc7454cbc3cb359453cc90a1911cf2be907accdcda8ca3b2f7ba0b1576f9f",
+      "softbox_linear_rgb": [
+        1.05,
+        1.05,
+        1.05
+      ],
+      "softboxes": [
+        {
+          "columns": [
+            6,
+            23
+          ],
+          "rows": [
+            5,
+            13
+          ]
+        },
+        {
+          "columns": [
+            41,
+            58
+          ],
+          "rows": [
+            4,
+            12
+          ]
+        }
+      ],
+      "spherical_harmonics": false
+    },
+    "field_arrays_unchanged": true,
+    "geometry_arrays_unchanged": true,
+    "mapping_controls_sha256": "9ccc16682bf335f14bc5c9902083da2b5b90659ce9115a5a82c19659a3390d52",
+    "preview_revision": "source_resolved_v1",
+    "source_field_npz_sha256_after": "c81b9701555bc061bc621e274b3ec64b6c7441354d866e2a196fddd6b2d71e5c",
+    "source_field_npz_sha256_before": "c81b9701555bc061bc621e274b3ec64b6c7441354d866e2a196fddd6b2d71e5c",
+    "source_geometry_array_sha256_after": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+    "source_geometry_array_sha256_before": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+    "source_numeric_panel_receipt_sha256": "7e35762dc13f038c18ce6a41477839d523db5fe38d72143b1561b8e7fc5a19f3"
+  },
+  "schema": "synlab.patterns.bluewhite_panel_receipt.v2",
+  "solver_receipt": {
+    "bound_fraction": 0.75,
+    "claims": {
+      "firing_reconstruction": false,
+      "measured_glaze_chemistry": false,
+      "mechanical_geometry_change": false
+    },
+    "duration": 1.0,
+    "interpretation": "appearance parameterization; not measured glaze chemistry",
+    "mass": {
+      "final_bound": 128.40695432340976,
+      "final_mobile": 42.80231810780322,
+      "final_total": 171.20927243121298,
+      "initial_bound": 128.40695432340976,
+      "initial_mobile": 42.80231810780326,
+      "initial_total": 171.20927243121304,
+      "relative_final_total_drift": 3.3201133357801087e-16
+    },
+    "mobile_diffusion_receipt": {
+      "appearance_calibration": "not_applicable_to_diffusion_field",
+      "boundary_conditions": {
+        "s": "no_flux_at_both_ends",
+        "theta": "periodic"
+      },
+      "claims": {
+        "firing_reconstruction": false,
+        "mechanical_geometry_change": false
+      },
+      "concentration_units": "caller_defined_pigment_loading_units",
+      "diffusivity": {
+        "effective_s_diffusion_max_mm2": 0.02,
+        "effective_s_diffusion_min_mm2": 0.02,
+        "effective_theta_diffusion_max_mm2": 0.08,
+        "effective_theta_diffusion_min_mm2": 0.08,
+        "s_max_mm2_per_effective_unit": 0.02,
+        "s_min_mm2_per_effective_unit": 0.02,
+        "theta_max_mm2_per_effective_unit": 0.08,
+        "theta_min_mm2_per_effective_unit": 0.08
+      },
+      "diffusivity_units": "mm^2_per_effective_process_unit",
+      "duration": 1.0,
+      "duration_units": "dimensionless_effective_process_index",
+      "exponential_work": {
+        "maximum_scaled_generator_infinity_norm": 1000.0,
+        "scaled_generator_infinity_norm": 75.64952149811174
+      },
+      "grid": {
+        "cell_area_max_mm2": 0.09085351559909523,
+        "cell_area_min_mm2": 0.017920121036569623,
+        "ds_mm": 0.2745557594164831,
+        "dtheta_rad": 0.006135923151542565,
+        "first_band_excludes_pole": true,
+        "first_band_radius_mm": 53.93017906493729,
+        "n_s": 240,
+        "n_theta": 1024,
+        "radius_max_mm": 53.93017906493729,
+        "radius_min_mm": 10.637277424245616
+      },
+      "integrated_diffusion_units": "mm^2",
+      "mass": {
+        "absolute_final_drift_after_clip": 4.263256414560601e-14,
+        "absolute_solver_drift": 4.263256414560601e-14,
+        "after_roundoff_clip": 42.80231810780322,
+        "after_solver_before_roundoff_clip": 42.80231810780322,
+        "before": 42.80231810780326,
+        "relative_final_drift_after_clip": 9.960340007340327e-16,
+        "relative_solver_drift": 9.960340007340327e-16,
+        "roundoff_clip_added_mass": 3.3099755151673304e-170
+      },
+      "model": "metric_surface_of_revolution_finite_volume_sparse_exponential",
+      "operator": {
+        "actual_generator_nnz": 1226752,
+        "actual_stiffness_nnz": 1226752,
+        "axial_boundary_condition": "no_flux_at_both_ends",
+        "axial_face_radius": "arithmetic_midpoint_between_true_arclength_centers",
+        "azimuth_boundary_condition": "periodic",
+        "cell_area_source": "caller_supplied_profile_integrated_discrete_cell_measure",
+        "conductances_nonnegative": true,
+        "edge_diffusivity": "harmonic_mean",
+        "estimated_peak_working_bytes": 172883968,
+        "first_band_excludes_pole": true,
+        "first_band_radius_mm": 53.93017906493729,
+        "generator_max_abs_row_sum": 75.64952149811174,
+        "generator_symmetric_by_area_similarity_transform": true,
+        "grid_cells": 245760,
+        "max_grid_cells": 256000,
+        "max_memory_bytes": 536870912,
+        "max_operator_nnz": 1280000,
+        "minimum_interior_axial_face_radius_mm": 10.7745497241318,
+        "negative_semidefinite_by_nonnegative_graph_conductances": true,
+        "operator_nnz_upper_bound": 1226752,
+        "radius_max_mm": 53.93017906493729,
+        "radius_min_mm": 10.637277424245616,
+        "stiffness_max_abs_row_sum": 9.454242944073599e-17,
+        "stiffness_symmetric_by_paired_face_assembly": true
+      },
+      "roundoff": {
+        "absolute_clip_tolerance": 2.842170943040401e-14,
+        "material_negative_values_clipped": false,
+        "minimum_solver_concentration": -9.900475202327444e-169,
+        "negative_cell_count": 161
+      },
+      "schema": "synlab.underglaze.diffusion_receipt.v1",
+      "solver": "scipy.sparse.linalg.expm_multiply"
+    },
+    "mobile_fraction": 0.25,
+    "model": "empirical_normalized_bound_plus_mobile_phase",
+    "no_sharpening_or_renormalization": true,
+    "schema": "synlab.underglaze.two_fraction_appearance_receipt.v1"
+  },
+  "source": {
+    "mask_semantics": "continuous blue-excess chroma proxy from an already-fired photo; tonal values retained; not recovered pre-fire pigment",
+    "normalized_density_hash_binds_shape_and_dtype": true,
+    "normalized_density_hash_canonical_dtype": "<f8",
+    "normalized_density_hash_input_dtype": "<f8",
+    "normalized_density_hash_schema": "synlab.patterns.bluewhite_panel.normalized_density_sha256.v1",
+    "normalized_density_sha256": "73e914de5476f1f271077b5fbcd63723320069c558e0fed7e9e6af6bb52a5770",
+    "photo_state": "already_fired_photo",
+    "source_density_contains_tonal_variation": true,
+    "source_density_shape": [
+      1160,
+      2000
+    ],
+    "source_density_value_range": [
+      0.0,
+      1.0
+    ],
+    "source_id": "met-50899-o2-dragon-continuous-cobalt-chroma",
+    "source_mask_path": "relicweave-synlab\\synlab\\patterns\\resources\\bluewhite_20261015\\derived\\met_50899_O2_dragon_cobalt_fired_photo_mask.png",
+    "source_mask_sha256": "bc166ca1adf15907f8049f39e81a8cfe75486818e231a2d4b998c49797782da5",
+    "source_url": "https://www.metmuseum.org/art/collection/search/50899",
+    "title": "Vase with dragon, already-fired O2 photo-derived crop"
+  },
+  "surface": {
+    "arclength_is_exact_cad": false,
+    "boundary_conditions": {
+      "s": "no_flux_at_both_outer_meridian_ends",
+      "theta": "periodic_exactly_n_theta_cells"
+    },
+    "cell_area_max_mm2": 0.09085351559909523,
+    "cell_area_method": "piecewise-linear exact integral of r(s) over each meridian cell times dtheta",
+    "cell_area_min_mm2": 0.017920121036569623,
+    "coordinate_frame": "sampled outer-meridian polyline [radius_mm,z_mm,s_mm]",
+    "meridian_length_mm": 65.89338225995594,
+    "positive_radius_annular_chart": true,
+    "radius_max_mm": 53.93017906493729,
+    "radius_min_mm": 10.637277424245616,
+    "s_definition": "cumulative Euclidean segment length over the supplied finite (r,z) polyline from its first row",
+    "s_input_column_status": "chart_payload_zero_placeholder_recomputed_from_rz_polyline",
+    "s_origin_rz_mm": [
+      53.96592582628907,
+      51.74118095489748
+    ],
+    "s_terminal_rz_mm": [
+      10.5,
+      8.0
+    ]
+  }
+}

@@ -1,0 +1,248 @@
+{
+  "appearance_pairs": [
+    {
+      "controls": {
+        "material": {
+          "coating_roughness": 0.18
+        },
+        "pattern": {
+          "line_width_mm": 1.0,
+          "spacing_mm": 10.0
+        }
+      },
+      "material": "daily_aberdeen_porcelain_celadon",
+      "name": "daily_tokusa_celadon_proxy",
+      "pattern": "daily_hasami_tokusa",
+      "seeds": {
+        "material": 2026101501,
+        "pattern": 2026101502
+      }
+    },
+    {
+      "controls": {
+        "material": {
+          "coating_roughness": 0.24
+        },
+        "pattern": {
+          "s_margin_frac": 0.02
+        }
+      },
+      "material": "historical_met_jun_stoneware_glaze",
+      "name": "jun_plain_bluegrey_proxy",
+      "pattern": "historical_met_jun_plain",
+      "seeds": {
+        "material": 2026101503,
+        "pattern": 2026101504
+      }
+    }
+  ],
+  "geometry_variants": [
+    "family_daily_deep_v1",
+    "family_daily_full_belly_v1",
+    "family_daily_broad_foot_v1"
+  ],
+  "results": [
+    {
+      "appearance_pair": "daily_tokusa_celadon_proxy",
+      "bounds_mm": [
+        [
+          -53.99984769515638,
+          -53.966952446967554,
+          -2.220446049250313e-16
+        ],
+        [
+          53.99984769515638,
+          53.96695244696755,
+          61.99984769515639
+        ]
+      ],
+      "files": {
+        "geometry_and_fields.npz": "8edcb785b5b2717e50dd658dd8aed36d62a39d42228ec0370f65304ab8a8d2e8",
+        "manifest.json": "64f927e35f5e01a0010fa3be954cc34d32dd84018a987b59d40bb1ac5f2dc8cb",
+        "metrics.json": "acf403f741b37b476859d30656fd56015e2807f66adf2f3d4830e262b5772e83",
+        "provenance.json": "633d49f286fdb8116bd9608bd8f0ec0357deab38ec763d90192912731cd412b8",
+        "recipe.json": "996676751ac16e8aac88884898606629794c1d0b5d626e5aa50d4d783ec3f450"
+      },
+      "geometry_array_sha256": "180c485e988507f33ad489b9bfea7742645adca82646ee273d469a9830acf402",
+      "geometry_unchanged": true,
+      "geometry_variant": "family_daily_deep_v1",
+      "material_layer_triangle_counts": {
+        "body": 13688,
+        "source_named_surface_finish": 12218
+      },
+      "output": "family_daily_deep_v1__daily_tokusa_celadon_proxy",
+      "pattern_region_triangle_count": 220,
+      "volume_mm3": 36532.06722343312
+    },
+    {
+      "appearance_pair": "jun_plain_bluegrey_proxy",
+      "bounds_mm": [
+        [
+          -53.99984769515638,
+          -53.966952446967554,
+          -2.220446049250313e-16
+        ],
+        [
+          53.99984769515638,
+          53.96695244696755,
+          61.99984769515639
+        ]
+      ],
+      "files": {
+        "geometry_and_fields.npz": "d9c4a8f3f3290fa7963cbde8182c85eaa421f99915ee9fc595766580e155ac83",
+        "manifest.json": "3a7f9001b7744f2c82548cb690ab0f30d35923285028651e6c9769c3658b9976",
+        "metrics.json": "8b0b711b09d3eaaf6feed6bd2a7797fc9b4900f85820324ea727bea9811ac276",
+        "provenance.json": "4c09eb569bc0c66c7f2e8503f3206c132f7663c1c8df011a3f4efb06d7a8ecb4",
+        "recipe.json": "ee5035d855218e57f7a5479fc0b8c31ce7370a6382f31bc221512280d33e7e63"
+      },
+      "geometry_array_sha256": "180c485e988507f33ad489b9bfea7742645adca82646ee273d469a9830acf402",
+      "geometry_unchanged": true,
+      "geometry_variant": "family_daily_deep_v1",
+      "material_layer_triangle_counts": {
+        "body": 13688,
+        "source_named_surface_finish": 12218
+      },
+      "output": "family_daily_deep_v1__jun_plain_bluegrey_proxy",
+      "pattern_region_triangle_count": 1984,
+      "volume_mm3": 36532.06722343312
+    },
+    {
+      "appearance_pair": "daily_tokusa_celadon_proxy",
+      "bounds_mm": [
+        [
+          -53.99939082701909,
+          -53.966495857141986,
+          -2.220446049250313e-16
+        ],
+        [
+          53.99939082701909,
+          53.966495857141986,
+          53.0
+        ]
+      ],
+      "files": {
+        "geometry_and_fields.npz": "dc3faad26dc99d648b176ee2604ba2bc48f704cce5fee1850628f4431662666a",
+        "manifest.json": "3dfcdfbfc5a7a2685c9100459b0fd27ddf870e6c47143162fa1b885ba9fecc48",
+        "metrics.json": "ec941c31a06b70ba68f665453a37ada96281ad3b147275b16de0d1aeffc7d517",
+        "provenance.json": "cefd478d64747c81a21b405b4c1649ec4aac4ea6cdb04ad7f9122bc261fa6629",
+        "recipe.json": "c9c8d4a1ef95855e5bc9f090a786fddc28105e2154cbebe74d61c3105bd71c19"
+      },
+      "geometry_array_sha256": "471cb0dcf827907dfeb435357bf2137146e2098e9174bb480884b8d76ca08144",
+      "geometry_unchanged": true,
+      "geometry_variant": "family_daily_full_belly_v1",
+      "material_layer_triangle_counts": {
+        "body": 13688,
+        "source_named_surface_finish": 12304
+      },
+      "output": "family_daily_full_belly_v1__daily_tokusa_celadon_proxy",
+      "pattern_region_triangle_count": 250,
+      "volume_mm3": 34334.50770951849
+    },
+    {
+      "appearance_pair": "jun_plain_bluegrey_proxy",
+      "bounds_mm": [
+        [
+          -53.99939082701909,
+          -53.966495857141986,
+          -2.220446049250313e-16
+        ],
+        [
+          53.99939082701909,
+          53.966495857141986,
+          53.0
+        ]
+      ],
+      "files": {
+        "geometry_and_fields.npz": "f5ca2055219bb9fac99224b9c17201357a2891437c6b757e65de93bacc05568d",
+        "manifest.json": "3f78671b9bb2d6fef1ff9262c732a5d415567e82455c51f8e9ade5d77f78c5da",
+        "metrics.json": "71a2f4ff4befe653437d4d15f961b26a6ea63bf1b1c1f26a6fc44b201c694aee",
+        "provenance.json": "d1dacf698a83da5a441502108216d6c878b54afb12138a5fb575852c18b7c88c",
+        "recipe.json": "7a49d323ed05109ee0c40d187f67432a61ae577fa53ccc491894a458214edc45"
+      },
+      "geometry_array_sha256": "471cb0dcf827907dfeb435357bf2137146e2098e9174bb480884b8d76ca08144",
+      "geometry_unchanged": true,
+      "geometry_variant": "family_daily_full_belly_v1",
+      "material_layer_triangle_counts": {
+        "body": 13688,
+        "source_named_surface_finish": 12304
+      },
+      "output": "family_daily_full_belly_v1__jun_plain_bluegrey_proxy",
+      "pattern_region_triangle_count": 2115,
+      "volume_mm3": 34334.50770951849
+    },
+    {
+      "appearance_pair": "daily_tokusa_celadon_proxy",
+      "bounds_mm": [
+        [
+          -53.99984769515638,
+          -53.966952446967554,
+          -1.1102230246251565e-16
+        ],
+        [
+          53.99984769515638,
+          53.96695244696755,
+          52.99984769515639
+        ]
+      ],
+      "files": {
+        "geometry_and_fields.npz": "d29e1184a1df03cc10115542cf4111633f2edfe116233e4b0bef7bdfc1b4b308",
+        "manifest.json": "3c1669ff45119387cb04da2885a035cc9c31983ab2cad2dc15a84d914eef5355",
+        "metrics.json": "379ad2a9d14640f60ea3021f8a37dc25819f9599843bab3021d8e6f287454d6b",
+        "provenance.json": "a560b8077abe5d4e5bd153d09838a4f0bc6f2f54cf75b625ccdfde9af4420653",
+        "recipe.json": "750a21402b492f59582a00e54cfeca0d0ac5b335ffda8fc39547978d49fdd576"
+      },
+      "geometry_array_sha256": "26b75b8fc497db03d3c14b10e50aebc9da2720e5a644980d16863aa246f2f534",
+      "geometry_unchanged": true,
+      "geometry_variant": "family_daily_broad_foot_v1",
+      "material_layer_triangle_counts": {
+        "body": 13500,
+        "source_named_surface_finish": 11910
+      },
+      "output": "family_daily_broad_foot_v1__daily_tokusa_celadon_proxy",
+      "pattern_region_triangle_count": 206,
+      "volume_mm3": 33473.5225391185
+    },
+    {
+      "appearance_pair": "jun_plain_bluegrey_proxy",
+      "bounds_mm": [
+        [
+          -53.99984769515638,
+          -53.966952446967554,
+          -1.1102230246251565e-16
+        ],
+        [
+          53.99984769515638,
+          53.96695244696755,
+          52.99984769515639
+        ]
+      ],
+      "files": {
+        "geometry_and_fields.npz": "0f47ece9595256ea1e42f01474aa73e4d69d34b8923af2b978fdcfffd080ce4f",
+        "manifest.json": "a7c15b06347b7b925b048fda23df6556020a0d6598ca7c0f372aa185357e7e91",
+        "metrics.json": "a6f1ae9ce8aadb424b35bd8c6756d60817af398f57fac58a3c664544d65a3dfb",
+        "provenance.json": "f128d691f59c8e97d08952b649611275521aa73ada3610d91a6c0dae8b498bfb",
+        "recipe.json": "046571d24d236bc00ceb76d4d5c96f6df38d8d4c4b389e90fd48af67e72a55ce"
+      },
+      "geometry_array_sha256": "26b75b8fc497db03d3c14b10e50aebc9da2720e5a644980d16863aa246f2f534",
+      "geometry_unchanged": true,
+      "geometry_variant": "family_daily_broad_foot_v1",
+      "material_layer_triangle_counts": {
+        "body": 13500,
+        "source_named_surface_finish": 11910
+      },
+      "output": "family_daily_broad_foot_v1__jun_plain_bluegrey_proxy",
+      "pattern_region_triangle_count": 1853,
+      "volume_mm3": 33473.5225391185
+    }
+  ],
+  "schema": "synlab.reference_generation_experiment.v1",
+  "scope": {
+    "appearance": "Two existing source-described material/pattern API combinations per geometry candidate.",
+    "geometry": "Three pre-existing daily family candidate meshes loaded unchanged; they differ through their source VF section geometry.",
+    "geometry_variation": "No geometry sampling or shape mutation is done by the appearance composer.",
+    "interpretation": "Generated variants are explicit mixed-source design recipes, not exact museum or maker-object clones.",
+    "physics": "No physical glaze thickness, chemistry, material mechanics or pigment diffusion is asserted in this first vertical slice.",
+    "training_export": "NONE"
+  },
+  "status": "REFERENCE_GUIDED_DESIGN_CANDIDATE"
+}

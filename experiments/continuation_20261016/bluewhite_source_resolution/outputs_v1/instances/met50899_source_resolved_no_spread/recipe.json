@@ -1,0 +1,328 @@
+{
+  "composition_policy": {
+    "appearance_transfer": "outer-wall source-conditioned material albedo multiplied by exp(-tau_rgb * total_density); roughness and IOR unchanged; appearance-only proxy",
+    "coating_claim": "appearance layer selection only; no physical glaze thickness or mechanics claim",
+    "continuous_preview_texture": "deterministic bounded API samples on the actual outer meridian chart; dimensions are recorded in texture metrics; defaults are 512 x 1024; linear RGB retained, preview PNG converted to sRGB; no geometry refinement",
+    "fresh_interface": "body material only; no glaze and no original-surface pattern",
+    "geometry_effect": "none; source geometry remains byte-value-identical in canonical array representation",
+    "inside_floor_binding": "The exact axis-to-body_inner source section segment is mapped to inner_wall for original-surface finish selection. The exterior underside remains base/bare. The body_inner pattern chart excludes this inside floor; no floor UV/pattern placement is claimed.",
+    "material_field": "source-conditioned material profile sampled at original triangle centroids and lineage tags",
+    "pattern_field": "finite photo-derived pigment density sampled on the actual outer-wall chart"
+  },
+  "controls_requested": {
+    "material": {},
+    "pattern": {
+      "continuous_sampling_mode": "source_resolved_stationary_v1",
+      "duration": 0.0
+    }
+  },
+  "experiment_recipe": {
+    "canonical_recipe_sha256": "cc5784bb29c8b47552a2451bd73fe94dcc36474c47963814d7a88206d2e20f1b",
+    "design_model": "FootedBowlDesign",
+    "design_overrides": {
+      "name": "met50899_source_resolved_no_spread"
+    },
+    "family": "footed_bowl",
+    "geometry_preset": "daily",
+    "instance_id": "met50899_source_resolved_no_spread"
+  },
+  "generation_mode": "NEW_REFERENCE_GUIDED_DESIGN",
+  "material": {
+    "coating_surface_policy": {
+      "bare_body_tags": [
+        "foot",
+        "base",
+        "new_fracture",
+        "interface",
+        "attachment"
+      ],
+      "coated_tags": [
+        "outer_wall",
+        "inner_wall",
+        "rim"
+      ],
+      "mode": "original_surface_tags",
+      "surface_query_depth_mm": 0.0,
+      "version": 1,
+      "volume_query_depth": "EXPLICIT_CALLER_DEPTH_REQUIRED",
+      "volume_tag": "volume"
+    },
+    "material_id": "M04",
+    "profile_hash": "sha256:cd385b7eb06321e191df9f9b443923bd66f0d83d151ecacc3ee93854274a2128",
+    "source_conditioned": {
+      "controls": {
+        "body_albedo_linear_rgb": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "linear_rgb_0_1",
+          "value": [
+            0.88,
+            0.86,
+            0.8
+          ]
+        },
+        "body_ior": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "1",
+          "value": 1.56
+        },
+        "body_roughness": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "1",
+          "value": 0.36
+        },
+        "coating_albedo_linear_rgb": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "linear_rgb_0_1",
+          "value": [
+            0.96,
+            0.95,
+            0.91
+          ]
+        },
+        "coating_band_mm": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "mm",
+          "value": 0.2
+        },
+        "coating_ior": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "1",
+          "value": 1.5
+        },
+        "coating_present": {
+          "note": "A clear/pale appearance-only layer is a rendering proxy; the object record names underglaze cobalt but does not describe a distinct clear-glaze layer or its properties.",
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "categorical",
+          "value": true
+        },
+        "coating_roughness": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "1",
+          "value": 0.11
+        },
+        "coating_transmission": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "1",
+          "value": 0.02
+        },
+        "grain_amount": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "1",
+          "value": 0.03
+        },
+        "grain_scale_mm": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "mm",
+          "value": 0.18
+        },
+        "physical_glaze_thickness_mm": {
+          "source_measurement": null,
+          "status": "UNKNOWN",
+          "unit": "mm",
+          "value": null
+        },
+        "pore_amount": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "1",
+          "value": 0.02
+        },
+        "pore_scale_mm": {
+          "source_measurement": null,
+          "status": "DESIGN_CHOICE",
+          "unit": "mm",
+          "value": 0.5
+        }
+      },
+      "layer_semantics": {
+        "bare_body_surface_tags": [
+          "foot",
+          "base",
+          "new_fracture",
+          "interface",
+          "attachment"
+        ],
+        "coated_surface_tags": [
+          "outer_wall",
+          "inner_wall",
+          "rim"
+        ],
+        "depth_band_parameter": "DESIGN_CHOICE_FOR_EXPLICIT_VOLUME_QUERY_ONLY",
+        "mode": "SHADING_LAYER",
+        "note": "The clear/pale appearance-only layer is a design proxy and is not a claim about glaze chemistry, physical thickness, or a separately documented clear glaze.",
+        "physical_solid_status": "NOT_CREATED",
+        "physical_thickness_status": "UNKNOWN",
+        "surface_policy": "original_surface_tags-v1",
+        "surface_query_depth_mm": 0.0,
+        "volume_query_depth": "EXPLICIT_CALLER_DEPTH_REQUIRED"
+      },
+      "material_class": "porcelain",
+      "material_class_evidence_status": "SOURCE_FACT",
+      "mechanics_status": "UNKNOWN",
+      "optical_measurements_status": "UNKNOWN",
+      "process_compatibility": {
+        "firing_schedule": "UNKNOWN",
+        "forming_process": "UNKNOWN",
+        "glaze_chemistry": "UNKNOWN",
+        "source_material_class": "SOURCE_FACT",
+        "source_named_decoration": {
+          "appearance_composition": "SEPARATE_FROM_SUBSTRATE_PROFILE",
+          "compatibility": {
+            "basis": "ceramic substrate class supports a separately composed underglaze-cobalt appearance; object-specific pigment formulation and firing behavior remain unknown",
+            "effect_scope": "SEPARATE_APPEARANCE_LAYER",
+            "material_class": "porcelain",
+            "process": "underglaze_cobalt",
+            "status": "COMPATIBLE_SUBSTRATE_CLASS"
+          },
+          "process": "underglaze_cobalt",
+          "source_measurement": "Porcelain painted in underglaze cobalt blue (Jingdezhen ware)",
+          "status": "SOURCE_FACT"
+        }
+      },
+      "profile_seed": 2026101601,
+      "schema": "shardforge.reference_material_profile.v1",
+      "seed_ref": "[2026101601,\"material\",\"historical_met_50899_porcelain_clear_underglaze\"]",
+      "source_object": {
+        "accessed_date": "2026-10-15",
+        "accession_number": "29.149.50",
+        "facts": [
+          {
+            "evidence": "object record",
+            "field": "object_name",
+            "value": "Vase"
+          },
+          {
+            "evidence": "object record",
+            "field": "accession_number",
+            "value": "29.149.50"
+          },
+          {
+            "evidence": "object record",
+            "field": "culture",
+            "value": "China"
+          },
+          {
+            "evidence": "object record",
+            "field": "date",
+            "value": "late 18th century; Qianlong period (1736–95), Qing dynasty (1644–1911)"
+          },
+          {
+            "evidence": "object record",
+            "field": "medium",
+            "value": "Porcelain painted in underglaze cobalt blue (Jingdezhen ware)"
+          },
+          {
+            "evidence": "object record",
+            "field": "height_mm",
+            "value": 184
+          },
+          {
+            "evidence": "object record",
+            "field": "object_image_rights",
+            "value": "Public Domain"
+          },
+          {
+            "evidence": "qualitative observation of the primary object photograph; illumination, camera, and surface response are not separated; not colorimetry",
+            "field": "visual_observation",
+            "value": "the retained O2 photograph shows a pale warm-white body, blue decoration, and bright surface reflections"
+          }
+        ],
+        "institution": "The Metropolitan Museum of Art",
+        "object_id": "50899",
+        "rights_note": "The Met object page identifies the object image as Public Domain; the photograph is used only for qualitative appearance context.",
+        "source_id": "met_29.149.50",
+        "title": "Vase with dragon",
+        "unknowns": [
+          "overall diameter, maximum width, full inner and outer meridian, and local cross-sections",
+          "whether a distinct clear glaze layer is present and its composition or measured thickness",
+          "forming and firing schedule",
+          "spectral reflectance, roughness, and index of refraction",
+          "lot-specific mechanical properties"
+        ],
+        "url": "https://www.metmuseum.org/art/collection/search/50899",
+        "visual_observation_boundary": "The pale warm-white body and bright reflections are photograph observations only; no white-point, colorimetry, gloss, or glaze property is inferred."
+      },
+      "style_id": "historical_met_50899_porcelain_clear_underglaze",
+      "style_name": "Met 50899 porcelain with clear-glaze appearance proxy"
+    },
+    "style_id": "historical_met_50899_porcelain_clear_underglaze"
+  },
+  "pattern": {
+    "claim_boundary": "finite photo-derived appearance proxy; not recovered pre-fire placement, authentic wrap, calibrated optics, chemistry, or firing mechanics",
+    "composed_color_law": "source_conditioned_material_albedo_linear_rgb * exp(-tau_rgb * total_density); material roughness and IOR unchanged",
+    "family_id": null,
+    "field_family_id": "met_50899_photo_projection_cobalt_panel_two_fraction_bleed.v1",
+    "field_receipt_schema": "synlab.patterns.bluewhite_panel_receipt.v2",
+    "field_receipt_sha256": "6e8ff55ad2f0fcc49c5d03a627a797ceeab974f748d6479a21c2d0a945c0d972",
+    "mapping_and_spread_controls": {
+      "boundary_halo_mm": 2.0,
+      "center_s_fraction": 0.5,
+      "center_theta_rad": 3.141592653589793,
+      "continuous_sampling_mode": "source_resolved_stationary_v1",
+      "diffusivity_s_mm2_per_unit": 0.02,
+      "diffusivity_theta_mm2_per_unit": 0.08,
+      "duration": 0.0,
+      "glaze_white_linear_rgb": [
+        0.94,
+        0.91,
+        0.84
+      ],
+      "image_top_toward": "lower_s",
+      "mobile_fraction": 0.25,
+      "n_s": 240,
+      "n_theta": 1024,
+      "panel_height_mm": 26.0,
+      "panel_width_mm": 45.0,
+      "tau_rgb": [
+        3.04,
+        2.56,
+        0.93
+      ]
+    },
+    "seed_ref": null,
+    "source_field": {
+      "mask_semantics": "continuous blue-excess chroma proxy from an already-fired photo; tonal values retained; not recovered pre-fire pigment",
+      "normalized_density_sha256": "73e914de5476f1f271077b5fbcd63723320069c558e0fed7e9e6af6bb52a5770",
+      "photo_state": "already_fired_photo",
+      "source_id": "met-50899-o2-dragon-continuous-cobalt-chroma",
+      "source_mask_path": "relicweave-synlab\\synlab\\patterns\\resources\\bluewhite_20261015\\derived\\met_50899_O2_dragon_cobalt_fired_photo_mask.png",
+      "source_mask_sha256": "bc166ca1adf15907f8049f39e81a8cfe75486818e231a2d4b998c49797782da5",
+      "source_url": "https://www.metmuseum.org/art/collection/search/50899",
+      "title": "Vase with dragon, already-fired O2 photo-derived crop"
+    },
+    "style_id": "met_50899_partial_dragon_panel",
+    "substrate_compatibility": {
+      "basis": "ceramic substrate class supports a separately composed underglaze-cobalt appearance; object-specific pigment formulation and firing behavior remain unknown",
+      "effect_scope": "SEPARATE_APPEARANCE_LAYER",
+      "material_class": "porcelain",
+      "material_class_evidence_status": "SOURCE_FACT",
+      "process": "underglaze_cobalt",
+      "status": "COMPATIBLE_SUBSTRATE_CLASS"
+    }
+  },
+  "schema": "synlab.reference_instance_recipe.v1",
+  "seeds": {
+    "material": 2026101601,
+    "pattern": 2026101602
+  },
+  "source_geometry": {
+    "candidate_status": "SIZE_REFERENCE_GEOMETRY_CANDIDATE_ONLY",
+    "directory_name": "met50899_source_resolved_no_spread",
+    "frame": "radius_mm_vs_z_mm; revolved about Z axis; Z-up",
+    "geometry_array_sha256": "7714b224dfc866d119cc1e42c664bf31c3ba6a05584630bad1c19b2f68195729",
+    "geometry_source_sha256": "b1ce6521290073fae7b48103d95333782d4d42e031a302d8c38ed2f5c0db17f3",
+    "refinement_status": "SOURCE_PROFILE_FIDELITY_NOT_ESTABLISHED",
+    "source_profile_fidelity": "NOT_ESTABLISHED; dimensions and photographs do not define the complete meridian or construction."
+  }
+}

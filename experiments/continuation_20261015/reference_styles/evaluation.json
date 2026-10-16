@@ -1,0 +1,591 @@
+{
+  "schema": "synlab.reference_style_preview.v1",
+  "generation_mode": "SYNTHETIC_REFERENCE_GUIDED",
+  "master_seed": 20261015,
+  "mother": {
+    "mother_id": "reference-styles-V01-20261015",
+    "vessel_id": "V01",
+    "material_id": "M01",
+    "faces": 4128,
+    "vertices": 2065,
+    "outer_chart": {
+      "name": "body",
+      "kind": "revolve",
+      "surface_tag": "outer_wall",
+      "surface_tag_index": 0,
+      "u_periodic": true,
+      "x_period_mm": 637.0214019628316,
+      "s_range_mm": [
+        78.97111413214606,
+        143.43920396538917
+      ],
+      "s_range_source": "measured_from_mesh",
+      "s_periodic": false,
+      "area_mm2": 34771.76814552291,
+      "circumferential_metric": {
+        "radius_min_mm": 76.29301153242918,
+        "radius_max_mm": 103.55276891737253,
+        "circumference_min_mm": 479.36312910104175,
+        "circumference_max_mm": 650.641236179398,
+        "metric_scale_at_r_min": 0.7525071019968826,
+        "metric_scale_at_r_max": 1.0213804970674456
+      },
+      "uv_to_xyz": false,
+      "region_mask": true
+    },
+    "preview_mapping": "no chart inverse; preview samples the measured chart coordinates and evaluation samples the real tagged mesh",
+    "mesh_display_subdivision_max_edge_mm": 2.0
+  },
+  "styles": {
+    "daily_hasami_tokusa": {
+      "recipe_hash": "sha256:28ace606f1a22e53d3117446f2c4507a6bc8eadd6d82f4c55d69cea570fe77ae",
+      "family_id": "PAT03",
+      "palette_id": "reference_tokusa_sandy_rust_proxy",
+      "seed_ref": "[20261015,\"reference-styles-V01-20261015\",\"daily_hasami_tokusa\",\"pattern\"]",
+      "region": {
+        "surface_tag": "outer_wall",
+        "chart": "body",
+        "s_min_mm": 87.71495684580184,
+        "s_max_mm": 134.7214558612371,
+        "feather_mm": 1.0,
+        "u_min": 0.0,
+        "u_max": 1.0,
+        "s_margin_frac": 0.1,
+        "s_margin_jitter": [
+          0.035630553600596984,
+          0.03522578576008546
+        ],
+        "legal_boundary": "hard s range with a smoothstep feather of feather_mm; the azimuthal axis is periodic and has no boundary"
+      },
+      "source_status": "SOURCE_DESCRIPTION_AND_PRODUCT_PHOTOGRAPH_REVIEWED",
+      "sampled_outer_mesh_points": 1943,
+      "sampled_outer_face_index_count": 1943,
+      "sampled_pattern_region_count": 235,
+      "sampled_pattern_region_fraction": 0.12094698919197118,
+      "face_centroid_pattern_region_count": 4,
+      "display_subdivided_face_count": 323328,
+      "display_subdivision_is_temporary_copy": true,
+      "height_max_abs_mm": 0.0,
+      "seam_pass": true,
+      "seam_max_abs_color_error": 0.0,
+      "determinism_pass": true,
+      "inheritance_pass": true,
+      "audit_pass": true,
+      "fracture_interface_body_fallback_pass": true,
+      "audit": {
+        "family_id": "PAT03",
+        "family_name": "条纹 stripes",
+        "version": "1.0",
+        "seed_ref": "[20261015,\"reference-styles-V01-20261015\",\"daily_hasami_tokusa\",\"pattern\"]",
+        "recipe_hash": "sha256:28ace606f1a22e53d3117446f2c4507a6bc8eadd6d82f4c55d69cea570fe77ae",
+        "recipe_hash_recomputed": "sha256:28ace606f1a22e53d3117446f2c4507a6bc8eadd6d82f4c55d69cea570fe77ae",
+        "recipe_hash_matches": true,
+        "resource_hash": "sha256:eb764f020086e3a4a2226164244ee1b04b04927db4db5331cdcf7bd2116de344",
+        "chart": {
+          "name": "body",
+          "kind": "revolve",
+          "surface_tag": "outer_wall",
+          "surface_tag_index": 0,
+          "u_periodic": true,
+          "x_period_mm": 637.0214019628316,
+          "s_range_mm": [
+            78.97111413214606,
+            143.43920396538917
+          ],
+          "s_range_source": "measured_from_mesh",
+          "s_periodic": false,
+          "area_mm2": 34771.76814552291,
+          "circumferential_metric": {
+            "radius_min_mm": 76.29301153242918,
+            "radius_max_mm": 103.55276891737253,
+            "circumference_min_mm": 479.36312910104175,
+            "circumference_max_mm": 650.641236179398,
+            "metric_scale_at_r_min": 0.7525071019968826,
+            "metric_scale_at_r_max": 1.0213804970674456
+          },
+          "uv_to_xyz": false,
+          "region_mask": true
+        },
+        "region": {
+          "surface_tag": "outer_wall",
+          "chart": "body",
+          "s_min_mm": 87.71495684580184,
+          "s_max_mm": 134.7214558612371,
+          "feather_mm": 1.0,
+          "u_min": 0.0,
+          "u_max": 1.0,
+          "s_margin_frac": 0.1,
+          "s_margin_jitter": [
+            0.035630553600596984,
+            0.03522578576008546
+          ],
+          "legal_boundary": "hard s range with a smoothstep feather of feather_mm; the azimuthal axis is periodic and has no boundary"
+        },
+        "audit_seed": {
+          "source": "recipe_hash",
+          "value": "sha256:28ace606f1a22e53d3117446f2c4507a6bc8eadd6d82f4c55d69cea570fe77ae"
+        },
+        "n_pairs": 256,
+        "units": {
+          "x": "mm",
+          "s": "mm",
+          "albedo": "linear rgb",
+          "height": "mm"
+        },
+        "seam": {
+          "chart_space": {
+            "n_pairs": 256,
+            "x_values": [
+              0.0,
+              637.0214019628316
+            ],
+            "max_abs_color_error": 0.0,
+            "max_abs_color_error_per_channel": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "p99_abs_color_error": 0.0,
+            "tolerance": 1e-05,
+            "pass": true,
+            "derivative_step_u": 1e-05,
+            "max_deriv_mismatch_abs": 1.0892717077521505e-15,
+            "p99_deriv_mismatch_abs": 1.0892717077521505e-15,
+            "max_deriv_mismatch_ratio": 1.0892717077521504e-09,
+            "deriv_ratio_budget": 0.001,
+            "interior_deriv_mismatch_p95": 1.8514856314766348e-11,
+            "interior_deriv_mismatch_p99": 0.005138719776709142,
+            "interior_deriv_mismatch_max": 0.034197567689613906,
+            "interior_n_pairs": 256,
+            "deriv_interior_factor": 4.0,
+            "deriv_abs_floor": 0.001,
+            "derivative_pass": true,
+            "derivative_status": "ENFORCED",
+            "derivative_policy": "smooth analytic field: the first-derivative budget is enforced",
+            "derivative_metric": "chart derivative",
+            "warp_normalised": false,
+            "definition": "one-sided first derivative of the linear albedo at the periodic seam (second-order stencils on [0,2h] and [C-2h,C] with h_u=1e-5, both estimating f'(0+)=f'(C-)) compared against the same stencil measured in the interior of the chart with the same sample count; legitimate frozen kinks are budgeted, not hidden"
+          },
+          "world_space": {
+            "status": "OK",
+            "n_pairs": 77,
+            "max_abs_color_error": 0.08821513472544729,
+            "max_arc_step_mm": 39.80663582498249,
+            "lipschitz_max_per_mm": 0.0,
+            "max_ratio_to_bound": 0.0,
+            "flat_field": true,
+            "local_circumference_mm": [
+              479.36312910104175,
+              650.641236179398
+            ],
+            "pass": true,
+            "definition": "mesh faces next to the seam paired by profile coordinate; the colour step must stay under the measured field Lipschitz bound times the real arc distance"
+          }
+        },
+        "determinism": {
+          "repeat_identical": {
+            "pass": true,
+            "detail": "two identical calls are bit-identical"
+          },
+          "batch_invariance": {
+            "pass": true,
+            "detail": "batches of 17 concatenate to the same field"
+          },
+          "order_invariance": {
+            "pass": true,
+            "detail": "reversed query order returns reversed values"
+          },
+          "rng_state_untouched": {
+            "pass": true,
+            "detail": "numpy legacy and python random states unchanged"
+          },
+          "frozen_params_unchanged": {
+            "pass": true,
+            "detail": "recipe payload hash stable across queries"
+          },
+          "no_seed_module_use": {
+            "pass": true,
+            "detail": "patched synlab.seeds.make_rng/seed64 to raise; the query still returned"
+          },
+          "fragment_id_independence": {
+            "pass": true,
+            "detail": "the field depends only on (recipe, x, s): no fragment identity, batch size or query order enters the value"
+          },
+          "pass": true
+        },
+        "scale": {
+          "line_width_mm": {
+            "status": "NA",
+            "reason": "no line cross-section found in the sampled window",
+            "n_samples": 96,
+            "n_valid_gradient": 12
+          },
+          "line_width_measured_on": "composite field",
+          "declared_line_width_mm": 1.0,
+          "spectrum": {
+            "status": "FLAT_FIELD",
+            "mean": 0.0,
+            "total_energy": 0.0,
+            "grid": {
+              "n_x": 192,
+              "n_s": 96,
+              "dx_mm": 3.317819801889748,
+              "ds_mm": 0.48965103141078403
+            },
+            "frozen_dominant_wavelength_mm": null,
+            "recheck_agreement": null
+          },
+          "min_wavelength_mm": null,
+          "circumferential_metric": {
+            "x_period_mm": 637.0214019628316,
+            "u_arc_length_mm_min": 479.36312910104175,
+            "u_arc_length_mm_max": 650.641236179398,
+            "note": "circumferential spacing is 2*pi*r(s)/|k|: it varies with the radius, the chart x is an arc length on the reference circumference"
+          },
+          "circumferential_spacing_mm": {
+            "integer_count": 64,
+            "reference_spacing_mm": 9.953459405669244,
+            "local_spacing_mm_min": 7.490048892203777,
+            "local_spacing_mm_max": 10.166269315303094
+          }
+        },
+        "inheritance": {
+          "field_identity_across_fragments": {
+            "pass": true,
+            "detail": "interleaved queries for two hypothetical fragments return bit-identical values for the first fragment: the field is frozen, never redrawn"
+          },
+          "cut_continuity": {
+            "status": "OK",
+            "cut": {
+              "kind": "plane_through_axis",
+              "azimuth_deg": 33.594233897708094,
+              "band_mm": 6.0
+            },
+            "n_pairs": 11,
+            "n_side_plus": 6,
+            "n_side_minus": 5,
+            "fragment_path_channel": "float32 (patterns.api.PatternChannels.albedo)",
+            "tolerance": 1e-05,
+            "max_abs_color_error_side_plus": 7.152557379708213e-09,
+            "max_abs_color_error_side_minus": 7.152557379708213e-09,
+            "bit_identical": false,
+            "cross_cut_color": {
+              "max_abs_color_step": 0.0,
+              "p50_abs_color_step": 0.0,
+              "max_gap_mm": 14.21353482916105,
+              "p50_gap_mm": 13.286561180426023
+            },
+            "cross_cut_median_gap_mm": 13.286561180426023,
+            "detail": "both sides of a real plane cut query the frozen field: the fragment-facing evaluate() path and the recipe field agree within the plan's 1e-5 continuous-channel budget, so the cut inherits the original colour instead of a redrawn one",
+            "steepness_bound_note": "no steepness/Lipschitz ratio is used as a criterion; see the docstring and tests/a12/patterns/probe_a05_cut_continuity.py",
+            "pass": true
+          },
+          "new_surface_exposes_body": {
+            "pass": true,
+            "status": "OK",
+            "pattern_region_all_zero": true,
+            "albedo_equals_body": true,
+            "n_points": 64,
+            "unpatterned_reason": "new_fracture_surface_exposes_body",
+            "detail": "a fresh fracture surface is unpainted and returns the body colour",
+            "material_integration": "PENDING: synlab.materials.material_at owns the body layer colour; the audit compares against the recipe body colour"
+          },
+          "pass": true
+        },
+        "geometry": {
+          "mode": "none",
+          "geometry_hash_before": "sha256:81fb288828e01104967a4243faab6ba8523a34e237f152fcf8f959ea756868c3",
+          "geometry_hash_after": "sha256:81fb288828e01104967a4243faab6ba8523a34e237f152fcf8f959ea756868c3",
+          "hash_unchanged": true,
+          "same_object_returned": true,
+          "pass": true,
+          "reason": "appearance-only family must not change the mother geometry",
+          "appearance_only_normal_map": false
+        },
+        "failures": [],
+        "pass": true
+      }
+    },
+    "historical_met_jun_plain": {
+      "recipe_hash": "sha256:1367f8a93105ec4db2c9f2f27de4a0e87996b292c95fbfcaea7abb44af503778",
+      "family_id": "PAT01",
+      "palette_id": "reference_jun_bluegrey_proxy",
+      "seed_ref": "[20261015,\"reference-styles-V01-20261015\",\"historical_met_jun_plain\",\"pattern\"]",
+      "region": {
+        "surface_tag": "outer_wall",
+        "chart": "body",
+        "s_min_mm": 78.97111418922468,
+        "s_max_mm": 143.43920391238515,
+        "feather_mm": 0.0,
+        "u_min": 0.0,
+        "u_max": 1.0,
+        "s_margin_frac": 0.0,
+        "s_margin_jitter": [
+          8.853780000329093e-10,
+          8.221744905079426e-10
+        ],
+        "legal_boundary": "hard s range with a smoothstep feather of feather_mm; the azimuthal axis is periodic and has no boundary"
+      },
+      "source_status": "CATALOGUE_DESCRIPTION_AND_PRODUCT_PHOTOGRAPH_REVIEWED",
+      "sampled_outer_mesh_points": 1926,
+      "sampled_outer_face_index_count": 1926,
+      "sampled_pattern_region_count": 1914,
+      "sampled_pattern_region_fraction": 0.9937694704049844,
+      "face_centroid_pattern_region_count": 1532,
+      "display_subdivided_face_count": 323328,
+      "display_subdivision_is_temporary_copy": true,
+      "height_max_abs_mm": 0.0,
+      "seam_pass": true,
+      "seam_max_abs_color_error": 0.0,
+      "determinism_pass": true,
+      "inheritance_pass": true,
+      "audit_pass": true,
+      "fracture_interface_body_fallback_pass": true,
+      "audit": {
+        "family_id": "PAT01",
+        "family_name": "素面 plain",
+        "version": "1.0",
+        "seed_ref": "[20261015,\"reference-styles-V01-20261015\",\"historical_met_jun_plain\",\"pattern\"]",
+        "recipe_hash": "sha256:1367f8a93105ec4db2c9f2f27de4a0e87996b292c95fbfcaea7abb44af503778",
+        "recipe_hash_recomputed": "sha256:1367f8a93105ec4db2c9f2f27de4a0e87996b292c95fbfcaea7abb44af503778",
+        "recipe_hash_matches": true,
+        "resource_hash": "sha256:da00d7b9cf9849b7159c47875e743b066a9c145b33b4234d15c14108a69255ea",
+        "chart": {
+          "name": "body",
+          "kind": "revolve",
+          "surface_tag": "outer_wall",
+          "surface_tag_index": 0,
+          "u_periodic": true,
+          "x_period_mm": 637.0214019628316,
+          "s_range_mm": [
+            78.97111413214606,
+            143.43920396538917
+          ],
+          "s_range_source": "measured_from_mesh",
+          "s_periodic": false,
+          "area_mm2": 34771.76814552291,
+          "circumferential_metric": {
+            "radius_min_mm": 76.29301153242918,
+            "radius_max_mm": 103.55276891737253,
+            "circumference_min_mm": 479.36312910104175,
+            "circumference_max_mm": 650.641236179398,
+            "metric_scale_at_r_min": 0.7525071019968826,
+            "metric_scale_at_r_max": 1.0213804970674456
+          },
+          "uv_to_xyz": false,
+          "region_mask": true
+        },
+        "region": {
+          "surface_tag": "outer_wall",
+          "chart": "body",
+          "s_min_mm": 78.97111418922468,
+          "s_max_mm": 143.43920391238515,
+          "feather_mm": 0.0,
+          "u_min": 0.0,
+          "u_max": 1.0,
+          "s_margin_frac": 0.0,
+          "s_margin_jitter": [
+            8.853780000329093e-10,
+            8.221744905079426e-10
+          ],
+          "legal_boundary": "hard s range with a smoothstep feather of feather_mm; the azimuthal axis is periodic and has no boundary"
+        },
+        "audit_seed": {
+          "source": "recipe_hash",
+          "value": "sha256:1367f8a93105ec4db2c9f2f27de4a0e87996b292c95fbfcaea7abb44af503778"
+        },
+        "n_pairs": 256,
+        "units": {
+          "x": "mm",
+          "s": "mm",
+          "albedo": "linear rgb",
+          "height": "mm"
+        },
+        "seam": {
+          "chart_space": {
+            "n_pairs": 256,
+            "x_values": [
+              0.0,
+              637.0214019628316
+            ],
+            "max_abs_color_error": 0.0,
+            "max_abs_color_error_per_channel": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "p99_abs_color_error": 0.0,
+            "tolerance": 1e-05,
+            "pass": true,
+            "derivative_step_u": 1e-05,
+            "max_deriv_mismatch_abs": 1.7428347324034407e-14,
+            "p99_deriv_mismatch_abs": 1.7428347324034407e-14,
+            "max_deriv_mismatch_ratio": 1.7428347324034407e-08,
+            "deriv_ratio_budget": 0.001,
+            "interior_deriv_mismatch_p95": 1.7428347324034407e-14,
+            "interior_deriv_mismatch_p99": 1.7428347324034407e-14,
+            "interior_deriv_mismatch_max": 1.7428347324034407e-14,
+            "interior_n_pairs": 256,
+            "deriv_interior_factor": 4.0,
+            "deriv_abs_floor": 0.001,
+            "derivative_pass": true,
+            "derivative_status": "ENFORCED",
+            "derivative_policy": "smooth analytic field: the first-derivative budget is enforced",
+            "derivative_metric": "chart derivative",
+            "warp_normalised": false,
+            "definition": "one-sided first derivative of the linear albedo at the periodic seam (second-order stencils on [0,2h] and [C-2h,C] with h_u=1e-5, both estimating f'(0+)=f'(C-)) compared against the same stencil measured in the interior of the chart with the same sample count; legitimate frozen kinks are budgeted, not hidden"
+          },
+          "world_space": {
+            "status": "OK",
+            "n_pairs": 77,
+            "max_abs_color_error": 0.0,
+            "max_arc_step_mm": 39.80663582498249,
+            "lipschitz_max_per_mm": 0.0,
+            "max_ratio_to_bound": 0.0,
+            "flat_field": true,
+            "local_circumference_mm": [
+              479.36312910104175,
+              650.641236179398
+            ],
+            "pass": true,
+            "definition": "mesh faces next to the seam paired by profile coordinate; the colour step must stay under the measured field Lipschitz bound times the real arc distance"
+          }
+        },
+        "determinism": {
+          "repeat_identical": {
+            "pass": true,
+            "detail": "two identical calls are bit-identical"
+          },
+          "batch_invariance": {
+            "pass": true,
+            "detail": "batches of 17 concatenate to the same field"
+          },
+          "order_invariance": {
+            "pass": true,
+            "detail": "reversed query order returns reversed values"
+          },
+          "rng_state_untouched": {
+            "pass": true,
+            "detail": "numpy legacy and python random states unchanged"
+          },
+          "frozen_params_unchanged": {
+            "pass": true,
+            "detail": "recipe payload hash stable across queries"
+          },
+          "no_seed_module_use": {
+            "pass": true,
+            "detail": "patched synlab.seeds.make_rng/seed64 to raise; the query still returned"
+          },
+          "fragment_id_independence": {
+            "pass": true,
+            "detail": "the field depends only on (recipe, x, s): no fragment identity, batch size or query order enters the value"
+          },
+          "pass": true
+        },
+        "scale": {
+          "line_width_mm": {
+            "status": "NA",
+            "reason": "family has no stroke lines to measure"
+          },
+          "line_width_measured_on": "composite field",
+          "declared_line_width_mm": 1.8700087464120931,
+          "spectrum": {
+            "status": "FLAT_FIELD",
+            "mean": 0.0,
+            "total_energy": 0.0,
+            "grid": {
+              "n_x": 192,
+              "n_s": 96,
+              "dx_mm": 3.317819801889748,
+              "ds_mm": 0.6715426012829216
+            },
+            "frozen_dominant_wavelength_mm": null,
+            "recheck_agreement": null
+          },
+          "min_wavelength_mm": null,
+          "circumferential_metric": {
+            "x_period_mm": 637.0214019628316,
+            "u_arc_length_mm_min": 479.36312910104175,
+            "u_arc_length_mm_max": 650.641236179398,
+            "note": "circumferential spacing is 2*pi*r(s)/|k|: it varies with the radius, the chart x is an arc length on the reference circumference"
+          }
+        },
+        "inheritance": {
+          "field_identity_across_fragments": {
+            "pass": true,
+            "detail": "interleaved queries for two hypothetical fragments return bit-identical values for the first fragment: the field is frozen, never redrawn"
+          },
+          "cut_continuity": {
+            "status": "OK",
+            "cut": {
+              "kind": "plane_through_axis",
+              "azimuth_deg": 161.58553234066184,
+              "band_mm": 6.0
+            },
+            "n_pairs": 23,
+            "n_side_plus": 14,
+            "n_side_minus": 9,
+            "fragment_path_channel": "float32 (patterns.api.PatternChannels.albedo)",
+            "tolerance": 1e-05,
+            "max_abs_color_error_side_plus": 1.4305114759416426e-08,
+            "max_abs_color_error_side_minus": 1.4305114759416426e-08,
+            "bit_identical": false,
+            "cross_cut_color": {
+              "max_abs_color_step": 0.0,
+              "p50_abs_color_step": 0.0,
+              "max_gap_mm": 29.500191327556223,
+              "p50_gap_mm": 13.283711531427617
+            },
+            "cross_cut_median_gap_mm": 13.283711531427617,
+            "detail": "both sides of a real plane cut query the frozen field: the fragment-facing evaluate() path and the recipe field agree within the plan's 1e-5 continuous-channel budget, so the cut inherits the original colour instead of a redrawn one",
+            "steepness_bound_note": "no steepness/Lipschitz ratio is used as a criterion; see the docstring and tests/a12/patterns/probe_a05_cut_continuity.py",
+            "pass": true
+          },
+          "new_surface_exposes_body": {
+            "pass": true,
+            "status": "OK",
+            "pattern_region_all_zero": true,
+            "albedo_equals_body": true,
+            "n_points": 64,
+            "unpatterned_reason": "new_fracture_surface_exposes_body",
+            "detail": "a fresh fracture surface is unpainted and returns the body colour",
+            "material_integration": "PENDING: synlab.materials.material_at owns the body layer colour; the audit compares against the recipe body colour"
+          },
+          "pass": true
+        },
+        "geometry": {
+          "mode": "none",
+          "geometry_hash_before": "sha256:81fb288828e01104967a4243faab6ba8523a34e237f152fcf8f959ea756868c3",
+          "geometry_hash_after": "sha256:81fb288828e01104967a4243faab6ba8523a34e237f152fcf8f959ea756868c3",
+          "hash_unchanged": true,
+          "same_object_returned": true,
+          "pass": true,
+          "reason": "appearance-only family must not change the mother geometry",
+          "appearance_only_normal_map": false
+        },
+        "failures": [],
+        "pass": true
+      }
+    }
+  },
+  "geometry_unchanged": true,
+  "limitations": [
+    "The PNG is an unwrapped chart preview, not a calibrated photograph or physically lit render.",
+    "The preview samples the real mother's measured chart bounds; the acceptance receipt additionally evaluates area-weighted points on its actual outer_wall mesh.",
+    "The Tokusa pattern engine does not model brush taper, underglaze pigment diffusion/bleed, glaze pooling or measured reflectance.",
+    "The Jun style is a flat PAT01 blue-gray albedo proxy; glaze chemistry, thickness, pooling, opalescence, crazing and firing behavior are not simulated here.",
+    "The catalogued Hacilar chevron candidate remains research-only because rim, body and projection charts are not source-aligned in the generic adapter."
+  ],
+  "runtime": {
+    "python": "3.12.14",
+    "implementation": "CPython"
+  },
+  "preview": {
+    "file": "reference_style_preview.png",
+    "width_px": 1120,
+    "height_px": 590,
+    "format": "PNG",
+    "display_encoding": "linear sRGB primaries encoded to sRGB for PNG display",
+    "rendering": "PIL painter-order raster of a temporary subdivided mesh copy with simple visualization shading; not a calibrated renderer"
+  }
+}

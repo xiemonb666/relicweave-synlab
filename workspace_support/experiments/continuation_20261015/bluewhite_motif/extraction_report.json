@@ -1,0 +1,61 @@
+{
+  "source_path": "relicweave-synlab/synlab/patterns/resources/bluewhite_20261015/source/met_50899_O2_original.jpg",
+  "source_sha256": "3228f553358887829ef0a3eff0036293f8df6e311bf1e5da0b48c3fe02f2f28b",
+  "source_dimensions_px": {
+    "width": 2667,
+    "height": 4000
+  },
+  "crop_box_source_px_ltrb": [
+    300,
+    2000,
+    2300,
+    3160
+  ],
+  "crop_dimensions_px": {
+    "width": 2000,
+    "height": 1160
+  },
+  "mask_path": "relicweave-synlab/synlab/patterns/resources/bluewhite_20261015/derived/met_50899_O2_dragon_cobalt_fired_photo_mask.png",
+  "mask_dimensions_px": {
+    "width": 2000,
+    "height": 1160
+  },
+  "mask_value_semantics": "0=no detected cobalt chroma; 255=strong cobalt chroma",
+  "blue_excess_thresholds_rgb_units": {
+    "zero_at_or_below": 6.0,
+    "full_at_or_above": 72.0,
+    "formula": "clamp((B - max(R, G) - zero) / (full - zero), 0, 1)"
+  },
+  "mask_nonzero_pixel_fraction": 0.32884956896551726,
+  "nonzero_mask_quantiles": [
+    15,
+    104,
+    236
+  ],
+  "strong_support_path": "relicweave-synlab/synlab/patterns/resources/bluewhite_20261015/derived/met_50899_O2_dragon_strong_cobalt_support_proxy.png",
+  "strong_support_threshold_rgb_units": 55.0,
+  "strong_support_pixel_fraction": 0.07115603448275862,
+  "strong_support_semantics": "binary cut of stronger observed cobalt chroma; optional sharper simulation seed, not recovered pre-firing brush placement",
+  "output_files": {
+    "met_50899_O2_dragon_projection_crop.png": {
+      "bytes": 1757727,
+      "sha256": "f9845558272540118089a3ff7a084372e0aceeebf9223796af7c19ea4d673f3d"
+    },
+    "met_50899_O2_dragon_cobalt_fired_photo_mask.png": {
+      "bytes": 284531,
+      "sha256": "bc166ca1adf15907f8049f39e81a8cfe75486818e231a2d4b998c49797782da5"
+    },
+    "met_50899_O2_dragon_strong_cobalt_support_proxy.png": {
+      "bytes": 23658,
+      "sha256": "a71ff127b69a8e447942f317c6aea3fe43803aebf0a11a009a4c2675deb5395a"
+    }
+  },
+  "processing": [
+    "crop the Met O2 photograph to CROP_BOX",
+    "save the cropped photograph losslessly as PNG",
+    "derive grayscale cobalt density from blue-channel excess",
+    "derive optional binary high-chroma support cut for a sharper simulation seed",
+    "apply no blur, diffusion, inpainting, morphology, or semantic redraw"
+  ],
+  "interpretation_limit": "Fired-photo projection only: camera color, glaze, illumination, compression/photographic softness, and vessel curvature remain. This is not the recovered pre-firing brush deposit."
+}
