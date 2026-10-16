@@ -1,0 +1,90 @@
+{
+  "schema": "shardforge.github_pause_delivery.v1",
+  "as_of": "2026-10-16",
+  "development_status": "PAUSED_BY_USER",
+  "status": "CODE_AND_DOCUMENTATION_CHECKPOINTS_PUSHED_AND_VERIFIED",
+  "repositories": [
+    {
+      "repository": "vesselforge",
+      "github_url": "https://github.com/xiemonb666/vesselforge",
+      "visibility": "private",
+      "default_branch": "backup/forge-work-20261003",
+      "code_checkpoint_commit": "feff8fdadbc51ccfefe9768f6beb39c8f1578642",
+      "verified_remote_refs": {
+        "refs/heads/backup/forge-work-20261003": "feff8fdadbc51ccfefe9768f6beb39c8f1578642"
+      },
+      "readme_blob_sha": "8ce607d48b1b267cec1cb873c1e303a58668cb91",
+      "readme_bytes": 13361,
+      "readme_matches_default_branch": true,
+      "verification": "PASS"
+    },
+    {
+      "repository": "pgfrag",
+      "github_url": "https://github.com/xiemonb666/pgfrag",
+      "visibility": "private",
+      "default_branch": "backup/forge-work-20261003",
+      "code_checkpoint_commit": "4ac29dd0f8d2da1988e0e545ac919e3174fcf3dc",
+      "verified_remote_refs": {
+        "refs/heads/backup/forge-work-20261003": "4ac29dd0f8d2da1988e0e545ac919e3174fcf3dc"
+      },
+      "readme_blob_sha": "af223b01a5fde9c07abfa749a6cad2f551544109",
+      "readme_bytes": 6633,
+      "readme_matches_default_branch": true,
+      "verification": "PASS"
+    },
+    {
+      "repository": "relicweave-synlab",
+      "github_url": "https://github.com/xiemonb666/relicweave-synlab",
+      "visibility": "private",
+      "default_branch": "main",
+      "code_checkpoint_commit": "7cc08f0cbb4a0693abb11b0a1590c4b1246cd232",
+      "verified_remote_refs": {
+        "refs/heads/backup/forge-work-20261003": "7cc08f0cbb4a0693abb11b0a1590c4b1246cd232",
+        "refs/heads/main": "7cc08f0cbb4a0693abb11b0a1590c4b1246cd232"
+      },
+      "readme_blob_sha": "0939912d0cb94e0f56dd6e742a918ae7994d15eb",
+      "readme_bytes": 12125,
+      "readme_matches_default_branch": true,
+      "verification": "PASS"
+    }
+  ],
+  "receipt_commit_note": "This receipt is appended in a documentation-only descendant of the SynLab code checkpoint. The checkpoint pins every functional source and the reviewed README; the published branch also contains this receipt.",
+  "source_scope": "All current project code, tests/configuration, historical project source snapshots, shared workspace scripts and bounded evidence. Runtime binaries/caches and listed large raw histories remain local.",
+  "local_exclusions": {
+    "files": 2324,
+    "bytes": 6594804164,
+    "manifest": "LOCAL_ARTIFACT_DELIVERY_BOUNDARY.json",
+    "prior_streamed_hashes_present": 2324
+  },
+  "shared_archive": {
+    "manifest": "../../../workspace_support/archive_manifest.json",
+    "manifest_sha256": "eb2140aa95e5eee72e8123f2106aded91702ee5406f9311252c6cd420869d2ce",
+    "files": 2667,
+    "bytes": 98808266,
+    "restore_dry_run_current_workspace": "PASS_NO_CONFLICTS",
+    "restore_dry_run_empty_workspace": "PASS_2667_MISSING_FILES_PLANNED_NO_COPY"
+  },
+  "master_plan": {
+    "file": "../../master/20261016/RelicWeave_V1.48_Engineering_Update_20261016.docx",
+    "sha256": "b134f7a781b62bbf8946a269343d8eeedbc87c2697c83dcb55e0ab83cf97fd62",
+    "pages": 231,
+    "visual_qa": "PASS_231_OF_231_PAGES",
+    "original_20261009_preserved": true
+  },
+  "validation": {
+    "VF": 66,
+    "PG": 55,
+    "A12": 90,
+    "total_focused_checks_passed": 211,
+    "full_repository_suite_claimed": false,
+    "solver_or_new_campaign_launched": false,
+    "qualified_complete_physical_packages": 0
+  },
+  "verification_methods": [
+    "git ls-remote branch hashes matched local commits",
+    "GitHub repository API confirmed private visibility and expected default branches",
+    "GitHub README API blob hashes matched local committed READMEs",
+    "Git index byte checks on frozen evidence and source archive; see INDEX_INTEGRITY.json"
+  ],
+  "final_remote_verification": "The exact final receipt-only descendant SHA is recorded after pushing in the workspace FINAL_DELIVERY_VERIFICATION.json; use the repository branch to include the receipt."
+}

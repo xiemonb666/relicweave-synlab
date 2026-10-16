@@ -30,3 +30,5 @@
 暂停快照中的本地 checkout 分支均为 `backup/forge-work-20261003`；VF/PG 远端默认分支同名，A12 远端默认分支是 `main`。A12 当前 `HEAD` 相对 `origin/main` 领先 16 个 commits，祖先关系允许 fast-forward，不需要 force。该信息描述暂停快照；当前交付 refs 以 `DELIVERY_RECEIPT` 为准。暂停时没有观察到仍运行中的本项目 Python/WSL solver。约 6.8 GB raw data 由本地 manifest 保留，不应等同项目源码全量提交；`_temp_matplotlib` 是外部 runtime cache，应排除。
 
 完整资格目标仍然是：以有来源、有尺寸与不确定度的日用及考古器物为输入，构建可审核的全器型几何与外观；在有来源绑定和已校准材料的前提下完成物理断裂、正面积裂面和闭合碎片；从结果生成不泄漏隐藏真值的观测与训练/检索数据，并通过独立资格审查。目前上述整条链尚未完成。
+
+[GitHub 交付回执](DELIVERY_RECEIPT.md)记录已核验的固定代码检查点、发布分支、README 和大文件边界；回执本身以仅文档提交追加。
