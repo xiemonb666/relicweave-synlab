@@ -129,6 +129,29 @@ a source-image appearance proxy and a sampling-resolution experiment; it is not 
 historical motif reconstruction, pre-firing pigment recovery, calibrated diffusion chemistry,
 optical calibration, or a real-vessel material measurement.
 
+## Remaining work and implementation approach
+
+Development remains paused. The accepted progress is a source-guided composition and observation
+software path; a qualified physical-fracture dataset has not been produced. On resumption:
+
+1. Finish reference-asset refinement and source review with VesselForge. Resolve design-space
+   metadata/control mismatches, including inherited V23 controls, before expanding vessel families.
+2. Build meaningful full-vessel ornament compositions from reviewed resources, with placement,
+   brush density and bounded pigment spread. The current vase-photo crop on a bowl is a partial
+   appearance study; historical meaning and finished ornament still need review.
+3. Connect material/process recipes to measured or well-sourced physical properties and optics.
+   Existing appearance recipes do not establish calibrated glaze, firing chemistry or fracture constants.
+4. Bind accepted PG-Frag outputs to the exact source mother, validate fragments and observations,
+   then qualify small experimental/training datasets. Current weak-seam controls remain research-only;
+   hidden mother identity, assembly pose and true adjacency must stay out of online features.
+5. Replace machine-specific runtime paths with explicit configuration, reconcile the historical
+   dependency snapshot, and document reproducible environment/source/license pins.
+
+Keep reusable adapters for mother geometry, material/process recipes, semantic motif/layout and
+surface transport, with separate qualification receipts. Reuse open resources where they fit,
+refine or replace the inadequate parts, and review even high-quality inputs before final acceptance.
+Prove one or a few complete vessel/pattern/material flows before increasing combinatorial breadth.
+
 ## Repository layout
 
 ```text
